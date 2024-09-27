@@ -477,7 +477,7 @@ class ProviderService {
             int relationCheck = OrgRole.executeQuery('select count(oo) from ProviderRole pvr join pvr.subscription sub, OrgRole oo where pvr.subscription = oo.org and oo.org = :context and sub.status = :current', [context: org, current: RDStore.SUBSCRIPTION_CURRENT])[0]
             result.isMyProvider = relationCheck > 0
 
-            int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.provider).size()
+            int tc1 = taskService.getTasksByResponsibilityAndObject(result.user, result.provider).size()
             int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.provider).size()
             result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
             result.docsCount        = docstoreService.getDocsCount(result.provider, result.institution)

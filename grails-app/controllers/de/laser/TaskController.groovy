@@ -169,20 +169,6 @@ class TaskController  {
     }
 
 	/**
-	 * Call to edit the given task instance
-	 * @return the task editing modal
-	 */
-	@Secured(['permitAll']) // TODO
-	def ajaxEdit() {
-        Map<String, Object> result = [:]
-		result.params = params
-		result.contextOrg = contextService.getOrg()
-		result.taskInstance = Task.get(params.id)
-
-		render template: "/templates/tasks/modal_edit", model: result
-	}
-
-	/**
 	 * Call to delete the given task instance
 	 * @return a redirect to the referer
 	 */

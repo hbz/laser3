@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5971    26.09.2024  dev     3.5         David   Feature     Refactoring: Aufgaben
+
 5959    23.09.2024  dev     3.5         David   Feature     Systemmeldungen auf Markdown umstellen
 
 5876    23.09.2024  dev     3.5         David   Feature     Kontextabhängige Hilfe -> technische Umsetzung

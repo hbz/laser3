@@ -4,7 +4,6 @@ package de.laser.ctrl
 import de.laser.*
 import de.laser.auth.User
 import de.laser.oap.OrgAccessPoint
-import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
@@ -402,7 +401,7 @@ class OrganisationControllerService {
             result.inContextOrg = true
         }
 
-        int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.orgInstance).size()
+        int tc1 = taskService.getTasksByResponsibilityAndObject(result.user, result.orgInstance).size()
         int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.orgInstance).size()
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
         result.docsCount        = docstoreService.getDocsCount(result.orgInstance, result.contextOrg)

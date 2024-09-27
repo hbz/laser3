@@ -35,26 +35,40 @@ Vielen Dank
 """
     ]
 
-    List<Task> myTasks = Task.findAllByCreatorAndTipp(BeanStore.getContextService().getUser(), tipp).sort{ it.dateCreated }.reverse()
+    Map<String, Object> currentTasks = taskService.getTasks(BeanStore.getContextService().getUser(), tipp)
 %>
 
         <ui:msg class="info" showIcon="true">
-            Bei den angezeigten Informationen ist Ihnen ein Fehler aufgefallen?
-            <br />
-            <a href="${'mailto:' + ttm_mailStruct['mailto'] + '?subject=' + ttm_mailStruct['subject'] + '&cc=' + ttm_mailStruct['mailcc'] + '&body=' +  ttm_mailStruct['body']}">Kontaktieren Sie den Anbieter</a>
+            ${message(code:'tipp.reportTitleToProvider.info1')} <br />
+            <a href="${'mailto:' + ttm_mailStruct['mailto'] + '?subject=' + ttm_mailStruct['subject'] + '&cc=' + ttm_mailStruct['mailcc'] + '&body=' +  ttm_mailStruct['body']}" class="js-no-wait-wheel">Kontaktieren Sie den Anbieter</a>
             und <a href="#modalCreateTask" data-ui="modal">erstellen Sie sich ggf. eine Aufgabe</a> zur Erinnerung.
             <br />
 
-            <g:if test="${myTasks}">
-                <br />
-                Sie haben bereits folgende Aufgaben erstellt: <br />
-                <g:each in="${myTasks}" var="mt">
-                    <g:formatDate format="${message(code:'default.date.format.notime')}" date="${mt.dateCreated}"/> ${mt.title}  <br />
-                </g:each>
-            </g:if>
+            <g:if test="${currentTasks.cmbTaskInstanceList}">
+                <g:if test="${currentTasks.cmbTaskInstanceList}">
+                    <br />
+                    ${message(code:'tipp.reportTitleToProvider.info2')} <br />
 
-            <br />
-            <strong>TODO: Beobachtungsliste</strong>
+                    <g:each in="${currentTasks.myTaskInstanceList.sort{ it.dateCreated }.reverse()}" var="tt">
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tt.dateCreated}"/>
+                        <a href="#" onclick="JSPC.app.editTask(${tt.id});">${tt.title}</a> <br />
+                    </g:each>
+                </g:if>
+%{--                <g:if test="${currentTasks.myTaskInstanceList}">--}%
+%{--                    <br />--}%
+%{--                    Füt diesen Titel haben Sie bereits folgende Aufgaben erstellt: <br />--}%
+%{--                    <g:each in="${currentTasks.myTaskInstanceList}" var="tt">--}%
+%{--                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tt.dateCreated}"/> ${tt.title}  <br />--}%
+%{--                    </g:each>--}%
+%{--                </g:if>--}%
+%{--                <g:if test="${currentTasks.taskInstanceList}">--}%
+%{--                    <br />--}%
+%{--                    Für diesen Titel wurden Ihnen folgende Aufgaben zugewiesen: <br />--}%
+%{--                    <g:each in="${currentTasks.taskInstanceList}" var="tt">--}%
+%{--                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tt.dateCreated}"/> ${tt.title}  <br />--}%
+%{--                    </g:each>--}%
+%{--                </g:if>--}%
+            </g:if>
         </ui:msg>
     </g:if>
 
@@ -142,6 +156,16 @@ Vielen Dank
         </g:form>
 
         <laser:script file="${this.getGroovyPageFileName()}">
+
+
+            JSPC.app.editTask = function (id) {
+                var func = bb8.ajax4SimpleModalFunction("#modalEditTask", "<g:createLink controller="ajaxHtml" action="editTask"/>?id=" + id, true);
+                func();
+            }
+%{--            JSPC.app.readTask = function (id) {--}%
+%{--                var func = bb8.ajax4SimpleModalFunction("#modalReadTask", "<g:createLink controller="ajaxHtml" action="readTask"/>?id=" + id);--}%
+%{--                func();--}%
+%{--            }--}%
 
             JSPC.callbacks.modal.onShow.modalCreateTask = function (trigger) {
                 /* r2d2.helper.resetModalForm ('#modalCreateTask'); */

@@ -8,7 +8,7 @@
 
 <ui:h1HeaderWithIcon message="menu.my.markers" type="Marker" floated="true" />
 
-<g:set var="markerTypeList" value="${SpringSecurityUtils.ifAnyGranted('ROLE_YODA') ? [Marker.TYPE.WEKB_CHANGES, Marker.TYPE.TIPP_CHANGES, Marker.TYPE.UNKOWN] : [Marker.TYPE.WEKB_CHANGES]}" />
+<g:set var="markerTypeList" value="${SpringSecurityUtils.ifAnyGranted('ROLE_YODA') ? [Marker.TYPE.WEKB_CHANGES, Marker.TYPE.UNKOWN] : [Marker.TYPE.WEKB_CHANGES]}" />
 
 <ui:filter simple="true">
     <form id="markerFilterForm" class="ui form">

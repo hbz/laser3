@@ -35,7 +35,6 @@ class ShareService {
                 license:        (target instanceof License) ? target : share.license,
                 subscription:   (target instanceof Subscription) ? target : share.subscription,
                 link:           (target instanceof Links) ? target : share.link,
-                globannounce:   share.globannounce,
                 sharedFrom:     share,
                 isShared:       false
         )
@@ -47,7 +46,6 @@ class ShareService {
                     DocContext clonedDescendantShare = new DocContext(
                             owner:          share.owner ,
                             subscription:   d,
-                            globannounce:   share.globannounce,
                             sharedFrom:     share,
                             isShared:       false
                     )

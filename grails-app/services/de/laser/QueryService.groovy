@@ -56,7 +56,7 @@ class QueryService {
         }
 
         if (contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_TASKS)==RDStore.YN_YES) {
-            dueObjects.addAll( taskService.getTasksByResponsibles(
+            dueObjects.addAll( taskService.getTasksByResponsibility(
                     contextUser,
                     contextOrg,
                     [query:" and t.status = :open and t.endDate <= :endDate",
