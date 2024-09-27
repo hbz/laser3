@@ -1368,54 +1368,9 @@ class AjaxHtmlController {
                     result.doc = doc
                     result.docCtx = docCtx
 
-                    Closure checkPermission = {
-                        // logic based on /views/templates/documents/card
+                    boolean checkPermission = tmpRefactoringService.hasAccessToDoc(doc, docCtx)
 
-                        boolean check = false
-                        long ctxOrgId = contextService.getOrg().id
-
-                        if ( doc.owner.id == ctxOrgId ) {
-                            check = true
-                        }
-                        else if ( docCtx.shareConf ) {
-                            if ( docCtx.shareConf == RDStore.SHARE_CONF_UPLOADER_ORG ) {
-                                check = (doc.owner.id == ctxOrgId)
-                            }
-                            if ( docCtx.shareConf == RDStore.SHARE_CONF_UPLOADER_AND_TARGET ) {
-                                check = (doc.owner.id == ctxOrgId) || (docCtx.targetOrg.id == ctxOrgId)
-                            }
-                            if ( docCtx.shareConf == RDStore.SHARE_CONF_ALL ) {
-                                // context based restrictions must be applied
-                                check = true
-                            }
-                        }
-                        else if ( docCtx.sharedFrom ) {
-                            if (docCtx.license) {
-                                docCtx.license.orgRelations.each {
-                                    if (it.org.id == ctxOrgId && it.roleType in [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]) {
-                                        check = true
-                                    }
-                                }
-                            }
-                            else if (docCtx.subscription) {
-                                docCtx.subscription.orgRelations.each {
-                                    if (it.org.id == ctxOrgId && it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER]) {
-                                        check = true
-                                    }
-                                }
-                            }
-                        }
-                        // survey workaround
-                        else if ( docCtx.surveyConfig ) {
-                            Map orgIdMap = docCtx.surveyConfig.getSurveyOrgsIDs()
-                            if (contextService.getOrg().id in orgIdMap.orgsWithSubIDs || contextService.getOrg().id in orgIdMap.orgsWithoutSubIDs) {
-                                check = true
-                            }
-                        }
-                        return check
-                    }
-
-                    if (checkPermission()) {
+                    if (checkPermission) {
                         Map<String, String> mimeTypes = Doc.getPreviewMimeTypes()
                         if (mimeTypes.containsKey(doc.mimeType)) {
                             String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
@@ -1446,7 +1401,7 @@ class AjaxHtmlController {
                         }
                     }
                     else {
-                        result.info = message(code: 'template.documents.preview.forbidden') as String
+                        result.warning = message(code: 'template.documents.preview.forbidden') as String
                     }
                 }
             }

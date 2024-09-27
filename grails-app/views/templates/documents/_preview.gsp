@@ -11,6 +11,9 @@
         <g:if test="${info}">
             <ui:msg class="info" hideClose="true" text="${info}" />
         </g:if>
+        <g:if test="${warning}">
+            <ui:msg class="warning" hideClose="true" text="${warning}" />
+        </g:if>
         <g:if test="${error}">
             <ui:msg class="error" hideClose="true" text="${error}" />
         </g:if>
