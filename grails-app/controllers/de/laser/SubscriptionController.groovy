@@ -1199,35 +1199,36 @@ class SubscriptionController {
             }
         }
         else {
-            Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
-            Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
-            threadArray.each {
-                if (it.name == 'PackageTransfer_'+result.subscription.id) {
-                    result.message = message(code: 'subscription.details.linkPackage.thread.running.withPackage',args: [subscriptionService.getCachedPackageName(it.name)] as Object[])
+            SwissKnife.setPaginationParams(result, params, (User) result.user)
+            if(result.subscription.packages) {
+                Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
+                Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
+                threadArray.each {
+                    if (it.name == 'PackageTransfer_'+result.subscription.id) {
+                        result.message = message(code: 'subscription.details.linkPackage.thread.running.withPackage',args: [subscriptionService.getCachedPackageName(it.name)] as Object[])
+                    }
+                    else if (it.name == 'EntitlementEnrichment_'+result.subscription.id) {
+                        result.message = message(code: 'subscription.details.addEntitlements.thread.running')
+                    }
                 }
-                else if (it.name == 'EntitlementEnrichment_'+result.subscription.id) {
-                    result.message = message(code: 'subscription.details.addEntitlements.thread.running')
-                }
+                result.issueEntitlementEnrichment = params.issueEntitlementEnrichment
+                Map ttParams = FilterLogic.resolveTabAndStatusForTitleTabsMenu(params, 'IEs')
+                if (ttParams.status) { params.status = ttParams.status }
+                if (ttParams.tab)    { params.tab = ttParams.tab }
+                SwissKnife.setPaginationParams(result, params, (User) result.user)
+                Subscription targetSub = issueEntitlementService.getTargetSubscription(result.subscription)
+                Set<Package> targetPkg = targetSub.packages.pkg
+                if(params.pkgFilter)
+                    targetPkg = [Package.get(params.pkgFilter)]
+                Map<String, Object> configMap = [subscription: targetSub, packages: targetPkg, offset: result.offset, max: result.max]
+                configMap.putAll(params)
+                result.putAll(issueEntitlementService.getIssueEntitlements(configMap))
             }
-            result.issueEntitlementEnrichment = params.issueEntitlementEnrichment
-            SwissKnife.setPaginationParams(result, params, (User) result.user)
-
-            //params.status = params.status ?: (result.subscription.hasPerpetualAccess ? [RDStore.TIPP_STATUS_CURRENT.id, RDStore.TIPP_STATUS_RETIRED.id] : [RDStore.TIPP_STATUS_CURRENT.id])
-
-            Map ttParams = FilterLogic.resolveTabAndStatusForTitleTabsMenu(params, 'IEs')
-            if (ttParams.status) { params.status = ttParams.status }
-            if (ttParams.tab)    { params.tab = ttParams.tab }
-            SwissKnife.setPaginationParams(result, params, (User) result.user)
-            Subscription targetSub = issueEntitlementService.getTargetSubscription(result.subscription)
-            Set<Package> targetPkg = targetSub.packages.pkg
-            Map<String, Object> configMap = [subscription: targetSub, packages: targetPkg]
-            configMap.putAll(params)
-            result.entitlements = issueEntitlementService.getIssueEntitlements(configMap)
             result
         }
 
         /*
-        String filename = "${escapeSring(ctrlResult.result.subscription.dropdownNamingConvention())}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
+        String filename = "${escapeString(ctrlResult.result.subscription.dropdownNamingConvention())}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
         //ArrayList<IssueEntitlement> issueEntitlements = []
         Map<String, Object> selectedFields = [:]
         if(params.fileformat) {

@@ -1667,6 +1667,7 @@ class SubscriptionControllerService {
                                             administrative: currParent._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE,
                                             manualRenewalDate: currParent.manualRenewalDate,
                                             /* manualCancellationDate: result.subscription.manualCancellationDate, */
+                                            holdingSelection: currParent.holdingSelection ?: null,
                                             identifier: UUID.randomUUID().toString(),
                                             instanceOf: currParent,
                                             isSlaved: true,

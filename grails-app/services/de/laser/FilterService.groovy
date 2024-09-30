@@ -1832,7 +1832,7 @@ class FilterService {
             queryArgs << 'tipp.pkg in (:packages)'
             queryParams.packages = params.packages
         }
-        if(params.platform) {
+        if(params.platforms) {
             queryArgs << 'tipp.platform in (:platforms)'
             queryParams.platforms = params.platforms
         }
@@ -1845,11 +1845,13 @@ class FilterService {
             queryParams.tippStatus = RDStore.TIPP_STATUS_REMOVED
         }
         if(params.filter) {
+            //deactivated because of performance reasons; query would take 11 seconds instead of millis
             //queryArgs << " ( genfunc_filter_matcher(tipp.name, :filter) = true or genfunc_filter_matcher(tipp.firstAuthor, :filter) = true or genfunc_filter_matcher(tipp.firstEditor, :filter) = true )"
             queryArgs << " ( lower(tipp.name) like :filter or lower(tipp.firstAuthor) like :filter or lower(tipp.firstEditor) like :filter )"
             queryParams.filter = "%${params.filter.toLowerCase()}%"
         }
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+        //ERMS-5972
         if (params.asAt) {
             queryArgs << " ( ( :asAt >= tipp.accessStartDate or tipp.accessStartDate is null ) and ( :asAt <= tipp.accessEndDate or tipp.accessEndDate is null) ) "
             queryParams.asAt = sdf.parse(params.asAt)
@@ -1873,8 +1875,8 @@ class FilterService {
             queryArgs << q
         }
         if (params.series_names && params.series_names != "" && listReaderWrapper(params, 'series_names')) {
-            queryArgs << " lower(tipp.seriesName) in (:series_names) "
-            queryParams.series_names = listReaderWrapper(params, 'series_names').collect { ""+it.toLowerCase()+"" }
+            queryArgs << " tipp.seriesName in (:series_names) "
+            queryParams.series_names = listReaderWrapper(params, 'series_names').collect { ""+it+"" }
         }
 
         if(params.summaryOfContent) {
@@ -2354,6 +2356,9 @@ class FilterService {
         //.respondsTo('size') is a substitute for instanceof Ljava.lang.String;
         else if(params[key] instanceof List || (params[key].respondsTo('size') && !(params[key] instanceof String))) {
             result = params[key]
+        }
+        else if(params[key] instanceof String && params[key].contains(',')) {
+            result = params[key].split(',')
         }
         else result = [params[key]]
         result
