@@ -414,9 +414,10 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def editNote() {
         Map<String, Object> result = [ params: params ]
+        Doc note = Doc.findByIdAndContentType(params.long('id'), Doc.CONTENT_TYPE_STRING)
 
-        if (tmpRefactoringService.hasAccessToDocNote()) {
-            result.noteInstance = Doc.get(params.id)
+        if (tmpRefactoringService.hasAccessToDocNote(note, null)) { // TODO
+            result.noteInstance = note
         }
         if (result.noteInstance) {
             render template: "/templates/notes/modal_edit", model: result
@@ -429,9 +430,10 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def readNote() {
         Map<String, Object> result = [ params: params ]
+        Doc note = Doc.findByIdAndContentType(params.long('id'), Doc.CONTENT_TYPE_STRING)
 
-        if (tmpRefactoringService.hasAccessToDocNote()) {
-            result.noteInstance = Doc.get(params.id)
+        if (tmpRefactoringService.hasAccessToDocNote(note, null)) { // TODO
+            result.noteInstance = note
         }
         if (result.noteInstance) {
             render template: "/templates/notes/modal_read", model: result
@@ -1361,7 +1363,7 @@ class AjaxHtmlController {
             if (params.key) {
                 String[] keys = params.key.split(':')
 
-                Doc doc = Doc.findByUuid(keys[0])
+                Doc doc = Doc.findByUuidAndContentType(keys[0], Doc.CONTENT_TYPE_FILE)
                 DocContext docCtx = DocContext.findByIdAndOwner(Long.parseLong(keys[1]), doc)
 
                 if (doc && docCtx) {

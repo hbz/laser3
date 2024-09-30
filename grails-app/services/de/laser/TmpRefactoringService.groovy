@@ -61,11 +61,28 @@ class TmpRefactoringService {
         return check
     }
 
-    boolean hasAccessToDocNote() {
+    boolean hasAccessToDocNote(Doc doc, DocContext docCtx) {
+
+//        license:        License,
+//        subscription:   Subscription,
+//        link:           Links,
+//        org:            Org,
+//        surveyConfig:   SurveyConfig,
+//        provider:       Provider,
+//        vendor:         Vendor
+
         return true
     }
 
     boolean hasAccessToTask() {
+//        License         license
+//        Org             org
+//        Provider        provider
+//        Vendor          vendor
+//        Subscription    subscription
+//        SurveyConfig    surveyConfig
+//        TitleInstancePackagePlatform tipp
+
         return true
     }
 
