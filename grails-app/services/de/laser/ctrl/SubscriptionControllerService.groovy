@@ -1942,6 +1942,7 @@ class SubscriptionControllerService {
      * @param params the request parameter map
      * @return OK with the result map containing defaults in case of success, ERROR otherwise
      */
+    @Deprecated
     Map<String,Object> renewEntitlementsWithSurvey(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
 
@@ -3623,49 +3624,6 @@ class SubscriptionControllerService {
     }
 
     @Deprecated
-    Map<String,Object> processRenewEntitlements(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
-        if(!result)
-            [result:null,status:STATUS_ERROR]
-        else {
-            List tippsToAdd = params."tippsToAdd".split(",")
-            List tippsToDelete = params."tippsToDelete".split(",")
-            tippsToAdd.each { tipp ->
-                try {
-                    if(subscriptionService.addEntitlement(result.subscription,tipp,null,false))
-                        log.debug("Added tipp ${tipp} to sub ${result.subscription.id}")
-                }
-                catch (EntitlementCreationException e) {
-                    result.error = e.getStackTrace()
-                    [result:result,status:STATUS_ERROR]
-                }
-            }
-            tippsToDelete.each { tipp ->
-                if(subscriptionService.deleteEntitlement(result.subscription,tipp))
-                    log.debug("Deleted tipp ${tipp} from sub ${result.subscription.id}")
-            }
-            if(params.process == "finalise") {
-                SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,Package.get(params.packageId))
-                sp.finishDate = new Date()
-                if(!sp.save()) {
-                    result.error = sp.errors
-                    [result:result,status:STATUS_ERROR]
-                }
-                else {
-                    Object[] args = [sp.pkg.name]
-                    result.message = messageSource.getMessage('subscription.details.renewEntitlements.submitSuccess',args, LocaleUtils.getCurrentLocale())
-                }
-            }
-            [result:result,status:STATUS_OK]
-        }
-    }
-
-    /**
-     * Takes the submitted input and adds the selected titles to the (preliminary) subscription holding from cache
-     * @param controller unused
-     * @param params the request parameter map
-     * @return OK if the selection (adding and/or removing of issue entitlements) was successful, ERROR otherwise
-     */
     Map<String,Object> processRenewEntitlementsWithSurvey(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result) {

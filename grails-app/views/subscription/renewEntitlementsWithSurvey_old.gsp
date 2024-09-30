@@ -84,6 +84,15 @@
             <a class="item" data-ui="modal" href="#individuallyExportModal">
                 ${message(code: 'renewEntitlementsWithSurvey.selectableTitles')} + ${message(code: 'default.stats.label')}
             </a>
+            %{--
+            <g:link class="item statsExport action="renewEntitlementsWithSurvey"
+                    id="${subscriberSub.id}"
+                    params="${[surveyConfigID : surveyConfig.id,
+                               exportForImport: true,
+                               tab            : 'allTipps',
+                               revision: revision]}">
+                ${message(code: 'renewEntitlementsWithSurvey.selectableTitles')} + ${message(code: 'default.stats.label')}
+            </g:link>--}%
         </ui:exportDropdownItem>
 
     </ui:exportDropdown>
@@ -165,6 +174,66 @@
 </g:if>
 
 <laser:render template="KBARTSelectionUploadFormModal"/>
+
+<%--
+<g:if test="${(params.tab == 'allTipps') && editable}">
+
+    <ui:greySegment>
+        <g:form class="ui form" controller="subscription" action="renewEntitlementsWithSurvey"
+                params="${[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: params.tab]}"
+                method="post" enctype="multipart/form-data">
+
+            <h4 class="ui dividing header"><g:message code="renewEntitlementsWithSurvey.issueEntitlementSelect.label"/>
+                <span class="la-long-tooltip la-popup-tooltip" data-position="right center" data-content="${message(code: 'renewEntitlementsWithSurvey.issueEntitlementSelect.info')}">
+                <i class="${Icon.TOOLTIP.HELP}"></i>
+            </span></h4>
+
+            <div class="two fields">
+                %{--<div class="field">
+                    ${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.uploadFile.info')}
+                    <g:link class="item" action="renewEntitlementsWithSurvey"
+                            id="${subscriberSub.id}"
+                            params="${[surveyConfigID: surveyConfig.id,
+                                       exportForImport   : true,
+                                       tab           : 'allTipps']}">
+                        ${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.uploadFile.info2')}
+                    </g:link> ${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.uploadFile.info3')}
+                </div>--}%
+
+                <div class="field">
+                    <div class="ui fluid action input">
+                        <input type="text" readonly="readonly"
+                               placeholder="${message(code: 'template.addDocument.selectFile')}">
+                        <input type="file" id="kbartPreselect" name="kbartPreselect" accept="text/tab-separated-values"
+                               style="display: none;">
+
+                        <div class="${Btn.BASIC_ICON}">
+                            <i class="${Icon.CMD.ATTACHMENT}"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <input type="submit"
+                           value="${message(code: 'renewEntitlementsWithSurvey.issueEntitlementSelect.uploadButton')}"
+                           class="${Btn.SIMPLE} fluid"/>
+                </div>
+            </div>
+        </g:form>
+
+        <laser:script file="${this.getGroovyPageFileName()}">
+            $('.action .icon.button').click(function () {
+                $(this).parent('.action').find('input:file').click();
+            });
+
+            $('input:file', '.ui.action.input').on('change', function (e) {
+                var name = e.target.files[0].name;
+                $('input:text', $(e.target).parent()).val(name);
+            });
+        </laser:script>
+    </ui:greySegment>
+</g:if>
+--%>
 
         <laser:render template="/templates/filter/tipp_ieFilter" model="[notShow: params.tab == 'allTipps', fillDropdownsWithPackage: params.tab == 'allTipps']"/>
 
