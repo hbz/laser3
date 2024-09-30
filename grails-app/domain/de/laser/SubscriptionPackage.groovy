@@ -137,9 +137,10 @@ class SubscriptionPackage implements Comparable {
    * </ul>
    * @return a HTML snippet showing the counts of titles of the package in the holding and on the global package level
    */
-  String getIEandPackageSize(){
+  Map<String, Object> getIEandPackageSize(){
 
-    return '(<span data-tooltip="Titel in der Lizenz"><i class="icon archive"></i></span>' + executeQuery('select count(*) from IssueEntitlement ie where ie.subscription = :sub and ie.tipp.pkg = :pkg and ie.status = :current',[sub: this.subscription, pkg: this.pkg, current: RDStore.TIPP_STATUS_CURRENT])[0] + ' / <span data-tooltip="Titel im Paket"><i class="' + Icon.TIPP + '"></i></span>' + executeQuery('select count(*) from TitleInstancePackagePlatform tipp join tipp.pkg pkg where pkg = :ctx and tipp.status = :current',[ctx:this.pkg, current:RDStore.TIPP_STATUS_CURRENT])[0] + ')'
+    return [ies: executeQuery('select count(*) from IssueEntitlement ie where ie.subscription = :sub and (select sp.pkg from SubscriptionPackage sp where sp.subscription = ie.subscription) = :pkg and ie.status = :current',[sub: this.subscription, pkg: this.pkg, current: RDStore.TIPP_STATUS_CURRENT])[0],
+    tipps: executeQuery('select count(*) from TitleInstancePackagePlatform tipp join tipp.pkg pkg where pkg = :ctx and tipp.status = :current',[ctx:this.pkg, current:RDStore.TIPP_STATUS_CURRENT])[0]]
   }
 
   /**
