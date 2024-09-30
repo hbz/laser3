@@ -13,6 +13,7 @@ import de.laser.storage.RDConstants
 import de.laser.survey.SurveyConfig
 import de.laser.utils.LocaleUtils
 import grails.plugin.springsecurity.annotation.Secured
+import org.apache.http.HttpStatus
 import org.springframework.context.MessageSource
 import org.springframework.transaction.TransactionStatus
 
@@ -27,6 +28,7 @@ class DocstoreController  {
     ContextService contextService
     DocstoreControllerService docstoreControllerService
     MessageSource messageSource
+    TmpRefactoringService tmpRefactoringService
 
     /**
      * Called by /documents/_table and /documents/_card
@@ -39,17 +41,25 @@ class DocstoreController  {
     })
     def index() {
         Doc doc = Doc.findByUuid(params.id)
-
         if (doc) {
-            String filename = doc.filename ?: messageSource.getMessage('template.documents.missing', null, LocaleUtils.getCurrentLocale())
+            boolean check = false
 
-            switch (doc.contentType) {
-                case Doc.CONTENT_TYPE_STRING:
-                    break
-                case Doc.CONTENT_TYPE_FILE:
-                    doc.render(response, filename)
-                    break
+            DocContext.findAllByOwner(doc).each{dc -> check = check || tmpRefactoringService.hasAccessToDoc(doc, dc) }
+            if (check) {
+                String filename = doc.filename ?: messageSource.getMessage('template.documents.missing', null, LocaleUtils.getCurrentLocale())
+
+                switch (doc.contentType) {
+                    case Doc.CONTENT_TYPE_STRING:
+                        break
+                    case Doc.CONTENT_TYPE_FILE:
+                        doc.render(response, filename)
+                        break
+                }
+            } else {
+                response.sendError(HttpStatus.SC_FORBIDDEN)
             }
+        } else {
+            response.sendError(HttpStatus.SC_NOT_FOUND)
         }
     }
 

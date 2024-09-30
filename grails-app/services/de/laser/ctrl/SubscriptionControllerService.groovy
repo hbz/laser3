@@ -130,7 +130,7 @@ class SubscriptionControllerService {
             // TODO: experimental asynchronous task
             //def task_tasks = task {
             // tasks
-            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.subscription)
+            result.tasks = taskService.getTasksByResponsibilityAndObject(result.user, result.subscription)
 
             prf.setBenchmark('properties')
             // TODO: experimental asynchronous task
@@ -294,7 +294,7 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         else {
             SwissKnife.setPaginationParams(result, params, result.user as User)
-            result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Org) result.institution, (Subscription) result.subscription)['cmbTaskInstanceList']
+            result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Subscription) result.subscription)['cmbTaskInstanceList']
             [result:result,status:STATUS_OK]
         }
     }
@@ -4121,7 +4121,7 @@ class SubscriptionControllerService {
             }
             result.showConsortiaFunctions = subscriptionService.showConsortiaFunctions(result.contextOrg, result.subscription)
 
-            int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.subscription).size()
+            int tc1 = taskService.getTasksByResponsibilityAndObject(result.user, result.subscription).size()
             int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.subscription).size()
             result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 

@@ -538,7 +538,7 @@ class VendorService {
         if(params.id) {
             result.vendor = Vendor.get(params.id)
             result.editable = userService.hasFormalAffiliation_or_ROLEADMIN(contextUser, contextOrg, 'INST_EDITOR')
-            int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.vendor).size()
+            int tc1 = taskService.getTasksByResponsibilityAndObject(result.user, result.vendor).size()
             int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.vendor).size()
             result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
             result.docsCount        = docstoreService.getDocsCount(result.vendor, result.institution)

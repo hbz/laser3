@@ -11,6 +11,7 @@ import de.laser.GenericOIDService
 import de.laser.HelpService
 import de.laser.PendingChangeService
 import de.laser.AddressbookService
+import de.laser.TmpRefactoringService
 import de.laser.WekbNewsService
 import de.laser.WorkflowService
 import de.laser.cache.EhcacheWrapper
@@ -105,6 +106,7 @@ class AjaxHtmlController {
     SubscriptionService subscriptionService
     SubscriptionControllerService subscriptionControllerService
     TaskService taskService
+    TmpRefactoringService tmpRefactoringService
     WekbNewsService wekbNewsService
     WorkflowService workflowService
 
@@ -401,16 +403,24 @@ class AjaxHtmlController {
         render template: "/templates/filter/vendorFilterTable", model: model
     }
 
+    def renderMarkdown() {
+        String text = params.text ?: ''
+        render helpService.parseMarkdown2(text)
+    }
+
     /**
      * Opens the edit modal for the given note
      */
     @Secured(['ROLE_USER'])
     def editNote() {
-        Map<String, Object> result = [:]
-        result.params = params
-        result.noteInstance = Doc.get(params.id)
+        Map<String, Object> result = [ params: params ]
 
-        render template: "/templates/notes/modal_edit", model: result
+        if (tmpRefactoringService.hasAccessToDocNote()) {
+            result.noteInstance = Doc.get(params.id)
+        }
+        if (result.noteInstance) {
+            render template: "/templates/notes/modal_edit", model: result
+        }
     }
 
     /**
@@ -418,16 +428,14 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def readNote() {
-        Map<String, Object> result = [:]
-        result.params = params
-        result.noteInstance = Doc.get(params.id)
+        Map<String, Object> result = [ params: params ]
 
-        render template: "/templates/notes/modal_read", model: result
-    }
-
-    def renderMarkdown() {
-        String text = params.text ?: ''
-        render helpService.parseMarkdown2(text)
+        if (tmpRefactoringService.hasAccessToDocNote()) {
+            result.noteInstance = Doc.get(params.id)
+        }
+        if (result.noteInstance) {
+            render template: "/templates/notes/modal_read", model: result
+        }
     }
 
     /**
@@ -447,12 +455,13 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def editTask() {
-        Map<String, Object> result = [:]
-        result.params = params
-        result.taskInstance = Task.get(params.id)
-        result.contextOrg = contextService.getOrg()
+        Map<String, Object> result = [ params: params ]
 
-        if (result.taskInstance){
+        if (tmpRefactoringService.hasAccessToTask()) {
+            result.taskInstance = Task.get(params.id)
+            result.contextOrg = contextService.getOrg()
+        }
+        if (result.taskInstance) {
             render template: "/templates/tasks/modal_edit", model: result
         }
     }
@@ -462,11 +471,12 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def readTask() {
-        Map<String, Object> result = [:]
-        result.params = params
-        result.taskInstance = Task.get(params.id)
-        result.contextOrg = contextService.getOrg()
+        Map<String, Object> result = [ params: params ]
 
+        if (tmpRefactoringService.hasAccessToTask()) {
+            result.taskInstance = Task.get(params.id)
+            result.contextOrg = contextService.getOrg()
+        }
         if (result.taskInstance) {
             render template: "/templates/tasks/modal_read", model: result
         }
@@ -1358,54 +1368,9 @@ class AjaxHtmlController {
                     result.doc = doc
                     result.docCtx = docCtx
 
-                    Closure checkPermission = {
-                        // logic based on /views/templates/documents/card
+                    boolean checkPermission = tmpRefactoringService.hasAccessToDoc(doc, docCtx)
 
-                        boolean check = false
-                        long ctxOrgId = contextService.getOrg().id
-
-                        if ( doc.owner.id == ctxOrgId ) {
-                            check = true
-                        }
-                        else if ( docCtx.shareConf ) {
-                            if ( docCtx.shareConf == RDStore.SHARE_CONF_UPLOADER_ORG ) {
-                                check = (doc.owner.id == ctxOrgId)
-                            }
-                            if ( docCtx.shareConf == RDStore.SHARE_CONF_UPLOADER_AND_TARGET ) {
-                                check = (doc.owner.id == ctxOrgId) || (docCtx.targetOrg.id == ctxOrgId)
-                            }
-                            if ( docCtx.shareConf == RDStore.SHARE_CONF_ALL ) {
-                                // context based restrictions must be applied
-                                check = true
-                            }
-                        }
-                        else if ( docCtx.sharedFrom ) {
-                            if (docCtx.license) {
-                                docCtx.license.orgRelations.each {
-                                    if (it.org.id == ctxOrgId && it.roleType in [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]) {
-                                        check = true
-                                    }
-                                }
-                            }
-                            else if (docCtx.subscription) {
-                                docCtx.subscription.orgRelations.each {
-                                    if (it.org.id == ctxOrgId && it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER]) {
-                                        check = true
-                                    }
-                                }
-                            }
-                        }
-                        // survey workaround
-                        else if ( docCtx.surveyConfig ) {
-                            Map orgIdMap = docCtx.surveyConfig.getSurveyOrgsIDs()
-                            if (contextService.getOrg().id in orgIdMap.orgsWithSubIDs || contextService.getOrg().id in orgIdMap.orgsWithoutSubIDs) {
-                                check = true
-                            }
-                        }
-                        return check
-                    }
-
-                    if (checkPermission()) {
+                    if (checkPermission) {
                         Map<String, String> mimeTypes = Doc.getPreviewMimeTypes()
                         if (mimeTypes.containsKey(doc.mimeType)) {
                             String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
@@ -1436,7 +1401,7 @@ class AjaxHtmlController {
                         }
                     }
                     else {
-                        result.info = message(code: 'template.documents.preview.forbidden') as String
+                        result.warning = message(code: 'template.documents.preview.forbidden') as String
                     }
                 }
             }

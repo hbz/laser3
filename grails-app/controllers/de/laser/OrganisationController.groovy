@@ -897,7 +897,7 @@ class OrganisationController  {
                 result.missing.leitID = message(code: 'org.eInvoice.info.missing.leitID')
         }
 
-        result.tasks = taskService.getTasksByResponsiblesAndObject(result.user,result.institution,result.orgInstance)
+        result.tasks = taskService.getTasksByResponsibilityAndObject(result.user, result.orgInstance)
 
         result.formalOrg = result.user.formalOrg as Org
 
@@ -1056,7 +1056,7 @@ class OrganisationController  {
             response.sendError(401); return
         }
         SwissKnife.setPaginationParams(result, params, result.user as User)
-        result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Org) result.institution, (Org) result.orgInstance)['cmbTaskInstanceList']
+        result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Org) result.orgInstance)['cmbTaskInstanceList']
 
         result
     }

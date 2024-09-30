@@ -172,7 +172,7 @@
                                     <div class="item"><div class="content">
                                         <g:link controller="subscription" action="index" id="${participant.oldSub.id}"
                                                 params="[pkgfilter: sp.pkg.id]">
-                                            ${sp.pkg.name}<br/>${raw(sp.getIEandPackageSize())}
+                                            ${sp.pkg.name}<br/><ui:ieAndPkgSize sp="${sp}" />
                                         </g:link>
                                     </div>
                                     </div>
@@ -198,7 +198,7 @@
                                     <div class="item"><div class="content">
                                         <g:link controller="subscription" action="index" id="${participant.newSub.id}"
                                                 params="[pkgfilter: sp.pkg.id]">
-                                            ${sp.pkg.name}<br/>${raw(sp.getIEandPackageSize())}
+                                            ${sp.pkg.name}<br/><ui:ieAndPkgSize sp="${sp}" />
                                         </g:link>
                                     </div>
                                     </div>

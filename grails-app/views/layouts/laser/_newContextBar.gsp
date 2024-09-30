@@ -151,14 +151,14 @@
                     <ui:cbItemMarkerAction provider="${provider}" type="${Marker.TYPE.WEKB_CHANGES}"/>
                 </g:if>
             </g:elseif>
-            <g:elseif test="${controllerName in ['issueEntitlement', 'tipp'] && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                <g:if test="${tipp}">
-                    <ui:cbItemMarkerAction tipp="${tipp}" type="${Marker.TYPE.TIPP_CHANGES}"/>
-                </g:if>
-                <g:elseif test="${issueEntitlementInstance?.tipp}">
-                    <ui:cbItemMarkerAction tipp="${issueEntitlementInstance.tipp}" type="${Marker.TYPE.TIPP_CHANGES}"/>
-                </g:elseif>
-            </g:elseif>
+%{--            <g:elseif test="${controllerName in ['issueEntitlement', 'tipp'] && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">--}%
+%{--                <g:if test="${tipp}">--}%
+%{--                    <ui:cbItemMarkerAction tipp="${tipp}" type="${Marker.TYPE.TIPP_CHANGES}"/>--}%
+%{--                </g:if>--}%
+%{--                <g:elseif test="${issueEntitlementInstance?.tipp}">--}%
+%{--                    <ui:cbItemMarkerAction tipp="${issueEntitlementInstance.tipp}" type="${Marker.TYPE.TIPP_CHANGES}"/>--}%
+%{--                </g:elseif>--}%
+%{--            </g:elseif>--}%
             <g:elseif test="${controllerName == 'vendor'}">
                 <g:if test="${vendor}">
                     <ui:cbItemMarkerAction vendor="${vendor}" type="${Marker.TYPE.WEKB_CHANGES}"/>

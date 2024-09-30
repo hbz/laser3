@@ -434,21 +434,21 @@
                     <tbody>
                         <g:each in="${costs.costItems}" var="ci" status="jj">
                             <%
-                                String icon         = '<i class="' + Icon.FNC.COST_NOT_SET + '"></i>'
                                 String dataTooltip  = message(code:'financials.costItemConfiguration.notSet')
+                                String icon = Icon.FNC.COST_NOT_SET
 
                                 switch (ci.costItemElementConfiguration) {
                                     case RDStore.CIEC_POSITIVE:
                                         dataTooltip = message(code:'financials.costItemConfiguration.positive')
-                                        icon = '<i class="' + Icon.FNC.COST_POSITIVE + '"></i>'
+                                        icon = Icon.FNC.COST_POSITIVE
                                         break
                                     case RDStore.CIEC_NEGATIVE:
                                         dataTooltip = message(code:'financials.costItemConfiguration.negative')
-                                        icon = '<i class="' + Icon.FNC.COST_NEGATIVE + '"></i>'
+                                        icon = Icon.FNC.COST_NEGATIVE
                                         break
                                     case RDStore.CIEC_NEUTRAL:
                                         dataTooltip = message(code:'financials.costItemConfiguration.neutral')
-                                        icon = '<i class="' + Icon.FNC.COST_NEUTRAL + '"></i>'
+                                        icon = Icon.FNC.COST_NEUTRAL
                                         break
                                 }
                             %>
@@ -485,7 +485,7 @@
                                     </g:else>
                                 </td>
                                 <td>
-                                    <span class="la-popup-tooltip" data-position="right center" data-content="${dataTooltip}">${raw(icon)}</span>
+                                    <span class="la-popup-tooltip" data-position="right center" data-content="${dataTooltip}"><i class="${icon}"></i></span>
                                 </td>
                                 <td>
                                     ${ci.billingCurrency ?: 'EUR'}

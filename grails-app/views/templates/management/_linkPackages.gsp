@@ -9,8 +9,7 @@
                 <div class="ui middle aligned selection list">
                     <g:each in="${validPackages}" var="subPkg">
                         <div class="item">
-                            <g:set var="counts" value="${subPkg.getIEandPackageSize()}"/>
-                            <g:link controller="package" action="show" id="${subPkg.pkg.id}">${subPkg.pkg.name} (<span data-tooltip="Titel in der Lizenz"><i class="icon archive"></i></span>${counts.ies} / <span data-tooltip="Titel im Paket"><i class="${Icon.TIPP}"></i></span> ${counts.tipps})</g:link>
+                            <g:link controller="package" action="show" id="${subPkg.pkg.id}">${subPkg.pkg.name} <ui:ieAndPkgSize sp="${subPkg}" /></g:link>
 
                             <div class="right floated content">
                                 <button class="${Btn.MODERN.NEGATIVE} la-selectable-button unlinkPackages" ${!editable || isUnlinkingRunning ? 'disabled="disabled"' : ''}
@@ -198,17 +197,15 @@
                                             </g:link>
                                         </g:if>
                                         <g:elseif test="${subscriptionService.countCurrentIssueEntitlements(sub) > 0}">
-                                            <g:set var="counts1" value="${sp.getIEandPackageSize()}"/>
                                             <g:link controller="subscription" action="index" id="${sub.id}"
                                                     params="[pkgfilter: sp.pkg.id]">
                                                 ${sp.pkg.name}<br/>(<span data-tooltip="Titel in der Lizenz"><i class="icon archive"></i></span>${counts1.ies} / <span data-tooltip="Titel im Paket"><i class="${Icon.TIPP}"></i></span> ${counts1.tipps})
                                             </g:link>
                                         </g:elseif>
                                         <g:else>
-                                            <g:set var="counts2" value="${sp.getIEandPackageSize()}"/>
                                             <g:link controller="subscription" action="addEntitlements" id="${sub.id}"
                                                     params="[pkgfilter: sp.pkg.id]">
-                                                ${sp.pkg.name}<br/>(<span data-tooltip="Titel in der Lizenz"><i class="icon archive"></i></span>${counts2.ies} / <span data-tooltip="Titel im Paket"><i class="${Icon.TIPP}"></i></span> ${counts2.tipps})
+                                                ${sp.pkg.name}<br/><ui:ieAndPkgSize sp="${sp}" />
                                             </g:link>
                                         </g:else>
                                         <g:if test="${editable && childWithCostItems.find { Package row -> row.id == sp.pkg.id }}">

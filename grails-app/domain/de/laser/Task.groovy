@@ -5,6 +5,7 @@ import de.laser.auth.User
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.survey.SurveyConfig
+import de.laser.ui.Icon
 import de.laser.wekb.Provider
 import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
@@ -108,19 +109,19 @@ class Task {
         List result = []
 
         if (license)
-            result << [controller: 'license', object: license]
+            result << [controller: 'license', icon: Icon.LICENSE, object: license]
         if (org)
-            result << [controller: 'organisation', object: org]
+            result << [controller: 'organisation', icon: Icon.ORG, object: org]
         if (provider)
-            result << [controller: 'provider', object: provider]
+            result << [controller: 'provider', icon: Icon.PROVIDER, object: provider]
         if (vendor)
-            result << [controller: 'vendor', object: vendor]
+            result << [controller: 'vendor', icon: Icon.VENDOR, object: vendor]
         if (subscription)
-            result << [controller: 'subscription', object: subscription]
+            result << [controller: 'subscription', icon: Icon.SUBSCRIPTION, object: subscription]
         if (surveyConfig)
-            result << [controller: 'survey', object: surveyConfig]
+            result << [controller: 'survey', icon: Icon.SURVEY, object: surveyConfig]
         if (tipp)
-            result << [controller: 'tipp', object: tipp]
+            result << [controller: 'tipp', icon: Icon.TIPP, object: tipp]
 
         result
     }

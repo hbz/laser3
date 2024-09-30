@@ -51,4 +51,50 @@ databaseChangeLog = {
             column(name: "tsk_tipp_fk")
         }
     }
+
+    changeSet(author: "klober (generated)", id: "1727092155564-10") {
+        dropIndex(indexName: "das_responsible_user_fk_idx", tableName: "dashboard_due_date")
+    }
+
+    changeSet(author: "klober (generated)", id: "1727092155564-11") {
+        createIndex(indexName: "das_responsible_user_idx", tableName: "dashboard_due_date") {
+            column(name: "das_responsible_user_fk")
+        }
+    }
+
+    changeSet(author: "klober (generated)", id: "1727092155564-12") {
+        dropIndex(indexName: "das_responsible_org_fk_idx", tableName: "dashboard_due_date")
+    }
+
+    changeSet(author: "klober (generated)", id: "1727092155564-13") {
+        createIndex(indexName: "das_responsible_org_idx", tableName: "dashboard_due_date") {
+            column(name: "das_responsible_org_fk")
+        }
+    }
+
+    changeSet(author: "klober (generated)", id: "1727092155564-14") {
+        dropColumn(columnName: "dc_is_global", tableName: "doc_context")
+    }
+
+    changeSet(author: "klober (generated)", id: "1727092155564-15") {
+        dropIndex(indexName: "pp_tenant_fk", tableName: "person_property")
+    }
+
+    changeSet(author: "klober (generated)", id: "1727092155564-16") {
+        createIndex(indexName: "pp_tenant_idx", tableName: "person_property") {
+            column(name: "pp_tenant_fk")
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1727092155564-17") {
+        grailsChange {
+            change {
+                sql.execute("update marker set mkr_type_enum = 'UNKOWN' where mkr_type_enum = 'TIPP_CHANGES'")
+                String info = "update marker set mkr_type_enum = 'UNKOWN': ${sql.getUpdateCount()}"
+                confirm(info)
+                changeSet.setComments(info)
+            }
+            rollback {}
+        }
+    }
 }
