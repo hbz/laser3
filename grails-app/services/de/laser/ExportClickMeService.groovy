@@ -7197,7 +7197,7 @@ class ExportClickMeService {
                 else
                     row.add(createTableCell(format, sum))
 
-                String note = readerNumberStudents ? readerNumberStudents.dateGroupNote : (readerNumberPeople ? readerNumberPeople.dateGroupNote : (readerNumberUser ? readerNumberUser.dateGroupNote : (readerNumberStaffWithDueDate ? readerNumberStaffWithDueDate.dateGroupNote : '')))
+                String note = readerNumberStudents ? readerNumberStudents.dateGroupNote : (readerNumberPeople ? readerNumberPeople.dateGroupNote : (readerNumberUser ? readerNumberUser.dateGroupNote : (readerNumberStaffWithDueDate ? readerNumberStaffWithDueDate.dateGroupNote : (readerNumberFTEWithDueDate ? readerNumberFTEWithDueDate.dateGroupNote : ''))))
 
                 row.add(createTableCell(format, note))
 
