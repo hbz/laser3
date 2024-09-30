@@ -7077,31 +7077,39 @@ class ExportClickMeService {
             }
         }else if (fieldKey == 'participant.readerNumbers') {
             if (org) {
+                ReaderNumber readerNumberPeople
+                ReaderNumber readerNumberUser
                 ReaderNumber readerNumberStudents
                 ReaderNumber readerNumberStaff
                 ReaderNumber readerNumberFTE
-                ReaderNumber readerNumberPeople = ReaderNumber.findByReferenceGroupAndOrg(RDStore.READER_NUMBER_PEOPLE, org, [sort: 'dueDate', order: 'desc'])
-                ReaderNumber readerNumberUser = ReaderNumber.findByReferenceGroupAndOrg(RDStore.READER_NUMBER_USER, org, [sort: 'dueDate', order: 'desc'])
-                ReaderNumber readerNumberStaffwithDueDate = ReaderNumber.findByReferenceGroupInListAndOrgAndDueDateIsNotNull([RDStore.READER_NUMBER_SCIENTIFIC_STAFF, RDStore.READER_NUMBER_FTE], org, [sort: 'dueDate', order: 'desc'])
+                ReaderNumber readerNumberStaffWithDueDate
+                ReaderNumber readerNumberFTEWithDueDate
+                List dueDateCheck = ReaderNumber.executeQuery('select rn.dueDate from ReaderNumber rn where rn.org = :org and rn.dueDate != null order by rn.dueDate desc', [org: org])
+                if(dueDateCheck) {
+                    Date newestDueDate = (Date) dueDateCheck[0]
+                    readerNumberPeople = ReaderNumber.findByReferenceGroupAndOrgAndDueDate(RDStore.READER_NUMBER_PEOPLE, org, newestDueDate)
+                    readerNumberUser = ReaderNumber.findByReferenceGroupAndOrgAndDueDate(RDStore.READER_NUMBER_USER, org, newestDueDate)
+                    readerNumberStaffWithDueDate = ReaderNumber.findByReferenceGroupAndOrgAndDueDateIsNotNullAndDueDate(RDStore.READER_NUMBER_SCIENTIFIC_STAFF, org, newestDueDate)
+                    readerNumberFTEWithDueDate = ReaderNumber.findByReferenceGroupAndOrgAndDueDateIsNotNullAndDueDate(RDStore.READER_NUMBER_FTE, org, newestDueDate)
 
-                if(readerNumberStaffwithDueDate){
-                    row.add(createTableCell(format, ' '))
-                    row.add(createTableCell(format, DateUtils.getLocalizedSDF_noTime(LocaleUtils.getCurrentLocale()).format(readerNumberStaffwithDueDate.dueDate)))
-                    row.add(createTableCell(format, ' '))
-                    row.add(createTableCell(format, readerNumberStaffwithDueDate.value))
-                    row.add(createTableCell(format, ' '))
-                }
-                else if(readerNumberPeople || readerNumberUser){
-                    String dueDate = ' '
-                    if(readerNumberPeople && readerNumberPeople.dueDate)
-                        dueDate = DateUtils.getLocalizedSDF_noTime(LocaleUtils.getCurrentLocale()).format(readerNumberPeople.dueDate)
-                    else if(readerNumberUser && readerNumberUser.dueDate)
-                        dueDate = DateUtils.getLocalizedSDF_noTime(LocaleUtils.getCurrentLocale()).format(readerNumberUser.dueDate)
-                    row.add(createTableCell(format, ' '))
-                    row.add(createTableCell(format, dueDate))
-                    row.add(createTableCell(format, ' '))
-                    row.add(createTableCell(format, ' '))
-                    row.add(createTableCell(format, ' '))
+                    if(readerNumberStaffWithDueDate || readerNumberFTEWithDueDate){
+                        row.add(createTableCell(format, ' '))
+                        row.add(createTableCell(format, DateUtils.getLocalizedSDF_noTime(LocaleUtils.getCurrentLocale()).format(newestDueDate)))
+                        row.add(createTableCell(format, ' '))
+                        if(readerNumberStaffWithDueDate)
+                            row.add(createTableCell(format, readerNumberStaffWithDueDate.value))
+                        else row.add(createTableCell(format, ' '))
+                        if(readerNumberFTEWithDueDate)
+                            row.add(createTableCell(format, readerNumberFTEWithDueDate.value))
+                        else row.add(createTableCell(format, ' '))
+                    }
+                    else if(readerNumberPeople || readerNumberUser){
+                        row.add(createTableCell(format, ' '))
+                        row.add(createTableCell(format, DateUtils.getLocalizedSDF_noTime(LocaleUtils.getCurrentLocale()).format(newestDueDate)))
+                        row.add(createTableCell(format, ' '))
+                        row.add(createTableCell(format, ' '))
+                        row.add(createTableCell(format, ' '))
+                    }
                 }
                 else {
                     RefdataValue currentSemester = RefdataValue.getCurrentSemester()
@@ -7183,15 +7191,21 @@ class ExportClickMeService {
                     sum = sum + (readerNumberUser.value != null ? readerNumberUser.value : 0)
                 }
 
-                if(readerNumberStaffwithDueDate){
-                    sum = sum + (readerNumberStaffwithDueDate.value != null ? readerNumberStaffwithDueDate.value : 0)
+                if(readerNumberStaffWithDueDate){
+                    sum = sum + (readerNumberStaffWithDueDate.value != null ? readerNumberStaffWithDueDate.value : 0)
+                }
+                if(readerNumberFTEWithDueDate){
+                    sum = sum + (readerNumberFTEWithDueDate.value != null ? readerNumberFTEWithDueDate.value : 0)
                 }
 
                 row.add(createTableCell(format, sumStudFTE))
                 row.add(createTableCell(format, sumStudHeads))
-                row.add(createTableCell(format, sum))
+                if((readerNumberFTE?.value || readerNumberFTEWithDueDate?.value) && (readerNumberStaff?.value || readerNumberStaffWithDueDate?.value))
+                    row.add(createTableCell(format, ' '))
+                else
+                    row.add(createTableCell(format, sum))
 
-                String note = readerNumberStudents ? readerNumberStudents.dateGroupNote : (readerNumberPeople ? readerNumberPeople.dateGroupNote : (readerNumberUser ? readerNumberUser.dateGroupNote : (readerNumberStaffwithDueDate ? readerNumberStaffwithDueDate.dateGroupNote : '')))
+                String note = readerNumberStudents ? readerNumberStudents.dateGroupNote : (readerNumberPeople ? readerNumberPeople.dateGroupNote : (readerNumberUser ? readerNumberUser.dateGroupNote : (readerNumberStaffWithDueDate ? readerNumberStaffWithDueDate.dateGroupNote : (readerNumberFTEWithDueDate ? readerNumberFTEWithDueDate.dateGroupNote : ''))))
 
                 row.add(createTableCell(format, note))
 

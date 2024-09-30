@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5987    30.09.2024  rc-3.4  3.4.9       Andreas Bug         falsche Ausgabe der Nutzerzahlen behoben
+
 5971    26.09.2024  dev     3.5         David   Feature     Refactoring: Aufgaben
 
 5959    23.09.2024  dev     3.5         David   Feature     Systemmeldungen auf Markdown umstellen
