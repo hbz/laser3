@@ -199,7 +199,7 @@
                                         <g:elseif test="${subscriptionService.countCurrentIssueEntitlements(sub) > 0}">
                                             <g:link controller="subscription" action="index" id="${sub.id}"
                                                     params="[pkgfilter: sp.pkg.id]">
-                                                ${sp.pkg.name}<br/>(<span data-tooltip="Titel in der Lizenz"><i class="icon archive"></i></span>${counts1.ies} / <span data-tooltip="Titel im Paket"><i class="${Icon.TIPP}"></i></span> ${counts1.tipps})
+                                                ${sp.pkg.name}<br/><ui:ieAndPkgSize sp="${sp}" />
                                             </g:link>
                                         </g:elseif>
                                         <g:else>
