@@ -13,8 +13,8 @@ import org.apache.http.HttpStatus
  */
 class Doc {
 
-    static final CONTENT_TYPE_STRING              = 0
-    static final CONTENT_TYPE_FILE                = 3
+    public static final CONTENT_TYPE_STRING     = 0
+    public static final CONTENT_TYPE_FILE       = 3
 
     @RefdataInfo(cat = RDConstants.DOCUMENT_TYPE)
     RefdataValue type
