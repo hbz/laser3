@@ -2307,7 +2307,7 @@ class SurveyService {
                 }
             }
             if (prop.isIntegerType()) {
-                chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.intValue is not null or sr.intValue != '') and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]
+                chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.intValue is not null) and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]
             }
             else if (prop.isStringType()) {
                 chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.stringValue is not null or sr.stringValue != '') and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]
@@ -2316,7 +2316,7 @@ class SurveyService {
                 chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.decValue is not null) and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]
             }
             else if (prop.isDateType()) {
-                chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.dateValue is not null or sr.dateValue != '') and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]
+                chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.dateValue is not null) and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]
             }
             else if (prop.isURLType()) {
                 chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.urlValue is not null or sr.urlValue != '') and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]

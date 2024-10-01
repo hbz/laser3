@@ -85,6 +85,9 @@ class RDStore {
     public final static RefdataValue EXISTENT                   = getRefdataValue('Existent', RDConstants.EXISTENCE)
     public final static RefdataValue NON_EXISTENT               = getRefdataValue('Nonexistend', RDConstants.EXISTENCE)
 
+    public final static RefdataValue INVOICE_PROCESSING_PROVIDER   = getRefdataValue('Provider', RDConstants.INVOICE_PROCESSING)
+    public final static RefdataValue INVOICE_PROCESSING_VENDOR   = getRefdataValue('Vendor', RDConstants.INVOICE_PROCESSING)
+
     public final static RefdataValue IE_ACCESS_CURRENT                      = getRefdataValue('Current', RDConstants.IE_ACCESS_STATUS)
 
     public final static RefdataValue LANGUAGE_DE            = getRefdataValue('de', RDConstants.LANGUAGE)
