@@ -62,6 +62,14 @@
         <div class="la-inline-lists">
             <div class="ui card" id="js-confirmationCard">
                 <div class="content">
+
+                    <g:if test="${!inContextOrg && contextOrg.isCustomerType_Consortium()}">
+                        <a href="#" class="ui icon la-float-right mailInfos-flyout-trigger" data-orgId="${orgInstance.id}">
+                            <i class="icon circular info inverted"></i>
+                        </a>
+                    </g:if>
+
+
                     <dl>
                         <dt><g:message code="default.name.label" /></dt>
                         <dd>
@@ -931,6 +939,8 @@
         </div>
     </aside>
 </div>
+
+<laser:render template="/templates/flyouts/mailInfos"/>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.createContact').click(function() {
