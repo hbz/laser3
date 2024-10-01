@@ -789,7 +789,7 @@ class ControlledListService {
         }
 
         if(subscription.packages){
-            coverageDepths = RefdataValue.executeQuery("select new map(rdv.value_"+i18n+" as name, rdv.id as value) from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.pkg in (:pkg)) "+statusFilter+nameFilter+" group by rdv.id, rdv.value_"+i18n+" order by rdv.value_"+i18n, queryParams)
+            coverageDepths = RefdataValue.executeQuery("select new map(rdv.value_"+i18n+" as name, rdv.id as value) from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.pkg in (:pkg)"+statusFilter+") "+nameFilter+" group by rdv.id, rdv.value_"+i18n+" order by rdv.value_"+i18n, queryParams)
         }
 
         coverageDepths
@@ -865,7 +865,7 @@ class ControlledListService {
 
         if(subscription.packages){
             Map<String, Object> queryParams = [pkg: subscription.packages.pkg, status: getTippStatusForRequest(forTitles)]
-            String nameFilter = "", statusFilter = " and tipp.status = :status "
+            String nameFilter = "", statusFilter = " and status = :status "
             if (query) {
                 nameFilter += " and genfunc_filter_matcher(seriesName, :query) = true "
                 queryParams.query = query

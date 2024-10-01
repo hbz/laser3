@@ -150,16 +150,18 @@
                                             <label for="linkAllPackages"><g:message code="myinst.addMembers.linkAllPackages"/></label>
                                         </div>
                                     </div>
-                                    <div class="field">
-                                        <div class="ui checkbox">
-                                            <input type="checkbox" id="linkWithEntitlements" name="linkWithEntitlements_${subscription.id}">
-                                            <label for="linkWithEntitlements"><g:message code="myinst.addMembers.withEntitlements"/></label>
+                                    <g:if test="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL}">
+                                        <div class="field">
+                                            <div class="ui checkbox">
+                                                <input type="checkbox" id="linkWithEntitlements" name="linkWithEntitlements_${subscription.id}">
+                                                <label for="linkWithEntitlements"><g:message code="myinst.addMembers.withEntitlements"/></label>
+                                            </div>
+                                            <g:select class="ui search multiple dropdown"
+                                                      optionKey="id" optionValue="${{ it.getPackageName() }}"
+                                                      from="${validPackages}" name="packageSelection_${subscription.id}" value=""
+                                                      noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.package')}"]'/>
                                         </div>
-                                        <g:select class="ui search multiple dropdown"
-                                                  optionKey="id" optionValue="${{ it.getPackageName() }}"
-                                                  from="${validPackages}" name="packageSelection_${subscription.id}" value=""
-                                                  noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.package')}"]'/>
-                                    </div>
+                                    </g:if>
                                 </div>
                             </g:if>
                             <g:else>
@@ -277,16 +279,18 @@
                                                                 </div>
 
                                                                 <div class="field">
-                                                                    <div class="ui checkboxLicAndPkg_${nextSub.id} checkbox">
-                                                                        <input type="checkbox" id="linkWithEntitlements_${nextSub.id}"
-                                                                               name="linkWithEntitlements_${nextSub.id}">
-                                                                        <label for="linkWithEntitlements"><g:message
-                                                                                code="myinst.addMembers.withEntitlements"/></label>
-                                                                    </div>
-                                                                    <g:select class="ui search multiple dropdown"
-                                                                              optionKey="id" optionValue="${{ it.getPackageName() }}"
-                                                                              from="${validPackagesNextSub}" name="packageSelection_${nextSub.id}" value=""
-                                                                              noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.package')}"]'/>
+                                                                    <g:if test="${nextSub.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL}">
+                                                                        <div class="ui checkboxLicAndPkg_${nextSub.id} checkbox">
+                                                                            <input type="checkbox" id="linkWithEntitlements_${nextSub.id}"
+                                                                                   name="linkWithEntitlements_${nextSub.id}">
+                                                                            <label for="linkWithEntitlements"><g:message
+                                                                                    code="myinst.addMembers.withEntitlements"/></label>
+                                                                        </div>
+                                                                        <g:select class="ui search multiple dropdown"
+                                                                                  optionKey="id" optionValue="${{ it.getPackageName() }}"
+                                                                                  from="${validPackagesNextSub}" name="packageSelection_${nextSub.id}" value=""
+                                                                                  noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.package')}"]'/>
+                                                                    </g:if>
                                                                 </div>
                                                             </div>
                                                         </g:if>
@@ -396,9 +400,7 @@
     <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
         <hr />
 
-            <ui:msg class="info" header="${message(code: 'myinst.noMembers.cons.header')}" hideClose="true">
-                <g:message code="myinst.noMembers.body" args="${[createLink(controller:'myInstitution', action:'manageMembers'),message(code:'consortium.member.plural')]}"/>
-            </ui:msg>
+            <ui:msg class="info" header="${message(code: 'myinst.noMembers.cons.header')}" hideClose="true" message="myinst.noMembers.body" args="${[createLink(controller:'myInstitution', action:'manageMembers'),message(code:'consortium.member.plural')]}"/>
     </g:if>
 </g:if>
 

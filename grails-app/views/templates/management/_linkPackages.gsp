@@ -190,12 +190,18 @@
                             <div class="ui middle aligned selection list">
                                 <g:each in="${sub.packages}" var="sp">
                                     <div class="item"><div class="content">
-                                        <g:if test="${subscriptionService.countCurrentIssueEntitlements(sub) > 0}">
+                                        <g:if test="${sub.instanceOf && sub.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+                                            <g:link controller="subscription" action="index" id="${sub.instanceOf.id}"
+                                                    params="[pkgfilter: sp.pkg.id]">
+                                                ${sp.pkg.name}<br/>(Bestand der Elternlizenz wird übernommen)
+                                            </g:link>
+                                        </g:if>
+                                        <g:elseif test="${subscriptionService.countCurrentIssueEntitlements(sub) > 0}">
                                             <g:link controller="subscription" action="index" id="${sub.id}"
                                                     params="[pkgfilter: sp.pkg.id]">
                                                 ${sp.pkg.name}<br/><ui:ieAndPkgSize sp="${sp}" />
                                             </g:link>
-                                        </g:if>
+                                        </g:elseif>
                                         <g:else>
                                             <g:link controller="subscription" action="addEntitlements" id="${sub.id}"
                                                     params="[pkgfilter: sp.pkg.id]">
