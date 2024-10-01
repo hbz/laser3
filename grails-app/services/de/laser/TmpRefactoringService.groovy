@@ -12,6 +12,10 @@ class TmpRefactoringService {
     boolean hasAccessToDoc(DocContext dctx) {
         // moved from ajaxHtmlController.documentPreview()$checkPermission
         // logic based on /views/templates/documents/card
+        if (!dctx) {
+            return false
+        }
+
         boolean check = false
 
         Doc doc = dctx.owner
@@ -63,6 +67,9 @@ class TmpRefactoringService {
     }
 
     boolean hasAccessToDocNote(DocContext dctx) {
+        if (!dctx) {
+            return false
+        }
         Doc doc = dctx.owner
 
         if (!doc || doc.contentType != Doc.CONTENT_TYPE_STRING) {
@@ -80,6 +87,10 @@ class TmpRefactoringService {
     }
 
     boolean hasAccessToTask(Task task) {
+        if (!task) {
+            return false
+        }
+
 //        License         license
 //        Org             org
 //        Provider        provider

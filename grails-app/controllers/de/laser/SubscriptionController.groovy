@@ -597,26 +597,6 @@ class SubscriptionController {
     }
 
     /**
-     * Call to edit the metadata of the given document
-     * @return opens the document editing modal
-     */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
-    })
-    def editDocument() {
-        Map<String,Object> result = [user: contextService.getUser(), institution: contextService.getOrg()]
-        result.ownobj = Subscription.get(params.instanceId)
-        result.owntp = 'subscription'
-        if(params.id) {
-            result.docctx = DocContext.get(params.id)
-            result.doc = result.docctx.owner
-        }
-
-        render template: "/templates/documents/modal", model: result
-    }
-
-    /**
      * Call to delete the given document attached to a subscription
      * @return a redirect, specified in the request parameters
      */

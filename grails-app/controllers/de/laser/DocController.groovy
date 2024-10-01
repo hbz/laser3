@@ -78,7 +78,7 @@ class DocController  {
 					//					Doc docInstance = Doc.findByIdAndContentType(params.long('id'), Doc.CONTENT_TYPE_STRING)
 					DocContext docContext = DocContext.get(params.long('dctx'))
 					if (! tmpRefactoringService.hasAccessToDocNote(docContext)) {
-						flash.message = message(code: 'default.noPermissions') as String
+						flash.error = message(code: 'default.noPermissions') as String
 						redirect(url: request.getHeader('referer'))
 						return
 					}

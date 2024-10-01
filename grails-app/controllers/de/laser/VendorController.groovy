@@ -484,31 +484,6 @@ class VendorController {
     }
 
     /**
-     * Call to edit the given document. Beware: edited are the relations between the document and the object
-     * it has been attached to; content editing of an uploaded document is not possible in this app!
-     * @return the modal to edit the document parameters
-     */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
-    })
-    def editDocument() {
-        Map<String, Object> result = vendorService.getResultGenerics(params)
-        if(!result) {
-            response.sendError(401)
-            return
-        }
-        result.ownobj = result.institution
-        result.owntp = 'vendor'
-        if(params.id) {
-            result.docctx = DocContext.get(params.id)
-            result.doc = result.docctx.owner
-        }
-
-        render template: "/templates/documents/modal", model: result
-    }
-
-    /**
      * Call to delete a given document
      * @return the document table view ({@link #documents()})
      * @see DocstoreService#unifiedDeleteDocuments()
@@ -519,7 +494,6 @@ class VendorController {
     })
     def deleteDocuments() {
         log.debug("deleteDocuments ${params}");
-
         docstoreService.unifiedDeleteDocuments(params)
 
         redirect controller: 'vendor', action:params.redirectAction, id:params.instanceId /*, fragment: 'docstab' */
