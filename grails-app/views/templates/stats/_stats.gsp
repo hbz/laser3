@@ -13,8 +13,9 @@
             <laser:render template="/platform/platformStatsDetails" model="[wekbServerUnavailable: wekbServerUnavailable, platformInstanceRecord: platform]"/>
             <g:set var="statsInfo" value="${SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp where (sp.owner = :subscription or sp.owner = (select s.instanceOf from Subscription s where s = :subscription)) and sp.type = :statsAccess', [statsAccess: PropertyStore.SUB_PROP_STATS_ACCESS, subscription: subscription])}"/>
             <g:if test="${statsInfo}">
-                <ui:msg icon="ui info icon" class="info" noClose="true"><%-- on remerge to DEV: header="${message(code: 'default.stats.info.header')}" --%>
-                    ${statsInfo[0]}
+                <ui:msg showIcon="true" class="info" noClose="true" header="${message(code: 'default.stats.info.header')}">
+                    ${statsInfo[0]}<br>
+                    <g:message code="default.stats.wekbContact"/><ui:wekbIconLink type="org" gokbId="${platform.providerUuid}"/>
                 </ui:msg>
             </g:if>
             <table class="ui la-js-responsive-table la-table table">
