@@ -824,7 +824,7 @@ class SurveyControllerService {
                             if (params.percentOnOldPrice) {
                                 Double percentOnOldPrice = params.double('percentOnOldPrice', 0.00)
                                 Subscription orgSub = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(surveyCostItem.surveyOrg.org)
-                                CostItem costItem = CostItem.findBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(orgSub, surveyCostItem.owner, RDStore.COST_ITEM_DELETED, surveyCostItem.costItemElement)
+                                CostItem costItem = CostItem.findBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElement(orgSub, surveyCostItem.owner, RDStore.COST_ITEM_DELETED, surveyCostItem.costItemElement)
                                 surveyCostItem.costInBillingCurrency = costItem ? (costItem.costInBillingCurrency * (1 + (percentOnOldPrice / 100))).round(2) : surveyCostItem.costInBillingCurrency
 
                                 int taxRate = 0 //fallback
@@ -3897,8 +3897,14 @@ class SurveyControllerService {
 
                     CostItem costItem = CostItem.get(costItemId)
                     Subscription participantSub = result.parentSuccessorSubscription?.getDerivedSubscriptionForNonHiddenSubscriber(costItem.surveyOrg.org)
-                    List participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(participantSub, result.institution, costItem.costItemElement, RDStore.COST_ITEM_DELETED)
-                    if (costItem && participantSub && !participantSubCostItem) {
+                    List participantSubCostItem
+                    if(result.surveyConfig.packageSurvey){
+                        participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkgNotInList(participantSub, result.institution, costItem.costItemElement, RDStore.COST_ITEM_DELETED, result.surveyConfig.surveyPackages.pkg)
+                    }else {
+                        participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participantSub, result.institution, costItem.costItemElement, RDStore.COST_ITEM_DELETED)
+                    }
+
+                      if (costItem && participantSub && !participantSubCostItem) {
 
                         Map properties = costItem.properties
                         CostItem copyCostItem = new CostItem()
@@ -3978,7 +3984,7 @@ class SurveyControllerService {
 
                 CostItem costItem = CostItem.get(costItemId)
                 Subscription participantSub = result.parentSuccessorSubscription?.getDerivedSubscriptionForNonHiddenSubscriber(costItem.surveyOrg.org)
-                List participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNotNull(participantSub, result.institution, costItem.costItemElement, RDStore.COST_ITEM_DELETED)
+                List participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkg(participantSub, result.institution, costItem.costItemElement, RDStore.COST_ITEM_DELETED, costItem.pkg)
                 if (costItem && participantSub && !participantSubCostItem) {
 
                     Map properties = costItem.properties
