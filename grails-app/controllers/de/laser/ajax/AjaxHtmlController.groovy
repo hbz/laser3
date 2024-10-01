@@ -1352,27 +1352,27 @@ class AjaxHtmlController {
     /**
      * Opens a modal containing a preview of the given document if rights are granted and the file being found.
      * The preview is being generated according to the MIME type of the requested document; the document key is
-     * expected in structure docUUID:docContextID
+     * expected as docContextID
      * @return the template containing a preview of the document (either document viewer or fulltext extract)
      */
     @Secured(['ROLE_USER'])
     def documentPreview() {
-        Map<String, Object> result = [:]
+        Map<String, Object> result = [
+                modalId : 'document-preview-' + params.dctx,
+                modalTitle : message(code: 'template.documents.preview')
+        ]
 
         try {
-            if (params.key) {
-                String[] keys = params.key.split(':')
-
-                Doc doc = Doc.findByUuidAndContentType(keys[0], Doc.CONTENT_TYPE_FILE)
-                DocContext docCtx = DocContext.findByIdAndOwner(Long.parseLong(keys[1]), doc)
+            if (params.dctx) {
+                DocContext docCtx = DocContext.findById(params.long('dctx'))
+                Doc doc = docCtx.owner
 
                 if (doc && docCtx) {
-                    result.doc = doc
-                    result.docCtx = docCtx
+                    if (tmpRefactoringService.hasAccessToDoc(doc, docCtx)) {
+                        result.doc = doc
+                        result.docCtx = docCtx
+                        result.modalTitle = doc.title
 
-                    boolean checkPermission = tmpRefactoringService.hasAccessToDoc(doc, docCtx)
-
-                    if (checkPermission) {
                         Map<String, String> mimeTypes = Doc.getPreviewMimeTypes()
                         if (mimeTypes.containsKey(doc.mimeType)) {
                             String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
