@@ -414,13 +414,15 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def editNote() {
         Map<String, Object> result = [ params: params ]
-        Doc note = Doc.findByIdAndContentType(params.long('id'), Doc.CONTENT_TYPE_STRING)
 
-        if (tmpRefactoringService.hasAccessToDocNote(note, null)) { // TODO
-            result.noteInstance = note
-        }
-        if (result.noteInstance) {
+        DocContext dctx = DocContext.findById(params.long('dctx'))
+        if (tmpRefactoringService.hasAccessToDocNote(dctx)) {
+            result.docContext   = dctx
+            result.noteInstance = dctx.owner
             render template: "/templates/notes/modal_edit", model: result
+        }
+        else {
+            render template: "/templates/generic_modal403", model: result
         }
     }
 
@@ -430,13 +432,15 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def readNote() {
         Map<String, Object> result = [ params: params ]
-        Doc note = Doc.findByIdAndContentType(params.long('id'), Doc.CONTENT_TYPE_STRING)
 
-        if (tmpRefactoringService.hasAccessToDocNote(note, null)) { // TODO
-            result.noteInstance = note
-        }
-        if (result.noteInstance) {
+        DocContext dctx = DocContext.findById(params.long('dctx'))
+        if (tmpRefactoringService.hasAccessToDocNote(dctx)) {
+            result.docContext   = dctx
+            result.noteInstance = dctx.owner
             render template: "/templates/notes/modal_read", model: result
+        }
+        else {
+            render template: "/templates/generic_modal403", model: result
         }
     }
 
@@ -458,13 +462,15 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def editTask() {
         Map<String, Object> result = [ params: params ]
+        Task task = Task.get(params.id)
 
-        if (tmpRefactoringService.hasAccessToTask()) {
-            result.taskInstance = Task.get(params.id)
+        if (tmpRefactoringService.hasAccessToTask(task)) {
+            result.taskInstance = task
             result.contextOrg = contextService.getOrg()
-        }
-        if (result.taskInstance) {
             render template: "/templates/tasks/modal_edit", model: result
+        }
+        else {
+            render template: "/templates/generic_modal403", model: result
         }
     }
 
@@ -474,13 +480,15 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def readTask() {
         Map<String, Object> result = [ params: params ]
+        Task task = Task.get(params.id)
 
-        if (tmpRefactoringService.hasAccessToTask()) {
-            result.taskInstance = Task.get(params.id)
+        if (tmpRefactoringService.hasAccessToTask(task)) {
+            result.taskInstance = task
             result.contextOrg = contextService.getOrg()
-        }
-        if (result.taskInstance) {
             render template: "/templates/tasks/modal_read", model: result
+        }
+        else {
+            render template: "/templates/generic_modal403", model: result
         }
     }
 
@@ -795,13 +803,13 @@ class AjaxHtmlController {
             }
         }
         */
-            if(notProcessedMandatoryProperties.size() > 0){
-                render message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')])
-            }
-            else if(noParticipation || allResultHaveValue)
-                render message(code: "confirm.dialog.concludeBinding.survey")
-            else if(!noParticipation && !allResultHaveValue)
-                render message(code: "confirm.dialog.concludeBinding.surveyIncomplete")
+        if(notProcessedMandatoryProperties.size() > 0){
+            render message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')])
+        }
+        else if(noParticipation || allResultHaveValue)
+            render message(code: "confirm.dialog.concludeBinding.survey")
+        else if(!noParticipation && !allResultHaveValue)
+            render message(code: "confirm.dialog.concludeBinding.surveyIncomplete")
     }
 
     // ----- reporting -----
@@ -816,7 +824,7 @@ class AjaxHtmlController {
     })
     def reporting() {
         Map<String, Object> result = [
-            tab: params.tab
+                tab: params.tab
         ]
 
         String cachePref = ReportingCache.CTX_GLOBAL + '/' + BeanStore.getContextService().getUser().id // user bound
@@ -866,8 +874,8 @@ class AjaxHtmlController {
         // TODO - SESSION TIMEOUTS
 
         Map<String, Object> result = [
-            token:  params.token,
-            query:  params.query
+                token:  params.token,
+                query:  params.query
         ]
         result.id = params.id ? (params.id != 'null' ? params.long('id') : '') : ''
 
@@ -1140,7 +1148,7 @@ class AjaxHtmlController {
 //                struct = ExportHelper.calculatePdfPageStruct(content, 'chartQueryExport')
 //            }
 //            if (params.contentType == 'image') {
-                // struct = ExportHelper.calculatePdfPageStruct(content, 'chartQueryExport-image') // TODO
+            // struct = ExportHelper.calculatePdfPageStruct(content, 'chartQueryExport-image') // TODO
 
 //                struct = [
 //                        width       : Float.parseFloat( params.imageSize.split(':')[0] ),
@@ -1154,8 +1162,8 @@ class AjaxHtmlController {
 //                    struct.orientation = 'Landscape'
 //                }
 
-                //Map<String, Object> queryCache = BaseQuery.getQueryCache( params.token )
-                //queryCache.put( 'tmpBase64Data', params.imageData )
+            //Map<String, Object> queryCache = BaseQuery.getQueryCache( params.token )
+            //queryCache.put( 'tmpBase64Data', params.imageData )
 //            }
 
             Map<String, Object> model = [
@@ -1363,52 +1371,54 @@ class AjaxHtmlController {
         ]
 
         try {
-            if (params.dctx) {
-                DocContext docCtx = DocContext.findById(params.long('dctx'))
-                Doc doc = docCtx.owner
+            DocContext docCtx = DocContext.findById(params.long('dctx'))
 
-                if (doc && docCtx) {
-                    if (tmpRefactoringService.hasAccessToDoc(doc, docCtx)) {
-                        result.doc = doc
-                        result.docCtx = docCtx
-                        result.modalTitle = doc.title
+            if (docCtx) {
+                if (tmpRefactoringService.hasAccessToDoc(docCtx)) {
+                    Doc doc = docCtx.owner
 
-                        Map<String, String> mimeTypes = Doc.getPreviewMimeTypes()
-                        if (mimeTypes.containsKey(doc.mimeType)) {
-                            String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
-                            File f = new File(fPath + '/' +  doc.uuid)
+                    result.docCtx = docCtx
+                    result.doc = doc
+                    result.modalTitle = doc.title
 
-                            if (f.exists()) {
+                    Map<String, String> mimeTypes = Doc.getPreviewMimeTypes()
+                    if (mimeTypes.containsKey(doc.mimeType)) {
+                        String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
+                        File f = new File(fPath + '/' +  doc.uuid)
 
-                                if (mimeTypes.get(doc.mimeType) == 'raw'){
-                                    result.docBase64 = f.getBytes().encodeBase64()
-                                    result.docDataType = doc.mimeType
-                                }
-                                else if (mimeTypes.get(doc.mimeType) == 'encode') {
-                                    String fCharset = UniversalDetector.detectCharset(f) ?: Charset.defaultCharset()
-                                    result.docBase64 = f.getText(fCharset).encodeAsRaw().getBytes().encodeBase64()
-                                    result.docDataType = 'text/plain;charset=' + fCharset
-                                }
-                                else {
-                                    result.error = 'Unbekannter Fehler'
-                                }
-                                // encodeAsHTML().replaceAll(/\r\n|\r|\n/,'<br />')
+                        if (f.exists()) {
+                            if (mimeTypes.get(doc.mimeType) == 'raw'){
+                                result.docBase64 = f.getBytes().encodeBase64()
+                                result.docDataType = doc.mimeType
+                            }
+                            else if (mimeTypes.get(doc.mimeType) == 'encode') {
+                                String fCharset = UniversalDetector.detectCharset(f) ?: Charset.defaultCharset()
+                                result.docBase64 = f.getText(fCharset).encodeAsRaw().getBytes().encodeBase64()
+                                result.docDataType = 'text/plain;charset=' + fCharset
                             }
                             else {
-                                result.error = message(code: 'template.documents.preview.fileNotFound') as String
+                                result.error = message(code: 'template.documents.preview.error') as String
                             }
+                            // encodeAsHTML().replaceAll(/\r\n|\r|\n/,'<br />')
                         }
                         else {
-                            result.error = message(code: 'template.documents.preview.unsupportedMimeType') as String
+                            result.error = message(code: 'template.documents.preview.fileNotFound') as String
                         }
                     }
                     else {
-                        result.warning = message(code: 'template.documents.preview.forbidden') as String
+                        result.error = message(code: 'template.documents.preview.unsupportedMimeType') as String
                     }
                 }
+                else {
+                    result.warning = message(code: 'template.documents.preview.forbidden') as String
+                }
+            }
+            else {
+                result.error = message(code: 'template.documents.preview.fileNotFound') as String
             }
         }
         catch (Exception e) {
+            result.error = message(code: 'template.documents.preview.error') as String
             log.error e.getMessage()
         }
 
