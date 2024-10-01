@@ -5,6 +5,7 @@ import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.cache.EhcacheWrapper
+import de.laser.ctrl.SubscriptionControllerService
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.finance.CostItem
@@ -68,6 +69,7 @@ class SubscriptionService {
     PropertyService propertyService
     ProviderService providerService
     RefdataService refdataService
+    SubscriptionControllerService subscriptionControllerService
     SubscriptionsQueryService subscriptionsQueryService
     SurveyService surveyService
     UserService userService
@@ -1631,26 +1633,30 @@ class SubscriptionService {
      * @return OK with the result map containing defaults in case of success, ERROR otherwise
      */
     Map<String,Object> renewEntitlementsWithSurvey(GrailsParameterMap params) {
-
-        /*
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-
+        Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
-            [result:null,status:STATUS_ERROR]
+            [result: null, status: SubscriptionControllerService.STATUS_ERROR]
         }
-        else {
+        else  {
             SwissKnife.setPaginationParams(result, params, (User) result.user)
-
-            Subscription subscriberSub = result.subscription
-            result.institution = result.contextOrg
             result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
             result.surveyInfo = result.surveyConfig.surveyInfo
+            Map ttParams = FilterLogic.resolveTabAndStatusForRenewalTabsMenu(params)
+            if (ttParams.tab)    { params.tab = ttParams.tab }
+            if (ttParams.subTab) { params.subTab = ttParams.subTab }
+            if (ttParams.status) { params.status = ttParams.status }
+            [result: result, status: SubscriptionControllerService.STATUS_OK]
+        }
+        /*
 
-            Subscription previousSubscription = subscriberSub._getCalculatedPreviousForSurvey()
+
+        else {
+
+            Subscription previousSubscription = result.subscription._getCalculatedPreviousForSurvey()
             Subscription baseSub = result.surveyConfig.subscription ?: subscriberSub.instanceOf
-            result.subscriber = subscriberSub.getSubscriberRespConsortia()
+            result.subscriber = result.subscription.getSubscriberRespConsortia()
 
-            IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
+            IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
             result.titleGroupID = issueEntitlementGroup ? issueEntitlementGroup.id.toString() : null
             result.titleGroup = issueEntitlementGroup
 

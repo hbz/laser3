@@ -2211,14 +2211,16 @@ class SubscriptionController {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     def renewEntitlementsWithSurvey() {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-
-        if (!result) {
-            [result:null,status:STATUS_ERROR]
+        Map<String,Object> ctrlResult = subscriptionService.renewEntitlementsWithSurvey(params)
+        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+            else flash.error = ctrlResult.result.error
         }
         else {
-
-            result
+            ctrlResult
         }
     }
 
