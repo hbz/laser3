@@ -2,6 +2,8 @@
 <g:if test="${sub}"><g:message code="gasco.table.product" locale="${language}"/>: ${sub.name}</g:if>
 <g:message code="default.institution" locale="${language}"/>: ${org.name}
 <g:if test="${customerIdentifier}"><g:message code="org.customerIdentifier" locale="${language}"/>: ${customerIdentifier}</g:if>
+<g:if test="${vatID}">VAT ID: ${vatID}</g:if>
+
 
 <g:if test="${readerNumberStudents}">${readerNumberStudents.referenceGroup.getI10n('value', language)}: ${readerNumberStudents.value} (${currentSemester.getI10n('value', language)})</g:if>
 <g:if test="${readerNumberStaff}">${readerNumberStaff.referenceGroup.getI10n('value', language)}: ${readerNumberStaff.value} (${currentSemester.getI10n('value', language)})</g:if>
