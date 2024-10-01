@@ -208,6 +208,11 @@
                 </th>
             </g:if>
 
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('mailInfos')}">
+                <th class="center aligned">
+                </th>
+            </g:if>
+
         </g:each>
     </tr>
     </thead>
@@ -1011,6 +1016,14 @@
                 </td>
             </g:if>
 
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('mailInfos')}">
+                <td class="center aligned">
+                    <a href="#" class="ui button blue icon la-modern-button mailInfos-flyout-trigger" data-orgId="${org.id}" >
+                        <i class="ui info icon"></i>
+                    </a>
+                </td>
+            </g:if>
+
         </g:each><!-- tmplConfigShow -->
         </tr>
     </g:each><!-- orgList -->
@@ -1119,4 +1132,8 @@
             location.href = url;
          });
     </laser:script>
+</g:if>
+
+<g:if test="${tmplConfigShow?.contains('mailInfos')}">
+    <laser:render template="/templates/flyouts/mailInfos"/>
 </g:if>

@@ -17,6 +17,7 @@ import de.laser.WorkflowService
 import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
+import de.laser.ctrl.OrganisationControllerService
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.remote.ApiSource
 import de.laser.ContextService
@@ -103,6 +104,7 @@ class AjaxHtmlController {
     PendingChangeService pendingChangeService
     ReportingGlobalService reportingGlobalService
     ReportingLocalService reportingLocalService
+    OrganisationControllerService organisationControllerService
     SubscriptionService subscriptionService
     SubscriptionControllerService subscriptionControllerService
     TaskService taskService
@@ -1411,5 +1413,14 @@ class AjaxHtmlController {
         }
 
         render template: '/templates/documents/preview', model: result
+    }
+
+    @Secured(['ROLE_USER'])
+    def mailInfosFlyout() {
+        log.debug('ajaxHtmlController.mailInfosFlyout ' + params)
+
+        Map<String, Object> result = organisationControllerService.mailInfos(null, params)
+
+        render template: '/templates/org/mailInfosContent', model: result
     }
 }
