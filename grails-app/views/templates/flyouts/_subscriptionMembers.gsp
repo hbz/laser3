@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Subscription;de.laser.OrgRole"%>
 
-<div class="ui seven wide flyout" id="subscriptionMembers-content" style="padding:50px 0 10px 0;overflow:scroll">
+<div class="ui seven wide flyout" id="subscriptionMembers-content">
 
     <h1 class="ui header">
 %{--        <i class="${Icon.ORG} icon la-list-icon"></i>--}%

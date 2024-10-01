@@ -5,7 +5,7 @@
     <i aria-hidden="true" class="tools icon"></i>
 </a>
 
-<div id="systemInfoFlyout" class="ui eight wide flyout" style="padding:50px 0 10px 0;overflow:scroll">
+<div id="systemInfoFlyout" class="ui eight wide flyout">
     <div class="ui header">
         <i class="tools icon"></i>
         <div class="content">SYSTEM INFORMATION</div>
