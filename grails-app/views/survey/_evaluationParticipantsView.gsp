@@ -600,15 +600,6 @@
                         <i class="${Icons.SURVEY} icon"></i>
                     </g:link>
 
-                    <g:if test="${SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, PropertyStore.SURVEY_PROPERTY_TEST)}">
-                        <g:set var="participantTestProperty" value="${SurveyResult.findBySurveyConfigAndParticipantAndType(surveyConfig, participant, PropertyStore.SURVEY_PROPERTY_TEST)}"/>
-                        <g:if test="${participantTestProperty && participantTestProperty.refValue == RDStore.YN_YES }">
-                            <g:link controller="organisation" action="mailInfos" id="${participant.id}" params="[subscription: surveyConfig.subscription?.id]"
-                                    class="ui button icon la-modern-button"><i class="mail icon"></i></g:link>
-                        </g:if>
-                    </g:if>
-
-
                     <g:if test="${surveyConfig.subscription}">
                         <g:set var="participantSub" value="${surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(participant)}"/>
                             <g:if test="${participantSub}">
@@ -617,6 +608,11 @@
                                         class="ui button orange icon la-modern-button"><i class="${Icons.SUBSCRIPTION} icon"></i></g:link>
                             </g:if>
                     </g:if>
+
+                    <br/>
+                    <a href="#" class="ui button blue icon la-modern-button mailInfos-flyout-trigger" data-orgId="${participant.id}" data-subId="${surveyConfig.subscription?.id}" data-surveyConfigId="${surveyConfig.id}">
+                        <i class="ui info icon"></i>
+                    </a>
                 </td>
 
             </tr>
@@ -1193,14 +1189,6 @@
                         <i class="${Icons.SURVEY} icon"></i>
                     </g:link>
 
-                    <g:if test="${SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, PropertyStore.SURVEY_PROPERTY_TEST)}">
-                        <g:set var="participantTestProperty" value="${SurveyResult.findBySurveyConfigAndParticipantAndType(surveyConfig, participant, PropertyStore.SURVEY_PROPERTY_TEST)}"/>
-                        <g:if test="${participantTestProperty && participantTestProperty.refValue == RDStore.YN_YES }">
-                            <g:link controller="organisation" action="mailInfos" id="${participant.id}"
-                                    class="ui button icon la-modern-button"><i class="mail icon"></i></g:link>
-                        </g:if>
-                    </g:if>
-
                     <g:if test="${surveyConfig.subscription}">
                         <g:set var="participantSub" value="${surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(participant)}"/>
                         <g:if test="${participantSub}">
@@ -1209,6 +1197,11 @@
                                     class="ui button orange icon la-modern-button"><i class="${Icons.SUBSCRIPTION} icon"></i></g:link>
                         </g:if>
                     </g:if>
+
+                    <br/>
+                    <a href="#" class="ui icon mailInfos-flyout-trigger" data-orgId="${participant.id}" data-subId="${surveyConfig.subscription?.id}" data-surveyConfigId="${surveyConfig.id}">
+                        <i class="icon info inverted"></i>
+                    </a>
                 </td>
             </tr>
 
@@ -1352,6 +1345,7 @@
 </g:form>
 
 
+<laser:render template="/templates/flyouts/mailInfos"/>
 
 <laser:script file="${this.getGroovyPageFileName()}">
 <g:if test="${showCheckboxForParticipantsHasAccess || showCheckboxForParticipantsHasNoAccess}">

@@ -7,6 +7,8 @@ import de.laser.oap.OrgAccessPoint
 import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyConfig
+import de.laser.survey.SurveyOrg
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import grails.gsp.PageRenderer
@@ -37,41 +39,62 @@ class OrganisationControllerService {
     PageRenderer groovyPageRenderer
 
     Map<String,Object> mailInfos(OrganisationController controller, GrailsParameterMap params) {
-        Map<String, Object> result = getResultGenericsAndCheckAccess(controller, params)
+        User user = contextService.getUser()
+        Org org = contextService.getOrg()
+        Map<String, Object> result = [user:user,
+                                      institution:org,
+                                      contextOrg: org]
 
-        if (result && result.editable) {
 
+        if (params.id) {
+            result.orgInstance = Org.get(params.id)
+            if(result.orgInstance.id == org.id){
+                return null
+            }
+            if (!contextService.getOrg().isCustomerType_Consortium() && !result.orgInstance.isCustomerType_Inst()) {
+                return null
+            }
+        }
+        else {
+            return null
+        }
+
+
+        if (result.orgInstance) {
+            String customerIdentifier = ''
             result.sub = Subscription.get(params.subscription)
 
-            List contactListProvider = result.sub.providerRelations ? Contact.executeQuery("select c.content from PersonRole pr " +
-                    "join pr.prs p join p.contacts c where pr.provider in :providers and " +
-                    "pr.responsibilityType = :responsibilityType and c.contentType = :type and p.isPublic = false and p.tenant = :ctx and pr.sub = :obj",
-                    [providers: result.sub.providerRelations.provider,
-                     responsibilityType: RDStore.PRS_RESP_SPEC_SUB_EDITOR,
-                     type: RDStore.CCT_EMAIL,
-                     ctx: result.contextOrg,
-                     obj: result.sub]) : null
+            if(result.sub) {
+                List contactListProvider = result.sub.providerRelations ? Contact.executeQuery("select c.content from PersonRole pr " +
+                        "join pr.prs p join p.contacts c where pr.provider in :providers and " +
+                        "pr.responsibilityType = :responsibilityType and c.contentType = :type and p.isPublic = false and p.tenant = :ctx and pr.sub = :obj",
+                        [providers         : result.sub.providerRelations.provider,
+                         responsibilityType: RDStore.PRS_RESP_SPEC_SUB_EDITOR,
+                         type              : RDStore.CCT_EMAIL,
+                         ctx               : result.contextOrg,
+                         obj               : result.sub]) : null
 
-            List contactListProvider2 = result.sub.providerRelations ? Contact.executeQuery("select c.content from PersonRole pr " +
-                    "join pr.prs p join p.contacts c where pr.provider in :providers and " +
-                    "pr.functionType in (:functionTypes) and c.contentType = :type and (p.isPublic = true OR (p.isPublic = false and p.tenant = :ctx))",
-                    [providers: result.sub.providerRelations.provider,
-                     functionTypes: [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_CUSTOMER_SERVICE, RDStore.PRS_FUNC_INVOICING_CONTACT],
-                     type: RDStore.CCT_EMAIL,
-                     ctx: result.contextOrg]) : null
+                List contactListProviderWekb = result.sub.providerRelations ? Contact.executeQuery("select c.content from PersonRole pr " +
+                        "join pr.prs p join p.contacts c where pr.provider in :providers and " +
+                        "pr.functionType in (:functionTypes) and c.contentType = :type and (p.isPublic = true OR (p.isPublic = false and p.tenant = :ctx))",
+                        [providers    : result.sub.providerRelations.provider,
+                         functionTypes: [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_CUSTOMER_SERVICE, RDStore.PRS_FUNC_INVOICING_CONTACT],
+                         type         : RDStore.CCT_EMAIL,
+                         ctx          : result.contextOrg]) : null
 
-            contactListProvider = contactListProvider + contactListProvider2
+                result.mailAddressOfProvider = contactListProvider ? contactListProvider.join("; ") : ''
+                result.mailAddressOfProviderWekb = contactListProviderWekb ? contactListProviderWekb.join("; ") : ''
 
-            result.mailAddressOfProvider = contactListProvider ? contactListProvider.join("; ") : ''
-            result.mailText = ""
+                List<Platform> platformList = Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription)', [subscription: result.sub])
 
-            List<Platform> platformList = Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription)', [subscription: result.sub])
-            String customerIdentifier = ''
 
-            List<CustomerIdentifier> customerIdentifiers = CustomerIdentifier.findAllByCustomerAndPlatformInList(result.orgInstance, platformList)
-            if (customerIdentifiers) {
-                customerIdentifier = customerIdentifiers.value.join('; ')
+                List<CustomerIdentifier> customerIdentifiers = CustomerIdentifier.findAllByCustomerAndPlatformInList(result.orgInstance, platformList)
+                if (customerIdentifiers) {
+                    customerIdentifier = customerIdentifiers.value.join('; ')
+                }
             }
+
+            result.mailText = ""
 
             ReaderNumber readerNumberStudents
             ReaderNumber readerNumberStaff
@@ -102,9 +125,6 @@ class OrganisationControllerService {
                 }
             }
 
-            List orgAccessPointList = accessPointService.getOapListWithLinkCounts(result.orgInstance)
-            LinkedHashMap orgAccessPointMap = orgAccessPointList.groupBy {it.oap.accessMethod.value}.sort {it.key}
-
             RefdataValue generalContact     = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
             RefdataValue responsibleAdmin   = RDStore.PRS_FUNC_RESPONSIBLE_ADMIN
             RefdataValue billingContact     = RDStore.PRS_FUNC_INVOICING_CONTACT
@@ -116,22 +136,57 @@ class OrganisationControllerService {
                      functionTypes: [generalContact, responsibleAdmin, billingContact],
                      type: RDStore.CCT_EMAIL])
 
-            List generalContacts = []
-            List responsibleAdmins = []
-            List billingContacts = []
+            List generalContactsList = []
+            List responsibleAdminsList = []
+            List billingContactsList = []
 
             contactList.each { row ->
                 String c = row[0]
                 if(generalContact == row[1]){
-                    generalContacts << c
+                    generalContactsList << c
                 }
                 else if(responsibleAdmin == row[1]){
-                    responsibleAdmins << c
+                    responsibleAdminsList << c
                 }
                 else if(billingContact == row[1]){
-                    billingContacts << c
+                    billingContactsList << c
                 }
             }
+
+            String adressFilter = ' and a.pob = null and a.pobZipcode = null and a.pobCity = null'
+            String postBoxFilter = ' and (a.pob is not null or a.pobZipcode is not null or a.pobCity is not null)'
+            Set<Address> addressList = Address.executeQuery("select a from Address a join a.type type where type = :type and a.org = :org and a.tenant = null "+adressFilter, [org: result.orgInstance, type: RDStore.ADDRESS_TYPE_BILLING])
+            Set<Address> postBoxList = Address.executeQuery("select a from Address a join a.type type where type = :type and a.org = :org and a.tenant = null "+postBoxFilter, [org: result.orgInstance, type: RDStore.ADDRESS_TYPE_BILLING])
+
+            String billingAddress = addressList.collect { Address address -> address.getAddressForExport()}.join(";")
+            String billingPostBox = postBoxList.collect { Address address -> address.getAddressForExport()}.join(";")
+
+            if(params.surveyConfigID){
+                SurveyConfig surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.long('surveyConfigID')) : null
+                if(surveyConfig && surveyConfig.invoicingInformation && surveyConfig.surveyInfo.owner == result.contextOrg){
+                    SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, result.orgInstance)
+                    if(surveyOrg.address) {
+                        String adressSurveyFilter = ' and a.pob = null and a.pobZipcode = null and a.pobCity = null'
+                        String postBoxSurveyFilter = ' and (a.pob is not null or a.pobZipcode is not null or a.pobCity is not null)'
+                        Set<Address> addressSurveyList = Address.executeQuery("select a from Address a join a.type type where a.id = :adressID " + adressSurveyFilter, [adressID: surveyOrg.address.id])
+                        Set<Address> postBoxSurveyList = Address.executeQuery("select a from Address a join a.type type where a.id = :adressID " + postBoxSurveyFilter, [adressID: surveyOrg.address.id])
+
+                        billingAddress = addressSurveyList.collect { Address address -> address.getAddressForExport() }.join(";")
+                        billingPostBox = postBoxSurveyList.collect { Address address -> address.getAddressForExport() }.join(";")
+                    }
+
+                    if(surveyOrg.person) {
+                        billingContactsList = Contact.executeQuery("select c.content from PersonRole pr " +
+                                "join pr.prs p join p.contacts c where pr.id = :personId and c.contentType = :type",
+                                [personId: surveyOrg.person.id, type: RDStore.CCT_EMAIL])
+                    }
+                }
+            }
+
+            String generalContacts = generalContactsList.join('; ')
+            String responsibleAdmins = responsibleAdminsList.join('; ')
+            String billingContacts = billingContactsList.join('; ')
+
 
             List accessPoints = []
 
@@ -181,14 +236,6 @@ class OrganisationControllerService {
                 }
             }
 
-            String adressFilter = ' and a.pob = null and a.pobZipcode = null and a.pobCity = null'
-            String postBoxFilter = ' and (a.pob is not null or a.pobZipcode is not null or a.pobCity is not null)'
-            Set<Address> addressList = Address.executeQuery("select a from Address a join a.type type where type = :type and a.org = :org and a.tenant = null "+adressFilter, [org: result.orgInstance, type: RDStore.ADDRESS_TYPE_BILLING])
-            Set<Address> postBoxList = Address.executeQuery("select a from Address a join a.type type where type = :type and a.org = :org and a.tenant = null "+postBoxFilter, [org: result.orgInstance, type: RDStore.ADDRESS_TYPE_BILLING])
-
-            String billingAddress = addressList.collect { Address address -> address.getAddressForExport()}.join(";")
-            String billingPostBox = postBoxList.collect { Address address -> address.getAddressForExport()}.join(";")
-
             result.language = params.newLanguage && params.newLanguage in [RDStore.LANGUAGE_DE.value, RDStore.LANGUAGE_EN.value] ? params.newLanguage : 'de'
             Locale language = new Locale(result.language)
             result.mailText = groovyPageRenderer.render view: '/mailTemplates/text/orgInfos', contentType: "text", encoding: "UTF-8", model: [language            : language,
@@ -199,10 +246,9 @@ class OrganisationControllerService {
                                                                                                                                               readerNumberStaff   : readerNumberStaff,
                                                                                                                                               readerNumberFTE     : readerNumberFTE,
                                                                                                                                               currentSemester     : currentSemester,
-                                                                                                                                              orgAccessPointMap   : orgAccessPointMap,
-                                                                                                                                              generalContacts     : generalContacts.join('; '),
-                                                                                                                                              responsibleAdmins   : responsibleAdmins.join('; '),
-                                                                                                                                              billingContacts     : billingContacts.join('; '),
+                                                                                                                                              generalContacts     : generalContacts,
+                                                                                                                                              responsibleAdmins   : responsibleAdmins,
+                                                                                                                                              billingContacts     : billingContacts,
                                                                                                                                               accessPoints        : accessPoints,
                                                                                                                                               billingAddress       : billingAddress,
                                                                                                                                               billingPostBox: billingPostBox]
