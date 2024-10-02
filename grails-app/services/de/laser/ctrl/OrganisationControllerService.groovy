@@ -74,13 +74,22 @@ class OrganisationControllerService {
                          ctx               : result.contextOrg,
                          obj               : result.sub]) : null
 
+                List contactListProviderAddressBook = result.sub.providerRelations ? Contact.executeQuery("select c.content from PersonRole pr " +
+                        "join pr.prs p join p.contacts c where pr.provider in :providers and " +
+                        "pr.functionType in (:functionTypes) and c.contentType = :type and p.isPublic = false and p.tenant = :ctx",
+                        [providers         : result.sub.providerRelations.provider,
+                         functionTypes: [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_CUSTOMER_SERVICE, RDStore.PRS_FUNC_INVOICING_CONTACT],
+                         type              : RDStore.CCT_EMAIL,
+                         ctx               : result.contextOrg]) : null
+
                 List contactListProviderWekb = result.sub.providerRelations ? Contact.executeQuery("select c.content from PersonRole pr " +
                         "join pr.prs p join p.contacts c where pr.provider in :providers and " +
-                        "pr.functionType in (:functionTypes) and c.contentType = :type and (p.isPublic = true OR (p.isPublic = false and p.tenant = :ctx))",
+                        "pr.functionType in (:functionTypes) and c.contentType = :type and p.isPublic = true",
                         [providers    : result.sub.providerRelations.provider,
-                         functionTypes: [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_CUSTOMER_SERVICE, RDStore.PRS_FUNC_INVOICING_CONTACT],
-                         type         : RDStore.CCT_EMAIL,
-                         ctx          : result.contextOrg]) : null
+                         functionTypes: [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_CUSTOMER_SERVICE, RDStore.PRS_FUNC_INVOICING_CONTACT, RDStore.PRS_FUNC_SALES_MARKETING],
+                         type         : RDStore.CCT_EMAIL]) : null
+
+                contactListProvider = contactListProvider + contactListProviderAddressBook
 
                 result.mailAddressOfProvider = contactListProvider ? contactListProvider.join("; ") : ''
                 result.mailAddressOfProviderWekb = contactListProviderWekb ? contactListProviderWekb.join("; ") : ''
