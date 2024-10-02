@@ -6,7 +6,6 @@ import de.laser.storage.RDStore
 import de.laser.utils.CodeUtils
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
-import org.springframework.dao.DataIntegrityViolationException
 
 /**
  * This controller manages notes for subscriptions, licenses or organisations
@@ -120,34 +119,4 @@ class DocController  {
 			}
 		}
 	}
-
-//	/**
-//	 * Deletes the {@link Doc} given by params.id
-//	 */
-//	@DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
-//	@Secured(closure = {
-//		ctx.contextService.isInstEditor_or_ROLEADMIN()
-//	})
-//    def delete() {
-//		Doc.withTransaction {
-//			Doc docInstance = Doc.get(params.id)
-//			if (! docInstance) {
-//				flash.message = message(code: 'default.not.found.message', args: [message(code: 'doc.label'), params.id]) as String
-//				redirect action: 'list'
-//				return
-//			}
-//
-//			try {
-//				docInstance.delete()
-//				flash.message = message(code: 'default.deleted.message', args: [message(code: 'doc.label'), params.id]) as String
-//				redirect action: 'list'
-//				return
-//			}
-//			catch (DataIntegrityViolationException e) {
-//				flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'doc.label'), params.id]) as String
-//				redirect action: 'show', id: params.id
-//				return
-//			}
-//		}
-//    }
 }

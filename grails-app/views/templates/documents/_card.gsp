@@ -88,12 +88,12 @@
 
                         <g:if test="${! (editable || editable2)}">
                             <%-- 1 --%>
-                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+                            <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                         </g:if>
                         <g:else>
                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                 <%-- 1 --%>
-                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+                                <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
 
                                 <%-- 2 --%>
                                 <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
@@ -106,7 +106,7 @@
                             </g:if>
                             <g:elseif test="${docctx.shareConf == RDStore.SHARE_CONF_UPLOADER_AND_TARGET}">
                                 <%-- 1 --%>
-                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+                                <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                             </g:elseif>
 
                             <%-- 3 --%>
@@ -159,79 +159,6 @@
                             </g:elseif>
                         </g:else>%{-- (editable || editable2) --}%
                         </div>
-
-                                %{-- old --}%
-
-%{--                            <g:if test="${docctx.owner.owner?.id == contextOrg.id}">--}%
-%{--                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>--}%
-
-%{--                                <%-- START First Button --%>--}%
-%{--                                <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />--}%
-%{--                                <button type="button" class="${Btn.MODERN.SIMPLE}"--}%
-%{--                                        data-ui="modal"--}%
-%{--                                        data-href="#modalEditDocument_${docctx.id}"--}%
-%{--                                        aria-label="${message(code: 'ariaLabel.change.universal')}">--}%
-%{--                                    <i class="${Icon.CMD.EDIT}"></i></button>--}%
-
-%{--                                <%-- START Second Button --%>--}%
-%{--                                <g:if test="${!docctx.isShared}">--}%
-%{--                                    <g:link controller="${ajaxCallController ?: controllerName}" action="deleteDocuments" class="${Btn.MODERN.NEGATIVE_CONFIRM}"--}%
-%{--                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"--}%
-%{--                                            data-confirm-term-how="delete"--}%
-%{--                                            params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${ajaxCallAction ?: actionName}"]'--}%
-%{--                                            role="button"--}%
-%{--                                            aria-label="${message(code: 'ariaLabel.delete.universal')}">--}%
-%{--                                        <i class="${Icon.CMD.DELETE}"></i>--}%
-%{--                                    </g:link>--}%
-%{--                                </g:if>--}%
-%{--                                <g:else>--}%
-%{--                                    <div class="${Btn.ICON.SIMPLE} la-hidden">--}%
-%{--                                        <icon:placeholder /><%-- Hidden Fake Button --%>--}%
-%{--                                    </div>--}%
-%{--                                </g:else>--}%
-%{--                                <%-- STOP Second Button --%>--}%
-%{--                            </g:if>--}%
-%{--                            <g:else>--}%
-%{--                                <div class="${Btn.ICON.SIMPLE} la-hidden">--}%
-%{--                                    <icon:placeholder /><%-- Hidden Fake Button --%>--}%
-%{--                                </div>--}%
-%{--                                <div class="${Btn.ICON.SIMPLE} la-hidden">--}%
-%{--                                    <icon:placeholder /><%-- Hidden Fake Button --%>--}%
-%{--                                </div>--}%
-%{--                            </g:else>--}%
-%{--                            <%-- START Third Button --%>--}%
-%{--                            <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton() && userService.hasFormalAffiliation(contextService.getUser(), docctx.owner.owner, 'INST_EDITOR')}">--}%
-%{--                                <g:if test="${docctx?.isShared}">--}%
-%{--                                    <span>--}%
-%{--                                    <ui:remoteLink class="${Btn.MODERN.POSITIVE_TOOLTIP} js-no-wait-wheel"--}%
-%{--                                                      controller="ajax"--}%
-%{--                                                      action="toggleShare"--}%
-%{--                                                      params='[owner:genericOIDService.getOID(ownobj), sharedObject:genericOIDService.getOID(docctx), tmpl:"documents", ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?:  actionName]'--}%
-%{--                                                      data-content="${message(code:'property.share.tooltip.on')}"--}%
-%{--                                                      data-done=""--}%
-%{--                                                      data-update="container-documents"--}%
-%{--                                                      role="button">--}%
-%{--                                        <i class="icon la-share"></i>--}%
-%{--                                    </ui:remoteLink>--}%
-%{--                                    </span>--}%
-%{--                                </g:if>--}%
-%{--                                <g:else>--}%
-%{--                                    <ui:remoteLink class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP} js-no-wait-wheel"--}%
-%{--                                                      controller="ajax"--}%
-%{--                                                      action="toggleShare"--}%
-%{--                                                      params='[owner:genericOIDService.getOID(ownobj), sharedObject:genericOIDService.getOID(docctx), tmpl:"documents", ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?:  actionName]'--}%
-%{--                                                      data-content="${message(code:'property.share.tooltip.off')}"--}%
-%{--                                                      data-confirm-tokenMsg="${message(code: "confirm.dialog.share.element.member", args: [docctx.owner.title])}"--}%
-%{--                                                      data-confirm-term-how="share"--}%
-%{--                                                      data-done=""--}%
-%{--                                                      data-update="container-documents"--}%
-%{--                                                      role="button">--}%
-%{--                                        <i class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>--}%
-%{--                                    </ui:remoteLink>--}%
-%{--                                </g:else>--}%
-%{--                            </g:if>--}%
-%{--                            <%-- STOP Third Button --%>--}%
-
                     </div>
                 </div>
             </g:if>
@@ -260,7 +187,7 @@
                         </div>
 
                         <div class="five wide right aligned column">
-                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+                            <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
 
                             %{--
                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">

@@ -30,6 +30,12 @@ class DocstoreController  {
     MessageSource messageSource
     TmpRefactoringService tmpRefactoringService
 
+    @Secured(['ROLE_USER'])
+    def index() {
+        redirect(action: 'downloadDocument', params: params)
+//        response.sendError(HttpStatus.SC_FORBIDDEN)
+    }
+
     /**
      * Called by /documents/_table and /documents/_card
      * Retrieves a document by its uuid
@@ -39,7 +45,7 @@ class DocstoreController  {
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
-    def index() {
+    def downloadDocument() {
         Doc doc = Doc.findByUuidAndContentType(params.id, Doc.CONTENT_TYPE_FILE)
         if (doc) {
             boolean check = false
@@ -221,5 +227,12 @@ class DocstoreController  {
             flash.error = message(code:'template.documents.edit.error') as String
         }
         redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
+    })
+    def deleteDocument() {
+        // todo
     }
 }
