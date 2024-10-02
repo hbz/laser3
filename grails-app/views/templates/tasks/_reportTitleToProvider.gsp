@@ -1,7 +1,7 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.storage.BeanStore; de.laser.Task; de.laser.remote.ApiSource; de.laser.Person; de.laser.Contact; grails.plugin.springsecurity.SpringSecurityUtils;" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.storage.BeanStore; de.laser.Task; de.laser.remote.ApiSource; de.laser.Person; de.laser.Contact; grails.plugin.springsecurity.SpringSecurityUtils;" %>
 <laser:serviceInjection />
 
-<g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+<g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)}">
 
     <g:if test="${tipp?.platform?.provider}">
 <%

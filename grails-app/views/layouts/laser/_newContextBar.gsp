@@ -308,9 +308,12 @@
     <g:render template="${'/help/' + helpService.getMapping(controllerName, actionName)}" />
 </g:if>
 <g:elseif test="${helpFlag == HelpService.MD}">
-    <div class="ui wide flyout" id="help-content" style="padding:50px 0 10px 0;overflow:scroll">
-        <div class="content">
+    <div class="ui wide markdown flyout" id="help-content">
+        <div class="scrolling content">
             <ui:renderMarkdown help="${helpService.getMapping(controllerName, actionName)}" />
+        </div>
+        <div class="basic center aligned actions">
+            <a href="mailto:laser@hbz-nrw.de?subject=Supportanfrage">Bei weiteren Fragen erreichen Sie uns per Email</a>
         </div>
     </div>
 </g:elseif>

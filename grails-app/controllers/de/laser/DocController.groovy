@@ -15,6 +15,7 @@ import org.springframework.dao.DataIntegrityViolationException
 class DocController  {
 
 	ContextService contextService
+	TmpRefactoringService tmpRefactoringService
 
     static allowedMethods = [delete: 'POST']
 
@@ -24,6 +25,7 @@ class DocController  {
 	@Secured(['ROLE_USER'])
 	@Transactional
 	def createNote() {
+		// processing form#modalCreateNote
 		log.debug("Create note referer was ${request.getHeader('referer')} or ${request.request.RequestURL}")
 
 		User user = contextService.getUser()
@@ -34,7 +36,8 @@ class DocController  {
 			if (instance) {
 				log.debug("Got owner instance ${instance}")
 
-				Doc doc_content = new Doc(contentType: Doc.CONTENT_TYPE_STRING,
+				Doc doc_content = new Doc(
+						contentType: Doc.CONTENT_TYPE_STRING,
 						title: params.noteTitle,
 						content: params.noteContent,
 						type: RDStore.DOC_TYPE_NOTE,
@@ -67,10 +70,20 @@ class DocController  {
 		ctx.contextService.isInstEditor_or_ROLEADMIN()
 	})
 	def editNote() {
+		// processing form#modalEditNote
+
 		Doc.withTransaction {
 			switch (request.method) {
 				case 'POST':
-					Doc docInstance = Doc.get(params.id)
+					//					Doc docInstance = Doc.findByIdAndContentType(params.long('id'), Doc.CONTENT_TYPE_STRING)
+					DocContext docContext = DocContext.get(params.long('dctx'))
+					if (! tmpRefactoringService.hasAccessToDocNote(docContext)) {
+						flash.error = message(code: 'default.noPermissions') as String
+						redirect(url: request.getHeader('referer'))
+						return
+					}
+
+					Doc docInstance = docContext?.owner
 					if (!docInstance) {
 						flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.note.label'), params.id]) as String
 						redirect(url: request.getHeader('referer'))
@@ -108,33 +121,33 @@ class DocController  {
 		}
 	}
 
-	/**
-	 * Deletes the {@link Doc} given by params.id
-	 */
-	@DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
-	@Secured(closure = {
-		ctx.contextService.isInstEditor_or_ROLEADMIN()
-	})
-    def delete() {
-		Doc.withTransaction {
-			Doc docInstance = Doc.get(params.id)
-			if (! docInstance) {
-				flash.message = message(code: 'default.not.found.message', args: [message(code: 'doc.label'), params.id]) as String
-				redirect action: 'list'
-				return
-			}
-
-			try {
-				docInstance.delete()
-				flash.message = message(code: 'default.deleted.message', args: [message(code: 'doc.label'), params.id]) as String
-				redirect action: 'list'
-				return
-			}
-			catch (DataIntegrityViolationException e) {
-				flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'doc.label'), params.id]) as String
-				redirect action: 'show', id: params.id
-				return
-			}
-		}
-    }
+//	/**
+//	 * Deletes the {@link Doc} given by params.id
+//	 */
+//	@DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+//	@Secured(closure = {
+//		ctx.contextService.isInstEditor_or_ROLEADMIN()
+//	})
+//    def delete() {
+//		Doc.withTransaction {
+//			Doc docInstance = Doc.get(params.id)
+//			if (! docInstance) {
+//				flash.message = message(code: 'default.not.found.message', args: [message(code: 'doc.label'), params.id]) as String
+//				redirect action: 'list'
+//				return
+//			}
+//
+//			try {
+//				docInstance.delete()
+//				flash.message = message(code: 'default.deleted.message', args: [message(code: 'doc.label'), params.id]) as String
+//				redirect action: 'list'
+//				return
+//			}
+//			catch (DataIntegrityViolationException e) {
+//				flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'doc.label'), params.id]) as String
+//				redirect action: 'show', id: params.id
+//				return
+//			}
+//		}
+//    }
 }
