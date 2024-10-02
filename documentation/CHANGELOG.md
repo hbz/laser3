@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      02.10.2024  rc-3.4  3.4.10      Andreas Bug         
+
 --      01.10.2024  rc-3.4  3.4.10      Andreas Bug         500er (Teilung durch null)-Fehler bei Cost per Use behoben
 
 5994    01.10.2024  rc-3.4  3.4.10      Andreas Feature     Hinweis auf we:kb-Kontakta im Statistik-Hinweisfeld eingefügt
