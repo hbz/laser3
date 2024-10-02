@@ -211,7 +211,7 @@ class ExportClickMeService {
                         message: 'subscription.label',
                         fields : [
                                 'subscription.name'                  : [field: 'sub.name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
-                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true'],
+                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label'],
                                 'subscription.startDate'             : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
                                 'subscription.endDate'               : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
                                 'subscription.manualCancellationDate': [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -363,7 +363,7 @@ class ExportClickMeService {
                         message: 'subscription.label',
                         fields: [
                                 'subscription.name'                         : [field: 'name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
-                                'subscription.altnames'                     : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
+                                'subscription.altnames'                     : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label'],
                                 'subscription.startDate'                    : [field: 'startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
                                 'subscription.endDate'                      : [field: 'endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
                                 'subscription.manualCancellationDate'       : [field: 'manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -507,7 +507,7 @@ class ExportClickMeService {
                         message: 'subscription.label',
                         fields: [
                                 'subscription.name'                         : [field: 'name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
-                                'subscription.altnames'                     : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
+                                'subscription.altnames'                     : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label'],
                                 'subscription.startDate'                    : [field: 'startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
                                 'subscription.endDate'                      : [field: 'endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
                                 'subscription.manualCancellationDate'       : [field: 'manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -614,7 +614,7 @@ class ExportClickMeService {
                         message: 'subscription.label',
                         fields: [
                                 'subscription.name'                         : [field: 'sub.name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
-                                'subscription.altnames'                     : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
+                                'subscription.altnames'                     : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label'],
                                 'subscription.startDate'                    : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
                                 'subscription.endDate'                      : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
                                 'subscription.manualCancellationDate'       : [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -765,7 +765,7 @@ class ExportClickMeService {
                         message: 'subscription.label',
                         fields : [
                                 'subscription.name'                  : [field: 'sub.name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
-                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true'],
+                                'subscription.altnames'              : [field: 'sub.altnames', label: 'Alternative names', message: 'org.altname.label'],
                                 'subscription.startDate'             : [field: 'sub.startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
                                 'subscription.endDate'               : [field: 'sub.endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
                                 'subscription.manualCancellationDate': [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
@@ -906,7 +906,7 @@ class ExportClickMeService {
                         message: 'license.label',
                         fields : [
                                 'license.reference'      : [field: 'reference', label: 'Name', message: 'exportClickMe.license.name', defaultChecked: 'true'],
-                                'license.altnames'       : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true'],
+                                'license.altnames'       : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label'],
                                 'license.status'         : [field: 'status', label: 'Status', message: 'exportClickMe.license.status', defaultChecked: 'true'],
                                 'license.licenseCategory': [field: 'licenseCategory', label: 'License Category', message: 'license.licenseCategory.label', defaultChecked: 'true'],
                                 'license.startDate'      : [field: 'startDate', label: 'Start Date', message: 'exportClickMe.license.startDate', defaultChecked: 'true'],
@@ -991,7 +991,7 @@ class ExportClickMeService {
                         message: 'license.label',
                         fields: [
                                 'license.reference'       : [field: 'reference', label: 'Name', message: 'exportClickMe.license.name', defaultChecked: 'true'],
-                                'license.altnames'        : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
+                                'license.altnames'        : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label'],
                                 'license.status'          : [field: 'status', label: 'Status', message: 'exportClickMe.license.status', defaultChecked: 'true'],
                                 'license.licenseCategory' : [field: 'licenseCategory', label: 'License Category', message: 'license.licenseCategory.label', defaultChecked: 'true'],
                                 'license.startDate'       : [field: 'startDate', label: 'Start Date', message: 'exportClickMe.license.startDate', defaultChecked: 'true'],
@@ -1398,7 +1398,7 @@ class ExportClickMeService {
                         fields: [
                                 'provider.name'                  : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
                                 'provider.sortname'              : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
-                                'provider.altnames'              : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
+                                'provider.altnames'              : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label'],
                                 'provider.status'                : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: true],
                                 'provider.homepage'              : [field: 'homepage', label: 'Homepage URL', message: 'org.homepage.label', defaultChecked: true],
                                 'provider.metadataDownloaderURL' : [field: 'metadataDownloaderURL', label: 'Metadata Downloader URL', message: 'org.metadataDownloaderURL.label', defaultChecked: true],
@@ -1458,6 +1458,7 @@ class ExportClickMeService {
                         fields: [
                                 'vendor.name'                  : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
                                 'vendor.sortname'              : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
+                                'vendor.altnames'              : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label'],
                                 'vendor.status'                : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: true],
                                 'vendor.homepage'              : [field: 'homepage', label: 'Homepage URL', message: 'org.homepage.label', defaultChecked: true],
                                 'vendor.packages'              : [field: null, label: 'Packages', message:'package.plural', defaultChecked: true],
@@ -7069,31 +7070,39 @@ class ExportClickMeService {
             }
         }else if (fieldKey == 'participant.readerNumbers') {
             if (org) {
+                ReaderNumber readerNumberPeople
+                ReaderNumber readerNumberUser
                 ReaderNumber readerNumberStudents
                 ReaderNumber readerNumberStaff
                 ReaderNumber readerNumberFTE
-                ReaderNumber readerNumberPeople = ReaderNumber.findByReferenceGroupAndOrg(RDStore.READER_NUMBER_PEOPLE, org, [sort: 'dueDate', order: 'desc'])
-                ReaderNumber readerNumberUser = ReaderNumber.findByReferenceGroupAndOrg(RDStore.READER_NUMBER_USER, org, [sort: 'dueDate', order: 'desc'])
-                ReaderNumber readerNumberStaffwithDueDate = ReaderNumber.findByReferenceGroupInListAndOrgAndDueDateIsNotNull([RDStore.READER_NUMBER_SCIENTIFIC_STAFF, RDStore.READER_NUMBER_FTE], org, [sort: 'dueDate', order: 'desc'])
+                ReaderNumber readerNumberStaffWithDueDate
+                ReaderNumber readerNumberFTEWithDueDate
+                List dueDateCheck = ReaderNumber.executeQuery('select rn.dueDate from ReaderNumber rn where rn.org = :org and rn.dueDate != null order by rn.dueDate desc', [org: org])
+                if(dueDateCheck) {
+                    Date newestDueDate = (Date) dueDateCheck[0]
+                    readerNumberPeople = ReaderNumber.findByReferenceGroupAndOrgAndDueDate(RDStore.READER_NUMBER_PEOPLE, org, newestDueDate)
+                    readerNumberUser = ReaderNumber.findByReferenceGroupAndOrgAndDueDate(RDStore.READER_NUMBER_USER, org, newestDueDate)
+                    readerNumberStaffWithDueDate = ReaderNumber.findByReferenceGroupAndOrgAndDueDateIsNotNullAndDueDate(RDStore.READER_NUMBER_SCIENTIFIC_STAFF, org, newestDueDate)
+                    readerNumberFTEWithDueDate = ReaderNumber.findByReferenceGroupAndOrgAndDueDateIsNotNullAndDueDate(RDStore.READER_NUMBER_FTE, org, newestDueDate)
 
-                if(readerNumberStaffwithDueDate){
-                    row.add(createTableCell(format, ' '))
-                    row.add(createTableCell(format, DateUtils.getLocalizedSDF_noTime(LocaleUtils.getCurrentLocale()).format(readerNumberStaffwithDueDate.dueDate)))
-                    row.add(createTableCell(format, ' '))
-                    row.add(createTableCell(format, readerNumberStaffwithDueDate.value))
-                    row.add(createTableCell(format, ' '))
-                }
-                else if(readerNumberPeople || readerNumberUser){
-                    String dueDate = ' '
-                    if(readerNumberPeople && readerNumberPeople.dueDate)
-                        dueDate = DateUtils.getLocalizedSDF_noTime(LocaleUtils.getCurrentLocale()).format(readerNumberPeople.dueDate)
-                    else if(readerNumberUser && readerNumberUser.dueDate)
-                        dueDate = DateUtils.getLocalizedSDF_noTime(LocaleUtils.getCurrentLocale()).format(readerNumberUser.dueDate)
-                    row.add(createTableCell(format, ' '))
-                    row.add(createTableCell(format, dueDate))
-                    row.add(createTableCell(format, ' '))
-                    row.add(createTableCell(format, ' '))
-                    row.add(createTableCell(format, ' '))
+                    if(readerNumberStaffWithDueDate || readerNumberFTEWithDueDate){
+                        row.add(createTableCell(format, ' '))
+                        row.add(createTableCell(format, DateUtils.getLocalizedSDF_noTime(LocaleUtils.getCurrentLocale()).format(newestDueDate)))
+                        row.add(createTableCell(format, ' '))
+                        if(readerNumberStaffWithDueDate)
+                            row.add(createTableCell(format, readerNumberStaffWithDueDate.value))
+                        else row.add(createTableCell(format, ' '))
+                        if(readerNumberFTEWithDueDate)
+                            row.add(createTableCell(format, readerNumberFTEWithDueDate.value))
+                        else row.add(createTableCell(format, ' '))
+                    }
+                    else if(readerNumberPeople || readerNumberUser){
+                        row.add(createTableCell(format, ' '))
+                        row.add(createTableCell(format, DateUtils.getLocalizedSDF_noTime(LocaleUtils.getCurrentLocale()).format(newestDueDate)))
+                        row.add(createTableCell(format, ' '))
+                        row.add(createTableCell(format, ' '))
+                        row.add(createTableCell(format, ' '))
+                    }
                 }
                 else {
                     RefdataValue currentSemester = RefdataValue.getCurrentSemester()
@@ -7175,15 +7184,21 @@ class ExportClickMeService {
                     sum = sum + (readerNumberUser.value != null ? readerNumberUser.value : 0)
                 }
 
-                if(readerNumberStaffwithDueDate){
-                    sum = sum + (readerNumberStaffwithDueDate.value != null ? readerNumberStaffwithDueDate.value : 0)
+                if(readerNumberStaffWithDueDate){
+                    sum = sum + (readerNumberStaffWithDueDate.value != null ? readerNumberStaffWithDueDate.value : 0)
+                }
+                if(readerNumberFTEWithDueDate){
+                    sum = sum + (readerNumberFTEWithDueDate.value != null ? readerNumberFTEWithDueDate.value : 0)
                 }
 
                 row.add(createTableCell(format, sumStudFTE))
                 row.add(createTableCell(format, sumStudHeads))
-                row.add(createTableCell(format, sum))
+                if((readerNumberFTE?.value || readerNumberFTEWithDueDate?.value) && (readerNumberStaff?.value || readerNumberStaffWithDueDate?.value))
+                    row.add(createTableCell(format, ' '))
+                else
+                    row.add(createTableCell(format, sum))
 
-                String note = readerNumberStudents ? readerNumberStudents.dateGroupNote : (readerNumberPeople ? readerNumberPeople.dateGroupNote : (readerNumberUser ? readerNumberUser.dateGroupNote : (readerNumberStaffwithDueDate ? readerNumberStaffwithDueDate.dateGroupNote : '')))
+                String note = readerNumberStudents ? readerNumberStudents.dateGroupNote : (readerNumberPeople ? readerNumberPeople.dateGroupNote : (readerNumberUser ? readerNumberUser.dateGroupNote : (readerNumberStaffWithDueDate ? readerNumberStaffWithDueDate.dateGroupNote : (readerNumberFTEWithDueDate ? readerNumberFTEWithDueDate.dateGroupNote : ''))))
 
                 row.add(createTableCell(format, note))
 

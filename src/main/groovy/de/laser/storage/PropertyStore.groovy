@@ -64,6 +64,7 @@ class PropertyStore {
 
     // -- Survey Properties
 
+    public final static PropertyDefinition SURVEY_PROPERTY_INVOICE_PROCESSING   = getSurveyProperty('Invoice Processing')
     public final static PropertyDefinition SURVEY_PROPERTY_PARTICIPATION   = getSurveyProperty('Participation')
     public final static PropertyDefinition SURVEY_PROPERTY_ORDER_NUMBER    = getSurveyProperty('Order number')
     public final static PropertyDefinition SURVEY_PROPERTY_MULTI_YEAR_5    = getSurveyProperty('Multi-year term 5 years')

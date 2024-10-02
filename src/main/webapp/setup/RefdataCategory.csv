@@ -64,6 +64,7 @@ ie.medium,IEMedium,IEMedium
 ill.code,Fernleihindikator,Ill code
 indemnification,Entschädigung Auswahl,Indemnification Choice
 invoicing,Rechnungsstellung,Invoicing
+invoice.processing,Rechnungsabwicklung,Invoice Processing
 ip.authentication,IP-Authentifizierung,IP Authentication
 ipv4.address.format,IPv4 Address Format,IPv4 Address Format
 ipv6.address.format,IPv6 Address Format,IPv6 Address Format
