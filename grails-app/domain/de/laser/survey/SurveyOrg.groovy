@@ -89,7 +89,7 @@ class SurveyOrg {
         boolean existsMultiYearTerm = false
         Subscription sub = surveyConfig.subscription
 
-        if (sub) {
+        if (this.surveyConfig.subSurveyUseForTransfer && sub) {
             Subscription subMuliYear = Subscription.executeQuery("select sub" +
                     " from Subscription sub " +
                     " join sub.orgRelations orgR " +
