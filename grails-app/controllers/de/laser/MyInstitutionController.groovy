@@ -2689,10 +2689,18 @@ class MyInstitutionController  {
                         notProcessedMandatoryProperties << surre.type.getI10n('name')
                     }
                 }
-                if(surveyConfig.invoicingInformation && (!surveyOrg.address || !surveyOrg.person)){
+                if(surveyConfig.surveyInfo.isMandatory && surveyConfig.invoicingInformation && (!surveyOrg.address || !surveyOrg.person)){
                     allResultHaveValue = false
                     flash.error = g.message(code: 'surveyResult.finish.invoicingInformation')
+                }else if(surveyConfig.surveyInfo.isMandatory && surveyConfig.vendorSurvey) {
+                    boolean vendorInvoicing = SurveyResult.findByParticipantAndSurveyConfigAndType(result.institution, surveyConfig, PropertyStore.SURVEY_PROPERTY_INVOICE_PROCESSING)?.refValue == RDStore.INVOICE_PROCESSING_VENDOR
+                    if (vendorInvoicing && SurveyPackageResult.executeQuery('select count (*) from SurveyPackageResult spr ' +
+                            'where spr.surveyConfig = :surveyConfig and spr.participant = :participant', [surveyConfig: surveyConfig, participant: result.institution])[0] == 0) {
+                        allResultHaveValue = false
+                        flash.error = g.message(code: 'surveyResult.finish.vendorSurvey')
+                    }
                 }
+
             }
 
 
@@ -3768,6 +3776,7 @@ join sub.orgRelations or_sub where
             result.tableConfig << "showPackages"
             result.tableConfig << "showProviders"
             result.tableConfig << "showVendors"
+            result.tableConfig << "showMailInfos"
         }
 
         result.putAll(subscriptionService.getMySubscriptionsForConsortia(params,result.user,result.institution,result.tableConfig))

@@ -76,6 +76,7 @@ class RDConstants {
     public static final String IP_AUTHENTICATION      = 'ip.authentication'
     public static final String IPV4_ADDRESS_FORMAT    = 'ipv4.address.format'
     public static final String IPV6_ADDRESS_FORMAT    = 'ipv6.address.format'
+    public static final String INVOICE_PROCESSING      = 'invoice.processing'
 
     public static final String MAIL_STATUS            = 'mail.status'
     public static final String MAIL_TYPE              = 'mail.type'

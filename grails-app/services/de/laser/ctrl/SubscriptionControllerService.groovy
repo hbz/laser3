@@ -1438,14 +1438,14 @@ class SubscriptionControllerService {
                         List<CostItem> previousSubCostItems
                         Subscription previousSub = memberSub._getCalculatedPreviousForSurvey()
                         if (previousSub) {
-                            previousSubCostItems = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(previousSub, result.institution, result.selectedCostItemElement, RDStore.COST_ITEM_DELETED)
+                            previousSubCostItems = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(previousSub, result.institution, result.selectedCostItemElement, RDStore.COST_ITEM_DELETED)
                         }
 
                         Double percentage = 1 + params.double('percentOnOldPrice') / 100
                         CostItem lastYearEquivalent = previousSubCostItems.size() == 1 ? previousSubCostItems[0] : null
                         if (lastYearEquivalent) {
 
-                            List<CostItem> currentSubCostItems = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(memberSub, result.institution, result.selectedCostItemElement, RDStore.COST_ITEM_DELETED)
+                            List<CostItem> currentSubCostItems = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(memberSub, result.institution, result.selectedCostItemElement, RDStore.COST_ITEM_DELETED)
 
                             currentSubCostItems.each { CostItem ci ->
                                 if (ci.sub) {
@@ -1464,7 +1464,7 @@ class SubscriptionControllerService {
                     } else if (params.percentOnCurrentPrice) {
                         Double percentage = 1 + params.double('percentOnCurrentPrice') / 100
 
-                        List<CostItem> currentSubCostItems = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(memberSub, result.institution, result.selectedCostItemElement, RDStore.COST_ITEM_DELETED)
+                        List<CostItem> currentSubCostItems = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(memberSub, result.institution, result.selectedCostItemElement, RDStore.COST_ITEM_DELETED)
 
                         currentSubCostItems.each { CostItem ci ->
                             if (ci.sub) {
