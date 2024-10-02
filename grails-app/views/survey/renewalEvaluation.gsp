@@ -262,7 +262,7 @@
                             <td>
                                 <g:if test="${sub}">
                                     <g:link controller="subscription" action="show" id="${sub.id}"
-                                            class="ui button icon"><i class="${Icons.SUBSCRIPTION} icon"></i></g:link>
+                                            class="ui button icon la-modern-button"><i class="${Icons.SUBSCRIPTION} icon"></i></g:link>
                                 </g:if>
                                 <g:if test="${sub._getCalculatedPreviousForSurvey()}">
                                     <br/>
@@ -270,7 +270,7 @@
                                     <%-- TODO Moe --%>
                                     <g:link controller="subscription" action="show"
                                             id="${sub._getCalculatedPreviousForSurvey()?.id}"
-                                            class="ui button icon"><i class="${Icons.SUBSCRIPTION} icon yellow"></i></g:link>
+                                            class="ui button icon la-modern-button"><i class="${Icons.SUBSCRIPTION} icon yellow"></i></g:link>
                                 </g:if>
                             </td>
                     </tr>
@@ -315,7 +315,7 @@
                             <td>
                                 <g:if test="${sub}">
                                     <g:link controller="subscription" action="show" id="${sub.id}"
-                                            class="ui button icon"><i class="${Icons.SUBSCRIPTION} icon"></i></g:link>
+                                            class="ui button icon la-modern-button"><i class="${Icons.SUBSCRIPTION} icon"></i></g:link>
                                 </g:if>
                                 <g:if test="${sub._getCalculatedPreviousForSurvey()}">
                                     <br/>
@@ -323,7 +323,7 @@
                                     <%-- TODO Moe --%>
                                     <g:link controller="subscription" action="show"
                                             id="${sub._getCalculatedPreviousForSurvey()?.id}"
-                                            class="ui button icon"><i class="${Icons.SUBSCRIPTION} icon yellow"></i></g:link>
+                                            class="ui button icon la-modern-button"><i class="${Icons.SUBSCRIPTION} icon yellow"></i></g:link>
                                 </g:if>
                             </td>
                     </tr>
