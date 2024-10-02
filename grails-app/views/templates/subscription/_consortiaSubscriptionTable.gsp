@@ -76,6 +76,9 @@
             <g:if test="${'onlyMemberSubs' in tableConfig}">
                 <th rowspan="2">${message(code:'default.actions.label')}</th>
             </g:if>
+            <g:if test="${'showMailInfos' in tableConfig}">
+                <th rowspan="2"></th>
+            </g:if>
         </tr>
         <g:if test="${'withCostItems' in tableConfig}">
             <tr>
@@ -270,6 +273,14 @@
                         </g:else>
                     </td>
                 </g:if>
+
+                <g:if test="${'showMailInfos' in tableConfig}">
+                    <td class="center aligned">
+                        <a href="#" class="ui button blue icon la-modern-button mailInfos-flyout-trigger" data-orgId="${subscr.id}" data-subId="${subCons?.id}" >
+                            <i class="ui info icon"></i>
+                        </a>
+                    </td>
+                </g:if>
             </tr>
         </g:each>
         </tbody>
@@ -308,3 +319,7 @@
 </g:else>
 
 <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}" max="${max}" total="${totalCount}" />
+
+<g:if test="${'showMailInfos' in tableConfig}">
+    <laser:render template="/templates/flyouts/mailInfos"/>
+</g:if>

@@ -209,7 +209,7 @@
                 <g:set var="subscr" value="${row.orgs}"/>
                 <g:if test="${showBulkCostItems && editable}">
                     <td>
-                        <g:if test="${currentSubCostItems && currentSubCostItems.size() > 0 && ((previousSubCostItems && previousSubCostItems.size() <= 1) || previousSubCostItems == null )}">
+                        <g:if test="${currentSubCostItems && currentSubCostItems.size() == 1 && ((previousSubCostItems && previousSubCostItems.size() <= 1) || previousSubCostItems == null )}">
                             <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}"
                                         checked="false"/>
                         </g:if>
