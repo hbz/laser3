@@ -236,6 +236,8 @@ class OrganisationControllerService {
                 }
             }
 
+            String vatID = result.orgInstance.getIdentifierByType(IdentifierNamespace.VAT)?.value
+
             result.language = params.newLanguage && params.newLanguage in [RDStore.LANGUAGE_DE.value, RDStore.LANGUAGE_EN.value] ? params.newLanguage : 'de'
             Locale language = new Locale(result.language)
             result.mailText = groovyPageRenderer.render view: '/mailTemplates/text/orgInfos', contentType: "text", encoding: "UTF-8", model: [language            : language,
@@ -251,7 +253,8 @@ class OrganisationControllerService {
                                                                                                                                               billingContacts     : billingContacts,
                                                                                                                                               accessPoints        : accessPoints,
                                                                                                                                               billingAddress       : billingAddress,
-                                                                                                                                              billingPostBox: billingPostBox]
+                                                                                                                                              billingPostBox: billingPostBox,
+                                                                                                                                              vatID: vatID]
 
         } else {
             return null

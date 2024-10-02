@@ -55,21 +55,21 @@
 <div class="ui top attached stackable tabular la-tab-with-js menu">
 
     <g:link class="item ${params.tab == 'participantsViewAllFinish' ? 'active' : ''}"
-            controller="survey" action="surveyPackagesEvaluation"
+            controller="survey" action="surveyVendorsEvaluation"
             params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllFinish']">
         ${message(code: 'surveyEvaluation.participantsViewAllFinish')}
         <ui:bubble float="true" count="${participantsFinishTotal}"/>
     </g:link>
 
     <g:link class="item ${params.tab == 'participantsViewAllNotFinish' ? 'active' : ''}"
-            controller="survey" action="surveyPackagesEvaluation"
+            controller="survey" action="surveyVendorsEvaluation"
             params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllNotFinish']">
         ${message(code: 'surveyEvaluation.participantsViewAllNotFinish')}
         <ui:bubble float="true" count="${participantsNotFinishTotal}"/>
     </g:link>
 
     <g:link class="item ${params.tab == 'participantsView' ? 'active' : ''}"
-            controller="survey" action="surveyPackagesEvaluation"
+            controller="survey" action="surveyVendorsEvaluation"
             params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsView']">
         ${message(code: 'surveyEvaluation.participantsView')}
         <ui:bubble float="true" count="${participantsTotal}"/>
@@ -80,7 +80,7 @@
 
     <div id="chartWrapper" style="width:100%; min-height:500px"></div>
 
-    <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyVendors', 'commentOnlyForOwner']}"/>
+    <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyVendor', 'commentOnlyForOwner']}"/>
 
     <laser:render template="evaluationParticipantsView" model="[showCheckboxForParticipantsHasAccess: false,
                                                                 showCheckboxForParticipantsHasNoAccess: false,
