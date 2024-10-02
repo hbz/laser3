@@ -92,6 +92,13 @@
 
         </g:if>
 
+        <g:if test="${parentSuccessorSubscription}">
+            <g:link class="ui button openTransferParticipantsModal" controller="survey" action="openTransferParticipantsModal" params="${[surveyConfigID: surveyConfig.id, id: surveyInfo.id, targetSubscriptionId: parentSuccessorSubscription.id]}">
+                <g:message code="surveyInfo.transferParticipants"/>
+            </g:link>
+            <br>
+        </g:if>
+
         <g:if test="${parentSuccessorSubscription && parentSuccessorSubscription.getDerivedNonHiddenSubscribers().size() > 0}">
             <g:link controller="subscription" action="copyElementsIntoSubscription" id="${parentSubscription.id}"
                     params="[sourceObjectId: genericOIDService.getOID(parentSubscription), targetObjectId: genericOIDService.getOID(parentSuccessorSubscription), isRenewSub: true, fromSurvey: surveyConfig.id]"
@@ -99,11 +106,7 @@
                 <g:message code="renewalEvaluation.newSub.change"/>
             </g:link>
         </g:if>
-        <g:elseif test="${parentSuccessorSubscription}">
-            <g:link class="ui button openTransferParticipantsModal" controller="survey" action="openTransferParticipantsModal" params="${[surveyConfigID: surveyConfig.id, id: surveyInfo.id, targetSubscriptionId: parentSuccessorSubscription.id]}">
-                <g:message code="surveyInfo.transferParticipants"/>
-            </g:link>
-        </g:elseif>
+
         <br>
     </g:if>
 </g:else>
