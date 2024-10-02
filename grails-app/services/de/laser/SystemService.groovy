@@ -29,7 +29,7 @@ class SystemService {
 
     public static final int UA_FLAG_EXPIRED_AFTER_MONTHS = 6
     public static final int UA_FLAG_LOCKED_AFTER_INVALID_ATTEMPTS = 5
-    public static final int UA_FLAG_UNLOCKED_AFTER_HOURS = 1
+    public static final int UA_FLAG_UNLOCKED_AFTER_MINUTES = 30
 
     /**
      * Dumps the state of currently active services
@@ -211,7 +211,7 @@ class SystemService {
 
         User.executeQuery("select u from User u where u.accountLocked = true and u.username != 'anonymous' order by u.username").each{ User usr ->
             LocalDateTime lastUpdated = DateUtils.dateToLocalDateTime(usr.lastUpdated)
-            if (lastUpdated.isBefore(now.minusHours(UA_FLAG_UNLOCKED_AFTER_HOURS))) {
+            if (lastUpdated.isBefore(now.minusMinutes(UA_FLAG_UNLOCKED_AFTER_MINUTES))) {
                 usr.invalidLoginAttempts = 0
                 usr.accountLocked = false
                 usr.save()
@@ -221,7 +221,7 @@ class SystemService {
         }
 
         if (unlockedAccounts) {
-            log.info '--> flagUserAccountsUnlocked after ' + UA_FLAG_UNLOCKED_AFTER_HOURS + ' hours: ' + unlockedAccounts.size()
+            log.info '--> flagUserAccountsUnlocked after ' + UA_FLAG_UNLOCKED_AFTER_MINUTES + ' minutes: ' + unlockedAccounts.size()
             SystemEvent.createEvent('SYSTEM_UA_FLAG_UNLOCKED', [unlocked: unlockedAccounts])
         }
     }
