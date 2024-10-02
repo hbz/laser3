@@ -1,5 +1,6 @@
 <laser:serviceInjection/>
-<ui:modal id="document-preview-${doc.uuid}" text="${doc.title}" hideSubmitButton="true">
+
+<ui:modal id="${modalId}" text="${modalTitle}" hideSubmitButton="true">
 
     <g:if test="${docBase64}">
         <div style="margin-bottom:1em;">
@@ -19,18 +20,20 @@
         </g:if>
     </div>
 
-    <div style="margin-top:1em;">
-        <div class="ui list">
-            <div class="item"> <strong>${message(code:'license.docs.table.fileName')}:</strong> ${doc.filename} </div>
-            <g:if test="${doc.type}">
-                <div class="item"> <strong>${message(code:'license.docs.table.type')}:</strong> ${doc.type.getI10n('value')} </div>
-            </g:if>
-%{--            <div class="item"> <strong>MIME-Typ:</strong> ${doc.mimeType} </div>--}%
-            <g:if test="${doc.confidentiality}">
-                <div class="item"> <strong>${message(code:'template.addDocument.confidentiality')}:</strong> ${doc.confidentiality.getI10n('value')} </div>
-            </g:if>
-            <div class="item"> <strong>${message(code:'license.docs.table.creator')}:</strong> <g:link controller="org" action="show" id="${doc.owner.id}">${doc.owner}</g:link> </div>
+    <g:if test="${doc}">
+        <div style="margin-top:1em;">
+            <div class="ui list">
+                <div class="item"> <strong>${message(code:'license.docs.table.fileName')}:</strong> ${doc.filename} </div>
+                <g:if test="${doc.type}">
+                    <div class="item"> <strong>${message(code:'license.docs.table.type')}:</strong> ${doc.type.getI10n('value')} </div>
+                </g:if>
+    %{--            <div class="item"> <strong>MIME-Typ:</strong> ${doc.mimeType} </div>--}%
+                <g:if test="${doc.confidentiality}">
+                    <div class="item"> <strong>${message(code:'template.addDocument.confidentiality')}:</strong> ${doc.confidentiality.getI10n('value')} </div>
+                </g:if>
+                <div class="item"> <strong>${message(code:'license.docs.table.creator')}:</strong> <g:link controller="org" action="show" id="${doc.owner.id}">${doc.owner}</g:link> </div>
+            </div>
         </div>
-    </div>
+    </g:if>
 
 </ui:modal>

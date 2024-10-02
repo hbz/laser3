@@ -62,8 +62,7 @@
 
                         <g:if test="${! docctx.sharedFrom}">
                         <g:if test="${userService.hasFormalAffiliation(contextService.getUser(), contextService.getOrg(), 'INST_EDITOR')}">
-                            <a onclick="JSPC.app.editNote(${docctx.owner.id});" class="${Btn.MODERN.SIMPLE}" role="button"
-                               aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                            <a onclick="JSPC.app.editNote(${docctx.id});" class="${Btn.MODERN.SIMPLE}" role="button" aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                             </a>
                             <g:link controller="${controllerName}" action="deleteDocuments" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
@@ -76,8 +75,7 @@
                             </g:link>
                         </g:if>
                         <g:else>
-                            <a onclick="JSPC.app.readNote(${docctx.owner.id});" class="${Btn.MODERN.SIMPLE}" role="button"
-                               aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                            <a onclick="JSPC.app.readNote(${docctx.id});" class="${Btn.MODERN.SIMPLE}" role="button" aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="search icon"></i>
                             </a>
                         </g:else>
@@ -89,9 +87,9 @@
     </table>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    JSPC.app.editNote = function (id) {
+    JSPC.app.editNote = function (dctx) {
         $.ajax({
-            url: '<g:createLink controller="ajaxHtml" action="editNote"/>?id='+id,
+            url: '<g:createLink controller="ajaxHtml" action="editNote"/>?dctx=' + dctx,
             success: function(result){
                 $('#dynamicModalContainer').empty();
                 $('#modalEditNote').remove();
@@ -106,9 +104,9 @@
             }
         });
     }
-    JSPC.app.readNote = function (id) {
+    JSPC.app.readNote = function (dctx) {
             $.ajax({
-                url: '<g:createLink controller="ajaxHtml" action="readNote"/>?id='+id,
+                url: '<g:createLink controller="ajaxHtml" action="readNote"/>?dctx=' + dctx,
                 success: function(result){
                     $('#dynamicModalContainer').empty();
                     $('#modalReadNote').remove();

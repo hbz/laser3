@@ -7,11 +7,15 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      02.10.2024  rc-3.4  3.4.10      Andreas Bug         
+
 --      01.10.2024  rc-3.4  3.4.10      Andreas Bug         500er (Teilung durch null)-Fehler bei Cost per Use behoben
 
 5994    01.10.2024  rc-3.4  3.4.10      Andreas Feature     Hinweis auf we:kb-Kontakta im Statistik-Hinweisfeld eingefügt
 
 5987    30.09.2024  rc-3.4  3.4.10      Andreas Bug         falsche Ausgabe der Nutzerzahlen behoben
+
+5967    30.09.2024  dev     3.5         David   Feature     Rechteprüfung: DocstoreController
 
 5971    26.09.2024  dev     3.5         David   Feature     Refactoring: Aufgaben
 

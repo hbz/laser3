@@ -82,7 +82,7 @@
                             %{--ERMS-4524--}%
                             <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />
                             <g:if test="${docctx.isDocAFile() && supportedMimeType}">
-                                <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title}</a>
+                                <a href="#documentPreview" data-dctx="${docctx.id}">${docctx.owner.title}</a>
                             </g:if>
                             <g:else>
                                 ${docctx.owner.title}

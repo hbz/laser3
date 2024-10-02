@@ -490,7 +490,7 @@
                                                        value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                                 <g:if test="${supportedMimeType}">
                                                     <a href="#documentPreview"
-                                                       data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
+                                                       data-dctx="${docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
                                                 </g:if>
                                                 <g:else>
                                                     ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
@@ -836,6 +836,11 @@
                         ${message(code: 'surveyVendors.selectedVendors')}
                     </th>
                 </g:if>
+                <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyVendor')}">
+                    <th>
+                        ${message(code: 'surveyVendors.selectedVendor')}
+                    </th>
+                </g:if>
 
             </g:each>
             <th scope="col" rowspan="2" class="two">${message(code:'default.actions.label')}</th>
@@ -1077,7 +1082,7 @@
                                                        value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                                 <g:if test="${supportedMimeType}">
                                                     <a href="#documentPreview"
-                                                       data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
+                                                       data-dctx="${docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
                                                 </g:if>
                                                 <g:else>
                                                     ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
@@ -1174,6 +1179,18 @@
                                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id, viewTab: 'vendorSurvey', subTab: 'selectVendors']">
                                 ${SurveyVendorResult.countByParticipantAndSurveyConfig(participant, surveyConfig)}
                             </g:link>
+                        </td>
+                    </g:if>
+
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyVendor')}">
+                        <td>
+                            <g:set var="vendorResult" value="${SurveyVendorResult.findByParticipantAndSurveyConfig(participant, surveyConfig)}"/>
+                            <g:if test="${vendorResult}">
+                                <g:link controller="survey" action="evaluationParticipant"
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id, viewTab: 'vendorSurvey', subTab: 'selectVendors']">
+                                    ${vendorResult.vendor.name}
+                                </g:link>
+                            </g:if>
                         </td>
                     </g:if>
 

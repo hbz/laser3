@@ -40,25 +40,20 @@ class DocstoreController  {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     def index() {
-        Doc doc = Doc.findByUuid(params.id)
+        Doc doc = Doc.findByUuidAndContentType(params.id, Doc.CONTENT_TYPE_FILE)
         if (doc) {
             boolean check = false
 
-            DocContext.findAllByOwner(doc).each{dc -> check = check || tmpRefactoringService.hasAccessToDoc(doc, dc) }
+            DocContext.findAllByOwner(doc).each{dctx -> check = check || tmpRefactoringService.hasAccessToDoc(dctx) }  // TODO
             if (check) {
                 String filename = doc.filename ?: messageSource.getMessage('template.documents.missing', null, LocaleUtils.getCurrentLocale())
-
-                switch (doc.contentType) {
-                    case Doc.CONTENT_TYPE_STRING:
-                        break
-                    case Doc.CONTENT_TYPE_FILE:
-                        doc.render(response, filename)
-                        break
-                }
-            } else {
+                doc.render(response, filename)
+            }
+            else {
                 response.sendError(HttpStatus.SC_FORBIDDEN)
             }
-        } else {
+        }
+        else {
             response.sendError(HttpStatus.SC_NOT_FOUND)
         }
     }

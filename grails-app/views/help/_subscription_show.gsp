@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Icon" %>
-<div class="ui wide flyout" id="help-content" style="padding:50px 0 10px 0;overflow:scroll">
+<div class="ui wide flyout" id="help-content">
 
     <h1 class="ui header">Erklärung der Icons</h1>
 

@@ -75,7 +75,7 @@
                             <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
                             <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />
                             <g:if test="${supportedMimeType}">
-                                <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code:'template.documents.missing')}</a>
+                                <a href="#documentPreview" data-dctx="${docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code:'template.documents.missing')}</a>
                             </g:if>
                             <g:else>
                                 ${docctx.owner.title ?: docctx.owner.filename ?: message(code:'template.documents.missing')}
@@ -249,7 +249,7 @@
                             <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
                             <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />
                             <g:if test="${supportedMimeType}">
-                                <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code:'template.documents.missing')}</a>
+                                <a href="#documentPreview" data-dctx="${docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code:'template.documents.missing')}</a>
                             </g:if>
                             <g:else>
                                 ${docctx.owner.title ?: docctx.owner.filename ?: message(code:'template.documents.missing')}

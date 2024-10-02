@@ -27,12 +27,12 @@
                     <div class="ui grid summary">
                         <div class="ten wide column la-column-right-lessPadding">
                             <g:if test="${(docctx.owner.owner?.id == contextService.getOrg().id || docctx.owner.owner == null) && (editable || editable2)}">
-                                <a onclick="JSPC.app.editNote(${docctx.owner.id});" class="la-js-toggle-showThis">
+                                <a onclick="JSPC.app.editNote(${docctx.id});" class="la-js-toggle-showThis">
                                     ${docctx.owner.title ?: message(code:'license.notes.noTitle')}
                                 </a>
                             </g:if>
                             <g:else>
-                                <a onclick="JSPC.app.readNote(${docctx.owner.id});">
+                                <a onclick="JSPC.app.readNote(${docctx.id});">
                                     ${docctx.owner.title ?: message(code:'license.notes.noTitle')}
                                 </a>
                             </g:else>
@@ -119,7 +119,7 @@
 
                         <div class="ui grid summary">
                             <div class="twelve wide column">
-                                <a onclick="JSPC.app.readNote(${docctx.owner.id});">
+                                <a onclick="JSPC.app.readNote(${docctx.id});">
                                     ${docctx.owner.title ?: message(code:'license.notes.noTitle')}
                                 </a>
                                 <br />
@@ -151,9 +151,9 @@
     </g:if>
 
     <laser:script file="${this.getGroovyPageFileName()}">
-        JSPC.app.editNote = function (id) {
+        JSPC.app.editNote = function (dctx) {
             $.ajax({
-                url: '<g:createLink controller="ajaxHtml" action="editNote"/>?id='+id,
+                url: '<g:createLink controller="ajaxHtml" action="editNote"/>?dctx=' + dctx,
                 success: function(result){
                     $('#dynamicModalContainer').empty();
                     $('#modalEditNote').remove();
@@ -168,9 +168,9 @@
                 }
             });
         }
-        JSPC.app.readNote = function (id) {
+        JSPC.app.readNote = function (dctx) {
             $.ajax({
-                url: '<g:createLink controller="ajaxHtml" action="readNote"/>?id='+id,
+                url: '<g:createLink controller="ajaxHtml" action="readNote"/>?dctx=' + dctx,
                 success: function(result){
                     $('#dynamicModalContainer').empty();
                     $('#modalReadNote').remove();

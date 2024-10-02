@@ -9,42 +9,47 @@ class TmpRefactoringService {
     ContextService contextService
     UserService userService
 
-    boolean hasAccessToDoc(Doc doc, DocContext docCtx) {
-
+    boolean hasAccessToDoc(DocContext dctx) {
         // moved from ajaxHtmlController.documentPreview()$checkPermission
         // logic based on /views/templates/documents/card
+        if (!dctx) {
+            return false
+        }
 
         boolean check = false
+
+        Doc doc = dctx.owner
         Org ctxOrg = contextService.getOrg()
 
-        if (docCtx.owner.id != doc.id) {
-            println 'hasAccessToDoc() - docCtx.owner.id != doc.id'
+        if (!doc || doc.contentType != Doc.CONTENT_TYPE_FILE) {
+            return false
         }
-        else if ( doc.owner.id == ctxOrg.id ) {
+
+        if ( doc.owner.id == ctxOrg.id ) {
             check = true
         }
-        else if ( docCtx.shareConf ) {
-            if ( docCtx.shareConf == RDStore.SHARE_CONF_UPLOADER_ORG ) {
+        else if ( dctx.shareConf ) {
+            if ( dctx.shareConf == RDStore.SHARE_CONF_UPLOADER_ORG ) {
                 check = (doc.owner.id == ctxOrg.id)
             }
-            if ( docCtx.shareConf == RDStore.SHARE_CONF_UPLOADER_AND_TARGET ) {
-                check = (doc.owner.id == ctxOrg.id) || (docCtx.targetOrg.id == ctxOrg.id)
+            if ( dctx.shareConf == RDStore.SHARE_CONF_UPLOADER_AND_TARGET ) {
+                check = (doc.owner.id == ctxOrg.id) || (dctx.targetOrg.id == ctxOrg.id)
             }
-            if ( docCtx.shareConf == RDStore.SHARE_CONF_ALL ) {
+            if ( dctx.shareConf == RDStore.SHARE_CONF_ALL ) {
                 // context based restrictions must be applied // todo: problem
                 check = true
             }
         }
-        else if ( docCtx.sharedFrom ) {
-            if (docCtx.license) {
-                docCtx.license.orgRelations.each {
+        else if ( dctx.sharedFrom ) {
+            if (dctx.license) {
+                dctx.license.orgRelations.each {
                     if (it.org.id == ctxOrg.id && it.roleType in [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]) {
                         check = true
                     }
                 }
             }
-            else if (docCtx.subscription) {
-                docCtx.subscription.orgRelations.each {
+            else if (dctx.subscription) {
+                dctx.subscription.orgRelations.each {
                     if (it.org.id == ctxOrg.id && it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER]) {
                         check = true
                     }
@@ -52,8 +57,8 @@ class TmpRefactoringService {
             }
         }
         // survey workaround
-        else if ( docCtx.surveyConfig ) {
-            Map orgIdMap = docCtx.surveyConfig.getSurveyOrgsIDs()
+        else if ( dctx.surveyConfig ) {
+            Map orgIdMap = dctx.surveyConfig.getSurveyOrgsIDs()
             if (ctxOrg.id in orgIdMap.orgsWithSubIDs || ctxOrg.id in orgIdMap.orgsWithoutSubIDs) { // TODO ???
                 check = true
             }
@@ -61,11 +66,39 @@ class TmpRefactoringService {
         return check
     }
 
-    boolean hasAccessToDocNote() {
+    boolean hasAccessToDocNote(DocContext dctx) {
+        if (!dctx) {
+            return false
+        }
+        Doc doc = dctx.owner
+
+        if (!doc || doc.contentType != Doc.CONTENT_TYPE_STRING) {
+            return false
+        }
+//        license:        License,
+//        subscription:   Subscription,
+//        link:           Links,
+//        org:            Org,
+//        surveyConfig:   SurveyConfig,
+//        provider:       Provider,
+//        vendor:         Vendor
+
         return true
     }
 
-    boolean hasAccessToTask() {
+    boolean hasAccessToTask(Task task) {
+        if (!task) {
+            return false
+        }
+
+//        License         license
+//        Org             org
+//        Provider        provider
+//        Vendor          vendor
+//        Subscription    subscription
+//        SurveyConfig    surveyConfig
+//        TitleInstancePackagePlatform tipp
+
         return true
     }
 
