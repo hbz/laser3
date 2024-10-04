@@ -390,9 +390,7 @@ i.icon.la-list-icon{
     -moz-hyphens: auto;
     hyphens: auto;
 }
-.la-hide-context-orgMenu {
-    padding-top: 60px;
-}
+
 .la-show-context-orgMenu {
     padding-top: 105px;
 }
