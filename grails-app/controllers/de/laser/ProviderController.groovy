@@ -513,17 +513,15 @@ class ProviderController {
     /**
      * Call to delete a given document
      * @return the document table view ({@link #documents()})
-     * @see DocstoreService#unifiedDeleteDocuments()
+     * @see DocstoreService#deleteDocument()
      */
     @DebugInfo(isInstEditor_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def deleteDocuments() {
-        log.debug("deleteDocuments ${params}");
-        docstoreService.unifiedDeleteDocuments(params)
-
-        redirect controller: 'provider', action:params.redirectAction, id:params.instanceId /*, fragment: 'docstab' */
+        docstoreService.deleteDocument(params)
+        redirect controller: 'provider', action: params.redirectAction, id: params.instanceId
     }
 
     /**

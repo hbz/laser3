@@ -585,11 +585,8 @@ class LicenseController {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def deleteDocuments() {
-        log.debug("deleteDocuments ${params}")
-
-        docstoreService.unifiedDeleteDocuments(params)
-
-        redirect controller: 'license', action:params.redirectAction, id:params.instanceId /*, fragment:'docstab' */
+        docstoreService.deleteDocument(params)
+        redirect controller: 'license', action: params.redirectAction, id: params.instanceId
     }
 
     /**
