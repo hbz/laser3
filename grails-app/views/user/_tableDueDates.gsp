@@ -75,6 +75,12 @@
                             <g:elseif test="${obj.provider}">
                                 <g:link controller="provider" action="show" id="${obj.provider.id}">${obj.title}</g:link>
                             </g:elseif>
+%{--                            <g:elseif test="${obj.tipp}">--}%
+%{--                                <g:link controller="tipp" action="show" id="${obj.tipp.id}">${obj.tipp}</g:link>--}%
+%{--                            </g:elseif>--}%
+                            <g:else>
+                                <g:link controller="myInstitution" action="tasks" params="${[taskName:obj.title]}">${obj.title}</g:link>
+                            </g:else>
                         </g:elseif>
                         <g:elseif test="${obj instanceof AbstractPropertyWithCalculatedLastUpdated}">
                             <g:if test="${obj.owner instanceof Person}">
@@ -102,7 +108,7 @@
                         </g:else>
                     </div>
                 </td>
-                <td class="x">
+                <td class="center aligned">
                     <g:if test="${false}">
                         <ui:remoteLink class="ui icon  negative button la-modern-button js-open-confirm-modal"
                                           controller="ajax"
@@ -153,7 +159,7 @@
                         </ui:remoteLink>
                     </g:else>
                 </td>
-                <td class="x">
+                <td class="center aligned">
                 <g:if test="${dashDueDate?.dueDateObject.isDone}">
                     <ui:remoteLink class="ui green button la-modern-button la-popup-tooltip la-delay"
                                       data-content="${message(code:'myinst.dash.due_dates.status.pending.tooltip')}"
