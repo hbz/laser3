@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.utils.LocaleUtils; de.laser.utils.SqlDateUtils; de.laser.survey.SurveyInfo; de.laser.Person; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DueDateObject; de.laser.*; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.helper.Icons; de.laser.utils.LocaleUtils; de.laser.utils.SqlDateUtils; de.laser.survey.SurveyInfo; de.laser.Person; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DueDateObject; de.laser.*; de.laser.DashboardDueDate" %>
 <laser:serviceInjection />
 <table class="ui celled table la-js-responsive-table la-table">
     <thead>
@@ -79,7 +79,13 @@
 %{--                                <g:link controller="tipp" action="show" id="${obj.tipp.id}">${obj.tipp}</g:link>--}%
 %{--                            </g:elseif>--}%
                             <g:else>
-                                <g:link controller="myInstitution" action="tasks" params="${[taskName:obj.title]}">${obj.title}</g:link>
+                                <g:if test="${obj.status == RDStore.TASK_STATUS_OPEN}">
+                                    <g:link controller="myInstitution" action="tasks" params="${[taskName:obj.title]}">${obj.title}</g:link>
+                                </g:if>
+                                <g:else>
+                                    <g:link controller="myInstitution" action="tasks" params="${[taskName:obj.title, taskStatus:obj.status.id, ctrlFilterSend:true]}">${obj.title}</g:link>
+                                    &nbsp; (${obj.status.getI10n('value')})
+                                </g:else>
                             </g:else>
                         </g:elseif>
                         <g:elseif test="${obj instanceof AbstractPropertyWithCalculatedLastUpdated}">
