@@ -4,9 +4,9 @@ Diese Informationen finden Sie hier: [https://service-wiki.hbz-nrw.de/display/LA
 
 ### Anleitung zum Hochladen von Beispiel-Vorlagedatei
 
-In LAS:eR gibt es an verschiedenen Orten die Möglichkeit Informationen hochzuladen. Jedoch müssen diese Informationen in einer Upload-Datei richtig formatiert sein. :
+In LAS:eR gibt es an verschiedenen Orten die Möglichkeit Informationen hochzuladen. Jedoch müssen diese Informationen in einer Upload-Datei richtig formatiert sein.
 
-Anleitung zum Hochladen
+[Anleitung zum Hochladen]({{current_server_laser}}/profile/importManuel)
 
 ### Wie kann ich die Rechtschreibprüfung nutzen?
 
