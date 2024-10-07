@@ -132,7 +132,6 @@ class InstitutionsService {
                             title: dctx.owner.title,
                             filename: dctx.owner.filename,
                             mimeType: dctx.owner.mimeType,
-                            migrated: dctx.owner.migrated,
                             server: dctx.owner.server
                     ).save()
 

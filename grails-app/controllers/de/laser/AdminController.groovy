@@ -645,7 +645,6 @@ class AdminController  {
                     title: doc.title,
                     filename: doc.filename,
                     mimeType: doc.mimeType,
-                    migrated: doc.migrated,
                     owner: doc.owner
             )
             result.docsToRecovery = docs

@@ -3,8 +3,10 @@ package de.laser
 import de.laser.annotations.UnstableFeature
 import de.laser.storage.RDStore
 import de.laser.workflow.WfChecklist
+import grails.gorm.transactions.Transactional
 
 @UnstableFeature
+@Transactional
 class AccessService {
 
     static final String CHECK_VIEW = 'CHECK_VIEW'                       // TODO
