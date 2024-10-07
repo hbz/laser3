@@ -326,8 +326,8 @@ class PublicController {
     @Secured(['permitAll'])
     def faq() {
         Map<String, Object> result = [
-                content : ['first', 'second', 'third'], // todo
-                topic   : 'first'
+                content : ['various', 'notifications', 'propertyDefinitions', 'userManagement'], // todo
+                topic   : 'various'
         ]
         if (params.id) {
             result.topic = params.id.toString()
