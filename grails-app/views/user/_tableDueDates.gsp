@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Icons; de.laser.utils.LocaleUtils; de.laser.utils.SqlDateUtils; de.laser.survey.SurveyInfo; de.laser.Person; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DueDateObject; de.laser.*; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.helper.Icons; de.laser.utils.LocaleUtils; de.laser.utils.SqlDateUtils; de.laser.survey.SurveyInfo; de.laser.Person; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DueDateObject; de.laser.*; de.laser.DashboardDueDate" %>
 <laser:serviceInjection />
 <table class="ui celled table la-js-responsive-table la-table">
     <thead>
@@ -75,6 +75,18 @@
                             <g:elseif test="${obj.provider}">
                                 <g:link controller="provider" action="show" id="${obj.provider.id}">${obj.title}</g:link>
                             </g:elseif>
+%{--                            <g:elseif test="${obj.tipp}">--}%
+%{--                                <g:link controller="tipp" action="show" id="${obj.tipp.id}">${obj.tipp}</g:link>--}%
+%{--                            </g:elseif>--}%
+                            <g:else>
+                                <g:if test="${obj.status == RDStore.TASK_STATUS_OPEN}">
+                                    <g:link controller="myInstitution" action="tasks" params="${[taskName:obj.title]}">${obj.title}</g:link>
+                                </g:if>
+                                <g:else>
+                                    <g:link controller="myInstitution" action="tasks" params="${[taskName:obj.title, taskStatus:obj.status.id, ctrlFilterSend:true]}">${obj.title}</g:link>
+                                    &nbsp; (${obj.status.getI10n('value')})
+                                </g:else>
+                            </g:else>
                         </g:elseif>
                         <g:elseif test="${obj instanceof AbstractPropertyWithCalculatedLastUpdated}">
                             <g:if test="${obj.owner instanceof Person}">
@@ -102,7 +114,7 @@
                         </g:else>
                     </div>
                 </td>
-                <td class="x">
+                <td class="center aligned">
                     <g:if test="${false}">
                         <ui:remoteLink class="ui icon  negative button la-modern-button js-open-confirm-modal"
                                           controller="ajax"
@@ -153,7 +165,7 @@
                         </ui:remoteLink>
                     </g:else>
                 </td>
-                <td class="x">
+                <td class="center aligned">
                 <g:if test="${dashDueDate?.dueDateObject.isDone}">
                     <ui:remoteLink class="ui green button la-modern-button la-popup-tooltip la-delay"
                                       data-content="${message(code:'myinst.dash.due_dates.status.pending.tooltip')}"
