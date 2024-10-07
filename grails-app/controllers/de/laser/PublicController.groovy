@@ -326,7 +326,12 @@ class PublicController {
     @Secured(['permitAll'])
     def faq() {
         Map<String, Object> result = [
-                content : ['various', 'notifications', 'propertyDefinitions', 'userManagement'], // todo
+                content : [
+                        'various'               : ['Allgemein', 'General'],
+                        'notifications'         : ['Benachrichtigungen', 'Notifications'],
+                        'propertyDefinitions'   : ['Merkmale', 'Properties'],
+                        'userManagement'        : ['Benutzer-Accounts', 'User accounts'],
+                ], // todo
                 topic   : 'various'
         ]
         if (params.id) {
