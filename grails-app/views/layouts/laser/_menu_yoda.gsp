@@ -97,7 +97,7 @@
 
         <div class="item" role="menuitem" aria-haspopup="true">
             <div class="title">
-                ${message(code:'menu.yoda.stats')}  <i class="dropdown icon"></i>
+                ${message(code:'menu.yoda.stats')} <i class="dropdown icon"></i>
             </div>
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="yoda" action="statsSync">${message(code:'menu.yoda.stats.sync')}</ui:link>
@@ -123,7 +123,7 @@
 
         <div class="item" role="menuitem" aria-haspopup="true">
             <div class="title">
-                ${message(code:'myinst.dash.due_dates.label')} <i class="dropdown icon"></i>
+                <i class="${Icon.DUE_DATE}"></i> ${message(code:'myinst.dash.due_dates.label')} <i class="dropdown icon"></i>
             </div>
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="yoda" action="dueDates_updateDashboardDB">${message(code:'menu.admin.updateDashboardTable')}</ui:link>

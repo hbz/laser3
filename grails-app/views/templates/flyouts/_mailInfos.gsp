@@ -1,5 +1,5 @@
 
-<div id="mailInfosFlyout" class="ui ten wide flyout" style="padding:50px 0 10px 0;overflow:scroll">
+<div id="mailInfosFlyout" class="ui ten wide flyout">
 
 </div>
 

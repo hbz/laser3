@@ -50,7 +50,7 @@ class DocstoreController  {
         if (doc) {
             boolean check = false
 
-            DocContext.findAllByOwner(doc).each{dctx -> check = check || tmpRefactoringService.hasAccessToDoc(dctx) }  // TODO
+            DocContext.findAllByOwner(doc).each{dctx -> check = check || tmpRefactoringService.hasAccessToDocument(dctx) }  // TODO
             if (check) {
                 String filename = doc.filename ?: messageSource.getMessage('template.documents.missing', null, LocaleUtils.getCurrentLocale())
                 doc.render(response, filename)

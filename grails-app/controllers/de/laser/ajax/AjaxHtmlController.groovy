@@ -1241,7 +1241,13 @@ class AjaxHtmlController {
         }
         result.referer = request.getHeader('referer')
 
-        render template: '/templates/workflow/flyout', model: result
+        WfChecklist toCheck = result.clist as WfChecklist
+        if (!tmpRefactoringService.hasAccessToWorkflow(toCheck)) {
+            render template: "/templates/generic_flyout403"
+        }
+        else {
+            render template: '/templates/workflow/flyout', model: result
+        }
     }
 
     /**
@@ -1314,7 +1320,13 @@ class AjaxHtmlController {
             result.info = params.info
         }
 
-        render template: '/templates/workflow/modal', model: result
+        WfChecklist toCheck = result.checklist ? result.checklist as WfChecklist : (result.checkpoint as WfCheckpoint).getChecklist()
+        if (!tmpRefactoringService.hasAccessToWorkflow(toCheck)) {
+            render template: "/templates/generic_modal403"
+        }
+        else {
+            render template: '/templates/workflow/modal', model: result
+        }
     }
 
     // ----- titles -----
@@ -1376,7 +1388,7 @@ class AjaxHtmlController {
             DocContext docCtx = DocContext.findById(params.long('dctx'))
 
             if (docCtx) {
-                if (tmpRefactoringService.hasAccessToDoc(docCtx)) {
+                if (tmpRefactoringService.hasAccessToDocument(docCtx)) {
                     Doc doc = docCtx.owner
 
                     result.docCtx = docCtx
