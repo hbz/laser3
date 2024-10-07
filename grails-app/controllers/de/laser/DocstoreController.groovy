@@ -28,7 +28,13 @@ class DocstoreController  {
     ContextService contextService
     DocstoreControllerService docstoreControllerService
     MessageSource messageSource
-    TmpRefactoringService tmpRefactoringService
+    AccessService accessService
+
+    @Secured(['ROLE_USER'])
+    def index() {
+        redirect(action: 'downloadDocument', params: params)
+//        response.sendError(HttpStatus.SC_FORBIDDEN)
+    }
 
     /**
      * Called by /documents/_table and /documents/_card
@@ -39,12 +45,12 @@ class DocstoreController  {
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
-    def index() {
+    def downloadDocument() {
         Doc doc = Doc.findByUuidAndContentType(params.id, Doc.CONTENT_TYPE_FILE)
         if (doc) {
             boolean check = false
 
-            DocContext.findAllByOwner(doc).each{dctx -> check = check || tmpRefactoringService.hasAccessToDoc(dctx) }  // TODO
+            DocContext.findAllByOwner(doc).each{dctx -> check = check || accessService.hasAccessToDocument(dctx) }  // TODO
             if (check) {
                 String filename = doc.filename ?: messageSource.getMessage('template.documents.missing', null, LocaleUtils.getCurrentLocale())
                 doc.render(response, filename)
@@ -221,5 +227,12 @@ class DocstoreController  {
             flash.error = message(code:'template.documents.edit.error') as String
         }
         redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
+    })
+    def deleteDocument() {
+        // todo
     }
 }

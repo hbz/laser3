@@ -605,7 +605,7 @@ class SubscriptionController {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     def deleteDocuments() {
-        docstoreService.unifiedDeleteDocuments(params)
+        docstoreService.deleteDocument(params)
         redirect controller: 'subscription', action: params.redirectAction, id: params.instanceId, params: [tab: params.redirectTab]
     }
 

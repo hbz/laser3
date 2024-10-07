@@ -59,7 +59,7 @@
                             <g:if test="${(docctx.isDocAFile() && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
                                 <div data-id="${docctx.id}" class="la-element la-min-height">
                                     <label>
-                                        <g:link controller="docstore" id="${docctx.owner.uuid}" target="_blank">
+                                        <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}" target="_blank">
                                             <g:if test="${docctx.owner?.title}">
                                                 ${docctx.owner.title}
                                             </g:if>
@@ -111,7 +111,7 @@
                                     <g:each in="${targetDocuments}" var="docctx">
                                         <g:if test="${(docctx.isDocAFile() && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
                                             <div data-id="${docctx.id}" class="la-element la-min-height">
-                                                <g:link controller="docstore" id="${docctx.owner.uuid}" target="_blank">
+                                                <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}" target="_blank">
                                                     <g:if test="${docctx.owner?.title}">
                                                         ${docctx.owner.title}
                                                     </g:if>

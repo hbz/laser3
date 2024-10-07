@@ -31,26 +31,8 @@ class DocstoreService {
      * </ul>
      * @param params the parameter map, coming from one of the controllers specified in the list above
      */
-    def unifiedDeleteDocuments(params) {
-
-        params.each { p ->
-            if (p.key.startsWith('_deleteflag.') ) {
-                String docctx_to_delete = p.key.substring(12)
-                log.debug("Looking up docctx ${docctx_to_delete} for delete")
-
-                DocContext docctx = DocContext.get(docctx_to_delete)
-                docctx.status = RDStore.DOC_CTX_STATUS_DELETED
-                docctx.save()
-            }
-            if (p.key.startsWith('_deleteflag"@.') ) { // PackageController
-                String docctx_to_delete = p.key.substring(12);
-                log.debug("Looking up docctx ${docctx_to_delete} for delete")
-
-                DocContext docctx = DocContext.get(docctx_to_delete)
-                docctx.status = RDStore.DOC_CTX_STATUS_DELETED
-                docctx.save()
-            }
-        }
+    def deleteDocument(params) {
+        log.debug("deleteDocument: ${params}")
 
         if (params.deleteId) {
             String docctx_to_delete = params.deleteId

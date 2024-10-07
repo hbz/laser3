@@ -1,0 +1,5 @@
+### Ich erhalte nicht die Benachrichtigungen per Mail, die ich benötige. Wie kann ich meine Einstellungen ändern?
+LAS:eR kann den Nutzenden über alle anstehenden Fristen informieren. Voraussetzung ist, dass diese mit einem Datum versehen sind. Unter dem **Benutzerprofil** kann individuell verwaltet werden, welche Art von Nachrichten, wie früh im Voraus, per Mail zugesendet werden.
+
+### Wie kann man als LAS:eR Pro-Nutzer einen Alert für die rechtzeitige Verlängerung einer Lizenz in LAS:eR einstellen?
+Will man x Wochen vor Kündigungsfrist automatisch daran erinnert werden, dass eine Verlängerungsentscheidung ansteht, so müssen zuvor individuelle Kündigungsfristen in den jeweiligen Lizenzen eingetragen und über das **Benutzerprofil** zugehörige Alerts eingestellt werden, die dann zum angegebenen Zeitpunkt als E-Mail-Benachrichtigung und im LAS:eR-Dashboard an die Kündigungsfrist erinnern.
