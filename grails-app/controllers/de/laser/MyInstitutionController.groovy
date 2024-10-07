@@ -32,6 +32,7 @@ import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyLinks
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
+import de.laser.survey.SurveyPackageResult
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.PdfUtils

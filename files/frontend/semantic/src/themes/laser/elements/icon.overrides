@@ -228,12 +228,7 @@ i.icon.la-check-double.slash:before { content: "\e923"; }
   text-transform: none;
 }
 
-// for the audit Icon that remains from the Audit Button in case of
-.la-header-with-icon {
-  .la-clone {
-  vertical-align: super;
-  }
-}
+
 /* Light Grey */
 i.la-light-grey.icon {
   color: #e8e8e8 !important;

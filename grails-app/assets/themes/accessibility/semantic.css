@@ -1645,10 +1645,6 @@ i.icon.la-list-icon:before {
   hyphens: auto;
 }
 
-.la-hide-context-orgMenu {
-  padding-top: 60px;
-}
-
 .la-show-context-orgMenu {
   padding-top: 105px;
 }
@@ -38251,10 +38247,6 @@ i.icon.la-check-double.slash:before {
   font-variant: normal;
   text-decoration: inherit;
   text-transform: none;
-}
-
-.la-header-with-icon .la-clone {
-  vertical-align: super;
 }
 
 /* Light Grey */
