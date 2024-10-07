@@ -11,7 +11,7 @@ import de.laser.GenericOIDService
 import de.laser.HelpService
 import de.laser.PendingChangeService
 import de.laser.AddressbookService
-import de.laser.TmpRefactoringService
+import de.laser.AccessService
 import de.laser.WekbNewsService
 import de.laser.WorkflowService
 import de.laser.cache.EhcacheWrapper
@@ -108,7 +108,7 @@ class AjaxHtmlController {
     SubscriptionService subscriptionService
     SubscriptionControllerService subscriptionControllerService
     TaskService taskService
-    TmpRefactoringService tmpRefactoringService
+    AccessService accessService
     WekbNewsService wekbNewsService
     WorkflowService workflowService
 
@@ -418,7 +418,7 @@ class AjaxHtmlController {
         Map<String, Object> result = [ params: params ]
 
         DocContext dctx = DocContext.findById(params.long('dctx'))
-        if (tmpRefactoringService.hasAccessToDocNote(dctx)) {
+        if (accessService.hasAccessToDocNote(dctx)) {
             result.docContext   = dctx
             result.noteInstance = dctx.owner
             render template: "/templates/notes/modal_edit", model: result
@@ -436,7 +436,7 @@ class AjaxHtmlController {
         Map<String, Object> result = [ params: params ]
 
         DocContext dctx = DocContext.findById(params.long('dctx'))
-        if (tmpRefactoringService.hasAccessToDocNote(dctx)) {
+        if (accessService.hasAccessToDocNote(dctx)) {
             result.docContext   = dctx
             result.noteInstance = dctx.owner
             render template: "/templates/notes/modal_read", model: result
@@ -466,7 +466,7 @@ class AjaxHtmlController {
         Map<String, Object> result = [ params: params ]
         Task task = Task.get(params.id)
 
-        if (tmpRefactoringService.hasAccessToTask(task)) {
+        if (accessService.hasAccessToTask(task)) {
             result.taskInstance = task
             result.contextOrg = contextService.getOrg()
             render template: "/templates/tasks/modal_edit", model: result
@@ -484,7 +484,7 @@ class AjaxHtmlController {
         Map<String, Object> result = [ params: params ]
         Task task = Task.get(params.id)
 
-        if (tmpRefactoringService.hasAccessToTask(task)) {
+        if (accessService.hasAccessToTask(task)) {
             result.taskInstance = task
             result.contextOrg = contextService.getOrg()
             render template: "/templates/tasks/modal_read", model: result
@@ -1242,7 +1242,7 @@ class AjaxHtmlController {
         result.referer = request.getHeader('referer')
 
         WfChecklist toCheck = result.clist as WfChecklist
-        if (!tmpRefactoringService.hasAccessToWorkflow(toCheck)) {
+        if (!accessService.hasAccessToWorkflow(toCheck)) {
             render template: "/templates/generic_flyout403"
         }
         else {
@@ -1321,7 +1321,7 @@ class AjaxHtmlController {
         }
 
         WfChecklist toCheck = result.checklist ? result.checklist as WfChecklist : (result.checkpoint as WfCheckpoint).getChecklist()
-        if (!tmpRefactoringService.hasAccessToWorkflow(toCheck)) {
+        if (!accessService.hasAccessToWorkflow(toCheck)) {
             render template: "/templates/generic_modal403"
         }
         else {
@@ -1388,7 +1388,7 @@ class AjaxHtmlController {
             DocContext docCtx = DocContext.findById(params.long('dctx'))
 
             if (docCtx) {
-                if (tmpRefactoringService.hasAccessToDocument(docCtx)) {
+                if (accessService.hasAccessToDocument(docCtx)) {
                     Doc doc = docCtx.owner
 
                     result.docCtx = docCtx

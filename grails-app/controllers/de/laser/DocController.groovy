@@ -6,7 +6,6 @@ import de.laser.storage.RDStore
 import de.laser.utils.CodeUtils
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
-import org.springframework.dao.DataIntegrityViolationException
 
 /**
  * This controller manages notes for subscriptions, licenses or organisations
@@ -15,7 +14,7 @@ import org.springframework.dao.DataIntegrityViolationException
 class DocController  {
 
 	ContextService contextService
-	TmpRefactoringService tmpRefactoringService
+	AccessService accessService
 
     static allowedMethods = [delete: 'POST']
 
@@ -77,7 +76,7 @@ class DocController  {
 				case 'POST':
 					//					Doc docInstance = Doc.findByIdAndContentType(params.long('id'), Doc.CONTENT_TYPE_STRING)
 					DocContext docContext = DocContext.get(params.long('dctx'))
-					if (! tmpRefactoringService.hasAccessToDocNote(docContext)) {
+					if (! accessService.hasAccessToDocNote(docContext)) {
 						flash.error = message(code: 'default.noPermissions') as String
 						redirect(url: request.getHeader('referer'))
 						return

@@ -28,7 +28,7 @@ class DocstoreController  {
     ContextService contextService
     DocstoreControllerService docstoreControllerService
     MessageSource messageSource
-    TmpRefactoringService tmpRefactoringService
+    AccessService accessService
 
     @Secured(['ROLE_USER'])
     def index() {
@@ -50,7 +50,7 @@ class DocstoreController  {
         if (doc) {
             boolean check = false
 
-            DocContext.findAllByOwner(doc).each{dctx -> check = check || tmpRefactoringService.hasAccessToDocument(dctx) }  // TODO
+            DocContext.findAllByOwner(doc).each{dctx -> check = check || accessService.hasAccessToDocument(dctx) }  // TODO
             if (check) {
                 String filename = doc.filename ?: messageSource.getMessage('template.documents.missing', null, LocaleUtils.getCurrentLocale())
                 doc.render(response, filename)
