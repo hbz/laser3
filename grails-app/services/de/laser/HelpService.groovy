@@ -72,7 +72,8 @@ class HelpService {
 //            renderer.render( document )
         }
         catch (Exception e) {
-            e.getMessage()
+            log.warn 'parseMardown( ' + file + ' ) > ' + e.getMessage()
+            return '...'
         }
     }
 
