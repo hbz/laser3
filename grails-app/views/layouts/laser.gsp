@@ -131,11 +131,12 @@
                                 <div class="menu" role="menu">
                                     <ui:link addItemAttributes="true" controller="profile" action="index">${message(code:'profile.user')}</ui:link>
                                     <ui:link addItemAttributes="true" controller="profile" action="help">${message(code:'menu.user.help')}</ui:link>
-                                    <ui:link addItemAttributes="true" controller="profile" action="dsgvo">${message(code:'privacyNotice')}</ui:link>
+                                    <ui:link addItemAttributes="true" controller="public" action="faq">${message(code:'menu.user.faq')}</ui:link>
 
                                     <ui:link addItemAttributes="true" controller="public" action="releaseNotes">
                                         ${message(code:'releaseNotes')} (${AppUtils.getMeta('info.app.version')})
                                     </ui:link>
+                                    <ui:link addItemAttributes="true" controller="profile" action="dsgvo">${message(code:'privacyNotice')}</ui:link>
 
                                     <div class="divider"></div>
                                     <ui:link class="la-highlightedMenueItem" addItemAttributes="true" controller="public" action="licensingModel"><i class="smile outline icon"></i>${message(code:'menu.user.licensingModel')}</ui:link>

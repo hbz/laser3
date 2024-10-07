@@ -324,6 +324,18 @@ class PublicController {
     }
 
     @Secured(['permitAll'])
+    def faq() {
+        Map<String, Object> result = [
+                content : ['first', 'second', 'third'], // todo
+                topic   : 'first'
+        ]
+        if (params.id) {
+            result.topic = params.id.toString()
+        }
+        result
+    }
+
+    @Secured(['permitAll'])
     def releaseNotes() {
         Map<String, Object> result = [
                 history : ['3.2', '3.3', '3.4'] // todo
