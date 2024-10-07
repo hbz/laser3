@@ -11,6 +11,9 @@ class MarkdownTagLib {
         if (attrs.file) {
             out <<  helpService.parseMarkdown( attrs.file )
         }
+        else if (attrs.faq) {
+            out <<  helpService.parseMarkdown( 'faq/' + attrs.faq + '.md' )
+        }
         else if (attrs.help) {
             out <<  helpService.parseMarkdown( 'help/' + attrs.help + '.md' )
         }
