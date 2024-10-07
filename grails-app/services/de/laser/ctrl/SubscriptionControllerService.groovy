@@ -75,7 +75,7 @@ class SubscriptionControllerService {
 
     AddressbookService addressbookService
     AuditService auditService
-    BatchUpdateService batchUpdateService
+    BatchQueryService batchQueryService
     ContextService contextService
     DocstoreService docstoreService
     FactService factService
@@ -2897,7 +2897,7 @@ class SubscriptionControllerService {
                             Sql sql = GlobalService.obtainSqlConnection()
                             childSubIds.each { Long childSubId ->
                                 pkgIds.each { Long pkgId ->
-                                    batchUpdateService.bulkAddHolding(sql, childSubId, pkgId, result.subscription.hasPerpetualAccess, result.subscription.id)
+                                    batchQueryService.bulkAddHolding(sql, childSubId, pkgId, result.subscription.hasPerpetualAccess, result.subscription.id)
                                 }
                             }
                             sql.close()

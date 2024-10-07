@@ -1925,7 +1925,7 @@ class FilterService {
         }
         String arguments = queryArgs.join(' and ')
         result.queryParams = queryParams
-        result.query = query+" ${arguments}"
+        result.query = query+" ${arguments} order by tipp.sortname"
         result
     }
 

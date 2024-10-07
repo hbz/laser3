@@ -42,6 +42,7 @@ import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
 import org.springframework.web.multipart.MultipartFile
 
+import java.math.RoundingMode
 import java.sql.Connection
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
@@ -53,7 +54,7 @@ import java.util.regex.Pattern
 class SubscriptionService {
 
     AuditService auditService
-    BatchUpdateService batchUpdateService
+    BatchQueryService batchQueryService
     CacheService cacheService
     ComparisonService comparisonService
     ContextService contextService
@@ -64,6 +65,7 @@ class SubscriptionService {
     GenericOIDService genericOIDService
     GlobalService globalService
     GokbService gokbService
+    IssueEntitlementService issueEntitlementService
     LinksGenerationService linksGenerationService
     MessageSource messageSource
     PropertyService propertyService
@@ -1014,7 +1016,7 @@ class SubscriptionService {
         */
         if ( createEntitlements ) {
             //List packageTitles = sql.rows("select * from title_instance_package_platform where tipp_pkg_fk = :pkgId and tipp_status_rv_fk = :current", [pkgId: pkg.id, current: RDStore.TIPP_STATUS_CURRENT.id])
-            batchUpdateService.bulkAddHolding(sql, subscription.id, pkg.id, subscription.hasPerpetualAccess)
+            batchQueryService.bulkAddHolding(sql, subscription.id, pkg.id, subscription.hasPerpetualAccess)
         }
     }
 
@@ -1088,7 +1090,7 @@ class SubscriptionService {
         sql.executeInsert('insert into subscription_package (sp_version, sp_pkg_fk, sp_sub_fk, sp_date_created, sp_last_updated) values (0, :pkgId, :subId, now(), now()) on conflict on constraint sub_package_unique do nothing', [pkgId: pkg.id, subId: target.id])
         //List consortiumHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where tipp_pkg_fk = :pkgId and ie_subscription_fk = :consortium and ie_status_rv_fk = :current", [pkgId: pkg.id, consortium: consortia.id, current: RDStore.TIPP_STATUS_CURRENT.id])
         if(withEntitlements)
-            batchUpdateService.bulkAddHolding(sql, target.id, pkg.id, target.hasPerpetualAccess, consortia.id)
+            batchQueryService.bulkAddHolding(sql, target.id, pkg.id, target.hasPerpetualAccess, consortia.id)
         /*
         List<SubscriptionPackage> dupe = SubscriptionPackage.executeQuery(
                 "from SubscriptionPackage where subscription = :sub and pkg = :pkg", [sub: target, pkg: pkg])
@@ -1641,101 +1643,51 @@ class SubscriptionService {
             SwissKnife.setPaginationParams(result, params, (User) result.user)
             result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
             result.surveyInfo = result.surveyConfig.surveyInfo
-            Map ttParams = FilterLogic.resolveTabAndStatusForRenewalTabsMenu(params)
-            if (ttParams.tab)    { params.tab = ttParams.tab }
-            if (ttParams.subTab) { params.subTab = ttParams.subTab }
-            if (ttParams.status) { params.status = ttParams.status }
-            [result: result, status: SubscriptionControllerService.STATUS_OK]
-        }
-        /*
-
-
-        else {
-
-            Subscription previousSubscription = result.subscription._getCalculatedPreviousForSurvey()
-            Subscription baseSub = result.surveyConfig.subscription ?: subscriberSub.instanceOf
             result.subscriber = result.subscription.getSubscriberRespConsortia()
-
-            IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
-            result.titleGroupID = issueEntitlementGroup ? issueEntitlementGroup.id.toString() : null
-            result.titleGroup = issueEntitlementGroup
-
-            params.tab = params.tab ?: 'allTipps'
-
-            result.preselectValues = params.preselectValues == 'on'
-
-            //result.subscriptionIDs = []
-
-            Set<Subscription> subscriptions = []
-            if(result.surveyConfig.pickAndChoosePerpetualAccess) {
-                subscriptions = linksGenerationService.getSuccessionChain(subscriberSub, 'sourceSubscription')
-                //subscriptions << subscriberSub
-                //result.subscriptionIDs = surveyService.subscriptionsOfOrg(result.subscriber)
-            }
-            else {
-                //subscriptions << previousSubscription
-                subscriptions << subscriberSub
-
-            }
-
-            if(!params.exportForImport) {
-                result.preselectValues = params.preselectValues == 'on'
-
-                //result.subscriptionIDs = []
-
-                result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
-                //result.showStatisticByParticipant = surveyService.showStatisticByParticipant(result.surveyConfig.subscription, result.subscriber)
-
-                result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(subscriberSub, result.surveyConfig)
-                result.countAllTipps = baseSub.packages ? TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.status = :status and pkg in (:pkgs)", [pkgs: baseSub.packages.pkg, status: RDStore.TIPP_STATUS_CURRENT])[0] : 0
-
-
-                if (result.editable) {
-                    EhcacheWrapper userCache = contextService.getUserCache("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}")
-                    Map<String, Object> checkedCache = userCache.get('selectedTitles')
-
-                    if (!checkedCache || !params.containsKey('pagination')) {
-                        checkedCache = ["checked": [:]]
+            Map rtParams = FilterLogic.resolveTabAndStatusForRenewalTabsMenu(params)
+            if (rtParams.tab)    { params.tab = rtParams.tab }
+            if (rtParams.subTab) { params.subTab = rtParams.subTab }
+            if (rtParams.status) { params.status = rtParams.status }
+            Map<String, Object> configMap = params.clone()
+            Subscription baseSub = result.surveyConfig.subscription ?: result.subscription.instanceOf
+            result.baseSub = baseSub
+            configMap.packages = baseSub.packages.pkg
+            result.packageInstance = baseSub.packages.pkg[0] //there was an if check about baseSub.pack
+            Map<String, Object> parameterGenerics = issueEntitlementService.getParameterGenerics(configMap)
+            Map<String, Object> titleConfigMap = parameterGenerics.titleConfigMap,
+                                identifierConfigMap = parameterGenerics.identifierConfigMap,
+                                issueEntitlementConfigMap = parameterGenerics.issueEntitlementConfigMap
+            //build up title data
+            switch(params.tab) {
+                case 'allTipps':
+                    Map<String, Object> query = filterService.getTippSubsetQuery(titleConfigMap)
+                    Set<Long> tippIds = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+                    if(configMap.identifier) {
+                        identifierConfigMap.identifier = "%${configMap.identifier.toLowerCase()}%"
+                        Set<Long> identifierMatches = TitleInstancePackagePlatform.executeQuery('select tipp.id from Identifier id join id.tipp tipp where tipp.pkg in (:packages) and lower(id.value) like :identifier and id.ns.ns in (:titleNS)', identifierConfigMap)
+                        tippIds = tippIds.intersect(identifierMatches)
                     }
-
-                    result.checkedCache = checkedCache.get('checked')
-                    result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
-
-                    result.allChecked = ""
-                    if (params.tab == 'allTipps' && result.countAllTipps > 0 && result.countAllTipps == result.checkedCount) {
-                        result.allChecked = "checked"
-                    }
-                    if (params.tab == 'selectedIEs' && result.countSelectedIEs > 0 && result.countSelectedIEs == result.checkedCount) {
-                        result.allChecked = "checked"
-                    }
-                }
-
-                if (params.hasPerpetualAccess) {
-                    params.hasPerpetualAccessBySubs = subscriptions
-                }
-
-                List<Long> sourceIEs = []
+                    String mainQry = "select pi_tipp_fk, pi_list_price, row_number() over (partition by pi_tipp_fk order by pi_date_created desc) as rn, count(*) over (partition by pi_tipp_fk) as cn from price_item where pi_list_price is not null and pi_list_currency_rv_fk = :currency and pi_tipp_fk = any(:tippIDs)"
+                    List eurCheck = batchQueryService.longArrayQuery("select sum(pi.pi_list_price) as list_price_eur from (${mainQry}) as pi where pi.rn = 1", [currency: RDStore.CURRENCY_EUR.id], [tippIDs: tippIds]),
+                    usdCheck = batchQueryService.longArrayQuery("select sum(pi.pi_list_price) as list_price_usd from (${mainQry}) as pi where pi.rn = 1", [currency: RDStore.CURRENCY_USD.id], [tippIDs: tippIds]),
+                    gbpCheck = batchQueryService.longArrayQuery("select sum(pi.pi_list_price) as list_price_gbp from (${mainQry}) as pi where pi.rn = 1", [currency: RDStore.CURRENCY_GBP.id], [tippIDs: tippIds])
+                    BigDecimal listPriceSumEUR = eurCheck[0]['list_price_eur']
+                    BigDecimal listPriceSumUSD = usdCheck[0]['list_price_usd']
+                    BigDecimal listPriceSumGBP = gbpCheck[0]['list_price_gbp']
+                    result.tippsListPriceSumEUR = listPriceSumEUR
+                    result.tippsListPriceSumUSD = listPriceSumUSD
+                    result.tippsListPriceSumGBP = listPriceSumGBP
+                    result.titlesList = TitleInstancePackagePlatform.findAllByIdInList(tippIds.drop(result.offset).take(result.max), [sort: params.sort, order: params.order])
+                    result.num_rows = tippIds.size()
+                    break
+                /*
                 if (params.tab == 'allTipps') {
                     params.status = [RDStore.TIPP_STATUS_CURRENT.id]
                     params.sort = params.sort ?: 'tipp.sortname'
                     params.order = params.order ?: 'asc'
                     Map<String, Object> query = filterService.getTippQuery(params, baseSub.packages.pkg)
-                    result.filterSet = query.filterSet
                     List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
 
-                    //sql bridge
-                    Sql sql = GlobalService.obtainSqlConnection()
-                    String mainQry = "select pi_tipp_fk, pi_list_price, row_number() over (partition by pi_tipp_fk order by pi_date_created desc) as rn, count(*) over (partition by pi_tipp_fk) as cn from price_item where pi_list_price is not null and pi_list_currency_rv_fk = :currency and pi_tipp_fk = any(:tippIDs)"
-                    result.tippsListPriceSumEUR = sql.rows('select sum(pi.pi_list_price) as list_price_eur from (' +
-                            mainQry +
-                            ') as pi where pi.rn = 1', [currency: RDStore.CURRENCY_EUR.id, tippIDs: sql.getDataSource().getConnection().createArrayOf('bigint', titlesList as Object[])])[0]['list_price_eur']
-                    result.tippsListPriceSumUSD = sql.rows('select sum(pi.pi_list_price) as list_price_usd from (' +
-                            mainQry +
-                            ') as pi where pi.rn = 1', [currency: RDStore.CURRENCY_USD.id, tippIDs: sql.getDataSource().getConnection().createArrayOf('bigint', titlesList as Object[])])[0]['list_price_usd']
-                    result.tippsListPriceSumGBP = sql.rows('select sum(pi.pi_list_price) as list_price_gbp from (' +
-                            mainQry +
-                            ') as pi where pi.rn = 1', [currency: RDStore.CURRENCY_GBP.id, tippIDs: sql.getDataSource().getConnection().createArrayOf('bigint', titlesList as Object[])])[0]['list_price_gbp']
-                    sql.close()
 
                     result.tippsListPriceSumEUR = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
                             'where p.listPrice is not null and p.listCurrency = :currency and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [currency: RDStore.CURRENCY_EUR, tiStatus: RDStore.TIPP_STATUS_CURRENT.id] + query.queryParams)[0] ?: 0
@@ -1873,6 +1825,73 @@ class SubscriptionService {
                             'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_GBP, ieIDs: sourceIEs])[0] ?: 0
 
                 }
+                 */
+            }
+            [result: result, status: SubscriptionControllerService.STATUS_OK]
+        }
+        /*
+
+
+        else {
+            IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
+            result.titleGroupID = issueEntitlementGroup ? issueEntitlementGroup.id : null
+            result.titleGroup = issueEntitlementGroup
+            result.preselectValues = params.preselectValues == 'on'
+
+            Subscription previousSubscription = result.subscription._getCalculatedPreviousForSurvey()
+            result.subscriber = result.subscription.getSubscriberRespConsortia()
+
+            //result.subscriptionIDs = []
+
+            Set<Subscription> subscriptions = []
+            if(result.surveyConfig.pickAndChoosePerpetualAccess) {
+                subscriptions = linksGenerationService.getSuccessionChain(subscriberSub, 'sourceSubscription')
+                //subscriptions << subscriberSub
+                //result.subscriptionIDs = surveyService.subscriptionsOfOrg(result.subscriber)
+            }
+            else {
+                //subscriptions << previousSubscription
+                subscriptions << subscriberSub
+
+            }
+
+            if(!params.exportForImport) {
+                result.preselectValues = params.preselectValues == 'on'
+
+                //result.subscriptionIDs = []
+
+                result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
+                //result.showStatisticByParticipant = surveyService.showStatisticByParticipant(result.surveyConfig.subscription, result.subscriber)
+
+                result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(subscriberSub, result.surveyConfig)
+                result.countAllTipps = baseSub.packages ? TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.status = :status and pkg in (:pkgs)", [pkgs: baseSub.packages.pkg, status: RDStore.TIPP_STATUS_CURRENT])[0] : 0
+
+
+                if (result.editable) {
+                    EhcacheWrapper userCache = contextService.getUserCache("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}")
+                    Map<String, Object> checkedCache = userCache.get('selectedTitles')
+
+                    if (!checkedCache || !params.containsKey('pagination')) {
+                        checkedCache = ["checked": [:]]
+                    }
+
+                    result.checkedCache = checkedCache.get('checked')
+                    result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
+
+                    result.allChecked = ""
+                    if (params.tab == 'allTipps' && result.countAllTipps > 0 && result.countAllTipps == result.checkedCount) {
+                        result.allChecked = "checked"
+                    }
+                    if (params.tab == 'selectedIEs' && result.countSelectedIEs > 0 && result.countSelectedIEs == result.checkedCount) {
+                        result.allChecked = "checked"
+                    }
+                }
+
+                if (params.hasPerpetualAccess) {
+                    params.hasPerpetualAccessBySubs = subscriptions
+                }
+
+                List<Long> sourceIEs = []
 
 
                 <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">

@@ -12,7 +12,7 @@
         <ui:crumb controller="myInstitution" action="surveyInfos"
                      params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]" message="issueEntitlementsSurvey.label"/>
     </g:else>
-    <ui:crumb controller="subscription" action="index" id="${subscriberSub.id}" class="active" text="${subscriberSub.name}"/>
+    <ui:crumb controller="subscription" action="index" id="${subscription.id}" class="active" text="${subscription.name}"/>
 </ui:breadcrumbs>
 
 <ui:controlButtons>
@@ -22,7 +22,7 @@
 
         <ui:exportDropdownItem>
             <g:link class="item kbartExport" action="renewEntitlementsWithSurvey"
-                    id="${subscriberSub.id}"
+                    id="${subscription.id}"
                     params="${[surveyConfigID: surveyConfig.id,
                                exportKBart   : true,
                                tab           : 'allTipps']}">${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}</g:link>
@@ -30,7 +30,7 @@
 
         <ui:exportDropdownItem>
             <g:link class="item kbartExport" action="renewEntitlementsWithSurvey"
-                    id="${subscriberSub.id}"
+                    id="${subscription.id}"
                     params="${[surveyConfigID: surveyConfig.id,
                                exportKBart   : true,
                                tab           : 'selectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}</g:link>
@@ -40,7 +40,7 @@
 
             <ui:exportDropdownItem>
                 <g:link class="item kbartExport" action="renewEntitlementsWithSurvey"
-                        id="${subscriberSub.id}"
+                        id="${subscription.id}"
                         params="${[surveyConfigID: surveyConfig.id,
                                    exportKBart   : true,
                                    tab           : 'currentPerpetualAccessIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentTitles')}</g:link>
@@ -53,7 +53,7 @@
 
         <ui:exportDropdownItem>
             <g:link class="item" action="renewEntitlementsWithSurvey"
-                    id="${subscriberSub.id}"
+                    id="${subscription.id}"
                     params="${[surveyConfigID: surveyConfig.id,
                                exportXLS     : true,
                                tab           : 'allTipps']}">${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}</g:link>
@@ -61,7 +61,7 @@
 
         <ui:exportDropdownItem>
             <g:link class="item" action="renewEntitlementsWithSurvey"
-                    id="${subscriberSub.id}"
+                    id="${subscription.id}"
                     params="${[surveyConfigID: surveyConfig.id,
                                exportXLS   : true,
                                tab           : 'selectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}</g:link>
@@ -70,7 +70,7 @@
         <g:if test="${countCurrentPermanentTitles > 0}">
             <ui:exportDropdownItem>
                 <g:link class="item" action="renewEntitlementsWithSurvey"
-                        id="${subscriberSub.id}"
+                        id="${subscription.id}"
                         params="${[surveyConfigID : surveyConfig.id,
                                    exportXLS     : true,
                                    tab           : 'currentPerpetualAccessIEs']}">
@@ -160,7 +160,7 @@
 <g:if test="${selectProcess}">
     <ui:msg class="success" header="${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.label')}">
             <g:message code="renewEntitlementsWithSurvey.issueEntitlementSelect.selectProcess"
-                       args="[selectProcess.processCount, selectProcess.processRows, selectProcess.countSelectTipps, selectProcess.countNotSelectTipps, g.createLink(controller: 'subscription', action: 'renewEntitlementsWithSurvey', params: [id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'selectedIEs'])]"/>
+                       args="[selectProcess.processCount, selectProcess.processRows, selectProcess.countSelectTipps, selectProcess.countNotSelectTipps, g.createLink(controller: 'subscription', action: 'renewEntitlementsWithSurvey', params: [id: subscription.id, surveyConfigID: surveyConfig.id, tab: 'selectedIEs'])]"/>
     </ui:msg>
 </g:if>
 
@@ -178,16 +178,16 @@
 
     <ui:tabs actionName="${actionName}">
     <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
-                    params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'allTipps']"
+                    params="[id: subscription.id, surveyConfigID: surveyConfig.id, tab: 'allTipps']"
                     text="${message(code: "renewEntitlementsWithSurvey.selectableTitles")}" tab="allTipps"
                     counts="${countAllTipps}"/>
     <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
-                    params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'selectedIEs']"
+                    params="[id: subscription.id, surveyConfigID: surveyConfig.id, tab: 'selectedIEs']"
                     text="${message(code: "renewEntitlementsWithSurvey.currentTitlesSelect")}" tab="selectedIEs"
                     counts="${countSelectedIEs}"/>
     <g:link controller="subscription" action="renewEntitlementsWithSurvey"
             class="item ${'currentPerpetualAccessIEs' == params.tab ? 'active' : ''}"
-            params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'currentPerpetualAccessIEs']">
+            params="[id: subscription.id, surveyConfigID: surveyConfig.id, tab: 'currentPerpetualAccessIEs']">
         <g:message code="renewEntitlementsWithSurvey.currentTitles"/>
             <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                   data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitles.mouseover')}">
@@ -202,23 +202,23 @@
     <g:if test="${(params.tab == 'selectedIEs' && titleGroup)}">
         <ui:tabs actionName="${actionName}">
             <ui:tabsItem controller="subscription" action="${actionName}"
-                         params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: params.tab, subTab: 'currentIEs']"
+                         params="[id: subscription.id, surveyConfigID: surveyConfig.id, tab: params.tab, subTab: 'currentIEs']"
                          text="${message(code: "package.show.nav.current")}" tab="currentIEs" subTab="currentIEs"
                          counts="${currentIECounts}"/>
             <ui:tabsItem controller="subscription" action="${actionName}"
-                         params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: params.tab, subTab: 'plannedIEs']"
+                         params="[id: subscription.id, surveyConfigID: surveyConfig.id, tab: params.tab, subTab: 'plannedIEs']"
                          text="${message(code: "package.show.nav.planned")}" tab="plannedIEs" subTab="plannedIEs"
                          counts="${plannedIECounts}"/>
             <ui:tabsItem controller="subscription" action="${actionName}"
-                         params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: params.tab, subTab: 'expiredIEs']"
+                         params="[id: subscription.id, surveyConfigID: surveyConfig.id, tab: params.tab, subTab: 'expiredIEs']"
                          text="${message(code: "package.show.nav.expired")}" tab="expiredIEs" subTab="expiredIEs"
                          counts="${expiredIECounts}"/>
             <ui:tabsItem controller="subscription" action="${actionName}"
-                         params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: params.tab, subTab: 'deletedIEs']"
+                         params="[id: subscription.id, surveyConfigID: surveyConfig.id, tab: params.tab, subTab: 'deletedIEs']"
                          text="${message(code: "package.show.nav.deleted")}" tab="deletedIEs" subTab="deletedIEs"
                          counts="${deletedIECounts}"/>
             <ui:tabsItem controller="subscription" action="${actionName}"
-                         params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: params.tab, subTab: 'allIEs']"
+                         params="[id: subscription.id, surveyConfigID: surveyConfig.id, tab: params.tab, subTab: 'allIEs']"
                          text="${message(code: "menu.public.all_titles")}" tab="allIEs" subTab="allIEs"
                          counts="${allIECounts}"/>
         </ui:tabs>
@@ -226,7 +226,7 @@
     </g:if>
 
 
-    <g:form name="renewEntitlements" id="${subscriberSub.id}" action="processRenewEntitlementsWithSurvey" class="ui form">
+    <g:form name="renewEntitlements" id="${subscription.id}" action="processRenewEntitlementsWithSurvey" class="ui form">
         <g:hiddenField id="packageId" name="packageId" value="${params.packageId}"/>
         <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
         <g:hiddenField name="tab" value="${params.tab}"/>
@@ -347,15 +347,15 @@
             $.ajax({
                 url: "<g:createLink controller="ajax" action="updateChecked" />",
                 data: {
-                    sub: "${subscriberSub.id}?${params.tab}",
+                    sub: "${subscription.id}?${params.tab}",
                     index: index,
                     filterParams: JSON.stringify(filterParams),
                     referer: "${actionName}",
                     checked: checked,
                     tab: "${params.tab}",
                     subTab: "${params.subTab}",
-                    baseSubID: "${parentSubscription.id}",
-                    newSubID: "${subscriberSub.id}",
+                    baseSubID: "${baseSub.id}",
+                    newSubID: "${subscription.id}",
                     surveyConfigID: "${surveyConfig.id}"
 
                 },
