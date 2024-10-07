@@ -32,7 +32,6 @@ class Doc {
   Date lastUpdated
   Org owner         //the context org of the user uploading a document
   String server
-  String migrated
 
   static mapping = {
                 id column:'doc_id'
@@ -43,7 +42,6 @@ class Doc {
               uuid column:'doc_docstore_uuid',  index:'doc_uuid_idx'
              title column:'doc_title'
           filename column:'doc_filename'
-          migrated column:'doc_migrated'
            content column:'doc_content', type:'text'
           mimeType column:'doc_mime_type'
              owner column:'doc_owner_fk',       index:'doc_owner_idx'
@@ -63,7 +61,6 @@ class Doc {
     mimeType  (nullable:true, blank:false)
     owner     (nullable:true)
     server    (nullable:true, blank:false)
-    migrated  (nullable:true, blank:false, maxSize:1)
   }
 
     /**

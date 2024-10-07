@@ -1218,7 +1218,6 @@ class SurveyService {
                             title: dctx.owner.title,
                             filename: dctx.owner.filename,
                             mimeType: dctx.owner.mimeType,
-                            migrated: dctx.owner.migrated,
                             owner: dctx.owner.owner,
                             server: dctx.owner.server
                     ).save()
@@ -1245,7 +1244,6 @@ class SurveyService {
                             title: dctx.owner.title,
                             filename: dctx.owner.filename,
                             mimeType: dctx.owner.mimeType,
-                            migrated: dctx.owner.migrated
                     ).save()
                     new DocContext(
                             owner: clonedContents,

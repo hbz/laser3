@@ -1146,8 +1146,7 @@ class CopyElementsService {
         targetObject.documents.each {
             if (toDeleteAnnouncements.contains(it.id) && it.isDocANote()) {
                 Map params = [deleteId: it.id]
-                log.debug("deleteDocuments ${params}");
-                docstoreService.unifiedDeleteDocuments(params)
+                docstoreService.deleteDocument(params)
             }
         }
     }

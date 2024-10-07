@@ -95,7 +95,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
         globalUID      (nullable: true, blank: false, unique:true, maxSize:255)
 
         notes          (nullable:true)
-        status         (nullable:true)
         accessStartDate(nullable:true)
         accessEndDate  (nullable:true)
 

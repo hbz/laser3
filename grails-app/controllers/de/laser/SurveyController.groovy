@@ -1686,8 +1686,7 @@ class SurveyController {
             }
         }
         if(result.editable) {
-
-            docstoreService.unifiedDeleteDocuments(params)
+            docstoreService.deleteDocument(params)
         }
 
         redirect(uri: request.getHeader('referer'))

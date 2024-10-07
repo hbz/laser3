@@ -107,9 +107,6 @@ class NavigationTagLib {
         if (attrs.id != null) {
             linkTagAttrs.id = attrs.id
         }
-        if (attrs.fragment != null) {
-            linkTagAttrs.fragment = attrs.fragment
-        }
         linkTagAttrs.params = linkParams
 
         Map prevMap = [title: (attrs.prev ?: messageSource.getMessage('default.paginate.prev', null, null, locale))]

@@ -97,4 +97,8 @@ databaseChangeLog = {
             rollback {}
         }
     }
+
+    changeSet(author: "klober (generated)", id: "1727092155564-18") {
+        dropColumn(columnName: "doc_migrated", tableName: "doc")
+    }
 }
