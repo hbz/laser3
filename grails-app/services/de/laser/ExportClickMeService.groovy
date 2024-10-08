@@ -1986,7 +1986,7 @@ class ExportClickMeService {
         }*/
 
         if(surveyConfig.vendorSurvey){
-            exportFields.put("vendorSurvey", [field: null, label: "${messageSource.getMessage('surveyconfig.vendorSurvey.label', null, locale)}", defaultChecked: 'true', separateSheet: 'true'])
+            exportFields.put("vendorSurvey", [field: null, label: "${messageSource.getMessage('surveyconfig.vendorSurvey.label', null, locale)}", defaultChecked: 'true'])
         }
         if(surveyConfig.packageSurvey){
             exportFields.put("packageSurvey", [field: null, label: "${messageSource.getMessage('surveyconfig.packageSurvey.label', null, locale)}", defaultChecked: 'true', separateSheet: 'true'])
@@ -2072,7 +2072,7 @@ class ExportClickMeService {
         }*/
 
         if(surveyConfig.vendorSurvey){
-            fields.survey.fields << ["vendorSurvey": [field: null, label: "${messageSource.getMessage('surveyconfig.vendorSurvey.label', null, locale)}", defaultChecked: 'true', separateSheet: 'true']]
+            fields.survey.fields << ["vendorSurvey": [field: null, label: "${messageSource.getMessage('surveyconfig.vendorSurvey.label', null, locale)}", defaultChecked: 'true']]
         }else {
             if(fields.survey.fields.containsKey('vendorSurvey')) {
                 fields.survey.fields.remove('vendorSurvey')
@@ -3495,7 +3495,7 @@ class ExportClickMeService {
         }
 
         if(surveyConfig.vendorSurvey){
-            exportFields.put("vendorSurvey", [field: null, label: "${messageSource.getMessage('surveyconfig.vendorSurvey.label', null, locale)}", defaultChecked: 'true', separateSheet: 'true'])
+            exportFields.put("vendorSurvey", [field: null, label: "${messageSource.getMessage('surveyconfig.vendorSurvey.label', null, locale)}", defaultChecked: 'true'])
         }
         if(surveyConfig.packageSurvey){
             exportFields.put("packageSurvey", [field: null, label: "${messageSource.getMessage('surveyconfig.packageSurvey.label', null, locale)}", defaultChecked: 'true', separateSheet: 'true'])
@@ -3570,7 +3570,7 @@ class ExportClickMeService {
         }
 
         if(surveyConfig.vendorSurvey){
-            fields.survey.fields << ["vendorSurvey": [field: null, label: "${messageSource.getMessage('surveyconfig.vendorSurvey.label', null, locale)}", defaultChecked: 'true', separateSheet: 'true']]
+            fields.survey.fields << ["vendorSurvey": [field: null, label: "${messageSource.getMessage('surveyconfig.vendorSurvey.label', null, locale)}", defaultChecked: 'true']]
         }else {
             if(fields.survey.fields.containsKey('vendorSurvey')) {
                 fields.survey.fields.remove('vendorSurvey')
@@ -5247,6 +5247,18 @@ class ExportClickMeService {
                     }
                     row.add(createTableCell(format, ownerComment))
                 }
+                else if (fieldKey == 'vendorSurvey') {
+                    SurveyVendorResult surveyVendorResult = SurveyVendorResult.findBySurveyConfigAndParticipant(participantResult.surveyConfig, participantResult.participant)
+                    if (surveyVendorResult) {
+                        row.add(createTableCell(format, surveyVendorResult.vendor.name))
+                        row.add(createTableCell(format, surveyVendorResult.comment))
+                        row.add(createTableCell(format, surveyVendorResult.ownerComment))
+                    }else {
+                        row.add(createTableCell(format, ''))
+                        row.add(createTableCell(format, ''))
+                        row.add(createTableCell(format, ''))
+                    }
+                }
                 else if (fieldKey == 'survey.finishDate') {
                     String finishDate = ""
                     if (surveyOrg && surveyOrg.finishDate) {
@@ -6349,6 +6361,15 @@ class ExportClickMeService {
                     }
                 } else if (fieldKey == 'survey.ownerComment') {
                     row.add(createTableCell(format, participantResult.surveyOrg.ownerComment))
+                }else if (fieldKey == 'vendorSurvey') {
+                    SurveyVendorResult surveyVendorResult = SurveyVendorResult.findBySurveyConfigAndParticipant(participantResult.surveyConfig, participantResult.participant)
+                    if (surveyVendorResult) {
+                        row.add(createTableCell(format, surveyVendorResult.vendor.name))
+                        row.add(createTableCell(format, surveyVendorResult.comment))
+                    }else {
+                        row.add(createTableCell(format, ''))
+                        row.add(createTableCell(format, ''))
+                    }
                 } else if (fieldKey == 'survey.finishDate') {
                     String finishDate = ""
                     if (participantResult.surveyOrg.finishDate) {
@@ -6839,7 +6860,7 @@ class ExportClickMeService {
             }
         }
 
-        if ('vendorSurvey' in selectedExportFields.keySet()) {
+       /* if ('vendorSurvey' in selectedExportFields.keySet()) {
             if (orgList) {
 
                 export = _exportSurveyVendors(surveyConfig, orgList, format)
@@ -6847,7 +6868,7 @@ class ExportClickMeService {
                 sheetData[sheetName] = export
             }
 
-        }
+        }*/
 
         if ('packageSurveyCostItems' in selectedExportFields.keySet()) {
             if (orgList) {
@@ -7612,6 +7633,11 @@ class ExportClickMeService {
                 else if(fieldKey.contains('participantIdentifiers.') || fieldKey.contains('providerIdentifiers.')) {
                     titles.add(createTableCell(format,  fields.label))
                     titles.add(createTableCell(format,  "${fields.label} ${messageSource.getMessage('default.notes.plural', null, locale)}"))
+                }
+                else if(fieldKey.contains('vendorSurvey')) {
+                    titles.add(createTableCell(format,  fields.label))
+                    titles.add(createTableCell(format,  "${fields.label}: ${messageSource.getMessage('surveyResult.participantComment', null, locale)}"))
+                    titles.add(createTableCell(format,  "${fields.label}: ${messageSource.getMessage('surveyResult.commentOnlyForOwner', null, locale)}"))
                 }
                 else {
                     String label = (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label)
