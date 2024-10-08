@@ -50,12 +50,12 @@
                                         </g:if>
                                         <g:if test="${pd.mandatory}">
                                             <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.mandatory.tooltip')}">
-                                                <i class="${Icon.PROP.MANDATORY} yellow"></i>
+                                                <i class="${Icon.PROP.MANDATORY}"></i>
                                             </span>
                                         </g:if>
                                         <g:if test="${pd.multipleOccurrence}">
                                             <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
-                                                <i class="${Icon.PROP.MULTIPLE} teal"></i>
+                                                <i class="${Icon.PROP.MULTIPLE}"></i>
                                             </span>
                                         </g:if>
                                         <g:if test="${pd.isUsedForLogic}">

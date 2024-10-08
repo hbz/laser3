@@ -55,12 +55,12 @@
                                         </g:if>
                                         <g:if test="${pd.mandatory}">
                                             <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.mandatory.tooltip')}">
-                                                <i class="${Icon.PROP.MANDATORY} yellow"></i>
+                                                <i class="${Icon.PROP.MANDATORY}"></i>
                                             </span>
                                         </g:if>
                                         <g:if test="${pd.multipleOccurrence}">
                                             <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
-                                                <i class="${Icon.PROP.MULTIPLE} teal"></i>
+                                                <i class="${Icon.PROP.MULTIPLE}"></i>
                                             </span>
                                         </g:if>
 
@@ -131,7 +131,7 @@
                                         <g:if test="${pd.mandatory}">
                                             <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMandatory.label')}" data-position="top left"
                                                     params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP} yellow">
-                                                <i class="${Icon.PROP.MANDATORY}"></i>
+                                                <i class="${Icon.PROP.MANDATORY} blue"></i>
                                             </g:link>
                                         </g:if>
                                         <g:else>
@@ -144,13 +144,13 @@
                                             <g:if test="${pd.multipleOccurrence}">
                                                 <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="top left"
                                                         params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP} teal">
-                                                    <i class="${Icon.PROP.MULTIPLE}"></i>
+                                                    <i class="${Icon.PROP.MULTIPLE} blue"></i>
                                                 </g:link>
                                             </g:if>
                                             <g:else>
                                                 <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMultiple.label')}" data-position="top left"
                                                         params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP} ">
-                                                    <i class="${Icon.PROP.MULTIPLE_NOT}"></i>
+                                                    <i class="${Icon.PROP.MULTIPLE_NOT} blue"></i>
                                                 </g:link>
                                             </g:else>
                                         </g:if>
