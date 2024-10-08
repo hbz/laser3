@@ -1317,14 +1317,13 @@ class FilterService {
         result
     }
 
-    Map<String,Object> getIssueEntitlementSubsetQuery(Map params) {
+    Map<String,Object> getIssueEntitlementSubsetQuery(Map params, String select = 'ie.id') {
         log.debug 'getIssueEntitlementSubsetQuery'
 
         int hashCode = params.hashCode()
 
         Map<String, Object> result = [:], queryParams = [subscription: params.subscription]
-        String query = 'select ie.id from IssueEntitlement ie join ie.tipp tipp where tipp.id in (:subset) and ie.subscription = :subscription ' +
-                ''
+        String query = "select ${select} from IssueEntitlement ie join ie.tipp tipp where tipp.id in (:subset) and ie.subscription = :subscription "
         Set<String> queryArgs = []
 
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -1337,6 +1336,15 @@ class FilterService {
         if (params.ieStatus) {
             queryArgs << "and ie.status in (:ieStatus)"
             queryParams.ieStatus = params.ieStatus
+        }
+
+        if (params.titleGroup) {
+            if(params.titleGroup == 'notInGroups'){
+                queryArgs << " and not exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ie = ie) "
+            }else {
+                queryArgs << " and exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ieGroup = :titleGroup and iegi.ie = ie) "
+                queryParams.titleGroup = params.titleGroup
+            }
         }
         /*
         String base_qry

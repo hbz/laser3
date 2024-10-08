@@ -71,7 +71,7 @@ class IssueEntitlementService {
                                               dateFirstOnlineTo: configMap.dateFirstOnlineFrom, yearsFirstOnline: configMap.yearsFirstOnline, publishers: configMap.publishers,
                                               coverageDepth: configMap.coverageDepth, title_types: configMap.title_types, medium: configMap.medium],
                             identifierConfigMap = [packages: configMap.packages, titleNS: IdentifierNamespace.CORE_TITLE_NS],
-                            issueEntitlementConfigMap = [subscription: configMap.subscription, asAt: configMap.asAt, hasPerpetualAccess: configMap.hasPerpetualAccess]
+                            issueEntitlementConfigMap = [subscription: configMap.subscription, asAt: configMap.asAt, hasPerpetualAccess: configMap.hasPerpetualAccess, titleGroup: configMap.titleGroup]
         [titleConfigMap: titleConfigMap, identifierConfigMap: identifierConfigMap, issueEntitlementConfigMap: issueEntitlementConfigMap]
     }
 }

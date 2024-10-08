@@ -1651,89 +1651,92 @@ class SubscriptionService {
             Map<String, Object> configMap = params.clone()
             Subscription baseSub = result.surveyConfig.subscription ?: result.subscription.instanceOf
             result.baseSub = baseSub
+            configMap.subscription = result.subscription
             configMap.packages = baseSub.packages.pkg
-            result.packageInstance = baseSub.packages.pkg[0] //there was an if check about baseSub.pack
+            result.packageInstance = baseSub.packages.pkg[0] //there was an if check about baseSub.pkg
+            IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
+            configMap.titleGroup = issueEntitlementGroup ?: null
+            result.titleGroup = issueEntitlementGroup
             Map<String, Object> parameterGenerics = issueEntitlementService.getParameterGenerics(configMap)
             Map<String, Object> titleConfigMap = parameterGenerics.titleConfigMap,
                                 identifierConfigMap = parameterGenerics.identifierConfigMap,
                                 issueEntitlementConfigMap = parameterGenerics.issueEntitlementConfigMap
+            String mainQry = "select pi_tipp_fk, pi_list_price, row_number() over (partition by pi_tipp_fk order by pi_date_created desc) as rn, count(*) over (partition by pi_tipp_fk) as cn from price_item where pi_list_price is not null and pi_list_currency_rv_fk = :currency and pi_tipp_fk = any(:tippIDs)"
             //build up title data
             switch(params.tab) {
                 case 'allTipps':
                     Map<String, Object> query = filterService.getTippSubsetQuery(titleConfigMap)
-                    Set<Long> tippIds = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+                    Set<Long> tippIDs = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
                     if(configMap.identifier) {
                         identifierConfigMap.identifier = "%${configMap.identifier.toLowerCase()}%"
                         Set<Long> identifierMatches = TitleInstancePackagePlatform.executeQuery('select tipp.id from Identifier id join id.tipp tipp where tipp.pkg in (:packages) and lower(id.value) like :identifier and id.ns.ns in (:titleNS)', identifierConfigMap)
-                        tippIds = tippIds.intersect(identifierMatches)
+                        tippIDs = tippIDs.intersect(identifierMatches)
                     }
-                    String mainQry = "select pi_tipp_fk, pi_list_price, row_number() over (partition by pi_tipp_fk order by pi_date_created desc) as rn, count(*) over (partition by pi_tipp_fk) as cn from price_item where pi_list_price is not null and pi_list_currency_rv_fk = :currency and pi_tipp_fk = any(:tippIDs)"
-                    List eurCheck = batchQueryService.longArrayQuery("select sum(pi.pi_list_price) as list_price_eur from (${mainQry}) as pi where pi.rn = 1", [currency: RDStore.CURRENCY_EUR.id], [tippIDs: tippIds]),
-                    usdCheck = batchQueryService.longArrayQuery("select sum(pi.pi_list_price) as list_price_usd from (${mainQry}) as pi where pi.rn = 1", [currency: RDStore.CURRENCY_USD.id], [tippIDs: tippIds]),
-                    gbpCheck = batchQueryService.longArrayQuery("select sum(pi.pi_list_price) as list_price_gbp from (${mainQry}) as pi where pi.rn = 1", [currency: RDStore.CURRENCY_GBP.id], [tippIDs: tippIds])
+                    List eurCheck = batchQueryService.longArrayQuery("select sum(pi.pi_list_price) as list_price_eur from (${mainQry}) as pi where pi.rn = 1", [currency: RDStore.CURRENCY_EUR.id], [tippIDs: tippIDs]),
+                    usdCheck = batchQueryService.longArrayQuery("select sum(pi.pi_list_price) as list_price_usd from (${mainQry}) as pi where pi.rn = 1", [currency: RDStore.CURRENCY_USD.id], [tippIDs: tippIDs]),
+                    gbpCheck = batchQueryService.longArrayQuery("select sum(pi.pi_list_price) as list_price_gbp from (${mainQry}) as pi where pi.rn = 1", [currency: RDStore.CURRENCY_GBP.id], [tippIDs: tippIDs])
                     BigDecimal listPriceSumEUR = eurCheck[0]['list_price_eur']
                     BigDecimal listPriceSumUSD = usdCheck[0]['list_price_usd']
                     BigDecimal listPriceSumGBP = gbpCheck[0]['list_price_gbp']
                     result.tippsListPriceSumEUR = listPriceSumEUR
                     result.tippsListPriceSumUSD = listPriceSumUSD
                     result.tippsListPriceSumGBP = listPriceSumGBP
-                    result.titlesList = TitleInstancePackagePlatform.findAllByIdInList(tippIds.drop(result.offset).take(result.max), [sort: params.sort, order: params.order])
-                    result.num_rows = tippIds.size()
+                    result.titlesList = tippIDs ? TitleInstancePackagePlatform.findAllByIdInList(tippIDs.drop(result.offset).take(result.max), [sort: params.sort, order: params.order]) : []
+                    result.num_rows = tippIDs.size()
                     break
-                /*
-                if (params.tab == 'allTipps') {
-                    params.status = [RDStore.TIPP_STATUS_CURRENT.id]
-                    params.sort = params.sort ?: 'tipp.sortname'
-                    params.order = params.order ?: 'asc'
-                    Map<String, Object> query = filterService.getTippQuery(params, baseSub.packages.pkg)
-                    List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
-
-
-                    result.tippsListPriceSumEUR = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
-                            'where p.listPrice is not null and p.listCurrency = :currency and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [currency: RDStore.CURRENCY_EUR, tiStatus: RDStore.TIPP_STATUS_CURRENT.id] + query.queryParams)[0] ?: 0
-
-                    result.tippsListPriceSumUSD = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
-                            'where p.listPrice is not null and p.listCurrency = :currency and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [currency: RDStore.CURRENCY_USD, tiStatus: RDStore.TIPP_STATUS_CURRENT.id] + query.queryParams)[0] ?: 0
-
-                    result.tippsListPriceSumGBP = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
-                            'where p.listPrice is not null and p.listCurrency = :currency and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [currency: RDStore.CURRENCY_GBP, tiStatus: RDStore.TIPP_STATUS_CURRENT.id] + query.queryParams)[0] ?: 0
-
-
-                    result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: params.sort, order: params.order]) : []
-                    result.num_rows = titlesList.size()
-
-                    if (baseSub.packages) {
-                        result.packageInstance = baseSub.packages.pkg[0]
-                    }
-
-                } else if (params.tab == 'selectedIEs') {
-                    if (issueEntitlementGroup) {
-                        params.sort = params.sort ?: 'tipp.sortname'
-                        params.order = params.order ?: 'asc'
-
-                        // params.currentIEs = 'currentIEs' for subTabs with UITagLib tabsItem
-                        if(params.subTab){
-                            if(params.subTab == 'currentIEs'){
-                                params.currentIEs = 'currentIEs'
-                                params.status = [RDStore.TIPP_STATUS_CURRENT.id]
-                            }else if(params.subTab == 'plannedIEs'){
-                                params.plannedIEs = 'plannedIEs'
-                                params.status = [RDStore.TIPP_STATUS_EXPECTED.id]
-                            }else if(params.subTab == 'expiredIEs'){
-                                params.expiredIEs = 'expiredIEs'
-                                params.status = [RDStore.TIPP_STATUS_RETIRED.id]
-                            }else if(params.subTab == 'deletedIEs'){
-                                params.deletedIEs = 'deletedIEs'
-                                params.status = [RDStore.TIPP_STATUS_DELETED.id]
-                            }else if(params.subTab == 'allIEs'){
-                                params.allIEs = 'allIEs'
-                                params.status = [RDStore.TIPP_STATUS_CURRENT.id, RDStore.TIPP_STATUS_EXPECTED.id, RDStore.TIPP_STATUS_RETIRED.id, RDStore.TIPP_STATUS_DELETED.id]
-                            }
-                        } else{
-                                params.currentIEs = 'currentIEs'
-                                params.status = [RDStore.TIPP_STATUS_CURRENT.id]
+                case 'selectedIEs':
+                    if(issueEntitlementGroup) {
+                        Map<String, Object> queryPart1 = filterService.getTippSubsetQuery(titleConfigMap)
+                        Set<Long> tippIds = TitleInstancePackagePlatform.executeQuery(queryPart1.query, queryPart1.queryParams)
+                        if(configMap.identifier) {
+                            identifierConfigMap.identifier = "%${configMap.identifier.toLowerCase()}%"
+                            Set<Long> identifierMatches = TitleInstancePackagePlatform.executeQuery('select tipp.id from Identifier id join id.tipp tipp where tipp.pkg in (:packages) and lower(id.value) like :identifier and id.ns.ns in (:titleNS)', identifierConfigMap)
+                            tippIds = tippIds.intersect(identifierMatches)
                         }
-                        result.listOfStatus = Params.getRefdataList(params, 'status')
+                        Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetQuery(issueEntitlementConfigMap, 'new map(ie.id as ieId, ie.tipp.id as tippId)')
+                        Set<Long> sourceIEs = [], sourceTIPPs = []
+                        tippIds.collate(65000).each { List<Long> subset ->
+                            queryPart2.queryParams.subset = subset
+                            List<Map> rows = IssueEntitlement.executeQuery(queryPart2.query, queryPart2.queryParams)
+                            rows.each { Map row ->
+                                sourceIEs << row.ieId
+                                sourceTIPPs << row.tippId
+                            }
+                        }
+                        result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max), [sort: params.sort, order: params.order]) : []
+                        result.num_rows = sourceIEs.size()
+                        List eurCheck = batchQueryService.longArrayQuery("select sum(pi.pi_list_price) as list_price_eur from (${mainQry}) as pi where pi.rn = 1", [currency: RDStore.CURRENCY_EUR.id], [tippIDs: sourceTIPPs]),
+                             usdCheck = batchQueryService.longArrayQuery("select sum(pi.pi_list_price) as list_price_usd from (${mainQry}) as pi where pi.rn = 1", [currency: RDStore.CURRENCY_USD.id], [tippIDs: sourceTIPPs]),
+                             gbpCheck = batchQueryService.longArrayQuery("select sum(pi.pi_list_price) as list_price_gbp from (${mainQry}) as pi where pi.rn = 1", [currency: RDStore.CURRENCY_GBP.id], [tippIDs: sourceTIPPs])
+                        BigDecimal listPriceSumEUR = eurCheck[0]['list_price_eur']
+                        BigDecimal listPriceSumUSD = usdCheck[0]['list_price_usd']
+                        BigDecimal listPriceSumGBP = gbpCheck[0]['list_price_gbp']
+                        result.iesTotalListPriceSumEUR = listPriceSumEUR
+                        result.iesTotalListPriceSumUSD = listPriceSumUSD
+                        result.iesTotalListPriceSumGBP = listPriceSumGBP
+                        List counts = IssueEntitlement.executeQuery('select new map(count(*) as count, status as status) from IssueEntitlement as ie where ie.subscription = :sub and ie.status != :ieStatus and exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ieGroup = :titleGroup and iegi.ie = ie) group by status', [titleGroup: issueEntitlementGroup, sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_REMOVED])
+                        result.allIECounts = 0
+                        result.currentIECounts = 0
+                        result.plannedIECounts = 0
+                        result.expiredIECounts = 0
+                        result.deletedIECounts = 0
+
+                        counts.each { row ->
+                            switch (row['status']) {
+                                case RDStore.TIPP_STATUS_CURRENT: result.currentIECounts = row['count']
+                                    break
+                                case RDStore.TIPP_STATUS_EXPECTED: result.plannedIECounts = row['count']
+                                    break
+                                case RDStore.TIPP_STATUS_RETIRED: result.expiredIECounts = row['count']
+                                    break
+                                case RDStore.TIPP_STATUS_DELETED: result.deletedIECounts = row['count']
+                                    break
+                            }
+                            result.allIECounts += row['count']
+                        }
+                    }
+                    break
+                /*else if (params.tab == 'selectedIEs') {
 
                         params.titleGroup = result.titleGroupID
                         Map query = filterService.getIssueEntitlementQuery(params, subscriberSub)
@@ -1765,27 +1768,6 @@ class SubscriptionService {
                                 'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_GBP, ieIDs: sourceIEs])[0] ?: 0
 
 
-                        List counts = IssueEntitlement.executeQuery('select new map(count(*) as count, status as status) from IssueEntitlement as ie where ie.subscription = :sub and ie.status != :ieStatus and exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ieGroup.id = :titleGroup and iegi.ie = ie) group by status', [titleGroup: Long.parseLong(result.titleGroupID), sub: subscriberSub, ieStatus: RDStore.TIPP_STATUS_REMOVED])
-                        result.allIECounts = 0
-                        result.currentIECounts = 0
-                        result.plannedIECounts = 0
-                        result.expiredIECounts = 0
-                        result.deletedIECounts = 0
-
-                        counts.each { row ->
-                            switch (row['status']) {
-                                case RDStore.TIPP_STATUS_CURRENT: result.currentIECounts = row['count']
-                                    break
-                                case RDStore.TIPP_STATUS_EXPECTED: result.plannedIECounts = row['count']
-                                    break
-                                case RDStore.TIPP_STATUS_RETIRED: result.expiredIECounts = row['count']
-                                    break
-                                case RDStore.TIPP_STATUS_DELETED: result.deletedIECounts = row['count']
-                                    break
-                            }
-                            result.allIECounts += row['count']
-                        }
-                    }
                 } else if (params.tab == 'currentPerpetualAccessIEs') {
                     params.sort = params.sort ?: 'tipp.sortname'
                     params.order = params.order ?: 'asc'
