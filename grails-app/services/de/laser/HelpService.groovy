@@ -72,7 +72,8 @@ class HelpService {
 //            renderer.render( document )
         }
         catch (Exception e) {
-            e.getMessage()
+            log.warn 'parseMarkdown( ' + file + ' ) > ' + e.getMessage()
+            return '...'
         }
     }
 
