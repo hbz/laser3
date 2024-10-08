@@ -6907,10 +6907,18 @@ a i.circular.la-gokb:hover {
   right: 1.5vw;
 }
 
+.la-scrollTopButton {
+  position: fixed;
+  bottom: 88px;
+  right: 1.5vw;
+  margin-right: 55px;
+}
+
 @media only screen and (min-width: 1920px) {
   #system-profiler,
   #showSystemInfo,
-  #showDebugInfo {
+  #showDebugInfo,
+  .la-scrollTopButton {
     right: 2vw;
   }
 }
@@ -6918,7 +6926,8 @@ a i.circular.la-gokb:hover {
 @media only screen and (min-width: 2600px) {
   #system-profiler,
   #showSystemInfo,
-  #showDebugInfo {
+  #showDebugInfo,
+  .la-scrollTopButton {
     right: 9vw;
   }
 }
