@@ -1682,12 +1682,17 @@ class AjaxController {
     @Transactional
     def delete() {
       switch(params.cmd) {
-        case 'deletePersonRole': deletePersonRole()
+        case 'deletePersonRole':
+            deletePersonRole()
         break
-        default: def obj = genericOIDService.resolveOID(params.oid)
-          if (obj) {
-            obj.delete()
-          }
+        case [ 'deleteAddress', 'deleteContact' ]:
+            def obj = genericOIDService.resolveOID(params.oid)
+            if (obj && (obj instanceof Address || obj instanceof Contact)) {
+                obj.delete() // TODO: check perms
+            }
+        break
+        default:
+            log.warn 'ajax.delete(): BLOCKED > ' + params.toMapString()
         break
       }
       redirect(url: request.getHeader('referer'))

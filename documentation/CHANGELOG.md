@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6005    08.10.2024  rc-3.4  3.4.11      David   Bug         Ungesichertes Löschen von beliebigen DB-Inhalten
+
 5997    04.10.2024  rc-3.4  3.4.11      David   Bug         Allgemeine Aufgaben werden der Nutzerin auf dem Dashboard nicht richtig angezeigt
 
 --      02.10.2024  rc-3.4  3.4.10      Andreas Bug         
