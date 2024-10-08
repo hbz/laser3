@@ -18,19 +18,20 @@ import org.springframework.context.MessageSource
 @Transactional
 class DocstoreService {
 
+    AccessService accessService
     MessageSource messageSource
 
     /**
      * Deletes a document with the given parameter map.
      * Used in:
      * <ul>
-     *     <li>{@link de.laser.LicenseController}</li>
      *     <li>{@link de.laser.MyInstitutionController}</li>
-     *     <li>{@link de.laser.PackageController}</li>
-     *     <li>{@link de.laser.SubscriptionController}</li>
+     *     <li>{@link de.laser.SurveyController}</li>
      * </ul>
+     * Will be replaced. Try to use {@link DocstoreController#deleteDocument()}
      * @param params the parameter map, coming from one of the controllers specified in the list above
      */
+    @Deprecated
     def deleteDocument(params) {
 
         // myInstitution > currentSubscriptionsTransfer
@@ -40,15 +41,15 @@ class DocstoreService {
         // survey > evaluationParticipantsView
         // survey > surveyConfigDocs
 
-        log.debug("deleteDocument: ${params}")
+        log.debug("deleteDocument (DEPRECATED): ${params}")
 
         if (params.deleteId) {
-            String docctx_to_delete = params.deleteId
-            log.debug("Looking up docctx ${docctx_to_delete} for delete")
+            DocContext docctx = DocContext.get(params.deleteId)
 
-            DocContext docctx = DocContext.get(docctx_to_delete)
-            docctx.status = RDStore.DOC_CTX_STATUS_DELETED
-            docctx.save()
+            if (accessService.hasAccessToDocument(docctx)) {
+                docctx.status = RDStore.DOC_CTX_STATUS_DELETED
+                docctx.save()
+            }
         }
     }
 
