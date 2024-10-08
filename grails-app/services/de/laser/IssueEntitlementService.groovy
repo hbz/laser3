@@ -18,13 +18,10 @@ class IssueEntitlementService {
     }
 
     Map<String, Object> getIssueEntitlements(Map configMap) {
-        Map<String, Object> titleConfigMap = [packages: configMap.packages, platforms: configMap.platforms, ddcs: configMap.ddcs, languages: configMap.languages,
-                                              subject_references: configMap.subject_references, series_names: configMap.series_names, summaryOfContent: configMap.summaryOfContent,
-                                              ebookFirstAutorOrFirstEditor: configMap.ebookFirstAutorOrFirstEditor, dateFirstOnlineFrom: configMap.dateFirstOnlineFrom,
-                                              dateFirstOnlineTo: configMap.dateFirstOnlineFrom, yearsFirstOnline: configMap.yearsFirstOnline, publishers: configMap.publishers,
-                                              coverageDepth: configMap.coverageDepth, title_types: configMap.title_types, medium: configMap.medium],
-                       identifierConfigMap = [packages: configMap.packages, titleNS: IdentifierNamespace.CORE_TITLE_NS],
-                issueEntitlementConfigMap = [subscription: configMap.subscription, asAt: configMap.asAt, hasPerpetualAccess: configMap.hasPerpetualAccess]
+        Map<String, Object> parameterGenerics = getParameterGenerics(configMap)
+        Map<String, Object> titleConfigMap = parameterGenerics.titleConfigMap,
+                            identifierConfigMap = parameterGenerics.identifierConfigMap,
+                            issueEntitlementConfigMap = parameterGenerics.issueEntitlementConfigMap
         if(configMap.filter) {
             titleConfigMap.filter = configMap.filter
         }
@@ -65,5 +62,16 @@ class IssueEntitlementService {
             [entIDs: ieSubset]
         }
         else [entitlements: result, num_ies_rows: ieIds.size()]
+    }
+
+    Map<String, Object> getParameterGenerics(configMap) {
+        Map<String, Object> titleConfigMap = [packages: configMap.packages, platforms: configMap.platforms, ddcs: configMap.ddcs, languages: configMap.languages,
+                                              subject_references: configMap.subject_references, series_names: configMap.series_names, summaryOfContent: configMap.summaryOfContent,
+                                              ebookFirstAutorOrFirstEditor: configMap.ebookFirstAutorOrFirstEditor, dateFirstOnlineFrom: configMap.dateFirstOnlineFrom,
+                                              dateFirstOnlineTo: configMap.dateFirstOnlineFrom, yearsFirstOnline: configMap.yearsFirstOnline, publishers: configMap.publishers,
+                                              coverageDepth: configMap.coverageDepth, title_types: configMap.title_types, medium: configMap.medium],
+                            identifierConfigMap = [packages: configMap.packages, titleNS: IdentifierNamespace.CORE_TITLE_NS],
+                            issueEntitlementConfigMap = [subscription: configMap.subscription, asAt: configMap.asAt, hasPerpetualAccess: configMap.hasPerpetualAccess]
+        [titleConfigMap: titleConfigMap, identifierConfigMap: identifierConfigMap, issueEntitlementConfigMap: issueEntitlementConfigMap]
     }
 }
