@@ -120,33 +120,26 @@ class DocController  {
 		}
 	}
 
-//	/**
-//	 * Deletes the {@link Doc} given by params.id
-//	 */
-//	@DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
-//	@Secured(closure = {
-//		ctx.contextService.isInstEditor_or_ROLEADMIN()
-//	})
-//    def delete() {
-//		Doc.withTransaction {
-//			Doc docInstance = Doc.get(params.id)
-//			if (! docInstance) {
-//				flash.message = message(code: 'default.not.found.message', args: [message(code: 'doc.label'), params.id]) as String
-//				redirect action: 'list'
-//				return
-//			}
-//
-//			try {
-//				docInstance.delete()
-//				flash.message = message(code: 'default.deleted.message', args: [message(code: 'doc.label'), params.id]) as String
-//				redirect action: 'list'
-//				return
-//			}
-//			catch (DataIntegrityViolationException e) {
-//				flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'doc.label'), params.id]) as String
-//				redirect action: 'show', id: params.id
-//				return
-//			}
-//		}
-//    }
+	@DebugInfo(isInstEditor_or_ROLEADMIN = [])
+	@Secured(closure = {
+		ctx.contextService.isInstEditor_or_ROLEADMIN()
+	})
+	def deleteNote() {
+		log.debug("deleteNote: ${params}")
+
+		if (params.deleteId) {
+			DocContext docctx = DocContext.get(params.deleteId)
+
+			if (accessService.hasAccessToDocNote(docctx)) {
+				docctx.status = RDStore.DOC_CTX_STATUS_DELETED
+				docctx.save()
+				flash.message = message(code: 'default.deleted.general.message')
+			}
+			else {
+				flash.error = message(code: 'default.noPermissions')
+			}
+		}
+
+		redirect controller: params.redirectController, action: params.redirectAction, id: params.instanceId
+	}
 }
