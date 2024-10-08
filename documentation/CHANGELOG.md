@@ -7,7 +7,19 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-5987    30.09.2024  rc-3.4  3.4.9       Andreas Bug         falsche Ausgabe der Nutzerzahlen behoben
+6005    08.10.2024  rc-3.4  3.4.11      David   Bug         Ungesichertes Löschen von beliebigen DB-Inhalten
+
+5779    16.09.2024  rc-3.4  3.4.11      Andreas Feature     Abräumen von öffentlichen Adressen von Anbietern und Lieferanten
+
+5997    04.10.2024  rc-3.4  3.4.11      David   Bug         Allgemeine Aufgaben werden der Nutzerin auf dem Dashboard nicht richtig angezeigt
+
+--      02.10.2024  rc-3.4  3.4.10      Andreas Bug         
+
+--      01.10.2024  rc-3.4  3.4.10      Andreas Bug         500er (Teilung durch null)-Fehler bei Cost per Use behoben
+
+5994    01.10.2024  rc-3.4  3.4.10      Andreas Feature     Hinweis auf we:kb-Kontakta im Statistik-Hinweisfeld eingefügt
+
+5987    30.09.2024  rc-3.4  3.4.10      Andreas Bug         falsche Ausgabe der Nutzerzahlen behoben
 
 5958    20.09.2024  rc-3.4  3.4.9       Andreas Bug         500er beim Aufruf von Lizenzen mit NatStat-Statistiken behoben
 

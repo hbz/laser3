@@ -633,11 +633,13 @@ class SubscriptionControllerService {
                 Map<String, BigDecimal> metricSums = costPerMetric.containsKey(metricType) ? costPerMetric.get(metricType) : [:]
                 reportYearMetrics.each { String date, Integer count ->
                     BigDecimal metricSum = 0.0
-                    if(date == 'total') {
-                        metricSum = (allYearsTotal / count).setScale(2, RoundingMode.HALF_UP)
-                    }
-                    else {
-                        metricSum = (costsAllYears.get(date.split('-')[0]).partial / count).setScale(2, RoundingMode.HALF_UP)
+                    if(count > 0) {
+                        if(date == 'total') {
+                            metricSum = (allYearsTotal / count).setScale(2, RoundingMode.HALF_UP)
+                        }
+                        else {
+                            metricSum = (costsAllYears.get(date.split('-')[0]).partial / count).setScale(2, RoundingMode.HALF_UP)
+                        }
                     }
                     metricSums.put(date, metricSum)
                 }
