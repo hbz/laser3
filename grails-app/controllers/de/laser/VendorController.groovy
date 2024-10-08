@@ -484,20 +484,6 @@ class VendorController {
     }
 
     /**
-     * Call to delete a given document
-     * @return the document table view ({@link #documents()})
-     * @see DocstoreService#deleteDocument()
-     */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
-    })
-    def deleteDocuments() {
-        docstoreService.deleteDocument(params)
-        redirect controller: 'vendor', action: params.redirectAction, id: params.instanceId
-    }
-
-    /**
      * Assigns the given subject group to the given organisation
      */
     @Transactional

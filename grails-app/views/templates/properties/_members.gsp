@@ -35,7 +35,7 @@
                             </g:else>
                             <g:if test="${propType.mandatory}">
                                 <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'default.mandatory.tooltip')}">
-                                    <i class="${Icon.PROP.MANDATORY} yellow"></i>
+                                    <i class="${Icon.PROP.MANDATORY}"></i>
                                 </span>
                             </g:if>
                             <g:if test="${propType.multipleOccurrence}">
@@ -59,7 +59,7 @@
                         </g:else>
                         <g:if test="${propType.mandatory}">
                             <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'default.mandatory.tooltip')}">
-                                <i class="${Icon.PROP.MANDATORY} yellow"></i>
+                                <i class="${Icon.PROP.MANDATORY}"></i>
                             </span>
                         </g:if>
                         <g:if test="${propType.multipleOccurrence}">

@@ -595,19 +595,6 @@ class SubscriptionController {
         }
     }
 
-    /**
-     * Call to delete the given document attached to a subscription
-     * @return a redirect, specified in the request parameters
-     */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
-    })
-    def deleteDocuments() {
-        docstoreService.deleteDocument(params)
-        redirect controller: 'subscription', action: params.redirectAction, id: params.instanceId, params: [tab: params.redirectTab]
-    }
-
     //--------------------------------- consortia members section ----------------------------------------------
 
     /**

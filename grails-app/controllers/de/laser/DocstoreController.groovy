@@ -5,6 +5,7 @@ import de.laser.auth.User
 import de.laser.ctrl.DocstoreControllerService
 import de.laser.config.ConfigDefaults
 import de.laser.interfaces.ShareSupport
+import de.laser.storage.RDStore
 import de.laser.utils.AppUtils
 import de.laser.utils.CodeUtils
 import de.laser.config.ConfigMapper
@@ -233,6 +234,24 @@ class DocstoreController  {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def deleteDocument() {
-        // todo
+        log.debug("deleteDocument: ${params}")
+
+        if (params.deleteId) {
+            DocContext docctx = DocContext.get(params.deleteId)
+
+            if (accessService.hasAccessToDocument(docctx)) {
+                docctx.status = RDStore.DOC_CTX_STATUS_DELETED
+                docctx.save()
+                flash.message = message(code: 'default.deleted.general.message')
+            }
+            else {
+                flash.error = message(code: 'default.noPermissions')
+            }
+        }
+        if (params.redirectTab) {
+            redirect controller: params.redirectController, action: params.redirectAction, id: params.instanceId, params: [tab: params.redirectTab] // subscription.membersSubscriptionsManagement
+        } else {
+            redirect controller: params.redirectController, action: params.redirectAction, id: params.instanceId
+        }
     }
 }

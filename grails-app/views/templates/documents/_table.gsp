@@ -202,10 +202,12 @@
                                     <%
                                         String redirectId = actionName == 'membersSubscriptionsManagement' && instance.instanceOf ? instance.instanceOf.id : instance.id
                                     %>
-                                    <g:link controller="${controllerName}" action="deleteDocuments" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
+                                    <g:set var="linkParams" value="${[instanceId:"${redirectId}", deleteId:"${docctx.id}", redirectController:"${controllerName}", redirectAction:"${actionName}"]}" />
+%{--                                    params='[instanceId:"${redirectId}", deleteId:"${docctx.id}", redirectController:"${controllerName}", redirectAction:"${actionName}", redirectTab: "${params.tab}"]'--}%
+                                    <g:link controller="docstore" action="deleteDocument" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                             data-confirm-term-how="delete"
-                                            params='[instanceId:"${redirectId}", deleteId:"${docctx.id}", redirectAction:"${actionName}", redirectTab: "${params.tab}"]'
+                                            params="${params.tab ? linkParams << [redirectTab: "${params.tab}"] : linkParams}"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                         <i class="${Icon.CMD.DELETE}"></i>

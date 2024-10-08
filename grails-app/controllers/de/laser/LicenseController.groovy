@@ -578,18 +578,6 @@ class LicenseController {
     }
 
     /**
-     * Call to delete the given document
-     */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
-    })
-    def deleteDocuments() {
-        docstoreService.deleteDocument(params)
-        redirect controller: 'license', action: params.redirectAction, id: params.instanceId
-    }
-
-    /**
      * Call to open the workflows linked to the given license
      * @see de.laser.workflow.WfChecklist
      */
