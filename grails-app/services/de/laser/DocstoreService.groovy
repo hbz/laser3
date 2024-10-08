@@ -32,6 +32,14 @@ class DocstoreService {
      * @param params the parameter map, coming from one of the controllers specified in the list above
      */
     def deleteDocument(params) {
+
+        // myInstitution > currentSubscriptionsTransfer
+        // myInstitution > currentSubscriptionsTransfer_support
+        // myInstitution > subscriptionsManagement
+        // survey > cardDocuments
+        // survey > evaluationParticipantsView
+        // survey > surveyConfigDocs
+
         log.debug("deleteDocument: ${params}")
 
         if (params.deleteId) {

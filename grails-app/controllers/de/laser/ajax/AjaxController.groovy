@@ -58,6 +58,7 @@ import java.time.Year
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxController {
 
+    AccessService accessService
     ContextService contextService
     DashboardDueDatesService dashboardDueDatesService
     EscapeService escapeService
@@ -2039,10 +2040,7 @@ class AjaxController {
         if (params.deleteId) {
             Task.withTransaction {
                 Task dTask = Task.get(params.deleteId)
-                boolean isCreator  = dTask.creator.id == contextService.getUser().id
-                boolean isRespUser = dTask.responsibleUser && dTask.responsibleUser.id == contextService.getUser().id
-                boolean isRespOrg  = dTask.responsibleOrg && dTask.responsibleOrg.id == contextService.getOrg().id
-                if (dTask && (isCreator || isRespUser || isRespOrg)) {
+                if (accessService.hasAccessToTask(dTask)) {
                     try {
                         flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title]) as String
                         dTask.delete()

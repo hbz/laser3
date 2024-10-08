@@ -1104,20 +1104,6 @@ class OrganisationController  {
     }
 
     /**
-     * Call to delete a given document
-     * @return the document table view ({@link #documents()})
-     * @see DocstoreService#deleteDocument()
-     */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
-    })
-    def deleteDocuments() {
-        docstoreService.deleteDocument(params)
-        redirect controller: 'organisation', action: params.redirectAction, id: params.instanceId
-    }
-
-    /**
      * Opens the notes view for the given organisation. Beware that those notes are being shown
      * which are attached to the given organisation; the target (if it is an institution) does not
      * see the notes!

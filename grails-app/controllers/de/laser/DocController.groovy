@@ -140,6 +140,10 @@ class DocController  {
 			}
 		}
 
-		redirect controller: params.redirectController, action: params.redirectAction, id: params.instanceId
+		if (params.redirectTab) {
+			redirect controller: params.redirectController, action: params.redirectAction, id: params.instanceId, params: [tab: params.redirectTab] // subscription.membersSubscriptionsManagement
+		} else {
+			redirect controller: params.redirectController, action: params.redirectAction, id: params.instanceId
+		}
 	}
 }
