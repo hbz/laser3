@@ -91,9 +91,7 @@
                     </td>
 
                     <td>
-                        <g:each in="${org.orgType?.sort{it?.getI10n("value")}}" var="type">
-                            ${type.getI10n("value")}
-                        </g:each>
+                        ${org.orgType_new?.getI10n("value")}
                     </td>
 
                     <td>
