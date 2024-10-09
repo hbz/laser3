@@ -292,7 +292,8 @@ class OrganisationControllerService {
                 Combo newMember = new Combo(fromOrg:orgInstance,toOrg:result.institution,type: RDStore.COMBO_TYPE_CONSORTIUM)
                 newMember.save()
                 orgInstance.setDefaultCustomerType()
-                orgInstance.addToOrgType(RDStore.OT_INSTITUTION) //RDStore adding causes a DuplicateKeyException - RefdataValue.getByValueAndCategory('Institution', RDConstants.ORG_TYPE)
+//                orgInstance.addToOrgType(RDStore.OT_INSTITUTION) //RDStore adding causes a DuplicateKeyException - RefdataValue.getByValueAndCategory('Institution', RDConstants.ORG_TYPE)
+                orgInstance.orgType_new = RDStore.OT_INSTITUTION
                 result.orgInstance = orgInstance
                 Object[] args = [messageSource.getMessage('org.institution.label',null,locale), orgInstance.name]
                 result.message = messageSource.getMessage('default.created.message', args, locale)
@@ -470,8 +471,7 @@ class OrganisationControllerService {
         Map<String, List> nav = (linksGenerationService.generateNavigation(result.orgInstance, true))
         result.navPrevOrg = nav.prevLink
         result.navNextOrg = nav.nextLink
-        result.targetCustomerType = result.orgInstance.getCustomerType()
-        result.allOrgTypeIds = result.orgInstance.getAllOrgTypeIds()
+
         result
     }
 }

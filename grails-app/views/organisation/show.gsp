@@ -327,7 +327,7 @@
                             <dt><g:message code="org.orgType.label" /></dt>
                             <dd>
                                 <laser:render template="orgTypeAsList"
-                                          model="${[org: orgInstance, orgTypes: orgInstance.orgType, availableOrgTypes: RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE), editable: isGrantedOrgRoleAdminOrOrgEditor]}"/>
+                                          model="${[org: orgInstance, orgType: orgInstance.orgType_new, availableOrgTypes: RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE), editable: isGrantedOrgRoleAdminOrOrgEditor]}"/>
                             </dd>
                         </dl>
 

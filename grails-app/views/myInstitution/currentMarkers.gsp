@@ -77,9 +77,7 @@
                                 <g:link controller="org" action="show" id="${obj.id}" target="_blank">${obj.name}</g:link>
                             </td>
                             <td>
-                                <g:each in="${obj.orgType}" var="ot">
-                                    ${ot.getI10n('value')}
-                                </g:each>
+                                ${obj.orgType_new?.getI10n("value")}
                             </td>
                             <td class="center aligned">
                                 <g:if test="${obj.id in myXMap.currentOrgIdList}">

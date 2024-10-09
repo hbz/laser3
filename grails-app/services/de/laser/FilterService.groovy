@@ -81,7 +81,7 @@ class FilterService {
              queryParams << [orgNameContains : "${params.orgNameContains}"]
         }
         if (params.orgType) {
-            query << " exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) )"
+            query << "(o.orgType_new != null and o.orgType_new.id in (:orgType))"
             queryParams << [orgType: Params.getLongList(params, 'orgType')]
         }
         if (params.orgStatus) {
@@ -226,7 +226,7 @@ class FilterService {
              queryParams << [orgNameContains2 : "${params.orgNameContains}"]
         }
         if (params.orgType) {
-            query << "exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) )"
+            query << "(o.orgType_new != null and o.orgType_new.id in (:orgType))"
             queryParams << [orgType : Params.getLongList(params, 'orgType')]
         }
         if (params.region) {
@@ -925,7 +925,7 @@ class FilterService {
             queryParams << [orgNameContains2 : "${params.orgNameContains}"]
         }
         if (params.orgType) {
-            base_qry += " and exists (select roletype from surveyOrg.org.orgType as roletype where roletype.id = :orgType )"
+            base_qry += " and (surveyOrg.org.orgType_new != null and surveyOrg.org.orgType_new.id = :orgType)"
             queryParams << [orgType : params.long('orgType')]
         }
         if (params.region) {

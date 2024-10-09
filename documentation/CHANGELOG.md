@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5927    09.10.2024  dev     3.5         David   Feature     JoinTable Org.orgType zum Fremdschlüssel umbauen
+
 6005    08.10.2024  rc-3.4  3.4.11      David   Bug         Ungesichertes Löschen von beliebigen DB-Inhalten
 
 5779    16.09.2024  rc-3.4  3.4.11      Andreas Feature     Abräumen von öffentlichen Adressen von Anbietern und Lieferanten

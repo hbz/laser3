@@ -272,7 +272,7 @@ class AddressbookService {
         List qParts = []
         Map qParams = [:]
         if (params.showOnlyContactPersonForInstitution || params.exportOnlyContactPersonForInstitution){
-            qParts << "(exists (select roletype from org.orgType as roletype where roletype.id = :instType ))"
+            qParts << "(org.orgType_new != null and org.orgType_new.id = :instType)"
             qParams << [instType: RDStore.OT_INSTITUTION.id]
         }
 

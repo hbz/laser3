@@ -44,9 +44,7 @@
                         <td>${org.libraryType?.getI10n('value')}</td>
                         <td>${org.libraryNetwork?.getI10n('value')}</td>
 %{--                        <td>--}%
-%{--                            <g:each in="${org.orgType}" var="ot">--}%
-%{--                                ${ot.getI10n('value')} <br/>--}%
-%{--                            </g:each>--}%
+%{--${org.orgType_new?.getI10n("value")}--}%
 %{--                        </td>--}%
                         <td>${org.getCustomerTypeI10n()}</td>
                     </tr>
@@ -83,9 +81,7 @@
                         <td>${org.libraryType?.getI10n('value')}</td>
                         <td>${org.libraryNetwork?.getI10n('value')}</td>
 %{--                        <td>--}%
-%{--                            <g:each in="${org.orgType}" var="ot">--}%
-%{--                                ${ot.getI10n('value')} <br/>--}%
-%{--                            </g:each>--}%
+%{--${org.orgType_new?.getI10n("value")}--}%
 %{--                        </td>--}%
                         <td>${org.getCustomerTypeI10n()}</td>
                     </tr>

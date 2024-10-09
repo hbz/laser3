@@ -28,7 +28,7 @@ class OrganisationConsCfg extends BaseConfig {
                             'legalInfo'         : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'libraryNetwork'    : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
                             'libraryType'       : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
-                            'orgType'           : [ type: BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE ],
+                            'orgType_new'           : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
                             'propertyKey'       : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'propertyValue'     : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'subjectGroup'      : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ]    // TODO custom_impl
@@ -37,7 +37,7 @@ class OrganisationConsCfg extends BaseConfig {
                             default : [
                                     [ 'country', 'region', 'subjectGroup', 'libraryType' ],
                                     [ 'libraryNetwork', 'funderType', 'funderHskType' ] ,
-                                    [ 'orgType', 'eInvoice' ],
+                                    [ 'orgType_new', 'eInvoice' ],
                                     [ 'customerType', 'legalInfo' ],
                                     [ 'propertyKey', 'propertyValue' ]
                             ]
@@ -45,7 +45,7 @@ class OrganisationConsCfg extends BaseConfig {
                     query : [
                             default : [
                                     org : [
-                                            'org-orgType' :         [ 'generic.org.orgType' ],
+                                            'org-orgType_new' :         [ 'generic.org.orgType' ],
                                             'org-customerType' :    [ 'generic.org.customerType' ],
                                             'org-libraryType' :     [ 'generic.org.libraryType' ],
                                             'org-apiLevel' :        [ 'generic.org.apiLevel' ],

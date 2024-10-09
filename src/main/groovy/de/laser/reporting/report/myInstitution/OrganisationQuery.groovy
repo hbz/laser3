@@ -34,20 +34,9 @@ class OrganisationQuery extends BaseQuery {
                     result
             )
         }
-        else if ( suffix in ['libraryType', 'region', 'country', 'libraryNetwork', 'funderType', 'funderHskType']) {
+        else if ( suffix in ['orgType_new', 'libraryType', 'region', 'country', 'libraryNetwork', 'funderType', 'funderHskType']) {
 
             _processSimpleRefdataQuery(params.query, suffix, idList, result)
-        }
-        else if ( suffix in ['orgType']) {
-
-            handleGenericRefdataQuery(
-                    params.query,
-                    REFDATA_QUERY[0] + 'from Org o join o.orgType ref where o.id in (:idList)' + REFDATA_QUERY[1],
-                    'select o.id from Org o join o.orgType ref where o.id in (:idList) and ref.id = :d order by o.name',
-                    'select distinct o.id from Org o where o.id in (:idList) and not exists (select ot from o.orgType ot)',
-                    idList,
-                    result
-            )
         }
         else if ( suffix in ['customerType']) {
 

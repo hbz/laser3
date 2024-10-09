@@ -93,7 +93,7 @@ class ApiUnsecuredMapReader {
 
         // References
         result.identifiers = ApiCollectionReader.getIdentifierCollection(org.ids) // de.laser.Identifier
-        result.type        = org.orgType?.collect{ it.value }
+        result.type        = org.orgType_new ? [org.orgType_new.value] : []
 
         ApiToolkit.cleanUp(result, true, true)
     }

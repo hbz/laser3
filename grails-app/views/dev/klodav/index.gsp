@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.utils.DateUtils; de.laser.Subscription; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.Org; de.laser.ui.Btn; de.laser.utils.DateUtils; de.laser.Subscription; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:htmlStart text="Playground: Various" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -254,11 +254,54 @@
     <p class="ui header">
         <icon:database /> granted permissions
     </p>
-    <p>
     <pre>
     <g:each in="${Role.executeQuery('select r, pg, p from Role r join r.grantedPermissions pg join pg.perm p')}" var="e">
         ${e[0].authority} (${e[0].roleType}) - ${e[2].code}</g:each>
     </pre>
+</div>
+
+<div class="ui segment">
+    <p class="ui header">
+        <icon:database /> HQL
+    </p>
+    <%
+        String query = 'from Org o where'
+
+        println '<br/>#1 [ '  + Org.executeQuery(query + " (o.orgType_new != null and o.orgType_new.id = :orgType)", [orgType: RDStore.OT_INSTITUTION.id]).size()
+        println         ' , ' + Org.executeQuery(query + " (o.orgType_new != null and o.orgType_new.id = :orgType)", [orgType: null]).size()
+        println ' ]'
+
+        println '<br/>#3 [ '  + Org.executeQuery(query + " (o.orgType_new.id = :orgType)", [orgType: RDStore.OT_INSTITUTION.id]).size()
+        println         ' , ' + Org.executeQuery(query + " (o.orgType_new.id = :orgType)", [orgType: null]).size()
+        println ' ]'
+
+        println '<br/>#5 [ ' + Org.executeQuery(query + " (o.orgType_new != null and o.orgType_new = :orgType)", [orgType: RDStore.OT_INSTITUTION]).size()
+        println         ' , ' + Org.executeQuery(query + " (o.orgType_new != null and o.orgType_new = :orgType)", [orgType: null]).size()
+        println ' ]'
+
+        println '<br/>#7 [ ' + Org.executeQuery(query + " (o.orgType_new = :orgType)", [orgType: RDStore.OT_INSTITUTION]).size()
+        println         ' , ' + Org.executeQuery(query + " (o.orgType_new = :orgType)", [orgType: null]).size()
+        println ' ]'
+
+        println '<br/>#11 [ ' + Org.executeQuery(query + " (o.orgType_new != null and o.orgType_new.id in (:orgTypes))", [orgTypes: [RDStore.OT_INSTITUTION.id]]).size()
+        println         ' , ' + Org.executeQuery(query + " (o.orgType_new != null and o.orgType_new.id in (:orgTypes))", [orgTypes: null]).size()
+        println ' ]'
+
+        println '<br/>#13 [ ' + Org.executeQuery(query + " (o.orgType_new.id in (:orgTypes))", [orgTypes: [RDStore.OT_INSTITUTION.id]]).size()
+        println         ' , ' + Org.executeQuery(query + " (o.orgType_new.id in (:orgTypes))", [orgTypes: null]).size()
+        println ' ]'
+
+        println '<br/>#15 [ ' + Org.executeQuery(query + " (o.orgType_new != null and o.orgType_new in (:orgTypes))", [orgTypes: [RDStore.OT_INSTITUTION]]).size()
+        println         ' , ' + Org.executeQuery(query + " (o.orgType_new != null and o.orgType_new in (:orgTypes))", [orgTypes: null]).size()
+        println ' ]'
+
+        println '<br/>#17 [ ' + Org.executeQuery(query + " (o.orgType_new in (:orgTypes))", [orgTypes: [RDStore.OT_INSTITUTION]]).size()
+        println         ' , ' + Org.executeQuery(query + " (o.orgType_new in (:orgTypes))", [orgTypes: null]).size()
+        println ' ]'
+
+        println '<br/>#20 ' + Org.executeQuery(query + " (o.orgType_new.id in (:orgTypes))", [orgTypes: []]).size()
+        println '<br/>#21 ' + Org.executeQuery(query + " (o.orgType_new in (:orgTypes))", [orgTypes: []]).size()
+    %>
 </div>
 
 <div class="ui segment">
@@ -306,7 +349,5 @@
     </p>
 </div>
 
-<div class="ui segment">
-</div>
 
 <laser:htmlEnd />

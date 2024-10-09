@@ -145,7 +145,7 @@ class ApiOAMonitor {
 
             // RefdataValues
 
-            result.type         = org.orgType?.collect{ it.value }
+            result.type         = org.orgType_new ? [org.orgType_new.value] : []
             result.status       = org.status?.value
 
             // References

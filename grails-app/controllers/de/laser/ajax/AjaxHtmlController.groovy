@@ -511,7 +511,7 @@ class AjaxHtmlController {
                 if(params.orgId)
                     model.orgId = params.orgId
                 else
-                    model.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id = :orgType ) order by LOWER(o.sortname) nulls last", [orgType: RDStore.OT_INSTITUTION.id])
+                    model.orgList = Org.executeQuery("from Org o where (o.orgType_new != null and o.orgType_new.id = :orgType) order by LOWER(o.sortname) nulls last", [orgType: RDStore.OT_INSTITUTION.id])
                 model.tenant = model.contextOrg.id
                 break
             case 'addressForProvider':
@@ -618,7 +618,7 @@ class AjaxHtmlController {
                     result.modalText = message(code: "person.create_new.contactPersonForInstitution.label") + ' (' + result.org.toString() + ')'
                 } else {
                     result.modalText = message(code: "person.create_new.contactPersonForInstitution.label")
-                    result.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id = :orgType ) order by LOWER(o.sortname)", [orgType: RDStore.OT_INSTITUTION.id])
+                    result.orgList = Org.executeQuery("from Org o where (o.orgType_new != null and o.orgType_new.id = :orgType) order by LOWER(o.sortname)", [orgType: RDStore.OT_INSTITUTION.id])
                 }
                 break
             case 'contactPersonForProvider':
@@ -685,7 +685,6 @@ class AjaxHtmlController {
 
             if (result.org || (params.org && params.org instanceof String)) {
                 result.org = params.org ? Org.get(params.long('org')) : result.org
-                List allOrgTypeIds =result.org.getAllOrgTypeIds()
                 result.modalText = message(code: 'default.edit.label', args: [message(code: "person.contactPersonForInstitution.label")]) + ' (' + result.org.toString() + ')'
             }
             else if(result.provider != null || params.containsKey('provider')) {
