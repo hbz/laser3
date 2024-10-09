@@ -117,8 +117,6 @@ class OrganisationController  {
         result.isComboRelated = isComboRelated
         result.contextOrg = result.institution //for the properties template
 
-        List<Long> orgInstanceTypeIds = result.orgInstance.getAllOrgTypeIds()
-
         Boolean hasAccess = (
                 (result.inContextOrg && userService.hasFormalAffiliation(result.user, result.orgInstance, 'INST_ADM')) ||
                 (isComboRelated && userService.hasFormalAffiliation(result.user, result.institution, 'INST_ADM')) ||

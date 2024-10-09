@@ -666,14 +666,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
-     * Gets all type reference value ids attributed to this organisation
-     * @return a {@link List} of reference data IDs assigned to this organisation
-     */
-    List getAllOrgTypeIds() {
-        orgType_new ? [orgType_new.id] : [] // todo - refactoring
-    }
-
-    /**
      * Checks if this institution is linked to any other institution by the given combo link type
      * @param comboType the type of link to check
      * @return true if there are any links from this institution to any other institution, false otherwise

@@ -470,8 +470,7 @@ class OrganisationControllerService {
         Map<String, List> nav = (linksGenerationService.generateNavigation(result.orgInstance, true))
         result.navPrevOrg = nav.prevLink
         result.navNextOrg = nav.nextLink
-        result.targetCustomerType = result.orgInstance.getCustomerType()
-        result.allOrgTypeIds = result.orgInstance.getAllOrgTypeIds()
+
         result
     }
 }

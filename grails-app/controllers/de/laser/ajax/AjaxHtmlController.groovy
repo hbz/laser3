@@ -685,7 +685,6 @@ class AjaxHtmlController {
 
             if (result.org || (params.org && params.org instanceof String)) {
                 result.org = params.org ? Org.get(params.long('org')) : result.org
-                List allOrgTypeIds =result.org.getAllOrgTypeIds()
                 result.modalText = message(code: 'default.edit.label', args: [message(code: "person.contactPersonForInstitution.label")]) + ' (' + result.org.toString() + ')'
             }
             else if(result.provider != null || params.containsKey('provider')) {
