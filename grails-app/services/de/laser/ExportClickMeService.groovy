@@ -6366,7 +6366,9 @@ class ExportClickMeService {
                     if (surveyVendorResult) {
                         row.add(createTableCell(format, surveyVendorResult.vendor.name))
                         row.add(createTableCell(format, surveyVendorResult.comment))
+                        row.add(createTableCell(format, surveyVendorResult.ownerComment))
                     }else {
+                        row.add(createTableCell(format, ''))
                         row.add(createTableCell(format, ''))
                         row.add(createTableCell(format, ''))
                     }
