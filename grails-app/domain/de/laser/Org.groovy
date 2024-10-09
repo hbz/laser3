@@ -61,6 +61,9 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     Date lastUpdated
     Date lastUpdatedCascading
 
+    @RefdataInfo(cat = RDConstants.ORG_TYPE, i18n = 'org.orgType.label')
+    RefdataValue orgType_new    // preparing ERMS-5927
+
     @RefdataInfo(cat = RDConstants.ORG_STATUS)
     RefdataValue status
 
@@ -167,6 +170,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         legallyObligedBy    column:'org_legally_obliged_by_fk'
     costConfigurationPreset column:'org_config_preset_rv_fk'
        lastUpdatedCascading column:'org_last_updated_cascading'
+        orgType_new         column:'org_type_rv_fk'
 
         orgType             joinTable: [
                 name:   'org_type',
@@ -219,6 +223,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     legallyObligedBy(nullable:true)
       costConfigurationPreset(nullable:true)
              orgType(nullable:true)
+         orgType_new(nullable:true)
              gokbId (nullable:true, blank:true)
         lastUpdatedCascading (nullable: true)
     }
@@ -667,14 +672,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
                     queryParams
             )
         }
-    }
-
-    /**
-     * Gets all type reference values attributed to this organisation
-     * @return a {@link List} of {@link RefdataValue}s assigned to this organisation
-     */
-    List<RefdataValue> getAllOrgTypes() {
-        RefdataValue.executeQuery("select ot from Org org join org.orgType ot where org = :org", [org: this])
     }
 
     /**
