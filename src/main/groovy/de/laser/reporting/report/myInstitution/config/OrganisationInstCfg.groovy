@@ -26,19 +26,19 @@ class OrganisationInstCfg extends BaseConfig {
                             'legalInfo'         : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'libraryNetwork'    : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
                             'libraryType'       : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
-                            'orgType'           : [ type: BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE ],
+                            'orgType_new'           : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
                             'subjectGroup'      : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ]    // TODO custom_impl
                     ],
                     filter : [
                             default : [
                                     [ 'country', 'region' ],
-                                    [ 'libraryNetwork',  'orgType' ]
+                                    [ 'libraryNetwork',  'orgType_new' ]
                             ]
                     ],
                     query : [
                             default : [
                                     org : [
-                                           'org-orgType' :          [ 'generic.org.orgType' ],
+                                           'org-orgType_new' :          [ 'generic.org.orgType' ],
                                            'org-customerType' :     [ 'generic.org.customerType' ],
                                            'org-libraryType' :      [ 'generic.org.libraryType' ],
                                            'org-country' :          [ 'generic.org.country' ],

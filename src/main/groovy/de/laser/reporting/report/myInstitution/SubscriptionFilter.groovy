@@ -400,13 +400,6 @@ class SubscriptionFilter extends BaseFilter {
                 }
                 // --> refdata join tables
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
-
-                    if (p == BaseConfig.RDJT_GENERIC_ORG_TYPE) {
-                        whereParts.add('exists (select ot from org.orgType ot where ot = :p' + (++pCount) + ')')
-                        queryParams.put('p' + pCount, RefdataValue.get(params.long(key)))
-
-                        filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
-                    }
                 }
                 // --> custom filter implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {

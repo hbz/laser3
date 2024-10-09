@@ -124,7 +124,7 @@ class SubscriptionInstCfg extends BaseConfig {
                             'legalInfo'         : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'libraryNetwork'    : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
                             'libraryType'       : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
-                            //'orgType'           : [ type: FIELD_TYPE_REFDATA_JOINTABLE ],
+                            //'orgType_new'           : [ type: FIELD_TYPE_REFDATA ],
                             'subjectGroup'      : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ]    // TODO custom_impl
                     ],
                     filter : [
@@ -137,7 +137,7 @@ class SubscriptionInstCfg extends BaseConfig {
                     query : [
                             default : [
                                     consortium : [
-                                             //'consortium-orgType :        [ 'generic.org.orgType' ],
+                                             //'consortium-orgType_new :        [ 'generic.org.orgType' ],
                                              //'consortium-customerType' :  [ 'generic.org.customerType' ],
                                              'consortium-libraryType' :     [ 'generic.org.libraryType' ],
                                              'consortium-region' :          [ 'generic.org.region' ],

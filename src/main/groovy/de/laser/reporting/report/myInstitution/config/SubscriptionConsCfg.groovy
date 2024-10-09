@@ -212,7 +212,7 @@ class SubscriptionConsCfg extends BaseConfig {
                             'legalInfo'         : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'libraryNetwork'    : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
                             'libraryType'       : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
-                            'orgType'           : [ type: BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE ],
+                            'orgType_new'           : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
                             'propertyKey'       : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'propertyValue'     : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'subjectGroup'      : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ]    // TODO custom_impl
@@ -221,7 +221,7 @@ class SubscriptionConsCfg extends BaseConfig {
                             default : [
                                     [ 'country', 'region', 'subjectGroup', 'libraryType' ],
                                     [ 'libraryNetwork', 'funderType', 'funderHskType' ],
-                                    [ 'orgType', 'eInvoice' ],
+                                    [ 'orgType_new', 'eInvoice' ],
                                     [ 'customerType', 'legalInfo' ],
                                     [ 'propertyKey', 'propertyValue' ]
                             ]
@@ -229,7 +229,7 @@ class SubscriptionConsCfg extends BaseConfig {
                     query : [
                             default : [
                                     member : [
-                                            'member-orgType' :          [ 'generic.org.orgType' ],
+                                            'member-orgType_new' :          [ 'generic.org.orgType' ],
                                             'member-customerType' :     [ 'generic.org.customerType' ],
                                             'member-libraryType' :      [ 'generic.org.libraryType' ],
                                             'member-region' :           [ 'generic.org.region' ],
