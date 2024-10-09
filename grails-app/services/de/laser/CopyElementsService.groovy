@@ -1343,6 +1343,7 @@ class CopyElementsService {
         String ownerClassName = classString.substring(classString.lastIndexOf(".") + 1)
         ownerClassName = "de.laser.properties.${ownerClassName}Property"
         def targetProp
+        List todoAuditProperties = []
         properties.each { AbstractPropertyWithCalculatedLastUpdated sourceProp ->
             targetProp = targetObject.propertySet.find { it.type.id == sourceProp.type.id && it.tenant == sourceProp.tenant }
             boolean isAddNewProp = sourceProp.type?.multipleOccurrence
@@ -1355,52 +1356,68 @@ class CopyElementsService {
                 if (sourceProp.id.toString() in auditProperties) {
                     //copy audit
                     if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
-
-                        targetObject.getClass().findAllByInstanceOf(targetObject).each { Object member ->
-
-                            def existingProp = targetProp.getClass().findByOwnerAndInstanceOf(member, targetProp)
-                            if (!existingProp) {
-
-                                // multi occurrence props; add one additional with backref
-                                if (sourceProp.type.multipleOccurrence) {
-                                    def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type, contextService.getOrg())
-                                    additionalProp = targetProp.copyInto(additionalProp)
-                                    additionalProp.instanceOf = targetProp
-                                    additionalProp.save()
-                                } else {
-                                    def matchingProps = targetProp.getClass().findAllByOwnerAndType(member, targetProp.type)
-                                    // unbound prop found with matching type, set backref
-                                    if (matchingProps) {
-                                        matchingProps.each { memberProp ->
-                                            memberProp.instanceOf = targetProp
-                                            memberProp.save()
-                                        }
-                                    } else {
-                                        // no match found, creating new prop with backref
-                                        def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type, contextService.getOrg())
-                                        newProp = targetProp.copyInto(newProp)
-                                        newProp.instanceOf = targetProp
-                                        newProp.save()
-                                    }
-                                }
-                            }
-                        }
-
-                        def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(targetProp.class.name, sourceProp.id)
-                        auditConfigs.each {
-                            AuditConfig ac ->
-                                //All ReferenceFields were copied!
-                                AuditConfig.addConfig(targetProp, ac.referenceField)
-                        }
-                        if (!auditConfigs) {
-                            AuditConfig.addConfig(targetProp, AuditConfig.COMPLETE_OBJECT)
-                        }
+                        todoAuditProperties << [sourcePropId: sourceProp.id, targetPropId: targetProp.id]
                     }
                 }
             } else {
                 //Replace
                 targetProp = sourceProp.copyInto(targetProp)
                 targetProp.save()
+
+                if (sourceProp.id.toString() in auditProperties) {
+                    //copy audit
+                    if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
+                        todoAuditProperties << [sourcePropId: sourceProp.id, targetPropId: targetProp.id]
+                    }
+                }
+            }
+        }
+
+
+        todoAuditProperties.each { Map todoAuditPro ->
+            AbstractPropertyWithCalculatedLastUpdated sourceProp = SubscriptionProperty.get(todoAuditPro.sourcePropId)
+            targetProp = SubscriptionProperty.get(todoAuditPro.targetPropId)
+            if(sourceProp && targetProp) {
+                targetObject.getClass().findAllByInstanceOf(targetObject).each { Object member ->
+                    member = member.refresh()
+                    targetProp = targetProp.refresh()
+                    def existingProp = targetProp.getClass().findByOwnerAndInstanceOf(member, targetProp)
+                    if (!existingProp) {
+
+                        // multi occurrence props; add one additional with backref
+                        if (sourceProp.type.multipleOccurrence) {
+                            def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type, contextService.getOrg())
+                            additionalProp = targetProp.copyInto(additionalProp)
+                            additionalProp.instanceOf = targetProp
+                            additionalProp.save()
+                        } else {
+                            def matchingProps = targetProp.getClass().findAllByOwnerAndType(member, targetProp.type)
+                            // unbound prop found with matching type, set backref
+                            if (matchingProps) {
+                                matchingProps.each { memberProp ->
+                                    memberProp.instanceOf = targetProp
+                                    memberProp.save()
+                                }
+                            } else {
+                                // no match found, creating new prop with backref
+                                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type, contextService.getOrg())
+                                newProp = targetProp.copyInto(newProp)
+                                newProp.instanceOf = targetProp
+                                newProp.save()
+                            }
+                        }
+                    }
+                }
+
+                def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(targetProp.class.name, sourceProp.id)
+                auditConfigs.each {
+                    AuditConfig ac ->
+                        //All ReferenceFields were copied!
+                        AuditConfig.addConfig(targetProp, ac.referenceField)
+                }
+                if (!auditConfigs) {
+                    AuditConfig.addConfig(targetProp, AuditConfig.COMPLETE_OBJECT)
+                }
             }
         }
     }

@@ -95,7 +95,7 @@
                           from="${currency}"
                           optionKey="id"
                           optionValue="${{ it.text.contains('-') ? it.text.split('-').first() : it.text }}"
-                          value="${costItem?.billingCurrency?.id ?: RDStore.CURRENCY_EUR.id}"/>
+                          value="${costItem?.billingCurrency?.id}"/>
             </div><!-- .field -->
             <div class="field">
                 <label><g:message code="financials.newCosts.totalAmount"/></label>
