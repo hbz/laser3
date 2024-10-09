@@ -3423,8 +3423,7 @@ class MyInstitutionController  {
                 idQuery = idQuery + ' and wf.vendor is not null'
             }
             if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION.id) {
-                idQuery = idQuery + ' and wf.org is not null'
-                idQuery = idQuery + ' and exists (select ot from wf.org.orgType as ot where ot = :orgType )'
+                idQuery = idQuery + ' and wf.org is not null and wf.org.orgType_new = :orgType'
                 queryParams.put('orgType', RDStore.OT_INSTITUTION)
             }
             else if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_LICENSE.id) {

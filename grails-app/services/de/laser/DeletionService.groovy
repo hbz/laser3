@@ -555,7 +555,6 @@ class DeletionService {
         List outgoingCombos = new ArrayList(org.outgoingCombos)
         List incomingCombos = new ArrayList(org.incomingCombos)
 
-        List orgTypes      = new ArrayList(org.orgType)
         List orgLinks      = new ArrayList(org.links)
         List orgSettings   = OrgSetting.findAllWhere(org: org)
         List userSettings  = UserSetting.findAllWhere(orgValue: org)
@@ -612,7 +611,6 @@ class DeletionService {
         result.info << ['Combos (out)', outgoingCombos]
         result.info << ['Combos (in)', incomingCombos, FLAG_BLOCKER]
 
-        result.info << ['Typen', orgTypes]
         result.info << ['OrgRoles', orgLinks, FLAG_BLOCKER]
         result.info << ['Einstellungen', orgSettings]
         result.info << ['Nutzereinstellungen', userSettings, FLAG_BLOCKER]
@@ -702,10 +700,6 @@ class DeletionService {
                     // outgoingCombos
                     org.outgoingCombos.clear()
                     outgoingCombos.each{ tmp -> tmp.delete() }
-
-                    // orgTypes
-                    //org.orgType.clear()
-                    //orgTypes.each{ tmp -> tmp.delete() }
 
                     // orgSettings
                     Set<String> specialAccess = []

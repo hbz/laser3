@@ -191,14 +191,7 @@ class DataloadService {
 
                 result.sortname = org.sortname
 
-                result.type = []
-                org.orgType?.each { type ->
-                    try {
-                        result.type.add(type.getMapForES())
-                    } catch (Exception e) {
-                        log.error( e.toString() )
-                    }
-                }
+                result.type = org.orgType_new.getMapForES() // todo - refactoring ?
 
                 result.identifiers = []
                 org.ids?.each { ident ->

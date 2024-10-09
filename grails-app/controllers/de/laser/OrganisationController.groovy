@@ -813,7 +813,7 @@ class OrganisationController  {
         Map result = [institution:contextService.getOrg(), organisationMatches:[], members:memberMap, comboType:RDStore.COMBO_TYPE_CONSORTIUM]
         //searching members for consortium, i.e. the context org is a consortium
         if (params.proposedOrganisation) {
-            result.organisationMatches.addAll(Org.executeQuery("select o from Org as o where exists (select roletype from o.orgType as roletype where roletype = :institution ) and (lower(o.name) like :searchName or lower(o.sortname) like :searchName) ",
+            result.organisationMatches.addAll(Org.executeQuery("select o from Org as o where o.orgType_new = :institution and (lower(o.name) like :searchName or lower(o.sortname) like :searchName) ",
                     [institution: RDStore.OT_INSTITUTION, searchName: "%${params.proposedOrganisation.toLowerCase()}%"]))
         }
         if (params.proposedOrganisationID) {
@@ -1629,7 +1629,7 @@ class OrganisationController  {
         result.editable = _checkIsEditable(result.user, orgInstance)
 
         if (result.editable) {
-            orgInstance.addToOrgType(RefdataValue.get(params.orgType))
+            orgInstance.orgType_new = RefdataValue.get(params.orgType) // TODO - refactoring
             orgInstance.save()
 //            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
         }

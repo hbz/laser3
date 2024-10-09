@@ -126,7 +126,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         altnames:           AlternativeName,
         discoverySystemFrontends: DiscoverySystemFrontend,
         discoverySystemIndices: DiscoverySystemIndex,
-        orgType:            RefdataValue,
         documents:          DocContext,
         platforms:          Platform,
         hasCreated:         Org,
@@ -171,13 +170,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     costConfigurationPreset column:'org_config_preset_rv_fk'
        lastUpdatedCascading column:'org_last_updated_cascading'
         orgType_new         column:'org_type_rv_fk'
-
-        orgType             joinTable: [
-                name:   'org_type',
-                key:    'org_id',
-                column: 'refdata_value_id', type:   'BIGINT'
-        ], lazy: false
-
         ids                 sort: 'ns', batchSize: 10
         outgoingCombos      batchSize: 10
         incomingCombos      batchSize: 10
@@ -222,7 +214,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
            createdBy(nullable:true)
     legallyObligedBy(nullable:true)
       costConfigurationPreset(nullable:true)
-             orgType(nullable:true)
          orgType_new(nullable:true)
              gokbId (nullable:true, blank:true)
         lastUpdatedCascading (nullable: true)
@@ -679,7 +670,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @return a {@link List} of reference data IDs assigned to this organisation
      */
     List getAllOrgTypeIds() {
-        RefdataValue.executeQuery("select ot.id from Org org join org.orgType ot where org = :org", [org: this])
+        orgType_new ? [orgType_new.id] : [] // todo - refactoring
     }
 
     /**

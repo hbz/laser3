@@ -137,7 +137,7 @@ class VendorService {
             }
         }
         Org.withTransaction { TransactionStatus ts ->
-            Set<Combo> agencyCombos = Combo.executeQuery('select c from Combo c, Org o join o.orgType ot where (c.fromOrg = o or c.toOrg = o) and ot = :agency', [agency: RDStore.OT_AGENCY])
+            Set<Combo> agencyCombos = Combo.executeQuery('select c from Combo c, Org o where (c.fromOrg = o or c.toOrg = o) and o.orgType_new = :agency', [agency: RDStore.OT_AGENCY])
             agencyCombos.each { Combo ac ->
                 VendorLink vl = new VendorLink(type: RDStore.PROVIDER_LINK_FOLLOWS)
                 vl.from = Vendor.convertFromAgency(ac.fromOrg)
@@ -151,7 +151,7 @@ class VendorService {
                 }
             }
             ts.flush()
-            Set<PersonRole> agencyContacts = PersonRole.executeQuery('select pr from PersonRole pr join pr.org o join o.orgType ot where ot = :agency', [agency: RDStore.OT_AGENCY])
+            Set<PersonRole> agencyContacts = PersonRole.executeQuery('select pr from PersonRole pr join pr.org o where o.orgType_new = :agency', [agency: RDStore.OT_AGENCY])
             agencyContacts.each { PersonRole pr ->
                 Vendor v = Vendor.findByGlobalUID(pr.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
                 if (!v) {
@@ -173,7 +173,7 @@ class VendorService {
                 }
             }
             ts.flush()
-            Set<DocContext> docOrgContexts = DocContext.executeQuery('select dc from DocContext dc join dc.org o join o.orgType ot where ot = :agency', [agency: RDStore.OT_AGENCY])
+            Set<DocContext> docOrgContexts = DocContext.executeQuery('select dc from DocContext dc join dc.org o where o.orgType_new = :agency', [agency: RDStore.OT_AGENCY])
             docOrgContexts.each { DocContext dc ->
                 Vendor v = Vendor.findByGlobalUID(dc.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
                 if (!v) {
@@ -186,7 +186,7 @@ class VendorService {
                 dc.save()
             }
             ts.flush()
-            Set<DocContext> docTargetOrgContexts = DocContext.executeQuery('select dc from DocContext dc join dc.targetOrg o join o.orgType ot where ot = :agency', [agency: RDStore.OT_AGENCY])
+            Set<DocContext> docTargetOrgContexts = DocContext.executeQuery('select dc from DocContext dc join dc.targetOrg o where o.orgType_new = :agency', [agency: RDStore.OT_AGENCY])
             docTargetOrgContexts.each { DocContext dc ->
                 Vendor v = Vendor.findByGlobalUID(dc.targetOrg.globalUID.replace(Org.class.simpleName.toLowerCase(), Vendor.class.simpleName.toLowerCase()))
                 if (!v) {
@@ -253,7 +253,7 @@ class VendorService {
             }
             ts.flush()
         }
-        Set<Org> agencies = Org.executeQuery('select o from Org o join o.orgType ot where ot in (:agency)', [agency: [RDStore.OT_PROVIDER, RDStore.OT_AGENCY]])
+        Set<Org> agencies = Org.executeQuery('select o from Org o where o.orgType_new in (:agency)', [agency: [RDStore.OT_PROVIDER, RDStore.OT_AGENCY]])
         agencies.each { Org agency ->
             OrgRole.executeUpdate('delete from OrgRole oo where oo.org = :agency and oo.roleType not in (:toKeep)', [agency: agency, toKeep: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER, RDStore.OR_LICENSOR, RDStore.OR_AGENCY]])
             List<Person> oldPersons = Person.executeQuery('select p from Person p where p.tenant = :agency and p.isPublic = true',[agency: agency])
