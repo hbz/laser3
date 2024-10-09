@@ -1375,7 +1375,6 @@ class CopyElementsService {
 
 
         todoAuditProperties.each { Map todoAuditPro ->
-            println(todoAuditPro)
             AbstractPropertyWithCalculatedLastUpdated sourceProp = SubscriptionProperty.get(todoAuditPro.sourcePropId)
             targetProp = SubscriptionProperty.get(todoAuditPro.targetPropId)
             if(sourceProp && targetProp) {
