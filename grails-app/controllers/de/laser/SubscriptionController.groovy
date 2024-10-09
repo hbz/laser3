@@ -3,7 +3,6 @@ package de.laser
 import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
 import de.laser.auth.User
-import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.exceptions.EntitlementCreationException
@@ -44,7 +43,7 @@ import java.util.concurrent.ExecutorService
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SubscriptionController {
 
-    BatchUpdateService batchUpdateService
+    BatchQueryService batchQueryService
     ContextService contextService
     CopyElementsService copyElementsService
     CustomerTypeService customerTypeService
@@ -1427,7 +1426,7 @@ class SubscriptionController {
                     Sql sql = GlobalService.obtainSqlConnection()
                     childSubIds.each { Long childSubId ->
                         pkgIds.each { Long pkgId ->
-                            batchUpdateService.bulkAddHolding(sql, childSubId, pkgId, result.subscription.hasPerpetualAccess, result.subscription.id)
+                            batchQueryService.bulkAddHolding(sql, childSubId, pkgId, result.subscription.hasPerpetualAccess, result.subscription.id)
                         }
                     }
                     sql.close()
@@ -1912,45 +1911,8 @@ class SubscriptionController {
 
     @Deprecated
     @Secured(['ROLE_ADMIN'])
-    Map renewEntitlements() {
-        params.id = params.targetObjectId
-        params.sourceObjectId = genericOIDService.resolveOID(params.targetObjectId)?.instanceOf?.id
-        //Map result = copyElementsService.loadDataFor_PackagesEntitlements()
-        //result.comparisonMap = comparisonService.buildTIPPComparisonMap(result.sourceIEs+result.targetIEs)
-        result
-    }
-
-    @Deprecated
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
-    })
-    def processRenewEntitlements() {
-        Map<String, Object> ctrlResult = subscriptionControllerService.processRenewEntitlements(this,params)
-        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if (!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-            else {
-                flash.error = ctrlResult.result.error
-            }
-        }
-        else {
-            flash.message = ctrlResult.result.message
-        }
-        redirect action: 'index', id: params.id
-    }
-
-    /**
-     * Call to load the selection list for the title renewal. The list may be exported as a (configurable) Excel table with usage data for each title
-     * @return the title list for selection; either as HTML table or as Excel export, configured with the given parameters
-     */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
-    })
-    def renewEntitlementsWithSurvey() {
+    Map renewEntitlementsWithSurvey_old() {
+        /*
         Map<String,Object> ctrlResult, exportResult
         params.statsForSurvey = true
         SXSSFWorkbook wb
@@ -2002,14 +1964,14 @@ class SubscriptionController {
                         startTime.add(Calendar.MONTH, 1)
                     }
                     //List<String> perpetuallyPurchasedTitleURLs = TitleInstancePackagePlatform.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (select oo.sub from OrgRole oo where oo.org = :org and oo.roleType in (:roleTypes)) and tipp.status = :tippStatus and ie.status = :tippStatus and ie.perpetualAccessBySub is not null',
-                     //       [org: ctrlResult.result.subscriber, tippStatus: RDStore.TIPP_STATUS_CURRENT, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS]])
-                    /*List<String> perpetuallyPurchasedTitleURLs = PermanentTitle.executeQuery('select pt.tipp.hostPlatformURL from PermanentTitle pt where pt.owner = :owner and pt.tipp.id in (select ti.id from TitleInstancePackagePlatform as ti where ti.pkg in (:pkgs))',
+                    //       [org: ctrlResult.result.subscriber, tippStatus: RDStore.TIPP_STATUS_CURRENT, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS]])
+                    List<String> perpetuallyPurchasedTitleURLs = PermanentTitle.executeQuery('select pt.tipp.hostPlatformURL from PermanentTitle pt where pt.owner = :owner and pt.tipp.id in (select ti.id from TitleInstancePackagePlatform as ti where ti.pkg in (:pkgs))',
                             [owner: ctrlResult.result.subscriber, pkgs: ctrlResult.result.parentSubscription.packages?.pkg])
                     IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(ctrlResult.result.surveyConfig, ctrlResult.result.subscriberSub)
                     if (issueEntitlementGroup) {
                         perpetuallyPurchasedTitleURLs.addAll(IssueEntitlementGroupItem.executeQuery("select ie.tipp.hostPlatformURL from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup",
                                 [ieGroup: issueEntitlementGroup]))
-                    }*/
+                    }
 
                     Map<String, Object> queryMap = [:]
                     queryMap.sort = 'tipp.sortname'
@@ -2027,7 +1989,6 @@ class SubscriptionController {
                     Map<String, Object> export = exportService.generateRenewalExport(queryMap, monthsInRing, ctrlResult.result.subscriber)
                     //Map<String, List> export = exportService.generateTitleExportCustom(queryMap, TitleInstancePackagePlatform.class.name, monthsInRing.sort { Date monthA, Date monthB -> monthA <=> monthB }, ctrlResult.result.subscriber, true)
                     if(!export.status202) {
-                        /*
                         String refYes = RDStore.YN_YES.getI10n('value')
                         String refNo = RDStore.YN_NO.getI10n('value')
                         userCache.put('progress', 100) //debug only
@@ -2038,7 +1999,6 @@ class SubscriptionController {
                                 export.rows[index] << [field: refYes, style: null]
                             }
                         }
-                        */
                         Map sheetData = [:]
                         sheetData[g.message(code: 'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow: export.titles, columnData: export.rows]
                         wb = exportService.generateXLSXWorkbook(sheetData)
@@ -2094,7 +2054,7 @@ class SubscriptionController {
                 if(ctrlResult.result.titleGroupID) {
                     queryMap = [sub: ctrlResult.result.subscriberSub, notStatus: RDStore.TIPP_STATUS_REMOVED.id, pkgIds: ctrlResult.result.parentSubscription.packages?.pkg?.id, titleGroup: ctrlResult.result.titleGroupID]
                 }
-                    filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect') + '_' + ctrlResult.result.subscriberSub.dropdownNamingConvention())
+                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect') + '_' + ctrlResult.result.subscriberSub.dropdownNamingConvention())
             }
 
             if(params.tab == 'currentPerpetualAccessIEs') {
@@ -2111,7 +2071,7 @@ class SubscriptionController {
                     //packageIds.addAll(ctrlResult.result.subscriberSub.packages?.pkg?.id)
                 }
                 queryMap = [subscriptions: subscriptions, ieStatus: RDStore.TIPP_STATUS_CURRENT, subscribers: subscribers, hasPerpetualAccess: RDStore.YN_YES.id.toString()]
-            
+
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentTitles') + '_' + ctrlResult.result.subscriberSub.dropdownNamingConvention())
             }
 
@@ -2121,9 +2081,9 @@ class SubscriptionController {
                 if(!f.exists()) {
                     FileOutputStream out = new FileOutputStream(f)
                     String domainClName = TitleInstancePackagePlatform.class.name
-                   /* if(params.tab == 'allTipps') {
-                        domainClName = TitleInstancePackagePlatform.class.name
-                    }*/
+                     if(params.tab == 'allTipps') {
+                         domainClName = TitleInstancePackagePlatform.class.name
+                     }
                     Map<String, Collection> tableData = queryMap ? exportService.generateTitleExportKBART(queryMap, domainClName) : [titleRow: [], columnData: []]
                     out.withWriter { Writer writer ->
                         writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
@@ -2136,20 +2096,20 @@ class SubscriptionController {
                 return
             }else if (params.exportXLS) {
                 String domainClName = TitleInstancePackagePlatform.class.name
-              /*  if(params.tab == 'allTipps') {
-                    domainClName = TitleInstancePackagePlatform.class.name
-                }*/
+                 if(params.tab == 'allTipps') {
+                      domainClName = TitleInstancePackagePlatform.class.name
+                  }
 
                 //List<String> perpetuallyPurchasedTitleURLs = PermanentTitle.executeQuery('select pt.tipp.hostPlatformURL from PermanentTitle pt where pt.owner = :owner and pt.tipp.id in (select ti.id from TitleInstancePackagePlatform as ti where ti.pkg in (:pkgs))',
                 //                        [owner: ctrlResult.result.subscriber, pkgs: ctrlResult.result.parentSubscription.packages?.pkg])
                 //List<String> perpetuallyPurchasedTitleURLs = TitleInstancePackagePlatform.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (select oo.sub from OrgRole oo where oo.org = :org and oo.roleType in (:roleTypes)) and tipp.status = :tippStatus and ie.status = :tippStatus and ie.perpetualAccessBySub is not null',
                 //        [org: ctrlResult.result.subscriber, tippStatus: RDStore.TIPP_STATUS_CURRENT, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS]])
 
-               /* IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(ctrlResult.result.surveyConfig, ctrlResult.result.subscriberSub)
-                if (issueEntitlementGroup) {
-                    perpetuallyPurchasedTitleURLs.addAll(IssueEntitlementGroupItem.executeQuery("select ie.tipp.hostPlatformURL from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup",
-                            [ieGroup: issueEntitlementGroup]))
-                }*/
+                IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(ctrlResult.result.surveyConfig, ctrlResult.result.subscriberSub)
+                 if (issueEntitlementGroup) {
+                     perpetuallyPurchasedTitleURLs.addAll(IssueEntitlementGroupItem.executeQuery("select ie.tipp.hostPlatformURL from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup",
+                             [ieGroup: issueEntitlementGroup]))
+                 }
 
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -2183,17 +2143,16 @@ class SubscriptionController {
                 ctrlResult.result
             }
         }
+        */
     }
 
-    /**
-     * Call to process the title selection with the given input parameters
-     * @return a redirect to the referer
-     */
+    @Deprecated
     @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
-    def processRenewEntitlementsWithSurvey() {
+    def processRenewEntitlementsWithSurvey_old() {
+        /*
         Map<String, Object> ctrlResult = subscriptionControllerService.processRenewEntitlementsWithSurvey(this,params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
@@ -2206,6 +2165,41 @@ class SubscriptionController {
             flash.message = ctrlResult.result.message
         }
         redirect(url: request.getHeader("referer"))
+        */
+    }
+
+    /**
+     * Call to load the selection list for the title renewal. The list may be exported as a (configurable) Excel table with usage data for each title
+     * @return the title list for selection; either as HTML table or as Excel export, configured with the given parameters
+     */
+    @DebugInfo(isInstUser_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.isInstUser_or_ROLEADMIN()
+    })
+    def renewEntitlementsWithSurvey() {
+        Map<String,Object> ctrlResult = subscriptionService.renewEntitlementsWithSurvey(params)
+        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+            else flash.error = ctrlResult.result.error
+        }
+        else {
+            ctrlResult.result
+        }
+    }
+
+    /**
+     * Call to process the title selection with the given input parameters
+     * @return a redirect to the referer
+     */
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+    })
+    def processRenewEntitlementsWithSurvey() {
+
     }
 
     /**

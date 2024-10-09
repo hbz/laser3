@@ -1,9 +1,9 @@
 <%@ page import="de.laser.wekb.Platform; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.ApiSource; de.laser.base.AbstractReport; grails.converters.JSON; de.laser.CustomerIdentifier; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 <%
-    Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscriberSub", [subscriberSub: subscriberSub])
+    Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscription])
     if(!subscribedPlatforms) {
-        subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscriberSub", [subscriberSub: subscriberSub])
+        subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription", [subscription: subscription])
     }
     Map<String, Map> platformInstanceRecords = [:]
     JSON platformsJSON = subscribedPlatforms.globalUID as JSON
@@ -30,7 +30,7 @@
             }
             CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(subscriber, platformInstance)
             if(ci?.value) {
-                reportTypes = subscriptionControllerService.getAvailableReports([subscription: subscriberSub], false)
+                reportTypes = subscriptionControllerService.getAvailableReports([subscription: subscription], false)
             }
             else if(ci) {
                 dummyCIs << ci
@@ -141,7 +141,7 @@
                 platforms: platforms,
                 multiple: false,
                 customer: '${subscriber.globalUID}',
-                subscription: ${subscriberSub.id}
+                subscription: ${subscription.id}
             }
         }).done(function(response) {
             $('.dynFilter').remove();

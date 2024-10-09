@@ -10,7 +10,7 @@
         <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>
         <g:each in="${titlesList}" var="tipp">
             <g:set var="ieInNewSub"
-                   value="${surveyService.titleContainedBySubscription(subscriberSub, tipp, [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_EXPECTED])}"/>
+                   value="${surveyService.titleContainedBySubscription(subscription, tipp, [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_EXPECTED])}"/>
             <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
                 <g:set var="participantPerpetualAccessToTitle"
                        value="${surveyService.hasParticipantPerpetualAccessToTitle3(subscriber, tipp)}"/>
@@ -54,7 +54,7 @@
                                 <laser:render
                                         template="/templates/titles/title_short_accordion"
                                         model="${[tipp: tipp,
-                                                  showPackage: true, showPlattform: true, showEmptyFields: false, sub: subscriberSub.id]}"/>
+                                                  showPackage: true, showPlattform: true, showEmptyFields: false, sub: subscription.id]}"/>
                                 <!-- END TEMPLATE -->
 
                             </div>
@@ -120,10 +120,10 @@
                                 <div class="${Btn.MODERN.SIMPLE}">
                                     <i class="${Icon.CMD.SHOW_MORE}"></i>
                                 </div>
-                                <g:if test="${(params.tab == 'allTipps') && editable && ieInNewSub && de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ieInNewSub, de.laser.IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub))}">
+                                <g:if test="${(params.tab == 'allTipps') && editable && ieInNewSub && de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ieInNewSub, de.laser.IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription))}">
                                     <g:link class="${Btn.MODERN.NEGATIVE_TOOLTIP}"
                                             action="processRemoveIssueEntitlementsSurvey"
-                                            params="${[id: subscriberSub.id, singleTitle: ieInNewSub.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
+                                            params="${[id: subscription.id, singleTitle: ieInNewSub.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
                                         <i class="la-basket-shopping slash icon"></i>
                                     </g:link>
@@ -133,7 +133,7 @@
                                 <g:if test="${(params.tab == 'allTipps') && editable && !ieInNewSub && allowedToSelect}">
                                     <g:link class="${Btn.MODERN.SIMPLE_TOOLTIP}"
                                             action="processAddIssueEntitlementsSurvey"
-                                            params="${[id: subscriberSub.id, singleTitle: tipp.id, surveyConfigID: surveyConfig?.id]}"
+                                            params="${[id: subscription.id, singleTitle: tipp.id, surveyConfigID: surveyConfig?.id]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
                                         <i class="shopping basket icon"></i>
                                     </g:link>

@@ -42,7 +42,7 @@ import java.util.concurrent.ExecutorService
 @Transactional
 class CopyElementsService {
 
-    BatchUpdateService batchUpdateService
+    BatchQueryService batchQueryService
     CompareService compareService
     ComparisonService comparisonService
     ContextService contextService
@@ -1344,6 +1344,7 @@ class CopyElementsService {
         String ownerClassName = classString.substring(classString.lastIndexOf(".") + 1)
         ownerClassName = "de.laser.properties.${ownerClassName}Property"
         def targetProp
+        List todoAuditProperties = []
         properties.each { AbstractPropertyWithCalculatedLastUpdated sourceProp ->
             targetProp = targetObject.propertySet.find { it.type.id == sourceProp.type.id && it.tenant == sourceProp.tenant }
             boolean isAddNewProp = sourceProp.type?.multipleOccurrence
@@ -1356,52 +1357,68 @@ class CopyElementsService {
                 if (sourceProp.id.toString() in auditProperties) {
                     //copy audit
                     if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
-
-                        targetObject.getClass().findAllByInstanceOf(targetObject).each { Object member ->
-
-                            def existingProp = targetProp.getClass().findByOwnerAndInstanceOf(member, targetProp)
-                            if (!existingProp) {
-
-                                // multi occurrence props; add one additional with backref
-                                if (sourceProp.type.multipleOccurrence) {
-                                    def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type, contextService.getOrg())
-                                    additionalProp = targetProp.copyInto(additionalProp)
-                                    additionalProp.instanceOf = targetProp
-                                    additionalProp.save()
-                                } else {
-                                    def matchingProps = targetProp.getClass().findAllByOwnerAndType(member, targetProp.type)
-                                    // unbound prop found with matching type, set backref
-                                    if (matchingProps) {
-                                        matchingProps.each { memberProp ->
-                                            memberProp.instanceOf = targetProp
-                                            memberProp.save()
-                                        }
-                                    } else {
-                                        // no match found, creating new prop with backref
-                                        def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type, contextService.getOrg())
-                                        newProp = targetProp.copyInto(newProp)
-                                        newProp.instanceOf = targetProp
-                                        newProp.save()
-                                    }
-                                }
-                            }
-                        }
-
-                        def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(targetProp.class.name, sourceProp.id)
-                        auditConfigs.each {
-                            AuditConfig ac ->
-                                //All ReferenceFields were copied!
-                                AuditConfig.addConfig(targetProp, ac.referenceField)
-                        }
-                        if (!auditConfigs) {
-                            AuditConfig.addConfig(targetProp, AuditConfig.COMPLETE_OBJECT)
-                        }
+                        todoAuditProperties << [sourcePropId: sourceProp.id, targetPropId: targetProp.id]
                     }
                 }
             } else {
                 //Replace
                 targetProp = sourceProp.copyInto(targetProp)
                 targetProp.save()
+
+                if (sourceProp.id.toString() in auditProperties) {
+                    //copy audit
+                    if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
+                        todoAuditProperties << [sourcePropId: sourceProp.id, targetPropId: targetProp.id]
+                    }
+                }
+            }
+        }
+
+
+        todoAuditProperties.each { Map todoAuditPro ->
+            AbstractPropertyWithCalculatedLastUpdated sourceProp = SubscriptionProperty.get(todoAuditPro.sourcePropId)
+            targetProp = SubscriptionProperty.get(todoAuditPro.targetPropId)
+            if(sourceProp && targetProp) {
+                targetObject.getClass().findAllByInstanceOf(targetObject).each { Object member ->
+                    member = member.refresh()
+                    targetProp = targetProp.refresh()
+                    def existingProp = targetProp.getClass().findByOwnerAndInstanceOf(member, targetProp)
+                    if (!existingProp) {
+
+                        // multi occurrence props; add one additional with backref
+                        if (sourceProp.type.multipleOccurrence) {
+                            def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type, contextService.getOrg())
+                            additionalProp = targetProp.copyInto(additionalProp)
+                            additionalProp.instanceOf = targetProp
+                            additionalProp.save()
+                        } else {
+                            def matchingProps = targetProp.getClass().findAllByOwnerAndType(member, targetProp.type)
+                            // unbound prop found with matching type, set backref
+                            if (matchingProps) {
+                                matchingProps.each { memberProp ->
+                                    memberProp.instanceOf = targetProp
+                                    memberProp.save()
+                                }
+                            } else {
+                                // no match found, creating new prop with backref
+                                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type, contextService.getOrg())
+                                newProp = targetProp.copyInto(newProp)
+                                newProp.instanceOf = targetProp
+                                newProp.save()
+                            }
+                        }
+                    }
+                }
+
+                def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(targetProp.class.name, sourceProp.id)
+                auditConfigs.each {
+                    AuditConfig ac ->
+                        //All ReferenceFields were copied!
+                        AuditConfig.addConfig(targetProp, ac.referenceField)
+                }
+                if (!auditConfigs) {
+                    AuditConfig.addConfig(targetProp, AuditConfig.COMPLETE_OBJECT)
+                }
             }
         }
     }
@@ -1785,12 +1802,12 @@ class CopyElementsService {
                     }
                     Sql sql = GlobalService.obtainSqlConnection()
                     //List subscriptionHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where tipp_pkg_fk = :pkgId and ie_subscription_fk = :source", [pkgId: newSubscriptionPackage.pkg.id, source: subscriptionPackage.subscription.id])
-                    batchUpdateService.bulkAddHolding(sql, targetObject.id, newSubscriptionPackage.pkg.id, targetObject.hasPerpetualAccess, null, subscriptionPackage.subscription.id)
+                    batchQueryService.bulkAddHolding(sql, targetObject.id, newSubscriptionPackage.pkg.id, targetObject.hasPerpetualAccess, null, subscriptionPackage.subscription.id)
                     if(subscriptionPackage in packagesToTakeForChildren) {
                         Subscription.findAllByInstanceOf(targetObject).each { Subscription child ->
                             if(!SubscriptionPackage.findByPkgAndSubscription(subscriptionPackage.pkg, child)) {
                                 SubscriptionPackage childSp = new SubscriptionPackage(pkg: subscriptionPackage.pkg, subscription: child).save()
-                                batchUpdateService.bulkAddHolding(sql, child.id, childSp.pkg.id, child.hasPerpetualAccess, targetObject.id)
+                                batchQueryService.bulkAddHolding(sql, child.id, childSp.pkg.id, child.hasPerpetualAccess, targetObject.id)
                             }
                         }
                     }
