@@ -13,7 +13,7 @@
                 <ui:crumb message="menu.my.insts" controller="myInstitution" action="manageMembers" params="[comboType:RDStore.COMBO_TYPE_CONSORTIUM]"/>
             </g:elseif>
             <g:else>
-                <g:if test="${orgInstance.orgType_new && orgInstance.orgType_new.id == RDStore.OT_CONSORTIUM.id}">%{-- ??? customerType --}%
+                <g:if test="${orgInstance.isCustomerType_Consortium()}">
                     <ui:crumb message="menu.public.all_cons" controller="org" action="listConsortia"/>
                 </g:if>
                 <g:else>
