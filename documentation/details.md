@@ -1,17 +1,17 @@
 
-## Details: Upgrade from [Grails 6.1.2](./grails6/details.md) to Grails 6.2.0
+## Details: Upgrade from [Grails 6.1.2](./grails6/details.md) to Grails 6.2.1
 
 ### Database Migration Plugin
 
-Dependency *org.grails:grails-shell:6.1.2* added - TODO: remove, if upgrade of plugin is available.
+Dependency *org.grails:grails-shell:6.1.2* added -> TODO: remove workaround
 
 ### Asset Pipeline Plugin
 
-Splitted dependencies: gradle:4.4.0, core:4.4.0, grails:4.5.1 - TODO: standardize
+Splitted dependencies: gradle:4.4.0, core:4.4.0, grails:4.5.1 -> TODO: upgrade & remove workaround
 
 ### ExecutorGrailsPlugin
 
-*org.grails.plugins:grails-executor* is deprecated as Grails already has similar functionality build in. Replacement should take place.
+*org.grails.plugins:grails-executor* is deprecated as Grails already has similar functionality build in -> TODO: replacement
 
 ### HTTP Status Codes
 

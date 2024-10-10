@@ -1,9 +1,9 @@
 
-## Upgrade to Grails 6.2.0
+## Upgrade to Grails 6.2.1
 
 #### Updated core and dependencies
 
-- Spring Framework 5.3.33
+- Spring Framework 5.3.39
 - Spring Boot 2.7.18
 - Micronaut 3.10.4 / for Spring 4.5.1
 - Hibernate 5.6.15.Final / GORM 8.1.0
