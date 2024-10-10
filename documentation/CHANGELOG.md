@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5967    09.10.2024  dev     3.5         David   Feature     Rechteprüfung: DocstoreController (Download)
+
 5927    09.10.2024  dev     3.5         David   Feature     JoinTable Org.orgType zum Fremdschlüssel umbauen
 
 6005    08.10.2024  rc-3.4  3.4.11      David   Bug         Ungesichertes Löschen von beliebigen DB-Inhalten
