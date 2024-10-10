@@ -16,7 +16,7 @@ import org.grails.web.mapping.DefaultUrlMappingParser
  * This controller handles the server code mapping output
  */
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class ServerCodesController {
+class StatusCodeController {
 
     GrailsApplication grailsApplication
 
@@ -117,7 +117,7 @@ class ServerCodesController {
      */
     def fallback() {
         // UrlMappings -> "/**"
-        log.debug 'ServerCodesController.fallback: ' + request.getRequestURL()
+        log.debug 'StatusCodeController.fallback: ' + request.getRequestURL()
 
         Map<String, Object> result = [
                 status: '404*',

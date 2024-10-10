@@ -1,13 +1,13 @@
 <%@ page import="de.laser.utils.AppUtils" %>
-<laser:htmlStart message="serverCode.error.message1" serviceInjection="true">
+<laser:htmlStart message="statusCode.error.message1" serviceInjection="true">
     <link rel="stylesheet" href="${resource(dir: 'css', file: 'fixed/onlyErrors.css')}" type="text/css">
 </laser:htmlStart>
 
     <br />
 
     <laser:serverCodeMessage status="${status}"
-                             header="${message(code: 'serverCode.error.message1')}"
-                             subheader="${message(code: 'serverCode.error.message2')}">
+                             header="${message(code: 'statusCode.error.message1')}"
+                             subheader="${message(code: 'statusCode.error.message2')}">
 
         <p>
             <strong>${request.forwardURI}</strong>
@@ -20,7 +20,7 @@
             <br />
             <p>
                 <a href="mailto:laser@hbz-nrw.de?${mailString}">
-                    <g:message code="serverCode.error.sendSupportMail"/>
+                    <g:message code="statusCode.error.sendSupportMail"/>
                 </a>
             </p>
         </g:if>

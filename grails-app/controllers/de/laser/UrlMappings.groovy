@@ -55,14 +55,14 @@ class UrlMappings {
 
         "/$controller/$action?/$id?" ()
 
-        // serverCodes
+        // statusCodes
 
-        "500"       (controller: 'serverCodes', action: 'error')
-        "401"       (controller: 'serverCodes', action: 'forbidden')
-        "403"       (controller: 'serverCodes', action: 'forbidden')
-        "404"       (controller: 'serverCodes', action: 'notFound')
-        "405"       (controller: 'serverCodes', action: 'error')
+        "500"       (controller: 'statusCode', action: 'error')
+        "401"       (controller: 'statusCode', action: 'forbidden')
+        "403"       (controller: 'statusCode', action: 'forbidden')
+        "404"       (controller: 'statusCode', action: 'notFound')
+        "405"       (controller: 'statusCode', action: 'error')
 
-        //        "/**"       (controller: 'serverCodes', action: 'fallback')
+        //        "/**"       (controller: 'statusCode', action: 'fallback')
     }
 }

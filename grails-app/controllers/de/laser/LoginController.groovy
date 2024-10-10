@@ -235,7 +235,7 @@ class LoginController {
                         it.clazz.simpleName == mappingInfo.controllerName.capitalize() + 'Controller'
                     }
 
-            if (controller && controller.name != 'ServerCodes') {
+            if (controller && controller.name != 'StatusCode') {
                 boolean match = mappingInfo.hasProperty('info') ? controller.actionUriToViewName.find { it.key == mappingInfo.info.params.action } : false
                 if (match) {
                     valid = true
