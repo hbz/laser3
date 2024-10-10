@@ -53,6 +53,7 @@ configurations {
     developmentOnly
     runtimeClasspath {
         extendsFrom developmentOnly
+        exclude group: 'org.grails', module: 'grails-shell' // - org.grails.plugins:database-migration (exclude)
     }
 }
 

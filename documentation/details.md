@@ -1,11 +1,6 @@
 
 ## Details: Upgrade from [Grails 6.1.2](./grails6/details.md) to Grails 6.2.0
 
-
-### Spring Boot Gradle Plugin
-
-Task :findMainClass FAILED
-
 ### Database Migration Plugin
 
 Dependency *org.grails:grails-shell:6.1.2* added - TODO: remove, if upgrade of plugin is available.

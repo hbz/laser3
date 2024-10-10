@@ -36,6 +36,7 @@
                 <ui:link addItemAttributes="true" controller="yoda" action="profilerLoadtime">${message(code:'menu.yoda.profilerLoadtime')}</ui:link>
                 <ui:link addItemAttributes="true" controller="yoda" action="profilerActivity">${message(code:'menu.yoda.profilerActivity')}</ui:link>
                 <ui:link addItemAttributes="true" controller="yoda" action="profilerTimeline">${message(code:'menu.yoda.profilerTimeline')}</ui:link>
+                <ui:link addItemAttributes="true" controller="yoda" action="profilerCurrent">${message(code:'menu.yoda.profilerCurrent')}</ui:link>
             </div>
         </div>
 

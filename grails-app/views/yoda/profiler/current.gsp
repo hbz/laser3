@@ -21,8 +21,8 @@
         <table class="ui table simple">
             <thead>
             <tr>
-                <th class="eight wide"></th>
-                <th class="four wide"></th>
+                <th class="seven wide"></th>
+                <th class="five wide"></th>
                 <th class="four wide"></th>
             </tr>
             </thead>
@@ -33,7 +33,7 @@
                         ${User.get(u[0]).formalOrg}
                     </td>
                     <td>
-                        <!--${User.get(u[0]).username}-->
+                        ${User.get(u[0]).display} (${User.get(u[0]).username})
                     </td>
                     <td>
                         ${DateUtils.getLocalizedSDF_noZ().format(new Date(u[1]))}

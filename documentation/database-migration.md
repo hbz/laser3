@@ -22,6 +22,13 @@
         }
     }
 
+    configurations {
+        developmentOnly
+        runtimeClasspath {
+            exclude group: 'org.grails', module: 'grails-shell'
+        }
+    }
+
     dependencies {
         implementation 'org.grails.plugins:database-migration:4.2.1', {
             exclude module: 'spring-boot-cli'
