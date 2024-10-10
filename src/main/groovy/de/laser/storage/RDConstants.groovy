@@ -19,8 +19,10 @@ class RDConstants {
     public static final String CATEGORY_BAUTABELLEN   = 'category.bautabellen'
     public static final String CATEGORY_DETAIL        = 'category.detail.inspiration'
     public static final String CATEGORY_EUROMONITOR   = 'category.euromonitor'
+    public static final String CATEGORY_INSIDE_DIN      = 'category.inside.din'
     public static final String CATEGORY_IGI           = 'category.igi'
     public static final String CATEGORY_JURIS         = 'category.juris'
+    public static final String CATEGORY_MEINUNTERRICHT  = 'category.meinUnterricht'
     public static final String CATEGORY_PNAS          = 'category.pnas'
     public static final String CATEGORY_SCIENTIFIC    = 'category.scientific.net.rup'
     public static final String CATEGORY_SCOPUS        = 'category.scopus'
@@ -71,6 +73,7 @@ class RDConstants {
     public static final String IP_AUTHENTICATION      = 'ip.authentication'
     public static final String IPV4_ADDRESS_FORMAT    = 'ipv4.address.format'
     public static final String IPV6_ADDRESS_FORMAT    = 'ipv6.address.format'
+    public static final String INVOICE_PROCESSING      = 'invoice.processing'
 
     public static final String MAIL_STATUS            = 'mail.status'
     public static final String MAIL_TYPE              = 'mail.type'

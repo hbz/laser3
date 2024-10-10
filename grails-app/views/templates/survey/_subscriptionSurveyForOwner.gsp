@@ -366,7 +366,7 @@
                                             <laser:render template="/templates/links/providerLinksAsList"
                                                       model="${[roleLinks    : visibleProviders,
                                                                 roleObject   : subscription,
-                                                                roleRespValue: 'Specific subscription editor',
+                                                                roleRespValue: RDStore.PRS_RESP_SPEC_SUB_EDITOR.value,
                                                                 editmode     : false,
                                                                 showPersons  : false
                                                       ]}"/>
@@ -378,7 +378,7 @@
                                             <laser:render template="/templates/links/vendorLinksAsList"
                                                       model="${[roleLinks    : visibleVendors,
                                                                 roleObject   : subscription,
-                                                                roleRespValue: 'Specific subscription editor',
+                                                                roleRespValue: RDStore.PRS_RESP_SPEC_SUB_EDITOR.value,
                                                                 editmode     : false,
                                                                 showPersons  : false
                                                       ]}"/>
@@ -415,49 +415,52 @@
                                             <table class="ui fixed table">
                                                 <g:each in="${links[genericOIDService.getOID(RDStore.LINKTYPE_LICENSE)]}"
                                                         var="link">
-                                                    <tr><g:set var="pair" value="${link.getOther(subscription)}"/>
-                                                        <th scope="row"
-                                                            class="control-label">${pair.licenseCategory?.getI10n("value")}</th>
-                                                        <td>
-                                                            <g:link controller="license" action="show" id="${pair.id}">
-                                                                ${pair.reference} (${pair.status.getI10n("value")})
-                                                            </g:link>
-                                                            <g:formatDate date="${pair.startDate}"
-                                                                          format="${message(code: 'default.date.format.notime')}"/>-<g:formatDate
-                                                                date="${pair.endDate}"
-                                                                format="${message(code: 'default.date.format.notime')}"/><br/>
-                                                            <g:set var="comment"
-                                                                   value="${DocContext.findByLink(link)}"/>
-                                                            <g:if test="${comment}">
-                                                                <em>${comment.owner.content}</em>
-                                                            </g:if>
-                                                        </td>
-                                                        <td class="right aligned">
-                                                            <g:if test="${pair.propertySet}">
-                                                                <div id="derived-license-properties-toggle${link.id}"
-                                                                        class="${Btn.MODERN.SIMPLE_TOOLTIP}"
-                                                                        data-content="${message(code: 'subscription.details.viewLicenseProperties')}">
-                                                                    <i class="${Icon.CMD.SHOW_MORE}"></i>
-                                                                </div>
-                                                                <laser:script file="${this.getGroovyPageFileName()}">
-                                                                    $("#derived-license-properties-toggle${link.id}").on('click', function() {
-                                                        $("#derived-license-properties${link.id}").transition('slide down');
-                                                        //$("#derived-license-properties${link.id}").toggleClass('hidden');
-
-                                                        if ($("#derived-license-properties${link.id}").hasClass('visible')) {
-                                                            $(this).html('<i class="angle double down icon"></i>')
-                                                        } else {
-                                                            $(this).html('<i class="angle double up icon"></i>')
-                                                        }
-                                                    })
-                                                                </laser:script>
-                                                            </g:if>
-                                                        </td>
-                                                    </tr>
-                                                    <g:if test="${pair.propertySet}">
+                                                    <g:set var="pair" value="${link.getOther(subscription)}"/>
+                                                        <g:if test="${pair}">
                                                         <tr>
-                                                            <td colspan="3"><div id="${link.id}Properties"></div></td>
+                                                            <th scope="row"
+                                                                class="control-label">${pair.licenseCategory?.getI10n("value")}</th>
+                                                            <td>
+                                                                <g:link controller="license" action="show" id="${pair.id}">
+                                                                    ${pair.reference} (${pair.status.getI10n("value")})
+                                                                </g:link>
+                                                                <g:formatDate date="${pair.startDate}"
+                                                                              format="${message(code: 'default.date.format.notime')}"/>-<g:formatDate
+                                                                    date="${pair.endDate}"
+                                                                    format="${message(code: 'default.date.format.notime')}"/><br/>
+                                                                <g:set var="comment"
+                                                                       value="${DocContext.findByLink(link)}"/>
+                                                                <g:if test="${comment}">
+                                                                    <em>${comment.owner.content}</em>
+                                                                </g:if>
+                                                            </td>
+                                                            <td class="right aligned">
+                                                                <g:if test="${pair.propertySet}">
+                                                                    <div id="derived-license-properties-toggle${link.id}"
+                                                                            class="${Btn.MODERN.SIMPLE_TOOLTIP}"
+                                                                            data-content="${message(code: 'subscription.details.viewLicenseProperties')}">
+                                                                        <i class="${Icon.CMD.SHOW_MORE}"></i>
+                                                                    </div>
+                                                                    <laser:script file="${this.getGroovyPageFileName()}">
+                                                                        $("#derived-license-properties-toggle${link.id}").on('click', function() {
+                                                            $("#derived-license-properties${link.id}").transition('slide down');
+                                                            //$("#derived-license-properties${link.id}").toggleClass('hidden');
+
+                                                            if ($("#derived-license-properties${link.id}").hasClass('visible')) {
+                                                                $(this).html('<i class="angle double down icon"></i>')
+                                                            } else {
+                                                                $(this).html('<i class="angle double up icon"></i>')
+                                                            }
+                                                        })
+                                                                    </laser:script>
+                                                                </g:if>
+                                                            </td>
                                                         </tr>
+                                                        <g:if test="${pair.propertySet}">
+                                                            <tr>
+                                                                <td colspan="3"><div id="${link.id}Properties"></div></td>
+                                                            </tr>
+                                                        </g:if>
                                                     </g:if>
                                                 </g:each>
                                             </table>

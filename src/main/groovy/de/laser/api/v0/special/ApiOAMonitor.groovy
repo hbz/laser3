@@ -6,7 +6,6 @@ import de.laser.OrgRole
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.SubscriptionPackage
-import de.laser.TitleInstancePackagePlatform
 import de.laser.exceptions.NativeSqlException
 import de.laser.finance.CostItem
 import de.laser.OrgSetting
@@ -146,7 +145,7 @@ class ApiOAMonitor {
 
             // RefdataValues
 
-            result.type         = org.orgType?.collect{ it.value }
+            result.type         = org.orgType_new ? [org.orgType_new.value] : []
             result.status       = org.status?.value
 
             // References

@@ -10,6 +10,7 @@ import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -30,7 +31,7 @@ import java.util.concurrent.ExecutorService
 //@Transactional
 class YodaService {
 
-    BatchUpdateService batchUpdateService
+    BatchQueryService batchQueryService
     ContextService contextService
     DeletionService deletionService
     GlobalSourceSyncService globalSourceSyncService
@@ -337,7 +338,7 @@ class YodaService {
                 subIds.each { Long subId ->
                     log.debug("now processing package ${subId}:${pkgId}")
                     if(entire)
-                        batchUpdateService.bulkAddHolding(sql, subId, pkgId, perpetualAccess)
+                        batchQueryService.bulkAddHolding(sql, subId, pkgId, perpetualAccess)
                     log.debug("${sql.executeUpdate('update issue_entitlement set ie_status_rv_fk = tipp_status_rv_fk from title_instance_package_platform where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk != tipp_status_rv_fk and ie_status_rv_fk != :removed', [subId: subId, removed: RDStore.TIPP_STATUS_REMOVED.id])} rows updated")
                 }
             }

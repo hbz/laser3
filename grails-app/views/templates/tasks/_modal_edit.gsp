@@ -1,36 +1,36 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.Task;de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Task;de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
 <laser:serviceInjection />
 
 <ui:modal id="modalEditTask" message="task.edit" isEditModal="true" >
 
-    <g:form class="ui form" id="edit_task" url="[controller:'task',action:'edit',id:taskInstance?.id]" method="post">
-        <g:hiddenField name="version" value="${taskInstance?.version}" />
+    <g:form class="ui form" id="edit_task" url="[controller:'task',action:'edit',id:taskInstance.id]" method="post">
+        <g:hiddenField name="version" value="${taskInstance.version}" />
         <div class="field ${hasErrors(bean: taskInstance, field: 'title', 'error')} required">
             <label for="title">
                 <g:message code="default.title.label"/>
             </label>
-            <g:textField name="title" required="" value="${taskInstance?.title}"/>
+            <g:textField name="title" required="" value="${taskInstance.title}"/>
         </div>
 
         <div class="field ${hasErrors(bean: taskInstance, field: 'description', 'error')}">
             <label for="description">
                 <g:message code="default.description.label"/>
             </label>
-            <g:textArea name="description" value="${taskInstance?.description}" rows="5" cols="40"/>
+            <g:textArea name="description" value="${taskInstance.description}" rows="5" cols="40"/>
         </div>
 
         <div class="field ${hasErrors(bean: taskInstance, field: 'description', 'error')}">
-            <strong>Betrifft:</strong>
+            <label>Bezieht sich auf</label>
             <g:if test="${taskInstance.getObjects()}">
                 <g:each in="${taskInstance.getObjects()}" var="tskObj">
-                    <br />
-                    - ${message(code: 'task.' + tskObj.controller)}:
-                    <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>
+                    <div class="la-flexbox">
+                        <i class="${tskObj.icon} la-list-icon"></i>
+                        <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>
+                    </div>
                 </g:each>
             </g:if>
             <g:else>
-                <br />
-                - ${message(code: 'task.general')}
+                <div class="la-flexbox">${message(code: 'task.general')}</div>
             </g:else>
         </div>
 
@@ -43,11 +43,11 @@
                     </label>
                     <ui:select id="status" name="status.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
                                   optionValue="value" optionKey="id" required=""
-                                  value="${taskInstance?.status?.id ?: RDStore.TASK_STATUS_OPEN.id}"
+                                  value="${taskInstance.status?.id ?: RDStore.TASK_STATUS_OPEN.id}"
                                   class="ui dropdown search many-to-one"/>
                 </div>
 
-                <ui:datepicker class="wide eight" label="task.endDate.label" id="endDate" name="endDate" placeholder="default.date.label" value="${formatDate(format:message(code:'default.date.format.notime'), date:taskInstance?.endDate)}" required="true" bean="${taskInstance}" />
+                <ui:datepicker class="wide eight" label="task.endDate.label" id="endDate" name="endDate" placeholder="default.date.label" value="${formatDate(format:message(code:'default.date.format.notime'), date:taskInstance.endDate)}" required="true" bean="${taskInstance}" />
 
             </div>
         </div>
@@ -59,7 +59,7 @@
                         <legend>
                             <g:message code="task.responsible.label" />
                         </legend>
-                        <g:if test="${taskInstance?.responsibleOrg?.id}"><g:set var="checked" value="checked" /></g:if><g:else> <g:set var="checked" value="" /></g:else>
+                        <g:if test="${taskInstance.responsibleOrg?.id}"><g:set var="checked" value="checked" /></g:if><g:else> <g:set var="checked" value="" /></g:else>
 
                         <div class="field">
                             <div class="ui radio checkbox">
@@ -67,7 +67,7 @@
                                 <label for="radioresponsibleOrgEdit">${message(code: 'task.responsibleOrg.label')} <strong>${contextOrg.getDesignation()}</strong></label>
                             </div>
                         </div>
-                        <g:if test="${taskInstance?.responsibleUser?.id}"><g:set var="checked" value="checked" /></g:if><g:else> <g:set var="checked" value="" /></g:else>
+                        <g:if test="${taskInstance.responsibleUser?.id}"><g:set var="checked" value="checked" /></g:if><g:else> <g:set var="checked" value="" /></g:else>
                         <div class="field">
                             <div class="ui radio checkbox">
                                 <input id="radioresponsibleUserEdit" type="radio" value="User" name="responsible" tabindex="0" class="hidden" ${checked}>
@@ -86,7 +86,7 @@
                               from="${taskService.getUserDropdown(contextOrg)}"
                               optionKey="id"
                               optionValue="display"
-                              value="${taskInstance?.responsibleUser?.id}"
+                              value="${taskInstance.responsibleUser?.id}"
                               class="ui dropdown search many-to-one"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"
                     />

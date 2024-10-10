@@ -18,47 +18,38 @@ import org.springframework.context.MessageSource
 @Transactional
 class DocstoreService {
 
+    AccessService accessService
     MessageSource messageSource
 
     /**
      * Deletes a document with the given parameter map.
      * Used in:
      * <ul>
-     *     <li>{@link de.laser.LicenseController}</li>
      *     <li>{@link de.laser.MyInstitutionController}</li>
-     *     <li>{@link de.laser.PackageController}</li>
-     *     <li>{@link de.laser.SubscriptionController}</li>
+     *     <li>{@link de.laser.SurveyController}</li>
      * </ul>
+     * Will be replaced. Try to use {@link DocstoreController#deleteDocument()}
      * @param params the parameter map, coming from one of the controllers specified in the list above
      */
-    def unifiedDeleteDocuments(params) {
+    @Deprecated
+    def deleteDocument(params) {
 
-        params.each { p ->
-            if (p.key.startsWith('_deleteflag.') ) {
-                String docctx_to_delete = p.key.substring(12)
-                log.debug("Looking up docctx ${docctx_to_delete} for delete")
+        // myInstitution > currentSubscriptionsTransfer
+        // myInstitution > currentSubscriptionsTransfer_support
+        // myInstitution > subscriptionsManagement
+        // survey > cardDocuments
+        // survey > evaluationParticipantsView
+        // survey > surveyConfigDocs
 
-                DocContext docctx = DocContext.get(docctx_to_delete)
-                docctx.status = RDStore.DOC_CTX_STATUS_DELETED
-                docctx.save()
-            }
-            if (p.key.startsWith('_deleteflag"@.') ) { // PackageController
-                String docctx_to_delete = p.key.substring(12);
-                log.debug("Looking up docctx ${docctx_to_delete} for delete")
-
-                DocContext docctx = DocContext.get(docctx_to_delete)
-                docctx.status = RDStore.DOC_CTX_STATUS_DELETED
-                docctx.save()
-            }
-        }
+        log.debug("deleteDocument (DEPRECATED): ${params}")
 
         if (params.deleteId) {
-            String docctx_to_delete = params.deleteId
-            log.debug("Looking up docctx ${docctx_to_delete} for delete")
+            DocContext docctx = DocContext.get(params.deleteId)
 
-            DocContext docctx = DocContext.get(docctx_to_delete)
-            docctx.status = RDStore.DOC_CTX_STATUS_DELETED
-            docctx.save()
+            if (accessService.hasAccessToDocument(docctx)) {
+                docctx.status = RDStore.DOC_CTX_STATUS_DELETED
+                docctx.save()
+            }
         }
     }
 
@@ -169,118 +160,75 @@ class DocstoreService {
 
     /**
      * Gets the notes of the given owner institution for the given object
-     * @param objInstance the object whose notes should be retrieved
+     * @param obj the object whose notes should be retrieved
      * @param docOwner the owner institution ({@link Org}) who owns the notes
      * @return a {@link List} of {@link DocContext}s pointing from the given object to respective notes
      */
-    List<DocContext> getNotes(def objInstance, Org docOwner) {
-
-        Map queryParams = [instance: objInstance, del: RDStore.DOC_CTX_STATUS_DELETED, docOwner: docOwner]
-        String query =  "and dc.owner = d and d.contentType = 0 and (dc.status is null or dc.status != :del) " +
-                        "and (dc.sharedFrom is not null or (dc.sharedFrom is null and d.owner =: docOwner)) " +
-                        "order by d.lastUpdated desc, d.dateCreated desc"
-
-        if (objInstance instanceof Subscription) {
-            query = "dc.subscription = :instance " + query
-        }
-        else if (objInstance instanceof License) {
-            query = "dc.license = :instance " + query
-        }
-        else if (objInstance instanceof Org) {
-            query = "dc.org = :instance " + query
-        }
-        else if (objInstance instanceof Provider) {
-            query = "dc.provider = :instance " + query
-        }
-        else if (objInstance instanceof Vendor) {
-            query = "dc.vendor = :instance " + query
-        }
-        else if (objInstance instanceof SurveyConfig) {
-            query = "dc.surveyConfig = :instance " + query
-        }
-        else {
-            return []
-        }
-
-
-        Doc.executeQuery("select dc from DocContext dc, Doc d where " + query, queryParams)
+    List<DocContext> getNotes(def obj, Org docOwner) {
+        _getQueryResult(obj, docOwner, Doc.CONTENT_TYPE_STRING, false)
     }
 
     /**
      * Counts the notes attached to the given object and owned by the given institution.
      * Notes are technically {@link Doc}s with the type {@link Doc#CONTENT_TYPE_STRING}
-     * @param objInstance the object, one of {@link Subscription}, {@link License}, {@link Org} or {@link SurveyConfig}, to which the notes are attached
+     * @param obj the object, one of {@link Subscription}, {@link License}, {@link Org} or {@link SurveyConfig}, to which the notes are attached
      * @param docOwner the institution {@link Org} whose notes should be counted
      * @return the count of matching notes
      */
-    int getNotesCount(def objInstance, Org docOwner) {
-
-        Map queryParams = [instance: objInstance, del: RDStore.DOC_CTX_STATUS_DELETED, docOwner: docOwner]
-        String query =  "and dc.owner = d and d.contentType = 0 and (dc.status is null or dc.status != :del) " +
-                "and (dc.sharedFrom is not null or (dc.sharedFrom is null and d.owner =: docOwner)) "
-
-        if (objInstance instanceof Subscription) {
-            query = "dc.subscription = :instance " + query
-        }
-        else if (objInstance instanceof License) {
-            query = "dc.license = :instance " + query
-        }
-        else if (objInstance instanceof Org) {
-            query = "dc.org = :instance " + query
-        }
-        else if (objInstance instanceof Provider) {
-            query = "dc.provider = :instance " + query
-        }
-        else if (objInstance instanceof Vendor) {
-            query = "dc.vendor = :instance " + query
-        }
-        else if (objInstance instanceof SurveyConfig) {
-            query = "dc.surveyConfig = :instance " + query
-        }
-        else {
-            return 0
-        }
-
-
-        Doc.executeQuery("select count(*) from DocContext dc, Doc d where " + query, queryParams)[0]
+    int getNotesCount(def obj, Org docOwner) {
+        _getQueryResult(obj, docOwner, Doc.CONTENT_TYPE_STRING, true)[0]
     }
 
     /**
      * Counts the documents ({@link Doc}s with {@link Doc#contentType} other than note) attached to the given object and owned by the given institution
-     * @param objInstance the object, one of {@link Subscription}, {@link License}, {@link Org} or {@link SurveyConfig}, to which the documents are attached
+     * @param obj the object, one of {@link Subscription}, {@link License}, {@link Org} or {@link SurveyConfig}, to which the documents are attached
      * @param docOwner the institution {@link Org} whose documents should be counted
      * @return the count of matching documents
      */
-    int getDocsCount(def objInstance, Org docOwner) {
+    int getDocsCount(def obj, Org docOwner) {
+        _getQueryResult(obj, docOwner, Doc.CONTENT_TYPE_FILE, true)[0]
+    }
 
-        Map queryParams = [instance: objInstance, del: RDStore.DOC_CTX_STATUS_DELETED, docOwner: docOwner]
-        String query =  "and dc.owner = d and d.contentType = 3 and (dc.status is null or dc.status != :del) " +
-                "and (dc.sharedFrom is not null or (dc.sharedFrom is null and d.owner =: docOwner)) "
+    private List _getQueryResult(def obj, Org docOwner, def contentType, boolean countOnly = false) {
 
-        if (objInstance instanceof Subscription) {
-            query = "dc.subscription = :instance " + query
+        Map queryParams = [
+                obj         : obj,
+                docOwner    : docOwner,
+                contentType : contentType,
+                delStatus   : RDStore.DOC_CTX_STATUS_DELETED,
+        ]
+        String query =  'and dc.owner = d and d.contentType = :contentType ' +
+                        'and (dc.status is null or dc.status != :delStatus) ' +
+                        'and (dc.sharedFrom is not null or (dc.sharedFrom is null and d.owner =: docOwner)) '
+
+        if (obj instanceof Subscription) {
+            query = 'dc.subscription = :obj ' + query
         }
-        else if (objInstance instanceof License) {
-            query = "dc.license = :instance " + query
+        else if (obj instanceof License) {
+            query = 'dc.license = :obj ' + query
         }
-        else if (objInstance instanceof Org) {
-            query = "dc.org = :instance " + query
+        else if (obj instanceof Org) {
+            query = 'dc.org = :obj ' + query
         }
-        else if (objInstance instanceof Provider) {
-            query = "dc.provider = :instance " + query
+        else if (obj instanceof Provider) {
+            query = 'dc.provider = :obj ' + query
         }
-        else if (objInstance instanceof Vendor) {
-            query = "dc.vendor = :instance " + query
+        else if (obj instanceof Vendor) {
+            query = 'dc.vendor = :obj ' + query
         }
-        else if (objInstance instanceof SurveyConfig) {
-            query = "dc.surveyConfig = :instance " + query
+        else if (obj instanceof SurveyConfig) {
+            query = 'dc.surveyConfig = :obj ' + query
         }
         else {
-            return 0
+            return []
         }
 
-
-        Doc.executeQuery("select count(*) from DocContext dc, Doc d where " + query, queryParams)[0]
+        if (countOnly) {
+            Doc.executeQuery('select count(*) from DocContext dc, Doc d where ' + query, queryParams)
+        }
+        else {
+            Doc.executeQuery('select dc from DocContext dc, Doc d where ' + query + ' order by d.lastUpdated desc, d.dateCreated desc', queryParams)
+        }
     }
 
     /**

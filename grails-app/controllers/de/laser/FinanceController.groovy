@@ -120,7 +120,7 @@ class FinanceController  {
                 }
             }
             result.checklistCount = workflowService.getWorkflowCount(result.subscription, result.institution)
-            int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.subscription).size()
+            int tc1 = taskService.getTasksByResponsibilityAndObject(result.user, result.subscription).size()
             int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.subscription).size()
             result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 

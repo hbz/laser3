@@ -22,7 +22,7 @@
 <uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="${actionName}"/>
 
 <g:if test="${surveyConfig.subscription}">
-    <ui:linkWithIcon icon="${Icon.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+ <ui:buttonWithIcon style="vertical-align: super;" message="${message(code: 'button.message.showLicense')}" variation="tiny" icon="${Icon.SUBSCRIPTION}" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
 <laser:render template="nav"/>
@@ -82,7 +82,7 @@
                             %{--ERMS-4524--}%
                             <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />
                             <g:if test="${docctx.isDocAFile() && supportedMimeType}">
-                                <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title}</a>
+                                <a href="#documentPreview" data-dctx="${docctx.id}">${docctx.owner.title}</a>
                             </g:if>
                             <g:else>
                                 ${docctx.owner.title}
@@ -104,7 +104,7 @@
                         </td>
                         <td class="x">
                             <g:if test="${docctx.isDocAFile()}">
-                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i
+                                <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i
                                         class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                                 <g:if test="${editable && !docctx.sharedFrom}">
                                     <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-ui="modal"

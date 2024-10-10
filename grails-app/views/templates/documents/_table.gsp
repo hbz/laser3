@@ -125,7 +125,7 @@
                             <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />
                             <strong>
                                 <g:if test="${docctx.isDocAFile() && visible && supportedMimeType}">
-                                    <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title}</a>
+                                    <a href="#documentPreview" data-dctx="${docctx.id}">${docctx.owner.title}</a>
                                 </g:if>
                                 <g:else>
                                     ${docctx.owner.title}
@@ -190,7 +190,7 @@
                                         </g:else>
                                     </g:if>
                                 </g:if>
-                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+                                <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                                 %{-- todo: !docctx.sharedFrom --}%
                                 <g:if test="${userService.hasFormalAffiliation(user, docctx.owner.owner, 'INST_EDITOR') && inOwnerOrg && !docctx.sharedFrom}">
                                     <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-ui="modal" data-href="#modalEditDocument_${docctx.id}" data-content="${message(code:"template.documents.edit")}"><i class="${Icon.CMD.EDIT}"></i></button>
@@ -202,10 +202,12 @@
                                     <%
                                         String redirectId = actionName == 'membersSubscriptionsManagement' && instance.instanceOf ? instance.instanceOf.id : instance.id
                                     %>
-                                    <g:link controller="${controllerName}" action="deleteDocuments" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
+                                    <g:set var="linkParams" value="${[instanceId:"${redirectId}", deleteId:"${docctx.id}", redirectController:"${controllerName}", redirectAction:"${actionName}"]}" />
+%{--                                    params='[instanceId:"${redirectId}", deleteId:"${docctx.id}", redirectController:"${controllerName}", redirectAction:"${actionName}", redirectTab: "${params.tab}"]'--}%
+                                    <g:link controller="docstore" action="deleteDocument" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                             data-confirm-term-how="delete"
-                                            params='[instanceId:"${redirectId}", deleteId:"${docctx.id}", redirectAction:"${actionName}", redirectTab: "${params.tab}"]'
+                                            params="${params.tab ? linkParams << [redirectTab: "${params.tab}"] : linkParams}"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                         <i class="${Icon.CMD.DELETE}"></i>

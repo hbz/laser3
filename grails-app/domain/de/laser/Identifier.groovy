@@ -5,6 +5,7 @@ import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.storage.BeanStore
 import de.laser.wekb.Package
 import de.laser.wekb.Provider
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import grails.plugins.orm.auditable.Auditable
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -19,7 +20,7 @@ import groovy.util.logging.Slf4j
  * @see Subscription#ids
  * @see License#ids
  * @see Org#ids
- * @see TitleInstancePackagePlatform#ids
+ * @see de.laser.wekb.TitleInstancePackagePlatform#ids
  * @see de.laser.wekb.Package#ids
  */
 @Slf4j
@@ -72,7 +73,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         id    column:'id_id'
         version column: 'id_version'
         ns    column:'id_ns_fk', index:'id_ns_value_idx'
-        value column:'id_value', index:'id_ns_value_idx'
+        value column:'id_value', index:'id_value_idx, id_ns_value_idx'
         note  column:'id_note',  type: 'text'
 
         lic   column:'id_lic_fk', index: 'id_lic_idx'

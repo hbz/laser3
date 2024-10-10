@@ -1,10 +1,6 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <laser:htmlStart message="privacyNotice" />
 
-<ui:breadcrumbs>
-    <ui:crumb message="privacyNotice" class="active"/>
-</ui:breadcrumbs>
-
 <ui:h1HeaderWithIcon message="privacyNotice" type="help"/>
 
 <br />

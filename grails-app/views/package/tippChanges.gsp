@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.TitleInstancePackagePlatform; de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange; de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.RefdataValue;" %>
+<%@ page import="de.laser.wekb.TitleInstancePackagePlatform; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange; de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.RefdataValue;" %>
 <laser:htmlStart message="myinst.menu.pendingChanges.label" serviceInjection="true" />
 
 <ui:breadcrumbs>

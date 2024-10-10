@@ -7,6 +7,7 @@ import de.laser.storage.PropertyStore
 import de.laser.storage.RDStore
 import de.laser.utils.AppUtils
 import de.laser.wekb.Package
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
@@ -108,6 +109,8 @@ class PublicController {
     def gasco() {
         Map<String, Object> result = [:]
 
+      try {
+
         result.allConsortia = Org.executeQuery(
                 """select o from Org o, OrgSetting os_gs, OrgSetting os_ct where 
                         os_gs.org = o and os_gs.key = 'GASCO_ENTRY' and os_gs.rdValue.value = 'Yes' and 
@@ -116,13 +119,11 @@ class PublicController {
                         order by lower(o.name)"""
         )
 
-
         if (! params.subKinds && ! params.consortia && ! params.q) {
             // init filter with checkboxes checked
             result.initQuery = 'true'
         }
         else {
-
             String q = params.q?.trim()
             Map<String, Object> queryParams = [:]
 
@@ -187,6 +188,11 @@ class PublicController {
             }
             result.subscriptionsCount = result.subscriptions.size()
         }
+
+      } catch (Exception e) {
+          log.warn 'gasco: exception caused by ' + request.getRemoteAddr()
+          throw e
+      }
 
         result
     }
@@ -314,6 +320,37 @@ class PublicController {
         Map<String, Object> result = [:]
         result.mappingColsBasic = ["asService", "accessRights", "community", "wekb"]
         result.mappingColsPro = ["management", "organisation", "reporting", "api"]
+        result
+    }
+
+    @Secured(['permitAll'])
+    def faq() {
+        Map<String, Object> result = [
+                content : [
+                        'various'               : ['Allgemein', 'General'],
+                        'notifications'         : ['Benachrichtigungen', 'Notifications'],
+                        'propertyDefinitions'   : ['Merkmale', 'Properties'],
+                        'userManagement'        : ['Benutzer-Accounts', 'User accounts'],
+                ], // todo
+                topic   : 'various'
+        ]
+        if (params.id) {
+            result.topic = params.id.toString()
+        }
+        result
+    }
+
+    @Secured(['permitAll'])
+    def releaseNotes() {
+        Map<String, Object> result = [
+                history : ['3.2', '3.3', '3.4'] // todo
+        ]
+
+        String[] iap = AppUtils.getMeta('info.app.version').split('\\.')
+        if (params.id) {
+            iap = params.id.toString().split('\\.')
+        }
+        result.version = (iap.length >= 2) ? (iap[0] + '.' + iap[1]) : 'failed'
         result
     }
 }

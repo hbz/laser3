@@ -9,14 +9,14 @@
                             <laser:render template="/templates/links/providerLinksAsList"
                                       model="${[roleLinks    : providerRoles,
                                                 roleObject   : subscription,
-                                                roleRespValue: 'Specific subscription editor',
+                                                roleRespValue: RDStore.PRS_RESP_SPEC_SUB_EDITOR.value,
                                                 editmode     : editable,
                                                 showPersons  : false
                                       ]}"/>
                             <laser:render template="/templates/links/vendorLinksAsList"
                                           model="${[vendorRoles  : vendorRoles,
                                                     roleObject   : subscription,
-                                                    roleRespValue: 'Specific subscription editor',
+                                                    roleRespValue: RDStore.PRS_RESP_SPEC_SUB_EDITOR.value,
                                                     editmode     : editable,
                                                     showPersons  : true
                                           ]}"/>
@@ -104,14 +104,14 @@
                                 <laser:render template="/templates/links/providerLinksAsList"
                                           model="${[providerRoles: ProviderRole.findAllBySubscription(sub, [sort: 'provider.sortname']),
                                                     roleObject   : sub,
-                                                    roleRespValue: 'Specific subscription editor',
+                                                    roleRespValue: RDStore.PRS_RESP_SPEC_SUB_EDITOR.value,
                                                     editmode     : editable,
                                                     showPersons  : false
                                           ]}"/>
                                 <laser:render template="/templates/links/vendorLinksAsList"
                                               model="${[vendorRoles  : VendorRole.findAllBySubscription(sub, [sort: 'vendor.sortname']),
                                                         roleObject   : sub,
-                                                        roleRespValue: 'Specific subscription editor',
+                                                        roleRespValue: RDStore.PRS_RESP_SPEC_SUB_EDITOR.value,
                                                         editmode     : editable,
                                                         showPersons  : false
                                               ]}"/>

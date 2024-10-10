@@ -77,17 +77,17 @@
                             <dt class="control-label">Renewal ${message(code: 'default.change.label')}</dt>
                             <dd>
                                 <g:set var="surveyUseForTransfer" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(subscription, true)}"/>
-                                <g:set var="countModificationToCostInformationAfterRenewalDoc" value="${surveyUseForTransfer ? surveyService.countModificationToCostInformationAfterRenewalDoc(subscription) : 0}"/>
+                                <g:set var="countModificationToContactInformationAfterRenewalDoc" value="${surveyUseForTransfer ? surveyService.countModificationToContactInformationAfterRenewalDoc(subscription) : 0}"/>
 
-                                    <g:if test="${countModificationToCostInformationAfterRenewalDoc > 0}">
+                                    <g:if test="${countModificationToContactInformationAfterRenewalDoc > 0}">
                                         <g:link class="ui label triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
                                                 params="[exportController: 'survey', exportAction: 'renewalEvaluation', exportParams: params, clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION, id: surveyUseForTransfer.surveyInfo.id, surveyConfigID: surveyUseForTransfer.id]">
-                                            <i class="${Icon.CMD.DOWNLOAD}"></i> ${countModificationToCostInformationAfterRenewalDoc}
+                                            <i class="${Icon.CMD.DOWNLOAD}"></i> ${countModificationToContactInformationAfterRenewalDoc}
                                         </g:link>
                                     </g:if>
                                     <g:else>
                                         <g:if test="${surveyUseForTransfer}">
-                                            ${countModificationToCostInformationAfterRenewalDoc}
+                                            ${countModificationToContactInformationAfterRenewalDoc}
                                         </g:if>
                                     </g:else>
                             </dd>
@@ -218,7 +218,7 @@
                                                value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                         <g:if test="${supportedMimeType}">
                                             <a href="#documentPreview"
-                                               data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
+                                               data-dctx="${docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
                                         </g:if>
                                         <g:else>
                                             ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
@@ -234,14 +234,14 @@
 
                                         <g:if test="${!(editable)}">
                                         <%-- 1 --%>
-                                            <g:link controller="docstore" id="${docctx.owner.uuid}"
+                                            <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}"
                                                     class="${Btn.MODERN.SIMPLE}"
                                                     target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                                         </g:if>
                                         <g:else>
                                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                             <%-- 1 --%>
-                                                <g:link controller="docstore" id="${docctx.owner.uuid}"
+                                                <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}"
                                                         class="${Btn.MODERN.SIMPLE}"
                                                         target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
 
@@ -258,12 +258,12 @@
 
                                         <%-- 4 --%>
                                             <g:if test="${docctx.owner.owner?.id == contextOrg.id && !docctx.isShared}">
-                                                <g:link controller="${ajaxCallController ?: controllerName}"
-                                                        action="deleteDocuments"
+                                                <g:link controller="docstore"
+                                                        action="deleteDocument"
                                                         class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                                         data-confirm-term-how="delete"
-                                                        params='[instanceId: "${subscription.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
+                                                        params='[instanceId: "${subscription.id}", deleteId: "${docctx.id}", redirectController:"${ajaxCallController ?: controllerName}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                         role="button"
                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                                     <i class="${Icon.CMD.DELETE}"></i>
@@ -298,7 +298,7 @@
                                                value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                         <g:if test="${supportedMimeType}">
                                             <a href="#documentPreview"
-                                               data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
+                                               data-dctx="${docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
                                         </g:if>
                                         <g:else>
                                             ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
@@ -312,14 +312,14 @@
 
                                         <g:if test="${!(editable)}">
                                         <%-- 1 --%>
-                                            <g:link controller="docstore" id="${docctx.owner.uuid}"
+                                            <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}"
                                                     class="${Btn.MODERN.SIMPLE}"
                                                     target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                                         </g:if>
                                         <g:else>
                                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                             <%-- 1 --%>
-                                                <g:link controller="docstore" id="${docctx.owner.uuid}"
+                                                <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}"
                                                         class="${Btn.MODERN.SIMPLE}"
                                                         target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
 
@@ -336,12 +336,12 @@
 
                                         <%-- 4 --%>
                                             <g:if test="${docctx.owner.owner?.id == contextOrg.id && !docctx.isShared}">
-                                                <g:link controller="${ajaxCallController ?: controllerName}"
-                                                        action="deleteDocuments"
+                                                <g:link controller="docstore"
+                                                        action="deleteDocument"
                                                         class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                                         data-confirm-term-how="delete"
-                                                        params='[instanceId: "${subscription.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
+                                                        params='[instanceId: "${subscription.id}", deleteId: "${docctx.id}", redirectController:"${ajaxCallController ?: controllerName}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                         role="button"
                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                                     <i class="${Icon.CMD.DELETE}"></i>

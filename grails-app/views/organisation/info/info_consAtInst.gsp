@@ -1,4 +1,4 @@
-<%@ page import="de.laser.wekb.Provider; de.laser.ui.Icon; java.time.Year; de.laser.finance.CostItem; de.laser.RefdataValue; de.laser.survey.SurveyInfo; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.wekb.Provider; de.laser.ui.Icon; java.time.Year; de.laser.finance.CostItem; de.laser.RefdataValue; de.laser.survey.SurveyInfo; de.laser.wekb.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
 
 <laser:htmlStart message="menu.institutions.org.info" serviceInjection="true">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
@@ -418,21 +418,21 @@
                     <tbody>
                         <g:each in="${costs.costItems}" var="ci" status="jj">
                             <%
-                                String icon         = '<i class="' + Icon.FNC.COST_NOT_SET + '"></i>'
-                                String dataTooltip  = message(code:'financials.costItemConfiguration.notSet')
+                                String dataTooltip = message(code:'financials.costItemConfiguration.notSet')
+                                String icon = Icon.FNC.COST_NOT_SET
 
                                 switch (ci.costItemElementConfiguration) {
                                     case RDStore.CIEC_POSITIVE:
                                         dataTooltip = message(code:'financials.costItemConfiguration.positive')
-                                        icon = '<i class="' + Icon.FNC.COST_POSITIVE + '"></i>'
+                                        icon = Icon.FNC.COST_POSITIVE
                                         break
                                     case RDStore.CIEC_NEGATIVE:
                                         dataTooltip = message(code:'financials.costItemConfiguration.negative')
-                                        icon = '<i class="' + Icon.FNC.COST_NEGATIVE + '"></i>'
+                                        icon = Icon.FNC.COST_NEGATIVE
                                         break
                                     case RDStore.CIEC_NEUTRAL:
                                         dataTooltip = message(code:'financials.costItemConfiguration.neutral')
-                                        icon = '<i class="' + Icon.FNC.COST_NEUTRAL + '"></i>'
+                                        icon = Icon.FNC.COST_NEUTRAL
                                         break
                                 }
                             %>
@@ -469,7 +469,7 @@
                                     </g:else>
                                 </td>
                                 <td>
-                                    <span class="la-popup-tooltip" data-position="right center" data-content="${dataTooltip}">${raw(icon)}</span>
+                                    <span class="la-popup-tooltip" data-position="right center" data-content="${dataTooltip}"><i class="${icon}"></i></span>
                                 </td>
                                 <td>
                                     ${ci.billingCurrency ?: 'EUR'}

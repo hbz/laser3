@@ -6,7 +6,7 @@ import de.laser.Links
 import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.Subscription
-import de.laser.TitleInstancePackagePlatform
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.ctrl.FinanceControllerService
 import de.laser.finance.CostItem
 import de.laser.storage.BeanStore
@@ -14,7 +14,6 @@ import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.reporting.report.myInstitution.base.BaseQuery
 import de.laser.utils.LocaleUtils
-import de.laser.wekb.Package
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 
@@ -687,16 +686,8 @@ class SubscriptionReport {
                 else if (params.query == 'member-libraryType') {
                     processSimpleMemberRefdataQuery(params.query, 'libraryType', idList, result)
                 }
-                else if (params.query == 'member-orgType') {
-
-                    BaseQuery.handleGenericRefdataQuery(
-                            params.query,
-                            'select p.id, p.value_de, count(*) from Org o join o.orgType p where o.id in (:idList) group by p.id, p.value_de order by p.value_de',
-                            'select o.id from Org o join o.orgType p where o.id in (:idList) and p.id = :d order by o.sortname, o.name',
-                            'select distinct o.id from Org o where o.id in (:idList) and not exists (select ot from o.orgType ot)',
-                            idList,
-                            result
-                    )
+                else if (params.query == 'member-orgType_new') {
+                    processSimpleMemberRefdataQuery(params.query, 'orgType_new', idList, result)
                 }
                 else if (params.query == 'member-region') {
                     processSimpleMemberRefdataQuery(params.query, 'region', idList, result)

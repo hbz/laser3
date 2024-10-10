@@ -70,7 +70,7 @@ class OrgSetting {
         version    column:'os_version'
         org        column:'os_org_fk', index: 'os_org_idx'
         key        column:'os_key_enum'
-        rdValue    column:'os_rv_fk'
+        rdValue    column:'os_rv_fk',  index: 'os_rv_idx'
         strValue   column:'os_string_value'
         roleValue  column:'os_role_fk'
 

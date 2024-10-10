@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.TitleInstancePackagePlatform; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.base.AbstractReport" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.wekb.TitleInstancePackagePlatform; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.base.AbstractReport" %>
 <laser:serviceInjection />
 <g:set var="action" value="${action ?: actionName}"/>
 <g:set var="forTitles" value="${forTitles ?: actionName}"/>

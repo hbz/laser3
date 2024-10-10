@@ -1,20 +1,21 @@
 <%@page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Subscription; de.laser.FormService" %>
 <laser:serviceInjection/>
 <g:if test="${wrapper == 'altname'}">
-    <div class="ui item" data-objId="${objOID}">
-        <div class="content la-space-right">
-            <g:if test="${ownObj.provider || ownObj.vendor}">
-                <ui:xEditable
-                        data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                        data_confirm_term_how="ok"
-                        class="js-open-confirm-modal-xEditable"
-                        owner="${ownObj}" field="${field}" overwriteEditable="${overwriteEditable}"/>
-            </g:if>
-            <g:else>
-                <ui:xEditable owner="${ownObj}" field="${field}" overwriteEditable="${overwriteEditable}"/>
-            </g:else>
-        </div>
-        <div class="content la-space-right">
+    <div  class="ui divided middle aligned selection list la-flex-center">
+        <div class="ui item" data-objId="${objOID}">
+            <div class="content la-space-right" >
+                <g:if test="${ownObj.provider || ownObj.vendor}">
+                    <ui:xEditable
+                            data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                            data_confirm_term_how="ok"
+                            class="js-open-confirm-modal-xEditable"
+                            owner="${ownObj}" field="${field}" overwriteEditable="${overwriteEditable}"/>
+                </g:if>
+                <g:else>
+                    <ui:xEditable owner="${ownObj}" field="${field}" overwriteEditable="${overwriteEditable}"/>
+                </g:else>
+            </div>
+
             <g:if test="${ownObj.subscription && showConsortiaFunctions}">
                 <ui:link class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP}"
                          controller="ajax"
@@ -51,12 +52,13 @@
                     <i class="icon la-thumbtack slash"></i>
                 </ui:link>
             </g:elseif>
-            <div class="ui buttons">
-                <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: ownObj.id]"
-                               data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.${wrapper}", args: [ownObj.name])}"
-                               data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${objOID}')">
-                    <i class="${Icon.CMD.DELETE}"></i>
-                </ui:remoteLink>
+            <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: ownObj.id]"
+                           data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.${wrapper}", args: [ownObj.name])}"
+                           data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${objOID}')">
+                <i class="${Icon.CMD.DELETE}"></i>
+            </ui:remoteLink>
+            <div class="${Btn.ICON.SIMPLE} la-hidden">
+                <icon:placeholder /><%-- Hidden Fake Button --%>
             </div>
         </div>
     </div>
@@ -66,14 +68,10 @@
         <div class="content la-space-right">
             <ui:xEditableRefData owner="${ownObj}" field="${field}" config="${config}" overwriteEditable="${overwriteEditable}"/>
         </div>
-        <div class="content la-space-right">
-            <div class="ui buttons">
-                <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: wrapper, objId: ownObj.id]"
-                               data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.${wrapper}", args: [ownObj[field].getI10n('value')])}"
-                               data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${objOID}')">
-                    <i class="${Icon.CMD.DELETE}"></i>
-                </ui:remoteLink>
-            </div>
-        </div>
+        <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: wrapper, objId: ownObj.id]"
+                       data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.${wrapper}", args: [ownObj[field].getI10n('value')])}"
+                       data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${objOID}')">
+            <i class="${Icon.CMD.DELETE}"></i>
+        </ui:remoteLink>
     </div>
 </g:elseif>

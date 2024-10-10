@@ -1,4 +1,4 @@
-<%@ page import="de.laser.wekb.Package; de.laser.wekb.ProviderLink; de.laser.wekb.Vendor; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.Contact; de.laser.remote.ApiSource; de.laser.wekb.Provider" %>
+<%@ page import="de.laser.wekb.Package; de.laser.wekb.ProviderLink; de.laser.wekb.Vendor; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.wekb.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.Contact; de.laser.remote.ApiSource; de.laser.wekb.Provider" %>
 
 <g:set var="entityName" value="${message(code: 'provider.label')}"/>
 
@@ -56,29 +56,29 @@
                     </dl>
                     <dl>
                         <dt><g:message code="altname.plural" /></dt>
-                        <dd>
-                            <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion la-accordion-showMore">
-                                <g:if test="${provider.altnames}">
-                                    <div class="item title" id="altname_title">
-                                        <div class="item" data-objId="${genericOIDService.getOID(provider.altnames[0])}">
+                        <dd id="altnames" class="ui accordion la-accordion-showMore la-accordion-altName" style="padding-bottom: 0">
+                            <g:if test="${provider.altnames}">
+                                <div class="ui divided middle aligned selection list la-flex-center">
+                                    <div class="item title" id="altname_title" data-objId="${genericOIDService.getOID(provider.altnames[0])}">
+                                        <div class="content la-space-right">
                                             <ui:xEditable data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                                          data_confirm_term_how="ok"
-                                                          class="js-open-confirm-modal-xEditable"
-                                                          owner="${provider.altnames[0]}" field="name" overwriteEditable="${editable && !provider.gokbId}"/>
-                                            <g:if test="${editable && !provider.gokbId}">
-                                                <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: provider.altnames[0].id]"
-                                                               data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [provider.altnames[0].name])}"
-                                                               data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(provider.altnames[0])}')">
-                                                    <i class="${Icon.CMD.DELETE}"></i>
-                                                </ui:remoteLink>
-                                            </g:if>
+                                                      data_confirm_term_how="ok"
+                                                      class="js-open-confirm-modal-xEditable"
+                                                      owner="${provider.altnames[0]}" field="name" overwriteEditable="${editable && !provider.gokbId}"/>
                                         </div>
+                                        <g:if test="${editable && !provider.gokbId}">
+                                            <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: provider.altnames[0].id]"
+                                                           data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [provider.altnames[0].name])}"
+                                                           data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(provider.altnames[0])}')">
+                                                <i class="${Icon.CMD.DELETE}"></i>
+                                            </ui:remoteLink>
+                                        </g:if>
                                         <div class="${Btn.MODERN.SIMPLE_TOOLTIP} la-show-button"
                                              data-content="${message(code: 'altname.showAll')}">
                                             <i class="${Icon.CMD.SHOW_MORE}"></i>
                                         </div>
                                     </div>
-                                    <div class="content">
+                                    <div class="content" style="padding:0">
                                         <g:each in="${provider.altnames.drop(1)}" var="altname">
                                             <div class="ui item" data-objId="${genericOIDService.getOID(altname)}">
                                                 <div class="content la-space-right">
@@ -89,26 +89,22 @@
                                                             owner="${altname}" field="name" overwriteEditable="${editable && !provider.gokbId}"/>
                                                 </div>
                                                 <g:if test="${editable && !provider.gokbId}">
-                                                    <div class="content la-space-right">
-                                                        <div class="ui buttons">
-                                                            <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
-                                                                           data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
-                                                                           data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                <i class="${Icon.CMD.DELETE}"></i>
-                                                            </ui:remoteLink>
-                                                        </div>
-                                                    </div>
+                                                    <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
+                                                                   data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
+                                                                   data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
+                                                        <i class="${Icon.CMD.DELETE}"></i>
+                                                    </ui:remoteLink>
                                                 </g:if>
                                             </div>
                                         </g:each>
                                     </div>
-                                </g:if>
-                            </div>
-                            <g:if test="${editable && !provider.gokbId}">
-                                <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} addListValue" data-objtype="altname" value="${message(code: 'altname.add')}">
+                                </div>
                             </g:if>
                         </dd>
                     </dl>
+                    <g:if test="${editable && !provider.gokbId}">
+                        <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} la-js-addListValue" data-objtype="altname" value="${message(code: 'altname.add')}">
+                    </g:if>
                     <dl>
                         <dt><g:message code="default.url.label"/></dt>
                         <dd>
@@ -1020,7 +1016,7 @@
         func();
     }
 
-    $('.addListValue').click(function() {
+    $('.la-js-addListValue').click(function() {
         let url;
         let returnSelector;
         switch($(this).attr('data-objtype')) {

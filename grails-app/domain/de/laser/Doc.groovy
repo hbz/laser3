@@ -13,8 +13,8 @@ import org.apache.http.HttpStatus
  */
 class Doc {
 
-    static final CONTENT_TYPE_STRING              = 0
-    static final CONTENT_TYPE_FILE                = 3
+    public static final CONTENT_TYPE_STRING     = 0
+    public static final CONTENT_TYPE_FILE       = 3
 
     @RefdataInfo(cat = RDConstants.DOCUMENT_TYPE)
     RefdataValue type
@@ -32,21 +32,19 @@ class Doc {
   Date lastUpdated
   Org owner         //the context org of the user uploading a document
   String server
-  String migrated
 
   static mapping = {
                 id column:'doc_id'
            version column:'doc_version'
-              type column:'doc_type_rv_fk',     index:'doc_type_idx'
-   confidentiality column:'doc_confidentiality_rv_fk'
+              type column:'doc_type_rv_fk',             index:'doc_type_idx'
+   confidentiality column:'doc_confidentiality_rv_fk',  index:'doc_confidentiality_idx'
        contentType column:'doc_content_type',   index:'doc_content_type_idx'
               uuid column:'doc_docstore_uuid',  index:'doc_uuid_idx'
              title column:'doc_title'
           filename column:'doc_filename'
-          migrated column:'doc_migrated'
            content column:'doc_content', type:'text'
           mimeType column:'doc_mime_type'
-             owner column:'doc_owner_fk'
+             owner column:'doc_owner_fk',       index:'doc_owner_idx'
             server column:'doc_server'
        dateCreated column:'doc_date_created'
        lastUpdated column:'doc_last_updated'
@@ -63,7 +61,6 @@ class Doc {
     mimeType  (nullable:true, blank:false)
     owner     (nullable:true)
     server    (nullable:true, blank:false)
-    migrated  (nullable:true, blank:false, maxSize:1)
   }
 
     /**

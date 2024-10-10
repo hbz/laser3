@@ -61,6 +61,9 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     Date lastUpdated
     Date lastUpdatedCascading
 
+    @RefdataInfo(cat = RDConstants.ORG_TYPE, i18n = 'org.orgType.label')
+    RefdataValue orgType_new    // preparing ERMS-5927
+
     @RefdataInfo(cat = RDConstants.ORG_STATUS)
     RefdataValue status
 
@@ -123,7 +126,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         altnames:           AlternativeName,
         discoverySystemFrontends: DiscoverySystemFrontend,
         discoverySystemIndices: DiscoverySystemIndex,
-        orgType:            RefdataValue,
         documents:          DocContext,
         platforms:          Platform,
         hasCreated:         Org,
@@ -167,13 +169,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         legallyObligedBy    column:'org_legally_obliged_by_fk'
     costConfigurationPreset column:'org_config_preset_rv_fk'
        lastUpdatedCascading column:'org_last_updated_cascading'
-
-        orgType             joinTable: [
-                name:   'org_type',
-                key:    'org_id',
-                column: 'refdata_value_id', type:   'BIGINT'
-        ], lazy: false
-
+        orgType_new         column:'org_type_rv_fk'
         ids                 sort: 'ns', batchSize: 10
         outgoingCombos      batchSize: 10
         incomingCombos      batchSize: 10
@@ -218,7 +214,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
            createdBy(nullable:true)
     legallyObligedBy(nullable:true)
       costConfigurationPreset(nullable:true)
-             orgType(nullable:true)
+         orgType_new(nullable:true)
              gokbId (nullable:true, blank:true)
         lastUpdatedCascading (nullable: true)
     }
@@ -667,22 +663,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
                     queryParams
             )
         }
-    }
-
-    /**
-     * Gets all type reference values attributed to this organisation
-     * @return a {@link List} of {@link RefdataValue}s assigned to this organisation
-     */
-    List<RefdataValue> getAllOrgTypes() {
-        RefdataValue.executeQuery("select ot from Org org join org.orgType ot where org = :org", [org: this])
-    }
-
-    /**
-     * Gets all type reference value ids attributed to this organisation
-     * @return a {@link List} of reference data IDs assigned to this organisation
-     */
-    List getAllOrgTypeIds() {
-        RefdataValue.executeQuery("select ot.id from Org org join org.orgType ot where org = :org", [org: this])
     }
 
     /**

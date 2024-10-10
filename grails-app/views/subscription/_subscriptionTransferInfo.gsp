@@ -81,6 +81,14 @@
             </thead>
         <tbody>
             <g:each in="${calculatedSubList}" var="s">
+                <g:set var="surConfig"
+                       value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(s, true)}"/>
+                <g:set var="surveyClass" value=""/>
+                <g:if test="${surConfig}">
+                    <g:set var="surveyClass"
+                           value="${surConfig.surveyInfo.status == RDStore.SURVEY_SURVEY_STARTED ? 'positive' : (surConfig.surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY] ? 'warning' : '')}"/>
+                </g:if>
+
                 <tr>
                     <td>
                         ${s.referenceYear}
@@ -148,7 +156,7 @@
                                             <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                             <g:if test="${supportedMimeType}">
                                                 <a href="#documentPreview"
-                                                   data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
+                                                   data-dctx="${docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
                                             </g:if>
                                             <g:else>
                                                 ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
@@ -159,7 +167,7 @@
                                         </div>
 
                                         <div class="right aligned five wide column la-column-left-lessPadding la-border-left">
-                                            <g:link controller="docstore" id="${docctx.owner.uuid}"
+                                            <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}"
                                                     class="${Btn.MODERN.SIMPLE} tiny"
                                                     target="_blank">
                                                 <i class="${Icon.CMD.DOWNLOAD} small"></i>
@@ -179,56 +187,53 @@
                     <td>
                         ${s.priceIncreaseInfo}
                     </td>
-
-                    <g:set var="surveyConfig"
-                           value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(s, true)}"/>
-                    <g:set var="surveyClass" value=""/>
-                    <g:if test="${surveyConfig}">
-                        <g:set var="surveyClass"
-                               value="${surveyConfig.surveyInfo.status == RDStore.SURVEY_SURVEY_STARTED ? 'positive' : (surveyConfig.surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY] ? 'warning' : '')}"/>
-                    </g:if>
                     <td class="${surveyClass}">
-                        <g:if test="${surveyConfig}">
-                            <g:link controller="survey" action="show" id="${surveyConfig.surveyInfo.id}"
+                        <g:if test="${surConfig}">
+                            <g:link controller="survey" action="show" id="${surConfig.surveyInfo.id}"
                                     target="_blank">
                                 <g:formatDate formatName="default.date.format.notime"
-                                              date="${surveyConfig.surveyInfo.startDate}"/>
+                                              date="${surConfig.surveyInfo.startDate}"/>
                                 <br/>
                                 <span class="la-secondHeaderRow"
                                       data-label="${message(code: 'default.endDate.label')}:">
                                     <g:formatDate formatName="default.date.format.notime"
-                                                  date="${surveyConfig.surveyInfo.endDate}"/>
+                                                  date="${surConfig.surveyInfo.endDate}"/>
                                 </span>
                             </g:link>
                         </g:if>
                     </td>
-
-                    <g:if test="${surveyConfig}">
+                    <g:if test="${surConfig}">
                         <g:set var="finish"
-                               value="${SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig).size()}"/>
-                        <g:set var="total" value="${SurveyOrg.findAllBySurveyConfig(surveyConfig).size()}"/>
+                               value="${SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surConfig).size()}"/>
+                        <g:set var="total"
+                               value="${SurveyOrg.findAllBySurveyConfig(surConfig).size()}"/>
 
-                        <g:set var="finishProcess" value="${(finish != 0 && total != 0) ? (finish / total) * 100 : 0}"/>
+                        <g:set var="finishProcess"
+                               value="${(finish != 0 && total != 0) ? (finish / total) * 100 : 0}"/>
                         <td class="${finish == total ? 'positive' : ''}">
                             <g:if test="${finishProcess >= 0}">
-                                <g:link controller="survey" action="surveyEvaluation" id="${surveyConfig.surveyInfo.id}" target="_blank">
-                                    <g:formatNumber number="${finishProcess}" type="number" maxFractionDigits="2" minFractionDigits="2"/>%
+                                <g:link controller="survey" action="surveyEvaluation"
+                                        id="${surConfig.surveyInfo.id}">
+                                    ${finish}/${total}
+                                    (<g:formatNumber number="${finishProcess}"
+                                                     type="number"
+                                                     maxFractionDigits="2"
+                                                     minFractionDigits="2"/>%)
                                 </g:link>
                             </g:if>
                         </td>
-                    </g:if>
-                    <g:else>
-                        <td></td>
-                    </g:else>
+                    </g:if><g:else>
+                    <td></td>
+                </g:else>
 
                     <g:set var="countOrgsWithTermination" value="${0}"/>
-                    <g:if test="${surveyConfig && surveyConfig.surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED, RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED]}">
-                        <g:set var="countOrgsWithTermination" value="${surveyConfig.countOrgsWithTermination()}"/>
+                    <g:if test="${surConfig && surConfig.surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED, RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED]}">
+                        <g:set var="countOrgsWithTermination" value="${surConfig.countOrgsWithTermination()}"/>
                     </g:if>
 
                     <td class="${countOrgsWithTermination > 0 && countOrgsWithTermination <= 10 ? 'warning' : (countOrgsWithTermination > 10 ? 'negative' : '')}">
-                        <g:if test="${surveyConfig && countOrgsWithTermination >= 0}">
-                            <g:link controller="survey" action="renewalEvaluation" id="${surveyConfig.surveyInfo.id}" target="_blank">
+                        <g:if test="${surConfig && countOrgsWithTermination >= 0}">
+                            <g:link controller="survey" action="renewalEvaluation" id="${surConfig.surveyInfo.id}" target="_blank">
                                 ${countOrgsWithTermination}
                             </g:link>
                         </g:if>
@@ -272,7 +277,7 @@
                                                    value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                             <g:if test="${supportedMimeType}">
                                                 <a href="#documentPreview"
-                                                   data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
+                                                   data-dctx="${docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
                                             </g:if>
                                             <g:else>
                                                 ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
@@ -283,7 +288,7 @@
                                         </div>
 
                                         <div class="right aligned five wide column la-column-left-lessPadding la-border-left">
-                                            <g:link controller="docstore" id="${docctx.owner.uuid}"
+                                            <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}"
                                                     class="${Btn.MODERN.SIMPLE} tiny"
                                                     target="_blank">
                                                 <i class="${Icon.CMD.DOWNLOAD} small"></i>
@@ -295,18 +300,18 @@
                         </g:each>
                     </td>
 
-                    <g:set var="countModificationToCostInformationAfterRenewalDoc" value="${surveyConfig ? surveyService.countModificationToCostInformationAfterRenewalDoc(s) : 0}"/>
+                    <g:set var="countModificationToContactInformationAfterRenewalDoc" value="${surConfig ? surveyService.countModificationToContactInformationAfterRenewalDoc(s) : 0}"/>
 
-                    <td class="${surveyConfig ? countModificationToCostInformationAfterRenewalDoc == 0 ? 'positive' : 'negative' : ''}">
-                        <g:if test="${countModificationToCostInformationAfterRenewalDoc > 0}">
+                    <td class="${surConfig ? countModificationToContactInformationAfterRenewalDoc == 0 ? 'positive' : 'negative' : ''}">
+                        <g:if test="${countModificationToContactInformationAfterRenewalDoc > 0}">
                             <g:link class="ui label triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
-                                    params="[exportController: 'survey', exportAction: 'renewalEvaluation', exportParams: params, clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION, id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]">
-                                <i class="${Icon.CMD.DOWNLOAD}"></i> ${countModificationToCostInformationAfterRenewalDoc}
+                                    params="[exportController: 'survey', exportAction: 'renewalEvaluation', exportParams: params, clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION, id: surConfig.surveyInfo.id, surveyConfigID: surConfig.id, modalText: message(code: 'renewalEvaluation.exportRenewal')]">
+                                <i class="${Icon.CMD.DOWNLOAD}"></i> ${countModificationToContactInformationAfterRenewalDoc}
                             </g:link>
                         </g:if>
                         <g:else>
-                            <g:if test="${surveyConfig}">
-                                ${countModificationToCostInformationAfterRenewalDoc}
+                            <g:if test="${surConfig}">
+                                ${countModificationToContactInformationAfterRenewalDoc}
                             </g:if>
                         </g:else>
                     </td>
@@ -315,12 +320,12 @@
                         ${s.participantTransferWithSurvey ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
                     </td>
                     <td>
-                        <g:if test="${surveyConfig && surveyConfig.surveyInfo.status in [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED]}">
+                        <g:if test="${surConfig && surConfig.surveyInfo.status in [RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED]}">
                             <g:link class="triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
                                 params="[exportController: 'survey', exportAction: 'renewalEvaluation', exportParams: params, clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION,
-                                         id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id,
-                                         modalText: 'Export: ('+ g.message(code: 'subscription.referenceYear.label')+': '+ surveyConfig.subscription.referenceYear+')']">
-                                <i class="${Icon.CMD.DOWNLOAD} small"></i>
+                                         id: surConfig.surveyInfo.id, surveyConfigID: surConfig.id,
+                                         modalText: 'Export: ('+ g.message(code: 'renewalEvaluation.exportRenewal')+'('+ g.message(code: 'subscription.referenceYear.label')+': '+ surConfig.subscription.referenceYear+')']">
+                                <i class="${Icon.CMD.DOWNLOAD}"></i>
                             </g:link>
                         </g:if>
                     </td>

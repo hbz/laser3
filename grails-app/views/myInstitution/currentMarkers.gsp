@@ -1,4 +1,4 @@
-<%@ page import="de.laser.wekb.Package; de.laser.wekb.Platform; de.laser.wekb.Provider; de.laser.wekb.Vendor; de.laser.ui.Btn; de.laser.ui.Icon; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.storage.RDStore; de.laser.convenience.Marker; de.laser.Org;de.laser.TitleInstancePackagePlatform" %>
+<%@ page import="de.laser.wekb.Package; de.laser.wekb.Platform; de.laser.wekb.Provider; de.laser.wekb.Vendor; de.laser.ui.Btn; de.laser.ui.Icon; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.storage.RDStore; de.laser.convenience.Marker; de.laser.Org;de.laser.wekb.TitleInstancePackagePlatform" %>
 
 <laser:htmlStart message="menu.my.markers" serviceInjection="true"/>
 
@@ -8,7 +8,7 @@
 
 <ui:h1HeaderWithIcon message="menu.my.markers" type="Marker" floated="true" />
 
-<g:set var="markerTypeList" value="${SpringSecurityUtils.ifAnyGranted('ROLE_YODA') ? [Marker.TYPE.WEKB_CHANGES, Marker.TYPE.TIPP_CHANGES, Marker.TYPE.UNKOWN] : [Marker.TYPE.WEKB_CHANGES]}" />
+<g:set var="markerTypeList" value="${SpringSecurityUtils.ifAnyGranted('ROLE_YODA') ? [Marker.TYPE.WEKB_CHANGES, Marker.TYPE.UNKOWN] : [Marker.TYPE.WEKB_CHANGES]}" />
 
 <ui:filter simple="true">
     <form id="markerFilterForm" class="ui form">
@@ -77,9 +77,7 @@
                                 <g:link controller="org" action="show" id="${obj.id}" target="_blank">${obj.name}</g:link>
                             </td>
                             <td>
-                                <g:each in="${obj.orgType}" var="ot">
-                                    ${ot.getI10n('value')}
-                                </g:each>
+                                ${obj.orgType_new?.getI10n("value")}
                             </td>
                             <td class="center aligned">
                                 <g:if test="${obj.id in myXMap.currentOrgIdList}">

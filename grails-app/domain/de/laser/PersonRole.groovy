@@ -4,6 +4,7 @@ import de.laser.annotations.RefdataInfo
 import de.laser.storage.RDConstants
 import de.laser.wekb.Package
 import de.laser.wekb.Provider
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 
 /**
@@ -13,7 +14,7 @@ import de.laser.wekb.Vendor
  *     <li>{@link License}</li>
  *     <li>{@link de.laser.wekb.Package}</li>
  *     <li>{@link Subscription}</li>
- *     <li>{@link TitleInstancePackagePlatform}</li>
+ *     <li>{@link de.laser.wekb.TitleInstancePackagePlatform}</li>
  * </ul>
  * Unlike in ${@link OrgRole}, the link between the person and the object other than organisation is not typised; it serves rather as a specification for the connection between the person and the organisation, e.g.
  * person A is a general contact of organisation B about the subscription C.

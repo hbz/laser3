@@ -41,7 +41,7 @@
 <div class="annotation transition visible">
     <div class="ui instructive bottom attached segment">
         <pre aria-hidden="true">
-            &lt;div class="ui flyout"&gt;
+            &lt;div class="ui wide flyout"&gt;
                 &lt;i class="close icon">&lt;/i&gt;
             &lt;div class="ui header">
             &lt;i class="${Icon.UI.HELP}">&lt;/i&gt;

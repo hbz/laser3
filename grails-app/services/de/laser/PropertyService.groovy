@@ -685,10 +685,10 @@ class PropertyService {
                  }
 
                  if(orgfilter != ''){
-                     objectsWithoutProp.addAll(Org.executeQuery('select o from Org o join o.orgType ot where o.status != :deleted and not exists (select op from OrgProperty op where op.owner = o and op.tenant = :ctx and op.type = :type) and o.status = :status  ' + orgfilter + ' order by o.sortname asc, o.name asc', parameterMap + orgFilterParams + orgFilterMap + [deleted: RDStore.ORG_STATUS_DELETED]))
+                     objectsWithoutProp.addAll(Org.executeQuery('select o from Org o where o.status != :deleted and not exists (select op from OrgProperty op where op.owner = o and op.tenant = :ctx and op.type = :type) and o.status = :status  ' + orgfilter + ' order by o.sortname asc, o.name asc', parameterMap + orgFilterMap + [deleted: RDStore.ORG_STATUS_DELETED]))
                      filteredObjs.addAll(OrgProperty.executeQuery('select op.owner from OrgProperty op where op.type = :type and op.tenant = :ctx and op.owner.status = :status ' + orgfilter2 + ' order by op.owner.sortname asc, op.owner.name asc', parameterMap + orgFilterMap ))
                  }else {
-                     objectsWithoutProp.addAll(Org.executeQuery('select o from Org o join o.orgType ot where o.status != :deleted and not exists (select op from OrgProperty op where op.owner = o and op.tenant = :ctx and op.type = :type) and o.status = :status order by o.sortname asc, o.name asc', parameterMap + orgFilterParams + [deleted: RDStore.ORG_STATUS_DELETED]))
+                     objectsWithoutProp.addAll(Org.executeQuery('select o from Org o where o.status != :deleted and not exists (select op from OrgProperty op where op.owner = o and op.tenant = :ctx and op.type = :type) and o.status = :status order by o.sortname asc, o.name asc', parameterMap + [deleted: RDStore.ORG_STATUS_DELETED]))
                      filteredObjs.addAll(OrgProperty.executeQuery('select op.owner from OrgProperty op where op.type = :type and op.tenant = :ctx and op.owner.status = :status order by op.owner.sortname asc, op.owner.name asc', parameterMap))
                  }
                  result.sortname = true

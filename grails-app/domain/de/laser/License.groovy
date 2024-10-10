@@ -37,6 +37,21 @@ import java.text.SimpleDateFormat
 class License extends AbstractBaseWithCalculatedLastUpdated
         implements Auditable, CalculatedType, Permissions, ShareSupport, Comparable<License> {
 
+    static enum ONIXPL_CONTROLLED_LIST {
+        LICENSE_DOCUMENT_TYPE_CODE ('LicenseDocumentTypeCode'),
+        LICENSE_STATUS_CODE ('LicenseStatusCode'),
+        TERM_STATUS_CODE ('TermStatusCode'),
+        USAGE_STATUS_CODE ('UsageStatusCode')
+
+        ONIXPL_CONTROLLED_LIST(String code) {
+            this.code = code
+        }
+
+        public String code
+    }
+
+
+
     License instanceOf
 
     /**
@@ -110,7 +125,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
                      id column:'lic_id'
                 version column:'lic_version'
               globalUID column:'lic_guid'
-                 status column:'lic_status_rv_fk'
+                 status column:'lic_status_rv_fk',  index:'lic_status_idx'
               reference column:'lic_ref'
       sortableReference column:'lic_sortable_ref'
            noticePeriod column:'lic_notice_period'
@@ -118,9 +133,9 @@ class License extends AbstractBaseWithCalculatedLastUpdated
              instanceOf column:'lic_parent_lic_fk', index:'lic_parent_idx'
          isPublicForApi column:'lic_is_public_for_api'
                isSlaved column:'lic_is_slaved'
-              openEnded column:'lic_open_ended_rv_fk'
+              openEnded column:'lic_open_ended_rv_fk', index:'lic_open_ended_idx'
               documents batchSize: 10
-        licenseCategory column: 'lic_category_rdv_fk'
+        licenseCategory column: 'lic_category_rdv_fk', index:'lic_category_idx'
               startDate column: 'lic_start_date',   index: 'lic_dates_idx'
                 endDate column: 'lic_end_date',     index: 'lic_dates_idx'
 

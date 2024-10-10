@@ -36,7 +36,7 @@ class PlatformProperty extends AbstractPropertyWithCalculatedLastUpdated {
         stringValue column: 'plp_string_value', type: 'text'
         intValue    column: 'plp_int_value'
         decValue    column: 'plp_dec_value'
-        refValue    column: 'plp_ref_value_rv_fk'
+        refValue    column: 'plp_ref_value_rv_fk', index: 'plp_ref_value_idx'
         urlValue    column: 'plp_url_value'
         note        column: 'plp_note', type: 'text'
         dateValue   column: 'plp_date_value'

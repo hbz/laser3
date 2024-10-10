@@ -32,6 +32,7 @@ import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyLinks
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
+import de.laser.survey.SurveyPackageResult
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.PdfUtils
@@ -40,6 +41,7 @@ import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import de.laser.wekb.ProviderRole
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import de.laser.wekb.VendorRole
 import de.laser.workflow.WfChecklist
@@ -1664,25 +1666,28 @@ class MyInstitutionController  {
     /**
      * Call to delete a given document
      * @return the document table view ({@link #documents()})
-     * @see DocstoreService#unifiedDeleteDocuments()
+     * @see DocstoreService#deleteDocument()
      */
     @DebugInfo(isInstEditor_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def deleteDocuments() {
-        log.debug("deleteDocuments ${params}");
-
-        docstoreService.unifiedDeleteDocuments(params)
+        docstoreService.deleteDocument(params)
 
         String redir
         if(params.redirectAction == 'subscriptionsManagement') {
             redir = 'subscriptionsManagement'
-        }else if(params.redirectAction) {
+        }
+        else if(params.redirectAction == 'currentSubscriptionsTransfer'){
+            redirect(uri: request.getHeader('referer'))
+            return
+        }
+        else if(params.redirectAction) {
             redir = params.redirectAction
         }
 
-        redirect controller: 'myInstitution', action: redir ?: 'documents', params: redir == 'subscriptionsManagement' ? [tab: 'documents'] : null /*, fragment: 'docstab' */
+        redirect controller: 'myInstitution', action: redir ?: 'documents', params: redir == 'subscriptionsManagement' ? [tab: 'documents'] : null
     }
 
     /**
@@ -2435,7 +2440,7 @@ class MyInstitutionController  {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
         List<String> mappingCols = ["name", "owner", "status", "type", "form", "resource", "provider", "vendor", "startDate", "endDate",
                               "manualCancellationDate", "referenceYear", "hasPerpetualAccess", "hasPublishComponent", "isPublicForApi",
-                              "customProperties", "privateProperties", "notes"]
+                              "customProperties", "privateProperties", "identifiers", "notes"]
         if(result.institution.isCustomerType_Inst_Pro()) {
             mappingCols.add(mappingCols.indexOf("manualCancellationDate"), "isAutomaticRenewAnnually")
         }
@@ -2500,7 +2505,7 @@ class MyInstitutionController  {
         params.tab = params.tab ?: 'open'
 
         //if(params.tab != 'new'){
-            params.sort = 'surInfo.endDate DESC, LOWER(surInfo.name)'
+            params.sort = params.sort ?: 'surInfo.endDate DESC, LOWER(surInfo.name)'
         //}
 
         if (params.validOnYear == null || params.validOnYear == '') {
@@ -2686,6 +2691,18 @@ class MyInstitutionController  {
                         notProcessedMandatoryProperties << surre.type.getI10n('name')
                     }
                 }
+                if(surveyConfig.surveyInfo.isMandatory && surveyConfig.invoicingInformation && (!surveyOrg.address || !surveyOrg.person)){
+                    allResultHaveValue = false
+                    flash.error = g.message(code: 'surveyResult.finish.invoicingInformation')
+                }else if(surveyConfig.surveyInfo.isMandatory && surveyConfig.vendorSurvey) {
+                    boolean vendorInvoicing = SurveyResult.findByParticipantAndSurveyConfigAndType(result.institution, surveyConfig, PropertyStore.SURVEY_PROPERTY_INVOICE_PROCESSING)?.refValue == RDStore.INVOICE_PROCESSING_VENDOR
+                    if (vendorInvoicing && SurveyPackageResult.executeQuery('select count (*) from SurveyPackageResult spr ' +
+                            'where spr.surveyConfig = :surveyConfig and spr.participant = :participant', [surveyConfig: surveyConfig, participant: result.institution])[0] == 0) {
+                        allResultHaveValue = false
+                        flash.error = g.message(code: 'surveyResult.finish.vendorSurvey')
+                    }
+                }
+
             }
 
 
@@ -2699,7 +2716,7 @@ class MyInstitutionController  {
 
             if (!noParticipation && notProcessedMandatoryProperties.size() > 0) {
                 flash.error = message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')]) as String
-            } else if (noParticipation || allResultHaveValue) {
+            } else if ((noParticipation && !surveyConfig.invoicingInformation) || allResultHaveValue) {
                 surveyOrg.finishDate = new Date()
                 if (!surveyOrg.save()) {
                     flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess') as String
@@ -2831,9 +2848,9 @@ class MyInstitutionController  {
                                 surveyService.emailsToSurveyUsersOfOrg(surveyInfo, org, false)
                                 //flash.message = message(code: 'surveyLinks.participateToSurvey.success')
 
-                                if(surveyConfig.invoicingInformation){
+                                /*if(surveyConfig.invoicingInformation){
                                     surveyService.setDefaultInvoiceInformation(surveyConfig, org)
-                                }
+                                }*/
                             }
                         }
                     }
@@ -3256,7 +3273,7 @@ class MyInstitutionController  {
 
         SwissKnife.setPaginationParams(result, params, result.user as User)
 
-        List<Task> taskInstanceList     = taskService.getTasksByResponsibles(result.user as User, result.institution as Org, [query: fsr.query, queryParams: fsr.queryParams])
+        List<Task> taskInstanceList     = taskService.getTasksByResponsibility(result.user as User, result.institution as Org, [query: fsr.query, queryParams: fsr.queryParams])
         List<Task> myTaskInstanceList   = taskService.getTasksByCreator(result.user as User, [query: fsr.query, queryParams: fsr.queryParams])
 
         result.taskCount    = taskInstanceList.size()
@@ -3406,8 +3423,7 @@ class MyInstitutionController  {
                 idQuery = idQuery + ' and wf.vendor is not null'
             }
             if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION.id) {
-                idQuery = idQuery + ' and wf.org is not null'
-                idQuery = idQuery + ' and exists (select ot from wf.org.orgType as ot where ot = :orgType )'
+                idQuery = idQuery + ' and wf.org is not null and wf.org.orgType_new = :orgType'
                 queryParams.put('orgType', RDStore.OT_INSTITUTION)
             }
             else if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_LICENSE.id) {
@@ -3761,6 +3777,7 @@ join sub.orgRelations or_sub where
             result.tableConfig << "showPackages"
             result.tableConfig << "showProviders"
             result.tableConfig << "showVendors"
+            result.tableConfig << "showMailInfos"
         }
 
         result.putAll(subscriptionService.getMySubscriptionsForConsortia(params,result.user,result.institution,result.tableConfig))
@@ -4537,6 +4554,17 @@ join sub.orgRelations or_sub where
             redirect action: 'manageProperties', params: [descr: pd.descr, filterPropDef: params.filterPropDef]
             return
         }
+    }
+
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+    })
+    def manageRefdatas() {
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+        result.rdCategories = RefdataCategory.executeQuery('from RefdataCategory order by desc_' + LocaleUtils.getCurrentLang())
+
+        result
     }
 
     /**

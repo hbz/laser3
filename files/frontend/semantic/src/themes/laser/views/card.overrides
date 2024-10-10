@@ -149,6 +149,7 @@
   width: 100%;
 }
 #container-tasks,
+#container-consortium,
 #container-documents,
 #container-notes,
 #container-provider,

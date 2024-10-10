@@ -137,7 +137,7 @@ class ProviderService {
                 plat.org = null
                 plat.save()
             }
-            Set<Combo> providerCombos = Combo.executeQuery('select c from Combo c, Org o join o.orgType ot where (c.fromOrg = o or c.toOrg = o) and ot in (:provider)', [provider: [RDStore.OT_PROVIDER, RDStore.OT_LICENSOR]])
+            Set<Combo> providerCombos = Combo.executeQuery('select c from Combo c, Org o where (c.fromOrg = o or c.toOrg = o) and o.orgType_new in (:provider)', [provider: [RDStore.OT_PROVIDER, RDStore.OT_LICENSOR]])
             providerCombos.each { Combo pc ->
                 ProviderLink pl = new ProviderLink(type: RDStore.PROVIDER_LINK_FOLLOWS)
                 pl.from = Provider.convertFromOrg(pc.fromOrg)
@@ -151,7 +151,7 @@ class ProviderService {
                 }
             }
             ts.flush()
-            Set<PersonRole> providerContacts = PersonRole.executeQuery('select pr from PersonRole pr join pr.org o join o.orgType ot where ot in (:provider)', [provider: [RDStore.OT_PROVIDER, RDStore.OT_LICENSOR]])
+            Set<PersonRole> providerContacts = PersonRole.executeQuery('select pr from PersonRole pr join pr.org o where o.orgType_new in (:provider)', [provider: [RDStore.OT_PROVIDER, RDStore.OT_LICENSOR]])
             providerContacts.each { PersonRole pr ->
                 Provider p = Provider.findByGlobalUID(pr.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Provider.class.simpleName.toLowerCase()))
                 if (!p) {
@@ -173,7 +173,7 @@ class ProviderService {
                 }
             }
             ts.flush()
-            Set<DocContext> docOrgContexts = DocContext.executeQuery('select dc from DocContext dc join dc.org o join o.orgType ot where ot in (:provider)', [provider: [RDStore.OT_PROVIDER, RDStore.OT_LICENSOR]])
+            Set<DocContext> docOrgContexts = DocContext.executeQuery('select dc from DocContext dc join dc.org o where o.orgType_new in (:provider)', [provider: [RDStore.OT_PROVIDER, RDStore.OT_LICENSOR]])
             docOrgContexts.each { DocContext dc ->
                 Provider p = Provider.findByGlobalUID(dc.org.globalUID.replace(Org.class.simpleName.toLowerCase(), Provider.class.simpleName.toLowerCase()))
                 if (!p) {
@@ -186,7 +186,7 @@ class ProviderService {
                 dc.save()
             }
             ts.flush()
-            Set<DocContext> docTargetOrgContexts = DocContext.executeQuery('select dc from DocContext dc join dc.targetOrg o join o.orgType ot where ot in (:provider)', [provider: [RDStore.OT_PROVIDER, RDStore.OT_LICENSOR]])
+            Set<DocContext> docTargetOrgContexts = DocContext.executeQuery('select dc from DocContext dc join dc.targetOrg o where o.orgType_new in (:provider)', [provider: [RDStore.OT_PROVIDER, RDStore.OT_LICENSOR]])
             docTargetOrgContexts.each { DocContext dc ->
                 Provider p = Provider.findByGlobalUID(dc.targetOrg.globalUID.replace(Org.class.simpleName.toLowerCase(), Provider.class.simpleName.toLowerCase()))
                 if (!p) {
@@ -249,7 +249,7 @@ class ProviderService {
             }
             ts.flush()
         }
-        Set<Org> providers = Org.executeQuery('select o from Org o join o.orgType ot where ot in (:provider)', [provider: [RDStore.OT_PROVIDER, RDStore.OT_LICENSOR]])
+        Set<Org> providers = Org.executeQuery('select o from Org o where o.orgType_new in (:provider)', [provider: [RDStore.OT_PROVIDER, RDStore.OT_LICENSOR]])
         providers.each { Org provider ->
             //delete doublet residuals
             OrgRole.executeUpdate('delete from OrgRole oo where oo.org = :provider and oo.roleType not in (:toKeep)', [provider: provider, toKeep: [RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER, RDStore.OR_LICENSOR, RDStore.OR_AGENCY]])
@@ -477,7 +477,7 @@ class ProviderService {
             int relationCheck = OrgRole.executeQuery('select count(oo) from ProviderRole pvr join pvr.subscription sub, OrgRole oo where pvr.subscription = oo.org and oo.org = :context and sub.status = :current', [context: org, current: RDStore.SUBSCRIPTION_CURRENT])[0]
             result.isMyProvider = relationCheck > 0
 
-            int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.provider).size()
+            int tc1 = taskService.getTasksByResponsibilityAndObject(result.user, result.provider).size()
             int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.provider).size()
             result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
             result.docsCount        = docstoreService.getDocsCount(result.provider, result.institution)

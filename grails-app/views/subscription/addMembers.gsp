@@ -38,6 +38,38 @@
 
     <g:form action="processAddMembers" params="${[id: params.id]}" controller="subscription" method="post" enctype="multipart/form-data" class="ui form addMembers">
 
+
+        <div class="ui divider"></div>
+
+        <ui:msg header="${message(code: 'subscription.details.addMembers.option.selectMembersWithFile.info')}" noClose="true">
+
+            ${message(code: 'subscription.details.addMembers.option.selectMembersWithFile.text')}
+
+            <br>
+            <g:link class="item" controller="profile" action="importManuel" target="_blank">${message(code: 'help.technicalHelp.uploadFile.manuel')}</g:link>
+            <br>
+
+            <g:link controller="subscription" action="templateForMembersBulkWithUpload" params="[id: params.id]">
+                <p>${message(code:'myinst.financeImport.template')}</p>
+            </g:link>
+
+            <div class="ui action input">
+                <input type="text" readonly="readonly"
+                       placeholder="${message(code: 'template.addDocument.selectFile')}">
+                <input type="file" name="selectSubMembersWithImport" accept="text/tab-separated-values,.txt,.csv"
+                       style="display: none;">
+                <div class="${Btn.ICON.SIMPLE}">
+                    <i class="${Icon.CMD.ATTACHMENT}"></i>
+                </div>
+            </div>
+            <g:if test="${members}">
+                <div class="field la-field-right-aligned">
+                    <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label')}"/>
+                </div>
+            </g:if>
+        </ui:msg>
+
+
         <laser:render template="/templates/filter/orgFilterTable"
                   model="[propList         : propList,
                           orgList          : members,
@@ -118,16 +150,18 @@
                                             <label for="linkAllPackages"><g:message code="myinst.addMembers.linkAllPackages"/></label>
                                         </div>
                                     </div>
-                                    <div class="field">
-                                        <div class="ui checkbox">
-                                            <input type="checkbox" id="linkWithEntitlements" name="linkWithEntitlements_${subscription.id}">
-                                            <label for="linkWithEntitlements"><g:message code="myinst.addMembers.withEntitlements"/></label>
+                                    <g:if test="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL}">
+                                        <div class="field">
+                                            <div class="ui checkbox">
+                                                <input type="checkbox" id="linkWithEntitlements" name="linkWithEntitlements_${subscription.id}">
+                                                <label for="linkWithEntitlements"><g:message code="myinst.addMembers.withEntitlements"/></label>
+                                            </div>
+                                            <g:select class="ui search multiple dropdown"
+                                                      optionKey="id" optionValue="${{ it.getPackageName() }}"
+                                                      from="${validPackages}" name="packageSelection_${subscription.id}" value=""
+                                                      noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.package')}"]'/>
                                         </div>
-                                        <g:select class="ui search multiple dropdown"
-                                                  optionKey="id" optionValue="${{ it.getPackageName() }}"
-                                                  from="${validPackages}" name="packageSelection_${subscription.id}" value=""
-                                                  noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.package')}"]'/>
-                                    </div>
+                                    </g:if>
                                 </div>
                             </g:if>
                             <g:else>
@@ -245,16 +279,18 @@
                                                                 </div>
 
                                                                 <div class="field">
-                                                                    <div class="ui checkboxLicAndPkg_${nextSub.id} checkbox">
-                                                                        <input type="checkbox" id="linkWithEntitlements_${nextSub.id}"
-                                                                               name="linkWithEntitlements_${nextSub.id}">
-                                                                        <label for="linkWithEntitlements"><g:message
-                                                                                code="myinst.addMembers.withEntitlements"/></label>
-                                                                    </div>
-                                                                    <g:select class="ui search multiple dropdown"
-                                                                              optionKey="id" optionValue="${{ it.getPackageName() }}"
-                                                                              from="${validPackagesNextSub}" name="packageSelection_${nextSub.id}" value=""
-                                                                              noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.package')}"]'/>
+                                                                    <g:if test="${nextSub.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL}">
+                                                                        <div class="ui checkboxLicAndPkg_${nextSub.id} checkbox">
+                                                                            <input type="checkbox" id="linkWithEntitlements_${nextSub.id}"
+                                                                                   name="linkWithEntitlements_${nextSub.id}">
+                                                                            <label for="linkWithEntitlements"><g:message
+                                                                                    code="myinst.addMembers.withEntitlements"/></label>
+                                                                        </div>
+                                                                        <g:select class="ui search multiple dropdown"
+                                                                                  optionKey="id" optionValue="${{ it.getPackageName() }}"
+                                                                                  from="${validPackagesNextSub}" name="packageSelection_${nextSub.id}" value=""
+                                                                                  noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.package')}"]'/>
+                                                                    </g:if>
                                                                 </div>
                                                             </div>
                                                         </g:if>
@@ -353,34 +389,6 @@
 
         <br />
 
-        <div class="ui divider"></div>
-
-        <div class="ui message">
-            <div class="header">${message(code: 'subscription.details.addMembers.option.selectMembersWithFile.info')}</div>
-
-            <br>
-            ${message(code: 'subscription.details.addMembers.option.selectMembersWithFile.text')}
-
-            <br>
-            <g:link class="item" controller="profile" action="importManuel" target="_blank">${message(code: 'help.technicalHelp.uploadFile.manuel')}</g:link>
-            <br>
-
-            <g:link controller="subscription" action="templateForMembersBulkWithUpload" params="[id: params.id]">
-                <p>${message(code:'myinst.financeImport.template')}</p>
-            </g:link>
-
-            <div class="ui action input">
-                <input type="text" readonly="readonly"
-                       placeholder="${message(code: 'template.addDocument.selectFile')}">
-                <input type="file" name="selectSubMembersWithImport" accept="text/tab-separated-values,.txt,.csv"
-                       style="display: none;">
-                <div class="${Btn.ICON.SIMPLE}">
-                    <i class="${Icon.CMD.ATTACHMENT}"></i>
-                </div>
-            </div>
-        </div><!-- .message -->
-
-
         <g:if test="${members}">
             <div class="field la-field-right-aligned">
                 <input type="submit" class="${Btn.SIMPLE_CLICKCONTROL}" value="${message(code: 'default.button.create.label')}"/>
@@ -392,9 +400,7 @@
     <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
         <hr />
 
-            <ui:msg class="info" header="${message(code: 'myinst.noMembers.cons.header')}" hideClose="true">
-                <g:message code="myinst.noMembers.body" args="${[createLink(controller:'myInstitution', action:'manageMembers'),message(code:'consortium.member.plural')]}"/>
-            </ui:msg>
+            <ui:msg class="info" header="${message(code: 'myinst.noMembers.cons.header')}" hideClose="true" message="myinst.noMembers.body" args="${[createLink(controller:'myInstitution', action:'manageMembers'),message(code:'consortium.member.plural')]}"/>
     </g:if>
 </g:if>
 

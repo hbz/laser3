@@ -41,7 +41,7 @@ import de.laser.SubscriptionService
 import de.laser.SubscriptionsQueryService
 import de.laser.SurveyService
 import de.laser.Task
-import de.laser.TitleInstancePackagePlatform
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import de.laser.wekb.VendorRole
 import de.laser.VendorService
@@ -184,7 +184,7 @@ class SurveyControllerService {
                 }
 
             }
-            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.surveyConfig)
+            result.tasks = taskService.getTasksByResponsibilityAndObject(result.user, result.surveyConfig)
             result.showSurveyPropertiesForOwer = true
 
             [result: result, status: STATUS_OK]
@@ -824,7 +824,7 @@ class SurveyControllerService {
                             if (params.percentOnOldPrice) {
                                 Double percentOnOldPrice = params.double('percentOnOldPrice', 0.00)
                                 Subscription orgSub = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(surveyCostItem.surveyOrg.org)
-                                CostItem costItem = CostItem.findBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(orgSub, surveyCostItem.owner, RDStore.COST_ITEM_DELETED, surveyCostItem.costItemElement)
+                                CostItem costItem = CostItem.findBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElement(orgSub, surveyCostItem.owner, RDStore.COST_ITEM_DELETED, surveyCostItem.costItemElement)
                                 surveyCostItem.costInBillingCurrency = costItem ? (costItem.costInBillingCurrency * (1 + (percentOnOldPrice / 100))).round(2) : surveyCostItem.costInBillingCurrency
 
                                 int taxRate = 0 //fallback
@@ -960,6 +960,8 @@ class SurveyControllerService {
                                 break
                             case ["anmerkung", "description"]: colMap.description = c
                                 break
+                            case ["sortiername", "sortname"]: colMap.sortname = c
+                                break
                             default: log.info("unhandled parameter type ${headerCol}, ignoring ...")
                                 break
                         }
@@ -1004,6 +1006,12 @@ class SurveyControllerService {
                             if (matchList.size() == 1)
                                 match = matchList[0] as Org
                         }
+                         if (colMap.sortname >= 0 && cols[colMap.sortname] != null && !cols[colMap.sortname].trim().isEmpty()) {
+                            List matchList = Org.executeQuery('select org from Org org where org.sortname = :sortname and org.status != :removed', [sortname: cols[colMap.sortname].trim(), removed: RDStore.TIPP_STATUS_REMOVED])
+                            if (matchList.size() == 1)
+                                 match = matchList[0] as Org
+                        }
+
 
                         processCount++
                         if (match) {
@@ -1021,6 +1029,10 @@ class SurveyControllerService {
                                         if (!cost_item_element)
                                             cost_item_element = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.COST_ITEM_ELEMENT, elementKey)
                                     }
+                                }
+
+                                if(!cost_item_element){
+                                    cost_item_element = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE
                                 }
 
                                 if (cost_item_element) {
@@ -1396,7 +1408,7 @@ class SurveyControllerService {
             [result: null, status: STATUS_ERROR]
         } else {
             SwissKnife.setPaginationParams(result, params, result.user as User)
-            result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Org) result.institution, (SurveyConfig) result.surveyConfig)['cmbTaskInstanceList']
+            result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (SurveyConfig) result.surveyConfig)['cmbTaskInstanceList']
             [result: result, status: STATUS_OK]
         }
     }
@@ -2580,9 +2592,9 @@ class SurveyControllerService {
                                             surveyService.emailsToSurveyUsersOfOrg(result.surveyInfo, org, false)
                                         }
 
-                                        if(result.surveyConfig.invoicingInformation){
+                                        /*if(result.surveyConfig.invoicingInformation){
                                             surveyService.setDefaultInvoiceInformation(result.surveyConfig, org)
-                                        }
+                                        }*/
                                     }
                                 }
                             }
@@ -2772,9 +2784,9 @@ class SurveyControllerService {
                                     }
                                 }
 
-                                if(config.invoicingInformation){
+                               /* if(config.invoicingInformation){
                                     surveyService.setDefaultInvoiceInformation(config, org)
-                                }
+                                }*/
                             }
                         }
                     }
@@ -3885,8 +3897,14 @@ class SurveyControllerService {
 
                     CostItem costItem = CostItem.get(costItemId)
                     Subscription participantSub = result.parentSuccessorSubscription?.getDerivedSubscriptionForNonHiddenSubscriber(costItem.surveyOrg.org)
-                    List participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(participantSub, result.institution, costItem.costItemElement, RDStore.COST_ITEM_DELETED)
-                    if (costItem && participantSub && !participantSubCostItem) {
+                    List participantSubCostItem
+                    if(result.surveyConfig.packageSurvey){
+                        participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkgNotInList(participantSub, result.institution, costItem.costItemElement, RDStore.COST_ITEM_DELETED, result.surveyConfig.surveyPackages.pkg)
+                    }else {
+                        participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participantSub, result.institution, costItem.costItemElement, RDStore.COST_ITEM_DELETED)
+                    }
+
+                      if (costItem && participantSub && !participantSubCostItem) {
 
                         Map properties = costItem.properties
                         CostItem copyCostItem = new CostItem()
@@ -3966,7 +3984,7 @@ class SurveyControllerService {
 
                 CostItem costItem = CostItem.get(costItemId)
                 Subscription participantSub = result.parentSuccessorSubscription?.getDerivedSubscriptionForNonHiddenSubscriber(costItem.surveyOrg.org)
-                List participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNotNull(participantSub, result.institution, costItem.costItemElement, RDStore.COST_ITEM_DELETED)
+                List participantSubCostItem = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkg(participantSub, result.institution, costItem.costItemElement, RDStore.COST_ITEM_DELETED, costItem.pkg)
                 if (costItem && participantSub && !participantSubCostItem) {
 
                     Map properties = costItem.properties
@@ -4813,7 +4831,7 @@ class SurveyControllerService {
             result.transferWorkflow = result.surveyConfig.transferWorkflow ? JSON.parse(result.surveyConfig.transferWorkflow) : null
         }
 
-        int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.surveyConfig).size()
+        int tc1 = taskService.getTasksByResponsibilityAndObject(result.user, result.surveyConfig).size()
         int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.surveyConfig).size()
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
@@ -5101,8 +5119,7 @@ class SurveyControllerService {
                 if (property && value && field) {
 
                     if (field == "refValue") {
-                        def binding_properties = ["${field}": value]
-                        SurveyController.bindData(property, binding_properties)
+                        property["${field}"] = value
                         //property.save(flush:true)
                         if (!property.save(failOnError: true)) {
                             log.error("Error Property save: " + property.error)
@@ -5148,8 +5165,7 @@ class SurveyControllerService {
                             value = new BigDecimal(value)
                         }
 
-                        binding_properties["${field}"] = value
-                        SurveyController.bindData(property, binding_properties)
+                        property["${field}"] = value
 
                         property.save(failOnError: true)
 

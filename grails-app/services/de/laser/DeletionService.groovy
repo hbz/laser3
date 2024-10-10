@@ -19,6 +19,10 @@ import de.laser.titles.TitleHistoryEventParticipant
 import de.laser.traces.DeletedObject
 import de.laser.convenience.Marker
 import de.laser.wekb.Package
+import de.laser.wekb.TIPPCoverage
+import de.laser.wekb.TitleInstancePackagePlatform
+import de.laser.workflow.WfChecklist
+import de.laser.workflow.WfCheckpoint
 import groovy.util.logging.Slf4j
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.client.RequestOptions
@@ -65,6 +69,7 @@ class DeletionService {
         List ref_instanceOf         = License.findAllByInstanceOf(lic)
 
         List tasks                  = Task.findAllByLicense(lic)
+        List workflows              = WfChecklist.findAllByLicense(lic)
         List propDefGroupBindings   = PropertyDefinitionGroupBinding.findAllByLic(lic)
         AuditConfig ac              = AuditConfig.getConfig(lic)
 
@@ -84,6 +89,7 @@ class DeletionService {
 
         result.info << ['Links: Verträge bzw. Lizenzen', links]
         result.info << ['Aufgaben', tasks]
+        result.info << ['Workflows', workflows]
         result.info << ['Merkmalsgruppen', propDefGroupBindings]
         //result.info << ['Lizenzen', links.findAll { row -> row.linkType == RDStore.LINKTYPE_LICENSE }]
         result.info << ['Vererbungskonfigurationen', ac ? [ac] : []]
@@ -164,6 +170,12 @@ class DeletionService {
 
                     // tasks
                     tasks.each{ tmp -> tmp.delete() }
+
+                    // workflows
+                    workflows.each { tmp ->
+                        WfCheckpoint.executeUpdate('delete from WfCheckpoint cp where cp.checklist = :tmp', [tmp: tmp])
+                        tmp.delete()
+                    }
 
                     // property groups and bindings
                     propDefGroupBindings.each{ tmp -> tmp.delete() }
@@ -251,6 +263,7 @@ class DeletionService {
         List links = Links.where { sourceSubscription == sub || destinationSubscription == sub }.findAll()
 
         List tasks                  = Task.findAllBySubscription(sub)
+        List workflows              = WfChecklist.findAllBySubscription(sub)
         List propDefGroupBindings   = PropertyDefinitionGroupBinding.findAllBySub(sub)
         AuditConfig ac              = AuditConfig.getConfig(sub)
 
@@ -284,6 +297,7 @@ class DeletionService {
 
         result.info << ['Links: Lizenzen', links.findAll { it.linkType == RDStore.LINKTYPE_LICENSE }]
         result.info << ['Aufgaben', tasks]
+        result.info << ['Workflows', workflows]
         result.info << ['Merkmalsgruppen', propDefGroupBindings]
         result.info << ['Vererbungskonfigurationen', ac ? [ac] : []]
 
@@ -361,6 +375,12 @@ class DeletionService {
 
                     // tasks
                     tasks.each{ tmp -> tmp.delete() }
+
+                    // workflows
+                    workflows.each { tmp ->
+                        WfCheckpoint.executeUpdate('delete from WfCheckpoint cp where cp.checklist = :tmp', [tmp: tmp])
+                        tmp.delete()
+                    }
 
                     // property groups and bindings
                     propDefGroupBindings.each{ tmp -> tmp.delete() }
@@ -535,7 +555,6 @@ class DeletionService {
         List outgoingCombos = new ArrayList(org.outgoingCombos)
         List incomingCombos = new ArrayList(org.incomingCombos)
 
-        List orgTypes      = new ArrayList(org.orgType)
         List orgLinks      = new ArrayList(org.links)
         List orgSettings   = OrgSetting.findAllWhere(org: org)
         List userSettings  = UserSetting.findAllWhere(orgValue: org)
@@ -568,6 +587,8 @@ class DeletionService {
         List pendingChanges     = PendingChange.findAllByOwner(org)
         List tasks              = Task.findAllByOrg(org)
         List tasksResp          = Task.findAllByResponsibleOrg(org)
+        List workflows          = WfChecklist.findAllByOrg(org)
+        List workflowsByOwner   = WfChecklist.findAllByOwner(org)
         List markers            = Marker.findAllByOrg(org)
         List systemProfilers    = SystemProfiler.findAllByContext(org)
 
@@ -590,7 +611,6 @@ class DeletionService {
         result.info << ['Combos (out)', outgoingCombos]
         result.info << ['Combos (in)', incomingCombos, FLAG_BLOCKER]
 
-        result.info << ['Typen', orgTypes]
         result.info << ['OrgRoles', orgLinks, FLAG_BLOCKER]
         result.info << ['Einstellungen', orgSettings]
         result.info << ['Nutzereinstellungen', userSettings, FLAG_BLOCKER]
@@ -624,6 +644,8 @@ class DeletionService {
         result.info << ['Anstehende Änderungen', pendingChanges, FLAG_BLOCKER]
         result.info << ['Aufgaben (owner)', tasks, FLAG_BLOCKER]
         result.info << ['Aufgaben (responsibility)', tasksResp, FLAG_BLOCKER]
+        result.info << ['Workflows', workflows]
+        result.info << ['Workflows (owner)', workflowsByOwner, FLAG_BLOCKER]
         result.info << ['Marker', markers]
         result.info << ['SystemProfilers', systemProfilers]
 
@@ -679,10 +701,6 @@ class DeletionService {
                     org.outgoingCombos.clear()
                     outgoingCombos.each{ tmp -> tmp.delete() }
 
-                    // orgTypes
-                    //org.orgType.clear()
-                    //orgTypes.each{ tmp -> tmp.delete() }
-
                     // orgSettings
                     Set<String> specialAccess = []
                     Set<OrgSetting.KEYS> specGrants = [OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS, OrgSetting.KEYS.EZB_SERVER_ACCESS]
@@ -719,6 +737,12 @@ class DeletionService {
                         tmp.save()
                     }
                     customProperties.each { tmp -> tmp.delete() }
+
+                    // workflows
+                    workflows.each { tmp ->
+                        WfCheckpoint.executeUpdate('delete from WfCheckpoint cp where cp.checklist = :tmp', [tmp: tmp])
+                        tmp.delete()
+                    }
 
                     // systemProfilers
                     systemProfilers.each { tmp -> tmp.delete() }

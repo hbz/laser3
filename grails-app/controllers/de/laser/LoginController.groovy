@@ -52,8 +52,8 @@ class LoginController {
    * Show the login page.
    */
     def auth = {
-//        log.debug 'Attempting login ~ ' + request.getRemoteAddr() + ', ' + request.session.id
-        log.debug '+ Attempting login >>> ' + request.session.id
+//        log.debug 'Attempting login ..... ' + request.getRemoteAddr() + ', ' + request.session.id
+        log.debug '+ Attempting login ..... ' + request.session.id
 
         ConfigObject config = SpringSecurityUtils.securityConfig
 
@@ -65,12 +65,12 @@ class LoginController {
 
         DefaultSavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, response) as DefaultSavedRequest
         if (savedRequest) {
-            log.debug '+ Saved original request >>> ' + savedRequest.getRequestURL()
+            log.debug '+ Saved original request ..... ' + savedRequest.getRequestURL()
 
             boolean fuzzyCheck = _fuzzyCheck(savedRequest)
             if (!fuzzyCheck) {
                 String url = savedRequest.getRequestURL() + (savedRequest.getQueryString() ? '?' + savedRequest.getQueryString() : '')
-                log.warn '+ Login failed; invalid url; noted in system events >>> ' + request.getRemoteAddr() + ' - ' + url
+                log.warn '+ Login failed; invalid url; noted in system events ..... ' + request.getRemoteAddr() + ' - ' + url
 
                 SystemEvent.createEvent('LOGIN_WARNING', [
                         url: url,
@@ -128,22 +128,22 @@ class LoginController {
     def exception = session[WebAttributes.AUTHENTICATION_EXCEPTION]
     if (exception) {
       if (exception instanceof AccountExpiredException) {
-        msg = g.message(code: "springSecurity.errors.login.expired")
+        msg = g.message(code: 'springSecurity.errors.login.expired')
       }
       else if (exception instanceof CredentialsExpiredException) {
-        msg = g.message(code: "springSecurity.errors.login.passwordExpired")
+        msg = g.message(code: 'springSecurity.errors.login.passwordExpired')
       }
       else if (exception instanceof LockedException) {
-        msg = g.message(code: "springSecurity.errors.login.locked")
+        msg = g.message(code: 'springSecurity.errors.login.locked') + ' ' + g.message(code: 'springSecurity.errors.login.locked.duration')
       }
       else if (exception instanceof DisabledException) {
-          msg = g.message(code: "springSecurity.errors.login.disabled")
+          msg = g.message(code: 'springSecurity.errors.login.disabled')
       }
       else {
-        msg = g.message(code: "springSecurity.errors.login.fail")
+        msg = g.message(code: 'springSecurity.errors.login.fail')
       }
     }
-    log.warn '+ Login failed >>> ' + request.getRemoteAddr() + ' - ' + msg
+    log.warn '+ Login failed ..... ' + request.getRemoteAddr() + ' - ' + msg
 
     if (springSecurityService.isAjax(request)) {
       render([error: msg] as JSON)

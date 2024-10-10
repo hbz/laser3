@@ -7,11 +7,101 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-5860    13.08.2024  rc-3.4  3.4.6       David   Bug         Admin > Referenzwerte verwalten
+5967    09.10.2024  dev     3.5         David   Feature     Rechteprüfung: DocstoreController (Download)
+
+5927    09.10.2024  dev     3.5         David   Feature     JoinTable Org.orgType zum Fremdschlüssel umbauen
+
+6005    08.10.2024  rc-3.4  3.4.11      David   Bug         Ungesichertes Löschen von beliebigen DB-Inhalten
+
+5779    16.09.2024  rc-3.4  3.4.11      Andreas Feature     Abräumen von öffentlichen Adressen von Anbietern und Lieferanten
+
+5997    04.10.2024  rc-3.4  3.4.11      David   Bug         Allgemeine Aufgaben werden der Nutzerin auf dem Dashboard nicht richtig angezeigt
+
+--      02.10.2024  rc-3.4  3.4.10      Andreas Bug         
+
+--      01.10.2024  rc-3.4  3.4.10      Andreas Bug         500er (Teilung durch null)-Fehler bei Cost per Use behoben
+
+5994    01.10.2024  rc-3.4  3.4.10      Andreas Feature     Hinweis auf we:kb-Kontakta im Statistik-Hinweisfeld eingefügt
+
+5987    30.09.2024  rc-3.4  3.4.10      Andreas Bug         falsche Ausgabe der Nutzerzahlen behoben
+
+5967    30.09.2024  dev     3.5         David   Feature     Rechteprüfung: DocstoreController
+
+5971    26.09.2024  dev     3.5         David   Feature     Refactoring: Aufgaben
+
+5959    23.09.2024  dev     3.5         David   Feature     Systemmeldungen auf Markdown umstellen
+
+5876    23.09.2024  dev     3.5         David   Feature     Kontextabhängige Hilfe -> technische Umsetzung
+
+5958    20.09.2024  rc-3.4  3.4.9       Andreas Bug         500er beim Aufruf von Lizenzen mit NatStat-Statistiken behoben
+
+5955    20.09.2024  dev     3.5         Andreas Feature     Upload von Requestor-IDs
+
+5956    19.09.2024  rc-3.4  3.4.9       Andreas Feature     Anzeige der Statistik-Abrufinformationen
+
+5950    19.09.2024  rc-3.4  3.4.9       Andreas Feature     Trennung der Adress- und Postfachdaten
+
+5941    17.09.2024  dev     3.5         Andreas Feature     Umbau der Vertragsentknüpfung
+
+5944    17.09.2024  rc-3.4  3.4.9       Andreas Feature     Anpassungen des Einrichtungsexports
+
+5942    17.09.2024  rc-3.4  3.4.9       Andreas Bug         spezielle Lizenzkontakte wurden nicht übertragen
+
+--      16.09.2024  dev     3.5         Ingrid Bug          Merkmale verwalten: Korrektur des durchgestrichenen Icons für Mehrfachsetzung; Vereinheitlichung der Anzeige (current state  vs go-to state)
+
+5936    16.09.2024  dev     3.5         Andreas Bug         Kosten ohne Lizenzbezug tauchten bei Konsortialstellen nicht auf
+
+5919    16.09.2024  dev     3.5         Andreas Bug         ES-Index wurde bei Änderungen von Alternativnamen nicht angestoßen
+
+5779    16.09.2024  dev     3.5         Andreas Feature     Abräumen von öffentlichen Adressen von Anbietern und Lieferanten
+
+5932    13.09.2024  rc-3.4  3.4         Ingrid Bug          Auswahl von eigenen Merkmalen bei Adresskontakten nicht möglich
+
+5933    13.09.2024  rc-3.4  3.4.9       Andreas Bug         Aufruf von Statista-Nutzungsstatistiken war nicht möglich
+
+5930    12.09.2024  dev     3.5         Ingrid Feature      Deutlichere Markierung der Systeme und zusätzliches System 
+
+--      12.09.2024  dev     3.5         Ingrid Feature      Anderes Icon für Umfragen
+
+5801    12.09.2024  dev     3.5         Andreas Feature     Lizenzimport unterstützt jetzt auch Identifikatoren
+
+5889    11.09.2024  rc-3.4  3.4.9       Andreas Bug         gruppierte Lizenzmerkmale konnten nicht entfernt werden
+
+5716    10.09.2024  dev     3.5         Andreas Feature     Verträge können im ONIX-PL-XML-Format exportiert werden
+
+5921    10.09.2024  dev     3.5         David   Feature     Merkmale/Referenzwerte .. dies und das
+
+5907    09.09.2024  dev     3.5         David   Bug         PropertyStore/RDStore: Slf4j-Logger wird nicht richtig initialisiert
+
+--      06.09.2024  rc-3.4  3.4.8       Andreas Bug         Kaskadierungsfehler bei Paket-Lieferant-Verknüpfungen behoben
+
+5911    05.09.2024  dev     3.5         Andreas Bug         Methodenaufruf korrigiert
+
+5910    04.09.2024  rc-3.4  3.4.8       Andreas Bug         Abfragefehler bei Merkmalsverwaltung behoben
+
+5904    02.09.2024  rc-3.4  3.4.8       Andreas Bug         Pfad im Erklärungstext angepasst
+
+5895    02.09.2024  rc-3.4  3.4.8       Andreas Bug         500er bei der Ausgabe von Anbietern behoben
+
+5881    02.09.2024  rc-3.4  3.4.8       Andreas Bug         inkorrekte Ausgaben bei den Exporten behoben
+
+5869    22.08.2024  rc-3.4  3.4.7       David   Bug         500er Export Adressbuch
+
+5868    22.08.2024  rc-3.4  3.4.7       David   Bug         Adressbuch: Keine Suche nach Anbieter/Lieferant/Einrichtung
+
+5870    20.08.2024  rc-3.4  3.4.7       David   Feature     Datenbank-Indizes überprüfen
+
+--      14.08.2024  rc-3.4  3.4.6       Andreas Bug         Erweiterung der Fehlermeldung beim Lizenzimport
+
+5865    13.08.2024  rc-3.4  3.4.6       Andreas Feature     Abschaltung der Sichten "Alle Titel" und "Meine Titel" mangels UseCase
+
+5864    13.08.2024  rc-3.4  3.4.6       Andreas Feature     feingliedrige Aufschlüsselung der Nutzerzahl-Summen im Excel-Export
 
 5863    13.08.2024  rc-3.4  3.4.6       Andreas Bug         inkorrekte Auslesung der Anbieter/Lieferantenkontakte beim PDF-Export
 
 5861    13.08.2024  dev     3.5         David   Feature     Refactoring: wekb-Package
+
+5860    13.08.2024  rc-3.4  3.4.6       David   Bug         Admin > Referenzwerte verwalten
 
 5859    12.08.2024  rc-3.4  3.4.6       David   Feature     Kundentyp (Org) in gecachten Nutzerrechten beachten
 

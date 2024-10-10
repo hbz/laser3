@@ -4,6 +4,7 @@ import de.laser.annotations.DebugInfo
 import de.laser.helper.Params
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyOrg
 import de.laser.wekb.Package
 import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
@@ -520,6 +521,11 @@ class PersonController  {
             }
 
             try {
+                List changeList = SurveyOrg.findAllByPerson(personInstance)
+                changeList.each { tmp2 ->
+                    tmp2.person = null
+                    tmp2.save()
+                }
                 personInstance.delete()
                 flash.message = message(code: 'default.deleted.message', args: [message(code: 'person.label'), params.id]) as String
                 String referer = request.getHeader('referer')
@@ -615,17 +621,17 @@ class PersonController  {
             }
             else if('resp' == roleType){
                 
-                if(roleRdv?.value == "Specific license editor") {
+                if(roleRdv == RDStore.PRS_RESP_SPEC_LIC_EDITOR) {
                     allSubjects             = License.getAll()
                     subjectType             = "license"
                     subjectFormOptionValue  = "reference"
                 }
-                else if(roleRdv?.value == "Specific package editor") {
+                else if(roleRdv == RDStore.PRS_RESP_SPEC_PKG_EDITOR) {
                     allSubjects             = Package.getAll()
                     subjectType             = "package"
                     subjectFormOptionValue  = "name"
                 }
-                else if(roleRdv?.value == "Specific subscription editor") {
+                else if(roleRdv == RDStore.PRS_RESP_SPEC_SUB_EDITOR) {
                     allSubjects             = Subscription.getAll()
                     subjectType             = "subscription"
                     subjectFormOptionValue  = "name"

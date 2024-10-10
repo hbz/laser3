@@ -14,6 +14,7 @@ import de.laser.properties.PropertyDefinition
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -336,8 +337,7 @@ class ControlledListService {
                 break
         }
         if(params.providerFilter) {
-            licFilter += " and exists (select ol from OrgRole ol where ol.lic = l and ol.roleType = :providerRoleType and ol.org = :filterProvider) "
-            filterParams.providerRoleType = RDStore.OR_LICENSOR
+            licFilter += " and exists (select pvr from ProviderRole pvr where pvr.license = l and pvr.provider = :filterProvider) "
             filterParams.filterProvider = genericOIDService.resolveOID(params.providerFilter)
         }
         result = License.executeQuery('select l from License as l join l.orgRelations ol where ol.org = :org and ol.roleType in (:orgRoles)'+licFilter+" order by l.reference asc",filterParams)
@@ -789,7 +789,7 @@ class ControlledListService {
         }
 
         if(subscription.packages){
-            coverageDepths = RefdataValue.executeQuery("select new map(rdv.value_"+i18n+" as name, rdv.id as value) from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.pkg in (:pkg)) "+statusFilter+nameFilter+" group by rdv.id, rdv.value_"+i18n+" order by rdv.value_"+i18n, queryParams)
+            coverageDepths = RefdataValue.executeQuery("select new map(rdv.value_"+i18n+" as name, rdv.id as value) from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.pkg in (:pkg)"+statusFilter+") "+nameFilter+" group by rdv.id, rdv.value_"+i18n+" order by rdv.value_"+i18n, queryParams)
         }
 
         coverageDepths
@@ -865,7 +865,7 @@ class ControlledListService {
 
         if(subscription.packages){
             Map<String, Object> queryParams = [pkg: subscription.packages.pkg, status: getTippStatusForRequest(forTitles)]
-            String nameFilter = "", statusFilter = " and tipp.status = :status "
+            String nameFilter = "", statusFilter = " and status = :status "
             if (query) {
                 nameFilter += " and genfunc_filter_matcher(seriesName, :query) = true "
                 queryParams.query = query
@@ -1461,7 +1461,8 @@ class ControlledListService {
                 results.sort { Map rowA, Map rowB ->
                     int cmp = rowA.sortname <=> rowB.sortname
                     if(!cmp)
-                        rowA.name <=> rowB.name
+                        cmp = rowA.name <=> rowB.name
+                    cmp
                 }
             }
         }

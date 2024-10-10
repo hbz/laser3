@@ -32,7 +32,7 @@
                             </span>
                             <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />
                             <g:if test="${supportedMimeType}">
-                                <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename}</a>
+                                <a href="#documentPreview" data-dctx="${docctx.id}">${docctx.owner.title ?: docctx.owner.filename}</a>
                             </g:if>
                             <g:else>
                                 ${docctx.owner.title ?: docctx.owner.filename}
@@ -41,7 +41,7 @@
                                 (${docctx.getDocType().getI10n("value")})
                             </g:if>
 
-%{--                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel" target="_blank">--}%
+%{--                            <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}" class="js-no-wait-wheel" target="_blank">--}%
 %{--                                <g:if test="${docctx.owner?.title}">--}%
 %{--                                    ${docctx.owner.title}--}%
 %{--                                </g:if>--}%
@@ -59,7 +59,7 @@
                         </div>
 
                         <div class="right aligned seven wide column">
-                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+                            <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
 
                             <g:if test="${!(ownobj instanceof SurveyConfig)}">
                                 <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton()}">

@@ -72,8 +72,6 @@ class BaseConfig {
     static String CHART_BAR                     = 'bar'
     static String CHART_PIE                     = 'pie'
 
-    static String RDJT_GENERIC_ORG_TYPE         = 'orgType'
-
     static String CI_GENERIC_CUSTOMER_TYPE      = 'customerType'
     static String CI_GENERIC_LEGAL_INFO         = 'legalInfo'
     static String CI_GENERIC_ANNUAL             = 'annual'
@@ -259,13 +257,7 @@ class BaseConfig {
         Locale locale = LocaleUtils.getCurrentLocale()
         String ck = 'reporting.customImpl.'
 
-        if (key == RDJT_GENERIC_ORG_TYPE) {
-            return [
-                    label: messageSource.getMessage('org.orgType.label', null, locale),
-                    from: RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE)
-            ]
-        }
-        else if (key == CI_GENERIC_CUSTOMER_TYPE) {
+        if (key == CI_GENERIC_CUSTOMER_TYPE) {
             List<Role> roles = Role.findAllByRoleType('org')
             return [
                     label: messageSource.getMessage('org.setting.CUSTOMER_TYPE', null, locale),
@@ -348,7 +340,7 @@ class BaseConfig {
 //        else if (key == CI_GENERIC_PACKAGE_OR_PROVIDER) {
 //            return [
 //                    label: messageSource.getMessage('provider.label', null, locale),
-//                    from: Org.executeQuery('select distinct(org) from Org org join org.orgType ot where ot in (:otList)',
+//                    from: Org.executeQuery('select distinct(org) from Org org where org.orgType_new in (:otList)',
 //                            [ otList: [RDStore.OT_PROVIDER] ]).collect{[
 //                            id: it.id,
 //                            value_de: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,

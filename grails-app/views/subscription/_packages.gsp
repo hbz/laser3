@@ -38,7 +38,7 @@
                                     <div>
                                         <i aria-hidden="true" class="${Icon.VENDOR} grey la-popup-tooltip" data-content="${message(code: 'vendor.label')}"></i>
                                         <g:link controller="vendor" action="show" id="${pv.vendor.id}">${pv.vendor.name}</g:link>
-                                        <g:if test="${vendorRecord.homepage}"><ui:linkWithIcon href="${vendorRecord.homepage.startsWith('http') ? vendorRecord.homepage : 'http://' + vendorRecord.homepage}"/></g:if>
+                                        <g:if test="${vendorRecord && vendorRecord.homepage}"><ui:linkWithIcon href="${vendorRecord.homepage.startsWith('http') ? vendorRecord.homepage : 'http://' + vendorRecord.homepage}"/></g:if>
                                         <g:if test="${pv.vendor.gokbId}"><ui:wekbIconLink type="vendor" gokbId="${pv.vendor.gokbId}"/></g:if>
                                     </div>
                                 </g:each>
@@ -95,11 +95,11 @@
                                                 <div class="menu">
                                                     <g:link controller="subscription" action="unlinkPackage" class="${btnClass}" params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'withIE']}" data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name])}"
                                                             data-confirm-term-how="delete" role="button" aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
-                                                        Paket auf Elternebene entknüpfen. Auf Einrichtungsebene Paket <strong>behalten</strong>.
+                                                        <g:message code="subscriptionsManagement.unlinkInfo.packageParentOnly"/>
                                                     </g:link>
                                                     <g:link controller="subscription" action="unlinkPackage" class="${btnClass}" params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'childWithIE']}" data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name]) + ' ' + message(code: "confirm.dialog.unlink.subscription.package.consortia")}"
                                                             data-confirm-term-how="delete" role="button" aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
-                                                        Paket auf Elternebene entknüpfen. Auf Einrichtungsebene Paket <strong>löschen</strong>.
+                                                        <g:message code="subscriptionsManagement.unlinkInfo.packageParentWithMembers"/>
                                                     </g:link>
                                                 </div>
                                             </div>
@@ -109,11 +109,11 @@
                                                 <div class="menu">
                                                     <g:link controller="subscription" action="unlinkPackage" class="${btnClass}" params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'onlyIE']}" data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.titles", args: [sp.pkg.name])}"
                                                             data-confirm-term-how="delete" role="button" aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
-                                                        Titel auf Elternebene löschen. Auf Einrichtungsebene Titel <strong>behalten</strong>.
+                                                        <g:message code="subscriptionsManagement.unlinkInfo.titlesParentOnly"/>
                                                     </g:link>
                                                     <g:link controller="subscription" action="unlinkPackage" class="${btnClass}" params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y', option: 'childOnlyIE']}" data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.titles", args: [sp.pkg.name]) + ' ' + message(code: "confirm.dialog.unlink.subscription.titles.consortia")}"
                                                             data-confirm-term-how="delete" role="button" aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
-                                                        Titel auf Elternebene löschen. Auf Einrichtungsebene Titel <strong>löschen</strong>.
+                                                        <g:message code="subscriptionsManagement.unlinkInfo.titlesParentWithMembers"/>
                                                     </g:link>
                                                 </div>
                                             </div>

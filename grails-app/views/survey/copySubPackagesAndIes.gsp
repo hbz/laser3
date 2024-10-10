@@ -17,7 +17,7 @@
 </ui:h1HeaderWithIcon>
 
 <g:if test="${surveyConfig.subscription}">
-    <ui:linkWithIcon icon="${Icon.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+    <ui:buttonWithIcon style="vertical-align: super;" message="${message(code: 'button.message.showLicense')}" variation="tiny" icon="${Icon.SUBSCRIPTION}" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
 <laser:render template="nav"/>
@@ -77,7 +77,7 @@
                                     <div class="item"><div class="content">
                                         <g:link controller="subscription" action="index" id="${parentSubscription.id}"
                                                 params="[pkgfilter: sp.pkg.id]">
-                                            ${sp.pkg.name}<br/>${raw(sp.getIEandPackageSize())}
+                                            ${sp.pkg.name}<br/><ui:ieAndPkgSize sp="${sp}" />
                                         </g:link>
                                     </div>
                                     </div>
@@ -112,7 +112,7 @@
                                         <g:link controller="subscription" action="index"
                                                 id="${parentSuccessorSubscription.id}"
                                                 params="[pkgfilter: sp.pkg.id]">
-                                            ${sp.pkg.name}<br/>${raw(sp.getIEandPackageSize())}
+                                            ${sp.pkg.name}<br/><ui:ieAndPkgSize sp="${sp}" />
                                         </g:link>
                                     </div>
                                     </div>
@@ -239,7 +239,7 @@
                                     <div class="item"><div class="content">
                                         <g:link controller="subscription" action="index" id="${participant.oldSub.id}"
                                                 params="[pkgfilter: sp.pkg.id]">
-                                            ${sp.pkg.name}<br/>${raw(sp.getIEandPackageSize())}
+                                            ${sp.pkg.name}<br/><ui:ieAndPkgSize sp="${sp}" />
                                         </g:link>
                                     </div>
                                     </div>
@@ -252,7 +252,7 @@
                                     <div class="item"><div class="content">
                                         <g:link controller="subscription" action="index" id="${participant.newSub.id}"
                                                 params="[pkgfilter: sp.pkg.id]">
-                                            ${sp.pkg.name}<br/>${raw(sp.getIEandPackageSize())}
+                                            ${sp.pkg.name}<br/><ui:ieAndPkgSize sp="${sp}" />
                                         </g:link>
                                     </div>
                                     </div>

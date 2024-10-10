@@ -69,7 +69,7 @@ import static java.time.temporal.ChronoUnit.DAYS
  * @see de.laser.wekb.Platform
  * @see de.laser.wekb.Package
  * @see SubscriptionPackage
- * @see TitleInstancePackagePlatform
+ * @see de.laser.wekb.TitleInstancePackagePlatform
  * @see IssueEntitlement
  * @see CostItem
  * @see License
@@ -189,11 +189,11 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         id          column:'sub_id'
         version     column:'sub_version'
         globalUID   column:'sub_guid'
-        status      column:'sub_status_rv_fk'
-        type        column:'sub_type_rv_fk',        index: 'sub_type_idx'
-        kind        column:'sub_kind_rv_fk'
-        form        column:'sub_form_fk'
-        resource    column:'sub_resource_fk'
+        status      column:'sub_status_rv_fk',  index: 'sub_status_idx'
+        type        column:'sub_type_rv_fk',    index: 'sub_type_idx'
+        kind        column:'sub_kind_rv_fk',    index: 'sub_kind_idx'
+        form        column:'sub_form_fk',       index: 'sub_form_idx'
+        resource    column:'sub_resource_fk',   index: 'sub_resource_idx'
         holdingSelection column:'sub_holding_selection_rv_fk', index: 'sub_holding_selection_idx'
         name        column:'sub_name'
         comment     column: 'sub_comment', type: 'text'
@@ -223,7 +223,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         renewalSent column:'sub_renewal_sent'
         renewalSentDate column:'sub_renewal_sent_date'
         participantTransferWithSurvey column:'sub_participant_transfer_with_survey'
-        discountScale column: 'sub_discount_scale_fk'
+        discountScale column: 'sub_discount_scale_fk',  index: 'sub_discount_scale_idx'
         reminderSent column: 'sub_reminder_sent'
         reminderSentDate column: 'sub_reminder_sent_date'
 
@@ -641,7 +641,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     List<Org> getDerivedNonHiddenSubscribers() {
         List<Subscription> subs = Subscription.findAllByInstanceOf(this)
         //OR_SUBSCRIBER is legacy; the org role types are distinct!
-        subs.isEmpty() ? [] : OrgRole.findAllBySubInListAndRoleTypeInList(subs, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], [sort: 'org.name']).collect{it.org}
+        subs.isEmpty() ? [] : OrgRole.findAllBySubInListAndRoleTypeInList(subs, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], [sort: 'org.sortname']).collect{it.org}
     }
 
     /**

@@ -62,22 +62,22 @@
 
                         <g:if test="${! docctx.sharedFrom}">
                         <g:if test="${userService.hasFormalAffiliation(contextService.getUser(), contextService.getOrg(), 'INST_EDITOR')}">
-                            <a onclick="JSPC.app.editNote(${docctx.owner.id});" class="${Btn.MODERN.SIMPLE}" role="button"
-                               aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                            <a onclick="JSPC.app.editNote(${docctx.id});" class="${Btn.MODERN.SIMPLE}" role="button" aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                             </a>
-                            <g:link controller="${controllerName}" action="deleteDocuments" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
+                            <g:set var="linkParams" value="${[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectController:"${controllerName}", redirectAction:"${actionName}"]}" />
+%{--                            params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectController:"${controllerName}", redirectAction:"${actionName}"]'--}%
+                            <g:link controller="doc" action="deleteNote" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.notes", args: [docctx.owner.title])}"
                                     data-confirm-term-how="delete"
-                                    params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${actionName}"]'
+                                    params="${params.tab ? linkParams << [redirectTab: "${params.tab}"] : linkParams}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                 <i class="${Icon.CMD.DELETE}"></i>
                             </g:link>
                         </g:if>
                         <g:else>
-                            <a onclick="JSPC.app.readNote(${docctx.owner.id});" class="${Btn.MODERN.SIMPLE}" role="button"
-                               aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                            <a onclick="JSPC.app.readNote(${docctx.id});" class="${Btn.MODERN.SIMPLE}" role="button" aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="search icon"></i>
                             </a>
                         </g:else>
@@ -89,9 +89,9 @@
     </table>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    JSPC.app.editNote = function (id) {
+    JSPC.app.editNote = function (dctx) {
         $.ajax({
-            url: '<g:createLink controller="ajaxHtml" action="editNote"/>?id='+id,
+            url: '<g:createLink controller="ajaxHtml" action="editNote"/>?dctx=' + dctx,
             success: function(result){
                 $('#dynamicModalContainer').empty();
                 $('#modalEditNote').remove();
@@ -106,9 +106,9 @@
             }
         });
     }
-    JSPC.app.readNote = function (id) {
+    JSPC.app.readNote = function (dctx) {
             $.ajax({
-                url: '<g:createLink controller="ajaxHtml" action="readNote"/>?id='+id,
+                url: '<g:createLink controller="ajaxHtml" action="readNote"/>?dctx=' + dctx,
                 success: function(result){
                     $('#dynamicModalContainer').empty();
                     $('#modalReadNote').remove();

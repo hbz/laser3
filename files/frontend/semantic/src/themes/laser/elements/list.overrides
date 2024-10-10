@@ -33,6 +33,7 @@
     opacity: 1;
   }
 }
+
 // Show Buttons only on hover
 .la-timeLineSegment-contact .row{
   .button {

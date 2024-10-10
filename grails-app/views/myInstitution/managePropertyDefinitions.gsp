@@ -1,10 +1,9 @@
-<%@ page import="de.laser.ui.Icon; de.laser.I10nTranslation; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory" %>
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.ui.Icon; de.laser.I10nTranslation; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory; grails.plugin.springsecurity.SpringSecurityUtils" %>
 
 <laser:htmlStart message="menu.institutions.prop_defs" />
-    <g:set var="entityName" value="${message(code: 'org.label')}" />
 
     <ui:breadcrumbs>
+        <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
         <ui:crumb message="menu.institutions.manage_props" class="active" />
     </ui:breadcrumbs>
 
@@ -37,15 +36,21 @@
                             <th>${message(code:'default.name.label')}</th>
                             <th>${message(code:'propertyDefinition.expl.label')}</th>
                             <th>${message(code:'default.type.label')}</th>
+                            <th></th>
                         </tr>
                         </thead>
                         <tbody>
                             <g:each in="${entry.value}" var="pd">
                                 <tr>
                                     <td>
-                                        <g:if test="${pd.isHardData}">
-                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.tooltip')}">
-                                                <i class="${Icon.PROP.HARDDATA}"></i>
+                                        <g:if test="${!pd.isHardData}">
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.not.tooltip')}">
+                                                <i class="${Icon.PROP.HARDDATA_NOT}"></i>
+                                            </span>
+                                        </g:if>
+                                        <g:if test="${pd.mandatory}">
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.mandatory.tooltip')}">
+                                                <i class="${Icon.PROP.MANDATORY}"></i>
                                             </span>
                                         </g:if>
                                         <g:if test="${pd.multipleOccurrence}">
@@ -53,7 +58,6 @@
                                                 <i class="${Icon.PROP.MULTIPLE}"></i>
                                             </span>
                                         </g:if>
-
                                         <g:if test="${pd.isUsedForLogic}">
                                             <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
                                                 <i class="${Icon.PROP.LOGIC}"></i>

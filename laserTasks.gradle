@@ -14,6 +14,12 @@ tasks.register('dbm.createGormDiff-storage', Exec) {
     args '-c', './gradlew dbmGormDiff -Pargs="changelogs/' + date + '-storage.groovy --add --dataSource=storage" -Dgrails.env=prod'
 }
 
+tasks.register('git.recent', Exec) {
+    group = 'laser'
+    executable 'sh'
+    args '-c', 'git for-each-ref --sort=-committerdate refs/heads --format=\'%(authordate:short) %(objectname:short) %(refname:short) (%(committerdate:relative)) %(authorname) | %(contents:subject)\''
+}
+
 tasks.register('gradle.helpWarningMode', Exec) {
     group = 'laser'
     executable 'sh'

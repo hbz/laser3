@@ -1,0 +1,2 @@
+Das ist das **Profil** Ihrer Einrichtung. 
+Hier können Sie alle Ihre Einrichtungsdaten, Identifikationsnummern, Nutzerzahlen und Kontaktdaten pflegen, die für die Verwaltung Ihrer Einrichtung durch die Konsortialstellen benötigt werden.

@@ -33,6 +33,7 @@ import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
@@ -1217,7 +1218,6 @@ class SurveyService {
                             title: dctx.owner.title,
                             filename: dctx.owner.filename,
                             mimeType: dctx.owner.mimeType,
-                            migrated: dctx.owner.migrated,
                             owner: dctx.owner.owner,
                             server: dctx.owner.server
                     ).save()
@@ -1228,14 +1228,13 @@ class SurveyService {
                     new DocContext(
                             owner: clonedContents,
                             surveyConfig: newSurveyConfig,
-                            domain: dctx.domain,
                             status: dctx.status
                     ).save()
                 }
             }
             //Copy Announcements
             if (params.copySurvey.copyAnnouncements) {
-                if (dctx.isDocANote() && !(dctx.domain) && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
+                if (dctx.isDocANote() && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
                     Doc clonedContents = new Doc(
                             type: dctx.getDocType(),
                             confidentiality: dctx.getDocConfid(),
@@ -1245,12 +1244,10 @@ class SurveyService {
                             title: dctx.owner.title,
                             filename: dctx.owner.filename,
                             mimeType: dctx.owner.mimeType,
-                            migrated: dctx.owner.migrated
                     ).save()
                     new DocContext(
                             owner: clonedContents,
                             surveyConfig: newSurveyConfig,
-                            domain: dctx.domain,
                             status: dctx.status
                     ).save()
                 }
@@ -1620,7 +1617,7 @@ class SurveyService {
     }
 
     /**
-     * Substitution call to ${@link #hasParticipantPerpetualAccessToTitle2(java.util.List, de.laser.TitleInstancePackagePlatform)}
+     * Substitution call to ${@link #hasParticipantPerpetualAccessToTitle2(java.util.List, de.laser.wekb.TitleInstancePackagePlatform)}
      * @param subscriptions the list of subscriptions eligible for the perpetual purchase
      * @param tipp the title to be checked
      * @return true if one of the given subscriptions grant access, false otherwise
@@ -2257,34 +2254,38 @@ class SurveyService {
         return [orgList: orgList, processCount: processCount, processRow: processRow, wrongOrgs: wrongOrgs.join(', '), truncatedRows: truncatedRows.join(', ')]
     }
 
-    boolean modificationToCostInformation(SurveyOrg surveyOrg) {
+    boolean modificationToContactInformation(SurveyOrg surveyOrg) {
         boolean modification = false
         Subscription subscription = surveyOrg.surveyConfig.subscription
         SurveyConfig surveyConfig = subscription ? SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(surveyOrg.surveyConfig.subscription, true) : null
-        if(surveyConfig){
+        Subscription prevSub = subscription ? subscription._getCalculatedPreviousForSurvey() : null
+        if(surveyConfig && surveyConfig.invoicingInformation && prevSub){
             int countModification = 0
-            Date renewalDate = DocContext.executeQuery('select dateCreated from DocContext as dc where dc.subscription = :subscription and dc.owner.type = :docType and dc.owner.owner = :owner and dc.status is null order by dc.dateCreated desc', [subscription: subscription, docType: RDStore.DOC_TYPE_RENEWAL, owner: surveyConfig.surveyInfo.owner])[0]
-            if(renewalDate)
+            Date renewalDate = DocContext.executeQuery('select dateCreated from DocContext as dc where dc.subscription = :subscription and dc.owner.type = :docType and dc.owner.owner = :owner and dc.status is null order by dc.dateCreated desc', [subscription: prevSub, docType: RDStore.DOC_TYPE_RENEWAL, owner: surveyConfig.surveyInfo.owner])[0]
+            if(renewalDate) {
                 countModification = SurveyOrg.executeQuery('select count(*) from SurveyOrg as surOrg where surOrg = :surOrg ' +
                         'and (exists(select addr from Address as addr where addr = surOrg.address and addr.lastUpdated > :renewalDate) ' +
                         'or exists(select ct from Contact as ct where ct.prs = surOrg.person and ct.lastUpdated > :renewalDate) ' +
                         'or exists(select pr from Person as pr where pr = surOrg.person and pr.lastUpdated > :renewalDate))', [renewalDate: renewalDate, surOrg: surveyOrg])[0]
-            modification = countModification > 0 ? true : false
+                modification = countModification > 0 ? true : false
+            }
         }
 
         return modification
     }
 
-    int countModificationToCostInformationAfterRenewalDoc(Subscription subscription){
+    int countModificationToContactInformationAfterRenewalDoc(Subscription subscription){
         int countModification = 0
         SurveyConfig surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(subscription, true)
-        if(surveyConfig){
-            Date renewalDate = DocContext.executeQuery('select dateCreated from DocContext as dc where dc.subscription = :subscription and dc.owner.type = :docType and dc.owner.owner = :owner and dc.status is null order by dc.dateCreated desc', [subscription: subscription, docType: RDStore.DOC_TYPE_RENEWAL, owner: surveyConfig.surveyInfo.owner])[0]
-            if(renewalDate)
-            countModification = SurveyOrg.executeQuery('select count(*) from SurveyOrg as surOrg where surveyConfig = :surveyConfig ' +
-                    'and (exists(select addr from Address as addr where addr = surOrg.address and addr.lastUpdated > :renewalDate) ' +
-                    'or exists(select ct from Contact as ct where ct.prs = surOrg.person and ct.lastUpdated > :renewalDate) ' +
-                    'or exists(select pr from Person as pr where pr = surOrg.person and pr.lastUpdated > :renewalDate))', [renewalDate: renewalDate, surveyConfig: surveyConfig])[0]
+        Subscription prevSub = subscription._getCalculatedPreviousForSurvey()
+        if(surveyConfig && surveyConfig.invoicingInformation && prevSub){
+            Date renewalDate = DocContext.executeQuery('select dateCreated from DocContext as dc where dc.subscription = :subscription and dc.owner.type = :docType and dc.owner.owner = :owner and dc.status is null order by dc.dateCreated desc', [subscription: prevSub, docType: RDStore.DOC_TYPE_RENEWAL, owner: surveyConfig.surveyInfo.owner])[0]
+            if(renewalDate) {
+                countModification = SurveyOrg.executeQuery('select count(*) from SurveyOrg as surOrg where surveyConfig = :surveyConfig ' +
+                        'and (exists(select addr from Address as addr where addr = surOrg.address and addr.lastUpdated > :renewalDate) ' +
+                        'or exists(select ct from Contact as ct where ct.prs = surOrg.person and ct.lastUpdated > :renewalDate) ' +
+                        'or exists(select pr from Person as pr where pr = surOrg.person and pr.lastUpdated > :renewalDate))', [renewalDate: renewalDate, surveyConfig: surveyConfig])[0]
+            }
 
         }
 
@@ -2304,7 +2305,7 @@ class SurveyService {
                 }
             }
             if (prop.isIntegerType()) {
-                chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.intValue is not null or sr.intValue != '') and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]
+                chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.intValue is not null) and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]
             }
             else if (prop.isStringType()) {
                 chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.stringValue is not null or sr.stringValue != '') and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]
@@ -2313,7 +2314,7 @@ class SurveyService {
                 chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.decValue is not null) and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]
             }
             else if (prop.isDateType()) {
-                chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.dateValue is not null or sr.dateValue != '') and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]
+                chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.dateValue is not null) and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]
             }
             else if (prop.isURLType()) {
                 chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.urlValue is not null or sr.urlValue != '') and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]

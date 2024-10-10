@@ -1,4 +1,4 @@
-<div class="ui flyout" id="dateCreatedLastUpdated-content" style="padding:50px 0 10px 0;overflow:scroll">
+<div class="ui wide flyout" id="dateCreatedLastUpdated-content">
 
     <h1 class="ui header"><g:message code="default.dateCreated.label"/>
         <sec:ifAnyGranted roles="ROLE_ADMIN">

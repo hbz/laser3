@@ -1015,10 +1015,11 @@ class SurveyController {
 
         ArrayList titles = ["WIB-ID", "ISIL", "ROR-ID", "GND-NR", "DEAL-ID"]
         titles.addAll([message(code: 'org.customerIdentifier'),
+                       message(code: 'org.sortname.label'), message(code: 'default.name.label'),
                        message(code: 'financials.costItemElement'),
                        message(code: 'default.status.label'),
                        message(code: 'myinst.financeImport.elementSign'),
-                       message(code: 'myinst.financeImport.invoiceTotal'), message(code: 'default.currency.label'), message(code: 'myinst.financeImport.taxRate'), message(code: 'myinst.financeImport.taxType'),
+                       message(code: 'myinst.financeImport.invoiceTotal'), message(code: 'default.currency.label.utf'), message(code: 'myinst.financeImport.taxRate'), message(code: 'myinst.financeImport.taxType'),
                        message(code: 'myinst.financeImport.dateFrom'), message(code: 'myinst.financeImport.dateTo'), message(code: 'myinst.financeImport.title'), message(code: 'myinst.financeImport.description')])
 
         ArrayList rowData = []
@@ -1043,7 +1044,8 @@ class SurveyController {
             }else{
                 row.add('')
             }
-
+            row.add(org.sortname)
+            row.add(org.name)
             row.add(RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.getI10n('value'))
             row.add(RDStore.COST_ITEM_ACTUAL.getI10n('value'))
             row.add(RDStore.CIEC_POSITIVE.getI10n('value'))
@@ -1684,8 +1686,7 @@ class SurveyController {
             }
         }
         if(result.editable) {
-
-            docstoreService.unifiedDeleteDocuments(params)
+            docstoreService.deleteDocument(params)
         }
 
         redirect(uri: request.getHeader('referer'))

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.convenience.Marker; de.laser.Subscription; de.laser.GenericOIDService; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.UserSetting; de.laser.auth.User; de.laser.auth.Role; de.laser.Org" %>
+<%@ page import="de.laser.HelpService; de.laser.ui.Btn; de.laser.ui.Icon; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.convenience.Marker; de.laser.Subscription; de.laser.GenericOIDService; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.UserSetting; de.laser.auth.User; de.laser.auth.Role; de.laser.Org" %>
 <laser:serviceInjection />
 
 <nav id="contextBar" class="ui fixed menu" aria-label="${message(code:'wcag.label.modeNavigation')}">
@@ -63,7 +63,9 @@
 
             %{-- help panel --}%
 
-            <g:if test="${(controllerName=='subscription' && actionName=='show') || (controllerName=='myInstitution' && actionName=='financeImport') || (controllerName=='myInstitution' && actionName=='subscriptionImport') || (controllerName=='dev' && actionName=='frontend')}">
+            <g:set var="helpFlag" value="${helpService.getFlag(controllerName, actionName)}" />
+
+            <g:if test="${helpFlag}">
                 <div class="item la-cb-action">
                     <button class="${Btn.ICON.SIMPLE} la-toggle-ui" id="help-toggle"><i class="${Icon.UI.HELP}"></i></button>
                 </div>
@@ -73,7 +75,7 @@
 
             <g:set var="isSubscriptionViewValid" value="${!(actionName.startsWith('copy') || actionName in ['renewEntitlementsWithSurvey', 'renewSubscription', 'emptySubscription'])}" />
 
-            <g:if test="${controllerName in ['finance', 'subscription'] && subscription && isSubscriptionViewValid}">
+            <g:if test="${controllerName in ['finance', 'subscription', 'survey'] && subscription && isSubscriptionViewValid}">
                 <g:if test="${editable && contextService.getOrg().isCustomerType_Consortium() && subscription._getCalculatedType() in [Subscription.TYPE_CONSORTIAL]}">
                     <div class="item la-cb-action">
                         <button class="${Btn.ICON.SIMPLE_TOOLTIP} la-toggle-ui" id="subscriptionTransfer-toggle"
@@ -149,11 +151,14 @@
                     <ui:cbItemMarkerAction provider="${provider}" type="${Marker.TYPE.WEKB_CHANGES}"/>
                 </g:if>
             </g:elseif>
-            <g:elseif test="${controllerName == 'tipp' && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                <g:if test="${tipp}">
-                    <ui:cbItemMarkerAction tipp="${tipp}" type="${Marker.TYPE.TIPP_CHANGES}"/>
-                </g:if>
-            </g:elseif>
+%{--            <g:elseif test="${controllerName in ['issueEntitlement', 'tipp'] && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">--}%
+%{--                <g:if test="${tipp}">--}%
+%{--                    <ui:cbItemMarkerAction tipp="${tipp}" type="${Marker.TYPE.TIPP_CHANGES}"/>--}%
+%{--                </g:if>--}%
+%{--                <g:elseif test="${issueEntitlementInstance?.tipp}">--}%
+%{--                    <ui:cbItemMarkerAction tipp="${issueEntitlementInstance.tipp}" type="${Marker.TYPE.TIPP_CHANGES}"/>--}%
+%{--                </g:elseif>--}%
+%{--            </g:elseif>--}%
             <g:elseif test="${controllerName == 'vendor'}">
                 <g:if test="${vendor}">
                     <ui:cbItemMarkerAction vendor="${vendor}" type="${Marker.TYPE.WEKB_CHANGES}"/>
@@ -297,6 +302,22 @@
 
 </nav>%{-- contextBar --}%
 
+%{-- help flyout --}%
+
+<g:if test="${helpFlag == HelpService.GSP}">
+    <g:render template="${'/help/' + helpService.getMapping(controllerName, actionName)}" />
+</g:if>
+<g:elseif test="${helpFlag == HelpService.MD}">
+    <div class="ui wide markdown flyout" id="help-content">
+        <div class="scrolling content">
+            <ui:renderMarkdown help="${helpService.getMapping(controllerName, actionName)}" />
+        </div>
+        <div class="basic center aligned actions">
+            <a href="mailto:laser@hbz-nrw.de?subject=Supportanfrage">Bei weiteren Fragen erreichen Sie uns per Email</a>
+        </div>
+    </div>
+</g:elseif>
+
 <style>
     #contextBar .la-advanced-view .item.la-cb-action-ext .item.la-flexbox {
         display: flex;
@@ -362,6 +383,8 @@
                     on: 'hover',
                     displayType: 'block'
                 })
+
+                tooltip.initDynamicPopups('.la-cb-action-ext')
 
                 $('.la-context-org, .la-advanced-view').fadeIn(150);
             }, 100);

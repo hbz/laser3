@@ -1,6 +1,11 @@
 package de.laser
 
 import de.laser.helper.Params
+import de.laser.interfaces.CalculatedType
+import de.laser.properties.LicenseProperty
+import de.laser.properties.PropertyDefinition
+import de.laser.storage.PropertyStore
+import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
 import de.laser.wekb.ProviderRole
@@ -10,6 +15,7 @@ import grails.gorm.transactions.Transactional
 import groovy.xml.StreamingMarkupBuilder
 import groovy.xml.XmlUtil
 import org.springframework.context.MessageSource
+import org.xml.sax.SAXParseException
 
 import javax.xml.XMLConstants
 import javax.xml.transform.stream.StreamSource
@@ -27,6 +33,34 @@ class LicenseService {
     ContextService contextService
     GrailsApplication grailsApplication
     MessageSource messageSource
+
+    Set<PropertyDefinition> AGENT_DEFINITION_PROPS = [PropertyStore.LIC_AUTHORIZED_USERS, PropertyStore.LIC_LOCAL_AUTHORIZED_USER_DEFINITION, PropertyStore.LIC_USAGE_STATISTICS_ADDRESSEE]
+    Set<PropertyDefinition> TIME_POINT_DEFINITION_PROPS = [PropertyStore.LIC_OA_FIRST_DATE, PropertyStore.LIC_OA_LAST_DATE, PropertyStore.LIC_PERPETUAL_COVERAGE_FROM, PropertyStore.LIC_PERPETUAL_COVERAGE_TO]
+    Set<PropertyDefinition> GENERAL_USAGE_STATEMENT_PROPS = [PropertyStore.LIC_ALUMNI_ACCESS, PropertyStore.LIC_CONFORMITY_WITH_URHG, PropertyStore.LIC_DISTANCE_EDUCATION,
+                                                                    PropertyStore.LIC_FAIR_USE_CLAUSE_INDICATOR, PropertyStore.LIC_PARTNERS_ACCESS, PropertyStore.LIC_REMOTE_ACCESS,
+                                                                    PropertyStore.LIC_SINGLE_USER_ACCESS, PropertyStore.LIC_WALK_IN_ACCESS, PropertyStore.LIC_WIFI_ACCESS]
+    Set<PropertyDefinition> COURSE_PACK_USAGE_STATEMENT_PROPS = [PropertyStore.LIC_COURSE_PACK_ELECTRONIC, PropertyStore.LIC_COURSE_PACK_PRINT, PropertyStore.LIC_COURSE_RESERVE_ELECTRONIC, PropertyStore.LIC_COURSE_RESERVE_PRINT]
+    Set<PropertyDefinition> ILL_USAGE_STATEMENT_PROPS = [PropertyStore.LIC_ILL_ELECTRONIC, PropertyStore.LIC_ILL_PRINT_OR_FAX, PropertyStore.LIC_ILL_RECORD_KEEPING_REQUIRED, PropertyStore.LIC_ILL_SECURE_ELECTRONIC_TRANSMISSION]
+    Set<PropertyDefinition> CORE_USAGE_TERMS = [PropertyStore.LIC_DIGITAL_COPY, PropertyStore.LIC_DIGITAL_COPY_TERM_NOTE, /*PropertyStore.LIC_DOCUMENT_DELIVERY_SERVICE,*/ PropertyStore.LIC_ELECTRONIC_LINK,
+                                                  PropertyStore.LIC_SCHOLARLY_SHARING, PropertyStore.LIC_SCHOLARLY_SHARING_TERM_NOTE, PropertyStore.LIC_PRINT_COPY, PropertyStore.LIC_PRINT_COPY_TERM_NOTE, PropertyStore.LIC_TDM,
+                                                  PropertyStore.LIC_TDM_RESTRICTIONS, PropertyStore.LIC_TDM_CHAR_COUNT]+GENERAL_USAGE_STATEMENT_PROPS
+    Set<PropertyDefinition> USAGE_TERMS = CORE_USAGE_TERMS+AGENT_DEFINITION_PROPS+GENERAL_USAGE_STATEMENT_PROPS+COURSE_PACK_USAGE_STATEMENT_PROPS+ILL_USAGE_STATEMENT_PROPS
+    Set<PropertyDefinition> SUPPLY_TERMS = [PropertyStore.LIC_ACCESSIBILITY_COMPLIANCE, PropertyStore.LIC_CHANGE_TO_LICENSED_MATERIAL, PropertyStore.LIC_COMPLETENESS_OF_CONTENT_CLAUSE,
+                                                   PropertyStore.LIC_CONCURRENCY_WITH_PRINT_VERSION, PropertyStore.LIC_CONTENT_WARRANTY, PropertyStore.LIC_CONT_ACCESS_TITLE_TRANSFER,
+                                                   PropertyStore.LIC_MAINTENANCE_WINDOW, PropertyStore.LIC_PERFORMANCE_WARRANTY, PropertyStore.LIC_UPTIME_GUARANTEE, PropertyStore.LIC_METADATA_DELIVERY,
+                                                   PropertyStore.LIC_METADATA_RELATED_CONTRACTUAL_TERMS, PropertyStore.LIC_OA_NOTE, PropertyStore.LIC_OPEN_ACCESS, PropertyStore.LIC_OA_FIRST_DATE, PropertyStore.LIC_OA_LAST_DATE,
+                                                   PropertyStore.LIC_USAGE_STATISTICS_AVAILABILITY_INDICATOR, PropertyStore.LIC_USAGE_STATISTICS_ADDRESSEE]
+    Set<PropertyDefinition> CONTINUING_ACCESS_TERMS = [PropertyStore.LIC_ARCHIVAL_COPY_CONTENT, PropertyStore.LIC_ARCHIVAL_COPY_COST, PropertyStore.LIC_ARCHIVAL_COPY_PERMISSION, PropertyStore.LIC_ARCHIVAL_COPY_TIME,
+                                                              PropertyStore.LIC_CONT_ACCESS_PAYMENT_NOTE, PropertyStore.LIC_CONT_ACCESS_RESTRICTIONS, PropertyStore.LIC_PERPETUAL_COVERAGE_FROM, PropertyStore.LIC_PERPETUAL_COVERAGE_NOTE,
+                                                              PropertyStore.LIC_PERPETUAL_COVERAGE_TO, PropertyStore.LIC_POST_CANCELLATION_ONLINE_ACCESS, PropertyStore.LIC_REPOSITORY]
+    Set<PropertyDefinition> PAYMENT_TERMS = [PropertyStore.LIC_OFFSETTING, PropertyStore.LIC_PUBLISHING_FEE, PropertyStore.LIC_READING_FEE]
+    Set<PropertyDefinition> GENERAL_TERMS = [PropertyStore.LIC_ALL_RIGHTS_RESERVED_INDICATOR, PropertyStore.LIC_APPLICABLE_COPYRIGHT_LAW, PropertyStore.LIC_BRANDING, PropertyStore.LIC_CANCELLATION_ALLOWANCE,
+                                                    PropertyStore.LIC_CLICKWRAP_MODIFICATION, PropertyStore.LIC_CONFIDENTIALITY_OF_AGREEMENT, PropertyStore.LIC_CURE_PERIOD_FOR_BREACH, PropertyStore.LIC_DATABASE_PROTECTION_OVERRIDE,
+                                                    PropertyStore.LIC_GOVERNING_JURISDICTION, PropertyStore.LIC_GOVERNING_LAW, PropertyStore.LIC_INDEMNIFICATION_BY_LICENSEE, PropertyStore.LIC_INDEMNIFICATION_BY_LICENSOR,
+                                                    PropertyStore.LIC_INTELLECTUAL_PROPERTY_WARRANTY, PropertyStore.LIC_LICENSEE_OBLIGATIONS,
+                                                    PropertyStore.LIC_LICENSEE_TERMINATION_CONDITION, PropertyStore.LIC_LICENSEE_TERMINATION_NOTICE_PERIOD, PropertyStore.LIC_LICENSEE_TERMINATION_RIGHT,
+                                                    PropertyStore.LIC_LICENSOR_TERMINATION_CONDITION, PropertyStore.LIC_LICENSOR_TERMINATION_NOTICE_PERIOD, PropertyStore.LIC_LICENSOR_TERMINATION_RIGHT,
+                                                    PropertyStore.LIC_MULTI_YEAR_LICENSE_TERMINATION, PropertyStore.LIC_TERMINATION_REQUIREMENT_NOTE, PropertyStore.LIC_USER_INFORMATION_CONFIDENTIALITY]
 
     /**
      * Gets a (filtered) list of licenses to which the context institution has reading rights
@@ -181,37 +215,20 @@ class LicenseService {
         visibleVendorRelations
     }
 
-    /*
-    do's: - return type either bool or XML
-    - input arg: License
-     */
-    String validateOnixPlDocument() {
-        /*
-        agenda:
-        - first: create XML document hand-coded
-        - create then a translation script from License into XML; the MarkupBuilder returns
-        - the translation script gets as input a Map in which inputParameters are being specified; those inputParameters are being processed upon creation of the XML
-        - implement validator: move XSD(s) into project or reference them with CDN and apply validator on it (cf. https://stackoverflow.com/questions/55067050/validating-a-xml-doc-in-groovy)
-
-        LAS:eR structure enhancements:
-        - new field paragraphNumber for LicenseProperty (optional on LAS:eR side, mandatory for ex/import, throw exception if not set!)
-
-        generic dos:
-        - RDConstants.YN and derivates and RDConstants.PERMISSIONS: implement helper; TermStatusCode is base for RefdataCategory RDConstants.PERMISSIONS
-          - in helper method: switch by refdata value (!) and map PERMISSION; Y_N; Y_N_U and Y_N_O accordingly; existence will be mapped onto Yes / No
-        - paragraph reference: create method for paragraph extraction
-        - LicenseProperty values are not necessarily defined nor are paragraphs; perform if-checks before each element!
-        - values may be mapped in Annotation nodes with AnnotationType onixPL:Interpretation
-
-        structure:
-        - elements may contain references to definitions; internal labels are being used as referrers
-        - definitions contain explanations (e.g. a LicenseStartDate is being referred to in LicenseDefinition but explained fully in TimePointDefinition)
-         */
+    String generateOnixPLDocument(License lic, Org institution) {
         File schemaFile = grailsApplication.mainContext.getResource('files/ONIX_PublicationsLicense_V1.0.xsd').file
         Validator validator = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(schemaFile).newValidator()
-        String xml = createHardCodedTestFile_v0()
-        //def xml = createHardCodedTestFile_v1()
-        validator.validate(new StreamSource(new StringReader(xml)))
+        String xml = buildDocument(lic, institution)
+        if(xml) {
+            try {
+                validator.validate(new StreamSource(new StringReader(xml)))
+            }
+            catch(SAXParseException e) {
+                log.error("validation error upon XML creation. Document shows as follows: ")
+                log.error(xml)
+                log.error("the error: ${e.getMessage()}")
+            }
+        }
         xml
     }
 
@@ -221,6 +238,7 @@ class LicenseService {
      */
     String createHardCodedTestFile_v0() {
         SimpleDateFormat onixTimestampFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmssZ")
+        SimpleDateFormat onixDateFormat = new SimpleDateFormat("yyyyMMdd")
         StreamingMarkupBuilder builder = new StreamingMarkupBuilder()
         Locale locale = LocaleUtils.getCurrentLocale()
         Org institution = contextService.getOrg()
@@ -238,7 +256,7 @@ class LicenseService {
                     }
                     Addressee {
                         AddresseeIdentifier {
-                            AddresseeIDType()
+                            AddresseeIDType('Institutional identifier')
                             IDTypeName('ISIL')
                             IDValue(institution.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISIL }?.value)
                         }
@@ -364,21 +382,21 @@ class LicenseService {
                             //license property Authorized Users
                             AgentLabel('Authorized Users')
                             AgentType('onixPL:Person')
-                            AgentName('s. Vertragstext') //sic!; the property value
+                            Description('s. Vertragstext') //sic!; the property value
                             LicenseTextLink(href: 'lp_authorized_users_01')
                         }
                         AgentDefinition {
                             //license property Local authorized user defintion
                             AgentLabel('Local Authorized Users')
                             AgentType('onixPL:Person')
-                            AgentName('Fakultätsangehörige, eingeschriebene Studenten, aktuelle Mitarbeiter, Vertragspersonal, das direkt in Bildungs- und Forschungsaktivitäten eingebunden ist') //property value
+                            Description('Fakultätsangehörige, eingeschriebene Studenten, aktuelle Mitarbeiter, Vertragspersonal, das direkt in Bildungs- und Forschungsaktivitäten eingebunden ist') //property value
                             LicenseTextLink(href: 'lp_local_authorized_user_defintion_01')
                         }
                         AgentDefinition {
                             //license property Usage Statistics Addressee
                             AgentLabel('Usage Statistics Addressee')
                             AgentType('onixPL:Person')
-                            AgentName('benannte Administratoren des Kunden')
+                            Description('benannte Administratoren des Kunden')
                             LicenseTextLink(href: 'lp_usage_statistics_addressee_01')
                         }
                         ResourceDefinition {
@@ -428,7 +446,7 @@ class LicenseService {
                                 IDValue(20281231) //format YYYYmmdd
                             }
                         }
-                        PlaceDefintion {
+                        PlaceDefinition {
                             //mapping license property Repository
                             PlaceLabel('Repository')
                             PlaceName {
@@ -495,7 +513,7 @@ class LicenseService {
                                 }
                             }
                             UsageRelatedPlace {
-                                UsageRelatedPlaceRelator('onixPL:PlaceofUsage')
+                                UsagePlaceRelator('onixPL:PlaceOfUsage')
                                 RelatedPlace('onixPL:RemoteLocation')
                             }
                         }
@@ -515,10 +533,12 @@ class LicenseService {
                             UsedResource('Subscription')
                         }
                         //multiple Usage statements per each status; include user if status applicable
+                        /*
                         Usage {
                             UsageType('onixPL:Use')
                             UsageStatus('onixPL:SilentUninterpreted') //for y_n_o other or y_n_u unclear
                         }
+                        */
                         Usage {
                             //license properties Course pack electronic/cached, Course pack print, Course reserve electronic/cached, Course reserve print; group by status
                             UsageType('onixPL:MakeAvailable')
@@ -582,14 +602,14 @@ class LicenseService {
                                 AnnotationType('onixPL:SpecialConditions')
                                 AnnotationText('§ 3 Abs. 1f: Incorporate Parts of the Licensed Material in printed or electronic form in assignments and portfolios, theses and in dissertations ( the Academic Works ), including reproductions of the Academic Works for personal use and library deposit. Reproductions in printed or electronic form of Academic Works may be provided to Sponsors of such Academic Works. Each item shall carry appropriate acknowledgement of the source; Publicly display or publicly perform Parts of the Licensed Material as part of a presentation at a seminar, Conference,-workshop, or other such similar activity. Deposit in perpetuity the learning and teaching objects as referred to in § 3.1.b on Servers operated by the Institution or Licensee. The use of such material shall be limited to Authorised Users.')
                             }
-                            LicenseTextLink('lp_scholarly_sharing_01')
+                            LicenseTextLink(href: 'lp_scholarly_sharing_01')
                             User('Licensee Consortial')
                             User('onixPL:AuthorizedUser')
+                            UsedResource('Subscription')
                             UsageRelatedAgent {
                                 UsageAgentRelator('onixPL:ReceivingAgent')
                                 RelatedAgent('onixPL:ExternalAcademic')
                             }
-                            UsedResource('Subscription')
                         }
                         Usage {
                             //license property Digital copy
@@ -644,12 +664,12 @@ class LicenseService {
                             //license properties Print Copy and Print copy term note
                             UsageType('onixPL:PrintCopy')
                             UsageStatus('onixPL:Permitted')
-                            LicenseTextLink(href: 'lp_print_copy_01') //license property Print Copy
-                            LicenseTextLink(href: 'lp_print_copy_term_note_01') //license property Print copy term note
                             Annotation {
                                 AnnotationType('onixPL:Interpretation')
                                 AnnotationText('Erlaubt für den persönlicher Gebrauch.')
                             }
+                            LicenseTextLink(href: 'lp_print_copy_01') //license property Print Copy
+                            LicenseTextLink(href: 'lp_print_copy_term_note_01') //license property Print copy term note
                             User('Licensee Consortial')
                             UsedResource('Subscription')
                         }
@@ -657,13 +677,13 @@ class LicenseService {
                             //license properties Text- and Datamining, Text- and Datamining Character Count, Text- and Datamining Restrictions
                             UsageType('onixPL:UseForDataMining')
                             UsageStatus('onixPL:InterpretedAsPermitted') //its refdata value
-                            LicenseTextLink('lp_text_and_datamining_01') //license property Text- and Datamining
-                            LicenseTextLink('lp_text_and_datamining_character_count_01')
-                            LicenseTextLink('lp_text_and_datamining_restrictions_01')
                             Annotation {
                                 AnnotationType('onixPL:Interpretation') //license property Text- and Datamining Restrictions
                                 AnnotationText('Zustimmung des Verlags erforderlich, außer es ist gesetzlich erlaubt. In dem Fall vorheringe Information des Verlags notwendig')
                             }
+                            LicenseTextLink(href: 'lp_text_and_datamining_01') //license property Text- and Datamining
+                            LicenseTextLink(href: 'lp_text_and_datamining_character_count_01')
+                            LicenseTextLink(href: 'lp_text_and_datamining_restrictions_01')
                             User('Licensee Consortial')
                             UsedResource('Subscription')
                             UsageCondition('onixPL:SubjectToVolumeLimit') //license property Text- and Datamining Character Count
@@ -708,9 +728,6 @@ class LicenseService {
                         SupplyTerm {
                             //license properties Maintenance window, Performance warranty and Uptime guarantee
                             SupplyTermType('onixPL:ServicePerformanceGuarantee')
-                            LicenseReferenceText(href: 'lp_maintenance_window_01')
-                            LicenseReferenceText(href: 'lp_performance_warranty_01')
-                            LicenseReferenceText(href: 'lp_uptime_guarantee_01')
                             Annotation {
                                 AnnotationType('onixPL:ERMI:MaintenanceWindow')
                                 AnnotationText('regelmäßig täglich zwischen 06:00 Uhr und 08:00 Uhr') //property value Maintenance window
@@ -723,6 +740,9 @@ class LicenseService {
                                 AnnotationType('onixPL:ERMI:UptimeGuarantee')
                                 AnnotationText('mind. 99,1% bzgl. eines Kalenderjahres') //property value Uptime guarantee
                             }
+                            LicenseTextLink(href: 'lp_maintenance_window_01')
+                            LicenseTextLink(href: 'lp_performance_warranty_01')
+                            LicenseTextLink(href: 'lp_uptime_guarantee_01')
                         }
                         SupplyTerm {
                             //license property Metadata delivery
@@ -794,8 +814,6 @@ class LicenseService {
                             //license property Post Cancellation Online Access
                             ContinuingAccessTermType('onixPL:PostCancellationOnlineAccess')
                             TermStatus('onixPL:Yes') //maps reference values; implement helper; TermStatusCode is base for RefdataCategory RDConstants.PERMISSIONS
-                            LicenseTextLink(href: 'lp_post_cancellation_online_access_01')
-                            LicenseTextLink(href: 'lp_repository_01')
                             //license property Continuing Access: Payment Note
                             Annotation {
                                 AnnotationType('onixPL:PaymentNote')
@@ -806,6 +824,8 @@ class LicenseService {
                                 AnnotationType('onixPL:PostCancellationOnlineAccessHoldingsNote')
                                 AnnotationText('Continued Access to Content (term 12 is not applicable to IOP ebooks, IOP Archive and Article Packs) 12.1 Upon termination of this Licence, where the Member: 12.1.1 is not in breach of any of the terms and conditions of this Licence; and 12.1.2 has paid all its fees in full, a Member(s) will be entitled to have continued access to the issues of the Publications dated with the calendar year in which this Licence commenced. 12.2 Where this Licence remains in force for subsequent full calendar years, and the conditions in term 12.1 apply, the Member will have continued access to the issues of the Publications under this Licence which were dated with those full calendar years (the “Available Content”). All other access shall terminate. 12.3 The Available Content will be made available via a website on payment of an annual maintenance fee and for so long as IOP provides electronic access to that content via that website. If access via a website is no longer available at any time, the Available Content will be made available on disk or some other form of electronic media. 12.4 If, at any time, IOP ceases to publish or distribute any of the Available Content then it will use its reasonable endeavours to negotiate the right for the Member(s) to continue to access it in accordance with these terms and conditions.')
                             }
+                            LicenseTextLink(href: 'lp_post_cancellation_online_access_01')
+                            LicenseTextLink(href: 'lp_repository_01')
                             ContinuingAccessTermRelatedPlace {
                                 ContinuingAccessTermPlaceRelator('Repository')
                                 RelatedPlace('Repository')
@@ -814,7 +834,7 @@ class LicenseService {
                         ContinuingAccessTerm {
                             //license properties Perpetual coverage from, Perpetual coverage note, Perpetual coverage to
                             ContinuingAccessTermType('onixPL:PostCancellationOnlineAccess')
-                            TermStatus('onixPL:Unclear') //refdata value from Perpetual coverage note
+                            TermStatus('onixPL:Uncertain') //refdata value from Perpetual coverage note
                             LicenseTextLink(href: 'lp_perpetual_coverage_from_01') //license property Perpetual coverage from
                             LicenseTextLink(href: 'lp_perpetual_coverage_to_01') //license property Perpetual coverage to
                             //license property Perpetual coverage from
@@ -877,12 +897,12 @@ class LicenseService {
                         }
                         GeneralTerm {
                             //license property Cancellation allowance
-                            GeneralTermType('onixPL:TerminationWithoutPrejucideToRights')
+                            GeneralTermType('onixPL:TerminationWithoutPrejudiceToRights')
                             LicenseTextLink(href: 'lp_cancellation_allowance_01')
                         }
                         GeneralTerm {
                             //license property Clickwrap modification
-                            GeneralTermType('Clickwrap modification')
+                            GeneralTermType('onixPL:ClickThroughOverride')
                             TermStatus('onixPL:No')
                             LicenseTextLink(href: 'lp_clickwrap_modification_01')
                         }
@@ -894,6 +914,7 @@ class LicenseService {
                         GeneralTerm {
                             //license property Cure period for breach
                             GeneralTermType('onixPL:TerminationByBreach')
+                            LicenseTextLink(href: 'lp_cure_period_for_breach_01')
                             GeneralTermQuantity {
                                 GeneralTermQuantityType('onixPL:PeriodForCureOfBreach')
                                 //extractor script "30 Tage" -> 30 and onixPL:Days; throw exception if mapping failed with indicating correct values
@@ -903,92 +924,91 @@ class LicenseService {
                                     QuantityUnit('onixPL:Days')
                                 }
                             }
-                            LicenseReferenceText(href: 'lp_cure_period_for_breach_01')
                         }
                         GeneralTerm {
                             //license property Data protection override
                             GeneralTermType('onixPL:DatabaseProtectionOverride')
                             TermStatus('onixPL:Yes')
-                            LicenseReferenceText(href: 'lp_data_protection_override_01')
+                            LicenseTextLink(href: 'lp_data_protection_override_01')
                         }
                         GeneralTerm {
                             //license property Governing jurisdiction
                             GeneralTermType('onixPL:Jurisdiction')
-                            LicenseReferenceText(href: 'lp_governing_jurisdiction_01')
+                            LicenseTextLink(href: 'lp_governing_jurisdiction_01')
                         }
                         GeneralTerm {
                             //license property Governing law
                             GeneralTermType('onixPL:GoverningLaw')
-                            LicenseReferenceText(href: 'lp_governing_law_01')
+                            LicenseTextLink(href: 'lp_governing_law_01')
                         }
                         GeneralTerm {
                             //license property Indemnification by licensee clause indicator
-                            GeneralTermType('onixPL:IndemnitiyAgainstBreach')
+                            GeneralTermType('onixPL:IndemnityAgainstBreach')
                             TermStatus('onixPL:No') //if exists
-                            LicenseReferenceText(href: 'lp_indemnification_by_licensee_clause_indicator_01')
+                            LicenseTextLink(href: 'lp_indemnification_by_licensee_clause_indicator_01')
                         }
                         GeneralTerm {
                             //license property Indemnification by licensor
                             GeneralTermType('onixPL:LicensorIndemnity')
                             TermStatus('onixPL:Uncertain') //if exists, maps y_n_o Other
-                            LicenseReferenceText(href: 'lp_indemnification_by_licensor_01')
+                            LicenseTextLink(href: 'lp_indemnification_by_licensor_01')
                         }
                         GeneralTerm {
                             //license property Intellectual property warranty
                             GeneralTermType('onixPL:LicensorIntellectualPropertyWarranty')
                             TermStatus('onixPL:Yes') //its refdata value
-                            LicenseReferenceText(href: 'lp_intellectual_property_warranty_01')
+                            LicenseTextLink(href: 'lp_intellectual_property_warranty_01')
                         }
                         GeneralTerm {
                             //license property Licensee obligations
                             GeneralTermType('onixPL:NotificationOfLicenseeIPAddresses')
-                            LicenseReferenceText(href: 'lp_licensee_obligations_01')
+                            LicenseTextLink(href: 'lp_licensee_obligations_01')
                         }
                         GeneralTerm {
                             //license properties Licensee termination condition, Licensee termination notice period, Licensee termination right
                             GeneralTermType('onixPL:LicenseeTerminationRight')
-                            TermStatus('onixPL:Unclear') //refdata value of License termination right
-                            LicenseReferenceText(href: 'lp_licensee_termination_notice_period_01') //license property Licensee termination notice period
-                            LicenseReferenceText(href: 'lp_licensee_termination_right_01') //license property Licensee termination right
+                            TermStatus('onixPL:Uncertain') //refdata value of License termination right
                             Annotation {
                                 AnnotationType('onixPL:Interpretation')
                                 AnnotationText('Sollte die Erhöhung mehr als 5% betragen, steht den K0NS0RTIAL TEILNEHMERN ein außerordentliches Kündigungsrecht zu.') //license property Licensee termination condition
                             }
+                            LicenseTextLink(href: 'lp_licensee_termination_notice_period_01') //license property Licensee termination notice period
+                            LicenseTextLink(href: 'lp_licensee_termination_right_01') //license property Licensee termination right
                         }
                         GeneralTerm {
                             //license properties Licensor termination condition, Licensor termination notice period, Licensor termination right
                             GeneralTermType('onixPL:LicensorTerminationRight')
                             TermStatus('onixPL:Yes') //refdata value of Licenor termination right
-                            LicenseReferenceText(href: 'lp_licensor_termination_notice_period_01') //license property Licensor termination notice period
-                            LicenseReferenceText(href: 'lp_licensor_termination_right_01') //license property Licensor termination right
                             Annotation {
                                 AnnotationType('onixPL:Interpretation')
                                 AnnotationText('Sollte Preselect eine grobe Missnutzungen der Inhalte feststellen, wird die Hochschule innerhalb von 4 Wochen versuchen diese zubeheben. Sollte dies nicht möglich sein, behält sich Preselect ein außerordentliches Kündigungsrecht und/oder das Abschalten der Hochschule vor.') //license property Licensor termination condition
                             }
+                            LicenseTextLink(href: 'lp_licensor_termination_notice_period_01') //license property Licensor termination notice period
+                            LicenseTextLink(href: 'lp_licensor_termination_right_01') //license property Licensor termination right
                         }
                         GeneralTerm {
                             //license property Multi Year License Termination
                             GeneralTermType('onixPL:MemberLeavingConsortium')
-                            LicenseReferenceText(href: 'lp_multi_year_license_termination_01')
                             Annotation {
                                 AnnotationType('onixPL:Interpretation')
                                 AnnotationText('monatlich in 2022') //we will map here the license property value
                             }
+                            LicenseTextLink(href: 'lp_multi_year_license_termination_01')
                         }
                         GeneralTerm {
                             //license property Termination requirement note
                             GeneralTermType('onixPL:ActionOnTermination')
-                            LicenseReferenceText(href: 'lp_termination_requirement_note_01')
                             Annotation {
                                 AnnotationType('onixPL:ERMI:TerminationRequirementsNote')
                                 AnnotationText('jede Kündigung bedarf der Schriftform')
                             }
+                            LicenseTextLink(href: 'lp_termination_requirement_note_01')
                         }
                         GeneralTerm {
                             //license property User information confidentiality
                             GeneralTermType('onixPL:ConfidentialityOfUserData')
                             TermStatus('onixPL:Uncertain')
-                            LicenseReferenceText(href: 'lp_user_information_confidentiality_01')
+                            LicenseTextLink(href: 'lp_user_information_confidentiality_01')
                         }
                     }
                     //optional 0-1; possible container for LicenseProperty.paragraph-s
@@ -1272,23 +1292,27 @@ class LicenseService {
                             SortNumber(0)
                             Text('3. USAGE RIGHTS 3.2 Authorized Users may, in accordance with the copyright laws of The Netherlands and subject to clause 6 below: 3 .2. 5 Distribute a copy of individual chapters, articles or other single items of the Licensed Materials in print or electronic form to other Authorized Users or to other individual scholars collaborating with Authorized Users but only for the purposes of research and private study; for the avoidance of doubt, this sub-clause shall include the distribution of a copy for teaching purposes to each individual student Authorized User in a class at the Licensee\'s institution. 3.2.6 Download a copy of individual chapters, articles or other single items of the Licensed Materials and share the same with Authorized Users or other individual scholars collaborating in a specific research project with such Authorized Users provided that it is held and accessed within a closed network that is not accessible to any person not directly involved in such collaboration and provided that it is deleted from such network immediately upon completion of the collaboration.')
                         }
+                        TextElement(id: 'lp_singleuseraccess_01') {
+                            SortNumber(0)
+                            Text('1. KEY DEFINITIONS 1.1 Authorised Users [...]Individuals who are not an Authorised User at an eligible Member Institution may access the Licensed Material under the terms herein only through the Consortium or a National, Regional, or State Library qualified to be Member, or through a co-operative system operated by a library service provider, provided such individuals are permanent residents of Germany and provided the Commercial Use Individual is registered with the Consortium and/or the Member or with the Consortium and/or Members co-operatively and subject to registration conditions that have been approved by the Publisher. Such approval shall not be unduly withheld by Publisher.')
+                        }
                         TextElement(id: 'lp_termination_requirement_note_01') {
                             SortNumber(0)
                             Text('§ 6 Vertragsdauer, Kündigung 6.2 Jede Kündigung bedarf der Schriftform')
                         }
-                        TextElement('lp_text_and_datamining_01') {
+                        TextElement(id: 'lp_text_and_datamining_01') {
                             SortNumber(0)
                             Text('3. Scope of License b. Downloading, printing, or saving of text for personal, noncommercial use is permissible. These terms and conditions do not permit the downloading of entire issues of PNAS Online, and systematic downloading is prohibited.')
                         }
-                        TextElement('lp_text_and_datamining_character_count_01') {
+                        TextElement(id: 'lp_text_and_datamining_character_count_01') {
                             SortNumber(0)
                             Text('1.3 Authorized Uses. [...] The Subscriber may: [...] maximum length of 200 characters surrounding and excluding the text entity matched ("Snippets") or bibliographic metadata.')
                         }
-                        TextElement('lp_text_and_datamining_restrictions_01') {
+                        TextElement(id: 'lp_text_and_datamining_restrictions_01') {
                             SortNumber(0)
                             Text('For the avoidance of doubt, the Licensee and Auhtorized Users may not [...] carry out any Text and Data Minging without the Licensor\'s prior consent in writing except as permitted by law, but must always notify the Licensor prior to commencing any Data Mining activity.')
                         }
-                        TextElement('lp_uptime_guarantee_01') {
+                        TextElement(id: 'lp_uptime_guarantee_01') {
                             SortNumber(0)
                             Text('§ 5 2.-5. § 6')
                         }
@@ -1304,11 +1328,11 @@ class LicenseService {
                             SortNumber(0)
                             Text('9. Confidentiality Confidential information received from each other (other than information that is or becomes public or known to us on a non-confidential basis) will not be disclosed to anyone else except to the extent required by law or as necessary to perform the agreement for as long as the information remains confidential. Each of us will use industry standard administrative, physical and technical safeguards to protect the other\'s confidential information. If a court or government agency orders either of us to disclose the confidential information of the other, the other will be promptly notified so that an appropriate protective order or other remedy can be obtained unless the court or government agency prohibits prior notification.')
                         }
-                        TextElement(href: 'lp_walkin_access_01') {
+                        TextElement(id: 'lp_walkin_access_01') {
                             SortNumber(0)
                             Text("§1: [...] authorised persons physically present in the Licensee's library facilities.")
                         }
-                        TextElement(href: 'lp_wifi_access_01') {
+                        TextElement(id: 'lp_wifi_access_01') {
                             SortNumber(0)
                             Text('§ 10 Sonstige Bestimmungen Der WLAN-Zugriff auf dem Campus oder in den Räumen einer Bibliothek ist gestattet.')
                         }
@@ -1323,12 +1347,1361 @@ class LicenseService {
      * experiment sandbox 2
      * @return
      */
-    String createHardCodedTestFile_v1() {
+    String buildDocument(License lic, Org institution) {
         SimpleDateFormat onixTimestampFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmssZ")
+        SimpleDateFormat onixDateFormat = new SimpleDateFormat("yyyyMMdd")
         StreamingMarkupBuilder builder = new StreamingMarkupBuilder()
+        Locale locale = LocaleUtils.getCurrentLocale()
+        Date now = new Date()
+        //for LicenseDocument.LicenseDocumentTypes; for that doc.doctype can be mapped to one of: onixPL:Addendum, onixPL:License, onixPL:LicenseMainTerms, onixPL:LicenseSchedule, onixPL:LicenseSummary
+        Set<RefdataValue> relevantDocTypes = RefdataValue.findAllByValueInListAndOwner(['Addendum', 'License', 'ONIX-PL License'], RefdataCategory.findByDesc(RDConstants.DOCUMENT_TYPE))
+        Map<Long, LicenseProperty> licPropertyMap = LicenseProperty.executeQuery('select lp.type.id, lp from LicenseProperty lp where lp.owner = :lic and (lp.isPublic = true or lp.tenant = :ctx)', [lic: lic, ctx: institution]).collectEntries { row -> [row[0], row[1]] }
+        Set<PropertyDefinition> paragraphableProps = USAGE_TERMS+SUPPLY_TERMS+CONTINUING_ACCESS_TERMS+PAYMENT_TERMS+GENERAL_TERMS
+        paragraphableProps << PropertyStore.LIC_ILL_TERM_NOTE
+        Set<String> possibleUsageStatus = ['onixPL:InterpretedAsPermitted', 'onixPL:InterpretedAsProhibited', 'onixPL:Permitted', 'onixPL:Prohibited', 'onixPL:SilentUninterpreted', 'onixPL:NotApplicable'],
+        usedGeneralUsageStatus = [], usedCoursePackUsageStatus = [], usedILLUsageStatus = []
+        possibleUsageStatus.each { String usageStatus ->
+            GENERAL_USAGE_STATEMENT_PROPS.each { PropertyDefinition propDef ->
+                if(checkValueAndPermissionStatus(licPropertyMap, propDef, usageStatus))
+                    usedGeneralUsageStatus << usageStatus
+            }
+            COURSE_PACK_USAGE_STATEMENT_PROPS.each { PropertyDefinition propDef ->
+                if(checkValueAndPermissionStatus(licPropertyMap, propDef, usageStatus))
+                    usedCoursePackUsageStatus << usageStatus
+            }
+            ILL_USAGE_STATEMENT_PROPS.each { PropertyDefinition propDef ->
+                if(checkValueAndPermissionStatus(licPropertyMap, propDef, usageStatus))
+                    usedILLUsageStatus << usageStatus
+            }
+        }
+        Set<Subscription> subscriptions = lic.getSubscriptions(institution)
         def xml = builder.bind {
-
+            mkp.xmlDeclaration()
+            mkp.declareNamespace(ople: "http://www.editeur.org/ople")
+            ONIXPublicationsLicenseMessage([version: '1.0',xmlns: "http://www.editeur.org/onix-pl"]) {
+                Header {
+                    Sender {
+                        SenderName(messageSource.getMessage('laser', null, locale))
+                        SenderContact('LAS:eR-Support')
+                        SenderEmail('laser@hbz-nrw.de')
+                    }
+                    Addressee {
+                        AddresseeIdentifier {
+                            AddresseeIDType('Institutional identifier')
+                            IDTypeName('ISIL')
+                            IDValue(Identifier.findByOrgAndNs(institution, IdentifierNamespace.findByNs(IdentifierNamespace.ISIL))?.value)
+                        }
+                    }
+                    SentDateTime(onixTimestampFormat.format(now))
+                }
+                PublicationsLicenseExpression {
+                    ExpressionDetail {
+                        ExpressionType('onixPL:LicenseExpression')
+                        //LicenseIdentifier does not support proprietary namespaces
+                        ExpressionIdentifier {
+                            ExpressionIDType('onixPL:Proprietary')
+                            IDTypeName('globalUID')
+                            IDValue(lic.globalUID)
+                        }
+                        ExpressionStatus('onixPL:Approved')
+                    }
+                    LicenseDetail {
+                        Description(lic.reference)
+                        LicenseStatus(refdataToOnixControlledList(lic.status, License.ONIXPL_CONTROLLED_LIST.LICENSE_STATUS_CODE)) //current => ActiveLicense, expired => NoLongerActive, expected => ProposedLicense?
+                        Set<DocContext> relevantDocuments = lic.documents.findAll { DocContext dc -> dc.owner.type in relevantDocTypes && dc.status != RDStore.DOC_CTX_STATUS_DELETED }
+                        relevantDocuments.each { DocContext dc ->
+                            LicenseDocument {
+                                LicenseDocumentType(refdataToOnixControlledList(dc.owner.type, License.ONIXPL_CONTROLLED_LIST.LICENSE_DOCUMENT_TYPE_CODE))
+                                DocumentLabel(dc.owner.title)
+                            }
+                        }
+                        /*
+                        orgRole.roleType == LicensingConsortium maps to onixPL:LicenseeRepresentative (def: A representative of the licensee(s) authorized to sign the license (usually when licensees are members of a consortium).)
+                        orgRole.roleType == Licensee_Consortial maps to onixPL:LicenseeConsortium (def: A consortium of which licensees under a license are members.)
+                        orgRole.roleType == Licensee maps to onixPL:Licensee
+                         */
+                        //mandatory are at least two LicenseRelatedAgent statements - error message if no provider is connected!
+                        if(lic.getLicensingConsortium()) {
+                            LicenseRelatedAgent {
+                                LicenseAgentRelator('onixPL:LicenseeRepresentative')
+                                RelatedAgent(RDStore.OR_LICENSING_CONSORTIUM.value)
+                            }
+                        }
+                        if(lic.getLicensee()) {
+                            if(lic._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
+                                LicenseRelatedAgent {
+                                    LicenseAgentRelator('onixPL:LicenseeConsortium')
+                                    RelatedAgent(RDStore.OR_LICENSEE_CONS.value)
+                                }
+                            }
+                            else if(lic._getCalculatedType() == CalculatedType.TYPE_LOCAL) {
+                                LicenseRelatedAgent {
+                                    LicenseAgentRelator('onixPL:Licensee')
+                                    RelatedAgent(RDStore.OR_LICENSEE.value)
+                                }
+                            }
+                        }
+                        if(lic.providerRelations) {
+                            LicenseRelatedAgent {
+                                LicenseAgentRelator('onixPL:Licensor')
+                                RelatedAgent('Licensor')
+                            }
+                        }
+                        if(lic.vendorRelations) {
+                            LicenseRelatedAgent {
+                                LicenseAgentRelator('onixPL:LicensingAgent')
+                                RelatedAgent('Vendor')
+                            }
+                        }
+                        LicenseRelatedResource {
+                            LicenseResourceRelator('onixPL:LicensedContent')
+                            RelatedResource('Subscription')
+                        }
+                        if(lic.startDate) {
+                            LicenseRelatedTimePoint {
+                                LicenseTimePointRelator('onixPL:LicenseStartDate')
+                                RelatedTimePoint('LicenseStartDate')
+                            }
+                        }
+                        if(lic.endDate) {
+                            LicenseRelatedTimePoint {
+                                LicenseTimePointRelator('onixPL:LicenseEndDate')
+                                RelatedTimePoint('LicenseEndDate')
+                            }
+                        }
+                    }
+                    Definitions {
+                        //define here the people and organisations taking part in the license: OrgRoles in detail, moreover Walk-In User and other related parties
+                        lic.orgRelations.each { OrgRole oo ->
+                            AgentDefinition {
+                                AgentLabel(oo.roleType.value) //use this as internal document referrer
+                                AgentType('onixPL:Organization')
+                                AgentIdentifier {
+                                    AgentIDType('onixPL:Proprietary')
+                                    IDTypeName('globalUID')
+                                    IDValue(oo.org.globalUID)
+                                }
+                                //for each identifier, ISIL, WIBID, etc.
+                                AgentIdentifier {
+                                    AgentIDType('onixPL:CompanyRegistrationNumber')
+                                    IDTypeName('ISIL')
+                                    IDValue(Identifier.findByNsAndOrg(IdentifierNamespace.findByNs(IdentifierNamespace.ISIL), oo.org).value)
+                                }
+                                AgentIdentifier {
+                                    AgentIDType('onixPL:CompanyRegistrationNumber')
+                                    IDTypeName('WIBID')
+                                    IDValue(Identifier.findByNsAndOrg(IdentifierNamespace.findByNs(IdentifierNamespace.WIBID), oo.org).value)
+                                }
+                                AgentIdentifier {
+                                    AgentIDType('onixPL:Proprietary')
+                                    IDTypeName('globalUID')
+                                    IDValue(oo.org.globalUID)
+                                }
+                                AgentName {
+                                    AgentNameType('onixPL:RegisteredName')
+                                    Name(oo.org.name)
+                                }
+                                AgentName {
+                                    AgentNameType('onixPL:CommonName')
+                                    Name(oo.org.sortname)
+                                }
+                            }
+                        }
+                        if(lic.providerRelations) {
+                            lic.providerRelations.each { ProviderRole pvr ->
+                                AgentDefinition {
+                                    AgentLabel('Licensor') //map ProviderRole to Licensor
+                                    AgentType('onixPL:Organization')
+                                    AgentIdentifier {
+                                        AgentIDType('onixPL:Proprietary')
+                                        IDTypeName('wekbId')
+                                        IDValue(pvr.provider.gokbId)
+                                    }
+                                    AgentName {
+                                        AgentNameType('onixPL:CommonName')
+                                        Name(pvr.provider.sortname)
+                                    }
+                                    AgentName {
+                                        AgentNameType('onixPL:RegisteredName')
+                                        Name(pvr.provider.name)
+                                    }
+                                }
+                            }
+                        }
+                        if(lic.vendorRelations) {
+                            lic.vendorRelations.each { VendorRole vr ->
+                                AgentDefinition {
+                                    AgentLabel('Vendor') //map VendorRole to LicensingAgent
+                                    AgentType('onixPL:Organization')
+                                    AgentIdentifier {
+                                        AgentIDType('onixPL:Proprietary')
+                                        IDTypeName('wekbId')
+                                        IDValue(vr.vendor.gokbId)
+                                    }
+                                    AgentName {
+                                        AgentNameType('onixPL:CommonName')
+                                        Name(vr.vendor.sortname)
+                                    }
+                                    AgentName {
+                                        AgentNameType('onixPL:RegisteredName')
+                                        Name(vr.vendor.name)
+                                    }
+                                }
+                            }
+                        }
+                        //license properties Authorized Users, Local authorized user defintion
+                        AGENT_DEFINITION_PROPS.each { PropertyDefinition propDef ->
+                            if(isValueSet(licPropertyMap, propDef) || isParagraphSet(licPropertyMap, propDef)) {
+                                LicenseProperty licProp = licPropertyMap.get(propDef.id)
+                                AgentDefinition {
+                                    AgentLabel(propDef.name)
+                                    AgentType('onixPL:Person')
+                                    if(licProp.getValue())
+                                        Description(licProp.getValue())
+                                    if(licProp.paragraph)
+                                        LicenseTextLink(href: "lp_${toSnakeCase(propDef.name)}_01")
+                                }
+                            }
+                        }
+                        //the subscriptions
+                        if(subscriptions) {
+                            subscriptions.each { Subscription s ->
+                                ResourceDefinition {
+                                    ResourceLabel('Subscription')
+                                    ResourceIdentifier {
+                                        ResourceIDType('onixPL:Proprietary')
+                                        IDTypeName('globalUID')
+                                        IDValue(s.globalUID)
+                                    }
+                                    Description(s.name)
+                                }
+                            }
+                        }
+                        else {
+                            ResourceDefinition {
+                                ResourceLabel('Subscription')
+                            }
+                        }
+                        if(isValueSet(licPropertyMap, PropertyStore.LIC_ARCHIVAL_COPY_TIME)) {
+                            TimePointDefinition {
+                                TimePointLabel('ArchivalCopyTimePoint')
+                                Description(licPropertyMap.get(PropertyStore.LIC_ARCHIVAL_COPY_TIME.id).getValue()) //maps refdata value of license property Archival Copy: Time
+                            }
+                        }
+                        if(lic.startDate) {
+                            TimePointDefinition {
+                                TimePointLabel('LicenseStartDate')
+                                TimePointIdentifier {
+                                    TimePointIDType('onixPL:YYYYMMDD')
+                                    IDValue(onixDateFormat.format(lic.startDate)) //format YYYYmmdd
+                                }
+                            }
+                        }
+                        if(lic.endDate) {
+                            TimePointDefinition {
+                                TimePointLabel('LicenseEndDate')
+                                TimePointIdentifier {
+                                    TimePointIDType('onixPL:YYYYMMDD')
+                                    IDValue(onixDateFormat.format(lic.endDate)) //format YYYYmmdd
+                                }
+                            }
+                        }
+                        //mapping license properties OA First Date, OA Last Date, Perpetual coverage from, Perpetual coverage to
+                        TIME_POINT_DEFINITION_PROPS.each { PropertyDefinition propDef ->
+                            if(isValueSet(licPropertyMap, propDef)) {
+                                TimePointDefinition {
+                                    TimePointLabel(propDef.name)
+                                    TimePointIdentifier {
+                                        TimePointIDType('onixPL:YYYYMMDD')
+                                        IDValue(onixDateFormat.format(licPropertyMap.get(propDef.id).getDateValue())) //format YYYYmmdd
+                                    }
+                                }
+                            }
+                        }
+                        //mapping license property Repository
+                        if(isValueSet(licPropertyMap, PropertyStore.LIC_REPOSITORY)) {
+                            PlaceDefinition {
+                                PlaceLabel('Repository')
+                                PlaceName {
+                                    Name(licPropertyMap.get(PropertyStore.LIC_REPOSITORY.id).getValue()) //the refdata value
+                                }
+                            }
+                        }
+                    }
+                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_CITATION_REQUIREMENT_DETAIL) || isParagraphSet(licPropertyMap, PropertyStore.LIC_OTHER_USE_RESTRICTION_NOTE)) {
+                        LicenseGrant {
+                            //license property Citation requirement detail
+                            if(isParagraphSet(licPropertyMap, PropertyStore.LIC_CITATION_REQUIREMENT_DETAIL)) {
+                                Annotation {
+                                    AnnotationType('onixPL:ERMI:CitationRequirementDetail')
+                                    AnnotationText(licPropertyMap.get(PropertyStore.LIC_CITATION_REQUIREMENT_DETAIL.id).paragraph)
+                                }
+                            }
+                            //license property Other Use Restriction Note
+                            if(isParagraphSet(licPropertyMap, PropertyStore.LIC_OTHER_USE_RESTRICTION_NOTE)) {
+                                Annotation {
+                                    AnnotationType('onixPL:ERMI:OtherUseRestrictionNote')
+                                    AnnotationText(licPropertyMap.get(PropertyStore.LIC_OTHER_USE_RESTRICTION_NOTE.id).paragraph)
+                                }
+                            }
+                        }
+                    }
+                    UsageTerms {
+                        usedGeneralUsageStatus.each { String usageStatus ->
+                            Usage {
+                                UsageType('onixPL:Use')
+                                UsageStatus(usageStatus)
+                                if(checkValueAndPermissionStatus(licPropertyMap, PropertyStore.LIC_WALK_IN_ACCESS, usageStatus) && isValueSet(licPropertyMap, PropertyStore.LIC_WALK_IN_USER_TERM_NOTE)) {
+                                    Annotation {
+                                        AnnotationType('onixPL:ERMI:WalkInUserTermNote')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_WALK_IN_USER_TERM_NOTE.id).getValue())
+                                    }
+                                }
+                                GENERAL_USAGE_STATEMENT_PROPS.each { PropertyDefinition propDef ->
+                                    if(checkValueAndPermissionStatus(licPropertyMap, propDef, usageStatus) && isParagraphSet(licPropertyMap, propDef)) {
+                                        LicenseTextLink(href: "lp_${toSnakeCase(propDef.name)}_01")
+                                    }
+                                }
+                                AGENT_DEFINITION_PROPS.each { PropertyDefinition pd ->
+                                    if(isValueSet(licPropertyMap, pd))
+                                        User(pd.name)
+                                }
+                                if(checkValueAndPermissionStatus(licPropertyMap, PropertyStore.LIC_PARTNERS_ACCESS, usageStatus))
+                                    User('onixPL:LicenseeInstitutionAndPartners')
+                                if(checkValueAndPermissionStatus(licPropertyMap, PropertyStore.LIC_WALK_IN_ACCESS, usageStatus))
+                                    User('onixPL:WalkInUser')
+                                User('onixPL:Licensee') //fallback
+                                UsedResource('Subscription')
+                                if(checkValueAndPermissionStatus(licPropertyMap, PropertyStore.LIC_SINGLE_USER_ACCESS, usageStatus))
+                                    UsagePurpose('onixPL:PersonalUse')
+                                if(isValueSet(licPropertyMap, PropertyStore.LIC_METHOD_OF_AUTHENTICATION)) {
+                                    LicenseProperty lp = licPropertyMap.get(PropertyStore.LIC_METHOD_OF_AUTHENTICATION.id)
+                                    if ('shibboleth' in lp.value.toLowerCase())
+                                        UsageMethod('onixPL:Shibboleth')
+                                    else if ('ip' in lp.value.toLowerCase())
+                                        UsageMethod('onixPL:IPAddressAuthentication')
+                                    else if ('password' in lp.value.toLowerCase())
+                                        UsageMethod('onixPL:PasswordAuthentication')
+                                    else
+                                        UsageMethod('onixPL:SecureAuthentication')
+                                }
+                                if(checkValueAndPermissionStatus(licPropertyMap, PropertyStore.LIC_WIFI_ACCESS, usageStatus))
+                                    UsageMethod('onixPL:PublicNetwork')
+                                if(checkValueAndPermissionStatus(licPropertyMap, PropertyStore.LIC_CONFORMITY_WITH_URHG, usageStatus))
+                                    UsageCondition('onixPL:ComplianceWithApplicableCopyrightLaw')
+                                if(checkValueAndPermissionStatus(licPropertyMap, PropertyStore.LIC_FAIR_USE_CLAUSE_INDICATOR, usageStatus))
+                                    UsageCondition('onixPL:SubjectToFairUse')
+                                if('Permitted' in usageStatus && isValueSet(licPropertyMap, PropertyStore.LIC_CONCURRENT_USERS)) {
+                                    UsageQuantity {
+                                        UsageQuantityType('onixPL:NumberOfConcurrentUsers')
+                                        QuantityDetail {
+                                            Value(licPropertyMap.get(PropertyStore.LIC_CONCURRENT_USERS.id).getValue())
+                                            QuantityUnit('onixPL:Users')
+                                        }
+                                    }
+                                }
+                                if(checkValueAndPermissionStatus(licPropertyMap, PropertyStore.LIC_REMOTE_ACCESS, usageStatus)) {
+                                    UsageRelatedPlace {
+                                        UsagePlaceRelator('onixPL:PlaceOfUsage')
+                                        RelatedPlace('onixPL:RemoteLocation')
+                                    }
+                                }
+                            }
+                        }
+                        usedCoursePackUsageStatus.each { String usageStatus ->
+                            Usage {
+                                UsageType('onixPL:MakeAvailable')
+                                UsageStatus(usageStatus)
+                                //value xor paragraph
+                                if(isValueSet(licPropertyMap, PropertyStore.LIC_COURSE_PACK_TERM_NOTE)) {
+                                    Annotation {
+                                        AnnotationType('onixPL:Interpretation')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_COURSE_PACK_TERM_NOTE.id).getValue())
+                                    }
+                                }
+                                else if(isParagraphSet(licPropertyMap, PropertyStore.LIC_COURSE_PACK_TERM_NOTE)) {
+                                    Annotation {
+                                        AnnotationType('onixPL:SpecialConditions')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_COURSE_PACK_TERM_NOTE.id).getParagraph())
+                                    }
+                                }
+                                //value xor paragraph
+                                if(isValueSet(licPropertyMap, PropertyStore.LIC_COURSE_RESERVE_TERM_NOTE)) {
+                                    Annotation {
+                                        AnnotationType('onixPL:Interpretation')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_COURSE_RESERVE_TERM_NOTE.id).getValue())
+                                    }
+                                }
+                                else if(isParagraphSet(licPropertyMap, PropertyStore.LIC_COURSE_RESERVE_TERM_NOTE)) {
+                                    Annotation {
+                                        AnnotationType('onixPL:SpecialConditions')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_COURSE_RESERVE_TERM_NOTE.id).getParagraph())
+                                    }
+                                }
+                                if(isParagraphSet(licPropertyMap, PropertyStore.LIC_COURSE_PACK_ELECTRONIC)) {
+                                    LicenseTextLink(href: 'lp_course_pack_electronic_01')
+                                }
+                                if(isParagraphSet(licPropertyMap, PropertyStore.LIC_COURSE_PACK_PRINT)) {
+                                    LicenseTextLink(href: 'lp_course_pack_print_01')
+                                }
+                                if(isValueSet(licPropertyMap, PropertyStore.LIC_COURSE_PACK_TERM_NOTE) && isParagraphSet(licPropertyMap, PropertyStore.LIC_COURSE_PACK_TERM_NOTE)) {
+                                    LicenseTextLink(href: 'lp_course_pack_term_note_01')
+                                }
+                                if(isParagraphSet(licPropertyMap, PropertyStore.LIC_COURSE_RESERVE_ELECTRONIC)) {
+                                    LicenseTextLink(href: 'lp_course_reserve_electronic_cached_01')
+                                }
+                                if(isParagraphSet(licPropertyMap, PropertyStore.LIC_COURSE_RESERVE_PRINT)) {
+                                    LicenseTextLink(href: 'lp_course_reserve_print_01')
+                                }
+                                if(isValueSet(licPropertyMap, PropertyStore.LIC_COURSE_RESERVE_TERM_NOTE) && isParagraphSet(licPropertyMap, PropertyStore.LIC_COURSE_RESERVE_TERM_NOTE)) {
+                                    LicenseTextLink(href: 'lp_course_reserve_term_note_01')
+                                }
+                                User('Licensee Consortial')
+                                UsedResource('Subscription')
+                                UsageRelatedResource {
+                                    UsageResourceRelator('onixPL:TargetResource')
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_COURSE_PACK_ELECTRONIC))
+                                        RelatedResource('onixPL:CoursePackElectronic')
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_COURSE_PACK_PRINT))
+                                        RelatedResource('onixPL:CoursePackPrint')
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_COURSE_RESERVE_ELECTRONIC))
+                                        RelatedResource('onixPL:CourseReserveElectronic')
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_COURSE_RESERVE_PRINT))
+                                        RelatedResource('onixPL:CourseReservePrint')
+                                }
+                            }
+                        }
+                        //license property Digital copy
+                        if(isValueSet(licPropertyMap, PropertyStore.LIC_DIGITAL_COPY)) {
+                            Usage {
+                                UsageType('onixPL:MakeDigitalCopy')
+                                UsageStatus('onixPL:Permitted')
+                                //license property Digital copy term note
+                                //value xor paragraph
+                                if(isValueSet(licPropertyMap, PropertyStore.LIC_DIGITAL_COPY_TERM_NOTE)) {
+                                    Annotation {
+                                        AnnotationType('onixPL:Interpretation')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_DIGITAL_COPY_TERM_NOTE.id).getValue())
+                                    }
+                                }
+                                else if(isParagraphSet(licPropertyMap, PropertyStore.LIC_DIGITAL_COPY_TERM_NOTE)) {
+                                    Annotation {
+                                        AnnotationType('onixPL:SpecialConditions')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_DIGITAL_COPY_TERM_NOTE.id).getParagraph())
+                                    }
+                                }
+                                if(isParagraphSet(licPropertyMap, PropertyStore.LIC_DIGITAL_COPY))
+                                    LicenseTextLink(href: 'lp_digitial_copy_01')
+                                User('Licensee Consortial')
+                                UsedResource('Subscription')
+                            }
+                        }
+                        //license property Document delivery service (commercial)
+                        /*
+                        if(isValueSet(licPropertyMap, PropertyStore.LIC_DOCUMENT_DELIVERY_SERVICE)) {
+                            Usage {
+                                UsageType('onixPL:MakeAvailable')
+                                UsageStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_DOCUMENT_DELIVERY_SERVICE.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.USAGE_STATUS_CODE))
+                                if(isParagraphSet(licPropertyMap, PropertyStore.LIC_DOCUMENT_DELIVERY_SERVICE))
+                                    LicenseTextLink(href: 'lp_document_delivery_service_commercial_01')
+                                User('Licensee Consortial')
+                                UsedResource('Subscription')
+                                UsagePurpose('onixPL:CommercialUse')
+                            }
+                        }
+                        */
+                        //license property Electronic link
+                        if(isValueSet(licPropertyMap, PropertyStore.LIC_ELECTRONIC_LINK)) {
+                            Usage {
+                                UsageType('onixPL:MakeAvailable')
+                                UsageStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_ELECTRONIC_LINK.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.USAGE_STATUS_CODE))
+                                //license property Electronic link term note
+                                //value xor paragraph
+                                if(isValueSet(licPropertyMap, PropertyStore.LIC_ELECTRONIC_LINK_TERM_NOTE)){
+                                    Annotation {
+                                        AnnotationType('onixPL:Interpretation')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_ELECTRONIC_LINK_TERM_NOTE.id).getValue())
+                                    }
+                                }
+                                else if(isParagraphSet(licPropertyMap, PropertyStore.LIC_ELECTRONIC_LINK_TERM_NOTE)) {
+                                    Annotation {
+                                        AnnotationType('onixPL:SpecialConditions')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_ELECTRONIC_LINK_TERM_NOTE.id).getParagraph())
+                                    }
+                                }
+                                if(isParagraphSet(licPropertyMap, PropertyStore.LIC_ELECTRONIC_LINK))
+                                    LicenseTextLink(href: 'lp_electronic_link_01')
+                                User('Licensee Consortial')
+                                UsedResource('Subscription')
+                                UsageRelatedResource {
+                                    UsageResourceRelator('onixPL:TargetResource')
+                                    RelatedResource('onixPL:LinkToLicensedContent')
+                                }
+                            }
+                        }
+                        //license properties ILL electronic, ILL print or fax, ILL record keeping required, ILL secure electronic transmission, ILL term note; group by status
+                        usedILLUsageStatus.each { String usageStatus ->
+                            Usage {
+                                UsageType('onixPL:SupplyCopy')
+                                UsageStatus(usageStatus)
+                                //license property ILL term note - value xor paragraph; include everywhere (to be sure)
+                                if(isValueSet(licPropertyMap, PropertyStore.LIC_ILL_TERM_NOTE)){
+                                    Annotation {
+                                        AnnotationType('onixPL:Interpretation')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_ILL_TERM_NOTE.id).getValue())
+                                    }
+                                }
+                                else if(isParagraphSet(licPropertyMap, PropertyStore.LIC_ILL_TERM_NOTE)) {
+                                    Annotation {
+                                        AnnotationType('onixPL:SpecialConditions')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_ILL_TERM_NOTE.id).getParagraph())
+                                    }
+                                }
+                                if(isParagraphSet(licPropertyMap, PropertyStore.LIC_ILL_ELECTRONIC))
+                                    LicenseTextLink(href: 'lp_ill_electronic_01')
+                                if(isParagraphSet(licPropertyMap, PropertyStore.LIC_ILL_PRINT_OR_FAX))
+                                    LicenseTextLink(href: 'lp_ill_print_or_fax_01')
+                                if(isParagraphSet(licPropertyMap, PropertyStore.LIC_ILL_SECURE_ELECTRONIC_TRANSMISSION))
+                                    LicenseTextLink(href: 'lp_ill_secure_electronic_transmission_01')
+                                if(isParagraphSet(licPropertyMap, PropertyStore.LIC_ILL_RECORD_KEEPING_REQUIRED))
+                                    LicenseTextLink(href: 'lp_ill_record_keeping_required_01')
+                                if(isValueSet(licPropertyMap, PropertyStore.LIC_ILL_TERM_NOTE) && isParagraphSet(licPropertyMap, PropertyStore.LIC_ILL_TERM_NOTE))
+                                    LicenseTextLink(href: 'lp_ill_term_note_01')
+                                User('Licensee Consortial')
+                                UsedResource('Subscription')
+                                if(isValueSet(licPropertyMap, PropertyStore.LIC_ILL_ELECTRONIC))
+                                    UsageMethod('onixPL:ElectronicTransmission') //license property ILL electronic
+                                if(isValueSet(licPropertyMap, PropertyStore.LIC_ILL_SECURE_ELECTRONIC_TRANSMISSION))
+                                    UsageMethod('onixPL:SecureElectronicTransmission') //license property ILL secure electronic transmission
+                                if(isValueSet(licPropertyMap, PropertyStore.LIC_ILL_PRINT_OR_FAX))
+                                    UsageMethod('onixPL:Fax') //license property ILL print or fax
+                                if(isValueSet(licPropertyMap, PropertyStore.LIC_ILL_RECORD_KEEPING_REQUIRED))
+                                    UsageCondition('onixPL:RecordKeepingRequired') //license property ILL record keeping required - currently no example available!
+                            }
+                        }
+                        //license property Scholarly sharing
+                        if(isValueSet(licPropertyMap, PropertyStore.LIC_SCHOLARLY_SHARING)) {
+                            Usage {
+                                UsageType('onixPL:MakeAvailable')
+                                UsageStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_SCHOLARLY_SHARING.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.USAGE_STATUS_CODE))
+                                //license property Scholarly sharing term note
+                                //value xor paragraph
+                                if(isValueSet(licPropertyMap, PropertyStore.LIC_SCHOLARLY_SHARING_TERM_NOTE)) {
+                                    Annotation {
+                                        AnnotationType('onixPL:Interpretation')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_SCHOLARLY_SHARING_TERM_NOTE.id).getValue())
+                                    }
+                                }
+                                else if(isParagraphSet(licPropertyMap, PropertyStore.LIC_SCHOLARLY_SHARING_TERM_NOTE)) {
+                                    Annotation {
+                                        AnnotationType('onixPL:SpecialConditions')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_SCHOLARLY_SHARING_TERM_NOTE.id).getParagraph())
+                                    }
+                                }
+                                if(isParagraphSet(licPropertyMap, PropertyStore.LIC_SCHOLARLY_SHARING))
+                                    LicenseTextLink(href: 'lp_scholarly_sharing_01')
+                                if(isValueSet(licPropertyMap, PropertyStore.LIC_SCHOLARLY_SHARING_TERM_NOTE) && isParagraphSet(licPropertyMap, PropertyStore.LIC_SCHOLARLY_SHARING_TERM_NOTE))
+                                    LicenseTextLink(href: 'lp_scholarly_sharing_term_note_01')
+                                User('Licensee Consortial')
+                                User('onixPL:AuthorizedUser')
+                                UsedResource('Subscription')
+                                UsageRelatedAgent {
+                                    UsageAgentRelator('onixPL:ReceivingAgent')
+                                    RelatedAgent('onixPL:ExternalAcademic')
+                                }
+                            }
+                        }
+                        //license properties Print Copy and Print copy term note
+                        if(isValueSet(licPropertyMap, PropertyStore.LIC_PRINT_COPY)) {
+                            Usage {
+                                UsageType('onixPL:PrintCopy')
+                                UsageStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_PRINT_COPY.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.USAGE_STATUS_CODE))
+                                //value xor paragraph
+                                if(isValueSet(licPropertyMap, PropertyStore.LIC_PRINT_COPY_TERM_NOTE)) {
+                                    Annotation {
+                                        AnnotationType('onixPL:Interpretation')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_PRINT_COPY_TERM_NOTE.id).getValue())
+                                    }
+                                }
+                                else if(isParagraphSet(licPropertyMap, PropertyStore.LIC_PRINT_COPY_TERM_NOTE)) {
+                                    Annotation {
+                                        AnnotationType('onixPL:SpecialConditions')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_PRINT_COPY_TERM_NOTE.id).getParagraph())
+                                    }
+                                }
+                                LicenseTextLink(href: 'lp_print_copy_01') //license property Print Copy
+                                if(isValueSet(licPropertyMap, PropertyStore.LIC_PRINT_COPY_TERM_NOTE) && isParagraphSet(licPropertyMap, PropertyStore.LIC_PRINT_COPY_TERM_NOTE))
+                                    LicenseTextLink(href: 'lp_print_copy_term_note_01')
+                                User('Licensee Consortial')
+                                UsedResource('Subscription')
+                            }
+                        }
+                        //license properties Text- and Datamining, Text- and Datamining Character Count, Text- and Datamining Restrictions
+                        if(isValueSet(licPropertyMap, PropertyStore.LIC_TDM)) {
+                            Usage {
+                                UsageType('onixPL:UseForDataMining')
+                                UsageStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_TDM.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.USAGE_STATUS_CODE))
+                                //license property Text- and Datamining Restrictions
+                                if(isValueSet(licPropertyMap, PropertyStore.LIC_TDM_RESTRICTIONS)) {
+                                    Annotation {
+                                        AnnotationType('onixPL:Interpretation')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_TDM_RESTRICTIONS.id).getValue())
+                                    }
+                                }
+                                //license property Text- and Datamining
+                                if(isParagraphSet(licPropertyMap, PropertyStore.LIC_TDM))
+                                    LicenseTextLink(href: 'lp_text_and_datamining_01')
+                                if(isParagraphSet(licPropertyMap, PropertyStore.LIC_TDM_CHAR_COUNT))
+                                    LicenseTextLink(href: 'lp_text_and_datamining_character_count_01')
+                                if(isParagraphSet(licPropertyMap, PropertyStore.LIC_TDM_RESTRICTIONS))
+                                    LicenseTextLink(href: 'lp_text_and_datamining_restrictions_01')
+                                User('Licensee Consortial')
+                                UsedResource('Subscription')
+                                //license property Text- and Datamining Character Count
+                                if(isValueSet(licPropertyMap, PropertyStore.LIC_TDM_CHAR_COUNT))
+                                    UsageCondition('onixPL:SubjectToVolumeLimit')
+                            }
+                        }
+                    }
+                    if(existsAnyOf(licPropertyMap, SUPPLY_TERMS)) {
+                        SupplyTerms {
+                            //license property Accessibility compliance
+                            if(isValueSet(licPropertyMap, PropertyStore.LIC_ACCESSIBILITY_COMPLIANCE)) {
+                                SupplyTerm {
+                                    SupplyTermType('onixPL:ComplianceWithAccessibilityStandards')
+                                    TermStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_ACCESSIBILITY_COMPLIANCE.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.TERM_STATUS_CODE))
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_ACCESSIBILITY_COMPLIANCE))
+                                        LicenseTextLink(href: 'lp_accessibility_compliance_01')
+                                }
+                            }
+                            //license property Change to licensed material
+                            if(isValueSet(licPropertyMap, PropertyStore.LIC_CHANGE_TO_LICENSED_MATERIAL)) {
+                                SupplyTerm {
+                                    SupplyTermType('onixPL:ChangesToLicensedContent')
+                                    Annotation {
+                                        AnnotationType('onixPL:Interpretation')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_CHANGE_TO_LICENSED_MATERIAL.id).getValue())
+                                    }
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_CHANGE_TO_LICENSED_MATERIAL))
+                                        LicenseTextLink(href: 'lp_change_to_licensed_material_01')
+                                }
+                            }
+                            //license property Completeness of content clause
+                            if(isValueSet(licPropertyMap, PropertyStore.LIC_COMPLETENESS_OF_CONTENT_CLAUSE)) {
+                                SupplyTerm {
+                                    SupplyTermType('onixPL:CompletenessOfContent')
+                                    TermStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_COMPLETENESS_OF_CONTENT_CLAUSE.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.TERM_STATUS_CODE))
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_COMPLETENESS_OF_CONTENT_CLAUSE))
+                                        LicenseTextLink(href: 'lp_completeness_of_content_clause_01')
+                                }
+                            }
+                            //license property Concurrency with print version LIC_CONCURRENCY_WITH_PRINT_VERSION
+                            if(isValueSet(licPropertyMap, PropertyStore.LIC_CONCURRENCY_WITH_PRINT_VERSION)) {
+                                SupplyTerm {
+                                    SupplyTermType('onixPL:ConcurrencyWithPrintVersion')
+                                    TermStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_CONCURRENCY_WITH_PRINT_VERSION.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.TERM_STATUS_CODE))
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_CONCURRENCY_WITH_PRINT_VERSION))
+                                        LicenseTextLink(href: 'lp_concurrency_with_print_version_01')
+                                }
+                            }
+                            //license property Content warranty
+                            if(isValueSet(licPropertyMap, PropertyStore.LIC_CONTENT_WARRANTY)) {
+                                SupplyTerm {
+                                    SupplyTermType('onixPL:ContentWarranty')
+                                    Annotation {
+                                        AnnotationType('onixPL:Interpretation')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_CONTENT_WARRANTY.id).getValue())
+                                    }
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_CONTENT_WARRANTY))
+                                        LicenseTextLink(href: 'lp_content_warranty_01')
+                                }
+                            }
+                            //license property Continuing Access: Title Transfer
+                            if(isValueSet(licPropertyMap, PropertyStore.LIC_CONT_ACCESS_TITLE_TRANSFER)) {
+                                SupplyTerm {
+                                    SupplyTermType('onixPL:ComplianceWithProjectTransferCode')
+                                    Annotation {
+                                        AnnotationType('onixPL:Interpretation')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_CONT_ACCESS_TITLE_TRANSFER.id).getRefValue().value)
+                                    }
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_CONT_ACCESS_TITLE_TRANSFER))
+                                        LicenseTextLink(href: 'lp_continuing_access_title_transfer_01')
+                                }
+                            }
+                            //license properties Maintenance window, Performance warranty and Uptime guarantee
+                            if(isValueOfAnySet(licPropertyMap, [PropertyStore.LIC_MAINTENANCE_WINDOW, PropertyStore.LIC_PERFORMANCE_WARRANTY, PropertyStore.LIC_UPTIME_GUARANTEE])) {
+                                SupplyTerm {
+                                    SupplyTermType('onixPL:ServicePerformanceGuarantee')
+                                    //property value Maintenance window
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_MAINTENANCE_WINDOW)) {
+                                        Annotation {
+                                            AnnotationType('onixPL:ERMI:MaintenanceWindow')
+                                            AnnotationText(licPropertyMap.get(PropertyStore.LIC_MAINTENANCE_WINDOW.id).getValue())
+                                        }
+                                    }
+                                    //property value Performance warranty
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_PERFORMANCE_WARRANTY)) {
+                                        Annotation {
+                                            AnnotationType('onixPL:Interpretation')
+                                            AnnotationText(licPropertyMap.get(PropertyStore.LIC_PERFORMANCE_WARRANTY.id).getValue())
+                                        }
+                                    }
+                                    //property value Uptime guarantee
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_UPTIME_GUARANTEE)) {
+                                        Annotation {
+                                            AnnotationType('onixPL:ERMI:UptimeGuarantee')
+                                            AnnotationText(licPropertyMap.get(PropertyStore.LIC_UPTIME_GUARANTEE.id).getValue())
+                                        }
+                                    }
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_MAINTENANCE_WINDOW))
+                                        LicenseTextLink(href: 'lp_maintenance_window_01')
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_PERFORMANCE_WARRANTY))
+                                        LicenseTextLink(href: 'lp_performance_warranty_01')
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_UPTIME_GUARANTEE))
+                                        LicenseTextLink(href: 'lp_uptime_guarantee_01')
+                                }
+                            }
+                            //license property Metadata delivery and Metadata-related contractual terms
+                            if(isValueOfAnySet(licPropertyMap, [PropertyStore.LIC_METADATA_DELIVERY, PropertyStore.LIC_METADATA_RELATED_CONTRACTUAL_TERMS])) {
+                                SupplyTerm {
+                                    SupplyTermType('onixPL:MetadataSupply')
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_METADATA_DELIVERY)) {
+                                        Annotation {
+                                            AnnotationType('onixPL:Interpretation')
+                                            AnnotationText(licPropertyMap.get(PropertyStore.LIC_METADATA_DELIVERY.id).getValue())
+                                        }
+                                    }
+                                    //license property Metadata-related contractual terms
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_METADATA_RELATED_CONTRACTUAL_TERMS)) {
+                                        Annotation {
+                                            AnnotationType('onixPL:Interpretation')
+                                            AnnotationText(licPropertyMap.get(PropertyStore.LIC_METADATA_RELATED_CONTRACTUAL_TERMS.id).getValue())
+                                        }
+                                    }
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_METADATA_DELIVERY))
+                                        LicenseTextLink(href: 'lp_metadata_delivery_01')
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_METADATA_RELATED_CONTRACTUAL_TERMS))
+                                        LicenseTextLink(href: 'lp_metadata-related_contractual_terms_01')
+                                }
+                            }
+                            //license property OA First Date, OA Last Date, OA Note, Open Access
+                            if(isValueOfAnySet(licPropertyMap, [PropertyStore.LIC_OA_FIRST_DATE, PropertyStore.LIC_OA_LAST_DATE, PropertyStore.LIC_OA_NOTE, PropertyStore.LIC_OPEN_ACCESS])) {
+                                SupplyTerm {
+                                    SupplyTermType('onixPL:OpenAccessContent')
+                                    //license property value OA Note
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_OA_NOTE)) {
+                                        Annotation {
+                                            AnnotationType('onixPL:Interpretation')
+                                            AnnotationText(licPropertyMap.get(PropertyStore.LIC_OA_NOTE.id).getValue())
+                                        }
+                                    }
+                                    //license property value Open Access
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_OPEN_ACCESS)) {
+                                        Annotation {
+                                            AnnotationType('onixPL:Interpretation')
+                                            AnnotationText(licPropertyMap.get(PropertyStore.LIC_OPEN_ACCESS.id).getRefValue().value)
+                                        }
+                                    }
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_OA_FIRST_DATE))
+                                        LicenseTextLink(href: 'lp_oa_first_date_01') //license property OA First Date
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_OA_LAST_DATE))
+                                        LicenseTextLink(href: 'lp_oa_last_date_01') //license property OA Last Date
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_OA_NOTE))
+                                        LicenseTextLink(href: 'lp_oa_note_01') //license property OA Note
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_OPEN_ACCESS))
+                                        LicenseTextLink(href: 'lp_open_access_01') //license property Open Access
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_OA_FIRST_DATE)) {
+                                        SupplyTermRelatedTimePoint {
+                                            SupplyTermTimePointRelator('onixPL:SupplyStartDate') //the only permitted list value
+                                            RelatedTimePoint('OAFirstDate')
+                                        }
+                                    }
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_OA_LAST_DATE)) {
+                                        SupplyTermRelatedTimePoint {
+                                            SupplyTermTimePointRelator('onixPL:SupplyStartDate') //the only permitted list value
+                                            RelatedTimePoint('OALastDate')
+                                        }
+                                    }
+                                }
+                            }
+                            //license properties Usage Statistics Addressee and Usage Statistics Availability Indicator
+                            if(isValueOfAnySet(licPropertyMap, [PropertyStore.LIC_USAGE_STATISTICS_ADDRESSEE, PropertyStore.LIC_USAGE_STATISTICS_AVAILABILITY_INDICATOR])) {
+                                SupplyTerm {
+                                    SupplyTermType('onixPL:UsageStatistics')
+                                    TermStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_USAGE_STATISTICS_AVAILABILITY_INDICATOR.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.TERM_STATUS_CODE))
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_USAGE_STATISTICS_ADDRESSEE))
+                                        LicenseTextLink(href: 'lp_usage_statistics_addressee_01')
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_USAGE_STATISTICS_AVAILABILITY_INDICATOR))
+                                        LicenseTextLink(href: 'lp_usage_statistics_availability_indicator_01')
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_USAGE_STATISTICS_ADDRESSEE)) {
+                                        SupplyTermRelatedAgent {
+                                            SupplyTermAgentRelator('onixPL:ReceivingAgent')
+                                            RelatedAgent('Usage Statistics Addressee')
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if(existsAnyOf(licPropertyMap, CONTINUING_ACCESS_TERMS)) {
+                        ContinuingAccessTerms {
+                            if(isValueOfAnySet(licPropertyMap, [PropertyStore.LIC_ARCHIVAL_COPY_CONTENT, PropertyStore.LIC_ARCHIVAL_COPY_COST, PropertyStore.LIC_ARCHIVAL_COPY_PERMISSION, PropertyStore.LIC_ARCHIVAL_COPY_TIME])) {
+                                //any of Archival Copy Content and Archival Copy: X
+                                ContinuingAccessTerm {
+                                    ContinuingAccessTermType('onixPL:PostCancellationFileSupply')
+                                    //license property Archival Copy: Permission
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_ARCHIVAL_COPY_PERMISSION))
+                                        TermStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_ARCHIVAL_COPY_PERMISSION.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.TERM_STATUS_CODE))
+                                    //license property Archival Copy Content
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_ARCHIVAL_COPY_PERMISSION)) {
+                                        Annotation {
+                                            AnnotationType('onixPL:PostCancellationFileSupplyNote')
+                                            AnnotationText(licPropertyMap.get(PropertyStore.LIC_ARCHIVAL_COPY_CONTENT.id).getValue())
+                                        }
+                                    }
+                                    //license property Archival Copy: Cost
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_ARCHIVAL_COPY_COST)) {
+                                        Annotation {
+                                            AnnotationType('onixPL:PaymentNote')
+                                            AnnotationText(licPropertyMap.get(PropertyStore.LIC_ARCHIVAL_COPY_COST.id).getValue())
+                                        }
+                                    }
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_ARCHIVAL_COPY_CONTENT))
+                                        LicenseTextLink(href: 'lp_archival_copy_content_01')
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_ARCHIVAL_COPY_COST))
+                                        LicenseTextLink(href: 'lp_archival_copy_cost_01')
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_ARCHIVAL_COPY_PERMISSION))
+                                        LicenseTextLink(href: 'lp_archival_copy_permission_01')
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_ARCHIVAL_COPY_TIME))
+                                        LicenseTextLink(href: 'lp_archival_copy_time_01')
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_ARCHIVAL_COPY_TIME)) {
+                                        ContinuingAccessTermRelatedTimePoint {
+                                            ContinuingAccessTermTimePointRelator('Archival Copy Permission')
+                                            RelatedTimePoint('ArchivalCopyTimePoint')
+                                        }
+                                    }
+                                }
+                            }
+                            if(isValueOfAnySet(licPropertyMap, [PropertyStore.LIC_CONT_ACCESS_PAYMENT_NOTE, PropertyStore.LIC_CONT_ACCESS_RESTRICTIONS, PropertyStore.LIC_POST_CANCELLATION_ONLINE_ACCESS, PropertyStore.LIC_REPOSITORY])) {
+                                ContinuingAccessTerm {
+                                    //license property Post Cancellation Online Access
+                                    ContinuingAccessTermType('onixPL:PostCancellationOnlineAccess')
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_POST_CANCELLATION_ONLINE_ACCESS))
+                                        TermStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_POST_CANCELLATION_ONLINE_ACCESS.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.TERM_STATUS_CODE))
+                                    //license property Continuing Access: Payment Note
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_CONT_ACCESS_PAYMENT_NOTE)) {
+                                        Annotation {
+                                            AnnotationType('onixPL:PaymentNote')
+                                            AnnotationText(licPropertyMap.get(PropertyStore.LIC_CONT_ACCESS_PAYMENT_NOTE.id).getValue())
+                                        }
+                                    }
+                                    //license property Continuing Access: Restrictions
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_CONT_ACCESS_RESTRICTIONS)) {
+                                        Annotation {
+                                            AnnotationType('onixPL:PostCancellationOnlineAccessHoldingsNote')
+                                            AnnotationText(licPropertyMap.get(PropertyStore.LIC_CONT_ACCESS_RESTRICTIONS.id).getValue())
+                                        }
+                                    }
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_CONT_ACCESS_PAYMENT_NOTE))
+                                        LicenseTextLink(href: 'lp_continuing_access_payment_note_01')
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_CONT_ACCESS_RESTRICTIONS))
+                                        LicenseTextLink(href: 'lp_continuing_access_restrictions_01')
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_POST_CANCELLATION_ONLINE_ACCESS))
+                                        LicenseTextLink(href: 'lp_post_cancellation_online_access_01')
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_REPOSITORY))
+                                        LicenseTextLink(href: 'lp_repository_01')
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_REPOSITORY)) {
+                                        ContinuingAccessTermRelatedPlace {
+                                            ContinuingAccessTermPlaceRelator('Repository')
+                                            RelatedPlace('Repository')
+                                        }
+                                    }
+                                }
+                            }
+                            //license properties Perpetual coverage from, Perpetual coverage note, Perpetual coverage to
+                            if(isValueOfAnySet(licPropertyMap, [PropertyStore.LIC_PERPETUAL_COVERAGE_FROM, PropertyStore.LIC_PERPETUAL_COVERAGE_NOTE, PropertyStore.LIC_PERPETUAL_COVERAGE_TO])) {
+                                ContinuingAccessTerm {
+                                    ContinuingAccessTermType('onixPL:PostCancellationOnlineAccess')
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_PERPETUAL_COVERAGE_NOTE))
+                                        TermStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_PERPETUAL_COVERAGE_NOTE.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.TERM_STATUS_CODE)) //refdata value from Perpetual coverage note
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_PERPETUAL_COVERAGE_FROM))
+                                        LicenseTextLink(href: 'lp_perpetual_coverage_from_01')
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_PERPETUAL_COVERAGE_NOTE))
+                                        LicenseTextLink(href: 'lp_perpetual_coverage_note_01')
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_PERPETUAL_COVERAGE_TO))
+                                        LicenseTextLink(href: 'lp_perpetual_coverage_to_01')
+                                    //license property Perpetual coverage from
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_PERPETUAL_COVERAGE_FROM)) {
+                                        ContinuingAccessTermRelatedTimePoint {
+                                            ContinuingAccessTermTimePointRelator('Perpetual coverage from')
+                                            RelatedTimePoint('PerpetualCoverageFrom')
+                                        }
+                                    }
+                                    //license property Perpetual coverage to
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_PERPETUAL_COVERAGE_TO)) {
+                                        ContinuingAccessTermRelatedTimePoint {
+                                            ContinuingAccessTermTimePointRelator('Perpetual coverage to')
+                                            RelatedTimePoint('PerpetualCoverageTo')
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if(existsAnyOf(licPropertyMap, PAYMENT_TERMS)) {
+                        PaymentTerms {
+                            //license property Offsetting
+                            if(isValueSet(licPropertyMap, PropertyStore.LIC_OFFSETTING) || isParagraphSet(licPropertyMap, PropertyStore.LIC_OFFSETTING)) {
+                                PaymentTerm {
+                                    PaymentTermType('onixPL:OpenAccessOffset')
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_OFFSETTING)) {
+                                        Annotation {
+                                            AnnotationType('onixPL:Interpretation')
+                                            AnnotationText(licPropertyMap.get(PropertyStore.LIC_OFFSETTING.id).getValue())
+                                        }
+                                    }
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_OFFSETTING))
+                                        LicenseTextLink(href: 'lp_offsetting_01')
+                                }
+                            }
+                            //license properties Publishing Fee and Reading Fee
+                            if(isValueOfAnySet(licPropertyMap, [PropertyStore.LIC_PUBLISHING_FEE, PropertyStore.LIC_READING_FEE]) || isParagraphOfAnySet(licPropertyMap, [PropertyStore.LIC_PUBLISHING_FEE, PropertyStore.LIC_READING_FEE])) {
+                                PaymentTerm {
+                                    PaymentTermType('onixPL:PaymentConditions')
+                                    //license property Publishing Fee
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_PUBLISHING_FEE)) {
+                                        Annotation {
+                                            AnnotationType('onixPL:Interpretation')
+                                            AnnotationText(licPropertyMap.get(PropertyStore.LIC_PUBLISHING_FEE.id).getValue())
+                                        }
+                                    }
+                                    //license property Reading Fee
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_READING_FEE)) {
+                                        Annotation {
+                                            AnnotationType('onixPL:Interpretation')
+                                            AnnotationText(licPropertyMap.get(PropertyStore.LIC_READING_FEE.id).getValue())
+                                        }
+                                    }
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_PUBLISHING_FEE))
+                                        LicenseTextLink(href: 'lp_publishing_fee_01')
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_READING_FEE))
+                                        LicenseTextLink(href: 'lp_reading_fee_01')
+                                }
+                            }
+                        }
+                    }
+                    if(existsAnyOf(licPropertyMap, GENERAL_TERMS)) {
+                        GeneralTerms {
+                            //license property All rights reserved indicator
+                            if(isValueSet(licPropertyMap, PropertyStore.LIC_ALL_RIGHTS_RESERVED_INDICATOR)) {
+                                GeneralTerm {
+                                    GeneralTermType('onixPL:AllRightsReserved')
+                                    TermStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_ALL_RIGHTS_RESERVED_INDICATOR).getRefValue(), License.ONIXPL_CONTROLLED_LIST.TERM_STATUS_CODE))
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_ALL_RIGHTS_RESERVED_INDICATOR))
+                                        LicenseTextLink(href: 'lp_all_rights_reserved_indicator_01')
+                                }
+                            }
+                            //license property Applicable copyright law
+                            if(isValueSet(licPropertyMap, PropertyStore.LIC_APPLICABLE_COPYRIGHT_LAW)) {
+                                GeneralTerm {
+                                    GeneralTermType('onixPL:ApplicableCopyrightLaw')
+                                    Annotation {
+                                        AnnotationType('onixPL:Interpretation')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_APPLICABLE_COPYRIGHT_LAW.id).getValue())
+                                    }
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_APPLICABLE_COPYRIGHT_LAW))
+                                        LicenseTextLink(href: 'lp_applicable_copyright_law_01')
+                                }
+                            }
+                            //license property Branding
+                            if(isValueSet(licPropertyMap, PropertyStore.LIC_BRANDING)) {
+                                GeneralTerm {
+                                    GeneralTermType('onixPL:UseOfDigitalWatermarking')
+                                    Annotation {
+                                        AnnotationType('onixPL:Interpretation')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_BRANDING.id).getValue())
+                                    }
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_BRANDING))
+                                        LicenseTextLink(href: 'lp_branding_01')
+                                }
+                            }
+                            //license property Cancellation allowance
+                            if(isValueSet(licPropertyMap, PropertyStore.LIC_CANCELLATION_ALLOWANCE)) {
+                                GeneralTerm {
+                                    GeneralTermType('onixPL:TerminationWithoutPrejudiceToRights')
+                                    Annotation {
+                                        AnnotationType('onixPL:Interpretation')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_CANCELLATION_ALLOWANCE.id).getValue())
+                                    }
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_CANCELLATION_ALLOWANCE))
+                                        LicenseTextLink(href: 'lp_cancellation_allowance_01')
+                                }
+                            }
+                            //license property Clickwrap modification
+                            if(isValueSet(licPropertyMap, PropertyStore.LIC_CLICKWRAP_MODIFICATION)) {
+                                GeneralTerm {
+                                    GeneralTermType('onixPL:ClickThroughOverride')
+                                    TermStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_CLICKWRAP_MODIFICATION.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.TERM_STATUS_CODE))
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_CLICKWRAP_MODIFICATION))
+                                        LicenseTextLink(href: 'lp_clickwrap_modification_01')
+                                }
+                            }
+                            //license property Confidentiality of agreement
+                            if(isValueSet(licPropertyMap, PropertyStore.LIC_CONFIDENTIALITY_OF_AGREEMENT)) {
+                                GeneralTerm {
+                                    GeneralTermType('onixPL:ConfidentialityOfAgreement')
+                                    Annotation {
+                                        AnnotationType('onixPL:Interpretation')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_CONFIDENTIALITY_OF_AGREEMENT.id).getRefValue().value)
+                                    }
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_CONFIDENTIALITY_OF_AGREEMENT))
+                                        LicenseTextLink(href: 'lp_confidentiality_of_agreement_01')
+                                }
+                            }
+                            //license property Cure period for breach
+                            if(isValueSet(licPropertyMap, PropertyStore.LIC_CURE_PERIOD_FOR_BREACH)) {
+                                GeneralTerm {
+                                    GeneralTermType('onixPL:TerminationByBreach')
+                                    Annotation {
+                                        AnnotationType('onixPL:Interpretation')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_CURE_PERIOD_FOR_BREACH.id).getValue())
+                                    }
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_CURE_PERIOD_FOR_BREACH))
+                                        LicenseTextLink(href: 'lp_cure_period_for_breach_01')
+                                    /*
+                                    that should actually be the structure, impossible because of the current values
+                                    GeneralTermQuantity {
+                                        GeneralTermQuantityType('onixPL:PeriodForCureOfBreach')
+                                        QuantityDetail {
+                                            Value(30)
+                                            QuantityUnit('onixPL:Days')
+                                        }
+                                    }
+                                    */
+                                }
+                            }
+                            //license property Data protection override
+                            if(isValueSet(licPropertyMap, PropertyStore.LIC_DATABASE_PROTECTION_OVERRIDE)) {
+                                GeneralTerm {
+                                    GeneralTermType('onixPL:DatabaseProtectionOverride')
+                                    TermStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_DATABASE_PROTECTION_OVERRIDE.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.TERM_STATUS_CODE))
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_DATABASE_PROTECTION_OVERRIDE))
+                                        LicenseTextLink(href: 'lp_data_protection_override_01')
+                                }
+                            }
+                            //license property Governing jurisdiction
+                            if(isValueSet(licPropertyMap, PropertyStore.LIC_GOVERNING_JURISDICTION)) {
+                                GeneralTerm {
+                                    GeneralTermType('onixPL:Jurisdiction')
+                                    Annotation {
+                                        AnnotationType('onixPL:Interpretation')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_GOVERNING_JURISDICTION.id).getValue())
+                                    }
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_GOVERNING_JURISDICTION))
+                                        LicenseTextLink(href: 'lp_governing_jurisdiction_01')
+                                }
+                            }
+                            //license property Governing law
+                            if(isValueSet(licPropertyMap, PropertyStore.LIC_GOVERNING_LAW)) {
+                                GeneralTerm {
+                                    GeneralTermType('onixPL:GoverningLaw')
+                                    Annotation {
+                                        AnnotationType('onixPL:Interpretation')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_GOVERNING_LAW.id).getValue())
+                                    }
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_GOVERNING_LAW))
+                                        LicenseTextLink(href: 'lp_governing_law_01')
+                                }
+                            }
+                            //license property Indemnification by licensee clause indicator
+                            if(isValueSet(licPropertyMap, PropertyStore.LIC_INDEMNIFICATION_BY_LICENSEE)) {
+                                GeneralTerm {
+                                    GeneralTermType('onixPL:IndemnityAgainstBreach')
+                                    TermStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_INDEMNIFICATION_BY_LICENSEE.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.TERM_STATUS_CODE))
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_INDEMNIFICATION_BY_LICENSEE))
+                                        LicenseTextLink(href: 'lp_indemnification_by_licensee_clause_indicator_01')
+                                }
+                            }
+                            //license property Indemnification by licensor
+                            if(isValueSet(licPropertyMap, PropertyStore.LIC_INDEMNIFICATION_BY_LICENSOR)) {
+                                GeneralTerm {
+                                    GeneralTermType('onixPL:LicensorIndemnity')
+                                    TermStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_INDEMNIFICATION_BY_LICENSOR.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.TERM_STATUS_CODE))
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_INDEMNIFICATION_BY_LICENSOR))
+                                        LicenseTextLink(href: 'lp_indemnification_by_licensor_01')
+                                }
+                            }
+                            //license property Intellectual property warranty
+                            if(isValueSet(licPropertyMap, PropertyStore.LIC_INTELLECTUAL_PROPERTY_WARRANTY)) {
+                                GeneralTerm {
+                                    GeneralTermType('onixPL:LicensorIntellectualPropertyWarranty')
+                                    TermStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_INTELLECTUAL_PROPERTY_WARRANTY.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.TERM_STATUS_CODE))
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_INTELLECTUAL_PROPERTY_WARRANTY))
+                                        LicenseTextLink(href: 'lp_intellectual_property_warranty_01')
+                                }
+                            }
+                            //license property Licensee obligations
+                            if(isValueSet(licPropertyMap, PropertyStore.LIC_LICENSEE_OBLIGATIONS)) {
+                                GeneralTerm {
+                                    GeneralTermType('onixPL:NotificationOfLicenseeIPAddresses')
+                                    Annotation {
+                                        AnnotationType('onixPL:Interpretation')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_LICENSEE_OBLIGATIONS.id).getValue())
+                                    }
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_LICENSEE_OBLIGATIONS))
+                                        LicenseTextLink(href: 'lp_licensee_obligations_01')
+                                }
+                            }
+                            //license properties Licensee termination condition, Licensee termination notice period, Licensee termination right
+                            if(isValueOfAnySet(licPropertyMap, [PropertyStore.LIC_LICENSEE_TERMINATION_CONDITION, PropertyStore.LIC_LICENSEE_TERMINATION_NOTICE_PERIOD, PropertyStore.LIC_LICENSEE_TERMINATION_RIGHT])) {
+                                GeneralTerm {
+                                    GeneralTermType('onixPL:LicenseeTerminationRight')
+                                    //license property License termination right
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_LICENSEE_TERMINATION_RIGHT))
+                                        TermStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_LICENSEE_TERMINATION_RIGHT.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.TERM_STATUS_CODE))
+                                    //license property Licensee termination condition
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_LICENSEE_TERMINATION_CONDITION)) {
+                                        Annotation {
+                                            AnnotationType('onixPL:Interpretation')
+                                            AnnotationText(licPropertyMap.get(PropertyStore.LIC_LICENSEE_TERMINATION_CONDITION.id).getRefValue().value)
+                                        }
+                                    }
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_LICENSEE_TERMINATION_CONDITION))
+                                        LicenseTextLink(href: 'lp_licensee_termination_condition_01')
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_LICENSEE_TERMINATION_NOTICE_PERIOD))
+                                        LicenseTextLink(href: 'lp_licensee_termination_notice_period_01')
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_LICENSEE_TERMINATION_RIGHT))
+                                        LicenseTextLink(href: 'lp_licensee_termination_right_01')
+                                }
+                            }
+                            //license properties Licensor termination condition, Licensor termination notice period, Licensor termination right
+                            if(isValueOfAnySet(licPropertyMap, [PropertyStore.LIC_LICENSOR_TERMINATION_CONDITION, PropertyStore.LIC_LICENSOR_TERMINATION_NOTICE_PERIOD, PropertyStore.LIC_LICENSOR_TERMINATION_RIGHT])) {
+                                GeneralTerm {
+                                    GeneralTermType('onixPL:LicensorTerminationRight')
+                                    //license property of Licensor termination right
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_LICENSOR_TERMINATION_RIGHT))
+                                        TermStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_LICENSOR_TERMINATION_RIGHT.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.TERM_STATUS_CODE))
+                                    // license property Licensor termination condition
+                                    if(isValueSet(licPropertyMap, PropertyStore.LIC_LICENSOR_TERMINATION_CONDITION)) {
+                                        Annotation {
+                                            AnnotationType('onixPL:Interpretation')
+                                            AnnotationText(licPropertyMap.get(PropertyStore.LIC_LICENSOR_TERMINATION_CONDITION.id).getRefValue().value)
+                                        }
+                                    }
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_LICENSOR_TERMINATION_CONDITION))
+                                        LicenseTextLink(href: 'lp_licensor_termination_condition_01')
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_LICENSOR_TERMINATION_NOTICE_PERIOD))
+                                        LicenseTextLink(href: 'lp_licensor_termination_notice_period_01')
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_LICENSOR_TERMINATION_RIGHT))
+                                        LicenseTextLink(href: 'lp_licensor_termination_right_01')
+                                }
+                            }
+                            //license property Multi Year License Termination
+                            if(isValueSet(licPropertyMap, PropertyStore.LIC_MULTI_YEAR_LICENSE_TERMINATION)) {
+                                GeneralTerm {
+                                    GeneralTermType('onixPL:MemberLeavingConsortium')
+                                    Annotation {
+                                        AnnotationType('onixPL:Interpretation')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_MULTI_YEAR_LICENSE_TERMINATION.id).getRefValue().value)
+                                    }
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_MULTI_YEAR_LICENSE_TERMINATION))
+                                        LicenseTextLink(href: 'lp_multi_year_license_termination_01')
+                                }
+                            }
+                            //license property Termination requirement note
+                            if(isValueSet(licPropertyMap, PropertyStore.LIC_TERMINATION_REQUIREMENT_NOTE)) {
+                                GeneralTerm {
+                                    GeneralTermType('onixPL:ActionOnTermination')
+                                    Annotation {
+                                        AnnotationType('onixPL:ERMI:TerminationRequirementsNote')
+                                        AnnotationText(licPropertyMap.get(PropertyStore.LIC_TERMINATION_REQUIREMENT_NOTE.id).getValue())
+                                    }
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_TERMINATION_REQUIREMENT_NOTE))
+                                        LicenseTextLink(href: 'lp_termination_requirement_note_01')
+                                }
+                            }
+                            //license property User information confidentiality
+                            if(isValueSet(licPropertyMap, PropertyStore.LIC_USER_INFORMATION_CONFIDENTIALITY)) {
+                                GeneralTerm {
+                                    GeneralTermType('onixPL:ConfidentialityOfUserData')
+                                    TermStatus(refdataToOnixControlledList(licPropertyMap.get(PropertyStore.LIC_USER_INFORMATION_CONFIDENTIALITY.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.TERM_STATUS_CODE))
+                                    if(isParagraphSet(licPropertyMap, PropertyStore.LIC_USER_INFORMATION_CONFIDENTIALITY))
+                                        LicenseTextLink(href: 'lp_user_information_confidentiality_01')
+                                }
+                            }
+                        }
+                    }
+                    //DocumentLabel: substituted by LicenseProperty paragraph, SortNumber: substituted by 0; may be removed completely if no productive use is possible, proposal character!
+                    //general: create iff license.paragraph != null!
+                    if(isParagraphOfAnySet(licPropertyMap, paragraphableProps)) {
+                        LicenseDocumentText {
+                            DocumentLabel(lic.reference)
+                            paragraphableProps.each { PropertyDefinition propDef ->
+                                if (isParagraphSet(licPropertyMap, propDef)) {
+                                    TextElement(id: "lp_${toSnakeCase(propDef.name)}_01") {
+                                        SortNumber(licPropertyMap.get(propDef.id).getParagraphNumber())
+                                        Text(licPropertyMap.get(propDef.id).getParagraph())
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
         XmlUtil.serialize(xml)
+    }
+
+    String precheckValidation(License lic, Org institution) {
+        Set<String> errors = []
+        String error = null
+        Locale locale = LocaleUtils.getCurrentLocale()
+        Map<Long, LicenseProperty> licPropertyMap = LicenseProperty.executeQuery('select lp.type.id, lp from LicenseProperty lp where lp.owner = :lic and (lp.isPublic = true or lp.tenant = :ctx)', [lic: lic, ctx: institution]).collectEntries { row -> [row[0], row[1]] }
+        Set<RefdataValue> matchingStatus = [RDStore.LICENSE_CURRENT, RDStore.LICENSE_EXPIRED, RDStore.LICENSE_INTENDED]
+        if(!(lic.status.id in matchingStatus.collect { RefdataValue rdv -> rdv.id })) {
+            List<Object> errArgs = [matchingStatus.collect { RefdataValue rdv -> rdv.getI10n('value') }.join(', ')]
+            errors << messageSource.getMessage("onix.validation.error.noMatchingStatus", errArgs.toArray(), locale)
+        }
+        if(!lic.providerRelations) {
+            errors << messageSource.getMessage("onix.validation.error.noLicensorError", null, locale)
+        }
+        if(!isValueOfAnySet(licPropertyMap, CORE_USAGE_TERMS)) {
+            List<Object> errArgs = [CORE_USAGE_TERMS.collect { PropertyDefinition pd -> pd.getI10n('name') }.join(', ')]
+            errors << messageSource.getMessage("onix.validation.error.noUsageTerms", errArgs.toArray(), locale)
+        }
+        if(errors) {
+            error = messageSource.getMessage('onix.validation.error', null, locale)
+            error += '\n'
+            errors.each { String errMess ->
+                error += errMess+'\n'
+            }
+        }
+        error
+    }
+
+    /**
+     * Helper method to map LAS:eR reference values to ONIX-PL controlled lists.
+     * ONIX-PL controlled list values commented out have currently no LAS:eR equivalent (yet)
+     * @param value the LAS:eR {@link RefdataValue} to map
+     * @param onixCodeList the ONIX-PL code list ({@link License.ONIXPL_CONTROLLED_LIST}) where the mapping should be looked up
+     * @return the ONIX-PL controlled list value
+     */
+    String refdataToOnixControlledList(RefdataValue value, License.ONIXPL_CONTROLLED_LIST onixCodeList) {
+        switch(onixCodeList) {
+            case License.ONIXPL_CONTROLLED_LIST.LICENSE_DOCUMENT_TYPE_CODE:
+                switch(value) {
+                    case RDStore.DOC_TYPE_ADDENDUM: return 'onixPL:Addendum'
+                    case [RDStore.DOC_TYPE_LICENSE, RDStore.DOC_TYPE_ONIXPL]: return 'onixPL:License'
+                    //onixPL:LicenseMainTerms
+                    //onixPL:LicenseSchedule
+                    //onixPL:LicenseSummary
+                    default:
+                        if(value) log.error("unmapped refdata: ${value}:${value.owner.desc}")
+                        else log.error("PANIC! refdata missing but passed existence check?!")
+                        return null
+                }
+            case License.ONIXPL_CONTROLLED_LIST.LICENSE_STATUS_CODE:
+                switch(value) {
+                    case RDStore.LICENSE_CURRENT: return 'onixPL:ActiveLicense'
+                        //onixPL:Model
+                    case RDStore.LICENSE_EXPIRED: return 'onixPL:NoLongerActive'
+                        //onixPL:PolicyTemplate
+                    case RDStore.LICENSE_INTENDED: return 'onixPL:ProposedLicense'
+                        //onixPL:Template
+                    default:
+                        if(value) log.error("unmapped refdata: ${value}:${value.owner.desc}")
+                        else log.error("PANIC! refdata missing but passed existence check?!")
+                        return null
+                }
+            case License.ONIXPL_CONTROLLED_LIST.TERM_STATUS_CODE:
+                switch(value) {
+                    case RDStore.PERM_PROH_EXPL: return 'onixPL:ExplicitNo'
+                    case RDStore.PERM_PERM_EXPL: return 'onixPL:ExplicitYes'
+                    case RDStore.PERM_PROH_INTERP: return 'onixPL:InterpretedNo'
+                    case RDStore.PERM_PERM_INTERP: return 'onixPL:InterpretedYes'
+                    case [RDStore.YN_NO, RDStore.YNO_NO, RDStore.YNU_NO, RDStore.NON_EXISTENT]: return 'onixPL:No'
+                    case RDStore.PERM_NOT_APPLICABLE: return 'onixPL:NotApplicable'
+                    case RDStore.PERM_SILENT: return 'onixPL:Silent'
+                    case [RDStore.PERM_UNKNOWN, RDStore.YNO_OTHER, RDStore.YNU_UNKNOWN]: return 'onixPL:Uncertain'
+                    case [RDStore.YN_YES, RDStore.YNO_YES, RDStore.YNU_YES, RDStore.EXISTENT]: return 'onixPL:Yes'
+                    default:
+                        if(value) log.error("unmapped refdata: ${value}:${value.owner.desc}")
+                        else log.error("PANIC! refdata missing but passed existence check?!")
+                        return null
+                }
+            case License.ONIXPL_CONTROLLED_LIST.USAGE_STATUS_CODE:
+                switch(value) {
+                    case [RDStore.PERM_PERM_INTERP, RDStore.CONCURRENT_ACCESS_SPECIFIED]: return 'onixPL:InterpretedAsPermitted'
+                    case RDStore.PERM_PROH_INTERP: return 'onixPL:InterpretedAsProhibited'
+                    case [RDStore.PERM_PERM_EXPL, RDStore.YN_YES, RDStore.YNO_YES, RDStore.YNU_YES, RDStore.CONCURRENT_ACCESS_NO_LIMIT]: return 'onixPL:Permitted'
+                    case [RDStore.PERM_PROH_EXPL, RDStore.YN_NO, RDStore.YNO_NO, RDStore.YNU_NO]: return 'onixPL:Prohibited'
+                    case [RDStore.PERM_SILENT, RDStore.PERM_UNKNOWN, RDStore.YNO_OTHER, RDStore.YNU_UNKNOWN, RDStore.CONCURRENT_ACCESS_NOT_SPECIFIED, RDStore.CONCURRENT_ACCESS_OTHER]: return 'onixPL:SilentUninterpreted'
+                    case RDStore.PERM_NOT_APPLICABLE: return 'onixPL:NotApplicable'
+                    default:
+                        if(value) log.error("unmapped refdata: ${value}:${value.owner.desc}")
+                        else log.error("PANIC! refdata missing but passed existence check?!")
+                        return null
+                }
+            default: log.error("unmapped refdata: ${value}:${value.owner.desc}")
+                return null
+        }
+    }
+
+    boolean isValueSet(Map<Long, LicenseProperty> licPropertyMap, PropertyDefinition pd) {
+        boolean isValueSet = false
+        if(licPropertyMap.containsKey(pd.id)) {
+            isValueSet = licPropertyMap.get(pd.id).getValue() != null
+        }
+        isValueSet
+    }
+
+    boolean isValueOfAnySet(Map<Long, LicenseProperty> licPropertyMap, Collection<PropertyDefinition> propDefs) {
+        boolean isValueSet = false
+        int i = 0
+        while(!isValueSet && i < propDefs.size()) {
+            PropertyDefinition pd = propDefs[i]
+            if(licPropertyMap.containsKey(pd.id)) {
+                isValueSet = licPropertyMap.get(pd.id).getValue() != null
+            }
+            i++
+        }
+        isValueSet
+    }
+
+    boolean existsAnyOf(Map<Long, LicenseProperty> licPropertyMap, Set<PropertyDefinition> checkList) {
+        isValueOfAnySet(licPropertyMap, checkList)
+    }
+
+    boolean isParagraphSet(Map<Long, LicenseProperty> licPropertyMap, PropertyDefinition pd) {
+        boolean isValueSet = false
+        if(licPropertyMap.containsKey(pd.id)) {
+            isValueSet = licPropertyMap.get(pd.id).paragraph != null
+        }
+        isValueSet
+    }
+
+    boolean isParagraphOfAnySet(Map<Long, LicenseProperty> licPropertyMap, Collection<PropertyDefinition> propDefs) {
+        boolean isParagraphSet = false
+        int i = 0
+        while(!isParagraphSet && i < propDefs.size()) {
+            PropertyDefinition pd = propDefs[i]
+            if(licPropertyMap.containsKey(pd.id)) {
+                isParagraphSet = licPropertyMap.get(pd.id).paragraph != null
+            }
+            i++
+        }
+        isParagraphSet
+    }
+
+    boolean checkValueAndPermissionStatus(Map<Long, LicenseProperty> licPropertyMap, PropertyDefinition pd, String onixPLPermissionStatus) {
+        boolean hasStatus = false
+        if(isValueSet(licPropertyMap, pd)) {
+            hasStatus = refdataToOnixControlledList(licPropertyMap.get(pd.id).getRefValue(), License.ONIXPL_CONTROLLED_LIST.USAGE_STATUS_CODE) == onixPLPermissionStatus
+        }
+        hasStatus
+    }
+
+    String toSnakeCase(String input) {
+        input.replaceAll(/[:()-]/, "").replaceAll(/[ \/]/,"_").toLowerCase()
     }
 }

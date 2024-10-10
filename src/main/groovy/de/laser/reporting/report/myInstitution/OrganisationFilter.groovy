@@ -38,13 +38,13 @@ class OrganisationFilter extends BaseFilter {
                 break
             case 'all-consortium':
                 queryParams.orgIdList = Org.executeQuery(
-                        'select o.id from Org o where exists (select ot from o.orgType ot where ot = :orgType) and (o.status is null or o.status != :orgStatus)',
+                        'select o.id from Org o where o.orgType_new = :orgType and (o.status is null or o.status != :orgStatus)',
                         [orgType: RDStore.OT_CONSORTIUM, orgStatus: RDStore.ORG_STATUS_DELETED]
                 )
                 break
             case 'all-inst':
                 queryParams.orgIdList = Org.executeQuery(
-                        'select o.id from Org o where (o.status is null or o.status != :orgStatus) and exists (select ot from o.orgType ot where ot = :orgType)',
+                        'select o.id from Org o where o.orgType_new = :orgType and (o.status is null or o.status != :orgStatus)',
                         [orgStatus: RDStore.ORG_STATUS_DELETED, orgType: RDStore.OT_INSTITUTION]
                 )
                 break
@@ -129,13 +129,6 @@ where (consOr.roleType = :consRoleType)
                 }
                 // --> refdata join tables
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
-
-                    if (p == BaseConfig.RDJT_GENERIC_ORG_TYPE) {
-                        whereParts.add('exists (select ot from org.orgType ot where ot = :p' + (++pCount) + ')')
-                        queryParams.put('p' + pCount, RefdataValue.get(params.long(key)))
-
-                        filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
-                    }
                 }
                 // --> custom filter implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {

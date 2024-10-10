@@ -313,7 +313,11 @@
                                 </span>
                             </g:else>
 
-                        <ui:xEditableAsIcon owner="${sub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea" emptyTooltip="${message(code: 'subscription.details.internalComment')}"/>
+                        <ui:xEditableAsIcon owner="${sub}" class="ui icon center aligned" iconClass="sticky note circular inverted" field="comment" type="textarea" emptyTooltip="${message(code: 'subscription.details.internalComment')}"/>
+
+                        <a href="#" class="ui button blue icon la-modern-button mailInfos-flyout-trigger" data-orgId="${subscr.id}" data-subId="${sub.id}">
+                            <i class="ui info icon"></i>
+                        </a>
                     </td>
                 </tr>
             </g:each>
@@ -339,6 +343,8 @@
             }
         });
     </laser:script>
+
+<laser:render template="/templates/flyouts/mailInfos"/>
 
 <g:render template="/clickMe/export/js"/>
 

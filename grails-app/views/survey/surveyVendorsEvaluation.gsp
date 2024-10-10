@@ -21,7 +21,7 @@
 <uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="${actionName}"/>
 
 <g:if test="${surveyConfig.subscription}">
-    <ui:linkWithIcon icon="${Icon.SUBSCRIPTION} bordered inverted orange la-object-extended" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+ <ui:buttonWithIcon style="vertical-align: super;" message="${message(code: 'button.message.showLicense')}" variation="tiny" icon="${Icon.SUBSCRIPTION}" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
 <laser:render template="nav"/>
@@ -55,21 +55,21 @@
 <div class="ui top attached stackable tabular la-tab-with-js menu">
 
     <g:link class="item ${params.tab == 'participantsViewAllFinish' ? 'active' : ''}"
-            controller="survey" action="surveyPackagesEvaluation"
+            controller="survey" action="surveyVendorsEvaluation"
             params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllFinish']">
         ${message(code: 'surveyEvaluation.participantsViewAllFinish')}
         <ui:bubble float="true" count="${participantsFinishTotal}"/>
     </g:link>
 
     <g:link class="item ${params.tab == 'participantsViewAllNotFinish' ? 'active' : ''}"
-            controller="survey" action="surveyPackagesEvaluation"
+            controller="survey" action="surveyVendorsEvaluation"
             params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllNotFinish']">
         ${message(code: 'surveyEvaluation.participantsViewAllNotFinish')}
         <ui:bubble float="true" count="${participantsNotFinishTotal}"/>
     </g:link>
 
     <g:link class="item ${params.tab == 'participantsView' ? 'active' : ''}"
-            controller="survey" action="surveyPackagesEvaluation"
+            controller="survey" action="surveyVendorsEvaluation"
             params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsView']">
         ${message(code: 'surveyEvaluation.participantsView')}
         <ui:bubble float="true" count="${participantsTotal}"/>
@@ -80,7 +80,7 @@
 
     <div id="chartWrapper" style="width:100%; min-height:500px"></div>
 
-    <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyVendors', 'commentOnlyForOwner']}"/>
+    <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyVendor', 'commentOnlyForOwner']}"/>
 
     <laser:render template="evaluationParticipantsView" model="[showCheckboxForParticipantsHasAccess: false,
                                                                 showCheckboxForParticipantsHasNoAccess: false,

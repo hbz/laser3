@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyPackageResult; de.laser.Doc; de.laser.DocContext; de.laser.IssueEntitlementGroup; de.laser.config.ConfigMapper; de.laser.survey.SurveyConfig; de.laser.survey.SurveyResult; de.laser.Org; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory; de.laser.survey.SurveyOrg" %>
+<%@ page import="de.laser.survey.SurveyConfigProperties; de.laser.storage.PropertyStore; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyPackageResult; de.laser.Doc; de.laser.DocContext; de.laser.IssueEntitlementGroup; de.laser.config.ConfigMapper; de.laser.survey.SurveyConfig; de.laser.survey.SurveyResult; de.laser.Org; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory; de.laser.survey.SurveyOrg" %>
 <laser:serviceInjection/>
 
 <g:if test="${showOpenParticipantsAgainButtons}">
@@ -250,6 +250,11 @@
                         ${message(code: 'surveyVendors.selectedVendors')}
                     </th>
                 </g:if>
+                <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyVendor')}">
+                    <th>
+                        ${message(code: 'surveyVendors.selectedVendor')}
+                    </th>
+                </g:if>
             </g:each>
             <th scope="col" rowspan="2" class="two">${message(code:'default.actions.label')}</th>
         </tr>
@@ -490,7 +495,7 @@
                                                        value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                                 <g:if test="${supportedMimeType}">
                                                     <a href="#documentPreview"
-                                                       data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
+                                                       data-dctx="${docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
                                                 </g:if>
                                                 <g:else>
                                                     ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
@@ -501,14 +506,14 @@
 
                                                 <g:if test="${!(editable)}">
                                                 <%-- 1 --%>
-                                                    <g:link controller="docstore" id="${docctx.owner.uuid}"
+                                                    <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}"
                                                             class="${Btn.MODERN.SIMPLE} tiny"
                                                             target="_blank"><i class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                                     <%-- 1 --%>
-                                                        <g:link controller="docstore" id="${docctx.owner.uuid}"
+                                                        <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}"
                                                                 class="${Btn.MODERN.SIMPLE} tiny"
                                                                 target="_blank"><i class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
 
@@ -588,6 +593,18 @@
                             </g:link>
                         </td>
                     </g:if>
+
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyVendor')}">
+                        <td>
+                            <g:set var="vendorResult" value="${SurveyVendorResult.findByParticipantAndSurveyConfig(participant, surveyConfig)}"/>
+                            <g:if test="${vendorResult}">
+                                <g:link controller="survey" action="evaluationParticipant"
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id, viewTab: 'vendorSurvey', subTab: 'selectVendors']">
+                                    ${vendorResult.vendor.name}
+                                </g:link>
+                            </g:if>
+                        </td>
+                    </g:if>
                 </g:each>
                 <td>
                     <g:link controller="survey" action="evaluationParticipant"
@@ -602,9 +619,14 @@
                             <g:if test="${participantSub}">
                                 <br/>
                                 <g:link controller="subscription" action="show" id="${participantSub.id}"
-                                        class="${Btn.ICON.SIMPLE} orange"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
+                                        class="${Btn.ICON.SIMPLE} orange la-modern-button"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                             </g:if>
                     </g:if>
+
+                    <br/>
+                    <a href="#" class="ui button blue icon la-modern-button mailInfos-flyout-trigger" data-orgId="${participant.id}" data-subId="${surveyConfig.subscription?.id}" data-surveyConfigId="${surveyConfig.id}">
+                        <i class="ui info icon"></i>
+                    </a>
                 </td>
 
             </tr>
@@ -829,6 +851,11 @@
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyVendors')}">
                     <th>
                         ${message(code: 'surveyVendors.selectedVendors')}
+                    </th>
+                </g:if>
+                <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyVendor')}">
+                    <th>
+                        ${message(code: 'surveyVendors.selectedVendor')}
                     </th>
                 </g:if>
 
@@ -1072,7 +1099,7 @@
                                                        value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                                 <g:if test="${supportedMimeType}">
                                                     <a href="#documentPreview"
-                                                       data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
+                                                       data-dctx="${docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
                                                 </g:if>
                                                 <g:else>
                                                     ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
@@ -1083,14 +1110,14 @@
 
                                                 <g:if test="${!(editable)}">
                                                 <%-- 1 --%>
-                                                    <g:link controller="docstore" id="${docctx.owner.uuid}"
+                                                    <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}"
                                                             class="${Btn.MODERN.SIMPLE} tiny"
                                                             target="_blank"><i class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                                     <%-- 1 --%>
-                                                        <g:link controller="docstore" id="${docctx.owner.uuid}"
+                                                        <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}"
                                                                 class="${Btn.MODERN.SIMPLE} tiny"
                                                                 target="_blank"><i
                                                                 class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
@@ -1172,6 +1199,18 @@
                         </td>
                     </g:if>
 
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyVendor')}">
+                        <td>
+                            <g:set var="vendorResult" value="${SurveyVendorResult.findByParticipantAndSurveyConfig(participant, surveyConfig)}"/>
+                            <g:if test="${vendorResult}">
+                                <g:link controller="survey" action="evaluationParticipant"
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id, viewTab: 'vendorSurvey', subTab: 'selectVendors']">
+                                    ${vendorResult.vendor.name}
+                                </g:link>
+                            </g:if>
+                        </td>
+                    </g:if>
+
                 </g:each>
                 <td>
                     <g:link controller="survey" action="evaluationParticipant"
@@ -1186,9 +1225,14 @@
                         <g:if test="${participantSub}">
                             <br/>
                             <g:link controller="subscription" action="show" id="${participantSub.id}"
-                                    class="${Btn.ICON.SIMPLE} orange"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
+                                    class="${Btn.ICON.SIMPLE} orange la-modern-button"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                         </g:if>
                     </g:if>
+
+                    <br/>
+                    <a href="#" class="ui icon mailInfos-flyout-trigger" data-orgId="${participant.id}" data-subId="${surveyConfig.subscription?.id}" data-surveyConfigId="${surveyConfig.id}">
+                        <i class="icon info inverted"></i>
+                    </a>
                 </td>
             </tr>
 
@@ -1332,6 +1376,7 @@
 </g:form>
 
 
+<laser:render template="/templates/flyouts/mailInfos"/>
 
 <laser:script file="${this.getGroovyPageFileName()}">
 <g:if test="${showCheckboxForParticipantsHasAccess || showCheckboxForParticipantsHasNoAccess}">

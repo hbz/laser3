@@ -256,7 +256,7 @@ class ProviderController {
                 subscriptionConsortiumFilter = 'and s.instanceOf = null'
                 licenseConsortiumFilter = 'and l.instanceOf = null'
             }
-            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, provider)
+            result.tasks = taskService.getTasksByResponsibilityAndObject(result.user, provider)
             Set<Package> allPackages = provider.packages
             result.allPackages = allPackages
             result.allPlatforms = allPackages.findAll { Package pkg -> pkg.nominalPlatform != null}.nominalPlatform.toSet()
@@ -449,7 +449,7 @@ class ProviderController {
             response.sendError(401); return
         }
         SwissKnife.setPaginationParams(result, params, result.user as User)
-        result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Org) result.institution, (Provider) result.provider)['cmbTaskInstanceList']
+        result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Provider) result.provider)['cmbTaskInstanceList']
 
         result
     }
@@ -508,48 +508,6 @@ class ProviderController {
             docstoreService.bulkDocOperation(params, result, flash)
         }
         result
-    }
-
-    /**
-     * Call to edit the given document. Beware: edited are the relations between the document and the object
-     * it has been attached to; content editing of an uploaded document is not possible in this app!
-     * @return the modal to edit the document parameters
-     */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
-    })
-    def editDocument() {
-        Map<String, Object> result = providerService.getResultGenericsAndCheckAccess(params)
-        if(!result) {
-            response.sendError(401)
-            return
-        }
-        result.ownobj = result.institution
-        result.owntp = 'provider'
-        if(params.id) {
-            result.docctx = DocContext.get(params.id)
-            result.doc = result.docctx.owner
-        }
-
-        render template: "/templates/documents/modal", model: result
-    }
-
-    /**
-     * Call to delete a given document
-     * @return the document table view ({@link #documents()})
-     * @see DocstoreService#unifiedDeleteDocuments()
-     */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
-    })
-    def deleteDocuments() {
-        log.debug("deleteDocuments ${params}");
-
-        docstoreService.unifiedDeleteDocuments(params)
-
-        redirect controller: 'provider', action:params.redirectAction, id:params.instanceId /*, fragment: 'docstab' */
     }
 
     /**

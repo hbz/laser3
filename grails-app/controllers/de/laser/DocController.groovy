@@ -6,7 +6,6 @@ import de.laser.storage.RDStore
 import de.laser.utils.CodeUtils
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
-import org.springframework.dao.DataIntegrityViolationException
 
 /**
  * This controller manages notes for subscriptions, licenses or organisations
@@ -15,6 +14,7 @@ import org.springframework.dao.DataIntegrityViolationException
 class DocController  {
 
 	ContextService contextService
+	AccessService accessService
 
     static allowedMethods = [delete: 'POST']
 
@@ -24,6 +24,7 @@ class DocController  {
 	@Secured(['ROLE_USER'])
 	@Transactional
 	def createNote() {
+		// processing form#modalCreateNote
 		log.debug("Create note referer was ${request.getHeader('referer')} or ${request.request.RequestURL}")
 
 		User user = contextService.getUser()
@@ -34,7 +35,8 @@ class DocController  {
 			if (instance) {
 				log.debug("Got owner instance ${instance}")
 
-				Doc doc_content = new Doc(contentType: Doc.CONTENT_TYPE_STRING,
+				Doc doc_content = new Doc(
+						contentType: Doc.CONTENT_TYPE_STRING,
 						title: params.noteTitle,
 						content: params.noteContent,
 						type: RDStore.DOC_TYPE_NOTE,
@@ -67,10 +69,20 @@ class DocController  {
 		ctx.contextService.isInstEditor_or_ROLEADMIN()
 	})
 	def editNote() {
+		// processing form#modalEditNote
+
 		Doc.withTransaction {
 			switch (request.method) {
 				case 'POST':
-					Doc docInstance = Doc.get(params.id)
+					//					Doc docInstance = Doc.findByIdAndContentType(params.long('id'), Doc.CONTENT_TYPE_STRING)
+					DocContext docContext = DocContext.get(params.long('dctx'))
+					if (! accessService.hasAccessToDocNote(docContext)) {
+						flash.error = message(code: 'default.noPermissions') as String
+						redirect(url: request.getHeader('referer'))
+						return
+					}
+
+					Doc docInstance = docContext?.owner
 					if (!docInstance) {
 						flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.note.label'), params.id]) as String
 						redirect(url: request.getHeader('referer'))
@@ -108,33 +120,30 @@ class DocController  {
 		}
 	}
 
-	/**
-	 * Deletes the {@link Doc} given by params.id
-	 */
-	@DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+	@DebugInfo(isInstEditor_or_ROLEADMIN = [])
 	@Secured(closure = {
 		ctx.contextService.isInstEditor_or_ROLEADMIN()
 	})
-    def delete() {
-		Doc.withTransaction {
-			Doc docInstance = Doc.get(params.id)
-			if (! docInstance) {
-				flash.message = message(code: 'default.not.found.message', args: [message(code: 'doc.label'), params.id]) as String
-				redirect action: 'list'
-				return
-			}
+	def deleteNote() {
+		log.debug("deleteNote: ${params}")
 
-			try {
-				docInstance.delete()
-				flash.message = message(code: 'default.deleted.message', args: [message(code: 'doc.label'), params.id]) as String
-				redirect action: 'list'
-				return
+		if (params.deleteId) {
+			DocContext docctx = DocContext.get(params.deleteId)
+
+			if (accessService.hasAccessToDocNote(docctx)) {
+				docctx.status = RDStore.DOC_CTX_STATUS_DELETED
+				docctx.save()
+				flash.message = message(code: 'default.deleted.general.message')
 			}
-			catch (DataIntegrityViolationException e) {
-				flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'doc.label'), params.id]) as String
-				redirect action: 'show', id: params.id
-				return
+			else {
+				flash.error = message(code: 'default.noPermissions')
 			}
 		}
-    }
+
+		if (params.redirectTab) {
+			redirect controller: params.redirectController, action: params.redirectAction, id: params.instanceId, params: [tab: params.redirectTab] // subscription.membersSubscriptionsManagement
+		} else {
+			redirect controller: params.redirectController, action: params.redirectAction, id: params.instanceId
+		}
+	}
 }

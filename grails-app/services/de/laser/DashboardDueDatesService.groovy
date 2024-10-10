@@ -129,12 +129,14 @@ class DashboardDueDatesService {
                              attribute_name: attributeName,
                              oid: oid
                             ])[0]
+                    // TODO ERMS-5862
 
-                    if (das){//update
-                        das.update(messageSource, obj)
+                    if (das) {
+                        das.update(obj)
                         log.debug("DashboardDueDatesService UPDATE: " + das);
-                    } else {//insert
-                        das = new DashboardDueDate(messageSource, obj, user, user.formalOrg, false, false)
+                    }
+                    else { // insert
+                        das = new DashboardDueDate(obj, user, user.formalOrg)
                         das.save()
                         dashboarEntriesToInsert << das
                         log.debug("DashboardDueDatesService INSERT: " + das);
@@ -159,7 +161,6 @@ class DashboardDueDatesService {
 
                 session.setRollbackOnly()
                 log.error("DashboardDueDatesService - updateDashboardTableInDatabase() :: Rollback for reason: ${tMsg}")
-
                 flash.error += messageSource.getMessage('menu.admin.updateDashboardTable.error', null, locale)
             }
         }
@@ -183,7 +184,7 @@ class DashboardDueDatesService {
                 boolean userWantsEmailReminder = RDStore.YN_YES.equals(user.getSetting(UserSetting.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO).rdValue)
                 if (userWantsEmailReminder) {
                     if (user.formalOrg) {
-                        List<DashboardDueDate> dashboardEntries = getDashboardDueDates(user, user.formalOrg, false, false)
+                        List<DashboardDueDate> dashboardEntries = getDashboardDueDates(user, user.formalOrg)
                         _sendEmail(user, user.formalOrg, dashboardEntries)
                         userCount++
                     }
@@ -226,8 +227,10 @@ class DashboardDueDatesService {
             List<Map<String, Object>> dueDateRows = []
             dashboardEntries.each { DashboardDueDate dashDueDate ->
                 Map<String, Object> dashDueDateRow = [:]
-                def obj = genericOIDService.resolveOID(dashDueDate.dueDateObject.oid)
-                if(obj) {
+//                def obj = genericOIDService.resolveOID(dashDueDate.dueDateObject.oid)
+                def obj = dashDueDate.dueDateObject.getObject() // TODO ERMS-5862
+
+                if (obj) {
                     if(userLang == RDStore.LANGUAGE_DE)
                         dashDueDateRow.valueDate = escapeService.replaceUmlaute(dashDueDate.dueDateObject.attribute_value_de)
                     else dashDueDateRow.valueDate = escapeService.replaceUmlaute(dashDueDate.dueDateObject.attribute_value_en)
@@ -237,6 +240,7 @@ class DashboardDueDatesService {
                     else if(SqlDateUtils.isBeforeToday(dashDueDate.dueDateObject.date))
                         dashDueDateRow.importance = '!!'
                     else dashDueDateRow.importance = ' '
+
                     if(obj instanceof Subscription) {
                         dashDueDateRow.classLabel = messageSource.getMessage('subscription', null, language)
                         dashDueDateRow.link = grailsLinkGenerator.link(controller: 'subscription', action: 'show', id: obj.id, absolute: true)
@@ -321,56 +325,46 @@ class DashboardDueDatesService {
     }
 
     /**
-     * Gets all due dates of the given user in the given context org; query can be limited to hidden (shown) / (un-)done tasks
+     * Gets all due dates of the given user in the given context org; matching hidden=false and done=false
      * @param user the {@link User} whose due dates are to be queried
      * @param org the {@link Org} whose context is requested
-     * @param isHidden are the tasks hidden?
-     * @param isDone are the tasts done?
      * @return a {@link List} of {@link DashboardDueDate} entries to be processed
      */
-    List<DashboardDueDate> getDashboardDueDates(User user, Org org, isHidden, isDone) {
-        List liste = DashboardDueDate.executeQuery(
-                """select das from DashboardDueDate as das 
-                        join das.dueDateObject ddo 
+    List<DashboardDueDate> getDashboardDueDates(User user, Org org) {
+        DashboardDueDate.executeQuery(
+                """select das from DashboardDueDate as das join das.dueDateObject ddo 
                         where das.responsibleUser = :user and das.responsibleOrg = :org and das.isHidden = :isHidden and ddo.isDone = :isDone
                         order by ddo.date""",
-                [user: user, org: org, isHidden: isHidden, isDone: isDone])
-        liste
+                [user: user, org: org, isHidden: false, isDone: false])
     }
 
     /**
-     * Gets all due dates of the given user in the given context org; query can be limited to hidden (shown) / (un-)done tasks and paginated
+     * Gets all due dates of the given user in the given context org; matching hidden=false and done=false with pagination
      * @param user the {@link User} whose due dates are to be queried
      * @param org the {@link Org} whose context is requested
-     * @param isHidden are the tasks hidden?
-     * @param isDone are the tasts done?
      * @param max the maximum count of entries to load
      * @param offset the number of entry to start from
      * @return a {@link List} of {@link DashboardDueDate} entries to be processed
      */
-    List<DashboardDueDate> getDashboardDueDates(User user, Org org, isHidden, isDone, max, offset){
-        List liste = DashboardDueDate.executeQuery(
+    List<DashboardDueDate> getDashboardDueDates(User user, Org org, max, offset){
+        DashboardDueDate.executeQuery(
                 """select das from DashboardDueDate as das join das.dueDateObject ddo 
                 where das.responsibleUser = :user and das.responsibleOrg = :org and das.isHidden = :isHidden and ddo.isDone = :isDone
                 order by ddo.date""",
-                [user: user, org: org, isHidden: isHidden, isDone: isDone], [max: max, offset: offset])
-
-        liste
+                [user: user, org: org, isHidden: false, isDone: false], [max: max, offset: offset])
     }
 
     /**
-     * Counts the {@link DashboardDueDate}s the responsible user has set, matching the given hidden and done flag
+     * Counts the {@link DashboardDueDate}s the responsible user has set, matching hidden=false and done=false
      * @param user the user whose due dates should be counted
      * @param org the institution responsible for the due date
-     * @param isHidden are the due dates to be counted hidden?
-     * @param isDone are the due dates to be counted completed?
      * @return the count of the due dates matching the flags
      */
-    int countDashboardDueDates(User user, Org org, isHidden, isDone){
+    int countDashboardDueDates(User user, Org org){
         return DashboardDueDate.executeQuery(
                 """select count(*) from DashboardDueDate as das join das.dueDateObject ddo 
                 where das.responsibleUser = :user and das.responsibleOrg = :org and das.isHidden = :isHidden and ddo.isDone = :isDone""",
-                [user: user, org: org, isHidden: isHidden, isDone: isDone])[0]
+                [user: user, org: org, isHidden: false, isDone: false])[0]
     }
 
 }

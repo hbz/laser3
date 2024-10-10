@@ -16,6 +16,7 @@ import de.laser.wekb.Package
 import de.laser.wekb.PackageVendor
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import grails.converters.JSON
 import org.apache.commons.lang3.ClassUtils
@@ -144,7 +145,7 @@ class DataloadService {
      *     <li>{@link Org}</li>
      *     <li>{@link de.laser.wekb.Provider}</li>
      *     <li>{@link de.laser.wekb.Vendor}</li>
-     *     <li>{@link TitleInstancePackagePlatform}</li>
+     *     <li>{@link de.laser.wekb.TitleInstancePackagePlatform}</li>
      *     <li>{@link de.laser.wekb.Package}</li>
      *     <li>{@link de.laser.wekb.Platform}</li>
      *     <li>{@link License}</li>
@@ -190,14 +191,7 @@ class DataloadService {
 
                 result.sortname = org.sortname
 
-                result.type = []
-                org.orgType?.each { type ->
-                    try {
-                        result.type.add(type.getMapForES())
-                    } catch (Exception e) {
-                        log.error( e.toString() )
-                    }
-                }
+                result.type = org.orgType_new.getMapForES() // todo - refactoring ?
 
                 result.identifiers = []
                 org.ids?.each { ident ->
@@ -405,8 +399,6 @@ class DataloadService {
                 result.visible = 'Public'
                 result.rectype = pkg.getClass().getSimpleName()
 
-                //result.consortiaID = pkg.getConsortia()?.id
-                //result.consortiaName = pkg.getConsortia()?.name
                 result.providerId = pkg.provider?.id
                 result.providerName = pkg.provider?.name
 

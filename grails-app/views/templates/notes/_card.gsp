@@ -22,17 +22,17 @@
 
     <ui:card message="license.notes" class="notes ${css_class}" href="#modalCreateNote" editable="${editable || editable2}">
         <g:each in="${baseItems}" var="docctx">
-            <g:if test="${docctx.isDocANote() && !(docctx.domain)}">
+            <g:if test="${docctx.isDocANote()}">
                 <div class="ui small feed content">
                     <div class="ui grid summary">
                         <div class="ten wide column la-column-right-lessPadding">
                             <g:if test="${(docctx.owner.owner?.id == contextService.getOrg().id || docctx.owner.owner == null) && (editable || editable2)}">
-                                <a onclick="JSPC.app.editNote(${docctx.owner.id});" class="la-js-toggle-showThis">
+                                <a onclick="JSPC.app.editNote(${docctx.id});">
                                     ${docctx.owner.title ?: message(code:'license.notes.noTitle')}
                                 </a>
                             </g:if>
                             <g:else>
-                                <a onclick="JSPC.app.readNote(${docctx.owner.id});">
+                                <a onclick="JSPC.app.readNote(${docctx.id});">
                                     ${docctx.owner.title ?: message(code:'license.notes.noTitle')}
                                 </a>
                             </g:else>
@@ -89,10 +89,10 @@
 %{--                            </g:else>--}%
                             <%-- 2 --%>
                             <g:if test="${!docctx.isShared && (editable || editable2)}">
-                                <g:link controller="${ajaxCallController ?: controllerName}" action="deleteDocuments" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
+                                <g:link controller="doc" action="deleteNote" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.notes", args: [docctx.owner.title])}"
                                         data-confirm-term-how="delete"
-                                        params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${ajaxCallAction ?: actionName}"]'
+                                        params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectController:"${ajaxCallController ?: controllerName}", redirectAction:"${ajaxCallAction ?: actionName}"]'
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                     <i class="${Icon.CMD.DELETE}"></i>
@@ -114,12 +114,12 @@
         <ui:card message="license.notes.shared" class="documents ${css_class}" editable="${editable}">
             <g:each in="${sharedItems}" var="docctx">
 
-                <g:if test="${docctx.isDocANote() && !(docctx.domain) && (docctx.status?.value != 'Deleted')}">
+                <g:if test="${docctx.isDocANote() && (docctx.status?.value != 'Deleted')}">
                     <div class="ui small feed content">
 
                         <div class="ui grid summary">
                             <div class="twelve wide column">
-                                <a onclick="JSPC.app.readNote(${docctx.owner.id});">
+                                <a onclick="JSPC.app.readNote(${docctx.id});">
                                     ${docctx.owner.title ?: message(code:'license.notes.noTitle')}
                                 </a>
                                 <br />
@@ -151,9 +151,9 @@
     </g:if>
 
     <laser:script file="${this.getGroovyPageFileName()}">
-        JSPC.app.editNote = function (id) {
+        JSPC.app.editNote = function (dctx) {
             $.ajax({
-                url: '<g:createLink controller="ajaxHtml" action="editNote"/>?id='+id,
+                url: '<g:createLink controller="ajaxHtml" action="editNote"/>?dctx=' + dctx,
                 success: function(result){
                     $('#dynamicModalContainer').empty();
                     $('#modalEditNote').remove();
@@ -168,9 +168,9 @@
                 }
             });
         }
-        JSPC.app.readNote = function (id) {
+        JSPC.app.readNote = function (dctx) {
             $.ajax({
-                url: '<g:createLink controller="ajaxHtml" action="readNote"/>?id='+id,
+                url: '<g:createLink controller="ajaxHtml" action="readNote"/>?dctx=' + dctx,
                 success: function(result){
                     $('#dynamicModalContainer').empty();
                     $('#modalReadNote').remove();

@@ -8,13 +8,16 @@ import de.laser.DiscoverySystemFrontend
 import de.laser.DiscoverySystemIndex
 import de.laser.DocContext
 import de.laser.GenericOIDService
+import de.laser.HelpService
 import de.laser.PendingChangeService
 import de.laser.AddressbookService
+import de.laser.AccessService
 import de.laser.WekbNewsService
 import de.laser.WorkflowService
 import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
+import de.laser.ctrl.OrganisationControllerService
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.remote.ApiSource
 import de.laser.ContextService
@@ -46,7 +49,7 @@ import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
 import de.laser.Task
 import de.laser.TaskService
-import de.laser.TitleInstancePackagePlatform
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.UserSetting
 import de.laser.wekb.Vendor
 import de.laser.annotations.DebugInfo
@@ -94,15 +97,18 @@ class AjaxHtmlController {
     CustomWkhtmltoxService wkhtmltoxService // custom
     GenericOIDService genericOIDService
     GokbService gokbService
+    HelpService helpService
     LicenseControllerService licenseControllerService
     LinksGenerationService linksGenerationService
     MyInstitutionControllerService myInstitutionControllerService
     PendingChangeService pendingChangeService
     ReportingGlobalService reportingGlobalService
     ReportingLocalService reportingLocalService
+    OrganisationControllerService organisationControllerService
     SubscriptionService subscriptionService
     SubscriptionControllerService subscriptionControllerService
     TaskService taskService
+    AccessService accessService
     WekbNewsService wekbNewsService
     WorkflowService workflowService
 
@@ -281,7 +287,7 @@ class AjaxHtmlController {
         result.showConsortiaFunctions = contextOrg.isCustomerType_Consortium()
         result.roleLinks = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIUM]) }
         result.roleObject = result.subscription
-        result.roleRespValue = 'Specific subscription editor'
+        result.roleRespValue = RDStore.PRS_RESP_SPEC_SUB_EDITOR.value
         result.editmode = result.subscription.isEditableBy(contextService.getUser())
         result.accessConfigEditable = contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_INST_BASIC) || (contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC) && result.subscription.getSubscriberRespConsortia().id == contextOrg.id)
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
@@ -399,16 +405,27 @@ class AjaxHtmlController {
         render template: "/templates/filter/vendorFilterTable", model: model
     }
 
+    def renderMarkdown() {
+        String text = params.text ?: ''
+        render helpService.parseMarkdown2(text)
+    }
+
     /**
      * Opens the edit modal for the given note
      */
     @Secured(['ROLE_USER'])
     def editNote() {
-        Map<String, Object> result = [:]
-        result.params = params
-        result.noteInstance = Doc.get(params.id)
+        Map<String, Object> result = [ params: params ]
 
-        render template: "/templates/notes/modal_edit", model: result
+        DocContext dctx = DocContext.findById(params.long('dctx'))
+        if (accessService.hasAccessToDocNote(dctx)) {
+            result.docContext   = dctx
+            result.noteInstance = dctx.owner
+            render template: "/templates/notes/modal_edit", model: result
+        }
+        else {
+            render template: "/templates/generic_modal403", model: result
+        }
     }
 
     /**
@@ -416,11 +433,17 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def readNote() {
-        Map<String, Object> result = [:]
-        result.params = params
-        result.noteInstance = Doc.get(params.id)
+        Map<String, Object> result = [ params: params ]
 
-        render template: "/templates/notes/modal_read", model: result
+        DocContext dctx = DocContext.findById(params.long('dctx'))
+        if (accessService.hasAccessToDocNote(dctx)) {
+            result.docContext   = dctx
+            result.noteInstance = dctx.owner
+            render template: "/templates/notes/modal_read", model: result
+        }
+        else {
+            render template: "/templates/generic_modal403", model: result
+        }
     }
 
     /**
@@ -440,13 +463,16 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def editTask() {
-        Map<String, Object> result = [:]
-        result.params = params
-        result.taskInstance = Task.get(params.id)
-        result.contextOrg = contextService.getOrg()
+        Map<String, Object> result = [ params: params ]
+        Task task = Task.get(params.id)
 
-        if (result.taskInstance){
+        if (accessService.hasAccessToTask(task)) {
+            result.taskInstance = task
+            result.contextOrg = contextService.getOrg()
             render template: "/templates/tasks/modal_edit", model: result
+        }
+        else {
+            render template: "/templates/generic_modal403", model: result
         }
     }
 
@@ -455,13 +481,16 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def readTask() {
-        Map<String, Object> result = [:]
-        result.params = params
-        result.taskInstance = Task.get(params.id)
-        result.contextOrg = contextService.getOrg()
+        Map<String, Object> result = [ params: params ]
+        Task task = Task.get(params.id)
 
-        if (result.taskInstance) {
+        if (accessService.hasAccessToTask(task)) {
+            result.taskInstance = task
+            result.contextOrg = contextService.getOrg()
             render template: "/templates/tasks/modal_read", model: result
+        }
+        else {
+            render template: "/templates/generic_modal403", model: result
         }
     }
 
@@ -482,7 +511,7 @@ class AjaxHtmlController {
                 if(params.orgId)
                     model.orgId = params.orgId
                 else
-                    model.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id = :orgType ) order by LOWER(o.sortname) nulls last", [orgType: RDStore.OT_INSTITUTION.id])
+                    model.orgList = Org.executeQuery("from Org o where (o.orgType_new != null and o.orgType_new.id = :orgType) order by LOWER(o.sortname) nulls last", [orgType: RDStore.OT_INSTITUTION.id])
                 model.tenant = model.contextOrg.id
                 break
             case 'addressForProvider':
@@ -589,7 +618,7 @@ class AjaxHtmlController {
                     result.modalText = message(code: "person.create_new.contactPersonForInstitution.label") + ' (' + result.org.toString() + ')'
                 } else {
                     result.modalText = message(code: "person.create_new.contactPersonForInstitution.label")
-                    result.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id = :orgType ) order by LOWER(o.sortname)", [orgType: RDStore.OT_INSTITUTION.id])
+                    result.orgList = Org.executeQuery("from Org o where (o.orgType_new != null and o.orgType_new.id = :orgType) order by LOWER(o.sortname)", [orgType: RDStore.OT_INSTITUTION.id])
                 }
                 break
             case 'contactPersonForProvider':
@@ -656,7 +685,6 @@ class AjaxHtmlController {
 
             if (result.org || (params.org && params.org instanceof String)) {
                 result.org = params.org ? Org.get(params.long('org')) : result.org
-                List allOrgTypeIds =result.org.getAllOrgTypeIds()
                 result.modalText = message(code: 'default.edit.label', args: [message(code: "person.contactPersonForInstitution.label")]) + ' (' + result.org.toString() + ')'
             }
             else if(result.provider != null || params.containsKey('provider')) {
@@ -776,13 +804,13 @@ class AjaxHtmlController {
             }
         }
         */
-            if(notProcessedMandatoryProperties.size() > 0){
-                render message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')])
-            }
-            else if(noParticipation || allResultHaveValue)
-                render message(code: "confirm.dialog.concludeBinding.survey")
-            else if(!noParticipation && !allResultHaveValue)
-                render message(code: "confirm.dialog.concludeBinding.surveyIncomplete")
+        if(notProcessedMandatoryProperties.size() > 0){
+            render message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')])
+        }
+        else if(noParticipation || allResultHaveValue)
+            render message(code: "confirm.dialog.concludeBinding.survey")
+        else if(!noParticipation && !allResultHaveValue)
+            render message(code: "confirm.dialog.concludeBinding.surveyIncomplete")
     }
 
     // ----- reporting -----
@@ -797,7 +825,7 @@ class AjaxHtmlController {
     })
     def reporting() {
         Map<String, Object> result = [
-            tab: params.tab
+                tab: params.tab
         ]
 
         String cachePref = ReportingCache.CTX_GLOBAL + '/' + BeanStore.getContextService().getUser().id // user bound
@@ -847,8 +875,8 @@ class AjaxHtmlController {
         // TODO - SESSION TIMEOUTS
 
         Map<String, Object> result = [
-            token:  params.token,
-            query:  params.query
+                token:  params.token,
+                query:  params.query
         ]
         result.id = params.id ? (params.id != 'null' ? params.long('id') : '') : ''
 
@@ -1121,7 +1149,7 @@ class AjaxHtmlController {
 //                struct = ExportHelper.calculatePdfPageStruct(content, 'chartQueryExport')
 //            }
 //            if (params.contentType == 'image') {
-                // struct = ExportHelper.calculatePdfPageStruct(content, 'chartQueryExport-image') // TODO
+            // struct = ExportHelper.calculatePdfPageStruct(content, 'chartQueryExport-image') // TODO
 
 //                struct = [
 //                        width       : Float.parseFloat( params.imageSize.split(':')[0] ),
@@ -1135,8 +1163,8 @@ class AjaxHtmlController {
 //                    struct.orientation = 'Landscape'
 //                }
 
-                //Map<String, Object> queryCache = BaseQuery.getQueryCache( params.token )
-                //queryCache.put( 'tmpBase64Data', params.imageData )
+            //Map<String, Object> queryCache = BaseQuery.getQueryCache( params.token )
+            //queryCache.put( 'tmpBase64Data', params.imageData )
 //            }
 
             Map<String, Object> model = [
@@ -1212,7 +1240,13 @@ class AjaxHtmlController {
         }
         result.referer = request.getHeader('referer')
 
-        render template: '/templates/workflow/flyout', model: result
+        WfChecklist toCheck = result.clist as WfChecklist
+        if (!accessService.hasAccessToWorkflow(toCheck)) {
+            render template: "/templates/generic_flyout403"
+        }
+        else {
+            render template: '/templates/workflow/flyout', model: result
+        }
     }
 
     /**
@@ -1285,7 +1319,13 @@ class AjaxHtmlController {
             result.info = params.info
         }
 
-        render template: '/templates/workflow/modal', model: result
+        WfChecklist toCheck = result.checklist ? result.checklist as WfChecklist : (result.checkpoint as WfCheckpoint).getChecklist()
+        if (!accessService.hasAccessToWorkflow(toCheck)) {
+            render template: "/templates/generic_modal403"
+        }
+        else {
+            render template: '/templates/workflow/modal', model: result
+        }
     }
 
     // ----- titles -----
@@ -1333,111 +1373,77 @@ class AjaxHtmlController {
     /**
      * Opens a modal containing a preview of the given document if rights are granted and the file being found.
      * The preview is being generated according to the MIME type of the requested document; the document key is
-     * expected in structure docUUID:docContextID
+     * expected as docContextID
      * @return the template containing a preview of the document (either document viewer or fulltext extract)
      */
     @Secured(['ROLE_USER'])
     def documentPreview() {
-        Map<String, Object> result = [:]
+        Map<String, Object> result = [
+                modalId : 'document-preview-' + params.dctx,
+                modalTitle : message(code: 'template.documents.preview')
+        ]
 
         try {
-            if (params.key) {
-                String[] keys = params.key.split(':')
+            DocContext docCtx = DocContext.findById(params.long('dctx'))
 
-                Doc doc = Doc.findByUuid(keys[0])
-                DocContext docCtx = DocContext.findByIdAndOwner(Long.parseLong(keys[1]), doc)
+            if (docCtx) {
+                if (accessService.hasAccessToDocument(docCtx)) {
+                    Doc doc = docCtx.owner
 
-                if (doc && docCtx) {
-                    result.doc = doc
                     result.docCtx = docCtx
+                    result.doc = doc
+                    result.modalTitle = doc.title
 
-                    Closure checkPermission = {
-                        // logic based on /views/templates/documents/card
+                    Map<String, String> mimeTypes = Doc.getPreviewMimeTypes()
+                    if (mimeTypes.containsKey(doc.mimeType)) {
+                        String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
+                        File f = new File(fPath + '/' +  doc.uuid)
 
-                        boolean check = false
-                        long ctxOrgId = contextService.getOrg().id
-
-                        if ( doc.owner.id == ctxOrgId ) {
-                            check = true
-                        }
-                        else if ( docCtx.shareConf ) {
-                            if ( docCtx.shareConf == RDStore.SHARE_CONF_UPLOADER_ORG ) {
-                                check = (doc.owner.id == ctxOrgId)
+                        if (f.exists()) {
+                            if (mimeTypes.get(doc.mimeType) == 'raw'){
+                                result.docBase64 = f.getBytes().encodeBase64()
+                                result.docDataType = doc.mimeType
                             }
-                            if ( docCtx.shareConf == RDStore.SHARE_CONF_UPLOADER_AND_TARGET ) {
-                                check = (doc.owner.id == ctxOrgId) || (docCtx.targetOrg.id == ctxOrgId)
-                            }
-                            if ( docCtx.shareConf == RDStore.SHARE_CONF_ALL ) {
-                                // context based restrictions must be applied
-                                check = true
-                            }
-                        }
-                        else if ( docCtx.sharedFrom ) {
-                            if (docCtx.license) {
-                                docCtx.license.orgRelations.each {
-                                    if (it.org.id == ctxOrgId && it.roleType in [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]) {
-                                        check = true
-                                    }
-                                }
-                            }
-                            else if (docCtx.subscription) {
-                                docCtx.subscription.orgRelations.each {
-                                    if (it.org.id == ctxOrgId && it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER]) {
-                                        check = true
-                                    }
-                                }
-                            }
-                        }
-                        // survey workaround
-                        else if ( docCtx.surveyConfig ) {
-                            Map orgIdMap = docCtx.surveyConfig.getSurveyOrgsIDs()
-                            if (contextService.getOrg().id in orgIdMap.orgsWithSubIDs || contextService.getOrg().id in orgIdMap.orgsWithoutSubIDs) {
-                                check = true
-                            }
-                        }
-                        return check
-                    }
-
-                    if (checkPermission()) {
-                        Map<String, String> mimeTypes = Doc.getPreviewMimeTypes()
-                        if (mimeTypes.containsKey(doc.mimeType)) {
-                            String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
-                            File f = new File(fPath + '/' +  doc.uuid)
-
-                            if (f.exists()) {
-
-                                if (mimeTypes.get(doc.mimeType) == 'raw'){
-                                    result.docBase64 = f.getBytes().encodeBase64()
-                                    result.docDataType = doc.mimeType
-                                }
-                                else if (mimeTypes.get(doc.mimeType) == 'encode') {
-                                    String fCharset = UniversalDetector.detectCharset(f) ?: Charset.defaultCharset()
-                                    result.docBase64 = f.getText(fCharset).encodeAsRaw().getBytes().encodeBase64()
-                                    result.docDataType = 'text/plain;charset=' + fCharset
-                                }
-                                else {
-                                    result.error = 'Unbekannter Fehler'
-                                }
-                                // encodeAsHTML().replaceAll(/\r\n|\r|\n/,'<br />')
+                            else if (mimeTypes.get(doc.mimeType) == 'encode') {
+                                String fCharset = UniversalDetector.detectCharset(f) ?: Charset.defaultCharset()
+                                result.docBase64 = f.getText(fCharset).encodeAsRaw().getBytes().encodeBase64()
+                                result.docDataType = 'text/plain;charset=' + fCharset
                             }
                             else {
-                                result.error = message(code: 'template.documents.preview.fileNotFound') as String
+                                result.error = message(code: 'template.documents.preview.error') as String
                             }
+                            // encodeAsHTML().replaceAll(/\r\n|\r|\n/,'<br />')
                         }
                         else {
-                            result.error = message(code: 'template.documents.preview.unsupportedMimeType') as String
+                            result.error = message(code: 'template.documents.preview.fileNotFound') as String
                         }
                     }
                     else {
-                        result.info = message(code: 'template.documents.preview.forbidden') as String
+                        result.error = message(code: 'template.documents.preview.unsupportedMimeType') as String
                     }
                 }
+                else {
+                    result.warning = message(code: 'template.documents.preview.forbidden') as String
+                }
+            }
+            else {
+                result.error = message(code: 'template.documents.preview.fileNotFound') as String
             }
         }
         catch (Exception e) {
+            result.error = message(code: 'template.documents.preview.error') as String
             log.error e.getMessage()
         }
 
         render template: '/templates/documents/preview', model: result
+    }
+
+    @Secured(['ROLE_USER'])
+    def mailInfosFlyout() {
+        log.debug('ajaxHtmlController.mailInfosFlyout ' + params)
+
+        Map<String, Object> result = organisationControllerService.mailInfos(null, params)
+
+        render template: '/templates/org/mailInfosContent', model: result
     }
 }

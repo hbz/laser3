@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.TitleInstancePackagePlatform; grails.converters.JSON" %>
+<%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.wekb.TitleInstancePackagePlatform; grails.converters.JSON" %>
 <g:set var="contextOrg" value="${contextService.getOrg()}"/>
 
 <laser:htmlStart text="Datenbereinigung: TIPPs ohne we:kb ID" serviceInjection="true"/>

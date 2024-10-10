@@ -130,7 +130,12 @@
 
                                 <div class="menu" role="menu">
                                     <ui:link addItemAttributes="true" controller="profile" action="index">${message(code:'profile.user')}</ui:link>
-                                    <ui:link addItemAttributes="true" controller="profile" action="help">${message(code:'menu.user.help')}</ui:link>
+%{--                                    <ui:link addItemAttributes="true" controller="profile" action="help">${message(code:'menu.user.help')}</ui:link>--}%
+                                    <ui:link addItemAttributes="true" controller="public" action="faq">${message(code:'menu.user.faq')}</ui:link>
+
+                                    <ui:link addItemAttributes="true" controller="public" action="releaseNotes">
+                                        ${message(code:'releaseNotes')} (${AppUtils.getMeta('info.app.version')})
+                                    </ui:link>
                                     <ui:link addItemAttributes="true" controller="profile" action="dsgvo">${message(code:'privacyNotice')}</ui:link>
 
                                     <div class="divider"></div>
@@ -139,9 +144,9 @@
 
                                     <ui:link addItemAttributes="true" controller="logout">${message(code:'menu.user.logout')}</ui:link>
                                     <div class="divider"></div>
-                                    <div class="header">
-                                        Version: ${AppUtils.getMeta('info.app.version')} – ${AppUtils.getMeta('info.app.build.date')}
-                                    </div>
+%{--                                    <div class="header">--}%
+%{--                                        Version: ${AppUtils.getMeta('info.app.version')} – ${AppUtils.getMeta('info.app.build.date')}--}%
+%{--                                    </div>--}%
                                     <div class="header">
                                         ${SystemActivityProfiler.getNumberOfActiveUsers()} Benutzer online
                                     </div>
@@ -175,14 +180,7 @@
 
                 %{-- system messages --}%
 
-                <g:if test="${SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)}">
-                    <div id="systemMessages" class="ui message large warning">
-                        <laser:render template="/templates/system/messages" model="${[systemMessages: SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)]}" />
-                    </div>
-                </g:if>
-                <g:else>
-                    <div id="systemMessages" class="ui message large warning hidden"></div>
-                </g:else>
+                <laser:render template="/templates/system/messages" />
 
                 %{-- content --}%
 

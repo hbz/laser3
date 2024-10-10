@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
-<laser:htmlStart text="Playground: New Icons" serviceInjection="true" />
+<laser:htmlStart text="Playground: New Buttons" serviceInjection="true" />
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.admin" controller="admin" action="index"/>
@@ -10,8 +10,10 @@
 
 <nav class="ui secondary menu">
     <g:link controller="dev" action="klodav" class="item">Various</g:link>
-    <g:link controller="dev" action="icons" class="item"><i class="${Icon.SIG.NEW_OBJECT} yellow"></i> New Icons</g:link>
-    <g:link controller="dev" action="buttons" class="item active"><i class="${Icon.SIG.NEW_OBJECT} orange"></i> New Buttons</g:link>
+    <g:link controller="dev" action="klodav" id="icons" class="item"><i class="${Icon.SIG.NEW_OBJECT} yellow"></i> New Icons</g:link>
+    <g:link controller="dev" action="klodav" id="buttons" class="item active"><i class="${Icon.SIG.NEW_OBJECT} yellow"></i> New Buttons</g:link>
+    <g:link controller="dev" action="klodav" id="markdown" class="item"><i class="${Icon.SIG.NEW_OBJECT} orange"></i> Markdown</g:link>
+    <g:link controller="dev" action="klodav" id="security" class="item"><i class="${Icon.SIG.NEW_OBJECT} red"></i> Security</g:link>
 </nav>
 
 <div class="ui info message">

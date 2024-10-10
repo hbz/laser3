@@ -6,6 +6,7 @@ import de.laser.config.ConfigDefaults
 import de.laser.storage.RDConstants
 import de.laser.utils.AppUtils
 import de.laser.helper.DatabaseInfo
+import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
@@ -313,7 +314,6 @@ class AdminController  {
     def databaseCollations() {
 
         Map<String, Object> result = [:]
-
         Sql sql = GlobalService.obtainSqlConnection()
 
         result.allTables = DatabaseInfo.getAllTablesWithCollations()
@@ -414,6 +414,25 @@ class AdminController  {
         ]
 
         [dbInfo: result]
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def databaseIndices() {
+
+        Map<String, Object> result = [
+                indices: DatabaseInfo.getAllTablesWithGORMIndices(),
+                counts: [:]
+                ]
+
+        CodeUtils.getAllDomainClasses().each { cls ->
+            String css = cls.getName()
+            try {
+                result.counts.putAt(css, Org.executeQuery('select count(*) from ' + cls.simpleName)[0])
+            } catch (Exception e) {
+                result.counts.putAt(css, '?')
+            }
+        }
+        result
     }
 
     /**
@@ -613,7 +632,7 @@ class AdminController  {
             }
         }
 
-        Doc doc = Doc.get( params.long('docID') )
+        Doc doc = Doc.findByIdAndContentType( params.long('docID'), Doc.CONTENT_TYPE_FILE )
 
         if (!fileCheck(doc)) {
             result.doc = doc
@@ -626,7 +645,6 @@ class AdminController  {
                     title: doc.title,
                     filename: doc.filename,
                     mimeType: doc.mimeType,
-                    migrated: doc.migrated,
                     owner: doc.owner
             )
             result.docsToRecovery = docs
@@ -656,8 +674,8 @@ class AdminController  {
             }
         }
 
-        Doc docWithoutFile = Doc.get( params.long('sourceDoc') )
-        Doc docWithFile = Doc.get( params.long('targetDoc') )
+        Doc docWithoutFile = Doc.findByIdAndContentType( params.long('sourceDoc'), Doc.CONTENT_TYPE_FILE )
+        Doc docWithFile = Doc.findByIdAndContentType( params.long('targetDoc'), Doc.CONTENT_TYPE_FILE )
 
         if (!fileCheck(docWithoutFile) && fileCheck(docWithFile)) {
 

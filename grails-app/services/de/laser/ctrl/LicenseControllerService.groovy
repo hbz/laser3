@@ -4,7 +4,6 @@ import de.laser.*
 import de.laser.auth.User
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
-import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import de.laser.interfaces.CalculatedType
 import grails.gorm.transactions.Transactional
@@ -63,7 +62,7 @@ class LicenseControllerService {
         }
         else {
             SwissKnife.setPaginationParams(result, params, result.user as User)
-            result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Org) result.institution, (License) result.license)['cmbTaskInstanceList']
+            result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (License) result.license)['cmbTaskInstanceList']
             [result:result,status:STATUS_OK]
         }
     }
@@ -99,7 +98,7 @@ class LicenseControllerService {
 
         result.showConsortiaFunctions = showConsortiaFunctions(result.license)
 
-        int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.license).size()
+        int tc1 = taskService.getTasksByResponsibilityAndObject(result.user, result.license).size()
         int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.license).size()
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
@@ -111,9 +110,22 @@ class LicenseControllerService {
         if(!clone.license){
             clone.license = result.license.id
         }
+
         Map notNeededOnlySetCloneParams = setSubscriptionFilterData(clone)
-        List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(clone)
-        result.subsCount   = result.license ? Subscription.executeQuery( "select count(*) " + tmpQ[0].split('order by')[0] , tmpQ[1] )[0] : 0
+        if(result.license._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.license.getLicensingConsortium().id == result.institution.id) {
+            Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
+            Map<String,Object> queryParams = [lic:result.license, subscriberRoleTypes:subscriberRoleTypes, linkType:RDStore.LINKTYPE_LICENSE]
+            String whereClause = ""
+            if (clone.status) {
+                whereClause += " and s.status.id = :status"
+                queryParams.status = clone.long('status')
+            }
+            String query = "select count(*) from Links l join l.destinationSubscription s join s.orgRelations oo where l.sourceLicense = :lic and l.linkType = :linkType and oo.roleType in :subscriberRoleTypes ${whereClause} "
+            result.subsCount = Subscription.executeQuery(query.split('order by')[0], queryParams)[0]
+        }else {
+            List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(clone)
+            result.subsCount   = Subscription.executeQuery( "select count(*) " + tmpQ[0].split('order by')[0] , tmpQ[1] )[0]
+        }
 
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)

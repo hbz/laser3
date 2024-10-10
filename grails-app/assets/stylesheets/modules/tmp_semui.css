@@ -211,22 +211,7 @@ body.myInstitution_dashboard .ui.tab .item .header {
     background-color: rgba(0,0,0, 0.40)
 }
 
-/* debug info */
 
-#showSystemInfo {
-    bottom: 45px;
-    right: 10px;
-}
-
-#showDebugInfo {
-    bottom: 45px;
-    right: 55px;
-}
-
-#system-profiler {
-    bottom: 10px;
-    right: 10px;
-}
 
 /* -- 2021-01-06 -- */
 
@@ -319,37 +304,33 @@ body.survey_copyElementsIntoSurvey nav.tabular .item .content .description
     color: #00b5ad;
 }
 
+/* -- flyouts -- */
 
-/* --- NEW DEFAULT for la-modern-button --- */
-
-.ui.buttons .button.la-modern-button,
-.ui.button.la-modern-button {
-    color: #004678;
-    background-color: transparent;
+#help-content.markdown > .content {
+    padding-top: 70px;
+}
+#help-content.markdown > .basic.actions {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #E9E9E9;
 }
 
-.ui.buttons .button.la-modern-button:hover,
-.ui.button.la-modern-button:hover {
-    background-color: #004678;
-    color: #FFFFFF;
+/* todo .. fix markup and remove */
+
+.ui.flyout:not(.markdown) {
+    padding: 50px 0 10px 0;
+    overflow: scroll
 }
 
-/* --- la-modern-button in button groups --- */
+/*
+.ui.flyout:not(.markdown) > .header {
+    padding-top: 70px;
+}
+.ui.flyout:not(.markdown) > .content {
+    padding-top: 70px;
+}
+.ui.flyout:not(.markdown) > .header + .content {
+    padding-top: 0px;
+}
+*/
 
-.ui.buttons .negative.button.la-modern-button {
-    color: #bb1600;
-    background-color: transparent;
-}
-.ui.buttons .negative.button.la-modern-button:hover {
-    background-color: #bb1600;
-    color: #FFFFFF;
-}
 
-.ui.buttons .positive.button.la-modern-button {
-    color: #98b500;
-    background-color: transparent;
-}
-.ui.buttons .positive.button.la-modern-button:hover {
-    background-color: #98b500;
-    color: #FFFFFF;
-}

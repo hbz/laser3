@@ -45,7 +45,7 @@ class OrgExport extends BaseDetailsExport {
                                     'globalUID'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     '+sortname+name'    : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
                                     'customerType'      : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
-                                    'orgType'           : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA_JOINTABLE ],
+                                    'orgType_new'           : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'libraryType'       : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'libraryNetwork'    : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'funderHskType'     : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],

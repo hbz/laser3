@@ -8,6 +8,7 @@ import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import de.laser.wekb.Package
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.gorm.transactions.Transactional
 import grails.web.mapping.LinkGenerator
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -19,7 +20,7 @@ import org.springframework.context.MessageSource
 @Transactional
 class PackageService {
 
-    BatchUpdateService batchUpdateService
+    BatchQueryService batchQueryService
     ContextService contextService
     DeletionService deletionService
     GokbService gokbService
@@ -217,7 +218,7 @@ class PackageService {
             Map<String,Object> queryParams = [sub: subList, pkg_id: pkg.id]
             //delete matches
             //IssueEntitlement.withSession { Session session ->
-            batchUpdateService.clearIssueEntitlements(queryParams)
+            batchQueryService.clearIssueEntitlements(queryParams)
             PermanentTitle.executeUpdate("delete from PermanentTitle pt where pt.subscription.id in (:sub) and pt.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id)", queryParams)
             if (deletePackage) {
                 removePackagePendingChanges(pkg, subList, true)

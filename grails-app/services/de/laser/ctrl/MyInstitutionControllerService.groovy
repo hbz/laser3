@@ -94,12 +94,12 @@ class MyInstitutionControllerService {
         params.taskStatus = 'not done'
         FilterService.Result fsr = filterService.getTaskQuery(params << [sort: 't.endDate', order: 'asc'], sdFormat)
         prf.setBenchmark('tasks')
-        result.tasks = taskService.getTasksByResponsibles(result.user as User, result.institution as Org, [query: fsr.query, queryParams: fsr.queryParams])
+        result.tasks = taskService.getTasksByResponsibility(result.user as User, result.institution as Org, [query: fsr.query, queryParams: fsr.queryParams])
         result.tasksCount    = result.tasks.size()
 
         prf.setBenchmark('due dates')
-        result.dueDates = dashboardDueDatesService.getDashboardDueDates( result.user, result.institution, false, false, result.max, result.dashboardDueDatesOffset)
-        result.dueDatesCount = dashboardDueDatesService.countDashboardDueDates( result.user, result.institution, false, false)
+        result.dueDates = dashboardDueDatesService.getDashboardDueDates( result.user, result.institution, result.max, result.dashboardDueDatesOffset)
+        result.dueDatesCount = dashboardDueDatesService.countDashboardDueDates( result.user, result.institution)
 
         prf.setBenchmark('workflows')
         if (workflowService.hasUserPerm_edit()) {

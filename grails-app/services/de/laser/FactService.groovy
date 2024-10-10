@@ -24,12 +24,14 @@ class FactService {
     // TODO make this configurable
     Map preferedCostPerUseMetrics = [
         'Database' : ['result_click', 'record_view', 'search_reg'],
-        'Journal' : ['ft_total']
+        'Journal' : ['ft_total'],
+        'serial' : ['ft_total']
     ]
 
     Map costPerUseReportForDatatype = [
         'Database' : 'DB1R4',
-        'Journal' : 'JR1R4'
+        'Journal' : 'JR1R4',
+        'serial' : 'JR1R4',
     ]
 
   private static String TOTAL_USAGE_FOR_SUB_IN_PERIOD =
@@ -119,7 +121,7 @@ class FactService {
       return null
     }
     // temp solution
-    if (type == 'EBook'){
+    if (type in ['monograph', 'EBook']){
       log.debug('CostPerUse not supported for EBooks')
       return null
     }

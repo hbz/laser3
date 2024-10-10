@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.IdentifierNamespace; de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
 <laser:htmlStart message="myinst.subscriptionImport.pageTitle" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -49,54 +49,6 @@
                download="template_bulk_load_subscription_records.csv">
                 <p><g:message code="myinst.subscriptionImport.template"/></p>
             </a>
-
-            <div class="ui flyout" id="help-content" style="padding:50px 0 10px 0;overflow:scroll">
-                <h1 class="ui header">
-                    <g:message code="myinst.subscriptionImport.template.description"/>
-                </h1>
-                <div class="content">
-                    <table class="ui la-ignore-fixed compact table">
-                        <thead>
-                        <tr>
-                            <th><g:message code="myinst.subscriptionImport.tsvColumnName"/></th>
-                            <th><g:message code="myinst.subscriptionImport.descriptionColumnName"/></th>
-                            <th><g:message code="myinst.subscriptionImport.necessaryFormat"/></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <g:each in="${mappingCols}" var="mpg">
-                            <%
-                                List args = []
-                                switch (mpg) {
-                                    case 'status': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS).collect { it -> it.getI10n('value') })
-                                        break
-                                    case 'type': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND).collect { it -> it.getI10n('value') })
-                                        break
-                                    case 'form': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM).collect { it -> it.getI10n('value') })
-                                        break
-                                    case 'resource': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE).collect { it -> it.getI10n('value') })
-                                        break
-                                    case 'hasPerpetualAccess': args.addAll(RDStore.YN_YES.getI10n('value'), RDStore.YN_NO.getI10n('value'))
-                                        break
-                                    case 'hasPublishComponent': args.addAll(RDStore.YN_YES.getI10n('value'), RDStore.YN_NO.getI10n('value'))
-                                        break
-                                    case 'isAutomaticRenewAnnually': args.addAll(RDStore.YN_YES.getI10n('value'), RDStore.YN_NO.getI10n('value'))
-                                        break
-                                    case 'isPublicForApi': args.addAll(RDStore.YN_YES.getI10n('value'), RDStore.YN_NO.getI10n('value'))
-                                        break
-                                }
-                            %>
-                            <tr>
-                                <td>${message(code: "myinst.subscriptionImport.${mpg}", args: args ?: '')}</td>
-                                <td>${message(code: "myinst.subscriptionImport.description.${mpg}") ?: ''}</td>
-                                <td>${message(code: "myinst.subscriptionImport.format.${mpg}", args: [raw("<ul><li>${args.join('</li><li>')}</li></ul>")]) ?: ''}</td>
-                            </tr>
-                        </g:each>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
 
             <g:uploadForm action="processSubscriptionImport" method="post">
                 <dl>

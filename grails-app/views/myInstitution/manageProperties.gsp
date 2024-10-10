@@ -2,13 +2,13 @@
 <laser:htmlStart message="menu.institutions.manage_props" serviceInjection="true"/>
 
 <ui:breadcrumbs>
+    <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
     <ui:crumb message="menu.institutions.manage_props" class="active" />
 </ui:breadcrumbs>
 
 <ui:h1HeaderWithIcon message="menu.institutions.manage_props" />
 
 <laser:render template="nav"/>
-
 
 <ui:filter simple="true">
     <g:form action="manageProperties" method="get" class="ui form">

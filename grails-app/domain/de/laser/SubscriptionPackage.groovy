@@ -4,6 +4,7 @@ import de.laser.ui.Icon
 import de.laser.oap.OrgAccessPointLink
 import de.laser.storage.RDStore
 import de.laser.wekb.Package
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.web.servlet.mvc.GrailsParameterMap
 
 import javax.persistence.Transient
@@ -128,26 +129,12 @@ class SubscriptionPackage implements Comparable {
   }
 
   /**
-   * Gets the counts of the titles in the holding and the package and outputs them as a formatted HTML snippet.
-   * The counts mean:
-   * <ul>
-   *     <li>how many titles are subscribed from the given package?</li>
-   *     <li>how many titles are generally in the given package?</li>
-   * </ul>
-   * @return a HTML snippet showing the counts of titles of the package in the holding and on the global package level
-   */
-  String getIEandPackageSize(){
-
-    return '(<span data-tooltip="Titel in der Lizenz"><i class="icon archive"></i></span>' + executeQuery('select count(*) from IssueEntitlement ie where ie.subscription = :sub and ie.tipp.pkg = :pkg and ie.status = :current',[sub: this.subscription, pkg: this.pkg, current: RDStore.TIPP_STATUS_CURRENT])[0] + ' / <span data-tooltip="Titel im Paket"><i class="' + Icon.TIPP + '"></i></span>' + executeQuery('select count(*) from TitleInstancePackagePlatform tipp join tipp.pkg pkg where pkg = :ctx and tipp.status = :current',[ctx:this.pkg, current:RDStore.TIPP_STATUS_CURRENT])[0] + ')'
-  }
-
-  /**
    * Retrieves the current titles of the global level of the given package - this method is NOT delivering the current holding of the subscription!
-   * @return a {@link Set} of {@link TitleInstancePackagePlatform}s in the subscribed package (on global level!)
+   * @return a {@link Set} of {@link de.laser.wekb.TitleInstancePackagePlatform}s in the subscribed package (on global level!)
    */
   Set getCurrentTippsofPkg()
   {
-    this.pkg.tipps?.findAll{TitleInstancePackagePlatform tipp -> tipp.status?.value == 'Current'}
+    this.pkg.tipps?.findAll{ TitleInstancePackagePlatform tipp -> tipp.status?.value == 'Current' }
   }
 
   /**

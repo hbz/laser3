@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.config.ConfigMapper; de.laser.properties.PropertyDefinition; de.laser.UserSetting; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated;" %>
+<%@ page import="de.laser.survey.SurveyResult; de.laser.survey.SurveyConfigProperties; de.laser.storage.PropertyStore; de.laser.storage.RDStore; de.laser.config.ConfigMapper; de.laser.properties.PropertyDefinition; de.laser.UserSetting; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -117,6 +117,10 @@ ${message(code: 'email.survey.finish.url', locale: language)}
 <br />
 ${ConfigMapper.getConfig('grails.serverURL', String) + surveyUrl}
 <br />
+<br />
+<g:set var="mailInfos" value="${"/organisation/mailInfos/${org.id}?subscription=${survey.surveyConfigs[0].subscription?.id}&surveyConfigID=${survey.surveyConfigs[0].id}"}"/>
+${message(code: 'mail.org.mailInfos', locale: language)}: ${ConfigMapper.getConfig('grails.serverURL', String) + mailInfos}
+
 <br />
 ${message(code: 'email.profile.settings', locale: language)}
 <g:render template="/mailTemplates/html/signature" />

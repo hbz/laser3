@@ -111,9 +111,10 @@ class AddressbookService {
                 qParams << [org: params.org]
             }
             else if(params.org instanceof String) {
-                qParts << "( genfunc_filter_matcher(org.name, :name) = true or genfunc_filter_matcher(org.sortname, :name) = true )"
-                qParts << "( genfunc_filter_matcher(vendor.name, :name) = true or genfunc_filter_matcher(vendor.sortname, :name) = true )"
-                qParts << "( genfunc_filter_matcher(provider.name, :name) = true or genfunc_filter_matcher(provider.sortname, :name) = true )"
+                // ERMS-5868
+                qParts <<   "(( genfunc_filter_matcher(org.name, :name) = true or genfunc_filter_matcher(org.sortname, :name) = true ) OR " +
+                            " ( genfunc_filter_matcher(vendor.name, :name) = true or genfunc_filter_matcher(vendor.sortname, :name) = true ) OR " +
+                            " ( genfunc_filter_matcher(provider.name, :name) = true or genfunc_filter_matcher(provider.sortname, :name) = true ))"
                 qParams << [name: "${params.org}"]
             }
         }
@@ -225,7 +226,10 @@ class AddressbookService {
             qParams << [org: params.org]
         }
         else if(params.org && params.org instanceof String) {
-            qParts << "( genfunc_filter_matcher(org.name, :name) = true or genfunc_filter_matcher(org.sortname, :name) = true )"
+            // ERMS-5868
+            qParts <<   "(( genfunc_filter_matcher(org.name, :name) = true or genfunc_filter_matcher(org.sortname, :name) = true ) OR " +
+                        " ( genfunc_filter_matcher(vendor.name, :name) = true or genfunc_filter_matcher(vendor.sortname, :name) = true ) OR " +
+                        " ( genfunc_filter_matcher(provider.name, :name) = true or genfunc_filter_matcher(provider.sortname, :name) = true ))"
             qParams << [name: "${params.org}"]
         }
 
@@ -268,7 +272,7 @@ class AddressbookService {
         List qParts = []
         Map qParams = [:]
         if (params.showOnlyContactPersonForInstitution || params.exportOnlyContactPersonForInstitution){
-            qParts << "(exists (select roletype from org.orgType as roletype where roletype.id = :instType ))"
+            qParts << "(org.orgType_new != null and org.orgType_new.id = :instType)"
             qParams << [instType: RDStore.OT_INSTITUTION.id]
         }
 

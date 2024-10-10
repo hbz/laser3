@@ -45,8 +45,9 @@
                     fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', RDConstants.LICENSE_STATUS))
                 %>
                 <ui:select name="status" from="${fakeList}" optionKey="id" optionValue="value"
-                              noSelection="${['' : '']}"
-                              value="${['':'']}"/>
+                                noSelection="${['' : '']}"
+                                value="${['':'']}"
+                                class="ui select dropdown"/>
             </div>
 
         <div class="field">

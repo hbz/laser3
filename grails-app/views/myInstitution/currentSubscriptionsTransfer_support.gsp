@@ -436,7 +436,7 @@
                                                 <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                                 <g:if test="${supportedMimeType}">
                                                     <a href="#documentPreview"
-                                                       data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
+                                                       data-dctx="${docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
                                                 </g:if>
                                                 <g:else>
                                                     ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
@@ -451,14 +451,14 @@
 
                                                 <g:if test="${!(editable)}">
                                                 <%-- 1 --%>
-                                                    <g:link controller="docstore" id="${docctx.owner.uuid}"
+                                                    <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}"
                                                             class="${Btn.MODERN.SIMPLE} tiny"
                                                             target="_blank"><i class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                                     <%-- 1 --%>
-                                                        <g:link controller="docstore" id="${docctx.owner.uuid}"
+                                                        <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}"
                                                                 class="${Btn.MODERN.SIMPLE} tiny"
                                                                 target="_blank"><i class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
 
@@ -627,7 +627,7 @@
                                                 <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                                 <g:if test="${supportedMimeType}">
                                                     <a href="#documentPreview"
-                                                       data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
+                                                       data-dctx="${docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
                                                 </g:if>
                                                 <g:else>
                                                     ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
@@ -641,14 +641,14 @@
 
                                                 <g:if test="${!(editable)}">
                                                 <%-- 1 --%>
-                                                    <g:link controller="docstore" id="${docctx.owner.uuid}"
+                                                    <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}"
                                                             class="${Btn.MODERN.SIMPLE} tiny"
                                                             target="_blank"><i class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                                     <%-- 1 --%>
-                                                        <g:link controller="docstore" id="${docctx.owner.uuid}"
+                                                        <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}"
                                                                 class="${Btn.MODERN.SIMPLE} tiny"
                                                                 target="_blank"><i class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
 

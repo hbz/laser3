@@ -42,7 +42,7 @@ import java.util.concurrent.ExecutorService
 @Transactional
 class CopyElementsService {
 
-    BatchUpdateService batchUpdateService
+    BatchQueryService batchQueryService
     CompareService compareService
     ComparisonService comparisonService
     ContextService contextService
@@ -1119,7 +1119,7 @@ class CopyElementsService {
     boolean copyAnnouncements(Object sourceObject, def toCopyAnnouncements, Object targetObject, def flash, def toShare = []) {
         sourceObject.documents?.each { dctx ->
             if (dctx.id in toCopyAnnouncements) {
-                if (dctx.isDocANote() && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
+                if (dctx.isDocANote() && (dctx.status?.value != 'Deleted')) {
                     Doc newDoc = new Doc()
                     InvokerHelper.setProperties(newDoc, dctx.owner.properties)
                     _save(newDoc, flash)
@@ -1144,10 +1144,9 @@ class CopyElementsService {
      */
     def deleteAnnouncements(List<Long> toDeleteAnnouncements, Object targetObject, def flash) {
         targetObject.documents.each {
-            if (toDeleteAnnouncements.contains(it.id) && it.isDocANote() && !(it.domain)) {
+            if (toDeleteAnnouncements.contains(it.id) && it.isDocANote()) {
                 Map params = [deleteId: it.id]
-                log.debug("deleteDocuments ${params}");
-                docstoreService.unifiedDeleteDocuments(params)
+                docstoreService.deleteDocument(params)
             }
         }
     }
@@ -1345,6 +1344,7 @@ class CopyElementsService {
         String ownerClassName = classString.substring(classString.lastIndexOf(".") + 1)
         ownerClassName = "de.laser.properties.${ownerClassName}Property"
         def targetProp
+        List todoAuditProperties = []
         properties.each { AbstractPropertyWithCalculatedLastUpdated sourceProp ->
             targetProp = targetObject.propertySet.find { it.type.id == sourceProp.type.id && it.tenant == sourceProp.tenant }
             boolean isAddNewProp = sourceProp.type?.multipleOccurrence
@@ -1357,52 +1357,68 @@ class CopyElementsService {
                 if (sourceProp.id.toString() in auditProperties) {
                     //copy audit
                     if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
-
-                        targetObject.getClass().findAllByInstanceOf(targetObject).each { Object member ->
-
-                            def existingProp = targetProp.getClass().findByOwnerAndInstanceOf(member, targetProp)
-                            if (!existingProp) {
-
-                                // multi occurrence props; add one additional with backref
-                                if (sourceProp.type.multipleOccurrence) {
-                                    def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type, contextService.getOrg())
-                                    additionalProp = targetProp.copyInto(additionalProp)
-                                    additionalProp.instanceOf = targetProp
-                                    additionalProp.save()
-                                } else {
-                                    def matchingProps = targetProp.getClass().findAllByOwnerAndType(member, targetProp.type)
-                                    // unbound prop found with matching type, set backref
-                                    if (matchingProps) {
-                                        matchingProps.each { memberProp ->
-                                            memberProp.instanceOf = targetProp
-                                            memberProp.save()
-                                        }
-                                    } else {
-                                        // no match found, creating new prop with backref
-                                        def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type, contextService.getOrg())
-                                        newProp = targetProp.copyInto(newProp)
-                                        newProp.instanceOf = targetProp
-                                        newProp.save()
-                                    }
-                                }
-                            }
-                        }
-
-                        def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(targetProp.class.name, sourceProp.id)
-                        auditConfigs.each {
-                            AuditConfig ac ->
-                                //All ReferenceFields were copied!
-                                AuditConfig.addConfig(targetProp, ac.referenceField)
-                        }
-                        if (!auditConfigs) {
-                            AuditConfig.addConfig(targetProp, AuditConfig.COMPLETE_OBJECT)
-                        }
+                        todoAuditProperties << [sourcePropId: sourceProp.id, targetPropId: targetProp.id]
                     }
                 }
             } else {
                 //Replace
                 targetProp = sourceProp.copyInto(targetProp)
                 targetProp.save()
+
+                if (sourceProp.id.toString() in auditProperties) {
+                    //copy audit
+                    if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
+                        todoAuditProperties << [sourcePropId: sourceProp.id, targetPropId: targetProp.id]
+                    }
+                }
+            }
+        }
+
+
+        todoAuditProperties.each { Map todoAuditPro ->
+            AbstractPropertyWithCalculatedLastUpdated sourceProp = SubscriptionProperty.get(todoAuditPro.sourcePropId)
+            targetProp = SubscriptionProperty.get(todoAuditPro.targetPropId)
+            if(sourceProp && targetProp) {
+                targetObject.getClass().findAllByInstanceOf(targetObject).each { Object member ->
+                    member = member.refresh()
+                    targetProp = targetProp.refresh()
+                    def existingProp = targetProp.getClass().findByOwnerAndInstanceOf(member, targetProp)
+                    if (!existingProp) {
+
+                        // multi occurrence props; add one additional with backref
+                        if (sourceProp.type.multipleOccurrence) {
+                            def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type, contextService.getOrg())
+                            additionalProp = targetProp.copyInto(additionalProp)
+                            additionalProp.instanceOf = targetProp
+                            additionalProp.save()
+                        } else {
+                            def matchingProps = targetProp.getClass().findAllByOwnerAndType(member, targetProp.type)
+                            // unbound prop found with matching type, set backref
+                            if (matchingProps) {
+                                matchingProps.each { memberProp ->
+                                    memberProp.instanceOf = targetProp
+                                    memberProp.save()
+                                }
+                            } else {
+                                // no match found, creating new prop with backref
+                                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, targetProp.type, contextService.getOrg())
+                                newProp = targetProp.copyInto(newProp)
+                                newProp.instanceOf = targetProp
+                                newProp.save()
+                            }
+                        }
+                    }
+                }
+
+                def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(targetProp.class.name, sourceProp.id)
+                auditConfigs.each {
+                    AuditConfig ac ->
+                        //All ReferenceFields were copied!
+                        AuditConfig.addConfig(targetProp, ac.referenceField)
+                }
+                if (!auditConfigs) {
+                    AuditConfig.addConfig(targetProp, AuditConfig.COMPLETE_OBJECT)
+                }
             }
         }
     }
@@ -1672,22 +1688,42 @@ class CopyElementsService {
      */
     boolean copySpecificSubscriptionEditors(List<PersonRole> toCopyPersonRoles, Object sourceObject, Object targetObject, def flash) {
 
-        toCopyPersonRoles.each { prRole ->
-            if (!(prRole.org in targetObject.orgRelations.org) && (prRole.org in sourceObject.orgRelations.org)) {
-                OrgRole or = OrgRole.findByOrgAndSub(prRole.org, sourceObject)
-                def newProperties = or.properties
+        toCopyPersonRoles.each { PersonRole prRole ->
+            if(prRole.provider) {
+                if (!(prRole.provider in targetObject.providerRelations.provider) && (prRole.provider in sourceObject.providerRelations.provider)) {
+                    ProviderRole pvr = ProviderRole.findByProviderAndSubscription(prRole.provider, sourceObject)
+                    def newProperties = pvr.properties
 
-                OrgRole newOrgRole = new OrgRole()
-                InvokerHelper.setProperties(newOrgRole, newProperties)
-                //Vererbung ausschalten
-                newOrgRole.sharedFrom = null
-                newOrgRole.isShared = false
-                newOrgRole.sub = targetObject
+                    ProviderRole newProviderRole = new ProviderRole()
+                    InvokerHelper.setProperties(newProviderRole, newProperties)
+                    //Vererbung ausschalten
+                    newProviderRole.sharedFrom = null
+                    newProviderRole.isShared = false
+                    newProviderRole.subscription = targetObject
+                }
+
+                if ((prRole.provider in targetObject.providerRelations.provider) && !PersonRole.findWhere(prs: prRole.prs, provider: prRole.provider, responsibilityType: prRole.responsibilityType, sub: targetObject)) {
+                    PersonRole newPrsRole = new PersonRole(prs: prRole.prs, provider: prRole.provider, sub: targetObject, responsibilityType: prRole.responsibilityType)
+                    _save(newPrsRole, flash)
+                }
             }
+            else if(prRole.vendor) {
+                if (!(prRole.vendor in targetObject.vendorRelations.vendor) && (prRole.vendor in sourceObject.vendorRelations.vendor)) {
+                    VendorRole vr = VendorRole.findByVendorAndSubscription(prRole.vendor, sourceObject)
+                    def newProperties = vr.properties
 
-            if ((prRole.org in targetObject.orgRelations.org) && !PersonRole.findWhere(prs: prRole.prs, org: prRole.org, responsibilityType: prRole.responsibilityType, sub: targetObject)) {
-                PersonRole newPrsRole = new PersonRole(prs: prRole.prs, org: prRole.org, sub: targetObject, responsibilityType: prRole.responsibilityType)
-                _save(newPrsRole, flash)
+                    VendorRole newVendorRole = new VendorRole()
+                    InvokerHelper.setProperties(newVendorRole, newProperties)
+                    //Vererbung ausschalten
+                    newVendorRole.sharedFrom = null
+                    newVendorRole.isShared = false
+                    newVendorRole.subscription = targetObject
+                }
+
+                if ((prRole.vendor in targetObject.vendorRelations.vendor) && !PersonRole.findWhere(prs: prRole.prs, vendor: prRole.vendor, responsibilityType: prRole.responsibilityType, sub: targetObject)) {
+                    PersonRole newPrsRole = new PersonRole(prs: prRole.prs, vendor: prRole.vendor, sub: targetObject, responsibilityType: prRole.responsibilityType)
+                    _save(newPrsRole, flash)
+                }
             }
         }
 
@@ -1766,12 +1802,12 @@ class CopyElementsService {
                     }
                     Sql sql = GlobalService.obtainSqlConnection()
                     //List subscriptionHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where tipp_pkg_fk = :pkgId and ie_subscription_fk = :source", [pkgId: newSubscriptionPackage.pkg.id, source: subscriptionPackage.subscription.id])
-                    batchUpdateService.bulkAddHolding(sql, targetObject.id, newSubscriptionPackage.pkg.id, targetObject.hasPerpetualAccess, null, subscriptionPackage.subscription.id)
+                    batchQueryService.bulkAddHolding(sql, targetObject.id, newSubscriptionPackage.pkg.id, targetObject.hasPerpetualAccess, null, subscriptionPackage.subscription.id)
                     if(subscriptionPackage in packagesToTakeForChildren) {
                         Subscription.findAllByInstanceOf(targetObject).each { Subscription child ->
                             if(!SubscriptionPackage.findByPkgAndSubscription(subscriptionPackage.pkg, child)) {
                                 SubscriptionPackage childSp = new SubscriptionPackage(pkg: subscriptionPackage.pkg, subscription: child).save()
-                                batchUpdateService.bulkAddHolding(sql, child.id, childSp.pkg.id, child.hasPerpetualAccess, targetObject.id)
+                                batchQueryService.bulkAddHolding(sql, child.id, childSp.pkg.id, child.hasPerpetualAccess, targetObject.id)
                             }
                         }
                     }

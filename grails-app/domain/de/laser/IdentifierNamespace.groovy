@@ -4,6 +4,7 @@ import de.laser.base.AbstractI10n
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.storage.BeanStore
 import de.laser.wekb.Package
+import de.laser.wekb.TitleInstancePackagePlatform
 import groovy.util.logging.Slf4j
 
 /**

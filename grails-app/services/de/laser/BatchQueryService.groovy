@@ -2,13 +2,14 @@ package de.laser
 
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
+import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 
 /**
  * This service is a container for methods which are resource-intensive or bulk process methods
  */
 @Transactional
-class BatchUpdateService {
+class BatchQueryService {
 
     /**
      * Adds the given set of package titles, retrieved by native database query, to the given subscription. Insertion as issue entitlements is being done by native SQL as well as it performs much better than GORM
@@ -103,5 +104,15 @@ class BatchUpdateService {
             */
         }
         sql.close()
+    }
+
+    List<GroovyRowResult> longArrayQuery(String query, Map queryParams, Map arrayParams) {
+        Sql sql = GlobalService.obtainSqlConnection()
+        arrayParams.each { String k, v ->
+            queryParams.put(k, sql.getDataSource().getConnection().createArrayOf('bigint', v as Object[]))
+        }
+        List<GroovyRowResult> result = sql.rows(query, queryParams)
+        sql.close()
+        result
     }
 }

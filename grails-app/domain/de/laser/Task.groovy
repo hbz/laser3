@@ -5,7 +5,9 @@ import de.laser.auth.User
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.survey.SurveyConfig
+import de.laser.ui.Icon
 import de.laser.wekb.Provider
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 
 /**
@@ -30,6 +32,7 @@ class Task {
     Vendor          vendor
     Subscription    subscription
     SurveyConfig    surveyConfig
+    TitleInstancePackagePlatform tipp
 
     String          title
     String          description
@@ -55,6 +58,7 @@ class Task {
         vendor          (nullable:true)
         subscription    (nullable:true)
         surveyConfig    (nullable:true)
+        tipp            (nullable:true)
         title           (blank:false)
         description     (nullable:true, blank:true)
         responsibleUser (nullable:true)
@@ -68,24 +72,25 @@ class Task {
         id              column:'tsk_id'
         version         column:'tsk_version'
 
-        license         column:'tsk_lic_fk'
-        org             column:'tsk_org_fk'
-        provider        column:'tsk_prov_fk'
-        vendor          column:'tsk_ven_fk'
-        subscription    column:'tsk_sub_fk'
-        surveyConfig    column:'tsk_sur_config_fk'
+        license         column:'tsk_lic_fk',        index: 'tsk_lic_idx'
+        org             column:'tsk_org_fk',        index: 'tsk_org_idx'
+        provider        column:'tsk_prov_fk',       index: 'tsk_prov_idx'
+        vendor          column:'tsk_ven_fk',        index: 'tsk_ven_idx'
+        subscription    column:'tsk_sub_fk',        index: 'tsk_sub_idx'
+        surveyConfig    column:'tsk_sur_config_fk', index: 'tsk_sur_config_idx'
+        tipp            column:'tsk_tipp_fk',       index: 'tsk_tipp_idx'
 
         title           column:'tsk_title'
         description     column:'tsk_description', type: 'text'
         status          column:'tsk_status_rdv_fk'
 
-        creator         column:'tsk_creator_fk'
+        creator         column:'tsk_creator_fk',    index: 'tsk_creator_idx'
         endDate         column:'tsk_end_date'
         systemCreateDate column:'tsk_system_create_date'
         createDate      column:'tsk_create_date'
 
-        responsibleUser      column:'tsk_responsible_user_fk'
-        responsibleOrg       column:'tsk_responsible_org_fk'
+        responsibleUser      column:'tsk_responsible_user_fk', index: 'tsk_responsible_user_idx'
+        responsibleOrg       column:'tsk_responsible_org_fk',  index: 'tsk_responsible_org_idx'
 
         dateCreated     column: 'tsk_date_created'
         lastUpdated     column: 'tsk_last_updated'
@@ -104,17 +109,19 @@ class Task {
         List result = []
 
         if (license)
-            result << [controller: 'license', object: license]
+            result << [controller: 'license', icon: Icon.LICENSE, object: license]
         if (org)
-            result << [controller: 'organisation', object: org]
+            result << [controller: 'organisation', icon: Icon.ORG, object: org]
         if (provider)
-            result << [controller: 'provider', object: provider]
+            result << [controller: 'provider', icon: Icon.PROVIDER, object: provider]
         if (vendor)
-            result << [controller: 'vendor', object: vendor]
+            result << [controller: 'vendor', icon: Icon.VENDOR, object: vendor]
         if (subscription)
-            result << [controller: 'subscription', object: subscription]
+            result << [controller: 'subscription', icon: Icon.SUBSCRIPTION, object: subscription]
         if (surveyConfig)
-            result << [controller: 'survey', object: surveyConfig]
+            result << [controller: 'survey', icon: Icon.SURVEY, object: surveyConfig]
+        if (tipp)
+            result << [controller: 'tipp', icon: Icon.TIPP, object: tipp]
 
         result
     }
@@ -125,6 +132,7 @@ class Task {
      */
     Map getDisplayArgs() {
         Map<String, Object> displayArgs = [action: 'show', absolute: true]
+
         if (license) {
             displayArgs.controller = 'license'
             displayArgs.id = license.id
@@ -149,6 +157,10 @@ class Task {
             displayArgs.controller = 'survey'
             displayArgs.id = surveyConfig.surveyInfo.id
             displayArgs.surveyConfigID = surveyConfig.id
+        }
+        else if (tipp) {
+            displayArgs.controller = 'tipp'
+            displayArgs.id = tipp.id
         }
         else {
             displayArgs.controller = 'myInstitution'
@@ -189,6 +201,9 @@ class Task {
         }
         else if (surveyConfig) {
             name = surveyConfig.surveyInfo.name
+        }
+        else if (tipp) {
+            name = tipp.name
         }
         name
     }

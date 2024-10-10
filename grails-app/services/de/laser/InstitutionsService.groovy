@@ -105,7 +105,6 @@ class InstitutionsService {
                         new DocContext(
                                 owner: dctx.owner,
                                 license: licenseInstance,
-                                domain: dctx.domain,
                                 status: dctx.status,
                                 sharedFrom: dctx
                         ).save()
@@ -133,7 +132,6 @@ class InstitutionsService {
                             title: dctx.owner.title,
                             filename: dctx.owner.filename,
                             mimeType: dctx.owner.mimeType,
-                            migrated: dctx.owner.migrated,
                             server: dctx.owner.server
                     ).save()
 
@@ -146,7 +144,6 @@ class InstitutionsService {
                     new DocContext(
                             owner: clonedContents,
                             license: licenseInstance,
-                            domain: dctx.domain,
                             status: dctx.status
                     ).save()
                 }

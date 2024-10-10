@@ -29,6 +29,7 @@ import de.laser.utils.SwissKnife
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.VendorRole
 import grails.converters.JSON
 import de.laser.stats.Counter4Report
@@ -74,7 +75,7 @@ class SubscriptionControllerService {
 
     AddressbookService addressbookService
     AuditService auditService
-    BatchUpdateService batchUpdateService
+    BatchQueryService batchQueryService
     ContextService contextService
     DocstoreService docstoreService
     FactService factService
@@ -129,7 +130,7 @@ class SubscriptionControllerService {
             // TODO: experimental asynchronous task
             //def task_tasks = task {
             // tasks
-            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.subscription)
+            result.tasks = taskService.getTasksByResponsibilityAndObject(result.user, result.subscription)
 
             prf.setBenchmark('properties')
             // TODO: experimental asynchronous task
@@ -293,7 +294,7 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         else {
             SwissKnife.setPaginationParams(result, params, result.user as User)
-            result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Org) result.institution, (Subscription) result.subscription)['cmbTaskInstanceList']
+            result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Subscription) result.subscription)['cmbTaskInstanceList']
             [result:result,status:STATUS_OK]
         }
     }
@@ -386,16 +387,18 @@ class SubscriptionControllerService {
                         //c5usages.each { Counter5Report report -> }
                         for(Map reportItem : requestResponse.items) {
                             Map<String, String> identifierMap = exportService.buildIdentifierMap(reportItem, AbstractReport.COUNTER_5)
-                            boolean titleMatch = (params.reportType in Counter5Report.COUNTER_5_TITLE_REPORTS && matchReport(titles, propIdNamespace, identifierMap) != null) || params.reportType in Counter5Report.COUNTER_5_PLATFORM_REPORTS
+                            boolean titleMatch = (params.reportType in Counter5Report.COUNTER_5_TITLE_REPORTS && matchReport(titles, propIdNamespace, identifierMap) != null) || params.reportType in Counter5Report.COUNTER_5_PLATFORM_REPORTS || params.reportType in Counter5Report.COUNTER_5_DATABASE_REPORTS
                             if(titleMatch) {
-                                for(Map performance: reportItem.Performance) {
-                                    Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
-                                    //String year = yearFormat.format(reportFrom)
-                                    for(Map instance: performance.Instance) {
-                                        String metricType = instance.Metric_Type
-                                        metricTypes << metricType
-                                        Map<String, Object> metricDatePointSums = c5counts.containsKey(metricType) ? c5counts.get(metricType) : [total: 0]
-                                        //if((!dateRanges.startDate || reportFrom >= dateRanges.startDate) && (!dateRanges.endDate || reportFrom <= dateRanges.endDate)) {
+                                //counter 5.0
+                                if(reportItem.containsKey('Performance')) {
+                                    for(Map performance: reportItem.Performance) {
+                                        Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
+                                        //String year = yearFormat.format(reportFrom)
+                                        for(Map instance: performance.Instance) {
+                                            String metricType = instance.Metric_Type
+                                            metricTypes << metricType
+                                            Map<String, Object> metricDatePointSums = c5counts.containsKey(metricType) ? c5counts.get(metricType) : [total: 0]
+                                            //if((!dateRanges.startDate || reportFrom >= dateRanges.startDate) && (!dateRanges.endDate || reportFrom <= dateRanges.endDate)) {
                                             String datePoint
                                             if(params.reportType == Counter5Report.JOURNAL_REQUESTS_BY_YOP) {
                                                 datePoint = "YOP ${performance.YOP}"
@@ -409,15 +412,43 @@ class SubscriptionControllerService {
                                             monthCount += instance.Count
                                             metricDatePointSums.put(datePoint, monthCount)
                                             c5counts.put(instance.Metric_Type, metricDatePointSums)
-                                        //}
-                                        //int yearCount = metricYearSums.containsKey(year) ? metricYearSums.get(year) : 0
-                                        //totalCount = countSumsPerYear.containsKey(year) ? countSumsPerYear.get(year) : 0
-                                        //yearCount += instance.Count
-                                        //totalCount += instance.Count
-                                        //metricYearSums.put(year, yearCount)
-                                        //countSumsPerYear.put(year, totalCount)
-                                        //c5allYearCounts.put(metricType, metricYearSums)
-                                        //allYears << year
+                                            //}
+                                            //int yearCount = metricYearSums.containsKey(year) ? metricYearSums.get(year) : 0
+                                            //totalCount = countSumsPerYear.containsKey(year) ? countSumsPerYear.get(year) : 0
+                                            //yearCount += instance.Count
+                                            //totalCount += instance.Count
+                                            //metricYearSums.put(year, yearCount)
+                                            //countSumsPerYear.put(year, totalCount)
+                                            //c5allYearCounts.put(metricType, metricYearSums)
+                                            //allYears << year
+                                        }
+                                    }
+                                }
+                                //counter 5.1
+                                else if(reportItem.containsKey('Attribute_Performance')) {
+                                    for (Map struct : reportItem.Attribute_Performance) {
+                                        for (Map.Entry performance : struct.Performance) {
+                                            for (Map.Entry instance : performance) {
+                                                String metricType = instance.getKey()
+                                                metricTypes << metricType
+                                                for (Map.Entry reportRow : instance.getValue()) {
+                                                    Map<String, Object> metricDatePointSums = c5counts.containsKey(metricType) ? c5counts.get(metricType) : [total: 0]
+                                                    String datePoint
+                                                    if(params.reportType == Counter5Report.JOURNAL_REQUESTS_BY_YOP) {
+                                                        datePoint = "YOP ${performance.YOP}"
+                                                    }
+                                                    else {
+                                                        datePoint = reportRow.getKey()
+                                                    }
+                                                    datePoints << datePoint
+                                                    metricDatePointSums.total += reportRow.getValue()
+                                                    int monthCount = metricDatePointSums.get(datePoint) ?: 0
+                                                    monthCount += reportRow.getValue()
+                                                    metricDatePointSums.put(datePoint, monthCount)
+                                                    c5counts.put(metricType, metricDatePointSums)
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -606,11 +637,13 @@ class SubscriptionControllerService {
                 Map<String, BigDecimal> metricSums = costPerMetric.containsKey(metricType) ? costPerMetric.get(metricType) : [:]
                 reportYearMetrics.each { String date, Integer count ->
                     BigDecimal metricSum = 0.0
-                    if(date == 'total') {
-                        metricSum = (allYearsTotal / count).setScale(2, RoundingMode.HALF_UP)
-                    }
-                    else {
-                        metricSum = (costsAllYears.get(date.split('-')[0]).partial / count).setScale(2, RoundingMode.HALF_UP)
+                    if(count > 0) {
+                        if(date == 'total') {
+                            metricSum = (allYearsTotal / count).setScale(2, RoundingMode.HALF_UP)
+                        }
+                        else {
+                            metricSum = (costsAllYears.get(date.split('-')[0]).partial / count).setScale(2, RoundingMode.HALF_UP)
+                        }
                     }
                     metricSums.put(date, metricSum)
                 }
@@ -1409,14 +1442,14 @@ class SubscriptionControllerService {
                         List<CostItem> previousSubCostItems
                         Subscription previousSub = memberSub._getCalculatedPreviousForSurvey()
                         if (previousSub) {
-                            previousSubCostItems = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(previousSub, result.institution, result.selectedCostItemElement, RDStore.COST_ITEM_DELETED)
+                            previousSubCostItems = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(previousSub, result.institution, result.selectedCostItemElement, RDStore.COST_ITEM_DELETED)
                         }
 
                         Double percentage = 1 + params.double('percentOnOldPrice') / 100
                         CostItem lastYearEquivalent = previousSubCostItems.size() == 1 ? previousSubCostItems[0] : null
                         if (lastYearEquivalent) {
 
-                            List<CostItem> currentSubCostItems = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(memberSub, result.institution, result.selectedCostItemElement, RDStore.COST_ITEM_DELETED)
+                            List<CostItem> currentSubCostItems = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(memberSub, result.institution, result.selectedCostItemElement, RDStore.COST_ITEM_DELETED)
 
                             currentSubCostItems.each { CostItem ci ->
                                 if (ci.sub) {
@@ -1435,7 +1468,7 @@ class SubscriptionControllerService {
                     } else if (params.percentOnCurrentPrice) {
                         Double percentage = 1 + params.double('percentOnCurrentPrice') / 100
 
-                        List<CostItem> currentSubCostItems = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(memberSub, result.institution, result.selectedCostItemElement, RDStore.COST_ITEM_DELETED)
+                        List<CostItem> currentSubCostItems = CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(memberSub, result.institution, result.selectedCostItemElement, RDStore.COST_ITEM_DELETED)
 
                         currentSubCostItems.each { CostItem ci ->
                             if (ci.sub) {
@@ -1636,6 +1669,7 @@ class SubscriptionControllerService {
                                             administrative: currParent._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE,
                                             manualRenewalDate: currParent.manualRenewalDate,
                                             /* manualCancellationDate: result.subscription.manualCancellationDate, */
+                                            holdingSelection: currParent.holdingSelection ?: null,
                                             identifier: UUID.randomUUID().toString(),
                                             instanceOf: currParent,
                                             isSlaved: true,
@@ -1910,6 +1944,7 @@ class SubscriptionControllerService {
      * @param params the request parameter map
      * @return OK with the result map containing defaults in case of success, ERROR otherwise
      */
+    @Deprecated
     Map<String,Object> renewEntitlementsWithSurvey(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
 
@@ -2862,7 +2897,7 @@ class SubscriptionControllerService {
                             Sql sql = GlobalService.obtainSqlConnection()
                             childSubIds.each { Long childSubId ->
                                 pkgIds.each { Long pkgId ->
-                                    batchUpdateService.bulkAddHolding(sql, childSubId, pkgId, result.subscription.hasPerpetualAccess, result.subscription.id)
+                                    batchQueryService.bulkAddHolding(sql, childSubId, pkgId, result.subscription.hasPerpetualAccess, result.subscription.id)
                                 }
                             }
                             sql.close()
@@ -3591,49 +3626,6 @@ class SubscriptionControllerService {
     }
 
     @Deprecated
-    Map<String,Object> processRenewEntitlements(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
-        if(!result)
-            [result:null,status:STATUS_ERROR]
-        else {
-            List tippsToAdd = params."tippsToAdd".split(",")
-            List tippsToDelete = params."tippsToDelete".split(",")
-            tippsToAdd.each { tipp ->
-                try {
-                    if(subscriptionService.addEntitlement(result.subscription,tipp,null,false))
-                        log.debug("Added tipp ${tipp} to sub ${result.subscription.id}")
-                }
-                catch (EntitlementCreationException e) {
-                    result.error = e.getStackTrace()
-                    [result:result,status:STATUS_ERROR]
-                }
-            }
-            tippsToDelete.each { tipp ->
-                if(subscriptionService.deleteEntitlement(result.subscription,tipp))
-                    log.debug("Deleted tipp ${tipp} from sub ${result.subscription.id}")
-            }
-            if(params.process == "finalise") {
-                SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,Package.get(params.packageId))
-                sp.finishDate = new Date()
-                if(!sp.save()) {
-                    result.error = sp.errors
-                    [result:result,status:STATUS_ERROR]
-                }
-                else {
-                    Object[] args = [sp.pkg.name]
-                    result.message = messageSource.getMessage('subscription.details.renewEntitlements.submitSuccess',args, LocaleUtils.getCurrentLocale())
-                }
-            }
-            [result:result,status:STATUS_OK]
-        }
-    }
-
-    /**
-     * Takes the submitted input and adds the selected titles to the (preliminary) subscription holding from cache
-     * @param controller unused
-     * @param params the request parameter map
-     * @return OK if the selection (adding and/or removing of issue entitlements) was successful, ERROR otherwise
-     */
     Map<String,Object> processRenewEntitlementsWithSurvey(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result) {
@@ -4089,7 +4081,7 @@ class SubscriptionControllerService {
             }
             result.showConsortiaFunctions = subscriptionService.showConsortiaFunctions(result.contextOrg, result.subscription)
 
-            int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.subscription).size()
+            int tc1 = taskService.getTasksByResponsibilityAndObject(result.user, result.subscription).size()
             int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.subscription).size()
             result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 

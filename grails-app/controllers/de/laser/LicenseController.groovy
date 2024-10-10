@@ -8,8 +8,7 @@ import de.laser.utils.LocaleUtils
 import de.laser.storage.RDConstants
 import de.laser.properties.LicenseProperty
 import de.laser.properties.PropertyDefinition
- 
-import de.laser.utils.DateUtils
+
 import de.laser.annotations.DebugInfo
 import de.laser.helper.Profiler
 import de.laser.storage.RDStore
@@ -20,8 +19,6 @@ import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
-
-import java.text.SimpleDateFormat
 
 /**
  * This controller is responsible for the license related calls
@@ -81,7 +78,7 @@ class LicenseController {
         prf.setBenchmark('tasks')
 
             // tasks
-            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.license)
+            result.tasks = taskService.getTasksByResponsibilityAndObject(result.user, result.license)
 
 
         prf.setBenchmark('properties')
@@ -151,27 +148,37 @@ class LicenseController {
 
         List bm = prf.stopBenchmark()
         result.benchMark = bm
-        if(params.export) {
-            result.availablePropDefGroups = PropertyDefinitionGroup.getAvailableGroups(result.institution, License.class.name)
-            result.allPropDefGroups = result.license.getCalculatedPropDefGroups(result.institution)
-            result.prop_desc = PropertyDefinition.LIC_PROP
-            result.memberLicenses = License.findAllByInstanceOf(result.license)
-            result.linkedSubscriptions = Subscription.executeQuery('select sub from Links li join li.destinationSubscription sub join sub.orgRelations oo where li.sourceLicense = :lic and li.linkType = :linkType and sub.status = :current and oo.org = :context', [lic: result.license, linkType: RDStore.LINKTYPE_LICENSE, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])
-            result.entry = result.license
-            result.tasks = taskService.getTasksForExport((User) result.user, (Org) result.institution, (License) result.license)
-            result.documents = docstoreService.getDocumentsForExport((Org) result.institution, (License) result.license)
-            result.notes = docstoreService.getNotesForExport((Org) result.institution, (License) result.license)
+        switch(params.export) {
+            case 'onix':
+                String xmlString = licenseService.generateOnixPLDocument(result.license, result.institution)
+                if(xmlString) {
+                    response.setContentType("application/xml")
+                    response.setHeader("Content-disposition", "attachment;filename=\"${escapeService.escapeString(result.license.reference)}\"_ONIX-PL.xml")
+                    response.outputStream << xmlString.bytes
+                }
+                break
+            case 'pdf':
+                result.availablePropDefGroups = PropertyDefinitionGroup.getAvailableGroups(result.institution, License.class.name)
+                result.allPropDefGroups = result.license.getCalculatedPropDefGroups(result.institution)
+                result.prop_desc = PropertyDefinition.LIC_PROP
+                result.memberLicenses = License.findAllByInstanceOf(result.license)
+                result.linkedSubscriptions = Subscription.executeQuery('select sub from Links li join li.destinationSubscription sub join sub.orgRelations oo where li.sourceLicense = :lic and li.linkType = :linkType and sub.status = :current and oo.org = :context', [lic: result.license, linkType: RDStore.LINKTYPE_LICENSE, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])
+                result.entry = result.license
+                result.tasks = taskService.getTasksForExport((User) result.user, (License) result.license)
+                result.documents = docstoreService.getDocumentsForExport((Org) result.institution, (License) result.license)
+                result.notes = docstoreService.getNotesForExport((Org) result.institution, (License) result.license)
 
-            byte[] pdf = PdfUtils.getPdf(
-                    result,
-                    PdfUtils.PORTRAIT_FIXED_A4,
-                    customerTypeService.getCustomerTypeDependingView('/license/licensePdf')
-            )
-            response.setHeader('Content-disposition', 'attachment; filename="'+ escapeService.escapeString(result.license.dropdownNamingConvention()) +'.pdf"')
-            response.setContentType('application/pdf')
-            response.outputStream.withStream { it << pdf }
+                byte[] pdf = PdfUtils.getPdf(
+                        result,
+                        PdfUtils.PORTRAIT_FIXED_A4,
+                        customerTypeService.getCustomerTypeDependingView('/license/licensePdf')
+                )
+                response.setHeader('Content-disposition', 'attachment; filename="'+ escapeService.escapeString(result.license.dropdownNamingConvention()) +'.pdf"')
+                response.setContentType('application/pdf')
+                response.outputStream.withStream { it << pdf }
+                break
+            default: result
         }
-        else result
   }
 
     /**
@@ -571,21 +578,6 @@ class LicenseController {
     }
 
     /**
-     * Call to delete the given document
-     */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
-    })
-    def deleteDocuments() {
-        log.debug("deleteDocuments ${params}")
-
-        docstoreService.unifiedDeleteDocuments(params)
-
-        redirect controller: 'license', action:params.redirectAction, id:params.instanceId /*, fragment:'docstab' */
-    }
-
-    /**
      * Call to open the workflows linked to the given license
      * @see de.laser.workflow.WfChecklist
      */
@@ -784,15 +776,6 @@ class LicenseController {
 
 //        result
         render view: customerTypeService.getCustomerTypeDependingView('copyElementsIntoLicense'), model: result
-    }
-
-    @Secured(['ROLE_ADMIN'])
-    def onixTestSuite() {
-        Map<String, Object> result = [user: contextService.getUser(), institution: contextService.getOrg()]
-        //enrich later by input!
-        result.xmlString = licenseService.validateOnixPlDocument()
-        //exportService.generateOnixPlExport(result.license)
-        render view: 'onixTestSuite', model: result
     }
 
 }

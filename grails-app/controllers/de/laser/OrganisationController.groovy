@@ -117,8 +117,6 @@ class OrganisationController  {
         result.isComboRelated = isComboRelated
         result.contextOrg = result.institution //for the properties template
 
-        List<Long> orgInstanceTypeIds = result.orgInstance.getAllOrgTypeIds()
-
         Boolean hasAccess = (
                 (result.inContextOrg && userService.hasFormalAffiliation(result.user, result.orgInstance, 'INST_ADM')) ||
                 (isComboRelated && userService.hasFormalAffiliation(result.user, result.institution, 'INST_ADM')) ||
@@ -813,7 +811,7 @@ class OrganisationController  {
         Map result = [institution:contextService.getOrg(), organisationMatches:[], members:memberMap, comboType:RDStore.COMBO_TYPE_CONSORTIUM]
         //searching members for consortium, i.e. the context org is a consortium
         if (params.proposedOrganisation) {
-            result.organisationMatches.addAll(Org.executeQuery("select o from Org as o where exists (select roletype from o.orgType as roletype where roletype = :institution ) and (lower(o.name) like :searchName or lower(o.sortname) like :searchName) ",
+            result.organisationMatches.addAll(Org.executeQuery("select o from Org as o where o.orgType_new = :institution and (lower(o.name) like :searchName or lower(o.sortname) like :searchName) ",
                     [institution: RDStore.OT_INSTITUTION, searchName: "%${params.proposedOrganisation.toLowerCase()}%"]))
         }
         if (params.proposedOrganisationID) {
@@ -897,7 +895,7 @@ class OrganisationController  {
                 result.missing.leitID = message(code: 'org.eInvoice.info.missing.leitID')
         }
 
-        result.tasks = taskService.getTasksByResponsiblesAndObject(result.user,result.institution,result.orgInstance)
+        result.tasks = taskService.getTasksByResponsibilityAndObject(result.user, result.orgInstance)
 
         result.formalOrg = result.user.formalOrg as Org
 
@@ -1056,7 +1054,7 @@ class OrganisationController  {
             response.sendError(401); return
         }
         SwissKnife.setPaginationParams(result, params, result.user as User)
-        result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Org) result.institution, (Org) result.orgInstance)['cmbTaskInstanceList']
+        result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Org) result.orgInstance)['cmbTaskInstanceList']
 
         result
     }
@@ -1101,48 +1099,6 @@ class OrganisationController  {
             docstoreService.bulkDocOperation(params, result, flash)
         }
         result
-    }
-
-    /**
-     * Call to edit the given document. Beware: edited are the relations between the document and the object
-     * it has been attached to; content editing of an uploaded document is not possible in this app!
-     * @return the modal to edit the document parameters
-     */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
-    })
-    def editDocument() {
-        Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
-        if(!result) {
-            response.sendError(401)
-            return
-        }
-        result.ownobj = result.institution
-        result.owntp = 'organisation'
-        if(params.id) {
-            result.docctx = DocContext.get(params.id)
-            result.doc = result.docctx.owner
-        }
-
-        render template: "/templates/documents/modal", model: result
-    }
-
-    /**
-     * Call to delete a given document
-     * @return the document table view ({@link #documents()})
-     * @see DocstoreService#unifiedDeleteDocuments()
-     */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
-    })
-    def deleteDocuments() {
-        log.debug("deleteDocuments ${params}");
-
-        docstoreService.unifiedDeleteDocuments(params)
-
-        redirect controller: 'organisation', action:params.redirectAction, id:params.instanceId /*, fragment: 'docstab' */
     }
 
     /**
@@ -1671,7 +1627,7 @@ class OrganisationController  {
         result.editable = _checkIsEditable(result.user, orgInstance)
 
         if (result.editable) {
-            orgInstance.addToOrgType(RefdataValue.get(params.orgType))
+            orgInstance.orgType_new = RefdataValue.get(params.orgType) // TODO - refactoring
             orgInstance.save()
 //            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
         }
@@ -1943,6 +1899,26 @@ class OrganisationController  {
 
         result
     }
+
+    /**
+     * Shows the details of the organisation to display
+     * @return the details view of the given orgainsation
+     */
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_or_ROLEADMIN()
+    })
+    @Check404(domain=Org)
+    def mailInfos() {
+        Map<String, Object> result = organisationControllerService.mailInfos(this, params)
+        if (! result) {
+            response.sendError(401)
+            return
+        }
+
+        result
+    }
+
 
     /**
      * Helper method to determine the edit rights the given user has for the given organisation in the given view

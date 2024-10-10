@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.Task;de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Task;de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
 <laser:serviceInjection />
 
 <ui:modal id="modalReadTask" message="task.label" hideSubmitButton="true">
@@ -19,17 +19,17 @@
         </div>
 
         <div class="field">
-            <strong>Betrifft:</strong>
+            <label>Bezieht sich auf</label>
             <g:if test="${taskInstance.getObjects()}">
                 <g:each in="${taskInstance.getObjects()}" var="tskObj">
-                    <br />
-                    - ${message(code: 'task.' + tskObj.controller)}:
-                    <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>
+                    <div class="la-flexbox">
+                        <i class="${tskObj.icon} la-list-icon"></i>
+                        <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>
+                    </div>
                 </g:each>
             </g:if>
             <g:else>
-                <br />
-                - ${message(code: 'task.general')}
+                <div class="la-flexbox">${message(code: 'task.general')}</div>
             </g:else>
         </div>
 

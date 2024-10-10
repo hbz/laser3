@@ -61,7 +61,7 @@
                     <td>
                         ${message(code: 'copySurvey.copyDates.startDate')}:&nbsp;<g:if
                                 test="${!surveyInfo.startDate}">-</g:if><g:formatDate date="${surveyInfo.startDate}"
-                                                                                      format="${message(code: 'default.date.format.notime')}"/> &nbsp
+                                                                                      format="${message(code: 'default.date.format.notime')}"/> &nbsp;
                         ${message(code: 'copySurvey.copyDates.endDate')}:&nbsp;<g:if
                                 test="${!surveyInfo.endDate}">-</g:if><g:formatDate date="${surveyInfo.endDate}"
                                                                                     format="${message(code: 'default.date.format.notime')}"/>
@@ -291,7 +291,7 @@
                     <td>
                         <g:each in="${surveyConfig.documents.sort { it.owner.title }}" var="docctx">
                             <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
-                                <g:link controller="docstore" id="${docctx.owner.uuid}" target="_blank">
+                                <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}" target="_blank">
                                     <g:if test="${docctx.owner.title}">
                                         ${docctx.owner.title}
                                     </g:if>
@@ -304,7 +304,7 @@
                                         </g:else>
                                     </g:else>
 
-                                </g:link>(${docctx.getDocType().getI10n("value")}) <br />
+                                </g:link>(${docctx.getDocType()?.getI10n("value")}) <br />
                             </g:if>
                         </g:each>
                     </td>
@@ -314,7 +314,7 @@
                     <td>${message(code: 'copySurvey.copyAnnouncements')}</td>
                     <td>
                         <g:each in="${surveyConfig.documents.sort { it.owner.title }}" var="docctx">
-                            <g:if test="${docctx.isDocANote() && !(docctx.domain) && (docctx.status?.value != 'Deleted')}">
+                            <g:if test="${docctx.isDocANote() && (docctx.status?.value != 'Deleted')}">
                                 <g:if test="${docctx.owner.title}">
                                     <strong>${docctx.owner.title}</strong>
                                 </g:if>

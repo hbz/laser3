@@ -44,7 +44,7 @@
                             </span>
                         </g:if>
                         <div class="one wide column">
-                            <g:if test="${editable && params.tab == 'selectedIEs' && ieInNewSub && de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ieInNewSub, de.laser.IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub))}">
+                            <g:if test="${editable && params.tab == 'selectedIEs' && ieInNewSub && de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ieInNewSub, de.laser.IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription))}">
                                 <input type="checkbox" name="bulkflag"
                                        class="bulkcheck la-vertical-centered la-js-notOpenAccordion" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
                             </g:if>
@@ -61,7 +61,7 @@
                                 <laser:render
                                         template="/templates/titles/title_short_accordion"
                                         model="${[ie         : ie, tipp: ie.tipp,
-                                                  showPackage: true, showPlattform: true, showEmptyFields: false, sub: subscriberSub.id]}"/>
+                                                  showPackage: true, showPlattform: true, showEmptyFields: false, sub: subscription.id]}"/>
                                 <!-- END TEMPLATE -->
 
                             </div>
@@ -127,10 +127,10 @@
                                 <div class="${Btn.MODERN.SIMPLE}">
                                     <i class="${Icon.CMD.SHOW_MORE}"></i>
                                 </div>
-                                <g:if test="${(params.tab == 'selectedIEs') && editable && ieInNewSub && de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ieInNewSub, de.laser.IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub))}">
+                                <g:if test="${(params.tab == 'selectedIEs') && editable && ieInNewSub && de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ieInNewSub, de.laser.IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription))}">
                                     <g:link class="${Btn.MODERN.NEGATIVE_TOOLTIP}"
                                             action="processRemoveIssueEntitlementsSurvey"
-                                            params="${[id: subscriberSub.id, singleTitle: ieInNewSub.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
+                                            params="${[id: subscription.id, singleTitle: ieInNewSub.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
                                         <i class="la-basket-shopping slash icon"></i>
                                     </g:link>

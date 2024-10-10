@@ -5,6 +5,7 @@ import de.laser.auth.User
 import de.laser.ctrl.DocstoreControllerService
 import de.laser.config.ConfigDefaults
 import de.laser.interfaces.ShareSupport
+import de.laser.storage.RDStore
 import de.laser.utils.AppUtils
 import de.laser.utils.CodeUtils
 import de.laser.config.ConfigMapper
@@ -13,6 +14,7 @@ import de.laser.storage.RDConstants
 import de.laser.survey.SurveyConfig
 import de.laser.utils.LocaleUtils
 import grails.plugin.springsecurity.annotation.Secured
+import org.apache.http.HttpStatus
 import org.springframework.context.MessageSource
 import org.springframework.transaction.TransactionStatus
 
@@ -27,6 +29,13 @@ class DocstoreController  {
     ContextService contextService
     DocstoreControllerService docstoreControllerService
     MessageSource messageSource
+    AccessService accessService
+
+    @Secured(['ROLE_USER'])
+    def index() {
+        redirect(action: 'downloadDocument', params: params)
+//        response.sendError(HttpStatus.SC_FORBIDDEN)
+    }
 
     /**
      * Called by /documents/_table and /documents/_card
@@ -37,19 +46,22 @@ class DocstoreController  {
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
-    def index() {
-        Doc doc = Doc.findByUuid(params.id)
-
+    def downloadDocument() {
+        Doc doc = Doc.findByUuidAndContentType(params.id, Doc.CONTENT_TYPE_FILE)
         if (doc) {
-            String filename = doc.filename ?: messageSource.getMessage('template.documents.missing', null, LocaleUtils.getCurrentLocale())
+            boolean check = false
 
-            switch (doc.contentType) {
-                case Doc.CONTENT_TYPE_STRING:
-                    break
-                case Doc.CONTENT_TYPE_FILE:
-                    doc.render(response, filename)
-                    break
+            DocContext.findAllByOwner(doc).each{dctx -> check = check || accessService.hasAccessToDocument(dctx) }  // TODO
+            if (check) {
+                String filename = doc.filename ?: messageSource.getMessage('template.documents.missing', null, LocaleUtils.getCurrentLocale())
+                doc.render(response, filename)
             }
+            else {
+                response.sendError(HttpStatus.SC_FORBIDDEN)
+            }
+        }
+        else {
+            response.sendError(HttpStatus.SC_NOT_FOUND)
         }
     }
 
@@ -216,5 +228,30 @@ class DocstoreController  {
             flash.error = message(code:'template.documents.edit.error') as String
         }
         redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
+    })
+    def deleteDocument() {
+        log.debug("deleteDocument: ${params}")
+
+        if (params.deleteId) {
+            DocContext docctx = DocContext.get(params.deleteId)
+
+            if (accessService.hasAccessToDocument(docctx)) {
+                docctx.status = RDStore.DOC_CTX_STATUS_DELETED
+                docctx.save()
+                flash.message = message(code: 'default.deleted.general.message')
+            }
+            else {
+                flash.error = message(code: 'default.noPermissions')
+            }
+        }
+        if (params.redirectTab) {
+            redirect controller: params.redirectController, action: params.redirectAction, id: params.instanceId, params: [tab: params.redirectTab] // subscription.membersSubscriptionsManagement
+        } else {
+            redirect controller: params.redirectController, action: params.redirectAction, id: params.instanceId
+        }
     }
 }

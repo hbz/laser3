@@ -1645,10 +1645,6 @@ i.icon.la-list-icon:before {
   hyphens: auto;
 }
 
-.la-hide-context-orgMenu {
-  padding-top: 60px;
-}
-
 .la-show-context-orgMenu {
   padding-top: 105px;
 }
@@ -6586,6 +6582,22 @@ i.icon.la-list-icon:before {
  ----------------*/
 
 /*---------------
+     Neutral
+ ----------------*/
+
+.ui.buttons .button.la-modern-button,
+.ui.button.la-modern-button {
+  color: #004678;
+  background-color: transparent;
+}
+
+.ui.buttons .button.la-modern-button:hover,
+.ui.button.la-modern-button:hover {
+  background-color: #004678;
+  color: #FFFFFF;
+}
+
+/*---------------
     Negativ
 ----------------*/
 
@@ -6673,6 +6685,150 @@ i.icon.la-list-icon:before {
   color: #FFFFFF;
 }
 
+/*---------------
+    TEAL
+----------------*/
+
+.ui.teal.buttons .button.la-modern-button,
+.ui.teal.button.la-modern-button {
+  color: #00B5AD;
+  background-color: transparent;
+}
+
+.ui.teal.buttons .button.la-modern-button:hover,
+.ui.teal.button.la-modern-button:hover {
+  background-color: #00B5AD;
+  color: #FFFFFF;
+}
+
+/*---------------
+    OLIVE
+----------------*/
+
+.ui.olive.buttons .button.la-modern-button,
+.ui.olive.button.la-modern-button {
+  color: #B5CC18;
+  background-color: transparent;
+}
+
+.ui.olive.buttons .button.la-modern-button:hover,
+.ui.olive.button.la-modern-button:hover {
+  background-color: #B5CC18;
+  color: #FFFFFF;
+}
+
+/*---------------
+    GREEN
+----------------*/
+
+.ui.green.buttons .button.la-modern-button,
+.ui.green.button.la-modern-button {
+  color: #98B500;
+  background-color: transparent;
+}
+
+.ui.green.buttons .button.la-modern-button:hover,
+.ui.green.button.la-modern-button:hover {
+  background-color: #98B500;
+  color: #FFFFFF;
+}
+
+/*---------------
+    VIOLET
+----------------*/
+
+.ui.violet.buttons .button.la-modern-button,
+.ui.violet.button.la-modern-button {
+  color: #76007A;
+  background-color: transparent;
+}
+
+.ui.violet.buttons .button.la-modern-button:hover,
+.ui.violet.button.la-modern-button:hover {
+  background-color: #76007A;
+  color: #FFFFFF;
+}
+
+/*---------------
+    PURPLE
+----------------*/
+
+.ui.purple.buttons .button.la-modern-button,
+.ui.purple.button.la-modern-button {
+  color: #2185d0;
+  background-color: transparent;
+}
+
+.ui.purple.buttons .button.la-modern-button:hover,
+.ui.purple.button.la-modern-button:hover {
+  background-color: #2185d0;
+  color: #FFFFFF;
+}
+
+/*---------------
+    PINK
+----------------*/
+
+.ui.pink.buttons .button.la-modern-button,
+.ui.pink.button.la-modern-button {
+  color: #E03997;
+  background-color: transparent;
+}
+
+.ui.pink.buttons .button.la-modern-button:hover,
+.ui.pink.button.la-modern-button:hover {
+  background-color: #E03997;
+  color: #FFFFFF;
+}
+
+/*---------------
+    BROWN
+----------------*/
+
+.ui.brown.buttons .button.la-modern-button,
+.ui.brown.button.la-modern-button {
+  color: #6b1d1d;
+  background-color: transparent;
+}
+
+.ui.brown.buttons .button.la-modern-button:hover,
+.ui.brown.button.la-modern-button:hover {
+  background-color: #6b1d1d;
+  color: #FFFFFF;
+}
+
+/*---------------
+    GREY
+----------------*/
+
+.ui.grey.buttons .button.la-modern-button,
+.ui.grey.button.la-modern-button {
+  color: #767676;
+  background-color: transparent;
+}
+
+.ui.grey.buttons .button.la-modern-button:hover,
+.ui.grey.button.la-modern-button:hover {
+  background-color: #767676;
+  color: #FFFFFF;
+}
+
+/*---------------
+    BLACK
+----------------*/
+
+.ui.black.buttons .button.la-modern-button,
+.ui.black.button.la-modern-button {
+  color: #1B1C1D;
+  background-color: transparent;
+}
+
+.ui.black.buttons .button.la-modern-button:hover,
+.ui.black.button.la-modern-button:hover {
+  background-color: #1B1C1D;
+  color: #FFFFFF;
+}
+
 .ui.la-menue-button.button.la-modern-button {
   color: #00000099;
   background-color: transparent;
@@ -6727,6 +6883,44 @@ a i.circular.la-gokb:hover {
 .la-debugInfos {
   position: fixed;
   z-index: 103;
+}
+
+.ui.button.la-js-addListValue {
+  margin-bottom: 1em;
+}
+
+/* debug info */
+
+#showSystemInfo {
+  bottom: 45px;
+  right: 1.5vw;
+}
+
+#showDebugInfo {
+  bottom: 45px;
+  right: 1.5vw;
+  margin-right: 55px;
+}
+
+#system-profiler {
+  bottom: 10px;
+  right: 1.5vw;
+}
+
+@media only screen and (min-width: 1920px) {
+  #system-profiler,
+  #showSystemInfo,
+  #showDebugInfo {
+    right: 2vw;
+  }
+}
+
+@media only screen and (min-width: 2600px) {
+  #system-profiler,
+  #showSystemInfo,
+  #showDebugInfo {
+    right: 9vw;
+  }
 }
 /*!
  * # Fomantic-UI 2.9.3 - Container
@@ -28309,7 +28503,7 @@ body[class*="vendor"] .ui.icon.header .icon.la-object {
 
 body[class*="Vendor"] .ui.icon.header .icon.la-object:before,
 body[class*="vendor"] .ui.icon.header .icon.la-object:before {
-  content: "\f48b";
+  content: "\f468";
 }
 
 body[class*="Vendor"] .la-objectIsMine,
@@ -28320,7 +28514,7 @@ body[class*="vendor"] .la-objectIsMine {
 
 body[class*="Vendor"] .ui.icon.header .icon.la-object:before,
 body[class*="vendor"] .ui.icon.header .icon.la-object:before {
-  content: "\f48b";
+  content: "\f468";
 }
 
 body[class*="Provider"] .ui.icon.header .icon.la-object,
@@ -37730,6 +37924,14 @@ i.icon.la-sparkles {
   font-family: 'icomoon';
 }
 
+i.icon.la-survey {
+  font-family: 'icomoon';
+}
+
+i.icon.la-check-double {
+  font-family: 'icomoon';
+}
+
 i.icon.hand.pointer.outline.slash:before {
   content: "\e901";
 }
@@ -37897,6 +38099,14 @@ i.icon.la-sparkles:before {
   content: "\e920";
 }
 
+i.icon.la-survey:before {
+  content: "\e922";
+}
+
+i.icon.la-check-double.slash:before {
+  content: "\e923";
+}
+
 /*******************************
            Laser Icons
 *******************************/
@@ -37911,10 +38121,6 @@ i.icon.la-sparkles:before {
   font-variant: normal;
   text-decoration: inherit;
   text-transform: none;
-}
-
-.la-header-with-icon .la-clone {
-  vertical-align: super;
 }
 
 /* Light Grey */
@@ -42741,11 +42947,10 @@ a.ui.ui.ui.inverted.basic.black.label:hover {
   padding-right: 0.2em;
   padding-top: 0.9em;
   padding-bottom: 0.9em;
-  margin-bottom: 1.2em;
   background-color: #fffaf5;
   border: 1px solid #d3dae3;
   vertical-align: super;
-  margin: 0 1.142857em;
+  margin: 0 0 2em 1.142857em;
 }
 
 .ui.label.la-annual-rings .ui.tiny.label {
@@ -42982,13 +43187,26 @@ a.ui.ui.ui.inverted.basic.black.label:hover {
 .ui.label.la-server-label {
   position: fixed;
   bottom: 0;
-  left: 0;
+  right: 0;
   top: 0;
   margin: 0 !important;
   border-radius: 0 !important;
   z-index: 999;
   padding: 0.2em;
   font-size: 2.5rem;
+  width: 1.5vw;
+}
+
+@media only screen and (min-width: 1920px) {
+  .ui.label.la-server-label {
+    width: 2vw;
+  }
+}
+
+@media only screen and (min-width: 2600px) {
+  .ui.label.la-server-label {
+    width: 9vw;
+  }
 }
 
 /* Label for survey types */
@@ -63879,6 +64097,7 @@ a.inverted.ui.card:hover,
 }
 
 #container-tasks,
+#container-consortium,
 #container-documents,
 #container-notes,
 #container-provider,
@@ -66894,6 +67113,40 @@ a.inverted.ui.card:hover,
 
 .ui.accordion.la-namedetails:not(.styled) .title ~ .content {
   padding: 0;
+}
+
+.la-accordion-altName .title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  table-layout: unset;
+}
+
+.la-accordion-altName .ui.divided.middle.list.la-flex-center {
+  margin: 0;
+}
+
+.la-accordion-altName .ui.divided.middle.list.la-flex-center .ui.selection.list .list > .item,
+.la-accordion-altName .ui.divided.middle.list.la-flex-center .ui.selection.list > .item {
+  padding: 0;
+}
+
+.la-accordion-altName .ui.divided.middle.list.la-flex-center .item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  table-layout: unset;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.la-accordion-altName .ui.divided.middle.list.la-flex-center .item .content {
+  flex-grow: 1;
+}
+
+.la-accordion-altName .ui.divided.middle.list.la-flex-center .ui.button {
+  display: inline-block !important;
+  padding: 0.78571429em 0.78571429em 0.78571429em !important;
 }
 /*!
  * # Fomantic-UI 2.9.3 - Calendar

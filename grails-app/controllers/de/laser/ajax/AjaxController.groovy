@@ -33,6 +33,7 @@ import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import de.laser.wekb.ProviderRole
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import de.laser.wekb.VendorRole
 import grails.converters.JSON
@@ -40,6 +41,7 @@ import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.springframework.transaction.TransactionStatus
 import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.support.RequestContextUtils
 
@@ -56,13 +58,14 @@ import java.time.Year
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxController {
 
-    GenericOIDService genericOIDService
+    AccessService accessService
     ContextService contextService
-    EscapeService escapeService
-    FormService formService
     DashboardDueDatesService dashboardDueDatesService
-    IdentifierService identifierService
+    EscapeService escapeService
     FilterService filterService
+    FormService formService
+    GenericOIDService genericOIDService
+    IdentifierService identifierService
     PropertyService propertyService
     SubscriptionControllerService subscriptionControllerService
     SubscriptionService subscriptionService
@@ -71,8 +74,8 @@ class AjaxController {
     def refdata_config = [
     "ContentProvider" : [
       domain:'Org',
-      countQry:"select count(*) from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted')",
-      rowQry:"select o from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted') order by o.name asc",
+      countQry:"select count(*) from Org as o where (o.orgType_new != null and o.orgType_new.value = 'Provider') and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted')",
+      rowQry:"select o from Org as o where (o.orgType_new != null and o.orgType_new.value = 'Provider') and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted') order by o.name asc",
       qryParams:[
               [
                 param:'sSearch',
@@ -1452,59 +1455,64 @@ class AjaxController {
      * Removes the given custom property from the object
      */
     @Secured(['ROLE_USER'])
-    @Transactional
     def deleteCustomProperty() {
-        String className = params.propClass.split(" ")[1]
-        def propClass = Class.forName(className)
-        def owner     = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
-        def property  = propClass.get(params.id)
-        def prop_desc = property.getType().getDescr()
-        Org contextOrg = contextService.getOrg()
+        Subscription.withTransaction { TransactionStatus ts ->
+            String className = params.propClass.split(" ")[1]
+            def propClass = Class.forName(className)
+            def owner     = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
+            def property  = propClass.get(params.id)
+            def prop_desc = property.getType().getDescr()
+            Org contextOrg = contextService.getOrg()
 
-        AuditConfig.removeAllConfigs(property)
+            AuditConfig.removeAllConfigs(property)
 
-        owner.propertySet.remove(property)
+            owner.propertySet.remove(property)
 
-        try {
-            property.delete()
-        } catch (Exception e) {
-            log.error(" TODO: fix property.delete() when instanceOf ")
-        }
+            //try {
+            property.delete() //cf. ERMS-5889; execution of delete done only after template has been called - with wrong values!
+            ts.flush()
+            //} catch (Exception e) {
+            //log.error(" TODO: fix property.delete() when instanceOf ")
+            //}
 
 
-        if(property.hasErrors()) {
-            log.error(property.errors.toString())
-        }
-        else {
-            log.debug("Deleted custom property: " + property.type.name)
-        }
-        request.setAttribute("editable", params.editable == "true")
-        boolean showConsortiaFunctions = Boolean.parseBoolean(params.showConsortiaFunctions)
-        if(params.propDefGroup) {
-          render(template: "/templates/properties/group", model: [
-                  ownobj          : owner,
-                  newProp         : property,
-                  showConsortiaFunctions: showConsortiaFunctions,
-                  contextOrg      : contextOrg,
-                  propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
-                  propDefGroupBinding : genericOIDService.resolveOID(params.propDefGroupBinding),
-                  custom_props_div: "${params.custom_props_div}", // JS markup id
-                  prop_desc       : prop_desc // form data
-          ])
-        }
-        else {
-            Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextOrg)
-            Map<String, Object> modelMap =  [
-                    ownobj                : owner,
-                    newProp               : property,
-                    showConsortiaFunctions: showConsortiaFunctions,
-                    contextOrg            : contextOrg,
-                    custom_props_div      : "${params.custom_props_div}", // JS markup id
-                    prop_desc             : prop_desc, // form data
-                    orphanedProperties    : allPropDefGroups.orphanedProperties
-            ]
+            if(property.hasErrors()) {
+                log.error(property.errors.toString())
+            }
+            else {
+                log.debug("Deleted custom property: " + property.type.name)
+            }
+            request.setAttribute("editable", params.editable == "true")
+            boolean showConsortiaFunctions = Boolean.parseBoolean(params.showConsortiaFunctions)
+            if(params.propDefGroup) {
+                PropertyDefinitionGroup propDefGroup = genericOIDService.resolveOID(params.propDefGroup)
+                PropertyDefinitionGroupBinding propDefGroupBinding = genericOIDService.resolveOID(params.propDefGroupBinding)
+                Map<String, Object> modelMap = [
+                        ownobj          : owner,
+                        newProp         : property,
+                        showConsortiaFunctions: showConsortiaFunctions,
+                        contextOrg      : contextOrg,
+                        propDefGroup    : propDefGroup,
+                        propDefGroupBinding : propDefGroupBinding,
+                        custom_props_div: "${params.custom_props_div}", // JS markup id
+                        prop_desc       : prop_desc // form data
+                ]
+                render(template: "/templates/properties/group", model: modelMap)
+            }
+            else {
+                Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextOrg)
+                Map<String, Object> modelMap =  [
+                        ownobj                : owner,
+                        newProp               : property,
+                        showConsortiaFunctions: showConsortiaFunctions,
+                        contextOrg            : contextOrg,
+                        custom_props_div      : "${params.custom_props_div}", // JS markup id
+                        prop_desc             : prop_desc, // form data
+                        orphanedProperties    : allPropDefGroups.orphanedProperties
+                ]
 
-            render(template: "/templates/properties/custom", model: modelMap)
+                render(template: "/templates/properties/custom", model: modelMap)
+            }
         }
     }
 
@@ -1596,8 +1604,8 @@ class AjaxController {
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.dashboardDueDatesOffset = result.offset
 
-        result.dueDates = dashboardDueDatesService.getDashboardDueDates(contextService.getUser(), contextService.getOrg(), false, false, result.max, result.dashboardDueDatesOffset)
-        result.dueDatesCount = dashboardDueDatesService.getDashboardDueDates(contextService.getUser(), contextService.getOrg(), false, false).size()
+        result.dueDates = dashboardDueDatesService.getDashboardDueDates(contextService.getUser(), contextService.getOrg(), result.max, result.dashboardDueDatesOffset)
+        result.dueDatesCount = dashboardDueDatesService.countDashboardDueDates(contextService.getUser(), contextService.getOrg())
 
         render (template: "/user/tableDueDates", model: [dueDates: result.dueDates, dueDatesCount: result.dueDatesCount, max: result.max, offset: result.offset])
     }
@@ -1642,7 +1650,8 @@ class AjaxController {
         if (params.owner) {
             DueDateObject dueDateObject = (DueDateObject) genericOIDService.resolveOID(params.owner)
             if (dueDateObject){
-                Object obj = genericOIDService.resolveOID(dueDateObject.oid)
+//                Object obj = genericOIDService.resolveOID(dueDateObject.oid)
+                Object obj = dueDateObject.getObject() // TODO - ERMS-5862
                 if (obj instanceof Task && isDone){
                     Task dueTask = (Task)obj
                     dueTask.setStatus(RDStore.TASK_STATUS_DONE)
@@ -1665,8 +1674,8 @@ class AjaxController {
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.dashboardDueDatesOffset = result.offset
 
-        result.dueDates = dashboardDueDatesService.getDashboardDueDates(contextService.getUser(), contextService.getOrg(), false, false, result.max, result.dashboardDueDatesOffset)
-        result.dueDatesCount = dashboardDueDatesService.getDashboardDueDates(contextService.getUser(), contextService.getOrg(), false, false).size()
+        result.dueDates = dashboardDueDatesService.getDashboardDueDates(contextService.getUser(), contextService.getOrg(), result.max, result.dashboardDueDatesOffset)
+        result.dueDatesCount = dashboardDueDatesService.countDashboardDueDates(contextService.getUser(), contextService.getOrg())
 
         render (template: "/user/tableDueDates", model: [dueDates: result.dueDates, dueDatesCount: result.dueDatesCount, max: result.max, offset: result.offset])
     }
@@ -1680,12 +1689,17 @@ class AjaxController {
     @Transactional
     def delete() {
       switch(params.cmd) {
-        case 'deletePersonRole': deletePersonRole()
+        case 'deletePersonRole':
+            deletePersonRole()
         break
-        default: def obj = genericOIDService.resolveOID(params.oid)
-          if (obj) {
-            obj.delete()
-          }
+        case [ 'deleteAddress', 'deleteContact' ]:
+            def obj = genericOIDService.resolveOID(params.oid)
+            if (obj && (obj instanceof Address || obj instanceof Contact)) {
+                obj.delete() // TODO: check perms
+            }
+        break
+        default:
+            log.warn 'ajax.delete(): BLOCKED > ' + params.toMapString()
         break
       }
       redirect(url: request.getHeader('referer'))
@@ -2026,10 +2040,7 @@ class AjaxController {
         if (params.deleteId) {
             Task.withTransaction {
                 Task dTask = Task.get(params.deleteId)
-                boolean isCreator  = dTask.creator.id == contextService.getUser().id
-                boolean isRespUser = dTask.responsibleUser && dTask.responsibleUser.id == contextService.getUser().id
-                boolean isRespOrg  = dTask.responsibleOrg && dTask.responsibleOrg.id == contextService.getOrg().id
-                if (dTask && (isCreator || isRespUser || isRespOrg)) {
+                if (accessService.hasAccessToTask(dTask)) {
                     try {
                         flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title]) as String
                         dTask.delete()

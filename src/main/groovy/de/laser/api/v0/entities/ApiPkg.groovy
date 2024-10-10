@@ -102,7 +102,7 @@ class ApiPkg {
 		result.provider    		= ApiUnsecuredMapReader.getProviderStubMap(pkg.provider) // de.laser.wekb.Provider
 		result.vendors			= ApiCollectionReader.getVendorCollection(pkg.vendors?.vendor) //de.laser.wekb.Vendor
 		//result.subscriptions    = ApiStubReader.retrieveSubscriptionPackageStubCollection(pkg.subscriptions, ApiCollectionReader.IGNORE_PACKAGE, context) // de.laser.SubscriptionPackage
-		result.tipps            = ApiCollectionReader.getTippCollection(pkg.tipps, ApiReader.IGNORE_ALL, context) // de.laser.TitleInstancePackagePlatform
+		result.tipps            = ApiCollectionReader.getTippCollection(pkg.tipps, ApiReader.IGNORE_ALL, context) // de.laser.wekb.TitleInstancePackagePlatform
 
 		ApiToolkit.cleanUp(result, true, true)
 	}

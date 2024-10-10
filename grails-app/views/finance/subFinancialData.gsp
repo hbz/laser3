@@ -1,7 +1,6 @@
 <%@ page import="de.laser.ExportClickMeService; de.laser.storage.RDStore; de.laser.Subscription" %>
 <laser:htmlStart message="subscription.details.financials.label" />
 
-<laser:render template="/templates/flyouts/help/subscription_show"/>
 <laser:render template="/templates/flyouts/dateCreatedLastUpdated" model="[obj: subscription]"/>
         <laser:serviceInjection />
         <g:set var="own" value="${financialData.own}"/>

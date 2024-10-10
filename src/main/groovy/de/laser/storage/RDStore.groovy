@@ -2,15 +2,17 @@ package de.laser.storage
 
 import de.laser.RefdataValue
 import groovy.transform.CompileStatic
-import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 /**
  * Container class for frequently used controlled list values, so called {@link RefdataValue}s
  */
 @CompileStatic
-@Slf4j
 class RDStore {
+
+//    public final static RefdataValue $TEST                          = getRefdataValue('failure_test', 'failure_test')
 
     public final static RefdataValue GENERIC_NULL_VALUE             = getRefdataValue('generic.null.value','filter.fake.values')
 
@@ -43,6 +45,11 @@ class RDStore {
     public final static RefdataValue COMBO_STATUS_ACTIVE        = getRefdataValue('Active', RDConstants.COMBO_STATUS)
     public final static RefdataValue COMBO_STATUS_INACTIVE      = getRefdataValue('Inactive', RDConstants.COMBO_STATUS)
 
+    public final static RefdataValue CONCURRENT_ACCESS_OTHER         = getRefdataValue('Other', RDConstants.CONCURRENT_ACCESS)
+    public final static RefdataValue CONCURRENT_ACCESS_NO_LIMIT      = getRefdataValue('No limit', RDConstants.CONCURRENT_ACCESS)
+    public final static RefdataValue CONCURRENT_ACCESS_NOT_SPECIFIED = getRefdataValue('Not Specified', RDConstants.CONCURRENT_ACCESS)
+    public final static RefdataValue CONCURRENT_ACCESS_SPECIFIED     = getRefdataValue('Specified', RDConstants.CONCURRENT_ACCESS)
+
     public final static RefdataValue CONTACT_TYPE_JOBRELATED    = getRefdataValue('Job-related', RDConstants.CONTACT_TYPE)
     public final static RefdataValue CONTACT_TYPE_PERSONAL      = getRefdataValue('Personal', RDConstants.CONTACT_TYPE)
 
@@ -66,12 +73,20 @@ class RDStore {
     public final static RefdataValue DOC_CONF_INTERNAL          = getRefdataValue('internal', RDConstants.DOCUMENT_CONFIDENTIALITY)
     public final static RefdataValue DOC_CONF_STRICTLY          = getRefdataValue('strictly_confidential', RDConstants.DOCUMENT_CONFIDENTIALITY)
     public final static RefdataValue DOC_CTX_STATUS_DELETED     = getRefdataValue('Deleted', RDConstants.DOCUMENT_CONTEXT_STATUS)
+    public final static RefdataValue DOC_TYPE_ADDENDUM          = getRefdataValue('Addendum', RDConstants.DOCUMENT_TYPE)
     public final static RefdataValue DOC_TYPE_ANNOUNCEMENT      = getRefdataValue('Announcement', RDConstants.DOCUMENT_TYPE)
     public final static RefdataValue DOC_TYPE_NOTE              = getRefdataValue('Note', RDConstants.DOCUMENT_TYPE)
     public final static RefdataValue DOC_TYPE_RENEWAL           = getRefdataValue('Renewal', RDConstants.DOCUMENT_TYPE)
-    public final static RefdataValue DOC_TYPE_OFFER           = getRefdataValue('Offer', RDConstants.DOCUMENT_TYPE)
+    public final static RefdataValue DOC_TYPE_LICENSE           = getRefdataValue('License', RDConstants.DOCUMENT_TYPE)
+    public final static RefdataValue DOC_TYPE_OFFER             = getRefdataValue('Offer', RDConstants.DOCUMENT_TYPE)
     public final static RefdataValue DOC_TYPE_ONIXPL            = getRefdataValue('ONIX-PL License', RDConstants.DOCUMENT_TYPE)
     public final static RefdataValue DOC_TYPE_TITLELIST         = getRefdataValue('Title List', RDConstants.DOCUMENT_TYPE)
+
+    public final static RefdataValue EXISTENT                   = getRefdataValue('Existent', RDConstants.EXISTENCE)
+    public final static RefdataValue NON_EXISTENT               = getRefdataValue('Nonexistend', RDConstants.EXISTENCE)
+
+    public final static RefdataValue INVOICE_PROCESSING_PROVIDER   = getRefdataValue('Provider', RDConstants.INVOICE_PROCESSING)
+    public final static RefdataValue INVOICE_PROCESSING_VENDOR   = getRefdataValue('Vendor', RDConstants.INVOICE_PROCESSING)
 
     public final static RefdataValue IE_ACCESS_CURRENT                      = getRefdataValue('Current', RDConstants.IE_ACCESS_STATUS)
 
@@ -319,6 +334,8 @@ class RDStore {
     public final static RefdataValue YNO_YES        = getRefdataValue('Yes', RDConstants.Y_N_O)
     public final static RefdataValue YNO_NO         = getRefdataValue('No', RDConstants.Y_N_O)
     public final static RefdataValue YNO_OTHER      = getRefdataValue('Other', RDConstants.Y_N_O)
+    public final static RefdataValue YNU_YES        = getRefdataValue('Yes', RDConstants.Y_N_U)
+    public final static RefdataValue YNU_NO         = getRefdataValue('No', RDConstants.Y_N_U)
     public final static RefdataValue YNU_UNKNOWN    = getRefdataValue('Unknown', RDConstants.Y_N_U)
 
     // --
@@ -333,6 +350,7 @@ class RDStore {
         RefdataValue result = RefdataValue.getByValueAndCategory(value, category)
 
         if (! result) {
+            Logger log = LoggerFactory.getLogger(RDStore.name)
             log.warn "No RefdataValue found for value:'${value}', category:'${category}'"
         }
         (RefdataValue) GrailsHibernateUtil.unwrapIfProxy( result)

@@ -1,6 +1,6 @@
 import java.text.SimpleDateFormat
 
-version '3.4.6'
+version '3.4.11'
 group 'de.laser'
 
 // ---[ build script ]---
@@ -55,6 +55,19 @@ configurations {
         extendsFrom developmentOnly
     }
 }
+configurations {
+    configureEach {
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+            // override dependency from org.grails.plugins:cache
+            if (details.requested.name in ['asset-pipeline-core']) {
+                details.useVersion '4.4.0' // upgrade from 3.x : [freeze] 4.5.* fails
+            }
+            if (details.requested.name in ['asset-pipeline-grails']) {
+                details.useVersion '4.5.1' // upgrade from 3.x
+            }
+        }
+    }
+}
 
 dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -88,18 +101,19 @@ dependencies {
 
     // --------------------------------------------------
 
-    implementation 'org.elasticsearch:elasticsearch:7.17.23'                                // 2024
-    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.23'  // 2024
+    implementation 'org.elasticsearch:elasticsearch:7.17.24'                                // 2024
+    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.24'  // 2024
 
     implementation 'org.grails:grails-shell:6.1.2'                          // 2024 : + org.grails.plugins:database-migration
 
-    implementation 'org.grails.plugins:spring-security-core:6.1.1'          // 2024
     implementation 'org.grails.plugins:audit-logging:4.0.3'                 // 2021
     implementation 'org.grails.plugins:database-migration:4.2.1', {         // 2023
         exclude module: 'spring-boot-cli'
     }
+    implementation 'org.grails.plugins:grails-executor:0.4'                 // 2016 : [deprecated]
     implementation 'org.grails.plugins:mail:3.0.0'                          // 2021
     implementation 'org.grails.plugins:quartz:3.0.0'                        // 2024
+    implementation 'org.grails.plugins:spring-security-core:6.1.1'          // 2024
     implementation 'org.grails.plugins:wkhtmltopdf:1.0.0.RC9'               // 2018
 
     implementation 'org.hibernate:hibernate-core:5.6.15.Final'              // 2023
@@ -108,10 +122,13 @@ dependencies {
 //    implementation 'org.hibernate:hibernate-jcache:5.6.15.Final'            //        replacement for hibernate-ehcache:5.6.14.Final
 //    implementation 'org.ehcache:ehcache:3.10.8'                             //        replacement for net.sf.ehcache:ehcache:2.10.9.2
 
-    implementation 'commons-io:commons-io:2.14.0'                           // 2023
+    implementation 'commons-io:commons-io:2.17.0'                           // 2024
     implementation 'com.github.albfernandez:juniversalchardet:2.5.0'        // 2024
+    implementation 'com.vladsch.flexmark:flexmark:0.64.8'                           // 2023
+    implementation 'com.vladsch.flexmark:flexmark-ext-gfm-strikethrough:0.64.8'     // 2023
+    implementation 'com.vladsch.flexmark:flexmark-ext-tables:0.64.8'                // 2023
     implementation 'io.github.gpc:asynchronous-mail:3.1.2'                  // 2023
-    implementation 'org.apache.commons:commons-lang3:3.16.0'                // 2024
+    implementation 'org.apache.commons:commons-lang3:3.17.0'                // 2024
     implementation 'org.apache.poi:poi-ooxml:3.17'                          // 2017 : [freeze] : 5.x available
     implementation 'org.codehaus.gpars:gpars:1.2.1'                         // 2014
     implementation 'org.codehaus.janino:janino:3.1.12'                      // 2024 : logback
@@ -120,13 +137,13 @@ dependencies {
 
     // --------------------------------------------------
 
-    runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-gradle:4.4.0'       // 2024 : [freeze - not 4.5.*] -- JS Closure uglify JS Exception
-    runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-core:4.4.0'         // 2024 : [freeze - not 4.5.*] -- java.lang.ClassNotFoundException: org.graalvm.polyglot.Context
-    runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-grails:4.5.1'       // 2024 -- No such property: asset for class: de.laser.system.AssetsTagLib
+//    runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-gradle:4.4.0'       // 2024 : [freeze - not 4.5.*] -- JS Closure uglify JS Exception
+//    runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-core:4.4.0'         // 2024 : [freeze - not 4.5.*] -- java.lang.ClassNotFoundException: org.graalvm.polyglot.Context
+//    runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-grails:4.5.1'       // 2024 -- No such property: asset for class: de.laser.system.AssetsTagLib
 
     runtimeOnly 'org.apache.tomcat:tomcat-jdbc'
     runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1'                             // 2018 : [?]
-    runtimeOnly 'org.postgresql:postgresql:42.7.3'                          // 2024
+    runtimeOnly 'org.postgresql:postgresql:42.7.4'                          // 2024
 }
 
 java {

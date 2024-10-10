@@ -7,26 +7,28 @@ import de.laser.finance.PriceItem
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.wekb.TIPPCoverage
+import de.laser.wekb.TitleInstancePackagePlatform
 import groovy.util.logging.Slf4j
 
 import javax.persistence.Transient
 
 /**
- * A title record within a local holding. Technically a {@link TitleInstancePackagePlatform} record entry with a {@link Subscription} foreign key. But there are a few more things to note:
+ * A title record within a local holding. Technically a {@link de.laser.wekb.TitleInstancePackagePlatform} record entry with a {@link Subscription} foreign key. But there are a few more things to note:
  * The individually negotiated subscription holding may differ from what a provider offers usually. Those differences must be reflected in the issue entitlement record; that is why there are some
  * fields in both classes. In detail:
  * <ul>
  *     <li>access start/end may be different</li>
  *     <li>the subscribing institution may have a perpetual access negotiated to the title; this is of course no global property</li>
- *     <li>there may be locally negotiated prices in addition to the global list price (the {@link de.laser.finance.PriceItem}s linked to the owning {@link TitleInstancePackagePlatform}; that is why issue entitlements and TIPPs have an individual set of price items)</li>
- *     <li>there may be coverage entries differing from global level ({@link IssueEntitlementCoverage} vs {@link TIPPCoverage})</li>
+ *     <li>there may be locally negotiated prices in addition to the global list price (the {@link de.laser.finance.PriceItem}s linked to the owning {@link de.laser.wekb.TitleInstancePackagePlatform}; that is why issue entitlements and TIPPs have an individual set of price items)</li>
+ *     <li>there may be coverage entries differing from global level ({@link IssueEntitlementCoverage} vs {@link de.laser.wekb.TIPPCoverage})</li>
  * </ul>
  * Moreover, issue entitlements may be grouped for that the subscribing institution may organise them by certain criteria e.g. subscription phase, title group etc.
  * @see IssueEntitlementCoverage
  * @see IssueEntitlementGroup
  * @see IssueEntitlementGroupItem
  * @see de.laser.finance.PriceItem
- * @see TitleInstancePackagePlatform
+ * @see de.laser.wekb.TitleInstancePackagePlatform
  * @see Subscription
  */
 @Slf4j
@@ -93,7 +95,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
         globalUID      (nullable: true, blank: false, unique:true, maxSize:255)
 
         notes          (nullable:true)
-        status         (nullable:true)
         accessStartDate(nullable:true)
         accessEndDate  (nullable:true)
 

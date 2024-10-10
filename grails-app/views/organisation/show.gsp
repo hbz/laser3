@@ -1,4 +1,4 @@
-<%@ page import="de.laser.wekb.Package; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.wekb.TitleInstancePackagePlatform; de.laser.wekb.Package; de.laser.ui.Btn; de.laser.ui.Icon; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
 
     <g:if test="${institutionalView}">
         <g:set var="entityName" value="${message(code: 'org.institution.label')}"/>
@@ -62,6 +62,14 @@
         <div class="la-inline-lists">
             <div class="ui card" id="js-confirmationCard">
                 <div class="content">
+
+                    <g:if test="${!inContextOrg && contextOrg.isCustomerType_Consortium()}">
+                        <a href="#" class="ui icon la-float-right mailInfos-flyout-trigger" data-orgId="${orgInstance.id}">
+                            <i class="icon circular info inverted"></i>
+                        </a>
+                    </g:if>
+
+
                     <dl>
                         <dt><g:message code="default.name.label" /></dt>
                         <dd>
@@ -79,52 +87,51 @@
                     </g:if>
                     <dl>
                         <dt><g:message code="altname.plural" /></dt>
-                        <dd>
-                            <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion la-accordion-showMore">
-                                <g:if test="${orgInstance.altnames}">
-                                    <div class="item title" id="altname_title">
-                                        <div class="item" data-objId="${genericOIDService.getOID(orgInstance.altnames[0])}">
+                        <dd id="altnames" class="ui accordion la-accordion-showMore la-accordion-altName" style="padding-bottom: 0">
+                            <g:if test="${orgInstance.altnames}">
+                                <div class="ui divided middle aligned selection list la-flex-center">
+                                    <div class="item title" id="altname_title"  data-objId="${genericOIDService.getOID(orgInstance.altnames[0])}">
+                                        <div class="content la-space-right">
                                             <ui:xEditable owner="${orgInstance.altnames[0]}" field="name" overwriteEditable="${editable}"/>
-                                            <g:if test="${editable}">
-                                                <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: orgInstance.altnames[0].id]"
-                                                               data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [orgInstance.altnames[0].name])}"
-                                                               data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(orgInstance.altnames[0])}')">
-                                                    <i class="${Icon.CMD.DELETE}"></i>
-                                                </ui:remoteLink>
-                                            </g:if>
                                         </div>
+                                        <g:if test="${editable}">
+                                            <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: orgInstance.altnames[0].id]"
+                                                           data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [orgInstance.altnames[0].name])}"
+                                                           data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(orgInstance.altnames[0])}')">
+                                                <i class="${Icon.CMD.DELETE}"></i>
+                                            </ui:remoteLink>
+                                        </g:if>
                                         <div class="${Btn.MODERN.SIMPLE_TOOLTIP} la-show-button"
                                              data-content="${message(code: 'altname.showAll')}">
                                             <i class="${Icon.CMD.SHOW_MORE}"></i>
                                         </div>
                                     </div>
-                                    <div class="content">
+                                    <div class="content" style="padding:0">
                                         <g:each in="${orgInstance.altnames.drop(1)}" var="altname">
                                             <div class="ui item" data-objId="${genericOIDService.getOID(altname)}">
                                                 <div class="content la-space-right">
                                                     <ui:xEditable owner="${altname}" field="name" overwriteEditable="${editable}"/>
                                                 </div>
                                                 <g:if test="${editable}">
-                                                    <div class="content la-space-right">
-                                                        <div class="ui buttons">
-                                                            <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
-                                                                           data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
-                                                                           data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                                <i class="${Icon.CMD.DELETE}"></i>
-                                                            </ui:remoteLink>
-                                                        </div>
-                                                    </div>
+                                                    <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
+                                                                   data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
+                                                                   data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
+                                                        <i class="${Icon.CMD.DELETE}"></i>
+                                                    </ui:remoteLink>
                                                 </g:if>
+                                                <div class="${Btn.ICON.SIMPLE} la-hidden">
+                                                    <icon:placeholder/><%-- Hidden Fake Button --%>
+                                                </div>
                                             </div>
                                         </g:each>
                                     </div>
-                                </g:if>
-                            </div>
-                            <g:if test="${editable}">
-                                <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} addListValue" data-objtype="altname" value="${message(code: 'altname.add')}">
+                                </div>
                             </g:if>
                         </dd>
                     </dl>
+                    <g:if test="${editable}">
+                        <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} la-js-addListValue" data-objtype="altname" value="${message(code: 'altname.add')}">
+                    </g:if>
                     <dl>
                         <dt><g:message code="default.url.label"/></dt>
                         <dd>
@@ -320,7 +327,7 @@
                             <dt><g:message code="org.orgType.label" /></dt>
                             <dd>
                                 <laser:render template="orgTypeAsList"
-                                          model="${[org: orgInstance, orgTypes: orgInstance.orgType, availableOrgTypes: RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE), editable: isGrantedOrgRoleAdminOrOrgEditor]}"/>
+                                          model="${[org: orgInstance, orgType: orgInstance.orgType_new, availableOrgTypes: RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE), editable: isGrantedOrgRoleAdminOrOrgEditor]}"/>
                             </dd>
                         </dl>
 
@@ -934,6 +941,8 @@
     </aside>
 </div>
 
+<laser:render template="/templates/flyouts/mailInfos"/>
+
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.createContact').click(function() {
         JSPC.app.personCreate($(this).attr('id'), ${orgInstance.id});
@@ -969,7 +978,7 @@
             JSPC.app.showRegionsdropdown( $("#country").editable('getValue', true) );
         }
     </g:if>
-    $('.addListValue').click(function() {
+    $('.la-js-addListValue').click(function() {
         let url;
         let returnSelector;
         switch($(this).attr('data-objtype')) {
