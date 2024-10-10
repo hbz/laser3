@@ -19,6 +19,7 @@ buildscript {
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.51.0'                      // 2024
 
         // -- dependency resolving issue
+        classpath 'org.grails:grails-shell:6.1.2'                                           // 2024 : + org.grails.plugins:database-migration
         classpath 'org.quartz-scheduler:quartz:2.3.2'                                       // 2019
     }
 }
@@ -52,19 +53,7 @@ configurations {
     developmentOnly
     runtimeClasspath {
         extendsFrom developmentOnly
-    }
-}
-configurations {
-    configureEach {
-        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-            // override dependency from org.grails.plugins:cache
-            if (details.requested.name in ['asset-pipeline-core']) {
-                details.useVersion '4.4.0' // upgrade from 3.x : [freeze] 4.5.* fails
-            }
-            if (details.requested.name in ['asset-pipeline-grails']) {
-                details.useVersion '4.5.1' // upgrade from 3.x
-            }
-        }
+        exclude group: 'org.grails', module: 'grails-shell' // - org.grails.plugins:database-migration (exclude)
     }
 }
 
@@ -81,20 +70,20 @@ dependencies {
 //    implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
     implementation 'org.grails:grails-core'
-    implementation 'org.grails:grails-web-boot'
     implementation 'org.grails:grails-logging'
-    implementation 'org.grails:grails-plugin-rest'
     implementation 'org.grails:grails-plugin-databinding'
     implementation 'org.grails:grails-plugin-i18n'
+    implementation 'org.grails:grails-plugin-interceptors'
+    implementation 'org.grails:grails-plugin-rest'
     implementation 'org.grails:grails-plugin-services'
     implementation 'org.grails:grails-plugin-url-mappings'
-    implementation 'org.grails:grails-plugin-interceptors'
-    implementation 'org.grails.plugins:cache'
+    implementation 'org.grails:grails-web-boot'
     implementation 'org.grails.plugins:async'
-    implementation 'org.grails.plugins:scaffolding'
+    implementation 'org.grails.plugins:cache'
     implementation 'org.grails.plugins:events'
-    implementation 'org.grails.plugins:hibernate5:' + gormVersion
     implementation 'org.grails.plugins:gsp'
+    implementation 'org.grails.plugins:hibernate5:' + gormVersion
+    implementation 'org.grails.plugins:scaffolding'
 
     implementation 'io.micronaut:micronaut-http-client'
 
@@ -102,6 +91,8 @@ dependencies {
 
     implementation 'org.elasticsearch:elasticsearch:7.17.24'                                // 2024
     implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.24'  // 2024
+
+    implementation 'org.grails:grails-shell:6.1.2'                          // 2024 : + org.grails.plugins:database-migration
 
     implementation 'org.grails.plugins:audit-logging:4.0.3'                 // 2021
     implementation 'org.grails.plugins:database-migration:4.2.1', {         // 2023
@@ -133,6 +124,10 @@ dependencies {
     implementation 'org.quartz-scheduler:quartz:2.3.2'                      // 2019
 
     // --------------------------------------------------
+
+    runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-gradle:4.4.0'       // 2024 : [freeze - not 4.5.*] -- JS Closure uglify JS Exception
+    runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-core:4.4.0'         // 2024 : [freeze - not 4.5.*] -- java.lang.ClassNotFoundException: org.graalvm.polyglot.Context
+    runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-grails:4.5.1'       // 2024 -- No such property: asset for class: de.laser.system.AssetsTagLib
 
     runtimeOnly 'org.apache.tomcat:tomcat-jdbc'
     runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1'                             // 2018 : [?]

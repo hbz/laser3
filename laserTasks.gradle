@@ -4,7 +4,6 @@ tasks.register('dbm.createGormDiff', Exec) {
     String date = java.time.LocalDate.now().format('yyyy-MM-dd')
 //    args '-c', './grailsw prod dbm-gorm-diff changelogs/' + date + '.groovy --add'
     args '-c', './gradlew dbmGormDiff -Pargs="changelogs/' + date + '.groovy --add" -Dgrails.env=prod'
-
 }
 
 tasks.register('dbm.createGormDiff-storage', Exec) {
@@ -13,6 +12,12 @@ tasks.register('dbm.createGormDiff-storage', Exec) {
     String date = java.time.LocalDate.now().format('yyyy-MM-dd')
 //    args '-c', './grailsw prod dbm-gorm-diff changelogs/' + date + '-storage.groovy --dataSource=storage --add'
     args '-c', './gradlew dbmGormDiff -Pargs="changelogs/' + date + '-storage.groovy --add --dataSource=storage" -Dgrails.env=prod'
+}
+
+tasks.register('git.recent', Exec) {
+    group = 'laser'
+    executable 'sh'
+    args '-c', 'git for-each-ref --sort=-committerdate refs/heads --format=\'%(authordate:short) %(objectname:short) %(refname:short) (%(committerdate:relative)) %(authorname) | %(contents:subject)\''
 }
 
 tasks.register('gradle.helpWarningMode', Exec) {

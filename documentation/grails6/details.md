@@ -1,17 +1,15 @@
 
-## Details: Upgrade from [Grails 6.1.2](./grails6/details.md) to Grails 6.2.1
-
-### Database Migration Plugin
-
-Dependency *org.grails:grails-shell:6.1.2* added -> TODO: remove workaround
-
-### Asset Pipeline Plugin
-
-Splitted dependencies: gradle:4.4.0, core:4.4.0, grails:4.5.1 -> TODO: upgrade & remove workaround
+## Details: Upgrade from [Grails 5.3.3](./grails5/details.md) to Grails 6.1.2
 
 ### ExecutorGrailsPlugin
 
-*org.grails.plugins:grails-executor* is deprecated as Grails already has similar functionality build in -> TODO: replacement
+*org.grails.plugins:grails-executor* is deprecated as Grails already has similar functionality build in. Replacement should take place.
+
+### ~~Fallbacks~~
+
+~~The following fallbacks have been set for faster migration. They can be treated later.~~
+
+* ~~hibernate.allow_update_outside_transaction: true~~
 
 ### HTTP Status Codes
 
