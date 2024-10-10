@@ -21,7 +21,7 @@
 
             <div class="content">
                 <ul>
-                    <li>${doc.id} : <strong>${doc.filename}</strong> -> <g:link controller="docstore" action="downloadDocument" id="${doc.uuid}">${doc.uuid}</g:link>
+                    <li>${doc.id} : <strong>${doc.filename}</strong> -> <g:link controller="document" action="downloadDocument" id="${doc.uuid}">${doc.uuid}</g:link>
                     <g:if test="${doc.owner}">
                         (Owner: <g:link action="show" controller="org" id="${doc.owner.id}">${doc.owner.name}</g:link>)
                     </g:if>
@@ -86,7 +86,7 @@
                 <g:each in="${docsToRecovery}" var="docRecovery">
                     <g:if test="${doc.id != docRecovery.id}">
                         <ul>
-                            <li>${docRecovery.id} : <strong>${docRecovery.filename}</strong> -> <g:link controller="docstore" action="downloadDocument" id="${docRecovery.uuid}">${docRecovery.uuid}</g:link>
+                            <li>${docRecovery.id} : <strong>${docRecovery.filename}</strong> -> <g:link controller="document" action="downloadDocument" id="${docRecovery.uuid}">${docRecovery.uuid}</g:link>
                             <g:if test="${docRecovery.owner}">
                                 (Owner: <g:link action="show" controller="org" id="${docRecovery.owner.id}">${docRecovery.owner.name}</g:link>)
                             </g:if>

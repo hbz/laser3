@@ -371,7 +371,7 @@ class SubscriptionController {
                 if(ctrlResult.containsKey('result')) {
                     SXSSFWorkbook wb = ctrlResult.result
                     /*
-                    see DocstoreController and https://stackoverflow.com/questions/24827571/how-to-convert-xssfworkbook-to-file
+                    see DocumentController and https://stackoverflow.com/questions/24827571/how-to-convert-xssfworkbook-to-file
                      */
                     FileOutputStream fos = new FileOutputStream(dir+'/'+token)
                     //--> to document

@@ -167,7 +167,7 @@
                                         </div>
 
                                         <div class="right aligned five wide column la-column-left-lessPadding la-border-left">
-                                            <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}"
+                                            <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}"
                                                     class="${Btn.MODERN.SIMPLE} tiny"
                                                     target="_blank">
                                                 <i class="${Icon.CMD.DOWNLOAD} small"></i>
@@ -288,7 +288,7 @@
                                         </div>
 
                                         <div class="right aligned five wide column la-column-left-lessPadding la-border-left">
-                                            <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}"
+                                            <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}"
                                                     class="${Btn.MODERN.SIMPLE} tiny"
                                                     target="_blank">
                                                 <i class="${Icon.CMD.DOWNLOAD} small"></i>

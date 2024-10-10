@@ -506,14 +506,14 @@
 
                                                 <g:if test="${!(editable)}">
                                                 <%-- 1 --%>
-                                                    <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}"
+                                                    <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}"
                                                             class="${Btn.MODERN.SIMPLE} tiny"
                                                             target="_blank"><i class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                                     <%-- 1 --%>
-                                                        <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}"
+                                                        <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}"
                                                                 class="${Btn.MODERN.SIMPLE} tiny"
                                                                 target="_blank"><i class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
 
@@ -1110,14 +1110,14 @@
 
                                                 <g:if test="${!(editable)}">
                                                 <%-- 1 --%>
-                                                    <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}"
+                                                    <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}"
                                                             class="${Btn.MODERN.SIMPLE} tiny"
                                                             target="_blank"><i class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                                     <%-- 1 --%>
-                                                        <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}"
+                                                        <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}"
                                                                 class="${Btn.MODERN.SIMPLE} tiny"
                                                                 target="_blank"><i
                                                                 class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
