@@ -2,7 +2,7 @@
 <laser:serviceInjection />
 <ui:modal id="modalCreateTask" message="task.create.new">
 
-    <g:form class="ui form" id="create_task" url="[controller: 'task', action: 'create']" method="post">
+    <g:form class="ui form" id="create_task" url="[controller: 'task', action: 'createTask']" method="post">
         <g:if test="${controllerName != 'myInstitution' && controllerName != 'ajaxHtml'}">
             <g:hiddenField name="${owntp}" value="${(owntp in ['surveyConfig']) ? ownobj?.id : params.id}"/>
             <g:hiddenField name="linkto" value="${owntp}"/>

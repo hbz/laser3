@@ -1,7 +1,6 @@
 package de.laser.ajax
 
 
-import de.laser.annotations.DebugInfo
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserRole
@@ -2027,46 +2026,6 @@ class AjaxController {
     // log.debug("Result of render: ${value} : ${result}");
     result
   }
-
-    /**
-     * Deletes the given task
-     */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
-    })
-    def deleteTask() {
-
-        if (params.deleteId) {
-            Task.withTransaction {
-                Task dTask = Task.get(params.deleteId)
-                if (accessService.hasAccessToTask(dTask)) {
-                    try {
-                        flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title]) as String
-                        dTask.delete()
-                    }
-                    catch (Exception e) {
-                        log.error(e)
-                        flash.error = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), dTask.title]) as String
-                    }
-                } else {
-                    if (!dTask) {
-                        flash.error = message(code: 'default.not.found.message', args: [message(code: 'task.label'), params.deleteId]) as String
-                    } else {
-                        flash.error = message(code: 'default.noPermissions') as String
-                    }
-                }
-            }
-        }
-        if(params.returnToShow) {
-            redirect action: 'show', id: params.id, controller: params.returnToShow
-            return
-        }
-        else {
-            redirect(url: request.getHeader('referer'))
-            return
-        }
-    }
 
     /**
      * Method under development; concept of cost per use is not fully elaborated yet

@@ -19,7 +19,7 @@ import org.springframework.context.MessageSource
 import org.springframework.transaction.TransactionStatus
 
 /**
- * This is the actual controller to handle uploaded documents. Handling notes is done in {@link DocController}
+ * This is the actual controller to handle uploaded documents. Handling notes is done in {@link NoteController}
  * @see DocContext
  * @see Doc
  */
