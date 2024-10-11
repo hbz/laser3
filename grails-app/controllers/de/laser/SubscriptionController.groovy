@@ -341,7 +341,7 @@ class SubscriptionController {
                     /*
                     see DocstoreController and https://stackoverflow.com/questions/24827571/how-to-convert-xssfworkbook-to-file
                      */
-                    FileOutputStream fos = new FileOutputStream(dir+'/'+token)
+                    FileOutputStream fos = new FileOutputStream(f)
                     //--> to document
                     wb.write(fos)
                     fos.flush()
@@ -1903,7 +1903,7 @@ class SubscriptionController {
                         sheetData[g.message(code: 'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow: export.titles, columnData: export.rows]
                         wb = exportService.generateXLSXWorkbook(sheetData)
                         userCache.put('progress', 100)
-                        FileOutputStream fos = new FileOutputStream(dir+'/'+token)
+                        FileOutputStream fos = new FileOutputStream(f)
                         //--> to document
                         wb.write(fos)
                         fos.flush()
