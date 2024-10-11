@@ -4144,7 +4144,7 @@ class ExportService {
 		 num_last_issue_online: '',
 		 title_url: 'tipp_host_platform_url as title_url',
 		 first_author: 'tipp_first_author as first_author',
-		 title_id: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNs('title_id').id}) as title_id",
+		 title_id: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType('title_id', TitleInstancePackagePlatform.class.name).id}) as title_id",
 		 embargo_info: '',
 		 coverage_depth: '',
 		 notes: '',

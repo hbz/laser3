@@ -1320,13 +1320,21 @@ class FilterService {
     Map<String,Object> getIssueEntitlementSubsetQuery(Map params, String select = 'ie.id') {
         log.debug 'getIssueEntitlementSubsetQuery'
 
-        int hashCode = params.hashCode()
-
-        Map<String, Object> result = [:], queryParams = [subscription: params.subscription]
-        String query = "select ${select} from IssueEntitlement ie join ie.tipp tipp where tipp.id in (:subset) and ie.subscription = :subscription "
+        Map<String, Object> result = [:], queryParams = [:]
+        String query = "select ${select} from IssueEntitlement ie join ie.tipp tipp where tipp.id in (:subset) "
         Set<String> queryArgs = []
 
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+
+        if (params.subscriptions) {
+            queryArgs << 'ie.subscriptions in (:subscriptions)'
+            queryParams.subscriptions = params.subscriptions
+        }
+        else {
+            queryArgs << 'ie.subscription = :subscription'
+            queryParams.subscription = params.subscription
+        }
+
         if (params.asAt && params.asAt.length() > 0) {
             queryArgs << 'ie.accessStartDate >= :asAt'
             queryArgs << 'ie.accessEndDate <= :asAt'
@@ -1334,15 +1342,15 @@ class FilterService {
         }
 
         if (params.ieStatus) {
-            queryArgs << "and ie.status in (:ieStatus)"
+            queryArgs << 'ie.status in (:ieStatus)'
             queryParams.ieStatus = params.ieStatus
         }
 
         if (params.titleGroup) {
             if(params.titleGroup == 'notInGroups'){
-                queryArgs << " and not exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ie = ie) "
+                queryArgs << "not exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ie = ie)"
             }else {
-                queryArgs << " and exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ieGroup = :titleGroup and iegi.ie = ie) "
+                queryArgs << "exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ieGroup = :titleGroup and iegi.ie = ie)"
                 queryParams.titleGroup = params.titleGroup
             }
         }
@@ -1469,15 +1477,10 @@ class FilterService {
 
         result.filterSet = filterSet
         */
-        query += queryArgs.join(' and ')
-        query += ' order by tipp.sortname'
-
-        result.query = query
+        String arguments = queryArgs.join(' and ')
+        result.query = query + "and ${arguments} order by tipp.sortname"
         result.queryParams = queryParams
 
-        if (params.hashCode() != hashCode) {
-            log.debug 'GrailsParameterMap was modified @ getIssueEntitlementSubsetQuery()'
-        }
         result
     }
 
