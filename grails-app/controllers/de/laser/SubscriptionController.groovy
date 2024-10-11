@@ -173,7 +173,7 @@ class SubscriptionController {
      * Call to prepare the usage data form for the given subscription
      * @return the filter for the given subscription
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })

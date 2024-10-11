@@ -229,7 +229,7 @@
                     </div>
                 </div>
                 <g:if test="${c.value.methods.others}">
-                    <div class="ui segment" style="background-color:#eee;">
+                    <div class="ui segment" style="background-color:#f5f5f5;">
                         <div class="ui vertically divided grid">
                             <g:each in="${c.value.methods.others}" var="method">
                                 <div class="row">
@@ -320,8 +320,6 @@
 .secInfoWrapper .transactional,
 .secInfoWrapper .warning,
 .secInfoWrapper .modifier,
-.secInfoWrapper .wtc_1,
-.secInfoWrapper .ctrlService_1,
 .secInfoWrapper .wtc_2,
 .secInfoWrapper .ctrlService_2 {
     margin-left: 0.5em;
@@ -342,12 +340,6 @@
     color: red;
     background-color: rgba(256,0,0,0.1);
     padding: 0.2rem 0.4rem;
-}
-
-.secInfoWrapper .wtc_1,
-.secInfoWrapper .ctrlService_1 {
-    color: green;
-    opacity: 0.4;
 }
 
 .secInfoWrapper .transactional,

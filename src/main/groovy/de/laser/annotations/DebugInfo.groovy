@@ -11,7 +11,6 @@ import java.lang.annotation.Target
 @interface DebugInfo {
 
     public static final int NOT_TRANSACTIONAL  = 0
-    public static final int IN_BETWEEN         = 1
     public static final int WITH_TRANSACTION   = 2
 
     // contextService
@@ -28,11 +27,9 @@ import java.lang.annotation.Target
 
     int ctrlService() default 0
     // NOT_TRANSACTIONAL    - no use of associated controllerService
-    // IN_BETWEEN           - logic is partially in controllerService
     // WITH_TRANSACTION     - full use of associated controllerService
 
     int wtc() default 0
     // NOT_TRANSACTIONAL    - no use of withTransaction{}
-    // IN_BETWEEN           - partially wrapped with withTransaction{}
     // WITH_TRANSACTION     - full wrapped with withTransaction{}
 }

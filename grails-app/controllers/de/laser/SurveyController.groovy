@@ -272,7 +272,7 @@ class SurveyController {
      * Takes the given parameters and creates a new general survey based on the input
      * @return the new survey details view
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
@@ -549,7 +549,7 @@ class SurveyController {
      * Takes the given parameters and creates a new subscription survey based on the input
      * @return the new survey details view
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
@@ -658,7 +658,7 @@ class SurveyController {
      * Takes the given parameters and creates a new title survey based on the input
      * @return the new survey details view
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
@@ -956,7 +956,7 @@ class SurveyController {
      * Takes the given input and processes the change on the selected survey cost items
      * @return a redirect to the referer
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
@@ -980,7 +980,7 @@ class SurveyController {
      *
      * @return a redirect to the referer
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
     })
@@ -1162,7 +1162,7 @@ class SurveyController {
      * Marks the given survey property (i.e. survey question) as mandatory to fill out
      * @return a redirect to the referer
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
@@ -1229,7 +1229,7 @@ class SurveyController {
      * Marks the given transfer procedure as (un-)checked
      * @return a redirect to the referer
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
@@ -1451,7 +1451,7 @@ class SurveyController {
      * Reopens the given survey for the given participant
      * @return a redirect to the referer
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
@@ -1634,7 +1634,7 @@ class SurveyController {
      * Adds the given institutions to the given survey as new participants
      * @return the updated survey participants list
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
@@ -1696,7 +1696,7 @@ class SurveyController {
      * Deletes the entire survey with attached objects
      * @return the survey list in case of success, a redirect to the referer otherwise
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
@@ -1729,7 +1729,7 @@ class SurveyController {
      * Marks the survey as being in evaluation
      * @return redirects to the renewal evaluation view
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
@@ -1889,7 +1889,7 @@ class SurveyController {
      * Takes the submitted base parameters and creates a copy of the given survey
      * @return either the survey list view for consortia or the survey details view
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
@@ -1942,7 +1942,7 @@ class SurveyController {
      * linked to the predecessor instance. The element copy workflow is triggered right after
      * @return the subscription element copy starting view
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
@@ -2015,7 +2015,7 @@ class SurveyController {
      * Takes the submitted input and creates cost items based on the given parameters for every selected survey participant
      * @return a redirect to the referer
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
@@ -2205,7 +2205,7 @@ class SurveyController {
      * Takes the given parameters and creates copies of the given cost items, based on the submitted data
      * @return the survey cost copy overview
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
@@ -2227,7 +2227,7 @@ class SurveyController {
 
     }
 
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
@@ -2274,7 +2274,7 @@ class SurveyController {
      * Takes the submitted parameters and copies the survey cost items into the subscriptions
      * @return the survey-subscription cost transfer view
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
@@ -2501,7 +2501,7 @@ class SurveyController {
      * Set link to license or provider
      * @return a redirect to the referer
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
