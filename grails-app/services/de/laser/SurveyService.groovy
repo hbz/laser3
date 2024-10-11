@@ -1183,8 +1183,16 @@ class SurveyService {
                                     emailsToSurveyUsersOfOrg(surveyConfig.surveyInfo, org, false)
                                 }
 
-                                if(surveyConfig.invoicingInformation){
+                               /* if(surveyConfig.invoicingInformation){
                                     setDefaultInvoiceInformation(surveyConfig, org)
+                                }*/
+
+                                if(surveyConfig.pickAndChoose){
+                                    Subscription participantSub = surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(org)
+                                    IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, participantSub)
+                                    if (!issueEntitlementGroup && participantSub) {
+                                        new IssueEntitlementGroup(surveyConfig: surveyConfig, sub: participantSub, name: surveyConfig.issueEntitlementGroupName).save()
+                                    }
                                 }
                             }
                         }
