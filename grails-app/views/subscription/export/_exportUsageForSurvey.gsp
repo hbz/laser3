@@ -30,7 +30,7 @@
             }
             CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(subscriber, platformInstance)
             if(ci?.value) {
-                reportTypes = reportTypes ?: subscriptionControllerService.getAvailableReports([subscription: subscriberSub], false)
+                reportTypes = subscriptionControllerService.getAvailableReports([subscription: subscriberSub], false)
             }
             else if(ci) {
                 dummyCIs << ci
