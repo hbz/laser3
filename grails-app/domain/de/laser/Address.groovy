@@ -41,7 +41,6 @@ class Address {
     String additionFirst
     String additionSecond
 
-    //Person prs              // person related contact; exclusive with org, deprecated and to be removed as of ERMS-4492
     Org    org              // org related contact; exclusive with vendor and provider
     Provider provider       // provider related contact; exclusive with org and vendor
     Vendor vendor           // vendor related contact; exclusive with org and provider
@@ -67,7 +66,6 @@ class Address {
         name     column:'adr_name'
         additionFirst   column:'adr_addition_first'
         additionSecond  column:'adr_addition_second'
-        //prs      column:'adr_prs_fk', index: 'adr_prs_idx'
         org      column:'adr_org_fk', index: 'adr_org_idx'
         provider column:'adr_provider_fk', index: 'adr_provider_idx'
         vendor   column:'adr_vendor_fk', index: 'adr_vendor_idx'
@@ -96,7 +94,6 @@ class Address {
         name            (nullable:true,  blank:false)
         additionFirst   (nullable:true,  blank:false)
         additionSecond  (nullable:true,  blank:false)
-        //prs      (nullable:true)
         org      (nullable:true)
         provider (nullable:true)
         vendor   (nullable:true)

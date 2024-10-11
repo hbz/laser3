@@ -14,9 +14,6 @@
         <g:if test="${prsId}">
             <input id="prs" name="prs" type="hidden" value="${prsId}"/>
         </g:if>
-        %{--<g:if test="${typeId}">
-            <input id="type" name="type.id" type="hidden" value="${typeId}"/>
-        </g:if>--}%
 
         <div class="field ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">
             <label for="type">

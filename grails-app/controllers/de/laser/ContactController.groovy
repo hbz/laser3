@@ -17,7 +17,7 @@ class ContactController  {
 	ContextService contextService
 	FormService formService
 
-    static allowedMethods = [create: ['GET', 'POST'], delete: 'POST']
+    static allowedMethods = [createContact: ['GET', 'POST'], deleteContact: 'POST']
 
 	/**
 	 * index call, redirecting to the context institution's addressbook
@@ -38,7 +38,7 @@ class ContactController  {
 	@Secured(closure = {
 		ctx.contextService.isInstEditor_or_ROLEADMIN()
 	})
-    def create() {
+    def createContact() {
 		Contact.withTransaction {
 			switch (request.method) {
 				case 'GET':
@@ -59,7 +59,7 @@ class ContactController  {
 						if (params.redirect) {
 							redirect(url: request.getHeader('referer'), params: params)
 						} else {
-							render view: 'create', model: [contactInstance: contactInstance]
+							render view: 'createContact', model: [contactInstance: contactInstance]
 						}
 						return
 					}
@@ -69,7 +69,7 @@ class ContactController  {
 						redirect(url: request.getHeader('referer'), params: params)
 						return
 					} else {
-						redirect action: 'show', id: contactInstance.id
+						redirect action: 'showContact', id: contactInstance.id
 						return
 					}
 					break
@@ -85,7 +85,7 @@ class ContactController  {
 	@Secured(closure = {
 		ctx.contextService.isInstEditor_or_ROLEADMIN()
 	})
-    def delete() {
+    def deleteContact() {
 		Contact.withTransaction {
 			Contact contactInstance = Contact.get(params.id)
 			if (!contactInstance) {
@@ -94,19 +94,19 @@ class ContactController  {
 				return
 			}
 			if (!addressbookService.isContactEditable(contactInstance, contextService.getUser())) {
-				redirect action: 'show', id: params.id
+				redirect action: 'showContact', id: params.id
 				return
 			}
 
 			try {
 				contactInstance.delete()
 				flash.message = message(code: 'default.deleted.message', args: [message(code: 'contact.label'), params.id]) as String
-				redirect action: 'list'
+				redirect action: 'list' // TODO ?? list
 				return
 			}
 			catch (DataIntegrityViolationException e) {
 				flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'contact.label'), params.id]) as String
-				redirect action: 'show', id: params.id
+				redirect action: 'showContact', id: params.id
 				return 
 			}
 		}

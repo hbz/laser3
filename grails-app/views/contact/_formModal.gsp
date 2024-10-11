@@ -3,7 +3,7 @@
 <ui:modal id="${modalId ?: 'contactFormModal'}"
              text="${message(code: 'default.add.label', args: [message(code: 'contact.label')])}">
 
-    <g:form id="newContact" name="newContact" class="ui form" url="[controller: 'contact', action: 'create']" method="POST">
+    <g:form id="newContact" name="newContact" class="ui form" url="[controller: 'contact', action: 'createContact']" method="POST">
         <input type="hidden" name="redirect" value="true" />
 
         <div class="field">

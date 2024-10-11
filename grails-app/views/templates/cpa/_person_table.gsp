@@ -30,9 +30,6 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyInvoicingInformation')}">
                 <col style="width:  118px;">
             </g:if>
-            <%--<g:if test="${tmplConfigItem.equalsIgnoreCase('showAddresses') && showAddresses}">
-                <col style="width: 332px;">
-            </g:if>--%>
         </g:each>
         <g:if test="${showOptions}">
                 <col style="width:  82px;">
@@ -73,9 +70,6 @@
     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyInvoicingInformation')}">
         <th>${message(code: 'surveyOrg.person.selected')}</th>
     </g:if>
-    <%--<g:if test="${tmplConfigItem.equalsIgnoreCase('showAddresses') && showAddresses}">
-            <th>${message(code: 'person.addresses.label')}</th>
-    </g:if>--%>
 </g:each>
         <g:if test="${showOptions}">
             <th class="la-action-info">${message(code: 'default.actions.label')}</th>
@@ -317,19 +311,6 @@
                         </g:else>
                 </td>
             </g:if>
-            <%--<g:if test="${tmplConfigItem.equalsIgnoreCase('showAddresses') && showAddresses}">
-                <td>
-                    <div class="ui divided middle aligned list la-flex-list ">
-                        <g:each in="${person.addresses.sort { it.type.each{it?.getI10n('value') }}}" var="address">
-                            <laser:render template="/templates/cpa/address" model="${[
-                                    address             : address,
-                                    tmplShowDeleteButton: true,
-                                    editable:             editable
-                            ]}"/>
-                        </g:each>
-                    </div>
-                </td>
-            </g:if>--%>
         </g:each>
         <g:if test="${showOptions}">
             <td class="x">
@@ -340,7 +321,7 @@
                         <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                     </button>
 
-                    <g:form style="display:inline" controller="person" action="delete" data-confirm-id="${person.id.toString() + '_form'}">
+                    <g:form style="display:inline" controller="person" action="deletePerson" data-confirm-id="${person.id.toString() + '_form'}">
                         <g:hiddenField id="person_id_${person.id}" name="id" value="${person.id}"/>
                         <div class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                              data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact.addressbook", args: [person.toString()])}"

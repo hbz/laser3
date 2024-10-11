@@ -19,7 +19,7 @@ class AddressController  {
     ContextService contextService
     FormService formService
 
-    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+    static allowedMethods = [createAddress: ['GET', 'POST'], editAddress: ['GET', 'POST'], deleteAddress: 'POST']
 
     /**
      * Index call
@@ -40,7 +40,7 @@ class AddressController  {
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
-    def create() {
+    def createAddress() {
         Address.withTransaction {
             switch (request.method) {
                 case 'GET':
@@ -90,7 +90,7 @@ class AddressController  {
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
-    def show() {
+    def showAddress() {
         Address addressInstance = Address.get(params.id)
         if (! addressInstance) {
 			flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label'), params.id]) as String
@@ -137,7 +137,7 @@ class AddressController  {
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
-    def edit() {
+    def editAddress() {
         Address.withTransaction {
             Address addressInstance = Address.get(params.id)
             if (!addressInstance) {
@@ -204,7 +204,7 @@ class AddressController  {
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
-    def delete() {
+    def deleteAddress() {
         Address.withTransaction {
             Address addressInstance = Address.get(params.id)
             if (!addressInstance) {
@@ -213,7 +213,7 @@ class AddressController  {
                 return
             }
             if (!addressbookService.isAddressEditable(addressInstance, contextService.getUser())) {
-                redirect action: 'show', id: params.id
+                redirect action: 'showAddress', id: params.id
                 return
             }
 
@@ -231,7 +231,7 @@ class AddressController  {
             }
             catch (DataIntegrityViolationException e) {
                 flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'address.label'), params.id]) as String
-                redirect action: 'show', id: params.id
+                redirect action: 'showAddress', id: params.id
                 return
             }
         }

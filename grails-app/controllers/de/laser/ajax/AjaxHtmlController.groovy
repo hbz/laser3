@@ -555,7 +555,7 @@ class AjaxHtmlController {
             model.modalText = message(code: 'default.new.label', args: [message(code: 'person.address.label')])
         }
         model.modalMsgSave = message(code: 'default.button.create.label')
-        model.url = [controller: 'address', action: 'create']
+        model.url = [controller: 'address', action: 'createAddress']
 
         render template: "/templates/cpa/addressFormModal", model: model
     }
@@ -582,7 +582,7 @@ class AjaxHtmlController {
                 model.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)])
             }
             model.modalMsgSave = message(code: 'default.button.save_changes')
-            model.url = [controller: 'address', action: 'edit']
+            model.url = [controller: 'address', action: 'editAddress']
 
             render template: "/templates/cpa/addressFormModal", model: model
         }
@@ -658,7 +658,7 @@ class AjaxHtmlController {
                 result.modalText = message(code: "person.create_new.contactPersonForPublic.label")
                 break
         }
-        result.url = [controller: 'person', action: 'create']
+        result.url = [controller: 'person', action: 'createPerson']
 
 
         render template: "/templates/cpa/personFormModal", model: result
@@ -718,7 +718,7 @@ class AjaxHtmlController {
             result.isPublic = result.personInstance.isPublic
             result.editable = addressbookService.isPersonEditable(result.personInstance, contextService.getUser())
             result.tmplShowDeleteButton = result.editable
-            result.url = [controller: 'person', action: 'edit', id: result.personInstance.id]
+            result.url = [controller: 'person', action: 'editPerson', id: result.personInstance.id]
             result.contextOrg = contextService.getOrg()
 
             render template: "/templates/cpa/personFormModal", model: result

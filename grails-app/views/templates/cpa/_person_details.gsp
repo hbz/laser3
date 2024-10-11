@@ -32,14 +32,6 @@
             </g:each>
 
         </g:if>
-        <%--<g:if test="${person.addresses}">
-
-            <g:each in="${person.addresses.sort { it?.type.each {it?.getI10n('value')} }}" var="address">
-                <laser:render template="/templates/cpa/address"
-                          model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton, editable: editable]}"/>
-            </g:each>
-
-        </g:if>--%>
 
         <g:if test="${!personRole && !tmplHideLinkToAddressbook}">
 
