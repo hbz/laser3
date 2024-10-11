@@ -25,9 +25,7 @@ import java.lang.annotation.Target
 
     // legacy
 
-    int ctrlService() default 0
-    // NOT_TRANSACTIONAL    - no use of associated controllerService
-    // WITH_TRANSACTION     - full use of associated controllerService
+    int ctrlService() default 0 // associated controllerService in use
 
     int wtc() default 0
     // NOT_TRANSACTIONAL    - no use of withTransaction{}

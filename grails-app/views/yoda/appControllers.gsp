@@ -321,7 +321,7 @@
 .secInfoWrapper .warning,
 .secInfoWrapper .modifier,
 .secInfoWrapper .wtc_2,
-.secInfoWrapper .ctrlService_2 {
+.secInfoWrapper .ctrlService_1 {
     margin-left: 0.5em;
     padding: 0.2rem 0.4rem;
     min-width: 90px;
@@ -343,9 +343,12 @@
 }
 
 .secInfoWrapper .transactional,
-.secInfoWrapper .wtc_2,
-.secInfoWrapper .ctrlService_2 {
+.secInfoWrapper .wtc_2 {
     color: green;
+}
+
+.secInfoWrapper .ctrlService_1 {
+    color: cornflowerblue;
 }
 
 .secInfoWrapper .perm,
@@ -363,7 +366,7 @@
     font-style: italic;
 }
 .secInfoWrapper .test {
-    color: #dd33dd;
+    color: blueviolet;
     text-decoration: underline dotted;
 }
 

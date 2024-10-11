@@ -218,7 +218,7 @@ class DocumentController {
     /**
      * Call for editing an existing document, see {@link DocumentControllerService#editDocument()} for the editing implementation. Redirects back to the referer where result may be shown in case of an error
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = 1)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
