@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.auth.User
-import de.laser.ctrl.DocstoreControllerService
+import de.laser.ctrl.DocumentControllerService
 import de.laser.config.ConfigDefaults
 import de.laser.interfaces.ShareSupport
 import de.laser.storage.RDStore
@@ -19,15 +19,15 @@ import org.springframework.context.MessageSource
 import org.springframework.transaction.TransactionStatus
 
 /**
- * This is the actual controller to handle uploaded documents. Handling notes is done in {@link DocController}
+ * This is the actual controller to handle uploaded documents. Handling notes is done in {@link NoteController}
  * @see DocContext
  * @see Doc
  */
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class DocstoreController  {
+class DocumentController {
 
     ContextService contextService
-    DocstoreControllerService docstoreControllerService
+    DocumentControllerService documentControllerService
     MessageSource messageSource
     AccessService accessService
 
@@ -216,15 +216,15 @@ class DocstoreController  {
     }
 
     /**
-     * Call for editing an existing document, see {@link DocstoreControllerService#editDocument()} for the editing implementation. Redirects back to the referer where result may be shown in case of an error
+     * Call for editing an existing document, see {@link DocumentControllerService#editDocument()} for the editing implementation. Redirects back to the referer where result may be shown in case of an error
      */
     @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def editDocument() {
-        Map<String,Object> ctrlResult = docstoreControllerService.editDocument(params)
-        if(ctrlResult.status == DocstoreControllerService.STATUS_ERROR) {
+        Map<String,Object> ctrlResult = documentControllerService.editDocument(params)
+        if(ctrlResult.status == DocumentControllerService.STATUS_ERROR) {
             flash.error = message(code:'template.documents.edit.error') as String
         }
         redirect(url: request.getHeader('referer'))

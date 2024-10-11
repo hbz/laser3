@@ -136,7 +136,7 @@
         <div class="ui list">
             <g:each in="${listOfDocsInUseOrphaned}" var="doc">
 
-                 <div class="item">${doc.id} : <strong>${doc.filename}</strong> -> <g:link controller="docstore" action="downloadDocument" id="${doc.uuid}">${doc.uuid}</g:link>
+                 <div class="item">${doc.id} : <strong>${doc.filename}</strong> -> <g:link controller="document" action="downloadDocument" id="${doc.uuid}">${doc.uuid}</g:link>
                     <g:if test="${doc.owner}">
                         (Owner: <g:link action="show" controller="org" id="${doc.owner.id}">${doc.owner.name}</g:link>)
                     </g:if>

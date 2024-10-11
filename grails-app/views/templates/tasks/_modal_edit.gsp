@@ -3,7 +3,7 @@
 
 <ui:modal id="modalEditTask" message="task.edit" isEditModal="true" >
 
-    <g:form class="ui form" id="edit_task" url="[controller:'task',action:'edit',id:taskInstance.id]" method="post">
+    <g:form class="ui form" id="edit_task" url="[controller:'task', action:'editTask', id:taskInstance.id]" method="post">
         <g:hiddenField name="version" value="${taskInstance.version}" />
         <div class="field ${hasErrors(bean: taskInstance, field: 'title', 'error')} required">
             <label for="title">

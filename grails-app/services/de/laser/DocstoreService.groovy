@@ -13,7 +13,7 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 
 /**
- * This service is one step behind {@link de.laser.ctrl.DocstoreControllerService} and contains helper methods for document retrieval
+ * This service is one step behind {@link de.laser.ctrl.DocumentControllerService} and contains helper methods for document retrieval
  */
 @Transactional
 class DocstoreService {
@@ -28,7 +28,7 @@ class DocstoreService {
      *     <li>{@link de.laser.MyInstitutionController}</li>
      *     <li>{@link de.laser.SurveyController}</li>
      * </ul>
-     * Will be replaced. Try to use {@link DocstoreController#deleteDocument()}
+     * Will be replaced. Try to use {@link DocumentController#deleteDocument()}
      * @param params the parameter map, coming from one of the controllers specified in the list above
      */
     @Deprecated

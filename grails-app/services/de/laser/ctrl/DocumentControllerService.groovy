@@ -7,10 +7,10 @@ import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 
 /**
- * This contains the service methods for the {@link DocstoreController}
+ * This contains the service methods for the {@link DocumentController}
  */
 @Transactional
-class DocstoreControllerService {
+class DocumentControllerService {
 
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1

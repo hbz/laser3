@@ -20,11 +20,10 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class TaskController  {
 
+	AccessService accessService
     ContextService contextService
 
 	//-----
-
-	static allowedMethods = [create: 'POST', edit: 'POST', delete: 'POST']
 
 	/**
 	 * Map containing menu alternatives if an unexisting object has been called
@@ -43,7 +42,7 @@ class TaskController  {
 	@Secured(closure = {
 		ctx.contextService.isInstEditor_or_ROLEADMIN()
 	})
-    def create() {
+    def createTask() {
 		Task.withTransaction {
 			Org contextOrg = contextService.getOrg()
 			SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -107,7 +106,7 @@ class TaskController  {
 		ctx.contextService.isInstUser_or_ROLEADMIN()
 	})
 	@Check404()
-    def edit() {
+    def editTask() {
 		Task.withTransaction {
 			Org contextOrg = contextService.getOrg()
 			User contextUser = contextService.getUser()
@@ -204,4 +203,44 @@ class TaskController  {
 			}
 		}
     }
+
+	/**
+	 * Deletes the given task
+	 */
+	@DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+	@Secured(closure = {
+		ctx.contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+	})
+	def deleteTask() { // moved from AjaxController
+
+		if (params.deleteId) {
+			Task.withTransaction {
+				Task dTask = Task.get(params.deleteId)
+				if (accessService.hasAccessToTask(dTask)) {
+					try {
+						flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title]) as String
+						dTask.delete()
+					}
+					catch (Exception e) {
+						log.error(e)
+						flash.error = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), dTask.title]) as String
+					}
+				} else {
+					if (!dTask) {
+						flash.error = message(code: 'default.not.found.message', args: [message(code: 'task.label'), params.deleteId]) as String
+					} else {
+						flash.error = message(code: 'default.noPermissions') as String
+					}
+				}
+			}
+		}
+		if(params.returnToShow) {
+			redirect action: 'show', id: params.id, controller: params.returnToShow
+			return
+		}
+		else {
+			redirect(url: request.getHeader('referer'))
+			return
+		}
+	}
 }

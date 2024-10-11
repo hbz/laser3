@@ -104,7 +104,7 @@
                         </td>
                         <td class="x">
                             <g:if test="${docctx.isDocAFile()}">
-                                <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i
+                                <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i
                                         class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                                 <g:if test="${editable && !docctx.sharedFrom}">
                                     <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-ui="modal"

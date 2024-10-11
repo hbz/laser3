@@ -11,12 +11,10 @@ import grails.plugin.springsecurity.annotation.Secured
  * This controller manages notes for subscriptions, licenses or organisations
  */
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class DocController  {
+class NoteController {
 
 	ContextService contextService
 	AccessService accessService
-
-    static allowedMethods = [delete: 'POST']
 
 	/**
 	 * Creates a new note for a {@link Subscription}, {@link License} or {@link Org}

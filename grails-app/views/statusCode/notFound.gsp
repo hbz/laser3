@@ -1,19 +1,19 @@
-<laser:htmlStart message="serverCode.notFound.message1" />
+<laser:htmlStart message="statusCode.notFound.message1" />
 
     <br />
 
     <ui:messages data="${flash}"/>
 
     <laser:serverCodeMessage status="${status}"
-                             header="${message(code: 'serverCode.notFound.message1')}"
-                             subheader="${customMessage ?: message(code: 'serverCode.notFound.message2')}">
+                             header="${message(code: 'statusCode.notFound.message1')}"
+                             subheader="${customMessage ?: message(code: 'statusCode.notFound.message2')}">
 
         <g:if test="${alternatives}">
             <g:if test="${alternatives.size() == 1}">
-                ${message(code: 'serverCode.notFound.message3')}
+                ${message(code: 'statusCode.notFound.message3')}
             </g:if>
             <g:else>
-                ${message(code: 'serverCode.notFound.message4')}
+                ${message(code: 'statusCode.notFound.message4')}
             </g:else>
             <br/>
             <div class="ui selection list">

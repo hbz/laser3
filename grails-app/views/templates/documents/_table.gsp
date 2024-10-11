@@ -190,7 +190,7 @@
                                         </g:else>
                                     </g:if>
                                 </g:if>
-                                <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+                                <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                                 %{-- todo: !docctx.sharedFrom --}%
                                 <g:if test="${userService.hasFormalAffiliation(user, docctx.owner.owner, 'INST_EDITOR') && inOwnerOrg && !docctx.sharedFrom}">
                                     <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-ui="modal" data-href="#modalEditDocument_${docctx.id}" data-content="${message(code:"template.documents.edit")}"><i class="${Icon.CMD.EDIT}"></i></button>
@@ -204,7 +204,7 @@
                                     %>
                                     <g:set var="linkParams" value="${[instanceId:"${redirectId}", deleteId:"${docctx.id}", redirectController:"${controllerName}", redirectAction:"${actionName}"]}" />
 %{--                                    params='[instanceId:"${redirectId}", deleteId:"${docctx.id}", redirectController:"${controllerName}", redirectAction:"${actionName}", redirectTab: "${params.tab}"]'--}%
-                                    <g:link controller="docstore" action="deleteDocument" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
+                                    <g:link controller="document" action="deleteDocument" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                             data-confirm-term-how="delete"
                                             params="${params.tab ? linkParams << [redirectTab: "${params.tab}"] : linkParams}"
