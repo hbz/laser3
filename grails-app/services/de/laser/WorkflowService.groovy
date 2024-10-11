@@ -16,6 +16,7 @@ import org.springframework.transaction.TransactionStatus
 @Transactional
 class WorkflowService {
 
+    AccessService accessService
     ContextService contextService
     GenericOIDService genericOIDService
 
@@ -57,7 +58,7 @@ class WorkflowService {
         if (result.contextOrg) {
 
             if (result.license) {
-                result.checklists = sortByLastUpdated( WfChecklist.findAllByLicenseAndOwner(result.license as License, result.contextOrg as Org))
+                result.checklists = sortByLastUpdated(WfChecklist.findAllByLicenseAndOwner(result.license as License, result.contextOrg as Org))
             }
             else if (result.orgInstance) {
                 result.checklists = sortByLastUpdated(WfChecklist.findAllByOrgAndOwner(result.orgInstance as Org, result.contextOrg as Org))
@@ -163,9 +164,14 @@ class WorkflowService {
         result.checkpoint = cpoint
 
         try {
-            cpoint.delete()
-            result.checkpoint = null // gap
-            result.status = OP_STATUS_DONE
+            if (accessService.hasAccessToWorkflow(cpoint.checklist)) {
+                cpoint.delete()
+                result.checkpoint = null // gap
+                result.status = OP_STATUS_DONE
+            }
+            else {
+                result.status = OP_STATUS_ERROR // TODO
+            }
         }
         catch (Exception e) {
             result.status = OP_STATUS_ERROR
@@ -405,11 +411,16 @@ class WorkflowService {
             try {
                 result.checklist = WfChecklist.get(cmd[2])
 
-                WfCheckpoint.executeUpdate('delete from WfCheckpoint cp where cp.checklist = :cl', [cl: result.checklist])
-                result.checklist.delete()
+                if (accessService.hasAccessToWorkflow(result.checklist)) {
+                    WfCheckpoint.executeUpdate('delete from WfCheckpoint cp where cp.checklist = :cl', [cl: result.checklist])
+                    result.checklist.delete()
 
-                result.status = OP_STATUS_DONE
-                ts.flush() // TODO
+                    result.status = OP_STATUS_DONE
+                    ts.flush() // TODO
+                }
+                else {
+                    result.status = OP_STATUS_ERROR // TODO
+                }
             }
             catch (Exception e) {
                 result.status = OP_STATUS_ERROR

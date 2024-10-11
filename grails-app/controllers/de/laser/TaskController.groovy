@@ -108,24 +108,20 @@ class TaskController  {
 	@Check404()
     def editTask() {
 		Task.withTransaction {
-			Org contextOrg = contextService.getOrg()
-			User contextUser = contextService.getUser()
-            Map<String, Object> result = [:]
-			result.contextOrg = contextOrg
-
-			SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-
-			if (params.endDate) {
-				params.endDate = sdf.parse(params.endDate)
-			}
-
+            Map<String, Object> result = [
+					contextOrg : contextService.getOrg()
+			]
 			Task taskInstance = Task.get(params.id)
 
-			if ( !((contextOrg.id == taskInstance.responsibleOrg?.id) || (contextUser.id == taskInstance.responsibleUser?.id) || (contextUser.id == taskInstance.creator.id))
-			) {
-				flash.error = message(code: 'task.edit.norights', args: [taskInstance.title]) as String
+			if (!accessService.hasAccessToTask(taskInstance)) {
+				flash.error = message(code: 'default.noPermissions') as String
 				redirect(url: request.getHeader('referer'))
 				return
+			}
+
+			SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+			if (params.endDate) {
+				params.endDate = sdf.parse(params.endDate)
 			}
 
 			if (params.version) {
@@ -148,7 +144,7 @@ class TaskController  {
 
 			//Bearbeiter festlegen/ändern
 			if (params.responsible == "Org") {
-				taskInstance.responsibleOrg = contextOrg
+				taskInstance.responsibleOrg = result.contextOrg
 				taskInstance.responsibleUser = null
 			} else if (params.responsible == "User") {
 				taskInstance.responsibleUser = (params.responsibleUser.id != 'null') ? User.get(params.responsibleUser.id) : contextService.getUser()

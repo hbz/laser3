@@ -16,6 +16,7 @@ class AccessService {
     ContextService contextService
     UserService userService
 
+    // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
     boolean hasAccessToDocument(DocContext dctx) {
         // moved from ajaxHtmlController.documentPreview()$checkPermission
         // logic based on /views/templates/documents/card
@@ -74,6 +75,7 @@ class AccessService {
         return check
     }
 
+    // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
     boolean hasAccessToDocNote(DocContext dctx) {
         boolean check = false
         Org ctxOrg = contextService.getOrg()
@@ -119,6 +121,7 @@ class AccessService {
         return check
     }
 
+    // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
     boolean hasAccessToTask(Task task) {
         boolean check = false
 
@@ -146,6 +149,7 @@ class AccessService {
         return check
     }
 
+    // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
     boolean hasAccessToWorkflow(WfChecklist workflow) {
         boolean check = false
 

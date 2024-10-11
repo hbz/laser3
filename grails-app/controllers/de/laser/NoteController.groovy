@@ -80,7 +80,7 @@ class NoteController {
 						return
 					}
 
-					Doc docInstance = docContext?.owner
+					Doc docInstance = docContext.owner
 					if (!docInstance) {
 						flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.note.label'), params.id]) as String
 						redirect(url: request.getHeader('referer'))
