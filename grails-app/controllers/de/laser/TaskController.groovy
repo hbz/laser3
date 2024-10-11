@@ -167,42 +167,42 @@ class TaskController  {
 		}
     }
 
-	/**
-	 * Call to delete the given task instance
-	 * @return a redirect to the referer
-	 */
-	@DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
-	@Secured(closure = {
-		ctx.contextService.isInstEditor_or_ROLEADMIN()
-	})
-    def delete() {
-		Task.withTransaction {
-			Task taskInstance = Task.get(params.id)
-			String tasktitel = taskInstance.title
-
-			if (!taskInstance) {
-				flash.message = message(code: 'default.not.found.message', args: [message(code: 'task.label'), params.id]) as String
-				redirect(url: request.getHeader('referer'))
-				return
-			}
-
-			if (taskInstance.creator != contextService.getUser()) {
-				flash.error = message(code: 'task.delete.norights', args: [tasktitel]) as String
-				redirect(url: request.getHeader('referer'))
-				return
-			}
-
-			try {
-				taskInstance.delete()
-				flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), tasktitel]) as String
-				redirect(url: request.getHeader('referer'))
-			}
-			catch (DataIntegrityViolationException e) {
-				flash.error = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), tasktitel]) as String
-				redirect(url: request.getHeader('referer'))
-			}
-		}
-    }
+//	/**
+//	 * Call to delete the given task instance
+//	 * @return a redirect to the referer
+//	 */
+//	@DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+//	@Secured(closure = {
+//		ctx.contextService.isInstEditor_or_ROLEADMIN()
+//	})
+//    def delete() {
+//		Task.withTransaction {
+//			Task taskInstance = Task.get(params.id)
+//			String tasktitel = taskInstance.title
+//
+//			if (!taskInstance) {
+//				flash.message = message(code: 'default.not.found.message', args: [message(code: 'task.label'), params.id]) as String
+//				redirect(url: request.getHeader('referer'))
+//				return
+//			}
+//
+//			if (taskInstance.creator != contextService.getUser()) {
+//				flash.error = message(code: 'task.delete.norights', args: [tasktitel]) as String
+//				redirect(url: request.getHeader('referer'))
+//				return
+//			}
+//
+//			try {
+//				taskInstance.delete()
+//				flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), tasktitel]) as String
+//				redirect(url: request.getHeader('referer'))
+//			}
+//			catch (DataIntegrityViolationException e) {
+//				flash.error = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), tasktitel]) as String
+//				redirect(url: request.getHeader('referer'))
+//			}
+//		}
+//    }
 
 	/**
 	 * Deletes the given task
