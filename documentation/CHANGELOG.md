@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6011    10.10.2024  dev     3.5         David   Feature     Update auf Grails 6.2.1
+
 5967    09.10.2024  dev     3.5         David   Feature     Rechteprüfung: DocstoreController (Download)
 
 5927    09.10.2024  dev     3.5         David   Feature     JoinTable Org.orgType zum Fremdschlüssel umbauen

@@ -38,7 +38,7 @@ class AccessPointController  {
      * Adds a new IP range with the given parameters. The distinction between v4 and v6 just as the validation is done in the service
      * @see AccessPointControllerService#addIpRange(grails.web.servlet.mvc.GrailsParameterMap)
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = 1)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -58,7 +58,7 @@ class AccessPointController  {
      * Adds a new Mail Domain with the given parameters.
      * @see AccessPointControllerService#addMailDomain(grails.web.servlet.mvc.GrailsParameterMap)
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = 1)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -174,7 +174,7 @@ class AccessPointController  {
      * Takes the given input parameters and builds a new access point for the institution
      * @return the edit view in case of success, the creation form page otherwise
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = 1)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -196,7 +196,7 @@ class AccessPointController  {
      * Handles the deletion call of the given access point to the service
      * @return the list of institution's access points in case of success
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = 1)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -392,7 +392,7 @@ class AccessPointController  {
     /**
      * Handles the deletion call for the given IP range to the service
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = 1)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -412,7 +412,7 @@ class AccessPointController  {
     /**
      * Controller call to link an access point to a given platform
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = 1)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -426,7 +426,7 @@ class AccessPointController  {
     /**
      * Controller call to unlink an access point from a given platform
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = 1)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })

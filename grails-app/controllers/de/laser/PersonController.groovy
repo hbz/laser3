@@ -43,7 +43,7 @@ class PersonController  {
      * @return redirect back to the referer -> an updated list of person contacts
      * @see Person
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], withTransaction = 1)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -260,7 +260,7 @@ class PersonController  {
      * Takes the submitted parameters and updates the person contact based on the given parameter map
      * @return redirect to the referer -> the updated view of the person contact
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], withTransaction = 1)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -493,7 +493,7 @@ class PersonController  {
      * Deletes the given person contact
      * @return redirects to one of the list views from which the person contact to be deleted has been called
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], withTransaction = 1)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })

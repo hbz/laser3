@@ -103,7 +103,7 @@ class YodaController {
         Map<String, Object> result = [
                 docStore: AppUtils.getDocumentStorageInfo()
         ]
-        result 
+        result
     }
 
     /**
@@ -535,13 +535,13 @@ class YodaController {
 
                             if (da.ctrlService()) {
                                 mInfo.ctrlService = da.ctrlService()
-                                if (da.ctrlService() == DebugInfo.WITH_TRANSACTION) {
+                                if (da.ctrlService() == 1) {
                                     mInfo.refactoring = 'done'
                                 }
                             }
-                            if (da.wtc()) {
-                                mInfo.wtc = da.wtc()
-                                if (da.wtc() == DebugInfo.WITH_TRANSACTION) {
+                            if (da.withTransaction()) {
+                                mInfo.withTransaction = da.withTransaction()
+                                if (da.withTransaction() == 1) {
                                     mInfo.refactoring = 'done'
                                 }
                             }

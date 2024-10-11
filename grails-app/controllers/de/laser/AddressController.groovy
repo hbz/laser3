@@ -36,7 +36,7 @@ class AddressController  {
     /**
      * Creates a new address with the given parameters
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], withTransaction = 1)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -133,7 +133,7 @@ class AddressController  {
     /**
      * Updates the given address with the given updated data
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], withTransaction = 1)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -200,7 +200,7 @@ class AddressController  {
     /**
      * Deletes the given address
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], withTransaction = 1)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })

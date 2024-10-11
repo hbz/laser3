@@ -31,7 +31,7 @@ class IssueEntitlementController {
     /**
      * Shows the given issue entitlement details
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [], withTransaction = 0)
     @Secured(closure = {
         ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
@@ -120,7 +120,7 @@ class IssueEntitlementController {
       result
     }
 
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], withTransaction = 1)
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })

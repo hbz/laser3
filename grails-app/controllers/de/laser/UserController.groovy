@@ -9,7 +9,6 @@ import de.laser.helper.Profiler
 import de.laser.utils.PasswordUtils
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 
 /**
@@ -160,7 +159,7 @@ class UserController {
      * Creates a new random password to the given user and sends that via mail to the address registered to the account
      * @return a redirect to the referer
      */
-    @DebugInfo(isInstAdm_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstAdm_or_ROLEADMIN = [], withTransaction = 1)
     @Secured(closure = {
         ctx.contextService.isInstAdm_or_ROLEADMIN()
     })
@@ -197,7 +196,7 @@ class UserController {
      * get username and sends that via mail to the address registered to the account
      * @return a redirect to the referer
      */
-    @DebugInfo(isInstAdm_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstAdm_or_ROLEADMIN = [], withTransaction = 1)
     @Secured(closure = {
         ctx.contextService.isInstAdm_or_ROLEADMIN()
     })

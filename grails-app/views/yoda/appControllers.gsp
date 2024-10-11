@@ -144,7 +144,7 @@
                                         <g:elseif test="${info.key == 'ctrlService'}">
                                             <strong class="${info.key}_${info.value}">ctrlService</strong>
                                         </g:elseif>
-                                        <g:elseif test="${info.key == 'wtc'}">
+                                        <g:elseif test="${info.key == 'withTransaction'}">
                                             <strong class="${info.key}_${info.value}">withTransaction{}</strong>
                                         </g:elseif>
                                     </g:each>
@@ -229,7 +229,7 @@
                     </div>
                 </div>
                 <g:if test="${c.value.methods.others}">
-                    <div class="ui segment" style="background-color:#eee;">
+                    <div class="ui segment" style="background-color:#f5f5f5;">
                         <div class="ui vertically divided grid">
                             <g:each in="${c.value.methods.others}" var="method">
                                 <div class="row">
@@ -264,7 +264,7 @@
                                             <g:elseif test="${info.key == 'ctrlService'}">
                                                 <strong class="${info.key}_${info.value}">ctrlService</strong>
                                             </g:elseif>
-                                            <g:elseif test="${info.key == 'wtc'}">
+                                            <g:elseif test="${info.key == 'withTransaction'}">
                                                 <strong class="${info.key}_${info.value}">withTransaction{}</strong>
                                             </g:elseif>
                                         </g:each>
@@ -320,10 +320,8 @@
 .secInfoWrapper .transactional,
 .secInfoWrapper .warning,
 .secInfoWrapper .modifier,
-.secInfoWrapper .wtc_1,
-.secInfoWrapper .ctrlService_1,
-.secInfoWrapper .wtc_2,
-.secInfoWrapper .ctrlService_2 {
+.secInfoWrapper .withTransaction_1,
+.secInfoWrapper .ctrlService_1 {
     margin-left: 0.5em;
     padding: 0.2rem 0.4rem;
     min-width: 90px;
@@ -344,16 +342,14 @@
     padding: 0.2rem 0.4rem;
 }
 
-.secInfoWrapper .wtc_1,
-.secInfoWrapper .ctrlService_1 {
+.secInfoWrapper .transactional {
     color: green;
-    opacity: 0.4;
 }
-
-.secInfoWrapper .transactional,
-.secInfoWrapper .wtc_2,
-.secInfoWrapper .ctrlService_2 {
-    color: green;
+.secInfoWrapper .withTransaction_1 {
+    color: limegreen;
+}
+.secInfoWrapper .ctrlService_1 {
+    color: cornflowerblue;
 }
 
 .secInfoWrapper .perm,
@@ -371,7 +367,7 @@
     font-style: italic;
 }
 .secInfoWrapper .test {
-    color: #dd33dd;
+    color: blueviolet;
     text-decoration: underline dotted;
 }
 
