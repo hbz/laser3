@@ -796,7 +796,7 @@ class MyInstitutionController  {
      * Creates a new license based on the parameters submitted
      * @return the license details view ({@link LicenseController#show()}) of the new license record
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [], withTransaction = 1)
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
@@ -2376,7 +2376,7 @@ class MyInstitutionController  {
      * processing whether the imported data is read correctly or not
      * @return the control view with the import preparation result
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], withTransaction = 1)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
@@ -3196,7 +3196,7 @@ class MyInstitutionController  {
      * @see BudgetCode
      * @see CostItemGroup
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], withTransaction = 1)
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
@@ -3293,7 +3293,7 @@ class MyInstitutionController  {
      * Call for listing institutions eligible to be attached to or detached from the context consortium
      * @return a list of institutions
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], withTransaction = 1)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
@@ -4499,7 +4499,7 @@ join sub.orgRelations or_sub where
      * Call to process a bulk assign of a property definition to a given set of objects
      * @return the updated view with the assigned property definitions
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], withTransaction = 1)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
@@ -4846,7 +4846,7 @@ join sub.orgRelations or_sub where
      * @return the (filtered) list of subscription transfers currently running
      * @see SubscriptionService#getMySubscriptionTransfer(grails.web.servlet.mvc.GrailsParameterMap, de.laser.auth.User, de.laser.Org)
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })

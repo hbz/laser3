@@ -62,7 +62,7 @@ class NoteController {
 	/**
 	 * Edits an already existing note. The note to edit is given by params.id
 	 */
-	@DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+	@DebugInfo(isInstEditor_or_ROLEADMIN = [], withTransaction = 1)
 	@Secured(closure = {
 		ctx.contextService.isInstEditor_or_ROLEADMIN()
 	})

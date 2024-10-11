@@ -68,7 +68,7 @@ class DocumentController {
     /**
      * Uploads a new document, specified by the upload form parameters, and sets the entered metadata to the new {@link DocContext} object
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], withTransaction = 1)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })

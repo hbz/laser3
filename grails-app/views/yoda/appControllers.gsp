@@ -144,7 +144,7 @@
                                         <g:elseif test="${info.key == 'ctrlService'}">
                                             <strong class="${info.key}_${info.value}">ctrlService</strong>
                                         </g:elseif>
-                                        <g:elseif test="${info.key == 'wtc'}">
+                                        <g:elseif test="${info.key == 'withTransaction'}">
                                             <strong class="${info.key}_${info.value}">withTransaction{}</strong>
                                         </g:elseif>
                                     </g:each>
@@ -264,7 +264,7 @@
                                             <g:elseif test="${info.key == 'ctrlService'}">
                                                 <strong class="${info.key}_${info.value}">ctrlService</strong>
                                             </g:elseif>
-                                            <g:elseif test="${info.key == 'wtc'}">
+                                            <g:elseif test="${info.key == 'withTransaction'}">
                                                 <strong class="${info.key}_${info.value}">withTransaction{}</strong>
                                             </g:elseif>
                                         </g:each>
@@ -320,7 +320,7 @@
 .secInfoWrapper .transactional,
 .secInfoWrapper .warning,
 .secInfoWrapper .modifier,
-.secInfoWrapper .wtc_2,
+.secInfoWrapper .withTransaction_1,
 .secInfoWrapper .ctrlService_1 {
     margin-left: 0.5em;
     padding: 0.2rem 0.4rem;
@@ -342,11 +342,12 @@
     padding: 0.2rem 0.4rem;
 }
 
-.secInfoWrapper .transactional,
-.secInfoWrapper .wtc_2 {
+.secInfoWrapper .transactional {
     color: green;
 }
-
+.secInfoWrapper .withTransaction_1 {
+    color: limegreen;
+}
 .secInfoWrapper .ctrlService_1 {
     color: cornflowerblue;
 }

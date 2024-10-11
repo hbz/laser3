@@ -10,8 +10,8 @@ import java.lang.annotation.Target
 
 @interface DebugInfo {
 
-    public static final int NOT_TRANSACTIONAL  = 0
-    public static final int WITH_TRANSACTION   = 2
+    public static final int NO  = 0
+    public static final int YES = 1
 
     // contextService
 
@@ -25,9 +25,6 @@ import java.lang.annotation.Target
 
     // legacy
 
-    int ctrlService() default 0 // associated controllerService in use
-
-    int wtc() default 0
-    // NOT_TRANSACTIONAL    - no use of withTransaction{}
-    // WITH_TRANSACTION     - full wrapped with withTransaction{}
+    int ctrlService()       default 0   // associated controllerService in use
+    int withTransaction()   default 0   // wrapped logic with withTransaction{}
 }

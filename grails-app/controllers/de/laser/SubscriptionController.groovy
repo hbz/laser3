@@ -666,7 +666,7 @@ class SubscriptionController {
         }
     }
 
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], withTransaction = 0)
     @Secured(closure = {
         ctx.contextService.isInstUser_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
@@ -1805,7 +1805,7 @@ class SubscriptionController {
         result
     }
 
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
