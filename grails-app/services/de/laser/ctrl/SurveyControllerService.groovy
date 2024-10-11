@@ -21,6 +21,7 @@ import de.laser.GlobalSourceSyncService
 import de.laser.GokbService
 import de.laser.Identifier
 import de.laser.IdentifierNamespace
+import de.laser.IssueEntitlementGroup
 import de.laser.License
 import de.laser.Links
 import de.laser.LinksGenerationService
@@ -2604,6 +2605,14 @@ class SurveyControllerService {
                                         /*if(result.surveyConfig.invoicingInformation){
                                             surveyService.setDefaultInvoiceInformation(result.surveyConfig, org)
                                         }*/
+
+                                        if(result.surveyConfig.pickAndChoose){
+                                            Subscription participantSub = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(org)
+                                            IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, participantSub)
+                                            if (!issueEntitlementGroup && participantSub) {
+                                                new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: participantSub, name: result.surveyConfig.issueEntitlementGroupName).save()
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -2796,6 +2805,14 @@ class SurveyControllerService {
                                /* if(config.invoicingInformation){
                                     surveyService.setDefaultInvoiceInformation(config, org)
                                 }*/
+
+                                if(config.pickAndChoose){
+                                    Subscription participantSub = config.subscription.getDerivedSubscriptionForNonHiddenSubscriber(org)
+                                    IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(config, participantSub)
+                                    if (!issueEntitlementGroup && participantSub) {
+                                        new IssueEntitlementGroup(surveyConfig: config, sub: participantSub, name: config.issueEntitlementGroupName).save()
+                                    }
+                                }
                             }
                         }
                     }
