@@ -1958,6 +1958,10 @@ class SubscriptionControllerService {
             result.subscriber = subscriberSub.getSubscriberRespConsortia()
 
             IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
+            if (!issueEntitlementGroup) {
+                    issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: result.surveyConfig.issueEntitlementGroupName).save()
+            }
+
             result.titleGroupID = issueEntitlementGroup ? issueEntitlementGroup.id.toString() : null
             result.titleGroup = issueEntitlementGroup
 

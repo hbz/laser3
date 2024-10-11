@@ -2397,7 +2397,13 @@ class SurveyService {
                                  [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
 
                         result.countSelectedIEs = countIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
-                        result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(result.subscription)
+                        if(result.surveyConfig.pickAndChoosePerpetualAccess) {
+                            result.countCurrentPermanentTitles = countPerpetualAccessTitlesBySubAndNotInIEGroup(result.subscription, result.surveyConfig)
+                        }
+                        else {
+                            IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
+                            result.countCurrentPermanentTitles = issueEntitlementGroup ? subscriptionService.countCurrentIssueEntitlementsNotInIEGroup(subscriberSub, issueEntitlementGroup) : 0
+                        }
 //                    if (result.surveyConfig.pickAndChoosePerpetualAccess) {
 //                        result.countCurrentIEs = countPerpetualAccessTitlesBySub(result.subscription)
 //                    } else {

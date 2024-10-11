@@ -11,7 +11,7 @@
     String revision
     List<CustomerIdentifier> dummyCIs = []
     List<String> errors = []
-    SortedSet reportTypes
+    Set reportTypes
     String dummy
     subscribedPlatforms.each { Platform platformInstance ->
         Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
@@ -30,7 +30,7 @@
             }
             CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(subscriber, platformInstance)
             if(ci?.value) {
-                reportTypes = subscriptionControllerService.getAvailableReports([subscription: subscriberSub], false)
+                reportTypes = reportTypes ?: subscriptionControllerService.getAvailableReports([subscription: subscriberSub], false)
             }
             else if(ci) {
                 dummyCIs << ci
