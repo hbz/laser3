@@ -86,7 +86,7 @@
                     <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact.organisation")}"
                             data-confirm-term-how="unlink"
-                            controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
+                            controller="addressbook" action="deletePersonRole" params="[oid: oid]"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                         <i class="${Icon.CMD.UNLINK}"></i>

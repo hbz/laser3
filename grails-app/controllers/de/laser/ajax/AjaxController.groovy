@@ -1680,45 +1680,6 @@ class AjaxController {
     }
 
     /**
-     * Deletes a person (contact)-object-relation. Is a substitution call for {@link #deletePersonRole()}
-     * @see Person
-     * @see PersonRole
-     */
-    @Secured(['ROLE_USER'])
-    @Transactional
-    def delete() {
-      switch(params.cmd) {
-        case 'deletePersonRole':
-            deletePersonRole()
-        break
-        case [ 'deleteAddress', 'deleteContact' ]:
-            def obj = genericOIDService.resolveOID(params.oid)
-            if (obj && (obj instanceof Address || obj instanceof Contact)) {
-                obj.delete() // TODO: check perms
-            }
-        break
-        default:
-            log.warn 'ajax.delete(): BLOCKED > ' + params.toMapString()
-        break
-      }
-      redirect(url: request.getHeader('referer'))
-    }
-
-    /**
-     * Deletes a person (contact)-object-relation
-     * @see Person
-     * @see PersonRole
-     */
-    @Secured(['ROLE_ADMIN'])
-    @Transactional
-    def deletePersonRole(){
-        PersonRole personRole = genericOIDService.resolveOID(params.oid) as PersonRole
-        if (personRole) {
-            personRole.delete()
-        }
-    }
-
-    /**
      * Adds an identifier to the given owner object
      */
     @Secured(['ROLE_USER'])
