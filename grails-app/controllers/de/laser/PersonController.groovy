@@ -440,50 +440,6 @@ class PersonController  {
     }
 
     /**
-     * Deletes the given person contact
-     * @return redirects to one of the list views from which the person contact to be deleted has been called
-     */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], withTransaction = 1)
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
-    })
-    def deletePerson() {
-        Person.withTransaction {
-            Person personInstance = Person.get(params.id)
-            if (!personInstance) {
-                flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id]) as String
-                String referer = request.getHeader('referer')
-                redirect(url: referer)
-                return
-            }
-            if (!addressbookService.isPersonEditable(personInstance, contextService.getUser())) {
-                flash.error = message(code: 'default.notAutorized.message') as String
-                redirect(url: request.getHeader('referer'))
-                return
-            }
-
-            try {
-                List changeList = SurveyOrg.findAllByPerson(personInstance)
-                changeList.each { tmp2 ->
-                    tmp2.person = null
-                    tmp2.save()
-                }
-                personInstance.delete()
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'person.label'), params.id]) as String
-                String referer = request.getHeader('referer')
-                redirect(url: referer)
-                return
-            }
-            catch (DataIntegrityViolationException e) {
-                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'person.label'), params.id]) as String
-                String referer = request.getHeader('referer')
-                redirect(url: referer)
-                return
-            }
-        }
-    }
-
-    /**
      * Lists all possible tenants of the given person contact
      * @return a JSON map containing all organisations / institutions linked to the given person contact
      */

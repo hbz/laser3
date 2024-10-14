@@ -78,7 +78,7 @@
                                 </g:if>
                                 <g:else>
                                     <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
-                                            controller="person"
+                                            controller="addressbook"
                                             action="deletePerson"
                                             id="${person.id}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.org.PrsLinksAndContact.function", args: [personRoleLink.functionType.getI10n('value'), person.toString()])}"
@@ -118,7 +118,7 @@
                                 </g:if>
                                 <g:else>
                                     <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
-                                            controller="person"
+                                            controller="addressbook"
                                             action="deletePerson"
                                             id="${person.id}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.org.PrsLinksAndContact.position", args: [personRole.positionType.getI10n('value'), person.toString()])}"

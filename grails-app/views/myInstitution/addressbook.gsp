@@ -170,11 +170,6 @@
     <a class="${params.tab == 'contacts' ? 'active' : ''} item" data-tab="contacts">
         ${message(code: 'org.prsLinks.label')} <ui:bubble count="${num_visiblePersons}" grey="true"/>
     </a>
-
-    <%--<a class="${params.tab == 'personAddresses' ? 'active' : ''} item" data-tab="personAddresses">
-        ${message(code: 'org.prsLinks.adresses.label')}
-    </a>--%>
-
     <a class="${params.tab == 'addresses' ? 'active' : ''} item" data-tab="addresses">
         ${message(code: 'org.addresses.label')} <ui:bubble count="${num_visibleAddresses}" grey="true"/>
     </a>
