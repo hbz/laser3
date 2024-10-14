@@ -217,7 +217,7 @@
                                                     <g:set var="prsRole" value="${PersonRole.getByPersonAndOrgAndRespValue(resp, role.org, roleRespValue)}" />
                                                     <div class="two wide column">
                                                         <div class="ui buttons">
-                                                            <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
+                                                            <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button" controller="addressbook" action="deletePersonRole" id="${prsRole.id}"
                                                                     data-confirm-tokenMsg = "${message(code:'template.orgLinks.delete.warn')}"
                                                                     data-confirm-how = "unlink">
                                                                 <i class="${Icon.CMD.UNLINK}"></i>
@@ -371,7 +371,7 @@
                                                     <g:set var="prsRole" value="${PersonRole.getByPersonAndOrgAndRespValue(resp, role.org, roleRespValue)}" />
                                                     <div class="two wide column">
                                                         <div class="ui buttons">
-                                                            <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
+                                                            <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button" controller="addressbook" action="deletePersonRole" id="${prsRole.id}"
                                                                     data-confirm-tokenMsg = "${message(code:'template.orgLinks.delete.warn')}"
                                                                     data-confirm-how = "unlink">
                                                                 <i class="${Icon.CMD.UNLINK}"></i>

@@ -811,23 +811,6 @@ class AjaxController {
     }
 
     /**
-     * Deletes the given relation link between a {@link Person} its target
-     */
-    @Secured(['ROLE_USER'])
-    @Transactional
-    def delPrsRole() {
-        PersonRole prsRole = PersonRole.get(params.id)
-
-        if (prsRole && prsRole.delete()) {
-        }
-        else {
-            log.error("Problem deleting person role ..")
-            //flash.error = message(code: 'default.error')
-        }
-        redirect(url: request.getHeader('referer'))
-    }
-
-    /**
      * Inserts a new reference data value. Beware: the inserted reference data value does not survive database resets nor is that available throughout the instances;
      * this has to be considered when running this webapp on multiple instances!
      * If you wish to insert a reference data value which persists and is available on different instances, enter the parameters in RefdataValue.csv. This resource file is

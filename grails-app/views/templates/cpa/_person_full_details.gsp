@@ -100,12 +100,11 @@
                         <div class="content">
 
                             <g:if test="${editable && tmplShowDeleteButton}">
-                                <g:set var="oid" value="${personRoleLink.class.name}:${personRoleLink.id}"/>
                                 <g:if test="${person.roleLinks.size() > 1}">
                                     <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.function.contact", args: [personRoleLink.functionType.getI10n('value'), person.toString()])}"
                                             data-confirm-term-how="unlink"
-                                            controller="addressbook" action="deletePersonRole" params="[oid: oid]"
+                                            controller="addressbook" action="deletePersonRole" params="[id: personRoleLink.id]"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                                         <i class="${Icon.CMD.UNLINK}"></i>
@@ -141,13 +140,11 @@
 
                         <div class="content">
                             <g:if test="${editable && tmplShowDeleteButton}">
-                                <g:set var="oid" value="${personRole.class.name}:${personRole.id}"/>
-
                                 <g:if test="${person.roleLinks.size() > 1}">
                                     <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.position.contact", args: [personRole.positionType.getI10n('value'), person.toString()])}"
                                             data-confirm-term-how="unlink"
-                                            controller="addressbook" action="deletePersonRole" params="[oid: oid]"
+                                            controller="addressbook" action="deletePersonRole" params="[id: personRole.id]"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                                         <i class="${Icon.CMD.UNLINK}"></i>
@@ -184,11 +181,10 @@
 
                         <div class="content">
                             <g:if test="${editable && tmplShowDeleteButton}">
-                                <g:set var="oid" value="${personRole.class.name}:${personRole.id}"/>
                                 <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact.organisation")}"
                                         data-confirm-term-how="unlink"
-                                        controller="addressbook" action="deletePersonRole" params="[oid: oid]"
+                                        controller="addressbook" action="deletePersonRole" params="[id: personRole.id]"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                                     <i class="${Icon.CMD.UNLINK}"></i>
@@ -204,11 +200,10 @@
     </div><!-- .la-flex-list -->
     <g:if test="${editable && tmplUnlinkedObj}">
         <td class="right aligned">
-            <g:set var="oid" value="${tmplUnlinkedObj.class.name}:${tmplUnlinkedObj.id}"/>
             <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                     data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact")}"
                     data-confirm-term-how="unlink"
-                    controller="addressbook" action="deletePersonRole" params="[oid: oid]"
+                    controller="addressbook" action="deletePersonRole" params="[id: tmplUnlinkedObj.id]"
                     role="button"
                     aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                 <i class="${Icon.CMD.UNLINK}"></i>

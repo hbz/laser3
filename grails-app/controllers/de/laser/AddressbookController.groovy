@@ -55,8 +55,8 @@ class AddressbookController {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def deletePersonRole() {
-        def obj = genericOIDService.resolveOID(params.oid)
-        if (obj && obj instanceof PersonRole) {
+        PersonRole obj = PersonRole.get(params.id)
+        if (obj) {
             obj.delete() // TODO: check perms
         }
         redirect(url: request.getHeader('referer'))

@@ -80,13 +80,10 @@
                         <laser:render template="/contact/formModal" model="['prsId': personRole.prs.id, modalId: 'contactFormModal'+personRole.prs.id]"/>
                     </g:if>
 
-
-                    <g:set var="oid" value="${personRole.class.name}:${personRole.id}"/>
-
                     <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact.organisation")}"
                             data-confirm-term-how="unlink"
-                            controller="addressbook" action="deletePersonRole" params="[oid: oid]"
+                            controller="addressbook" action="deletePersonRole" params="[id: personRole.id]"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                         <i class="${Icon.CMD.UNLINK}"></i>
