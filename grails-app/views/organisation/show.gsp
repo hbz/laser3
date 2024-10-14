@@ -961,18 +961,6 @@
         }
     };
 
-    JSPC.app.addresscreate_org = function (orgId, typeId, redirect, hideType) {
-        var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?orgId=' + orgId + '&typeId=' + typeId + '&redirect=' + redirect + '&hideType=' + hideType;
-        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);
-        func();
-    }
-
-    <%--JSPC.app.addresscreate_prs = function (prsId, typeId, redirect, hideType) {
-        var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?prsId=' + prsId + '&typeId=' + typeId + '&redirect=' + redirect + '&hideType=' + hideType;
-        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);
-        func();
-    }--%>
-
     <g:if test="${orgInstance.isCustomerType_Inst()}">
         if($("#country").length) {
             JSPC.app.showRegionsdropdown( $("#country").editable('getValue', true) );

@@ -976,12 +976,6 @@
         JSPC.app.personCreate($(this).attr('id'), ${vendor.id});
     });
 
-    JSPC.app.addresscreate_org = function (vendorId, typeId, redirect, hideType) {
-        var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?vendorId=' + vendorId + '&typeId=' + typeId + '&redirect=' + redirect + '&hideType=' + hideType;
-        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);
-        func();
-    }
-
     $('.la-js-addListValue').click(function() {
         let url;
         let returnSelector;

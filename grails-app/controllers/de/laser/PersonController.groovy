@@ -211,52 +211,6 @@ class PersonController  {
     }
 
     /**
-     * Shows the contact details of the given person instance
-     */
-    @Secured(['ROLE_USER'])
-    Map<String,Object> showPerson() {
-        Person personInstance = Person.get(params.id)
-        Org contextOrg = contextService.getOrg()
-
-        if (! personInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id]) as String
-            //redirect action: 'list'
-            redirect(url: request.getHeader('referer'))
-            return
-        }
-        else if(personInstance && ! personInstance.isPublic) {
-            if(contextOrg.id != personInstance.tenant?.id && !SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-                flash.error = message(code: 'default.notAutorized.message') as String
-                redirect(url: request.getHeader('referer'))
-                return
-            }
-        }
-
-        boolean myPublicContact = false // TODO: check
-
-        List<PersonRole> gcp = PersonRole.where {
-            prs == personInstance &&
-            functionType == RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
-        }.findAll()
-        List<PersonRole> fcba = PersonRole.where {
-            prs == personInstance &&
-            functionType == RDStore.PRS_FUNC_INVOICING_CONTACT
-        }.findAll()
-        
-
-        Map<String,Object> result = [
-                institution: contextOrg,
-                personInstance: personInstance,
-                presetOrg: gcp.size() == 1 ? gcp.first().org : fcba.size() == 1 ? fcba.first().org : personInstance.tenant,
-                editable: addressbookService.isPersonEditable(personInstance, contextService.getUser()),
-                myPublicContact: myPublicContact,
-                contextOrg: contextOrg
-        ]
-
-        result
-    }
-
-    /**
      * Takes the submitted parameters and updates the person contact based on the given parameter map
      * @return redirect to the referer -> the updated view of the person contact
      */
@@ -265,8 +219,6 @@ class PersonController  {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def editPerson() {
-        //redirect controller: 'person', action: 'showPerson', params: params
-        //return // ----- deprecated
 
         Person.withTransaction {
             Org contextOrg = contextService.getOrg()
@@ -501,20 +453,12 @@ class PersonController  {
             if (!personInstance) {
                 flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id]) as String
                 String referer = request.getHeader('referer')
-                if (referer.endsWith('person/showPerson/' + params.id)) {
-                    if (params.previousReferer && !params.previousReferer.endsWith('person/showPerson/' + params.id)) {
-                        redirect(url: params.previousReferer)
-                    }
-                    else {
-                        redirect controller: 'myInstitution', action: 'addressbook'
-                    }
-                } else {
-                    redirect(url: request.getHeader('referer'))
-                }
+                redirect(url: referer)
                 return
             }
             if (!addressbookService.isPersonEditable(personInstance, contextService.getUser())) {
-                redirect action: 'showPerson', id: params.id
+                flash.error = message(code: 'default.notAutorized.message') as String
+                redirect(url: request.getHeader('referer'))
                 return
             }
 
@@ -527,22 +471,13 @@ class PersonController  {
                 personInstance.delete()
                 flash.message = message(code: 'default.deleted.message', args: [message(code: 'person.label'), params.id]) as String
                 String referer = request.getHeader('referer')
-                if (referer.endsWith('person/showPerson/' + params.id)) {
-                    if (params.previousReferer && !params.previousReferer.endsWith('person/showPerson/' + params.id)) {
-                        redirect(url: params.previousReferer)
-                    }
-                    else {
-                        redirect controller: 'myInstitution', action: 'addressbook'
-                        return
-                    }
-                } else {
-                    redirect(url: referer)
-                    return
-                }
+                redirect(url: referer)
+                return
             }
             catch (DataIntegrityViolationException e) {
                 flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'person.label'), params.id]) as String
-                redirect action: 'showPerson', id: params.id
+                String referer = request.getHeader('referer')
+                redirect(url: referer)
                 return
             }
         }
@@ -569,138 +504,6 @@ class PersonController  {
         render result as JSON
     }
 
-    @Deprecated
-    @Secured(['ROLE_USER'])
-    def ajax() {        
-        Person person               = Person.get(params.id)
-        def existingPrsLinks
-        
-        def allSubjects             // all subjects of given type
-        def subjectType             // type of subject
-        def subjectFormOptionValue
-        
-        def cmd      = params.cmd
-        def roleType = params.roleType
-        
-        // requesting form for deleting existing personRoles
-        if('list' == cmd){ 
-            
-            if(person){
-                if('func' == roleType){
-                    RefdataCategory rdc = RefdataCategory.getByDesc(RDConstants.PERSON_FUNCTION)
-                    String hqlPart = "from PersonRole as PR where PR.prs = ${person?.id} and PR.functionType.owner = ${rdc.id}"
-                    existingPrsLinks = PersonRole.findAll(hqlPart) 
-                }
-                else if('resp' == roleType){
-                    RefdataCategory rdc = RefdataCategory.getByDesc(RDConstants.PERSON_RESPONSIBILITY)
-                    String hqlPart = "from PersonRole as PR where PR.prs = ${person?.id} and PR.responsibilityType.owner = ${rdc.id}"
-                    existingPrsLinks = PersonRole.findAll(hqlPart)
-                }
-
-                render view: 'ajax/listPersonRoles', model: [
-                    existingPrsLinks: existingPrsLinks
-                ]
-                return
-            }
-            else {
-                render "No Data found."
-                return
-            }
-        }
-        
-        // requesting form for adding new personRoles
-        else if('add' == cmd){
-
-            RefdataValue roleRdv = RefdataValue.get(params.roleTypeId)
-
-            if('func' == roleType){
-                
-                // only one rdv of person function
-            }
-            else if('resp' == roleType){
-                
-                if(roleRdv == RDStore.PRS_RESP_SPEC_LIC_EDITOR) {
-                    allSubjects             = License.getAll()
-                    subjectType             = "license"
-                    subjectFormOptionValue  = "reference"
-                }
-                else if(roleRdv == RDStore.PRS_RESP_SPEC_PKG_EDITOR) {
-                    allSubjects             = Package.getAll()
-                    subjectType             = "package"
-                    subjectFormOptionValue  = "name"
-                }
-                else if(roleRdv == RDStore.PRS_RESP_SPEC_SUB_EDITOR) {
-                    allSubjects             = Subscription.getAll()
-                    subjectType             = "subscription"
-                    subjectFormOptionValue  = "name"
-                }
-            }
-            
-            render view: 'ajax/addPersonRole', model: [
-                personInstance:     person,
-                allOrgs:            Org.getAll(),
-                allSubjects:        allSubjects,
-                subjectType:        subjectType,
-                subjectOptionValue: subjectFormOptionValue,
-                existingPrsLinks:   existingPrsLinks,
-                roleType:           roleType,
-                roleRdv:            roleRdv,
-                org:                Org.get(params.org),        // through passing for g:select value
-                timestamp:          System.currentTimeMillis()
-                ]
-            return
-        }
-    }
-
-    /**
-     * Assigns a new function / position / responsibility to the given person contact
-     * @return if a redirect has been specified, the redirect is being executed; the person details page otherwise
-     */
-    @Transactional
-    @Secured(['ROLE_USER'])
-    def addPersonRole() {
-        PersonRole result
-        Person prs = Person.get(params.id)
-
-        if (addressbookService.isPersonEditable(prs, contextService.getUser())) {
-
-            if (params.newPrsRoleOrg && params.newPrsRoleType) {
-                Org org = Org.get(params.newPrsRoleOrg)
-                RefdataValue rdv = RefdataValue.get(params.newPrsRoleType)
-
-                def prAttr = params.roleType ?: PersonRole.TYPE_FUNCTION
-
-                if (prAttr in [PersonRole.TYPE_FUNCTION, PersonRole.TYPE_POSITION]) {
-
-                    String query = "from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${org.id} and PR.${prAttr} = ${rdv.id}"
-                    if (PersonRole.find(query)) {
-                        log.debug("ignore adding PersonRole because of existing duplicate")
-                    }
-                    else {
-                        result = new PersonRole(prs: prs, org: org)
-                        result."${prAttr}" = rdv
-
-                        if (result.save()) {
-                            log.debug("adding PersonRole ${result}")
-                        }
-                        else {
-                            log.error("problem saving new PersonRole ${result}")
-                        }
-                    }
-                }
-            }
-        }
-
-        if (params.redirect) {
-            redirect(url: request.getHeader('referer'), params: params)
-            return
-        }
-        else {
-            redirect action: 'showPerson', id: params.id
-            return
-        }
-    }
-
     /**
      * Removes an assignal from the given person contact
      * @return the person details view
@@ -723,7 +526,7 @@ class PersonController  {
                 }
             }
         }
-        redirect action: 'showPerson', id: params.id
+        redirect(url: request.getHeader('referer'))
     }
 
     @Deprecated

@@ -72,14 +72,6 @@
 
             <div class="content">
                 <g:if test="${editable && tmplShowDeleteButton}">
-
-                    <g:if test="${showAddContacts}">
-                        <input class="${Btn.ICON.SIMPLE}" type="button" data-ui="modal"
-                               data-href="#contactFormModal${personRole.prs.id}"
-                               value="${message(code: 'default.add.label', args: [message(code: 'person.contacts.label')])}">
-                        <laser:render template="/contact/formModal" model="['prsId': personRole.prs.id, modalId: 'contactFormModal'+personRole.prs.id]"/>
-                    </g:if>
-
                     <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact.organisation")}"
                             data-confirm-term-how="unlink"

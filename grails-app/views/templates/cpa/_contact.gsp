@@ -33,7 +33,7 @@
 				<g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contactItems.addressbook")}"
                         data-confirm-term-how="delete"
-                        controller="addressbook" action="deleteContact" params="[oid: contact.id]"
+                        controller="addressbook" action="deleteContact" params="[id: contact.id]"
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
 					<i class="${Icon.CMD.DELETE}"></i>
