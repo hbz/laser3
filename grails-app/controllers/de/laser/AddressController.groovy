@@ -83,54 +83,6 @@ class AddressController  {
     }
 
     /**
-     * Shows the given address details
-     * @return a modal containing the address details
-     */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
-    @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
-    })
-    def showAddress() {
-        Address addressInstance = Address.get(params.id)
-        if (! addressInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label'), params.id]) as String
-            redirect(url: request.getHeader('referer'))
-            return
-        }
-        String messageCode
-        switch (addressInstance.type){
-            case RDStore.ADDRESS_TYPE_POSTAL:
-                messageCode = "addressFormModalPostalAddress"
-                break
-            case RDStore.ADDRESS_TYPE_BILLING:
-                messageCode = "addressFormModalBillingAddress"
-                break
-            case RDStore.ADDRESS_TYPE_LEGAL_PATRON:
-                messageCode = "addressFormModalLegalPatronAddress"
-                break
-            case RDStore.ADDRESS_TYPE_DELIVERY:
-                messageCode = "addressFormModalDeliveryAddress"
-                break
-            case RDStore.ADDRESS_TYPE_LIBRARY:
-                messageCode = "addressFormModalLibraryAddress"
-                break
-        }
-        Map model = [
-            addressInstance: addressInstance,
-            orgId: addressInstance.org?.id,
-            prsId: addressInstance.prs?.id,
-            typeId: addressInstance.type?.id,
-            modalText: messageCode?
-                    message(code: 'default.edit.label', args: [message(code: messageCode)]) :
-                    message(code: 'default.new.label', args: [message(code: 'person.address.label')]),
-            editable: addressbookService.isAddressEditable(addressInstance, contextService.getUser()),
-            redirect: '.',
-            hideType: true
-        ]
-        render template: "/templates/cpa/addressFormModal", model: model
-    }
-
-    /**
      * Updates the given address with the given updated data
      */
     @DebugInfo(isInstEditor_or_ROLEADMIN = [], withTransaction = 1)
@@ -213,7 +165,7 @@ class AddressController  {
                 return
             }
             if (!addressbookService.isAddressEditable(addressInstance, contextService.getUser())) {
-                redirect action: 'showAddress', id: params.id
+                redirect(url: request.getHeader('referer')) // ?
                 return
             }
 
@@ -231,7 +183,7 @@ class AddressController  {
             }
             catch (DataIntegrityViolationException e) {
                 flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'address.label'), params.id]) as String
-                redirect action: 'showAddress', id: params.id
+                redirect(url: request.getHeader('referer'))
                 return
             }
         }
