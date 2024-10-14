@@ -211,52 +211,6 @@ class PersonController  {
     }
 
     /**
-     * Shows the contact details of the given person instance
-     */
-    @Secured(['ROLE_USER'])
-    Map<String,Object> showPerson() {
-        Person personInstance = Person.get(params.id)
-        Org contextOrg = contextService.getOrg()
-
-        if (! personInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id]) as String
-            //redirect action: 'list'
-            redirect(url: request.getHeader('referer'))
-            return
-        }
-        else if(personInstance && ! personInstance.isPublic) {
-            if(contextOrg.id != personInstance.tenant?.id && !SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-                flash.error = message(code: 'default.notAutorized.message') as String
-                redirect(url: request.getHeader('referer'))
-                return
-            }
-        }
-
-        boolean myPublicContact = false // TODO: check
-
-        List<PersonRole> gcp = PersonRole.where {
-            prs == personInstance &&
-            functionType == RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
-        }.findAll()
-        List<PersonRole> fcba = PersonRole.where {
-            prs == personInstance &&
-            functionType == RDStore.PRS_FUNC_INVOICING_CONTACT
-        }.findAll()
-        
-
-        Map<String,Object> result = [
-                institution: contextOrg,
-                personInstance: personInstance,
-                presetOrg: gcp.size() == 1 ? gcp.first().org : fcba.size() == 1 ? fcba.first().org : personInstance.tenant,
-                editable: addressbookService.isPersonEditable(personInstance, contextService.getUser()),
-                myPublicContact: myPublicContact,
-                contextOrg: contextOrg
-        ]
-
-        result
-    }
-
-    /**
      * Takes the submitted parameters and updates the person contact based on the given parameter map
      * @return redirect to the referer -> the updated view of the person contact
      */
@@ -265,8 +219,6 @@ class PersonController  {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def editPerson() {
-        //redirect controller: 'person', action: 'showPerson', params: params
-        //return // ----- deprecated
 
         Person.withTransaction {
             Org contextOrg = contextService.getOrg()
@@ -501,20 +453,12 @@ class PersonController  {
             if (!personInstance) {
                 flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id]) as String
                 String referer = request.getHeader('referer')
-                if (referer.endsWith('person/showPerson/' + params.id)) {
-                    if (params.previousReferer && !params.previousReferer.endsWith('person/showPerson/' + params.id)) {
-                        redirect(url: params.previousReferer)
-                    }
-                    else {
-                        redirect controller: 'myInstitution', action: 'addressbook'
-                    }
-                } else {
-                    redirect(url: request.getHeader('referer'))
-                }
+                redirect(url: referer)
                 return
             }
             if (!addressbookService.isPersonEditable(personInstance, contextService.getUser())) {
-                redirect action: 'showPerson', id: params.id
+                flash.error = message(code: 'default.notAutorized.message') as String
+                redirect(url: request.getHeader('referer'))
                 return
             }
 
@@ -527,22 +471,13 @@ class PersonController  {
                 personInstance.delete()
                 flash.message = message(code: 'default.deleted.message', args: [message(code: 'person.label'), params.id]) as String
                 String referer = request.getHeader('referer')
-                if (referer.endsWith('person/showPerson/' + params.id)) {
-                    if (params.previousReferer && !params.previousReferer.endsWith('person/showPerson/' + params.id)) {
-                        redirect(url: params.previousReferer)
-                    }
-                    else {
-                        redirect controller: 'myInstitution', action: 'addressbook'
-                        return
-                    }
-                } else {
-                    redirect(url: referer)
-                    return
-                }
+                redirect(url: referer)
+                return
             }
             catch (DataIntegrityViolationException e) {
                 flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'person.label'), params.id]) as String
-                redirect action: 'showPerson', id: params.id
+                String referer = request.getHeader('referer')
+                redirect(url: referer)
                 return
             }
         }
@@ -696,7 +631,7 @@ class PersonController  {
             return
         }
         else {
-            redirect action: 'showPerson', id: params.id
+            redirect(url: request.getHeader('referer'))
             return
         }
     }
@@ -723,7 +658,7 @@ class PersonController  {
                 }
             }
         }
-        redirect action: 'showPerson', id: params.id
+        redirect(url: request.getHeader('referer'))
     }
 
     @Deprecated
