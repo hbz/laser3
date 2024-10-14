@@ -83,11 +83,6 @@
 
                                 </g:each>
                             </div>
-                            <g:if test="${editable}">
-                                <input class="${Btn.SIMPLE}" type="button" data-ui="modal" data-href="#contactFormModal"
-                                       value="${message(code: 'default.add.label', args: [message(code: 'person.contacts.label')])}">
-                                <laser:render template="/contact/formModal" model="['prsId': personInstance?.id]"/>
-                            </g:if>
                         </dd>
                     </dl>
 
@@ -152,9 +147,6 @@
                                     </g:each>
                                 </div>
 
-                                <g:if test="${editable}">
-                                    <a href="#prFunctionModal" data-ui="modal" class="${Btn.SIMPLE}">${message('code':'default.button.add.label')}</a>
-                                </g:if>
                             </dd>
                         </dl>
 
@@ -212,9 +204,6 @@
                                     </g:each>
                                 </div>
 
-                                <g:if test="${editable}">
-                                    <a href="#prPositionModal" data-ui="modal" class="${Btn.SIMPLE}">${message('code':'default.button.add.label')}</a>
-                                </g:if>
                             </dd>
                         </dl>
 
@@ -370,29 +359,5 @@
     </aside><!-- .four -->
 
 </div><!-- .grid -->
-
-<laser:render template="prsRoleModal" model="[
-        tmplId: 'prFunctionModal',
-        tmplRoleType: 'Funktion',
-        roleType: PersonRole.TYPE_FUNCTION,
-        roleTypeValues: PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION),
-        message:'person.function_new.label',
-        presetOrgId: presetOrg?.id]" />
-
-<laser:render template="prsRoleModal" model="[
-        tmplId: 'prPositionModal',
-        tmplRoleType: 'Position',
-        roleType: PersonRole.TYPE_POSITION,
-        roleTypeValues: PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION),
-        message:'person.position_new.label',
-        presetOrgId: presetOrg?.id]" />
-
-<laser:script file="${this.getGroovyPageFileName()}">
-    JSPC.app.addresscreate_prs = function (prsId, typeId, redirect, modalId, hideType) {
-        var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'?prsId=' + prsId + '&typeId=' + typeId + '&redirect=' + redirect + '&modalId=' + modalId + '&hideType=' + hideType;
-        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);
-        func();
-    }
-</laser:script>
 
 <laser:htmlEnd />

@@ -37,40 +37,6 @@
             </g:if>
 
             <div class="content">
-                <g:if test="${editable}">
-
-                    <g:if test="${tmplShowAddPersonRoles}">
-                        <input class="${Btn.ICON.SIMPLE}" type="button" data-ui="modal"
-                               data-href="#prsRoleFormModal${personRole.id}_F"
-                               value="Funktionen">
-                        <laser:render template="/person/prsRoleModal" model="[personInstance: person,
-                                                                          tmplId: 'prsRoleFormModal' + personRole.id + '_F',
-                                                                          tmplRoleType: 'Funktion',
-                                                                          roleType: PersonRole.TYPE_FUNCTION,
-                                                                          roleTypeValues: PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION),
-                                                                          message:'person.function_new.label',
-                                                                          presetOrgId: personContext.id ]"/>
-
-                        <input class="${Btn.ICON.SIMPLE}" type="button" data-ui="modal"
-                               data-href="#prsRoleFormModal${personRole.id}_P"
-                               value="Positionen">
-                        <laser:render template="/person/prsRoleModal" model="[personInstance: person,
-                                                                          tmplId: 'prsRoleFormModal' + personRole.id + '_P',
-                                                                          tmplRoleType: 'Funktion',
-                                                                          roleType: PersonRole.TYPE_POSITION,
-                                                                          roleTypeValues: PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION),
-                                                                          message:'person.position_new.label',
-                                                                          presetOrgId: personContext.id ]"/>
-                    </g:if>
-
-                    <g:if test="${tmplShowAddContacts}">
-                        <input class="${Btn.ICON.SIMPLE}" type="button" data-ui="modal"
-                               data-href="#contactFormModal${personRole.id}"
-                               value="${message(code: 'person.contacts.label')}">
-                        <laser:render template="/contact/formModal" model="['prsId': person.id, prId: personRole.id, modalId: 'contactFormModal' + personRole.id]"/>
-                    </g:if>
-
-                </g:if>
             </div>
         </div><!-- .person-details -->
 
