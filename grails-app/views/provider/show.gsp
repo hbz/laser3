@@ -1010,12 +1010,6 @@
         JSPC.app.personCreate($(this).attr('id'), ${provider.id});
     });
 
-    JSPC.app.addresscreate_org = function (providerId, typeId, redirect, hideType) {
-        var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?providerId=' + providerId + '&typeId=' + typeId + '&redirect=' + redirect + '&hideType=' + hideType;
-        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);
-        func();
-    }
-
     $('.la-js-addListValue').click(function() {
         let url;
         let returnSelector;

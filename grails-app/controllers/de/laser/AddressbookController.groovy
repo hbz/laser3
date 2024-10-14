@@ -34,6 +34,10 @@ class AddressbookController {
         Address obj = Address.get(params.id)
         if (accessService.hasAccessToAddress(obj)) {
             obj.delete() // TODO: check perms
+            flash.message = message(code: 'default.deleted.message', args: [message(code: 'address.label'), params.id])
+        }
+        else {
+            flash.error = message(code: 'default.noPermissions')
         }
         redirect(url: request.getHeader('referer'))
     }
@@ -46,6 +50,10 @@ class AddressbookController {
         Contact obj = Contact.get(params.id)
         if (accessService.hasAccessToContact(obj)) {
             obj.delete() // TODO: check perms
+            flash.message = message(code: 'default.deleted.message', args: [message(code: 'contact.label'), params.id])
+        }
+        else {
+            flash.error = message(code: 'default.noPermissions')
         }
         redirect(url: request.getHeader('referer'))
     }
@@ -58,6 +66,9 @@ class AddressbookController {
         PersonRole obj = PersonRole.get(params.id)
         if (obj) {
             obj.delete() // TODO: check perms
+        }
+        else {
+            flash.error = message(code: 'default.noPermissions')
         }
         redirect(url: request.getHeader('referer'))
     }
