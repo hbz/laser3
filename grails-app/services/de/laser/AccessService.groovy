@@ -168,4 +168,42 @@ class AccessService {
         return check
     }
 
+    // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
+    boolean hasAccessToAddress(Address address) {
+        return true // TODO
+
+        boolean check = false
+
+        if (!address) {
+            // .. invalid
+        }
+
+        return check
+    }
+
+    // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
+    boolean hasAccessToContact(Contact contact) {
+        return true // TODO
+
+        boolean check = false
+
+        if (!contact) {
+            // .. invalid
+        }
+
+        return check
+    }
+
+    // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
+    boolean hasAccessToPerson(Person person) {
+        return true // TODO
+
+        boolean check = false
+
+        if (!person) {
+            // .. invalid
+        }
+
+        return check
+    }
 }

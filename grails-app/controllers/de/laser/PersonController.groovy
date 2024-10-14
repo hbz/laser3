@@ -25,7 +25,7 @@ class PersonController  {
     FormService formService
     GenericOIDService genericOIDService
 
-    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+    static allowedMethods = [createPerson: ['GET', 'POST'], editPerson: ['GET', 'POST'], deletePerson: 'POST']
 
     /**
      * Redirects to the addressbook of the context institution
@@ -47,7 +47,7 @@ class PersonController  {
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
-    def create() {
+    def createPerson() {
         Person.withTransaction {
             Org contextOrg = contextService.getOrg()
             List userMemberships = contextService.getUser().formalOrg ? [contextService.getUser().formalOrg] : []
@@ -214,7 +214,7 @@ class PersonController  {
      * Shows the contact details of the given person instance
      */
     @Secured(['ROLE_USER'])
-    Map<String,Object> show() {
+    Map<String,Object> showPerson() {
         Person personInstance = Person.get(params.id)
         Org contextOrg = contextService.getOrg()
 
@@ -264,8 +264,8 @@ class PersonController  {
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
-    def edit() {
-        //redirect controller: 'person', action: 'show', params: params
+    def editPerson() {
+        //redirect controller: 'person', action: 'showPerson', params: params
         //return // ----- deprecated
 
         Person.withTransaction {
@@ -346,7 +346,6 @@ class PersonController  {
                         log.debug("ignore adding PersonRole because of existing duplicate")
                     }
                 }
-
             }
 
             if(personRoleOrg) {
@@ -411,7 +410,6 @@ class PersonController  {
                         log.debug("ignore adding PersonRole because of existing duplicate")
                     }
                 }
-
             }
 
             Set<Long> toDelete = []
@@ -497,14 +495,14 @@ class PersonController  {
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
-    def delete() {
+    def deletePerson() {
         Person.withTransaction {
             Person personInstance = Person.get(params.id)
             if (!personInstance) {
                 flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id]) as String
                 String referer = request.getHeader('referer')
-                if (referer.endsWith('person/show/' + params.id)) {
-                    if (params.previousReferer && !params.previousReferer.endsWith('person/show/' + params.id)) {
+                if (referer.endsWith('person/showPerson/' + params.id)) {
+                    if (params.previousReferer && !params.previousReferer.endsWith('person/showPerson/' + params.id)) {
                         redirect(url: params.previousReferer)
                     }
                     else {
@@ -516,7 +514,7 @@ class PersonController  {
                 return
             }
             if (!addressbookService.isPersonEditable(personInstance, contextService.getUser())) {
-                redirect action: 'show', id: params.id
+                redirect action: 'showPerson', id: params.id
                 return
             }
 
@@ -529,8 +527,8 @@ class PersonController  {
                 personInstance.delete()
                 flash.message = message(code: 'default.deleted.message', args: [message(code: 'person.label'), params.id]) as String
                 String referer = request.getHeader('referer')
-                if (referer.endsWith('person/show/' + params.id)) {
-                    if (params.previousReferer && !params.previousReferer.endsWith('person/show/' + params.id)) {
+                if (referer.endsWith('person/showPerson/' + params.id)) {
+                    if (params.previousReferer && !params.previousReferer.endsWith('person/showPerson/' + params.id)) {
                         redirect(url: params.previousReferer)
                     }
                     else {
@@ -544,7 +542,7 @@ class PersonController  {
             }
             catch (DataIntegrityViolationException e) {
                 flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'person.label'), params.id]) as String
-                redirect action: 'show', id: params.id
+                redirect action: 'showPerson', id: params.id
                 return
             }
         }
@@ -698,7 +696,7 @@ class PersonController  {
             return
         }
         else {
-            redirect action: 'show', id: params.id
+            redirect action: 'showPerson', id: params.id
             return
         }
     }
@@ -725,7 +723,7 @@ class PersonController  {
                 }
             }
         }
-        redirect action: 'show', id: params.id
+        redirect action: 'showPerson', id: params.id
     }
 
     @Deprecated

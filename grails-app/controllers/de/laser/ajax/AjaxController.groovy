@@ -811,23 +811,6 @@ class AjaxController {
     }
 
     /**
-     * Deletes the given relation link between a {@link Person} its target
-     */
-    @Secured(['ROLE_USER'])
-    @Transactional
-    def delPrsRole() {
-        PersonRole prsRole = PersonRole.get(params.id)
-
-        if (prsRole && prsRole.delete()) {
-        }
-        else {
-            log.error("Problem deleting person role ..")
-            //flash.error = message(code: 'default.error')
-        }
-        redirect(url: request.getHeader('referer'))
-    }
-
-    /**
      * Inserts a new reference data value. Beware: the inserted reference data value does not survive database resets nor is that available throughout the instances;
      * this has to be considered when running this webapp on multiple instances!
      * If you wish to insert a reference data value which persists and is available on different instances, enter the parameters in RefdataValue.csv. This resource file is
@@ -1677,45 +1660,6 @@ class AjaxController {
         result.dueDatesCount = dashboardDueDatesService.countDashboardDueDates(contextService.getUser(), contextService.getOrg())
 
         render (template: "/user/tableDueDates", model: [dueDates: result.dueDates, dueDatesCount: result.dueDatesCount, max: result.max, offset: result.offset])
-    }
-
-    /**
-     * Deletes a person (contact)-object-relation. Is a substitution call for {@link #deletePersonRole()}
-     * @see Person
-     * @see PersonRole
-     */
-    @Secured(['ROLE_USER'])
-    @Transactional
-    def delete() {
-      switch(params.cmd) {
-        case 'deletePersonRole':
-            deletePersonRole()
-        break
-        case [ 'deleteAddress', 'deleteContact' ]:
-            def obj = genericOIDService.resolveOID(params.oid)
-            if (obj && (obj instanceof Address || obj instanceof Contact)) {
-                obj.delete() // TODO: check perms
-            }
-        break
-        default:
-            log.warn 'ajax.delete(): BLOCKED > ' + params.toMapString()
-        break
-      }
-      redirect(url: request.getHeader('referer'))
-    }
-
-    /**
-     * Deletes a person (contact)-object-relation
-     * @see Person
-     * @see PersonRole
-     */
-    @Secured(['ROLE_ADMIN'])
-    @Transactional
-    def deletePersonRole(){
-        PersonRole personRole = genericOIDService.resolveOID(params.oid) as PersonRole
-        if (personRole) {
-            personRole.delete()
-        }
     }
 
     /**

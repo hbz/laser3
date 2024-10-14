@@ -77,7 +77,7 @@
                                             contact: c,
                                             tmplShowDeleteButton: true,
                                             controller: 'person',
-                                            action: 'show',
+                                            action: 'showPerson',
                                             id: personInstance.id
                                     ]}"/>
 
@@ -90,36 +90,6 @@
                             </g:if>
                         </dd>
                     </dl>
-
-                    <%--<dl>
-                        <dt><g:message code="person.addresses.label" /></dt>
-                        <dd>
-                            <div class="ui divided middle aligned selection list la-flex-list">
-                                <g:each in="${personInstance.addresses.sort{it.type.each {it?.getI10n('value')}}}" var="a">
-                                    <laser:render template="/templates/cpa/address" model="${[
-                                            address: a,
-                                            editable            : editable,
-                                            tmplShowDeleteButton: true,
-                                            controller: 'person',
-                                            action: 'show',
-                                            id: personInstance.id
-                                    ]}"/>
-
-                                </g:each>
-                            </div>
-                            <g:if test="${editable}">
-                                <% Map model = [:]
-                                model.prsId = personInstance.id
-                                model.redirect = '.'
-                                model.typeId = RDStore.ADDRESS_TYPE_LIBRARY.id
-                                model.hideType = true%>
-                                <input class="${Btn.BASIC_ICON}" type="button"
-                                       value="${message(code: 'default.add.label', args: [message(code: 'address.label')])}"
-                                       onclick="JSPC.app.addresscreate_prs('${model.prsId}', '${model.typeId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');"
-                                >
-                            </g:if>
-                        </dd>
-                    </dl>--%>
 
                 </div>
             </div><!-- .card -->
@@ -164,7 +134,7 @@
                                                             <div class="ui buttons">
                                                                 <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                                         controller="person"
-                                                                        action="delete"
+                                                                        action="deletePerson"
                                                                         id="${personInstance?.id}"
                                                                         params="[previousReferer: request.getHeader('referer')]"
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.org.PrsLinksAndContact.function", args:[link?.functionType?.getI10n('value'), personInstance.toString()])}"
@@ -224,7 +194,7 @@
                                                             <div class="ui buttons">
                                                                 <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                                         controller="person"
-                                                                        action="delete"
+                                                                        action="deletePerson"
                                                                         id="${personInstance?.id}"
                                                                         params="[previousReferer: request.getHeader('referer')]"
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.org.PrsLinksAndContact.function", args:[link.positionType?.getI10n('value'), personInstance.toString()])}"
@@ -380,7 +350,7 @@
                 <div class="ui card">
                     <div class="content">
                             <g:link controller="person"
-                                    action="delete"
+                                    action="deletePerson"
                                     id="${personInstance?.id}"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact", args: [personInstance])}"
                                     data-confirm-term-how="delete"
@@ -418,11 +388,6 @@
         presetOrgId: presetOrg?.id]" />
 
 <laser:script file="${this.getGroovyPageFileName()}">
-        %{--function addresscreate_org(orgId, typeId, redirect, modalId, hideType) {--}%
-            %{--var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?orgId='+orgId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;--}%
-            %{--private_address_modal(url);--}%
-        %{--}--}%
-
     JSPC.app.addresscreate_prs = function (prsId, typeId, redirect, modalId, hideType) {
         var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'?prsId=' + prsId + '&typeId=' + typeId + '&redirect=' + redirect + '&modalId=' + modalId + '&hideType=' + hideType;
         var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);

@@ -101,62 +101,8 @@
                                     <input name="personRoleVendor" type="hidden" value="${vendor.id}"/>
                                 </div>
                             </g:elseif>
-                        %{--<g:else>
-                            <label for="personRoleOrg">
-                                <g:message code="contact.belongesTo.label"/>
-                            </label>
-                            <i class="${Icon.ORG} icon la-list-icon"></i>${org?.name}
-                            <input id="personRoleOrg" name="personRoleOrg" type="hidden" value="${org?.id}"/>
-                        </g:else>--}%
 
                     </g:if>
-                %{-- <g:if test="${actionName != 'contacts'}">
-                     <div class="field">
-                         <g:if test="${institution}">
-                             <label for="functionOrg">
-                                 <g:message code="contact.belongesTo.label"/>
-                             </label>
-                             <g:select class="ui search dropdown"
-                                       name="functionOrg"
-                                       from="${orgList}"
-                                       value="${org?.id}"
-                                       optionKey="id"
-                                       optionValue=""/>
-                         </g:if>
-                         <g:else>
-                             <label for="functionOrg">
-                                 <g:message code="contact.belongesTo.label"/>
-                             </label>
-                             <i class="${Icon.ORG} icon la-list-icon"></i>${org?.name}
-                             <input id="functionOrg" name="functionOrg" type="hidden" value="${org?.id}"/>
-                         </g:else>
-                     </div>
-                 </g:if>--}%
-
-                %{--<g:if test="${actionName != 'contacts'}">
-                    <div class="field">
-
-                        <g:if test="${institution}">
-                            <label for="positionOrg">
-                                <g:message code="contact.belongesTo.label"/>
-                            </label>
-                            <g:select class="ui search dropdown"
-                                      name="positionOrg"
-                                      from="${orgList}"
-                                      value="${org?.id}"
-                                      optionKey="id"
-                                      optionValue=""/>
-                        </g:if>
-                        <g:else>
-                            <label for="positionOrg">
-                                <g:message code="contact.belongesTo.label"/>
-                            </label>
-                            <i class="${Icon.ORG} icon la-list-icon"></i>${org?.name}
-                            <input id="positionOrg" name="positionOrg" type="hidden" value="${org?.id}"/>
-                        </g:else>
-                    </div>
-                </g:if>--}%
-
                 </div>
             </div><!-- .field -->
                 <!-- Alternating contact buttons START-->
@@ -194,8 +140,6 @@
                         </label>
                         <g:textField name="last_name"  value="${personInstance?.last_name}"/>
                     </div>
-
-
 
                     <div id="person_gender"
                          class="field wide four ${hasErrors(bean: personInstance, field: 'gender', 'error')} ">

@@ -32,14 +32,6 @@
             </g:each>
 
         </g:if>
-        <%--<g:if test="${person.addresses}">
-
-            <g:each in="${person.addresses.sort { it?.type.each {it?.getI10n('value')} }}" var="address">
-                <laser:render template="/templates/cpa/address"
-                          model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton, editable: editable]}"/>
-            </g:each>
-
-        </g:if>--%>
 
         <g:if test="${!personRole && !tmplHideLinkToAddressbook}">
 
@@ -88,13 +80,10 @@
                         <laser:render template="/contact/formModal" model="['prsId': personRole.prs.id, modalId: 'contactFormModal'+personRole.prs.id]"/>
                     </g:if>
 
-
-                    <g:set var="oid" value="${personRole.class.name}:${personRole.id}"/>
-
                     <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact.organisation")}"
                             data-confirm-term-how="unlink"
-                            controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
+                            controller="addressbook" action="deletePersonRole" params="[id: personRole.id]"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                         <i class="${Icon.CMD.UNLINK}"></i>
