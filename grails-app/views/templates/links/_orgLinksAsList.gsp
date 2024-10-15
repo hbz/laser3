@@ -51,14 +51,14 @@
                         </g:if>
 
                         <g:if test="${showPersons}">
-                                <button class="${Btn.MODERN.SIMPLE_TOOLTIP} la-selectable-button" data-ui="modal" data-href="#${cssId}" data-content="${message(code:'subscription.details.addNewContact')}">
-                                    <i class="${Icon.CMD.ADD}"></i>
-                                </button>
+                            <button class="${Btn.MODERN.SIMPLE_TOOLTIP} la-selectable-button" data-ui="modal" data-href="#${cssId}" data-content="${message(code:'subscription.details.addNewContact')}">
+                                <i class="${Icon.CMD.ADD}"></i>
+                            </button>
 
-                        <laser:render template="/templates/links/orgLinksAsListAddPrsModal"
-                                  model="['cssId': cssId,
-                                          'orgRole': role,
-                                          'roleObject': roleObject,
+                            <laser:render template="/templates/links/linksAsListAddPrsModal"
+                                  model="[cssId: cssId,
+                                          relation: role,
+                                          roleObject: roleObject,
                                           parent: genericOIDService.getOID(roleObject),
                                           role: genericOIDService.getOID(modalPrsLinkRole)
                                   ]"/>

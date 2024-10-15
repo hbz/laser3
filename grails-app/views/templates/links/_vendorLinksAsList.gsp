@@ -57,21 +57,20 @@
                                 <i class="${Icon.SIG.SHARED_OBJECT_ON} grey"></i>
                             </span>
                         </g:if>
-                        <%--
-                        <g:if test="${showPersons}">
-                                <button class="${Btn.MODERN.SIMPLE_TOOLTIP} la-selectable-button" data-ui="modal" data-href="#${cssId}" data-content="${message(code:'subscription.details.addNewContact')}">
-                                    <i class="${Icon.CMD.ADD}"></i>
-                                </button>
 
-                        <laser:render template="/templates/links/vendorLinksAsListAddPrsModal"
-                                  model="['cssId': cssId,
-                                          'orgRole': role,
-                                          'roleObject': roleObject,
+                        <g:if test="${showPersons}">
+                            <button class="${Btn.MODERN.SIMPLE_TOOLTIP} la-selectable-button" data-ui="modal" data-href="#${cssId}" data-content="${message(code:'subscription.details.addNewContact')}">
+                                <i class="${Icon.CMD.ADD}"></i>
+                            </button>
+
+                            <laser:render template="/templates/links/linksAsListAddPrsModal"
+                                  model="[cssId: cssId,
+                                          relation: role,
+                                          roleObject: roleObject,
                                           parent: genericOIDService.getOID(roleObject),
                                           role: genericOIDService.getOID(modalPrsLinkRole)
                                   ]"/>
                         </g:if>
-                        --%>
                     </g:if>
                 </td>
 
