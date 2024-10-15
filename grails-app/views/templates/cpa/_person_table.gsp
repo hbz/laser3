@@ -321,7 +321,7 @@
                         <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                     </button>
 
-                    <g:form style="display:inline" controller="person" action="deletePerson" data-confirm-id="${person.id.toString() + '_form'}">
+                    <g:form style="display:inline" controller="addressbook" action="deletePerson" data-confirm-id="${person.id.toString() + '_form'}">
                         <g:hiddenField id="person_id_${person.id}" name="id" value="${person.id}"/>
                         <div class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                              data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact.addressbook", args: [person.toString()])}"

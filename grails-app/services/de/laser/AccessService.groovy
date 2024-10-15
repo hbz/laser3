@@ -13,6 +13,7 @@ class AccessService {
     static final String CHECK_EDIT = 'CHECK_EDIT'                       // TODO
     static final String CHECK_VIEW_AND_EDIT = 'CHECK_VIEW_AND_EDIT'     // TODO
 
+    AddressbookService addressbookService
     ContextService contextService
     UserService userService
 
@@ -203,6 +204,9 @@ class AccessService {
         if (!person) {
             // .. invalid
         }
+//        else if (addressbookService.isPersonEditable(person, contextService.getUser())) { // ROLEADMIN !!
+//            check = true
+//        }
 
         return check
     }

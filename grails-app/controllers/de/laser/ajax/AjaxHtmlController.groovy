@@ -555,7 +555,7 @@ class AjaxHtmlController {
             model.modalText = message(code: 'default.new.label', args: [message(code: 'person.address.label')])
         }
         model.modalMsgSave = message(code: 'default.button.create.label')
-        model.url = [controller: 'address', action: 'createAddress']
+        model.url = [controller: 'addressbook', action: 'createAddress']
 
         render template: "/templates/cpa/addressFormModal", model: model
     }
@@ -582,7 +582,7 @@ class AjaxHtmlController {
                 model.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)])
             }
             model.modalMsgSave = message(code: 'default.button.save_changes')
-            model.url = [controller: 'address', action: 'editAddress']
+            model.url = [controller: 'addressbook', action: 'editAddress']
 
             render template: "/templates/cpa/addressFormModal", model: model
         }

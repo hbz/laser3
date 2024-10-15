@@ -22,11 +22,6 @@
     <a class="${params.tab == 'contacts' ? 'active' : ''} item" data-tab="contacts">
         ${message(code: 'org.prsLinks.label')}
     </a>
-
-    <%--<a class="${params.tab == 'personAddresses' ? 'active' : ''} item" data-tab="personAddresses">
-        ${message(code: 'org.prsLinks.adresses.label')}
-    </a>--%>
-
     <a class="${params.tab == 'addresses' ? 'active' : ''} item" data-tab="addresses">
         ${message(code: 'org.addresses.label')}
     </a>
@@ -93,72 +88,7 @@
 </div>
 
 %{--------------------}%
-<%--<div class="ui bottom attached tab segment ${params.tab == 'personAddresses' ? 'active' : ''}"
-     data-tab="personAddresses">
 
-    <ui:filter simple="true">
-        <g:form action="${actionName}" controller="organisation" method="get" params="${params}" class="ui small form">
-            <div class="three fields">
-                <div class="field">
-                    <label for="prs">${message(code: 'person.filter.name')}</label>
-
-                    <div class="ui input">
-                        <input type="text" name="prs" value="${params.prs}"
-                               placeholder="${message(code: 'person.filter.name')}"/>
-                    </div>
-                </div>
-
-                <div class="field">
-                    <label><g:message code="person.function.label"/></label>
-                    <ui:select class="ui dropdown search"
-                                  name="function"
-                                  from="${rdvAllPersonFunctions}"
-                                  multiple=""
-                                  optionKey="id"
-                                  optionValue="value"
-                                  value="${params.function}"/>
-                </div>
-
-                <div class="field">
-                    <label><g:message code="person.position.label"/></label>
-                    <ui:select class="ui dropdown search"
-                                  name="position"
-                                  from="${rdvAllPersonPositions}"
-                                  multiple=""
-                                  optionKey="id"
-                                  optionValue="value"
-                                  value="${params.position}"
-                                  noSelection="${['': message(code: 'default.select.choose.label')]}"/>
-                </div>
-            </div>
-
-            <div class="field la-field-right-aligned">
-                <label></label>
-                <a href="${request.forwardURI}"
-                   class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
-                <input type="submit" class="${Btn.PRIMARY}"
-                       value="${message(code: 'default.button.filter.label')}">
-            </div>
-        </g:form>
-    </ui:filter>
-
-    <laser:render template="/templates/cpa/person_table"
-              model="${[persons       : visiblePersons,
-                        showAddresses : true,
-                        showContacts  : true,
-                        tmplConfigShow: ['lineNumber', 'name', 'showAddresses', 'function', 'position']
-              ]}"/>
-
-    <ui:paginate action="contacts" controller="organisation" params="${params}"
-                    max="${max}"
-                    total="${num_visiblePersons}"/>
-
-</div>--%>
-
-%{--------------------}%
-
-
-%{--------------------}%
 <div class="ui bottom attached tab segment ${params.tab == 'addresses' ? 'active' : ''}" data-tab="addresses">
 
     <laser:render template="/templates/cpa/address_table" model="${[
