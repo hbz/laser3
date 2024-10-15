@@ -1954,8 +1954,6 @@ class OrganisationController  {
             case 'contacts':
                 if (inContextOrg) {
                     isEditable = userHasEditableRights
-                }else{
-                    isEditable = userIsYoda
                 }
                 break
             case [ 'show', 'ids', 'addSubjectGroup', 'deleteSubjectGroup', 'addDiscoverySystem', 'deleteDiscoverySystem', 'readerNumber', 'accessPoints', 'addressbook' ]:

@@ -59,6 +59,19 @@
                             </span>
                         </g:if>
 
+                        <g:if test="${showPersons}">
+                            <button class="ui icon button blue la-modern-button la-selectable-button la-popup-tooltip la-delay" data-ui="modal" data-href="#${cssId}" data-content="${message(code:'subscription.details.addNewContact')}">
+                                <i class="address plus icon"></i>
+                            </button>
+
+                            <laser:render template="/templates/links/linksAsListAddPrsModal"
+                                          model="[cssId: cssId,
+                                                  relation: role,
+                                                  roleObject: roleObject,
+                                                  parent: genericOIDService.getOID(roleObject),
+                                                  role: genericOIDService.getOID(modalPrsLinkRole)
+                                          ]"/>
+                        </g:if>
                     </g:if>
                 </td>
 
