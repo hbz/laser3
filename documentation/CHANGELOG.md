@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6023    15.10.2024  rc-3.4  3.4.12      Andreas Bug         diverse kontaktbezogene Fehler behoben
+
 6021    15.10.2024  rc-3.4  3.4.12      Andreas Bug         fehlende Lizenzen im "Meine Lizenzen pro Einrichtung" wiederhergestellt
 
 6019    15.10.2024  rc-3.4  3.4.12      Andreas Bug         fehlende Identifikatoren im Titelexport ergänzt
@@ -17,7 +19,7 @@
 
 5997    04.10.2024  rc-3.4  3.4.11      David   Bug         Allgemeine Aufgaben werden der Nutzerin auf dem Dashboard nicht richtig angezeigt
 
---      02.10.2024  rc-3.4  3.4.10      Andreas Bug         
+--      02.10.2024  rc-3.4  3.4.10      Andreas Bug         Defaultmäßiges Anhaken des Alternativnamen im Export aufgehoben
 
 --      01.10.2024  rc-3.4  3.4.10      Andreas Bug         500er (Teilung durch null)-Fehler bei Cost per Use behoben
 
