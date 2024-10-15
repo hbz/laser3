@@ -439,52 +439,6 @@ class PersonController  {
         }
     }
 
-    /**
-     * Lists all possible tenants of the given person contact
-     * @return a JSON map containing all organisations / institutions linked to the given person contact
-     */
-    @Secured(['ROLE_USER'])
-    def getPossibleTenantsAsJson() {
-        def result = []
-
-        Person person = (Person) genericOIDService.resolveOID(params.oid)
-
-        List<Org> orgs = person.roleLinks?.collect{ it.org }
-        orgs.add(person.tenant)
-        orgs.add(contextService.getOrg())
-
-        orgs.unique().each { o ->
-            result.add([value: "${o.class.name}:${o.id}", text: "${o.toString()}"])
-        }
-
-        render result as JSON
-    }
-
-    /**
-     * Removes an assignal from the given person contact
-     * @return the person details view
-     */
-    @Transactional
-    @Secured(['ROLE_USER'])
-    def deletePersonRole() {
-        Person prs = Person.get(params.id)
-
-        if (addressbookService.isPersonEditable(prs, contextService.getUser())) {
-
-            if (params.oid) {
-                PersonRole pr = (PersonRole) genericOIDService.resolveOID(params.oid)
-
-                if (pr && (pr.prs.id == prs.id) && pr.delete()) {
-                    log.debug("deleted PersonRole ${pr}")
-                }
-                else {
-                    log.debug("problem deleting PersonRole ${pr}")
-                }
-            }
-        }
-        redirect(url: request.getHeader('referer'))
-    }
-
     @Deprecated
     @Transactional
     private void _addPersonRoles(Person prs){
