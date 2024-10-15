@@ -240,6 +240,17 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         BeanStore.getPropertyService().getCalculatedPropDefGroups(this, contextOrg)
     }
 
+    /**
+     * Gets all public contact persons of this vendor
+     * @return a {@link List} of public {@link Person}s
+     */
+    List<Person> getPublicPersons() {
+        Person.executeQuery(
+                "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.vendor = :vendor",
+                [vendor: this]
+        )
+    }
+
     static Vendor convertFromAgency(Org agency) {
         Vendor v = null
         if(agency.gokbId) {

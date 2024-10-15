@@ -209,6 +209,17 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         BeanStore.getPropertyService().getCalculatedPropDefGroups(this, contextOrg)
     }
 
+    /**
+     * Gets all public contact persons of this provider
+     * @return a {@link List} of public {@link Person}s
+     */
+    List<Person> getPublicPersons() {
+        Person.executeQuery(
+                "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.provider = :provider",
+                [provider: this]
+        )
+    }
+
     static Provider convertFromOrg(Org provider) {
         Provider p = null
         if(provider.gokbId) {
