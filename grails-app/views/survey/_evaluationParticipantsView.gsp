@@ -425,21 +425,21 @@
                                     var="costItem">
                                 <g:formatNumber number="${costItem.costInBillingCurrency}" type="currency" currencyCode="${costItem.billingCurrency.value}"/>
 
-                                <g:if test="${costItem.billingCurrency == RDStore.CURRENCY_EUR}">
+                                <g:if test="${sumListPriceSelectedIEsEUR && costItem.billingCurrency == RDStore.CURRENCY_EUR && costItem.costInBillingCurrency > 0}">
                                     <g:set var="diffEUR" value="${costItem.costInBillingCurrency - sumListPriceSelectedIEsEUR}"/>
                                 </g:if>
 
-                                <g:if test="${costItem.billingCurrency == RDStore.CURRENCY_USD}">
+                                <g:if test="${sumListPriceSelectedIEsUSD && costItem.billingCurrency == RDStore.CURRENCY_USD && costItem.costInBillingCurrency > 0}">
                                     <g:set var="diffUSD" value="${costItem.costInBillingCurrency - sumListPriceSelectedIEsUSD}"/>
                                 </g:if>
 
-                                <g:if test="${costItem.billingCurrency == RDStore.CURRENCY_GBP}">
+                                <g:if test="${sumListPriceSelectedIEsGBP && costItem.billingCurrency == RDStore.CURRENCY_GBP && costItem.costInBillingCurrency > 0}">
                                     <g:set var="diffGBP" value="${costItem.costInBillingCurrency - sumListPriceSelectedIEsGBP}"/>
                                 </g:if>
 
-                                <g:set var="sumBudgetEUR" value="${costItem.billingCurrency == RDStore.CURRENCY_EUR ? (sumBudgetEUR+costItem.costInBillingCurrency) : sumBudgetEUR}"/>
-                                <g:set var="sumBudgetUSD" value="${costItem.billingCurrency == RDStore.CURRENCY_USD ? (sumBudgetUSD+costItem.costInBillingCurrency) : sumBudgetUSD}"/>
-                                <g:set var="sumBudgetGBP" value="${costItem.billingCurrency == RDStore.CURRENCY_GBP ? (sumBudgetGBP+costItem.costInBillingCurrency) : sumBudgetGBP}"/>
+                                <g:set var="sumBudgetEUR" value="${costItem.billingCurrency == RDStore.CURRENCY_EUR && costItem.costInBillingCurrency > 0 ? (sumBudgetEUR+costItem.costInBillingCurrency) : sumBudgetEUR}"/>
+                                <g:set var="sumBudgetUSD" value="${costItem.billingCurrency == RDStore.CURRENCY_USD && costItem.costInBillingCurrency > 0 ? (sumBudgetUSD+costItem.costInBillingCurrency) : sumBudgetUSD}"/>
+                                <g:set var="sumBudgetGBP" value="${costItem.billingCurrency == RDStore.CURRENCY_GBP && costItem.costInBillingCurrency > 0 ? (sumBudgetGBP+costItem.costInBillingCurrency) : sumBudgetGBP}"/>
 
                             </g:each>
 
@@ -1041,9 +1041,9 @@
                                     <g:set var="diffGBP" value="${costItem.costInBillingCurrency - sumListPriceSelectedIEsGBP}"/>
                                 </g:if>
 
-                                <g:set var="sumBudgetEUR" value="${costItem.billingCurrency == RDStore.CURRENCY_EUR ? (sumBudgetEUR+costItem.costInBillingCurrency) : sumBudgetEUR}"/>
-                                <g:set var="sumBudgetUSD" value="${costItem.billingCurrency == RDStore.CURRENCY_USD ? (sumBudgetUSD+costItem.costInBillingCurrency) : sumBudgetUSD}"/>
-                                <g:set var="sumBudgetGBP" value="${costItem.billingCurrency == RDStore.CURRENCY_GBP ? (sumBudgetGBP+costItem.costInBillingCurrency) : sumBudgetGBP}"/>
+                                <g:set var="sumBudgetEUR" value="${costItem.billingCurrency == RDStore.CURRENCY_EUR && costItem.costInBillingCurrency > 0 ? (sumBudgetEUR+costItem.costInBillingCurrency) : sumBudgetEUR}"/>
+                                <g:set var="sumBudgetUSD" value="${costItem.billingCurrency == RDStore.CURRENCY_USD && costItem.costInBillingCurrency > 0 ? (sumBudgetUSD+costItem.costInBillingCurrency) : sumBudgetUSD}"/>
+                                <g:set var="sumBudgetGBP" value="${costItem.billingCurrency == RDStore.CURRENCY_GBP && costItem.costInBillingCurrency > 0 ? (sumBudgetGBP+costItem.costInBillingCurrency) : sumBudgetGBP}"/>
 
                             </g:each>
 
