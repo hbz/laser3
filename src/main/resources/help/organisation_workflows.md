@@ -1,8 +1,3 @@
-Hier können Sie Workflows in Form von individualiserter Checklisten für Ihre Einrichtung erstellen.  
+Workflows sind individualisierte Checklisten, in die Sie Ihre routinemäßigen Arbeitsschritte eintragen, verwalten und abhaken können. Diese können mit verschiedenen Objekten (Verträge/Lizenzen/etc.) verknüpft werden. 
 
-Diese sind anbindbar an:
-* Einrichtung
-* Anbieter
-* Lieferanten
-* Verträge
-* Lizenzen
+Hier können Sie die mit Ihrer Einrichtung verknüpften Workflows einsehen und neue erstellen. Eine Übersicht über alle von Ihnen erstellten Workflows finden Sie unter *Meine Objekte > Meine Workflows*. 
