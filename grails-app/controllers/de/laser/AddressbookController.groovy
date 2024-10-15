@@ -91,7 +91,7 @@ class AddressbookController {
         List args   = [message(code: 'address.label'), params.id]
 
         if (obj) {
-            if (accessService.hasAccessToAddress(obj) || addressbookService.isAddressEditable(obj, contextService.getUser())) {
+            if (accessService.hasAccessToAddress(obj) || addressbookService.isAddressEditable(obj, contextService.getUser())) { // TODO
                 Address.withTransaction {
                     try {
                         List changeList = SurveyOrg.findAllByAddress(obj)
@@ -104,6 +104,7 @@ class AddressbookController {
                         flash.message = message(code: 'default.deleted.message', args: args)
                     }
                     catch (Exception e) {
+                        log.debug(e.getMessage())
                         flash.error = message(code: 'default.not.deleted.message', args: args)
                     }
                 }
@@ -132,6 +133,7 @@ class AddressbookController {
                 flash.message = message(code: 'default.deleted.message', args: args)
             }
             catch (Exception e) {
+                log.debug(e.getMessage())
                 flash.error = message(code: 'default.not.deleted.message', args: args)
             }
         }
@@ -163,6 +165,7 @@ class AddressbookController {
                         flash.message = message(code: 'default.deleted.message', args: args)
                     }
                     catch (Exception e) {
+                        log.debug(e.getMessage())
                         flash.error = message(code: 'default.not.deleted.message', args: args)
                     }
                 }
@@ -188,6 +191,7 @@ class AddressbookController {
                 obj.delete() // TODO: check perms
             }
             catch (Exception e) {
+                log.debug(e.getMessage())
                 flash.error = message(code: 'default.delete.error.general.message')
             }
         }
@@ -208,63 +212,74 @@ class AddressbookController {
     })
     def editAddress() {
         // moved from AddressController.editAddress()
+        Address obj     = Address.get(params.id)
+        List args       = [message(code: 'address.label'), params.id]
+        String referer  = request.getHeader('referer')
 
-        Address.withTransaction {
-            Address addressInstance = Address.get(params.id)
-            if (!addressInstance) {
-                flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label'), params.id]) as String
-                redirect(url: request.getHeader('referer'))
-                return
-            }
-            if (!addressbookService.isAddressEditable(addressInstance, contextService.getUser())) {
-                redirect(url: request.getHeader('referer'))
-                return
-            }
-            if (params.version) {
-                Long version = params.long('version')
-                if (addressInstance.version > version) {
-                    addressInstance.errors.rejectValue('version', 'default.optimistic.locking.failure',
-                            [message(code: 'address.label')] as Object[],
-                            "Another user has updated this Address while you were editing")
-                    redirect(url: request.getHeader('referer'))
-                    return
+        if (obj) {
+            if (accessService.hasAccessToAddress(obj) || addressbookService.isAddressEditable(obj, contextService.getUser())) { // TODO
+                if (params.version) {
+                    Long version = params.long('version')
+                    if (obj.version > version) {
+                        obj.errors.rejectValue('version', 'default.optimistic.locking.failure',
+                                [message(code: 'address.label')] as Object[],
+                                "Another user has updated this Address while you were editing")
+                        redirect(url: referer)
+                        return
+                    }
+                }
+
+                Address.withTransaction {
+                    try {
+                        obj.properties = params
+
+                        List<RefdataValue> typesToRemove = []
+                        obj.type.each {
+                            if (!(it.toString() in params.list('type.id'))) {
+                                typesToRemove << it
+                            }
+                        }
+
+                        typesToRemove.each {
+                            obj.removeFromType(it)
+                        }
+
+                        params.list('type.id').each {
+                            if (!(it in obj.type)) {
+                                obj.addToType(RefdataValue.get(Long.parseLong(it)))
+                            }
+                        }
+
+                        if (!referer.contains('tab')) {
+                            if(referer.contains('?'))
+                                referer += '&tab=addresses'
+                            else
+                                referer += '?tab=addresses'
+                        }
+                        else {
+                            referer = referer.replaceAll('tab=contacts', 'tab=addresses')
+                        }
+
+                        if (obj.save()) {
+                            flash.message = message(code: 'default.updated.message', args: args)
+                        }
+                        else {
+                            flash.error = message(code: 'default.save.error.general.message')
+                        }
+                    }
+                    catch (Exception e) {
+                        log.debug(e.getMessage())
+                        flash.error = message(code: 'default.save.error.general.message')
+                    }
                 }
             }
-
-            addressInstance.properties = params
-
-            List<RefdataValue> typesToRemove = []
-            addressInstance.type.each {
-                if (!(it.toString() in params.list('type.id'))) {
-                    typesToRemove << it
-                }
+            else {
+                flash.error = message(code: 'default.noPermissions')
             }
-
-            typesToRemove.each {
-                addressInstance.removeFromType(it)
-            }
-
-            params.list('type.id').each {
-                if (!(it in addressInstance.type)) {
-                    addressInstance.addToType(RefdataValue.get(Long.parseLong(it)))
-                }
-            }
-
-            String referer = request.getHeader('referer')
-            if(!referer.contains('tab')) {
-                if(referer.contains('?'))
-                    referer += '&tab=addresses'
-                else
-                    referer += '?tab=addresses'
-            }
-            else referer = referer.replaceAll('tab=contacts', 'tab=addresses')
-            if (!addressInstance.save()) {
-                redirect(url: referer)
-                return
-            }
-
-            flash.message = message(code: 'default.updated.message', args: [message(code: 'address.label'), (addressInstance.name ?: '')]) as String
-            redirect(url: referer)
         }
+        else {
+            flash.error = message(code: 'default.not.found.message', args: args)
+        }
+        redirect(url: referer)
     }
 }
