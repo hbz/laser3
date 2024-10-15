@@ -265,7 +265,7 @@
                 <td>
                     <div class="ui divided middle aligned list la-flex-list ">
                         <g:each in="${person.contacts?.toSorted()}" var="contact">
-                            <laser:render template="/templates/cpa/contact" model="${[
+                            <laser:render template="/addressbook/contact" model="${[
                                     contact             : contact,
                                     tmplShowDeleteButton: true,
                                     overwriteEditable   : false
@@ -342,9 +342,8 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.editPerson = function (id) {
-        //addresses deactivated as of ERMS-4492; the argument was showAddresses?:false
         <%
-            Map<String, Object> urlParams = [showAddresses: false, showContacts: showContacts?:false]
+            Map<String, Object> urlParams = [showContacts: showContacts?:false]
             if(restrictToOrg)
                 urlParams.org = restrictToOrg.id
             else if(restrictToProvider)
@@ -353,9 +352,7 @@
                 urlParams.vendor = restrictToVendor.id
         %>
         var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="${urlParams}"/>&id='+id;
-        JSPC.app.person_editModal(url)
-    }
-    JSPC.app.person_editModal = function (url) {
+
         $.ajax({
             url: url,
             success: function(result){

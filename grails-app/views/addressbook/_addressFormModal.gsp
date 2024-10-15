@@ -431,7 +431,6 @@
               }
             ]
           });
-
         }
 
         $("#buttonPhysicalAddress").click(function () {
@@ -499,7 +498,6 @@
       }
     }
 
-
     JSPC.app.updateDropdown = function() {
         var dropdownRegion = $('#region');
         var selectedCountry = $("#country").val();
@@ -527,9 +525,6 @@
         if($("#country").val()) { JSPC.app.updateDropdown(); }
 
         $("#country").change(function() { JSPC.app.updateDropdown(); });
-
-
-
 
     </laser:script>
 

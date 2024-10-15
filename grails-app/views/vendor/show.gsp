@@ -602,7 +602,7 @@
                                     </h5>
                                     <g:if test="${createdByOrgGeneralContacts}">
                                         <g:each in="${createdByOrgGeneralContacts}" var="cbogc">
-                                            <laser:render template="/templates/cpa/person_full_details" model="${[
+                                            <laser:render template="/addressbook/person_full_details" model="${[
                                                     person              : cbogc,
                                                     personContext       : vendor.createdBy,
                                                     tmplShowFunctions       : true,
@@ -627,7 +627,7 @@
                                     </h5>
                                     <g:if test="${legallyObligedByOrgGeneralContacts}">
                                         <g:each in="${legallyObligedByOrgGeneralContacts}" var="lobogc">
-                                            <laser:render template="/templates/cpa/person_full_details" model="${[
+                                            <laser:render template="/addressbook/person_full_details" model="${[
                                                     person              : lobogc,
                                                     personContext       : vendor.legallyObligedBy,
                                                     tmplShowFunctions       : true,
@@ -698,7 +698,7 @@
                                                                     <g:if test="${prs.contacts}">
                                                                         <g:each in="${prs.contacts.toSorted()}" var="contact">
                                                                             <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
-                                                                                <laser:render template="/templates/cpa/contact" model="${[
+                                                                                <laser:render template="/addressbook/contact" model="${[
                                                                                         contact             : contact,
                                                                                         tmplShowDeleteButton: false
                                                                                 ]}"/>
@@ -749,7 +749,7 @@
                                                                         <div class="ui label">${typeName}</div>
                                                                         <g:each in="${publicAddresses}" var="a">
                                                                             <g:if test="${a.vendor}">
-                                                                                <laser:render template="/templates/cpa/address" model="${[
+                                                                                <laser:render template="/addressbook/address" model="${[
                                                                                         hideAddressType     : true,
                                                                                         address             : a,
                                                                                         tmplShowDeleteButton: false,
@@ -818,7 +818,7 @@
                                                                     <g:if test="${person.contacts}">
                                                                         <g:each in="${person.contacts.toSorted()}" var="contact">
                                                                             <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
-                                                                                <laser:render template="/templates/cpa/contact" model="${[
+                                                                                <laser:render template="/addressbook/contact" model="${[
                                                                                         overwriteEditable   : editable,
                                                                                         contact             : contact,
                                                                                         tmplShowDeleteButton: editable
@@ -905,7 +905,7 @@
                                                                         <g:if test="${person.contacts}">
                                                                             <g:each in="${person.contacts.toSorted()}" var="contact">
                                                                                 <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
-                                                                                    <laser:render template="/templates/cpa/contact" model="${[
+                                                                                    <laser:render template="/addressbook/contact" model="${[
                                                                                             overwriteEditable   : false,
                                                                                             contact             : contact,
                                                                                             tmplShowDeleteButton: false
@@ -939,7 +939,7 @@
                                                                             <div class="ui label">${typeName}</div>
                                                                             <g:each in="${privateAddresses}" var="a">
                                                                                 <g:if test="${a.vendor}">
-                                                                                    <laser:render template="/templates/cpa/address" model="${[
+                                                                                    <laser:render template="/addressbook/address" model="${[
                                                                                             hideAddressType     : true,
                                                                                             address             : a,
                                                                                             tmplShowDeleteButton: false,
@@ -1005,7 +1005,7 @@
         <g:else>
             let existsWekbRecord = "";
         </g:else>
-        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor=' + contactFor + '&vendor=' + vendor + existsWekbRecord + '&showAddresses=false&showContacts=true' + supportType;
+        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor=' + contactFor + '&vendor=' + vendor + existsWekbRecord + '&showContacts=true' + supportType;
         var func = bb8.ajax4SimpleModalFunction("#personModal", url);
         func();
     }

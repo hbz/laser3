@@ -74,7 +74,7 @@
         </g:form>
     </ui:filter>
 
-    <laser:render template="/templates/cpa/person_table"
+    <laser:render template="/addressbook/person_table"
               model="${[persons       : visiblePersons,
                         showContacts  : true,
                         showOptions : true,
@@ -91,7 +91,7 @@
 
 <div class="ui bottom attached tab segment ${params.tab == 'addresses' ? 'active' : ''}" data-tab="addresses">
 
-    <laser:render template="/templates/cpa/address_table" model="${[
+    <laser:render template="/addressbook/address_table" model="${[
             addresses           : addresses,
             tmplShowDeleteButton: true,
             editable            : editable,
@@ -104,7 +104,7 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.personCreate = function (contactFor) {
-        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor=' + contactFor + '&showAddresses=false&showContacts=true';
+        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor=' + contactFor + '&showContacts=true';
         var func = bb8.ajax4SimpleModalFunction("#personModal", url);
         func();
     }

@@ -183,11 +183,10 @@
 
 <div class="ui bottom attached tab segment ${params.tab == 'contacts' ? 'active' : ''}" data-tab="contacts">
 
-    <laser:render template="/templates/cpa/person_table" model="${[
+    <laser:render template="/addressbook/person_table" model="${[
             persons       : visiblePersons,
             offset        : personOffset,
             showContacts  : true,
-            showAddresses : true,
             showOptions : true,
             tmplConfigShow: ['lineNumber', 'organisation', 'function', 'position', 'name', 'showContacts']
     ]}"/>
@@ -200,7 +199,7 @@
 
 <div class="ui bottom attached tab segment ${params.tab == 'addresses' ? 'active' : ''}" data-tab="addresses">
 
-    <laser:render template="/templates/cpa/address_table" model="${[
+    <laser:render template="/addressbook/address_table" model="${[
             addresses           : addresses,
             offset              : addressOffset,
             tmplShowDeleteButton: true,
@@ -216,7 +215,7 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.personCreate = function (contactFor) {
-        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&showAddresses=true&showContacts=true';
+        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&showContacts=true';
         JSPC.app.createPersonModal(url)
     }
     JSPC.app.createPersonModal = function (url) {

@@ -94,7 +94,7 @@
                     <g:if test="${choosenOrgCPAs}">
                         <g:each in="${choosenOrgCPAs}" var="gcp">
                             %{-- EXPORT PROBLEM @ laser:render in call stack - ERMS-5437 --}%
-                            <g:render template="/templates/cpa/person_details"  model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
+                            <g:render template="/addressbook/person_details"  model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
                         </g:each>
 
                     </g:if>

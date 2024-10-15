@@ -76,7 +76,7 @@
                     <g:set var="oldEditable" value="${editable}"/>
                     <g:set var="editable" value="${false}" scope="request"/>
                     <g:each in="${choosenOrgCPAs}" var="gcp">
-                        <laser:render template="/templates/cpa/person_details"
+                        <laser:render template="/addressbook/person_details"
                                   model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
                     </g:each>
                     <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>

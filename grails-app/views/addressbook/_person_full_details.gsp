@@ -44,7 +44,7 @@
             <g:each in="${person.contacts.toSorted()}" var="contact">
                 <%-- contentType should be made not nullable ... subject of kanban! --%>
                 <g:if test="${contact.contentType && tmplConfigShow.contains(contact.contentType.value)}">
-                    <laser:render template="/templates/cpa/contact" model="${[
+                    <laser:render template="/addressbook/contact" model="${[
                             overwriteEditable   : editable,
                             contact             : contact,
                             tmplShowDeleteButton: tmplShowDeleteButton
@@ -180,7 +180,7 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
         JSPC.app.editPerson = function (id) {
-            var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showAddresses: showAddresses ?: false, showContacts: showContacts ?: false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id=' + id;
+            var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showContacts: showContacts ?: false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id=' + id;
             var func = bb8.ajax4SimpleModalFunction("#personModal", url);
             func();
         }

@@ -27,7 +27,7 @@
         <g:if test="${person.contacts}">
 
             <g:each in="${person.contacts.toSorted()}" var="contact">
-                <laser:render template="/templates/cpa/contact"
+                <laser:render template="/addressbook/contact"
                           model="${[contact: contact, tmplShowDeleteButton: tmplShowDeleteButton, overwriteEditable: overwriteEditable]}"/>
             </g:each>
 
@@ -86,7 +86,7 @@
     <g:if test="${personRole.prs.contacts}">
         <g:each in="${personRole.prs.contacts.toSorted()}" var="contact">
             <g:if test="${tmplConfigShow.contains(contact.contentType?.value)}">
-                <laser:render template="/templates/cpa/contact" model="${[
+                <laser:render template="/addressbook/contact" model="${[
                         contact             : contact,
                         tmplShowDeleteButton: true
                 ]}"/>
@@ -97,7 +97,7 @@
     <g:if test="${tmplConfigShow?.contains('address') && personRole.prs.addresses}">
 
         <g:each in="${personRole.prs.addresses.sort { it.type.each {it?.getI10n('value')} }}" var="address">
-            <laser:render template="/templates/cpa/address"
+            <laser:render template="/addressbook/address"
                       model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton, editable: editable]}"/>
         </g:each>
 
@@ -106,10 +106,8 @@
 </g:if>
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.editPerson = function (id) {
-            var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showAddresses: showAddresses?:false, showContacts: showContacts?:false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id='+id;
-            JSPC.app.person_editModal(url)
-        }
-    JSPC.app.person_editModal = function (url) {
+            var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showContacts: showContacts?:false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id='+id;
+
             $.ajax({
                 url: url,
                 success: function(result){
