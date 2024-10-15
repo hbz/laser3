@@ -42,29 +42,35 @@
     <ui:actionsDropdown>
         <g:if test="${editable}">
 
-            <a href="#createPersonModal" class="item" data-ui="modal"
-               onclick="JSPC.app.personCreate('contactPersonForProvider');"><i class="${Icon.ACP_PRIVATE}"></i><g:message
-                    code="person.create_new.contactPersonForProvider.label"/></a>
-            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForProvider');"><i class="${Icon.ADDRESS}"></i><g:message code="address.add.addressForProvider.label"/></a>
-
-            <a href="#createPersonModal" class="item" data-ui="modal"
-               onclick="JSPC.app.personCreate('contactPersonForVendor');"><i class="${Icon.ACP_PRIVATE}"></i><g:message
-                    code="person.create_new.contactPersonForVendor.label"/></a>
-
-            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForVendor');"><i class="${Icon.ADDRESS}"></i><g:message code="address.add.addressForVendor.label"/></a>
+            <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForProvider');">
+                <i class="${Icon.ACP_PRIVATE}"></i><g:message code="person.create_new.contactPersonForProvider.label"/>
+            </a>
+            <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForVendor');">
+                <i class="${Icon.ACP_PRIVATE}"></i><g:message code="person.create_new.contactPersonForVendor.label"/>
+            </a>
             <g:if test="${institution.isCustomerType_Consortium()}">
-                <a href="#createPersonModal" class="item" data-ui="modal"
-                   onclick="JSPC.app.personCreate('contactPersonForInstitution');"><i class="${Icon.ACP_PRIVATE}"></i><g:message
-                        code="person.create_new.contactPersonForInstitution.label"/></a>
-
-                <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForInstitution');"><i class="${Icon.ADDRESS}"></i><g:message code="address.add.addressForInstitution.label"/></a>
+                <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForInstitution');">
+                    <i class="${Icon.ACP_PRIVATE}"></i><g:message code="person.create_new.contactPersonForInstitution.label"/>
+                </a>
             </g:if>
+            <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForPublic');">
+                <i class="${Icon.ACP_PRIVATE}"></i><g:message code="person.create_new.contactPersonForPublic.label"/>
+            </a>
 
-            <a href="#createPersonModal" class="item" data-ui="modal"
-               onclick="JSPC.app.personCreate('contactPersonForPublic');"><i class="${Icon.ACP_PRIVATE}"></i><g:message
-                    code="person.create_new.contactPersonForPublic.label"/></a>
-
-            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForPublic');"><i class="${Icon.ADDRESS}"></i><g:message code="address.add.addressForPublic.label"/></a>
+            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForProvider');">
+                <i class="${Icon.ADDRESS}"></i><g:message code="address.add.addressForProvider.label"/>
+            </a>
+            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForVendor');">
+                <i class="${Icon.ADDRESS}"></i><g:message code="address.add.addressForVendor.label"/>
+            </a>
+            <g:if test="${institution.isCustomerType_Consortium()}">
+                <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForInstitution');">
+                    <i class="${Icon.ADDRESS}"></i><g:message code="address.add.addressForInstitution.label"/>
+                </a>
+            </g:if>
+            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForPublic');">
+                <i class="${Icon.ADDRESS}"></i><g:message code="address.add.addressForPublic.label"/>
+            </a>
 
             <div class="divider"></div>
         </g:if>
