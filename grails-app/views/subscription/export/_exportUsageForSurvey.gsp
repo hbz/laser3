@@ -11,7 +11,7 @@
     String revision
     List<CustomerIdentifier> dummyCIs = []
     List<String> errors = []
-    SortedSet reportTypes
+    Set reportTypes
     String dummy
     subscribedPlatforms.each { Platform platformInstance ->
         Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
