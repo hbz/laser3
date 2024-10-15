@@ -597,8 +597,6 @@ class AjaxHtmlController {
         result.presetFunctionType = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
         result.showContacts = params.showContacts == "true" ? true : ''
         result.addContacts = params.showContacts == "true" ? true : ''
-        result.showAddresses = params.showAddresses == "true" ? true : ''
-        result.addAddresses = params.showAddresses == "true" ? true : ''
         result.org = params.org ? Org.get(params.long('org')) : null
         result.provider = params.provider ? Provider.get(params.long('provider')) : null
         result.vendor = params.vendor ? Vendor.get(params.long('vendor')) : null
@@ -710,8 +708,6 @@ class AjaxHtmlController {
             result.modalMsgSave = message(code: 'default.button.save_changes')
             result.showContacts = params.showContacts == "true" ? true : ''
             result.addContacts = params.showContacts == "true" ? true : ''
-            result.showAddresses = params.showAddresses == "true" ? true : ''
-            result.addAddresses = params.showAddresses == "true" ? true : ''
             result.isPublic = result.personInstance.isPublic
             result.editable = addressbookService.isPersonEditable(result.personInstance, contextService.getUser())
             result.tmplShowDeleteButton = result.editable

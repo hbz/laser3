@@ -342,9 +342,8 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.editPerson = function (id) {
-        //addresses deactivated as of ERMS-4492; the argument was showAddresses?:false
         <%
-            Map<String, Object> urlParams = [showAddresses: false, showContacts: showContacts?:false]
+            Map<String, Object> urlParams = [showContacts: showContacts?:false]
             if(restrictToOrg)
                 urlParams.org = restrictToOrg.id
             else if(restrictToProvider)

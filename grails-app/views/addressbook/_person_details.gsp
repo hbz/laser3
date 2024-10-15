@@ -106,7 +106,7 @@
 </g:if>
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.editPerson = function (id) {
-            var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showAddresses: showAddresses?:false, showContacts: showContacts?:false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id='+id;
+            var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showContacts: showContacts?:false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id='+id;
 
             $.ajax({
                 url: url,

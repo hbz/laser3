@@ -80,9 +80,8 @@
             persons       : visiblePersons,
             restrictToOrg : orgInstance,
             showContacts: true,
-            showAddresses: true,
             showOptions : true,
-            tmplConfigShow: ['lineNumber', 'name', 'function', 'position',  'showContacts', 'showAddresses']
+            tmplConfigShow: ['lineNumber', 'name', 'function', 'position',  'showContacts']
     ]}"/>
 
     <ui:paginate action="organisation" controller="myInstitution" params="${params+[tab: 'contacts']}"
@@ -107,7 +106,7 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.personCreate = function (contactFor, org) {
-        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&org='+org+'&showAddresses=true&showContacts=true';
+        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&org='+org+'&showContacts=true';
         JSPC.app.createPersonModal(url)
     }
     JSPC.app.createPersonModal = function (url) {

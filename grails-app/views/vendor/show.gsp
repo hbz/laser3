@@ -1005,7 +1005,7 @@
         <g:else>
             let existsWekbRecord = "";
         </g:else>
-        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor=' + contactFor + '&vendor=' + vendor + existsWekbRecord + '&showAddresses=false&showContacts=true' + supportType;
+        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor=' + contactFor + '&vendor=' + vendor + existsWekbRecord + '&showContacts=true' + supportType;
         var func = bb8.ajax4SimpleModalFunction("#personModal", url);
         func();
     }

@@ -180,7 +180,7 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
         JSPC.app.editPerson = function (id) {
-            var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showAddresses: showAddresses ?: false, showContacts: showContacts ?: false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id=' + id;
+            var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showContacts: showContacts ?: false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id=' + id;
             var func = bb8.ajax4SimpleModalFunction("#personModal", url);
             func();
         }

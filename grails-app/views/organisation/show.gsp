@@ -995,7 +995,7 @@
     }
 
     JSPC.app.personCreate = function (contactFor, org, supportType = "") {
-        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor=' + contactFor + '&org=' + org + '&showAddresses=false&showContacts=true' + supportType;
+        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor=' + contactFor + '&org=' + org + '&showContacts=true' + supportType;
         var func = bb8.ajax4SimpleModalFunction("#personModal", url);
         func();
     }

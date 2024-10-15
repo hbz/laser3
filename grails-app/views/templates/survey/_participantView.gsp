@@ -117,9 +117,8 @@
                             persons       : visiblePersons,
                             participant   : participant,
                             showContacts  : true,
-                            showAddresses : true,
                             showOptions   : false,
-                            tmplConfigShow: ['lineNumber', 'function', 'position', 'name', 'showContacts', 'showAddresses', 'surveyInvoicingInformation']
+                            tmplConfigShow: ['lineNumber', 'function', 'position', 'name', 'showContacts', 'surveyInvoicingInformation']
                     ]}"/>
 
                 </div>
