@@ -658,7 +658,7 @@ class AjaxHtmlController {
                 result.modalText = message(code: "person.create_new.contactPersonForPublic.label")
                 break
         }
-        result.url = [controller: 'person', action: 'createPerson']
+        result.url = [controller: 'addressbook', action: 'createPerson']
 
 
         render template: "/templates/cpa/personFormModal", model: result
@@ -731,14 +731,6 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def contactFields() {
         render template: "/templates/cpa/contactFields"
-    }
-
-    /**
-     * Retrieves the address fields for an entity modal
-     */
-    @Secured(['ROLE_USER'])
-    def addressFields() {
-        render template: "/templates/cpa/addressFields", model: [multipleAddresses: params.multipleAddresses]
     }
 
     /**
