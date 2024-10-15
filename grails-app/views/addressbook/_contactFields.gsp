@@ -1,6 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Contact; de.laser.storage.RDConstants; de.laser.RefdataCategory;" %>
 
-
 <div class="three fields contactField">
     <div class="field one wide la-contactIconField">
         <i class="${Icon.SYM.EMAIL} large la-js-contactIcon"></i>

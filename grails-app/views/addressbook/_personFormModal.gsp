@@ -374,7 +374,6 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
 
-
     $("#la-js-buttonFunction").on("click", function () {
         $("#la-js-nameOrFunction").text("${message(code:'contact.functionName')}");
         $(this).parent('.buttons').find('#la-js-buttonSurname').removeClass('active');
@@ -472,7 +471,6 @@
         });
     }
 
-
 %{--    JSPC.app.addressElementCount = $(".addressField").length;--}%
     JSPC.app.contactElementCount = $(".contactField").length;
 
@@ -481,8 +479,6 @@
 
 %{--    $(JSPC.app.addressContainer).attr('id', 'addressElementsContainer');--}%
     $(JSPC.app.contactContainer).attr('id', 'contactElementsContainer');
-
-
 
     JSPC.app.isNamesDetailsAlreadyFilled = function () {
         let input = [$("#title"), $("#first_name"), $("#middle_name")];
@@ -555,12 +551,10 @@
         });
     });
 
-
 %{--   Delete the icon classes before adding new one        --}%
     JSPC.app.deleteIconClass = function (icon) {
         icon.removeAttr("class");
     }
-
 
 %{--  Change icon when contact dropdown is changed          --}%
     JSPC.app.changeIconRegardingDropdown = function() {
@@ -608,16 +602,12 @@
 
     JSPC.app.changeIconRegardingDropdown();
 
-
 %{--    Deal with accordion in case already any input--}%
     $(".accordion").accordion();
 
      JSPC.app.isNamesDetailsAlreadyFilled();
-
      JSPC.app.removeContactElement();
-
     JSPC.app.formValidation();
-
 
     </laser:script>
 

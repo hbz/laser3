@@ -435,7 +435,7 @@
                     <g:each in="${org?.prsLinks?.toSorted()}" var="pl">
                         <g:if test="${pl.functionType?.value && pl.prs.isPublic}">
                             <g:if test="${plctr == 0}">
-                                <laser:render template="/templates/cpa/person_details" model="${[
+                                <laser:render template="/addressbook/person_details" model="${[
                                         personRole          : pl,
                                         tmplShowDeleteButton: false,
                                         tmplConfigShow      : ['E-Mail', 'Mail', 'Phone'],
@@ -452,7 +452,7 @@
                                         </div>
                                         <div class="content">
                                 </g:if>
-                                <laser:render template="/templates/cpa/person_details" model="${[
+                                <laser:render template="/addressbook/person_details" model="${[
                                         personRole          : pl,
                                         tmplShowDeleteButton: false,
                                         tmplConfigShow      : ['E-Mail', 'Mail', 'Phone'],
@@ -477,7 +477,7 @@
                             <g:if test="${!visiblePrivateContacts.contains(pl.prs.id)}">
                                 <g:set var="visiblePrivateContacts" value="${visiblePrivateContacts + pl.prs.id}"/>
                                 <g:if test="${ol == 0}">
-                                    <laser:render template="/templates/cpa/person_full_details" model="${[
+                                    <laser:render template="/addressbook/person_full_details" model="${[
                                             person                 : pl.prs,
                                             personContext          : org,
                                             tmplShowDeleteButton   : true,
@@ -499,7 +499,7 @@
                                         </div>
                                         <div class="content">
                                     </g:if>
-                                    <laser:render template="/templates/cpa/person_full_details" model="${[
+                                    <laser:render template="/addressbook/person_full_details" model="${[
                                             person                 : pl.prs,
                                             personContext          : org,
                                             tmplShowDeleteButton   : true,

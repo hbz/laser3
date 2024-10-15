@@ -556,7 +556,7 @@ making obsolete package/actions
                                                                                     person,
                                                                                     RDStore.CCT_EMAIL
                                                                             )}" var="prsContact">
-                                                                                <laser:render template="/templates/cpa/contact" model="${[
+                                                                                <laser:render template="/addressbook/contact" model="${[
                                                                                         contact             : prsContact,
                                                                                         tmplShowDeleteButton: false,
                                                                                         overwriteEditable   : false

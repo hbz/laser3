@@ -44,7 +44,7 @@
             <g:each in="${person.contacts.toSorted()}" var="contact">
                 <%-- contentType should be made not nullable ... subject of kanban! --%>
                 <g:if test="${contact.contentType && tmplConfigShow.contains(contact.contentType.value)}">
-                    <laser:render template="/templates/cpa/contact" model="${[
+                    <laser:render template="/addressbook/contact" model="${[
                             overwriteEditable   : editable,
                             contact             : contact,
                             tmplShowDeleteButton: tmplShowDeleteButton

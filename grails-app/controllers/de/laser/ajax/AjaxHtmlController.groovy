@@ -557,7 +557,7 @@ class AjaxHtmlController {
         model.modalMsgSave = message(code: 'default.button.create.label')
         model.url = [controller: 'addressbook', action: 'createAddress']
 
-        render template: "/templates/cpa/addressFormModal", model: model
+        render template: "/addressbook/addressFormModal", model: model
     }
 
     /**
@@ -581,7 +581,7 @@ class AjaxHtmlController {
             model.modalMsgSave = message(code: 'default.button.save_changes')
             model.url = [controller: 'addressbook', action: 'editAddress']
 
-            render template: "/templates/cpa/addressFormModal", model: model
+            render template: "/addressbook/addressFormModal", model: model
         }
     }
 
@@ -658,7 +658,7 @@ class AjaxHtmlController {
         result.url = [controller: 'addressbook', action: 'createPerson']
 
 
-        render template: "/templates/cpa/personFormModal", model: result
+        render template: "/addressbook/personFormModal", model: result
     }
 
     /**
@@ -718,7 +718,7 @@ class AjaxHtmlController {
             result.url = [controller: 'person', action: 'editPerson', id: result.personInstance.id]
             result.contextOrg = contextService.getOrg()
 
-            render template: "/templates/cpa/personFormModal", model: result
+            render template: "/addressbook/personFormModal", model: result
         }
     }
 
@@ -727,7 +727,7 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def contactFields() {
-        render template: "/templates/cpa/contactFields"
+        render template: "/addressbook/contactFields"
     }
 
     /**

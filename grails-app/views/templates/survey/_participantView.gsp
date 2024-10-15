@@ -113,7 +113,7 @@
                     <br>
                     <br>
 
-                    <laser:render template="/templates/cpa/person_table" model="${[
+                    <laser:render template="/addressbook/person_table" model="${[
                             persons       : visiblePersons,
                             participant   : participant,
                             showContacts  : true,
@@ -133,7 +133,7 @@
                     <br>
 
 
-                    <laser:render template="/templates/cpa/address_table" model="${[
+                    <laser:render template="/addressbook/address_table" model="${[
                             addresses                     : addresses,
                             editable                      : editable,
                             showSurveyInvoicingInformation: true,

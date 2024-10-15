@@ -11,7 +11,6 @@
             </div>
         </div>
 
-
         <div class="content">
             <g:if test="${contact.contentType == RDStore.CCT_EMAIL}">
                 <span class="la-popup-tooltip" data-position="top right" data-content="${message(code: 'tooltip.sendMail')}">

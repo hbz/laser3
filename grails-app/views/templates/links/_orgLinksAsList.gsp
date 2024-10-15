@@ -101,7 +101,7 @@
                                                     func,
                                                     RDStore.CCT_EMAIL
                                             )}" var="contact">
-                                                        <laser:render template="/templates/cpa/contact" model="${[
+                                                        <laser:render template="/addressbook/contact" model="${[
                                                             contact             : contact,
                                                             tmplShowDeleteButton: false,
                                                             overwriteEditable   : false
@@ -130,7 +130,7 @@
                                                                 func,
                                                                 [RDStore.CCT_EMAIL, RDStore.CCT_URL]
                                                         )}" var="contact">
-                                                            <laser:render template="/templates/cpa/contact" model="${[
+                                                            <laser:render template="/addressbook/contact" model="${[
                                                                     contact             : contact,
                                                                     tmplShowDeleteButton: false,
                                                                     overwriteEditable   : false
@@ -155,7 +155,7 @@
                                                                 func,
                                                                 [RDStore.CCT_EMAIL, RDStore.CCT_URL]
                                                         )}" var="contact">
-                                                            <laser:render template="/templates/cpa/contact" model="${[
+                                                            <laser:render template="/addressbook/contact" model="${[
                                                                     contact             : contact,
                                                                     tmplShowDeleteButton: false,
                                                                     overwriteEditable   : false
@@ -180,7 +180,7 @@
                                                                 func,
                                                                 RDStore.CCT_EMAIL
                                                         )}" var="contact">
-                                                            <laser:render template="/templates/cpa/contact" model="${[
+                                                            <laser:render template="/addressbook/contact" model="${[
                                                                     contact             : contact,
                                                                     tmplShowDeleteButton: false,
                                                                     overwriteEditable   : false
@@ -206,7 +206,7 @@
                                                             resp,
                                                             [RDStore.CCT_EMAIL, RDStore.CCT_URL]
                                                     )}" var="contact">
-                                                        <laser:render template="/templates/cpa/contact" model="${[
+                                                        <laser:render template="/addressbook/contact" model="${[
                                                                 contact             : contact,
                                                                 tmplShowDeleteButton: false,
                                                                 overwriteEditable   : false
@@ -258,7 +258,7 @@
                                                             func,
                                                             [RDStore.CCT_EMAIL, RDStore.CCT_URL]
                                                     )}" var="contact">
-                                                        <laser:render template="/templates/cpa/contact" model="${[
+                                                        <laser:render template="/addressbook/contact" model="${[
                                                                 contact             : contact,
                                                                 tmplShowDeleteButton: false,
                                                                 overwriteEditable   : false
@@ -284,7 +284,7 @@
                                                                 func,
                                                                 [RDStore.CCT_EMAIL, RDStore.CCT_URL]
                                                         )}" var="contact">
-                                                            <laser:render template="/templates/cpa/contact" model="${[
+                                                            <laser:render template="/addressbook/contact" model="${[
                                                                     contact             : contact,
                                                                     tmplShowDeleteButton: false,
                                                                     overwriteEditable   : false
@@ -309,7 +309,7 @@
                                                                 func,
                                                                 [RDStore.CCT_EMAIL, RDStore.CCT_URL]
                                                         )}" var="contact">
-                                                            <laser:render template="/templates/cpa/contact" model="${[
+                                                            <laser:render template="/addressbook/contact" model="${[
                                                                     contact             : contact,
                                                                     tmplShowDeleteButton: false,
                                                                     overwriteEditable   : false
@@ -334,7 +334,7 @@
                                                                 func,
                                                                 [RDStore.CCT_EMAIL, RDStore.CCT_URL]
                                                         )}" var="contact">
-                                                            <laser:render template="/templates/cpa/contact" model="${[
+                                                            <laser:render template="/addressbook/contact" model="${[
                                                                     contact             : contact,
                                                                     tmplShowDeleteButton: false,
                                                                     overwriteEditable   : false
@@ -360,7 +360,7 @@
                                                             resp,
                                                             [RDStore.CCT_EMAIL, RDStore.CCT_URL]
                                                     )}" var="contact">
-                                                        <laser:render template="/templates/cpa/contact" model="${[
+                                                        <laser:render template="/addressbook/contact" model="${[
                                                                 contact             : contact,
                                                                 tmplShowDeleteButton: false,
                                                                 overwriteEditable   : false

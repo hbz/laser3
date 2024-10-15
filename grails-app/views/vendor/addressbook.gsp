@@ -76,7 +76,7 @@
 </div>
 
 <div class="ui bottom attached tab segment ${params.tab == 'contacts' ? 'active' : ''}" data-tab="contacts">
-    <laser:render template="/templates/cpa/person_table" model="${[
+    <laser:render template="/addressbook/person_table" model="${[
             persons       : visiblePersons,
             restrictToVendor : vendor,
             showContacts: true,
@@ -92,7 +92,7 @@
 
 <div class="ui bottom attached tab segment ${params.tab == 'addresses' ? 'active' : ''}" data-tab="addresses">
 
-    <laser:render template="/templates/cpa/address_table" model="${[
+    <laser:render template="/addressbook/address_table" model="${[
             addresses           : addresses,
             offset              : addressOffset,
             tmplShowDeleteButton: true,

@@ -265,7 +265,7 @@
                 <td>
                     <div class="ui divided middle aligned list la-flex-list ">
                         <g:each in="${person.contacts?.toSorted()}" var="contact">
-                            <laser:render template="/templates/cpa/contact" model="${[
+                            <laser:render template="/addressbook/contact" model="${[
                                     contact             : contact,
                                     tmplShowDeleteButton: true,
                                     overwriteEditable   : false
@@ -353,9 +353,7 @@
                 urlParams.vendor = restrictToVendor.id
         %>
         var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="${urlParams}"/>&id='+id;
-        JSPC.app.person_editModal(url)
-    }
-    JSPC.app.person_editModal = function (url) {
+
         $.ajax({
             url: url,
             success: function(result){
