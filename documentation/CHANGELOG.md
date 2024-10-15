@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6021    15.10.2024  rc-3.4  3.4.12      Andreas Bug         fehlende Lizenzen im "Meine Lizenzen pro Einrichtung" wiederhergestellt
+
+6019    15.10.2024  rc-3.4  3.4.12      Andreas Bug         fehlende Identifikatoren im Titelexport ergänzt
+
 6005    08.10.2024  rc-3.4  3.4.11      David   Bug         Ungesichertes Löschen von beliebigen DB-Inhalten
 
 5779    16.09.2024  rc-3.4  3.4.11      Andreas Feature     Abräumen von öffentlichen Adressen von Anbietern und Lieferanten
