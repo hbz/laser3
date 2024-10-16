@@ -42,29 +42,35 @@
     <ui:actionsDropdown>
         <g:if test="${editable}">
 
-            <a href="#createPersonModal" class="item" data-ui="modal"
-               onclick="JSPC.app.personCreate('contactPersonForProvider');"><i class="${Icon.ACP_PRIVATE}"></i><g:message
-                    code="person.create_new.contactPersonForProvider.label"/></a>
-            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForProvider');"><i class="${Icon.ADDRESS}"></i><g:message code="address.add.addressForProvider.label"/></a>
-
-            <a href="#createPersonModal" class="item" data-ui="modal"
-               onclick="JSPC.app.personCreate('contactPersonForVendor');"><i class="${Icon.ACP_PRIVATE}"></i><g:message
-                    code="person.create_new.contactPersonForVendor.label"/></a>
-
-            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForVendor');"><i class="${Icon.ADDRESS}"></i><g:message code="address.add.addressForVendor.label"/></a>
+            <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForProvider');">
+                <i class="${Icon.ACP_PRIVATE}"></i><g:message code="person.create_new.contactPersonForProvider.label"/>
+            </a>
+            <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForVendor');">
+                <i class="${Icon.ACP_PRIVATE}"></i><g:message code="person.create_new.contactPersonForVendor.label"/>
+            </a>
             <g:if test="${institution.isCustomerType_Consortium()}">
-                <a href="#createPersonModal" class="item" data-ui="modal"
-                   onclick="JSPC.app.personCreate('contactPersonForInstitution');"><i class="${Icon.ACP_PRIVATE}"></i><g:message
-                        code="person.create_new.contactPersonForInstitution.label"/></a>
-
-                <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForInstitution');"><i class="${Icon.ADDRESS}"></i><g:message code="address.add.addressForInstitution.label"/></a>
+                <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForInstitution');">
+                    <i class="${Icon.ACP_PRIVATE}"></i><g:message code="person.create_new.contactPersonForInstitution.label"/>
+                </a>
             </g:if>
+            <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForPublic');">
+                <i class="${Icon.ACP_PRIVATE}"></i><g:message code="person.create_new.contactPersonForPublic.label"/>
+            </a>
 
-            <a href="#createPersonModal" class="item" data-ui="modal"
-               onclick="JSPC.app.personCreate('contactPersonForPublic');"><i class="${Icon.ACP_PRIVATE}"></i><g:message
-                    code="person.create_new.contactPersonForPublic.label"/></a>
-
-            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForPublic');"><i class="${Icon.ADDRESS}"></i><g:message code="address.add.addressForPublic.label"/></a>
+            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForProvider');">
+                <i class="${Icon.ADDRESS}"></i><g:message code="address.add.addressForProvider.label"/>
+            </a>
+            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForVendor');">
+                <i class="${Icon.ADDRESS}"></i><g:message code="address.add.addressForVendor.label"/>
+            </a>
+            <g:if test="${institution.isCustomerType_Consortium()}">
+                <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForInstitution');">
+                    <i class="${Icon.ADDRESS}"></i><g:message code="address.add.addressForInstitution.label"/>
+                </a>
+            </g:if>
+            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForPublic');">
+                <i class="${Icon.ADDRESS}"></i><g:message code="address.add.addressForPublic.label"/>
+            </a>
 
             <div class="divider"></div>
         </g:if>
@@ -170,11 +176,6 @@
     <a class="${params.tab == 'contacts' ? 'active' : ''} item" data-tab="contacts">
         ${message(code: 'org.prsLinks.label')} <ui:bubble count="${num_visiblePersons}" grey="true"/>
     </a>
-
-    <%--<a class="${params.tab == 'personAddresses' ? 'active' : ''} item" data-tab="personAddresses">
-        ${message(code: 'org.prsLinks.adresses.label')}
-    </a>--%>
-
     <a class="${params.tab == 'addresses' ? 'active' : ''} item" data-tab="addresses">
         ${message(code: 'org.addresses.label')} <ui:bubble count="${num_visibleAddresses}" grey="true"/>
     </a>
@@ -182,11 +183,10 @@
 
 <div class="ui bottom attached tab segment ${params.tab == 'contacts' ? 'active' : ''}" data-tab="contacts">
 
-    <laser:render template="/templates/cpa/person_table" model="${[
+    <laser:render template="/addressbook/person_table" model="${[
             persons       : visiblePersons,
             offset        : personOffset,
             showContacts  : true,
-            showAddresses : true,
             showOptions : true,
             tmplConfigShow: ['lineNumber', 'organisation', 'function', 'position', 'name', 'showContacts']
     ]}"/>
@@ -199,7 +199,7 @@
 
 <div class="ui bottom attached tab segment ${params.tab == 'addresses' ? 'active' : ''}" data-tab="addresses">
 
-    <laser:render template="/templates/cpa/address_table" model="${[
+    <laser:render template="/addressbook/address_table" model="${[
             addresses           : addresses,
             offset              : addressOffset,
             tmplShowDeleteButton: true,
@@ -215,7 +215,7 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.personCreate = function (contactFor) {
-        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&showAddresses=true&showContacts=true';
+        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&showContacts=true';
         JSPC.app.createPersonModal(url)
     }
     JSPC.app.createPersonModal = function (url) {

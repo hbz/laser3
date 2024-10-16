@@ -27,11 +27,10 @@
                         <i class="${Icon.CMD.EDIT}"></i>
                     </a>
 
-                    <g:set var="oid" value="${address.class.name}:${address.id}" />
                     <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.address.addressbook")}"
                             data-confirm-term-how="delete"
-                            controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: oid]"
+                            controller="addressbook" action="deleteAddress" params="[id: address.id]"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
                         <i class="${Icon.CMD.DELETE}"></i>

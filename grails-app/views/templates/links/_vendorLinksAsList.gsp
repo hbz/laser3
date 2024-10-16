@@ -57,21 +57,20 @@
                                 <i class="${Icon.SIG.SHARED_OBJECT_ON} grey"></i>
                             </span>
                         </g:if>
-                        <%--
-                        <g:if test="${showPersons}">
-                                <button class="${Btn.MODERN.SIMPLE_TOOLTIP} la-selectable-button" data-ui="modal" data-href="#${cssId}" data-content="${message(code:'subscription.details.addNewContact')}">
-                                    <i class="${Icon.CMD.ADD}"></i>
-                                </button>
 
-                        <laser:render template="/templates/links/vendorLinksAsListAddPrsModal"
-                                  model="['cssId': cssId,
-                                          'orgRole': role,
-                                          'roleObject': roleObject,
+                        <g:if test="${showPersons}">
+                            <button class="${Btn.MODERN.SIMPLE_TOOLTIP} la-selectable-button" data-ui="modal" data-href="#${cssId}" data-content="${message(code:'subscription.details.addNewContact')}">
+                                <i class="${Icon.CMD.ADD}"></i>
+                            </button>
+
+                            <laser:render template="/templates/links/linksAsListAddPrsModal"
+                                  model="[cssId: cssId,
+                                          relation: role,
+                                          roleObject: roleObject,
                                           parent: genericOIDService.getOID(roleObject),
                                           role: genericOIDService.getOID(modalPrsLinkRole)
                                   ]"/>
                         </g:if>
-                        --%>
                     </g:if>
                 </td>
 
@@ -121,7 +120,7 @@
                                                     func,
                                                     RDStore.CCT_EMAIL
                                             )}" var="contact">
-                                                        <laser:render template="/templates/cpa/contact" model="${[
+                                                        <laser:render template="/addressbook/contact" model="${[
                                                             contact             : contact,
                                                             tmplShowDeleteButton: false,
                                                             overwriteEditable   : false
@@ -161,7 +160,7 @@
                                                                 func,
                                                                 [RDStore.CCT_EMAIL, RDStore.CCT_URL]
                                                         )}" var="contact">
-                                                            <laser:render template="/templates/cpa/contact" model="${[
+                                                            <laser:render template="/addressbook/contact" model="${[
                                                                     contact             : contact,
                                                                     tmplShowDeleteButton: false,
                                                                     overwriteEditable   : false
@@ -191,7 +190,7 @@
                                                                 func,
                                                                 [RDStore.CCT_EMAIL, RDStore.CCT_URL]
                                                         )}" var="contact">
-                                                            <laser:render template="/templates/cpa/contact" model="${[
+                                                            <laser:render template="/addressbook/contact" model="${[
                                                                     contact             : contact,
                                                                     tmplShowDeleteButton: false,
                                                                     overwriteEditable   : false
@@ -221,7 +220,7 @@
                                                                 func,
                                                                 RDStore.CCT_EMAIL
                                                         )}" var="contact">
-                                                            <laser:render template="/templates/cpa/contact" model="${[
+                                                            <laser:render template="/addressbook/contact" model="${[
                                                                     contact             : contact,
                                                                     tmplShowDeleteButton: false,
                                                                     overwriteEditable   : false
@@ -247,7 +246,7 @@
                                                             resp,
                                                             [RDStore.CCT_EMAIL, RDStore.CCT_URL]
                                                     )}" var="contact">
-                                                        <laser:render template="/templates/cpa/contact" model="${[
+                                                        <laser:render template="/addressbook/contact" model="${[
                                                                 contact             : contact,
                                                                 tmplShowDeleteButton: false,
                                                                 overwriteEditable   : false
@@ -258,7 +257,7 @@
                                                     <g:set var="prsRole" value="${PersonRole.getByPersonAndOrgAndRespValue(resp, role.vendor, roleRespValue)}" />
                                                     <div class="two wide column">
                                                         <div class="ui buttons">
-                                                            <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
+                                                            <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button" controller="addressbook" action="deletePersonRole" id="${prsRole.id}"
                                                                     data-confirm-tokenMsg = "${message(code:'template.orgLinks.delete.warn')}"
                                                                     data-confirm-how = "unlink">
                                                                 <i class="${Icon.CMD.UNLINK}"></i>
@@ -299,7 +298,7 @@
                                                             func,
                                                             [RDStore.CCT_EMAIL, RDStore.CCT_URL]
                                                     )}" var="contact">
-                                                        <laser:render template="/templates/cpa/contact" model="${[
+                                                        <laser:render template="/addressbook/contact" model="${[
                                                                 contact             : contact,
                                                                 tmplShowDeleteButton: false,
                                                                 overwriteEditable   : false
@@ -325,7 +324,7 @@
                                                                 func,
                                                                 [RDStore.CCT_EMAIL, RDStore.CCT_URL]
                                                         )}" var="contact">
-                                                            <laser:render template="/templates/cpa/contact" model="${[
+                                                            <laser:render template="/addressbook/contact" model="${[
                                                                     contact             : contact,
                                                                     tmplShowDeleteButton: false,
                                                                     overwriteEditable   : false
@@ -350,7 +349,7 @@
                                                                 func,
                                                                 [RDStore.CCT_EMAIL, RDStore.CCT_URL]
                                                         )}" var="contact">
-                                                            <laser:render template="/templates/cpa/contact" model="${[
+                                                            <laser:render template="/addressbook/contact" model="${[
                                                                     contact             : contact,
                                                                     tmplShowDeleteButton: false,
                                                                     overwriteEditable   : false
@@ -375,7 +374,7 @@
                                                                 func,
                                                                 [RDStore.CCT_EMAIL, RDStore.CCT_URL]
                                                         )}" var="contact">
-                                                            <laser:render template="/templates/cpa/contact" model="${[
+                                                            <laser:render template="/addressbook/contact" model="${[
                                                                     contact             : contact,
                                                                     tmplShowDeleteButton: false,
                                                                     overwriteEditable   : false
@@ -401,7 +400,7 @@
                                                             resp,
                                                             [RDStore.CCT_EMAIL, RDStore.CCT_URL]
                                                     )}" var="contact">
-                                                        <laser:render template="/templates/cpa/contact" model="${[
+                                                        <laser:render template="/addressbook/contact" model="${[
                                                                 contact             : contact,
                                                                 tmplShowDeleteButton: false,
                                                                 overwriteEditable   : false
@@ -412,7 +411,7 @@
                                                     <g:set var="prsRole" value="${PersonRole.getByPersonAndOrgAndRespValue(resp, role.vendor, roleRespValue)}" />
                                                     <div class="two wide column">
                                                         <div class="ui buttons">
-                                                            <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button" controller="ajax" action="delPrsRole" id="${prsRole?.id}"
+                                                            <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button" controller="addressbook" action="deletePersonRole" id="${prsRole.id}"
                                                                     data-confirm-tokenMsg = "${message(code:'template.orgLinks.delete.warn')}"
                                                                     data-confirm-how = "unlink">
                                                                 <i class="${Icon.CMD.UNLINK}"></i>

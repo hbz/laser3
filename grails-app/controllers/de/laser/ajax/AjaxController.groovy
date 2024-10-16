@@ -776,26 +776,33 @@ class AjaxController {
     @Secured(['ROLE_USER'])
     @Transactional
     def addPrsRole() {
-        Org org             = (Org) genericOIDService.resolveOID(params.org)
+        def owner           = genericOIDService.resolveOID(params.ownObj)
         def parent          = genericOIDService.resolveOID(params.parent)
         Person person       = (Person) genericOIDService.resolveOID(params.person)
         RefdataValue role   = (RefdataValue) genericOIDService.resolveOID(params.role)
 
         PersonRole newPrsRole
-        PersonRole existingPrsRole
+        List<PersonRole> existingPrsRole
 
-        if (org && person && role) {
-            newPrsRole = new PersonRole(prs: person, org: org)
+        if (owner && person && role) {
+            newPrsRole = new PersonRole(prs: person)
+            if(owner instanceof Org)
+                newPrsRole.org = owner
+            else if(owner instanceof Provider)
+                newPrsRole.provider = owner
+            else if(owner instanceof Vendor)
+                newPrsRole.vendor = owner
             if (parent) {
                 newPrsRole.responsibilityType = role
                 newPrsRole.setReference(parent)
 
                 String[] ref = newPrsRole.getReference().split(":")
-                existingPrsRole = PersonRole.findWhere(prs:person, org: org, responsibilityType: role, "${ref[0]}": parent)
+                String query = "select pr from PersonRole pr where pr.prs = :prs and (pr.org = :owner or pr.provider = :owner or pr.vendor = :owner) and pr.responsibilityType = :responsibilityType and ${ref[0]} = :parent"
+                existingPrsRole = PersonRole.executeQuery(query, [prs:person, owner: owner, responsibilityType: role, parent: parent])
             }
             else {
                 newPrsRole.functionType = role
-                existingPrsRole = PersonRole.findWhere(prs:person, org: org, functionType: role)
+                existingPrsRole = PersonRole.executeQuery('select pr from PersonRole pr where pr.prs = :prs and (pr.org = :owner or pr.provider = :owner or pr.vendor = :owner) and pr.functionType = :functionType', [prs:person, owner: owner, functionType: role])
             }
         }
 
@@ -807,23 +814,6 @@ class AjaxController {
             //flash.error = message(code: 'default.error')
         }
 
-        redirect(url: request.getHeader('referer'))
-    }
-
-    /**
-     * Deletes the given relation link between a {@link Person} its target
-     */
-    @Secured(['ROLE_USER'])
-    @Transactional
-    def delPrsRole() {
-        PersonRole prsRole = PersonRole.get(params.id)
-
-        if (prsRole && prsRole.delete()) {
-        }
-        else {
-            log.error("Problem deleting person role ..")
-            //flash.error = message(code: 'default.error')
-        }
         redirect(url: request.getHeader('referer'))
     }
 
@@ -1677,45 +1667,6 @@ class AjaxController {
         result.dueDatesCount = dashboardDueDatesService.countDashboardDueDates(contextService.getUser(), contextService.getOrg())
 
         render (template: "/user/tableDueDates", model: [dueDates: result.dueDates, dueDatesCount: result.dueDatesCount, max: result.max, offset: result.offset])
-    }
-
-    /**
-     * Deletes a person (contact)-object-relation. Is a substitution call for {@link #deletePersonRole()}
-     * @see Person
-     * @see PersonRole
-     */
-    @Secured(['ROLE_USER'])
-    @Transactional
-    def delete() {
-      switch(params.cmd) {
-        case 'deletePersonRole':
-            deletePersonRole()
-        break
-        case [ 'deleteAddress', 'deleteContact' ]:
-            def obj = genericOIDService.resolveOID(params.oid)
-            if (obj && (obj instanceof Address || obj instanceof Contact)) {
-                obj.delete() // TODO: check perms
-            }
-        break
-        default:
-            log.warn 'ajax.delete(): BLOCKED > ' + params.toMapString()
-        break
-      }
-      redirect(url: request.getHeader('referer'))
-    }
-
-    /**
-     * Deletes a person (contact)-object-relation
-     * @see Person
-     * @see PersonRole
-     */
-    @Secured(['ROLE_ADMIN'])
-    @Transactional
-    def deletePersonRole(){
-        PersonRole personRole = genericOIDService.resolveOID(params.oid) as PersonRole
-        if (personRole) {
-            personRole.delete()
-        }
     }
 
     /**

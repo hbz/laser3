@@ -265,7 +265,7 @@ class DashboardDueDatesService {
                         dashDueDateRow.classLabel = messageSource.getMessage('attribute', null, language)+': '
                         if (obj.owner instanceof Person) {
                             dashDueDateRow.classLabel += "${messageSource.getMessage('default.person.label', null, language)}: "
-                            dashDueDateRow.link = grailsLinkGenerator.link([controller: "person", action: "show", id: obj.owner?.id, absolute: true])
+                            // dashDueDateRow.link
                             dashDueDateRow.objLabel = obj.owner?.first_name+' '+obj.owner?.last_name
                         }
                         else if (obj.owner instanceof Subscription) {

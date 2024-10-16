@@ -13,9 +13,11 @@ class AccessService {
     static final String CHECK_EDIT = 'CHECK_EDIT'                       // TODO
     static final String CHECK_VIEW_AND_EDIT = 'CHECK_VIEW_AND_EDIT'     // TODO
 
+    AddressbookService addressbookService
     ContextService contextService
     UserService userService
 
+    // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
     boolean hasAccessToDocument(DocContext dctx) {
         // moved from ajaxHtmlController.documentPreview()$checkPermission
         // logic based on /views/templates/documents/card
@@ -74,6 +76,7 @@ class AccessService {
         return check
     }
 
+    // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
     boolean hasAccessToDocNote(DocContext dctx) {
         boolean check = false
         Org ctxOrg = contextService.getOrg()
@@ -119,6 +122,7 @@ class AccessService {
         return check
     }
 
+    // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
     boolean hasAccessToTask(Task task) {
         boolean check = false
 
@@ -146,6 +150,7 @@ class AccessService {
         return check
     }
 
+    // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
     boolean hasAccessToWorkflow(WfChecklist workflow) {
         boolean check = false
 
@@ -164,4 +169,45 @@ class AccessService {
         return check
     }
 
+    // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
+    boolean hasAccessToAddress(Address address) {
+        return true // TODO
+
+        boolean check = false
+
+        if (!address) {
+            // .. invalid
+        }
+
+        return check
+    }
+
+    // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
+    boolean hasAccessToContact(Contact contact) {
+        return true // TODO
+
+        boolean check = false
+
+        if (!contact) {
+            // .. invalid
+        }
+
+        return check
+    }
+
+    // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
+    boolean hasAccessToPerson(Person person) {
+        return true // TODO
+
+        boolean check = false
+
+        if (!person) {
+            // .. invalid
+        }
+//        else if (addressbookService.isPersonEditable(person, contextService.getUser())) { // ROLEADMIN !!
+//            check = true
+//        }
+
+        return check
+    }
 }
