@@ -3919,6 +3919,8 @@ class ExportService {
 									if(!titleMatch)
 										titleMatch = identifierInverseMap.printIdentifiers.get(identifier.'ns2:Value'.text().replaceAll('-',''))
 									break
+								case 'url': titleMatch = identifierInverseMap.url.get(identifier.'ns2:Value'.text())
+									break
 								case 'doi': titleMatch = identifierInverseMap.doi.get(identifier.'ns2:Value'.text())
 									break
 								case 'proprietary_id': propIdNamespaces.each { String propIdNamespace ->
@@ -3954,11 +3956,11 @@ class ExportService {
 							switch(idData.Type.toLowerCase()) {
 								case 'isbn': titleMatch = identifierInverseMap.onlineIdentifiers.get(idData.Value)
 									if(!titleMatch)
-										titleMatch = identifierInverseMap.onlineIdentifiers.get(idData.Value)
+										titleMatch = identifierInverseMap.onlineIdentifiers.get(idData.Value.replaceAll('-',''))
 									if(!titleMatch)
 										titleMatch = identifierInverseMap.printIdentifiers.get(idData.Value.replaceAll('-',''))
 									if(!titleMatch)
-										titleMatch = identifierInverseMap.printIdentifiers.get(idData.Value.replaceAll('-',''))
+										titleMatch = identifierInverseMap.printIdentifiers.get(idData.Value)
 									break
 								case 'online_issn':
 								case 'online_isbn': titleMatch = identifierInverseMap.onlineIdentifiers.get(idData.Value)
@@ -3971,6 +3973,8 @@ class ExportService {
 										titleMatch = identifierInverseMap.printIdentifiers.get(idData.Value.replaceAll('-',''))
 									break
 								case 'doi': titleMatch = identifierInverseMap.doi.get(idData.Value)
+									break
+								case 'url': titleMatch = identifierInverseMap.url.get(idData.Value)
 									break
 								case 'proprietary_id': titleMatch = identifierInverseMap.proprietaryIdentifiers.get(idData.Value)
 									break
