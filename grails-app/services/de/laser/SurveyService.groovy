@@ -2410,7 +2410,7 @@ class SurveyService {
                         }
                         else {
                             IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
-                            result.countCurrentPermanentTitles = issueEntitlementGroup ? subscriptionService.countCurrentIssueEntitlementsNotInIEGroup(subscriberSub, issueEntitlementGroup) : 0
+                            result.countCurrentPermanentTitles = issueEntitlementGroup ? subscriptionService.countCurrentIssueEntitlementsNotInIEGroup(result.subscription, issueEntitlementGroup) : 0
                         }
 //                    if (result.surveyConfig.pickAndChoosePerpetualAccess) {
 //                        result.countCurrentIEs = countPerpetualAccessTitlesBySub(result.subscription)
