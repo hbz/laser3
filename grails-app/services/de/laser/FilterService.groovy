@@ -1317,11 +1317,11 @@ class FilterService {
         result
     }
 
-    Map<String,Object> getIssueEntitlementSubsetQuery(Map params, String select = 'ie.id') {
+    Map<String,Object> getIssueEntitlementSubsetQuery(Map params) {
         log.debug 'getIssueEntitlementSubsetQuery'
 
         Map<String, Object> result = [:], queryParams = [:]
-        String query = "select ${select} from IssueEntitlement ie join ie.tipp tipp where tipp.id in (:subset) "
+        String query = "select ie.id from IssueEntitlement ie join ie.tipp tipp where tipp.id in (:subset) "
         Set<String> queryArgs = []
 
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -1480,6 +1480,52 @@ class FilterService {
         String arguments = queryArgs.join(' and ')
         result.query = query + "and ${arguments} order by tipp.sortname"
         result.queryParams = queryParams
+
+        result
+    }
+
+    Map<String,Object> getIssueEntitlementSubsetSQLQuery(Map params) {
+        log.debug 'getIssueEntitlementSubsetSQLQuery'
+
+        Map<String, Object> result = [:], queryParams = [:], arrayParams = [tippIDs: params.tippIDs]
+        String query = "select ie_id, tipp_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_id = any(:tippIDs) " //continue here: implement batch array query to resolve sorting problem
+        Set<String> queryArgs = []
+
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+
+        if (params.subscriptions) {
+            queryArgs << 'ie_subscription_fk = any(:subscriptions)'
+            arrayParams.subscriptions = params.subscriptions.id
+        }
+        else {
+            queryArgs << 'ie_subscription_fk = :subscription'
+            queryParams.subscription = params.subscription.id
+        }
+
+        if (params.asAt && params.asAt.length() > 0) {
+            queryArgs << 'ie_access_start_date >= :asAt'
+            queryArgs << 'ie_access_end_date <= :asAt'
+            queryParams.asAt = sdf.parse(params.asAt)
+        }
+
+        if (params.ieStatus) {
+            queryArgs << 'ie_status_rv_fk = any(:ieStatus)'
+            arrayParams.ieStatus = params.ieStatus.id
+        }
+
+        if (params.titleGroup) {
+            if(params.titleGroup == 'notInGroups'){
+                queryArgs << "not exists ( select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id)"
+            }else {
+                queryArgs << "exists ( select igi_id from issue_entitlement_group_item where igi_ie_group_fk = :titleGroup and igi_ie_fk = ie_id)"
+                queryParams.titleGroup = params.titleGroup.id
+            }
+        }
+
+        String arguments = queryArgs.join(' and ')
+        result.query = query + "and ${arguments} order by tipp_sort_name"
+        result.queryParams = queryParams
+        result.arrayParams = arrayParams
 
         result
     }

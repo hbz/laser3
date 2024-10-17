@@ -1711,28 +1711,18 @@ class SubscriptionService {
                 case 'selectedIEs':
                     if(issueEntitlementGroup) {
                         Map<String, Object> queryPart1 = filterService.getTippSubsetQuery(titleConfigMap)
-                        Set<Long> tippIds = TitleInstancePackagePlatform.executeQuery(queryPart1.query, queryPart1.queryParams)
+                        Set<Long> tippIDs = TitleInstancePackagePlatform.executeQuery(queryPart1.query, queryPart1.queryParams)
                         if(configMap.identifier) {
                             identifierConfigMap.identifier = "%${configMap.identifier.toLowerCase()}%"
                             Set<Long> identifierMatches = TitleInstancePackagePlatform.executeQuery('select tipp.id from Identifier id join id.tipp tipp where tipp.pkg in (:packages) and lower(id.value) like :identifier and id.ns.ns in (:titleNS)', identifierConfigMap)
-                            tippIds = tippIds.intersect(identifierMatches)
+                            tippIDs = tippIDs.intersect(identifierMatches)
                         }
-                        /*
-                        continue here: how to solve the sorting problem?
-                        - get tipp IDs
-                        - get issue entitlement IDs (sort here!!!)
-                        - get issue entitlement objects (already sorted!!!)
-                        */
-                        Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetQuery(issueEntitlementConfigMap, 'new map(ie.id as ieId, tipp.id as tippId)')
+                        issueEntitlementConfigMap.tippIDs = tippIDs
+                        Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetSQLQuery(issueEntitlementConfigMap)
                         Set<Long> sourceIEs = [], sourceTIPPs = []
-                        tippIds.collate(65000).each { List<Long> subset ->
-                            queryPart2.queryParams.subset = subset
-                            List<Map> rows = IssueEntitlement.executeQuery(queryPart2.query, queryPart2.queryParams)
-                            rows.each { Map row ->
-                                sourceIEs << row.ieId
-                                sourceTIPPs << row.tippId
-                            }
-                        }
+                        List<GroovyRowResult> rows = batchQueryService.longArrayQuery(queryPart2.query, queryPart2.queryParams, queryPart2.arrayParams)
+                        sourceIEs.addAll(rows["ie_id"])
+                        sourceTIPPs.addAll(rows["tipp_id"])
                         result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max), [sort: params.sort, order: params.order]) : []
                         result.num_rows = sourceIEs.size()
                         List eurCheck = batchQueryService.longArrayQuery("select sum(pi.pi_list_price) as list_price_eur from (${mainQry}) as pi where pi.rn = 1", [currency: RDStore.CURRENCY_EUR.id], [tippIDs: sourceTIPPs]),
@@ -1775,7 +1765,7 @@ class SubscriptionService {
                         subscriptions << result.subscription
                     }
                     if(subscriptions) {
-                        Set<Long> permanentTitleIDs = PermanentTitle.executeQuery('select pt.ie.id from PermanentTitle pt join pt.tipp tipp where pt.subscription in (:subscriptions) and tipp.status = :current', [current: RDStore.TIPP_STATUS_CURRENT, subscriptions: subscriptions])
+                        Set<Long> permanentTitleIDs = PermanentTitle.executeQuery('select pt.issueEntitlement.id from PermanentTitle pt join pt.tipp tipp where pt.subscription in (:subscriptions) and tipp.status = :current', [current: RDStore.TIPP_STATUS_CURRENT, subscriptions: subscriptions])
                         Set<Long> sourceIEs = batchQueryService.longArrayQuery('select ie_id from issue_entitlement where ie_id = any(:permanentTitleIDs)', [:], [permanentTitleIDs: permanentTitleIDs])['ie_id']
                         result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max), [sort: params.sort, order: params.order]) : []
                         result.num_rows = sourceIEs.size()
