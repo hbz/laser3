@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6024    17.10.2024  rc-3.4  3.4.12      Andreas Bug         500er beim Eintragen negativer Posten ohne Wert
+
 6023    15.10.2024  rc-3.4  3.4.12      Andreas Bug         diverse kontaktbezogene Fehler behoben
 
 6021    15.10.2024  rc-3.4  3.4.12      Andreas Bug         fehlende Lizenzen im "Meine Lizenzen pro Einrichtung" wiederhergestellt
