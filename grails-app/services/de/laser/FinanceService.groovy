@@ -1111,8 +1111,22 @@ class FinanceService {
                         Map negEntry = billingSumsNegative[index]
                         billingSum = posEntry.billingSum - negEntry.billingSum
                         billingSumAfterTax = posEntry.billingSumAfterTax - negEntry.billingSumAfterTax
-                        localSum = posEntry.localSum - negEntry.localSum
-                        localSumAfterTax = posEntry.localSumAfterTax - negEntry.localSumAfterTax
+                        if(posEntry.localSum && negEntry.localSum) {
+                            localSum = posEntry.localSum - negEntry.localSum
+                            localSumAfterTax = posEntry.localSumAfterTax - negEntry.localSumAfterTax
+                        }
+                        else if(posEntry.localSum) {
+                            localSum = posEntry.localSum
+                            localSumAfterTax = posEntry.localSumAfterTax
+                        }
+                        else if(negEntry.localSum) {
+                            localSum = negEntry.localSum
+                            localSumAfterTax = negEntry.localSumAfterTax
+                        }
+                        else {
+                            localSum = 0.0
+                            localSumAfterTax = 0.0
+                        }
                     }
                     else {
                         billingSum = posEntry.billingSum
