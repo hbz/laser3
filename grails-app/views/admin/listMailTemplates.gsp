@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.MailTemplate; de.laser.storage.RDConstants;de.laser.RefdataCategory" %>
+<%@ page import="de.laser.mail.MailTemplate; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDConstants;de.laser.RefdataCategory" %>
 <laser:htmlStart message="menu.admin.manageMailTemplates" />
 
 <ui:breadcrumbs>
