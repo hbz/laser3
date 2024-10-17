@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Contact; de.laser.storage.RDConstants; de.laser.RefdataCategory;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.addressbook.Contact; de.laser.storage.RDConstants; de.laser.RefdataCategory;" %>
 
 <div class="three fields contactField">
     <div class="field one wide la-contactIconField">

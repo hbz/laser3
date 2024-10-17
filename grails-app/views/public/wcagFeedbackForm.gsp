@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.ui.Btn; de.laser.PersonRole; de.laser.Contact; de.laser.OrgRole; de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
+<%@ page import="de.laser.ui.Icon; de.laser.ui.Btn; de.laser.addressbook.PersonRole; de.laser.addressbook.Contact; de.laser.OrgRole; de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
 <laser:htmlStart message="feedback.title" />
 
     <h1 class="ui header">

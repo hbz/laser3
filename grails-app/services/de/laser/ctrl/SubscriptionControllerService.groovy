@@ -2,6 +2,8 @@ package de.laser.ctrl
 
 
 import de.laser.*
+import de.laser.addressbook.Person
+import de.laser.addressbook.PersonRole
 import de.laser.auth.User
 import de.laser.base.AbstractReport
 import de.laser.cache.EhcacheWrapper

@@ -1,5 +1,9 @@
 package de.laser
 
+import de.laser.addressbook.Address
+import de.laser.addressbook.Contact
+import de.laser.addressbook.Person
+import de.laser.addressbook.PersonRole
 import de.laser.auth.User
 import de.laser.convenience.Marker
 import de.laser.helper.Params
@@ -44,7 +48,7 @@ class ProviderService {
      * @param onlyPublic retrieve only public contacts?
      * @param functionType the function type of the contacts to be requested
      * @param exWekb should only contacts being retrieved which come from the provider itself (i.e. from we:kb)?
-     * @return a {@link List} of {@link Person}s matching to the function type
+     * @return a {@link List} of {@link de.laser.addressbook.Person}s matching to the function type
      */
     List<Person> getContactPersonsByFunctionType(Provider provider, Org contextOrg, boolean onlyPublic, RefdataValue functionType = null) {
         Map<String, Object> queryParams = [provider: provider]

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.PersonRole; de.laser.OrgRole; de.laser.wekb.ProviderRole; de.laser.wekb.VendorRole" %>
+<%@ page import="de.laser.addressbook.PersonRole; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.OrgRole; de.laser.wekb.ProviderRole; de.laser.wekb.VendorRole" %>
 <ui:modal id="${cssId}" text="Neuen ${modalPrsLinkRole.getI10n("value")} hinzufügen" hideSubmitButton="true">
     <%
         def ownObj

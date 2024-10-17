@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.helper.Params; de.laser.Org; de.laser.Person; de.laser.PersonRole; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants " %>
+<%@ page import="de.laser.addressbook.PersonRole; de.laser.ui.Btn; de.laser.helper.Params; de.laser.Org; de.laser.addressbook.Person; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants " %>
 
 <laser:htmlStart message="menu.institutions.myAddressbook" serviceInjection="true"/>
 

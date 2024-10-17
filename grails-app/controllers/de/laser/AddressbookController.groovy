@@ -1,5 +1,9 @@
 package de.laser
- 
+
+import de.laser.addressbook.Address
+import de.laser.addressbook.Contact
+import de.laser.addressbook.Person
+import de.laser.addressbook.PersonRole
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyOrg
@@ -9,9 +13,9 @@ import grails.plugin.springsecurity.annotation.Secured
 
 /**
  * This controller is responsible for contact address display and manipulation
- * @see Address
- * @see Contact
- * @see Person
+ * @see de.laser.addressbook.Address
+ * @see de.laser.addressbook.Contact
+ * @see de.laser.addressbook.Person
  */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AddressbookController {
@@ -80,7 +84,7 @@ class AddressbookController {
      * Takes submitted parameters and creates a new person contact instance based on the
      * given parameter map
      * @return redirect back to the referer -> an updated list of person contacts
-     * @see Person
+     * @see de.laser.addressbook.Person
      */
     @DebugInfo(isInstEditor_or_ROLEADMIN = [], withTransaction = 1)
     @Secured(closure = {

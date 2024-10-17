@@ -34,10 +34,10 @@ import de.laser.ReportingFilter
 import de.laser.ReportingGlobalService
 import de.laser.ReportingLocalService
 import de.laser.Subscription
-import de.laser.Address
+import de.laser.addressbook.Address
 import de.laser.Doc
-import de.laser.Person
-import de.laser.PersonRole
+import de.laser.addressbook.Person
+import de.laser.addressbook.PersonRole
 import de.laser.SubscriptionPackage
 import de.laser.SubscriptionService
 import de.laser.storage.BeanStore

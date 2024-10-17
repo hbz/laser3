@@ -1,18 +1,14 @@
 package de.laser
 
+import de.laser.addressbook.Contact
+import de.laser.addressbook.Person
+import de.laser.addressbook.PersonRole
 import de.laser.annotations.DebugInfo
 import de.laser.helper.Params
-import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.survey.SurveyOrg
-import de.laser.wekb.Package
 import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
-import grails.converters.JSON
-import grails.gorm.transactions.Transactional
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
-import org.springframework.dao.DataIntegrityViolationException
 
 /**
  * This controller manages person-contact related calls

@@ -2,7 +2,7 @@ package de.laser.api.v0
 
 
 import de.laser.Org
-import de.laser.Person
+import de.laser.addressbook.Person
 import de.laser.wekb.TitleInstancePackagePlatform
 import groovy.sql.GroovyRowResult
 
@@ -33,8 +33,8 @@ class ApiMapReader {
             result.contactType     = prs.contactType?.value
 
             // References
-            result.contacts     = ApiCollectionReader.getContactCollection(prs.contacts, allowedContactTypes) // de.laser.Contact
-            //result.addresses    = [:]//ApiCollectionReader.getAddressCollection(prs.addresses, allowedAddressTypes) // de.laser.Address - obsolete for 3.2
+            result.contacts     = ApiCollectionReader.getContactCollection(prs.contacts, allowedContactTypes) // de.laser.addressbook.Contact
+            //result.addresses    = [:]//ApiCollectionReader.getAddressCollection(prs.addresses, allowedAddressTypes) // de.laser.addressbook.Address - obsolete for 3.2
             result.properties   = ApiCollectionReader.getPrivatePropertyCollection(prs.propertySet, context) // de.laser.PersonPrivateProperty
         }
         return ApiToolkit.cleanUp(result, true, true)

@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.addressbook.PersonRole
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
 import de.laser.config.ConfigDefaults

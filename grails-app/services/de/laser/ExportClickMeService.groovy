@@ -1,5 +1,9 @@
 package de.laser
 
+import de.laser.addressbook.Address
+import de.laser.addressbook.Contact
+import de.laser.addressbook.Person
+import de.laser.addressbook.PersonRole
 import de.laser.base.AbstractCoverage
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem

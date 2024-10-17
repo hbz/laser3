@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.addressbook.Person
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.utils.AppUtils

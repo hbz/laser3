@@ -1,6 +1,7 @@
 package de.laser
 
-
+import de.laser.addressbook.Person
+import de.laser.addressbook.PersonRole
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
@@ -42,7 +43,6 @@ import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
 import org.springframework.web.multipart.MultipartFile
 
-import java.math.RoundingMode
 import java.sql.Connection
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
