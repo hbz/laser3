@@ -443,10 +443,24 @@ class AjaxController {
           Map<String, Object> filterParams = [:]
           if(params.filterParams){
               JSON.parse(params.filterParams).each {
-                  filterParams[it.key] = it.value
+                  if(it.key in ['series_names', 'subject_references', 'ddcs', 'languages', 'yearsFirstOnline', 'medium', 'title_types', 'publishers']){
+                      if(it.value != '[]') {
+                          filterParams[it.key] = []
+                          it.value = it.value.replace('[','').replace(']','')
+                          //Needed because of filterService -> Params.getLongList_forCommaSeparatedString()
+                          if(it.key in ['ddcs', 'languages', 'yearsFirstOnline', 'medium']){
+                              filterParams[it.key] = it.value
+                          }else {
+                              it.value.split(',').each { String paramsValue ->
+                                  filterParams[it.key] << paramsValue
+                              }
+                          }
+                      }
+                  }else{
+                      filterParams[it.key] = it.value
+                  }
               }
           }
-
 		  Map<String, String> newChecked = checked ?: [:]
           if(params.referer == 'renewEntitlementsWithSurvey'){
 
