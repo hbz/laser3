@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.addressbook.Address
 import de.laser.annotations.RefdataInfo
 import de.laser.auth.Role
 import de.laser.auth.User

@@ -23,8 +23,8 @@ import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
 import de.laser.properties.LicenseProperty
 import de.laser.properties.PropertyDefinition
-import de.laser.Address
-import de.laser.Contact
+import de.laser.addressbook.Address
+import de.laser.addressbook.Contact
 import de.laser.oap.OrgAccessPoint
 import de.laser.api.v0.entities.ApiDoc
 import de.laser.api.v0.entities.ApiIssueEntitlement
@@ -49,7 +49,7 @@ class ApiCollectionReader {
     static Collection<Object> getAddressCollection(Collection<Address> list, allowedTypes) {
         Collection<Object> result = []
 
-        list.each { it ->   // de.laser.Address
+        list.each { it ->   // de.laser.addressbook.Address
             Map<String, Object> tmp = [:]
 
             tmp.street1         = it.street_1
@@ -100,7 +100,7 @@ class ApiCollectionReader {
     static Collection<Object> getContactCollection(Collection<Contact> list, allowedTypes) {
         Collection<Object> result = []
 
-        list.each { it ->       // de.laser.Contact
+        list.each { it ->       // de.laser.addressbook.Contact
             Map<String, Object> tmp = [:]
 
             tmp.content         = it.content

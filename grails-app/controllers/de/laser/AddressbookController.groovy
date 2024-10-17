@@ -1,5 +1,7 @@
 package de.laser
- 
+
+import de.laser.addressbook.Address
+import de.laser.addressbook.Contact
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyOrg
@@ -9,8 +11,8 @@ import grails.plugin.springsecurity.annotation.Secured
 
 /**
  * This controller is responsible for contact address display and manipulation
- * @see Address
- * @see Contact
+ * @see de.laser.addressbook.Address
+ * @see de.laser.addressbook.Contact
  * @see Person
  */
 @Secured(['IS_AUTHENTICATED_FULLY'])

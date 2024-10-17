@@ -1,5 +1,7 @@
 package de.laser
 
+import de.laser.addressbook.Address
+import de.laser.addressbook.Contact
 import de.laser.auth.User
 import de.laser.helper.Params
 import de.laser.storage.RDStore
@@ -10,8 +12,8 @@ import grails.gorm.transactions.Transactional
 /**
  * This service handles retrieval and processing of contact data
  * @see Person
- * @see Address
- * @see Contact
+ * @see de.laser.addressbook.Address
+ * @see de.laser.addressbook.Contact
  */
 @Transactional
 class AddressbookService {

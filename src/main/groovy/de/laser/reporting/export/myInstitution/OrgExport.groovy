@@ -1,6 +1,6 @@
 package de.laser.reporting.export.myInstitution
 
-import de.laser.Address
+import de.laser.addressbook.Address
 import de.laser.ContextService
 import de.laser.Identifier
 import de.laser.Org

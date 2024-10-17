@@ -1,5 +1,7 @@
 package de.laser
 
+import de.laser.addressbook.Address
+import de.laser.addressbook.Contact
 import de.laser.auth.User
 import de.laser.convenience.Marker
 import de.laser.helper.Params

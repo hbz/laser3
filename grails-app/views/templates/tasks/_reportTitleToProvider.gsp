@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.storage.BeanStore; de.laser.Task; de.laser.remote.ApiSource; de.laser.Person; de.laser.Contact; grails.plugin.springsecurity.SpringSecurityUtils;" %>
+<%@ page import="de.laser.addressbook.Contact; de.laser.CustomerTypeService; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.storage.BeanStore; de.laser.Task; de.laser.remote.ApiSource; de.laser.Person; grails.plugin.springsecurity.SpringSecurityUtils;" %>
 <laser:serviceInjection />
 
 <g:if test="${contextService.isInstEditor_or_ROLEADMIN()}">

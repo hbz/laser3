@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.addressbook.Contact
 import de.laser.annotations.RefdataInfo
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.properties.PersonProperty
@@ -17,8 +18,8 @@ import groovy.util.logging.Slf4j
  * implemented by the {@link PersonRole} structure. As the contact details towards a person may vary from institution to
  * institution, contact details such as addresses are stored separately from the person instance. Moreover, contacts may
  * be public or private, i.e. visibility is restricted to the institution which set up the contact
- * @see Address
- * @see Contact
+ * @see de.laser.addressbook.Address
+ * @see de.laser.addressbook.Contact
  * @see PersonRole
  */
 @Slf4j

@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.addressbook.Address
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.ctrl.SubscriptionControllerService

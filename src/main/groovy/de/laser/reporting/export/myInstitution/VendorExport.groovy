@@ -1,6 +1,7 @@
 package de.laser.reporting.export.myInstitution
 
 import de.laser.*
+import de.laser.addressbook.Address
 import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.GenericHelper

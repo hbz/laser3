@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.addressbook.Contact
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.base.AbstractReport
 import de.laser.cache.EhcacheWrapper

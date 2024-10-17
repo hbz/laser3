@@ -1,5 +1,7 @@
 package de.laser
 
+import de.laser.addressbook.Address
+import de.laser.addressbook.Contact
 import de.laser.annotations.UnstableFeature
 import de.laser.storage.RDStore
 import de.laser.workflow.WfChecklist

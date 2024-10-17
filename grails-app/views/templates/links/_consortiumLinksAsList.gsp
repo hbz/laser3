@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.PersonRole; de.laser.RefdataValue; de.laser.Person; de.laser.Contact; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.addressbook.Contact; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.PersonRole; de.laser.RefdataValue; de.laser.Person; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
 <laser:serviceInjection/>
 <g:if test="${consortium}">
     <table class="ui compact table">

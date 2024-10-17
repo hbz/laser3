@@ -41,7 +41,7 @@ import de.laser.Subscription
 import de.laser.SubscriptionPackage
 import de.laser.properties.SubscriptionProperty
 import de.laser.auth.User
-import de.laser.Contact
+import de.laser.addressbook.Contact
 import de.laser.Person
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
@@ -56,7 +56,6 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
-import javax.transaction.Transactional
 import java.text.SimpleDateFormat
 
 /**

@@ -1,6 +1,6 @@
 package de.laser.survey
 
-import de.laser.Address
+import de.laser.addressbook.Address
 import de.laser.Org
 import de.laser.OrgRole
 import de.laser.Person

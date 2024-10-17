@@ -1,6 +1,6 @@
 package de.laser.wekb
 
-import de.laser.Address
+import de.laser.addressbook.Address
 import de.laser.AlternativeName
 import de.laser.DocContext
 import de.laser.Identifier

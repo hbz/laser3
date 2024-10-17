@@ -1,5 +1,8 @@
-package de.laser
+package de.laser.addressbook
 
+import de.laser.Person
+import de.laser.RefdataCategory
+import de.laser.RefdataValue
 import de.laser.annotations.RefdataInfo
 import de.laser.storage.RDConstants
 import groovy.util.logging.Slf4j
@@ -57,7 +60,7 @@ class Contact implements Comparable<Contact>{
     }
 
     /**
-     * Maps to {@link RefdataCategory#getAllRefdataValues()}
+     * Maps to {@link de.laser.RefdataCategory#getAllRefdataValues()}
      * @param category the category (one of {@link RDConstants#CONTACT_CONTENT_TYPE} or {@link RDConstants#CONTACT_TYPE}) to look for
      * @return a {@link List} of all reference data values of the given category
      */
