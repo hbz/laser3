@@ -1,6 +1,7 @@
 package de.laser.ajax
 
-
+import de.laser.addressbook.Person
+import de.laser.addressbook.PersonRole
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserRole
@@ -771,7 +772,7 @@ class AjaxController {
     }
 
     /**
-     * Adds a relation link from a given object to a {@link Person}
+     * Adds a relation link from a given object to a {@link de.laser.addressbook.Person}
      */
     @Secured(['ROLE_USER'])
     @Transactional

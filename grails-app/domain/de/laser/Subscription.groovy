@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.addressbook.PersonRole
 import de.laser.annotations.RefdataInfo
 import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated

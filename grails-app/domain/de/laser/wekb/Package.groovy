@@ -5,7 +5,7 @@ import de.laser.DeweyDecimalClassification
 import de.laser.Identifier
 import de.laser.Language
 import de.laser.PendingChange
-import de.laser.PersonRole
+import de.laser.addressbook.PersonRole
 import de.laser.RefdataValue
 import de.laser.SubscriptionPackage
 import de.laser.annotations.RefdataInfo

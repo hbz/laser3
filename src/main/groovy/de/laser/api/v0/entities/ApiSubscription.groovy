@@ -240,7 +240,7 @@ class ApiSubscription {
 		/*
 		result.persons      = exportHelperService.resolvePrsLinks(
 				sub.prsLinks,  true, true, context
-		) // de.laser.PersonRole
+		) // de.laser.addressbook.PersonRole
 		*/
 
 		//result.license = ApiStubReader.requestLicenseStub(sub.owner, context) // de.laser.License
