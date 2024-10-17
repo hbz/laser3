@@ -59,7 +59,7 @@ class AddressbookService {
      * @return true if the user is affiliated at least as INST_EDITOR with the given tenant or institution or is a global admin, false otherwise
      */
     boolean isContactEditable(Contact contact, User user) {
-        Org org = contact.getPrs()?.tenant ?: contact.org
+        Org org = contact.getPrs()?.tenant
         userService.hasFormalAffiliation_or_ROLEADMIN(user, org, 'INST_EDITOR')
     }
 
@@ -70,7 +70,7 @@ class AddressbookService {
      * @return true if the user is affiliated at least as INST_EDITOR with the given tenant or is a global admin, false otherwise
      */
     boolean isPersonEditable(Person person, User user) {
-        userService.hasFormalAffiliation_or_ROLEADMIN(user, person.tenant , 'INST_EDITOR')
+        userService.hasFormalAffiliation_or_ROLEADMIN(user, person.tenant, 'INST_EDITOR')
     }
 
     /**
@@ -156,7 +156,7 @@ class AddressbookService {
             qParts << '('+posParts.join(' OR ')+')'
         }
 
-        Map<String, Object> instProvVenFilter = getInstitutionProviderVendorFilter(params)
+        Map<String, Object> instProvVenFilter = _getInstitutionProviderVendorFilter(params)
         if(instProvVenFilter.containsKey('qParams')) {
             qParts.add(instProvVenFilter.qParts)
             qParams.putAll(instProvVenFilter.qParams)
@@ -241,7 +241,7 @@ class AddressbookService {
             qParams << [selectedTypes: Params.getLongList(params, 'type')]
         }
 
-        Map<String, Object> instProvVenFilter = getInstitutionProviderVendorFilter(params)
+        Map<String, Object> instProvVenFilter = _getInstitutionProviderVendorFilter(params)
         if(instProvVenFilter.containsKey('qParts')) {
             qParts.add(instProvVenFilter.qParts)
             qParams.putAll(instProvVenFilter.qParams)
@@ -271,7 +271,7 @@ class AddressbookService {
         result
     }
 
-    private Map<String, Object> getInstitutionProviderVendorFilter(Map params) {
+    private Map<String, Object> _getInstitutionProviderVendorFilter(Map params) {
         List qParts = []
         Map qParams = [:]
         if (params.showOnlyContactPersonForInstitution || params.exportOnlyContactPersonForInstitution){

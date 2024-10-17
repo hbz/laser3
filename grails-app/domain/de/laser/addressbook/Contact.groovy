@@ -8,7 +8,7 @@ import de.laser.storage.RDConstants
 import groovy.util.logging.Slf4j
 
 /**
- * A contact address for a given {@link Person} or {@link de.laser.Org}. Note that physical addresses are stored as {@link Address}es;
+ * A contact address for a given {@link Person}. Note that physical addresses are stored as {@link Address}es;
  * the more appropriate name for this domain would be ContactDetails because the Person domain class represents the actual contact
  * @see Address
  * @see Person

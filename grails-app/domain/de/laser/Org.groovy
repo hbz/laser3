@@ -202,12 +202,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
              country(nullable:true)
               region(nullable:true)
             eInvoicePortal(nullable:true)
-//        , validator: {RefdataValue val, Org obj, errors ->
-//                  if ( ! val.owner.desc.endsWith(obj.country.toString().toLowerCase())){
-//                      errors.rejectValue('region', 'regionDoesNotBelongToSelectedCountry')
-//                      return false
-//                  }
-//              })
       libraryNetwork(nullable:true)
           funderType(nullable:true)
        funderHskType(nullable:true)
@@ -367,10 +361,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     boolean isCustomerType_Consortium() {
         this.getCustomerType() in [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO ]
     }
-
-//    boolean isCustomerType_Consortium_or_Support() {
-//        this.getCustomerType() in [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO, CustomerTypeService.ORG_SUPPORT ] // hasPerm(ORG_CONSORTIUM_BASIC)
-//    }
 
     boolean isCustomerType_Support() {
         this.getCustomerType() == CustomerTypeService.ORG_SUPPORT
