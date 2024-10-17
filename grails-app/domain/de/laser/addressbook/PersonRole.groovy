@@ -13,7 +13,7 @@ import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 
 /**
- * This class ensures connections between {@link de.laser.addressbook.Person}s and {@link Org}s. Moreover, a person role may be specified to an instance of certain other objects like {@link OrgRole} does it for organisations.
+ * This class ensures connections between {@link de.laser.addressbook.Person}s and {@link Org}s. Moreover, a person role may be specified to an instance of certain other objects like {@link de.laser.OrgRole} does it for organisations.
  * Possible objects to restrict are:
  * <ul>
  *     <li>{@link License}</li>
@@ -21,7 +21,7 @@ import de.laser.wekb.Vendor
  *     <li>{@link Subscription}</li>
  *     <li>{@link de.laser.wekb.TitleInstancePackagePlatform}</li>
  * </ul>
- * Unlike in ${@link OrgRole}, the link between the person and the object other than organisation is not typised; it serves rather as a specification for the connection between the person and the organisation, e.g.
+ * Unlike in ${@link de.laser.OrgRole}, the link between the person and the object other than organisation is not typised; it serves rather as a specification for the connection between the person and the organisation, e.g.
  * person A is a general contact of organisation B about the subscription C.
  * The relation of the person and the organisation is typised by three distinctive ways which exclude each other. There are several types, using each different sets of reference values:
  * <ol>
