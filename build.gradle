@@ -126,7 +126,7 @@ dependencies {
     // --------------------------------------------------
 
     runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-gradle:4.4.0'       // 2024 : [freeze - not 4.5.*] -- JS Closure uglify JS Exception
-    runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-core:4.4.0'         // 2024 : [freeze - not 4.5.*] -- java.lang.ClassNotFoundException: org.graalvm.polyglot.Context
+    runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-core:4.5.1'         // 2024 -- java.lang.ClassNotFoundException: org.graalvm.polyglot.Context
     runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-grails:4.5.1'       // 2024 -- No such property: asset for class: de.laser.system.AssetsTagLib
 
     runtimeOnly 'org.apache.tomcat:tomcat-jdbc'
