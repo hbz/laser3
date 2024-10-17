@@ -30,9 +30,6 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyInvoicingInformation')}">
                 <col style="width:  118px;">
             </g:if>
-            <%--<g:if test="${tmplConfigItem.equalsIgnoreCase('showAddresses') && showAddresses}">
-                <col style="width: 332px;">
-            </g:if>--%>
         </g:each>
         <g:if test="${showOptions}">
                 <col style="width:  82px;">
@@ -73,9 +70,6 @@
     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyInvoicingInformation')}">
         <th>${message(code: 'surveyOrg.person.selected')}</th>
     </g:if>
-    <%--<g:if test="${tmplConfigItem.equalsIgnoreCase('showAddresses') && showAddresses}">
-            <th>${message(code: 'person.addresses.label')}</th>
-    </g:if>--%>
 </g:each>
         <g:if test="${showOptions}">
             <th class="la-action-info">${message(code: 'default.actions.label')}</th>
@@ -271,7 +265,7 @@
                 <td>
                     <div class="ui divided middle aligned list la-flex-list ">
                         <g:each in="${person.contacts?.toSorted()}" var="contact">
-                            <laser:render template="/templates/cpa/contact" model="${[
+                            <laser:render template="/addressbook/contact" model="${[
                                     contact             : contact,
                                     tmplShowDeleteButton: true,
                                     overwriteEditable   : false
@@ -317,19 +311,6 @@
                         </g:else>
                 </td>
             </g:if>
-            <%--<g:if test="${tmplConfigItem.equalsIgnoreCase('showAddresses') && showAddresses}">
-                <td>
-                    <div class="ui divided middle aligned list la-flex-list ">
-                        <g:each in="${person.addresses.sort { it.type.each{it?.getI10n('value') }}}" var="address">
-                            <laser:render template="/templates/cpa/address" model="${[
-                                    address             : address,
-                                    tmplShowDeleteButton: true,
-                                    editable:             editable
-                            ]}"/>
-                        </g:each>
-                    </div>
-                </td>
-            </g:if>--%>
         </g:each>
         <g:if test="${showOptions}">
             <td class="x">
@@ -340,7 +321,7 @@
                         <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                     </button>
 
-                    <g:form style="display:inline" controller="person" action="delete" data-confirm-id="${person.id.toString() + '_form'}">
+                    <g:form style="display:inline" controller="addressbook" action="deletePerson" data-confirm-id="${person.id.toString() + '_form'}">
                         <g:hiddenField id="person_id_${person.id}" name="id" value="${person.id}"/>
                         <div class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                              data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact.addressbook", args: [person.toString()])}"
@@ -361,9 +342,8 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.editPerson = function (id) {
-        //addresses deactivated as of ERMS-4492; the argument was showAddresses?:false
         <%
-            Map<String, Object> urlParams = [showAddresses: false, showContacts: showContacts?:false]
+            Map<String, Object> urlParams = [showContacts: showContacts?:false]
             if(restrictToOrg)
                 urlParams.org = restrictToOrg.id
             else if(restrictToProvider)
@@ -372,9 +352,7 @@
                 urlParams.vendor = restrictToVendor.id
         %>
         var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="${urlParams}"/>&id='+id;
-        JSPC.app.person_editModal(url)
-    }
-    JSPC.app.person_editModal = function (url) {
+
         $.ajax({
             url: url,
             success: function(result){

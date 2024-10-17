@@ -95,7 +95,7 @@
                             <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
                                     data-confirm-term-how="delete"
-                                    action="deleteTask" controller="ajax" params="[deleteId:taskInstance.id]"
+                                    action="deleteTask" controller="task" params="[deleteId:taskInstance.id]"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.task')}">
                                 <i class="${Icon.CMD.DELETE}"></i>

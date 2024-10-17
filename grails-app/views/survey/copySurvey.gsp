@@ -291,7 +291,7 @@
                     <td>
                         <g:each in="${surveyConfig.documents.sort { it.owner.title }}" var="docctx">
                             <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
-                                <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}" target="_blank">
+                                <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}" target="_blank">
                                     <g:if test="${docctx.owner.title}">
                                         ${docctx.owner.title}
                                     </g:if>

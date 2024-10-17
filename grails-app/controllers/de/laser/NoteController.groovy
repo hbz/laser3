@@ -11,12 +11,10 @@ import grails.plugin.springsecurity.annotation.Secured
  * This controller manages notes for subscriptions, licenses or organisations
  */
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class DocController  {
+class NoteController {
 
 	ContextService contextService
 	AccessService accessService
-
-    static allowedMethods = [delete: 'POST']
 
 	/**
 	 * Creates a new note for a {@link Subscription}, {@link License} or {@link Org}
@@ -64,7 +62,7 @@ class DocController  {
 	/**
 	 * Edits an already existing note. The note to edit is given by params.id
 	 */
-	@DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
+	@DebugInfo(isInstEditor_or_ROLEADMIN = [], withTransaction = 1)
 	@Secured(closure = {
 		ctx.contextService.isInstEditor_or_ROLEADMIN()
 	})
@@ -82,7 +80,7 @@ class DocController  {
 						return
 					}
 
-					Doc docInstance = docContext?.owner
+					Doc docInstance = docContext.owner
 					if (!docInstance) {
 						flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.note.label'), params.id]) as String
 						redirect(url: request.getHeader('referer'))

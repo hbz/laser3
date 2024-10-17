@@ -234,14 +234,14 @@
 
                                         <g:if test="${!(editable)}">
                                         <%-- 1 --%>
-                                            <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}"
+                                            <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}"
                                                     class="${Btn.MODERN.SIMPLE}"
                                                     target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                                         </g:if>
                                         <g:else>
                                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                             <%-- 1 --%>
-                                                <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}"
+                                                <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}"
                                                         class="${Btn.MODERN.SIMPLE}"
                                                         target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
 
@@ -258,7 +258,7 @@
 
                                         <%-- 4 --%>
                                             <g:if test="${docctx.owner.owner?.id == contextOrg.id && !docctx.isShared}">
-                                                <g:link controller="docstore"
+                                                <g:link controller="document"
                                                         action="deleteDocument"
                                                         class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
@@ -312,14 +312,14 @@
 
                                         <g:if test="${!(editable)}">
                                         <%-- 1 --%>
-                                            <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}"
+                                            <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}"
                                                     class="${Btn.MODERN.SIMPLE}"
                                                     target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                                         </g:if>
                                         <g:else>
                                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                             <%-- 1 --%>
-                                                <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}"
+                                                <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}"
                                                         class="${Btn.MODERN.SIMPLE}"
                                                         target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
 
@@ -336,7 +336,7 @@
 
                                         <%-- 4 --%>
                                             <g:if test="${docctx.owner.owner?.id == contextOrg.id && !docctx.isShared}">
-                                                <g:link controller="docstore"
+                                                <g:link controller="document"
                                                         action="deleteDocument"
                                                         class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"

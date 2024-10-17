@@ -67,7 +67,7 @@
                             </a>
                             <g:set var="linkParams" value="${[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectController:"${controllerName}", redirectAction:"${actionName}"]}" />
 %{--                            params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectController:"${controllerName}", redirectAction:"${actionName}"]'--}%
-                            <g:link controller="doc" action="deleteNote" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
+                            <g:link controller="note" action="deleteNote" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.notes", args: [docctx.owner.title])}"
                                     data-confirm-term-how="delete"
                                     params="${params.tab ? linkParams << [redirectTab: "${params.tab}"] : linkParams}"

@@ -88,12 +88,12 @@
 
                         <g:if test="${! (editable || editable2)}">
                             <%-- 1 --%>
-                            <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+                            <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                         </g:if>
                         <g:else>
                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                 <%-- 1 --%>
-                                <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+                                <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
 
                                 <%-- 2 --%>
                                 <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
@@ -106,7 +106,7 @@
                             </g:if>
                             <g:elseif test="${docctx.shareConf == RDStore.SHARE_CONF_UPLOADER_AND_TARGET}">
                                 <%-- 1 --%>
-                                <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+                                <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                             </g:elseif>
 
                             <%-- 3 --%>
@@ -143,7 +143,7 @@
 
                             <%-- 4 --%>
                             <g:if test="${docctx.owner.owner?.id == contextOrg.id && !docctx.isShared}">
-                                <g:link controller="docstore" action="deleteDocument" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
+                                <g:link controller="document" action="deleteDocument" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                         data-confirm-term-how="delete"
                                         params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectController:"${ajaxCallController ?: controllerName}", redirectAction:"${ajaxCallAction ?: actionName}"]'
@@ -187,7 +187,7 @@
                         </div>
 
                         <div class="five wide right aligned column">
-                            <g:link controller="docstore" action="downloadDocument" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+                            <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
 
                             %{--
                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">

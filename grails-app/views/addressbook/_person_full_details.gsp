@@ -37,51 +37,6 @@
             </g:if>
 
             <div class="content">
-                <g:if test="${editable}">
-
-                    <g:if test="${tmplShowAddPersonRoles}">
-                        <input class="${Btn.ICON.SIMPLE}" type="button" data-ui="modal"
-                               data-href="#prsRoleFormModal${personRole.id}_F"
-                               value="Funktionen">
-                        <laser:render template="/person/prsRoleModal" model="[personInstance: person,
-                                                                          tmplId: 'prsRoleFormModal' + personRole.id + '_F',
-                                                                          tmplRoleType: 'Funktion',
-                                                                          roleType: PersonRole.TYPE_FUNCTION,
-                                                                          roleTypeValues: PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION),
-                                                                          message:'person.function_new.label',
-                                                                          presetOrgId: personContext.id ]"/>
-
-                        <input class="${Btn.ICON.SIMPLE}" type="button" data-ui="modal"
-                               data-href="#prsRoleFormModal${personRole.id}_P"
-                               value="Positionen">
-                        <laser:render template="/person/prsRoleModal" model="[personInstance: person,
-                                                                          tmplId: 'prsRoleFormModal' + personRole.id + '_P',
-                                                                          tmplRoleType: 'Funktion',
-                                                                          roleType: PersonRole.TYPE_POSITION,
-                                                                          roleTypeValues: PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION),
-                                                                          message:'person.position_new.label',
-                                                                          presetOrgId: personContext.id ]"/>
-                    </g:if>
-
-                    <g:if test="${tmplShowAddContacts}">
-                        <input class="${Btn.ICON.SIMPLE}" type="button" data-ui="modal"
-                               data-href="#contactFormModal${personRole.id}"
-                               value="${message(code: 'person.contacts.label')}">
-                        <laser:render template="/contact/formModal" model="['prsId': person.id, prId: personRole.id, modalId: 'contactFormModal' + personRole.id]"/>
-                    </g:if>
-
-                    <%--<g:if test="${tmplShowAddAddresses}">
-                        <% Map model = [:]
-                        model.prsId = person?.id
-                        model.typeId = RDStore.ADDRESS_TYPE_LIBRARY
-                        model.redirect = '.'
-                        model.hideType = true%>
-                        <input class="${Btn.BASIC_ICON}" type="button"
-                               value="${message(code: 'person.addresses.label')}"
-                               onclick="JSPC.app.addresscreate_prs('${model.prsId}', '${model.typeId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');" >
-                    </g:if>--%>
-
-                </g:if>
             </div>
         </div><!-- .person-details -->
 
@@ -89,7 +44,7 @@
             <g:each in="${person.contacts.toSorted()}" var="contact">
                 <%-- contentType should be made not nullable ... subject of kanban! --%>
                 <g:if test="${contact.contentType && tmplConfigShow.contains(contact.contentType.value)}">
-                    <laser:render template="/templates/cpa/contact" model="${[
+                    <laser:render template="/addressbook/contact" model="${[
                             overwriteEditable   : editable,
                             contact             : contact,
                             tmplShowDeleteButton: tmplShowDeleteButton
@@ -98,14 +53,7 @@
             </g:each>
 
         </g:if>
-        <%--<g:if test="${tmplConfigShow.contains('address') && person.addresses}">
 
-            <g:each in="${person.addresses.sort { it.type.each{it?.getI10n('value') }}}" var="address">
-                <laser:render template="/templates/cpa/address"
-                          model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton, editable: editable]}"/>
-            </g:each>
-
-        </g:if>--%>
         <g:if test="${tmplShowFunctions}">
             <g:each in="${person.roleLinks.toSorted()}" var="personRoleLink">
                 <g:if test="${personRoleLink.org.id == personContext.id && personRoleLink.functionType}">
@@ -118,12 +66,11 @@
                         <div class="content">
 
                             <g:if test="${editable && tmplShowDeleteButton}">
-                                <g:set var="oid" value="${personRoleLink.class.name}:${personRoleLink.id}"/>
                                 <g:if test="${person.roleLinks.size() > 1}">
                                     <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.function.contact", args: [personRoleLink.functionType.getI10n('value'), person.toString()])}"
                                             data-confirm-term-how="unlink"
-                                            controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
+                                            controller="addressbook" action="deletePersonRole" params="[id: personRoleLink.id]"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                                         <i class="${Icon.CMD.UNLINK}"></i>
@@ -131,8 +78,8 @@
                                 </g:if>
                                 <g:else>
                                     <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
-                                            controller="person"
-                                            action="delete"
+                                            controller="addressbook"
+                                            action="deletePerson"
                                             id="${person.id}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.org.PrsLinksAndContact.function", args: [personRoleLink.functionType.getI10n('value'), person.toString()])}"
                                             data-confirm-term-how="delete"
@@ -159,13 +106,11 @@
 
                         <div class="content">
                             <g:if test="${editable && tmplShowDeleteButton}">
-                                <g:set var="oid" value="${personRole.class.name}:${personRole.id}"/>
-
                                 <g:if test="${person.roleLinks.size() > 1}">
                                     <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.position.contact", args: [personRole.positionType.getI10n('value'), person.toString()])}"
                                             data-confirm-term-how="unlink"
-                                            controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
+                                            controller="addressbook" action="deletePersonRole" params="[id: personRole.id]"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                                         <i class="${Icon.CMD.UNLINK}"></i>
@@ -173,8 +118,8 @@
                                 </g:if>
                                 <g:else>
                                     <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
-                                            controller="person"
-                                            action="delete"
+                                            controller="addressbook"
+                                            action="deletePerson"
                                             id="${person.id}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.org.PrsLinksAndContact.position", args: [personRole.positionType.getI10n('value'), person.toString()])}"
                                             data-confirm-term-how="delete"
@@ -202,11 +147,10 @@
 
                         <div class="content">
                             <g:if test="${editable && tmplShowDeleteButton}">
-                                <g:set var="oid" value="${personRole.class.name}:${personRole.id}"/>
                                 <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact.organisation")}"
                                         data-confirm-term-how="unlink"
-                                        controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
+                                        controller="addressbook" action="deletePersonRole" params="[id: personRole.id]"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                                     <i class="${Icon.CMD.UNLINK}"></i>
@@ -222,11 +166,10 @@
     </div><!-- .la-flex-list -->
     <g:if test="${editable && tmplUnlinkedObj}">
         <td class="right aligned">
-            <g:set var="oid" value="${tmplUnlinkedObj.class.name}:${tmplUnlinkedObj.id}"/>
             <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                     data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact")}"
                     data-confirm-term-how="unlink"
-                    controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
+                    controller="addressbook" action="deletePersonRole" params="[id: tmplUnlinkedObj.id]"
                     role="button"
                     aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                 <i class="${Icon.CMD.UNLINK}"></i>
@@ -236,14 +179,8 @@
 </g:if>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-        JSPC.app.addresscreate_prs = function (prsId, typeId, redirect, hideType) {
-            var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?prsId=' + prsId + '&typeId=' + typeId + '&redirect=' + redirect + '&hideType=' + hideType;
-            var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);
-            func();
-        }
-
         JSPC.app.editPerson = function (id) {
-            var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showAddresses: showAddresses ?: false, showContacts: showContacts ?: false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id=' + id;
+            var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showContacts: showContacts ?: false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id=' + id;
             var func = bb8.ajax4SimpleModalFunction("#personModal", url);
             func();
         }

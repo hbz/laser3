@@ -89,7 +89,7 @@
 %{--                            </g:else>--}%
                             <%-- 2 --%>
                             <g:if test="${!docctx.isShared && (editable || editable2)}">
-                                <g:link controller="doc" action="deleteNote" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
+                                <g:link controller="note" action="deleteNote" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.notes", args: [docctx.owner.title])}"
                                         data-confirm-term-how="delete"
                                         params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectController:"${ajaxCallController ?: controllerName}", redirectAction:"${ajaxCallAction ?: actionName}"]'

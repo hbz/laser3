@@ -11,7 +11,6 @@
             </div>
         </div>
 
-
         <div class="content">
             <g:if test="${contact.contentType == RDStore.CCT_EMAIL}">
                 <span class="la-popup-tooltip" data-position="top right" data-content="${message(code: 'tooltip.sendMail')}">
@@ -33,7 +32,7 @@
 				<g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contactItems.addressbook")}"
                         data-confirm-term-how="delete"
-                        controller="ajax" action="delete" params="[cmd: 'deleteContact', oid: genericOIDService.getOID(contact)]"
+                        controller="addressbook" action="deleteContact" params="[id: contact.id]"
                         role="button"
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
 					<i class="${Icon.CMD.DELETE}"></i>

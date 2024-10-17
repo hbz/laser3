@@ -78,7 +78,7 @@ Vielen Dank
 
     <ui:modal id="modalCreateTask" message="task.create.reportTitleToProvider">
 
-        <g:form class="ui form" id="create_task" url="[controller: 'task', action: 'create']" method="post">
+        <g:form class="ui form" id="create_task" url="[controller: 'task', action: 'createTask']" method="post">
             <g:hiddenField name="tipp" value="${tipp.id}"/>
             <g:hiddenField name="linkto" value="tipp"/>
 

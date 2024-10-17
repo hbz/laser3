@@ -27,19 +27,11 @@
         <g:if test="${person.contacts}">
 
             <g:each in="${person.contacts.toSorted()}" var="contact">
-                <laser:render template="/templates/cpa/contact"
+                <laser:render template="/addressbook/contact"
                           model="${[contact: contact, tmplShowDeleteButton: tmplShowDeleteButton, overwriteEditable: overwriteEditable]}"/>
             </g:each>
 
         </g:if>
-        <%--<g:if test="${person.addresses}">
-
-            <g:each in="${person.addresses.sort { it?.type.each {it?.getI10n('value')} }}" var="address">
-                <laser:render template="/templates/cpa/address"
-                          model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton, editable: editable]}"/>
-            </g:each>
-
-        </g:if>--%>
 
         <g:if test="${!personRole && !tmplHideLinkToAddressbook}">
 
@@ -80,21 +72,10 @@
 
             <div class="content">
                 <g:if test="${editable && tmplShowDeleteButton}">
-
-                    <g:if test="${showAddContacts}">
-                        <input class="${Btn.ICON.SIMPLE}" type="button" data-ui="modal"
-                               data-href="#contactFormModal${personRole.prs.id}"
-                               value="${message(code: 'default.add.label', args: [message(code: 'person.contacts.label')])}">
-                        <laser:render template="/contact/formModal" model="['prsId': personRole.prs.id, modalId: 'contactFormModal'+personRole.prs.id]"/>
-                    </g:if>
-
-
-                    <g:set var="oid" value="${personRole.class.name}:${personRole.id}"/>
-
                     <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.contact.organisation")}"
                             data-confirm-term-how="unlink"
-                            controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]"
+                            controller="addressbook" action="deletePersonRole" params="[id: personRole.id]"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.unlink.universal')}">
                         <i class="${Icon.CMD.UNLINK}"></i>
@@ -105,7 +86,7 @@
     <g:if test="${personRole.prs.contacts}">
         <g:each in="${personRole.prs.contacts.toSorted()}" var="contact">
             <g:if test="${tmplConfigShow.contains(contact.contentType?.value)}">
-                <laser:render template="/templates/cpa/contact" model="${[
+                <laser:render template="/addressbook/contact" model="${[
                         contact             : contact,
                         tmplShowDeleteButton: true
                 ]}"/>
@@ -116,7 +97,7 @@
     <g:if test="${tmplConfigShow?.contains('address') && personRole.prs.addresses}">
 
         <g:each in="${personRole.prs.addresses.sort { it.type.each {it?.getI10n('value')} }}" var="address">
-            <laser:render template="/templates/cpa/address"
+            <laser:render template="/addressbook/address"
                       model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton, editable: editable]}"/>
         </g:each>
 
@@ -125,10 +106,8 @@
 </g:if>
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.editPerson = function (id) {
-            var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showAddresses: showAddresses?:false, showContacts: showContacts?:false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id='+id;
-            JSPC.app.person_editModal(url)
-        }
-    JSPC.app.person_editModal = function (url) {
+            var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showContacts: showContacts?:false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id='+id;
+
             $.ajax({
                 url: url,
                 success: function(result){

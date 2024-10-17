@@ -36,4 +36,10 @@ databaseChangeLog = {
     changeSet(author: "klober (generated)", id: "1728392757265-6") {
         dropTable(tableName: "org_type")
     }
+
+//    changeSet(author: "klober (generated)", id: "1728392757265-7") {
+//        addColumn(tableName: "delete_me") {
+//            column(name: "dbm_test_grails_620", type: "int8")
+//        }
+//    }
 }

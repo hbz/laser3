@@ -555,9 +555,9 @@ class AjaxHtmlController {
             model.modalText = message(code: 'default.new.label', args: [message(code: 'person.address.label')])
         }
         model.modalMsgSave = message(code: 'default.button.create.label')
-        model.url = [controller: 'address', action: 'create']
+        model.url = [controller: 'addressbook', action: 'createAddress']
 
-        render template: "/templates/cpa/addressFormModal", model: model
+        render template: "/addressbook/addressFormModal", model: model
     }
 
     /**
@@ -572,9 +572,6 @@ class AjaxHtmlController {
             model.modalId = 'addressFormModal'
             String messageCode = 'person.address.label'
             model.typeId = model.addressInstance.type.id
-            /*if(model.addressInstance.prs) {
-                model.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)]) + ' (' + model.addressInstance.prs.toString() + ')'
-            }*/
             if(model.addressInstance.org) {
                 model.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)]) + ' (' + model.addressInstance.org.toString() + ')'
             }
@@ -582,9 +579,9 @@ class AjaxHtmlController {
                 model.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)])
             }
             model.modalMsgSave = message(code: 'default.button.save_changes')
-            model.url = [controller: 'address', action: 'edit']
+            model.url = [controller: 'addressbook', action: 'editAddress']
 
-            render template: "/templates/cpa/addressFormModal", model: model
+            render template: "/addressbook/addressFormModal", model: model
         }
     }
 
@@ -600,8 +597,6 @@ class AjaxHtmlController {
         result.presetFunctionType = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
         result.showContacts = params.showContacts == "true" ? true : ''
         result.addContacts = params.showContacts == "true" ? true : ''
-        result.showAddresses = params.showAddresses == "true" ? true : ''
-        result.addAddresses = params.showAddresses == "true" ? true : ''
         result.org = params.org ? Org.get(params.long('org')) : null
         result.provider = params.provider ? Provider.get(params.long('provider')) : null
         result.vendor = params.vendor ? Vendor.get(params.long('vendor')) : null
@@ -658,10 +653,10 @@ class AjaxHtmlController {
                 result.modalText = message(code: "person.create_new.contactPersonForPublic.label")
                 break
         }
-        result.url = [controller: 'person', action: 'create']
+        result.url = [controller: 'addressbook', action: 'createPerson']
 
 
-        render template: "/templates/cpa/personFormModal", model: result
+        render template: "/addressbook/personFormModal", model: result
     }
 
     /**
@@ -713,15 +708,13 @@ class AjaxHtmlController {
             result.modalMsgSave = message(code: 'default.button.save_changes')
             result.showContacts = params.showContacts == "true" ? true : ''
             result.addContacts = params.showContacts == "true" ? true : ''
-            result.showAddresses = params.showAddresses == "true" ? true : ''
-            result.addAddresses = params.showAddresses == "true" ? true : ''
             result.isPublic = result.personInstance.isPublic
             result.editable = addressbookService.isPersonEditable(result.personInstance, contextService.getUser())
             result.tmplShowDeleteButton = result.editable
-            result.url = [controller: 'person', action: 'edit', id: result.personInstance.id]
+            result.url = [controller: 'person', action: 'editPerson', id: result.personInstance.id]
             result.contextOrg = contextService.getOrg()
 
-            render template: "/templates/cpa/personFormModal", model: result
+            render template: "/addressbook/personFormModal", model: result
         }
     }
 
@@ -730,15 +723,7 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def contactFields() {
-        render template: "/templates/cpa/contactFields"
-    }
-
-    /**
-     * Retrieves the address fields for an entity modal
-     */
-    @Secured(['ROLE_USER'])
-    def addressFields() {
-        render template: "/templates/cpa/addressFields", model: [multipleAddresses: params.multipleAddresses]
+        render template: "/addressbook/contactFields"
     }
 
     /**

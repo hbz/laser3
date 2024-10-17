@@ -160,7 +160,7 @@
                         <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.address.addressbook")}"
                                 data-confirm-term-how="delete"
-                                controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: genericOIDService.getOID(address)]"
+                                controller="addressbook" action="deleteAddress" params="[id: address.id]"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
                             <i class="${Icon.CMD.DELETE}"></i>

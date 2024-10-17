@@ -535,7 +535,18 @@ class SubscriptionService {
             }
 
 
-                Set costs = CostItem.executeQuery(query + " " + orderQuery, qarams).findAll { row -> row.cost == null || row.cost.owner.id == contextOrg.id } //very ugly and subject of performance loss; keep an eye on that!
+            List allCosts = CostItem.executeQuery(query + " " + orderQuery, qarams) //.findAll { row -> row.cost == null || row.cost.owner.id == contextOrg.id } did not work
+            Set costs = []
+            // very ugly and subject of performance loss; keep an eye on that!
+            allCosts.each { row ->
+                if(row.cost == null || row.cost.owner.id == contextOrg.id) {
+                    costs << row
+                }
+                else if(row.cost && row.cost.owner.id != contextOrg.id) {
+                    row.cost = null
+                    costs << row
+                }
+            }
             prf.setBenchmark('read off costs')
             //post filter; HQL cannot filter that parameter out
             result.costs = costs

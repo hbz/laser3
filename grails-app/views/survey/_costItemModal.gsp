@@ -25,7 +25,7 @@
 <ui:modal id="${modalID ?: 'modalSurveyCostItem'}" text="${modalText + (surveyOrg && surveyOrg.surveyConfig.subscription ? ' ('+ surveyOrg.surveyConfig.subscription+ ')' : '')}" msgSave="${submitButtonLabel}">
     <g:form class="ui small form" name="editCost_${idSuffix}" action="createSurveyCostItem" id="${params.id}">
 
-        <laser:render template="costItemInputSurvey" model="[idSuffix: 'createSurveyCostItem']"/>
+        <laser:render template="costItemInputSurvey" model="[idSuffix: idSuffix]"/>
 
     </g:form>
 
