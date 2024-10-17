@@ -1147,8 +1147,18 @@ class FinanceService {
         }
         if(billingSumsNegative.size() > 0) {
             billingSumsNegative.each { negEntry ->
-                if(!positiveCurrencies.contains(negEntry.currency))
-                    billingSums.add([currency: negEntry.currency, billingSum: negEntry.billingSum * (-1), billingSumAfterTax: negEntry.billingSumAfterTax * (-1), localSum: negEntry.localSum * (-1), localSumAfterTax: negEntry.localSumAfterTax * (-1)])
+                if(!positiveCurrencies.contains(negEntry.currency)) {
+                    Map<String, Object> data = [currency: negEntry.currency, billingSum: negEntry.billingSum * (-1), billingSumAfterTax: negEntry.billingSumAfterTax * (-1)]
+                    if(negEntry.localSum) {
+                        data.localSum = negEntry.localSum * (-1)
+                        data.localSumAfterTax = negEntry.localSumAfterTax * (-1)
+                    }
+                    else {
+                        data.localSum = 0.0
+                        data.localSumAfterTax = 0.0
+                    }
+                    billingSums.add(data)
+                }
             }
         }
         if(localSumsPositive.localSum && localSumsPositive.localSumAfterTax) {
