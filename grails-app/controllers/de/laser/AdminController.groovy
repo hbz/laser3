@@ -3,6 +3,7 @@ package de.laser
 import de.laser.annotations.DebugInfo
 import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigDefaults
+import de.laser.mail.MailTemplate
 import de.laser.storage.RDConstants
 import de.laser.utils.AppUtils
 import de.laser.helper.DatabaseInfo
@@ -24,7 +25,6 @@ import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugins.mail.MailService
-import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.Sql
 import org.grails.web.json.JSONElement
 import org.hibernate.SessionFactory
