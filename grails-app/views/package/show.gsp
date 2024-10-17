@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.config.ConfigMapper; de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.wekb.Package;de.laser.RefdataValue;org.springframework.web.servlet.support.RequestContextUtils; de.laser.Org; de.laser.wekb.Platform; java.text.SimpleDateFormat; de.laser.PersonRole; de.laser.addressbook.Contact" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.config.ConfigMapper; de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.wekb.Package;de.laser.RefdataValue;org.springframework.web.servlet.support.RequestContextUtils; de.laser.Org; de.laser.wekb.Platform; java.text.SimpleDateFormat; de.laser.addressbook.PersonRole; de.laser.addressbook.Contact" %>
 <laser:htmlStart message="package.details" serviceInjection="true"/>
 
 <ui:debugInfo>

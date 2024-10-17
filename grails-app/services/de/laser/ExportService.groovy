@@ -1,6 +1,8 @@
 package de.laser
 
 import de.laser.addressbook.Contact
+import de.laser.addressbook.Person
+import de.laser.addressbook.PersonRole
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.base.AbstractReport
 import de.laser.cache.EhcacheWrapper
@@ -513,7 +515,7 @@ class ExportService {
 	/**
 	 * Exports the given list of contacts in the given format
 	 * @param format the format to use for the export (Excel or CSV)
-	 * @param visiblePersons the list of {@link Person}s to export
+	 * @param visiblePersons the list of {@link de.laser.addressbook.Person}s to export
 	 * @return either an Excel workbook or a character-separated list containing the export
 	 * @deprecated all exports should be made configurable by modal; move this export to {@link ExportClickMeService#exportAddresses(java.util.List, java.util.List, java.util.Map, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.String, de.laser.ExportClickMeService.FORMAT)}
 	 */

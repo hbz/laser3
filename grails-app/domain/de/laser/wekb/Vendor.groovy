@@ -6,8 +6,8 @@ import de.laser.DocContext
 import de.laser.Identifier
 import de.laser.LibrarySystem
 import de.laser.Org
-import de.laser.Person
-import de.laser.PersonRole
+import de.laser.addressbook.Person
+import de.laser.addressbook.PersonRole
 import de.laser.RefdataValue
 import de.laser.Task
 import de.laser.annotations.RefdataInfo

@@ -1,5 +1,10 @@
-package de.laser
+package de.laser.addressbook
 
+import de.laser.License
+import de.laser.Org
+import de.laser.RefdataCategory
+import de.laser.RefdataValue
+import de.laser.Subscription
 import de.laser.annotations.RefdataInfo
 import de.laser.storage.RDConstants
 import de.laser.wekb.Package
@@ -8,7 +13,7 @@ import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 
 /**
- * This class ensures connections between {@link Person}s and {@link Org}s. Moreover, a person role may be specified to an instance of certain other objects like {@link OrgRole} does it for organisations.
+ * This class ensures connections between {@link de.laser.addressbook.Person}s and {@link Org}s. Moreover, a person role may be specified to an instance of certain other objects like {@link OrgRole} does it for organisations.
  * Possible objects to restrict are:
  * <ul>
  *     <li>{@link License}</li>
@@ -149,7 +154,7 @@ class PersonRole implements Comparable<PersonRole>{
     }
 
     /**
-     * A mirror of {@link RefdataCategory#getAllRefdataValues(java.lang.String)}; gets all reference values of the given reference category string
+     * A mirror of {@link de.laser.RefdataCategory#getAllRefdataValues(java.lang.String)}; gets all reference values of the given reference category string
      * @param category the reference value category to retrieve
      * @return a {@link List} of {@link RefdataValue}s matching the given category
      */

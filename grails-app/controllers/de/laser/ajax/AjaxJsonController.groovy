@@ -42,7 +42,7 @@ import de.laser.SubscriptionPackage
 import de.laser.properties.SubscriptionProperty
 import de.laser.auth.User
 import de.laser.addressbook.Contact
-import de.laser.Person
+import de.laser.addressbook.Person
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.base.AbstractI10n

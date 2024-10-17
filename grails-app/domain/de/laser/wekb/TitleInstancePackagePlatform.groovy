@@ -6,7 +6,7 @@ import de.laser.Identifier
 import de.laser.Language
 import de.laser.Org
 import de.laser.OrgRole
-import de.laser.PersonRole
+import de.laser.addressbook.PersonRole
 import de.laser.RefdataValue
 import de.laser.annotations.RefdataInfo
 import de.laser.auth.User

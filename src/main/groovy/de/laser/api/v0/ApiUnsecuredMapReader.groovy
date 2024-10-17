@@ -471,7 +471,7 @@ class ApiUnsecuredMapReader {
         result.platforms    = ApiCollectionReader.getPlatformCollection(provider.platforms)
         result.persons      = ApiCollectionReader.getPrsLinkCollection(
                 provider.prsLinks, ApiReader.NO_CONSTRAINT, ApiReader.NO_CONSTRAINT, context
-        ) // de.laser.PersonRole
+        ) // de.laser.addressbook.PersonRole
         result.invoicingVendors    = ApiCollectionReader.getVendorCollection(provider.invoicingVendors.vendor)
 
         result.properties   = ApiCollectionReader.getPropertyCollection(provider, context, ApiReader.IGNORE_NONE) // de.laser.ProviderProperty
@@ -524,7 +524,7 @@ class ApiUnsecuredMapReader {
         result.packages     = ApiCollectionReader.getPackageCollection(vendor.packages.pkg)
         result.persons      = ApiCollectionReader.getPrsLinkCollection(
                 vendor.prsLinks, ApiReader.NO_CONSTRAINT, ApiReader.NO_CONSTRAINT, context
-        ) // de.laser.PersonRole
+        ) // de.laser.addressbook.PersonRole
 
         result.properties   = ApiCollectionReader.getPropertyCollection(vendor, context, ApiReader.IGNORE_NONE) // de.laser.VendorProperty
 

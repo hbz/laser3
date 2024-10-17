@@ -1,6 +1,8 @@
 package de.laser
 
 import de.laser.addressbook.Contact
+import de.laser.addressbook.Person
+import de.laser.addressbook.PersonRole
 import de.laser.base.AbstractCoverage
 import de.laser.base.AbstractLockableService
 import de.laser.config.ConfigMapper

@@ -1,5 +1,5 @@
 <!-- __generateEmailWithAddresses.gsp -->
-<%@ page import="de.laser.ui.Btn; de.laser.PersonRole; de.laser.addressbook.Contact; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.addressbook.PersonRole; de.laser.ui.Btn; de.laser.addressbook.Contact; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 <laser:serviceInjection />
 
 <g:set var="modalID" value="${modalID ?: '_generateEmailWithAddresses_ajaxModal'}"/>

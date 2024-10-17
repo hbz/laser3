@@ -10,7 +10,7 @@ import de.laser.IssueEntitlement
 import de.laser.Language
 import de.laser.Org
 import de.laser.OrgRole
-import de.laser.PersonRole
+import de.laser.addressbook.PersonRole
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import de.laser.Subscription
@@ -202,7 +202,7 @@ class ApiCollectionReader {
     /**
      * Builds a collection of custom (= general) properties for the given object and respecting the settings of the requestor institution
      * @param list the {@link Collection} of properties to enumerate
-     * @param generic the object (one of {@link de.laser.Subscription}, {@link de.laser.License}, {@link Org}, {@link de.laser.Person} or {@link de.laser.wekb.Platform})
+     * @param generic the object (one of {@link de.laser.Subscription}, {@link de.laser.License}, {@link Org}, {@link de.laser.addressbook.Person} or {@link de.laser.wekb.Platform})
      * @param context the requestor institution ({@link Org})
      * @return a {@link Collection} of {@link Map}s containing property details for API output
      */
@@ -683,7 +683,7 @@ class ApiCollectionReader {
      * @param allowedContactTypes the types of contacts which can be returned
      * @param context the requesting institution ({@link Org}) whose perspective is going to be taken during checks
      * @return a {@link List} of map entries reflecting the contact entity details
-     * @see de.laser.Person
+     * @see de.laser.addressbook.Person
      */
     static Collection<Object> getPrsLinkCollection(Collection<PersonRole> list, allowedAddressTypes, allowedContactTypes, Org context) {  // TODO check context
         List result = []
@@ -697,7 +697,7 @@ class ApiCollectionReader {
                 def person = tmp.find {it.globalUID == x}
 
                 if(!person) {
-                    person = ApiMapReader.getPersonMap(it.prs, allowedAddressTypes, allowedContactTypes, context) // de.laser.Person
+                    person = ApiMapReader.getPersonMap(it.prs, allowedAddressTypes, allowedContactTypes, context) // de.laser.addressbook.Person
 
                     // export public
                     if(it.prs.isPublic) {
@@ -711,7 +711,7 @@ class ApiCollectionReader {
                     }
                 }
 
-                Map<String, Object> role    = [:] // de.laser.PersonRole
+                Map<String, Object> role    = [:] // de.laser.addressbook.PersonRole
                 role.startDate              = ApiToolkit.formatInternalDate(it.start_date)
                 role.endDate                = ApiToolkit.formatInternalDate(it.end_date)
 

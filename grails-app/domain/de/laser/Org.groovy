@@ -1,6 +1,8 @@
 package de.laser
 
 import de.laser.addressbook.Address
+import de.laser.addressbook.Person
+import de.laser.addressbook.PersonRole
 import de.laser.annotations.RefdataInfo
 import de.laser.auth.Role
 import de.laser.auth.User
@@ -589,7 +591,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     /**
      * Retrieves the general contact persons of this organisation
      * @param onlyPublic should only the public contacts being retieved?
-     * @return a {@link List} of {@link Person}s marked as general contacts of this organisation
+     * @return a {@link List} of {@link de.laser.addressbook.Person}s marked as general contacts of this organisation
      */
     List<Person> getGeneralContactPersons(boolean onlyPublic) {
         if (onlyPublic) {

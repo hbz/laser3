@@ -7,7 +7,7 @@ import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.OrgSubjectGroup
 import de.laser.OrganisationService
-import de.laser.Person
+import de.laser.addressbook.Person
 import de.laser.ReaderNumber
 import de.laser.RefdataValue
 import de.laser.utils.LocaleUtils

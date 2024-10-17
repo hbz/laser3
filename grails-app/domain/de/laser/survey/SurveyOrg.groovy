@@ -3,7 +3,7 @@ package de.laser.survey
 import de.laser.addressbook.Address
 import de.laser.Org
 import de.laser.OrgRole
-import de.laser.Person
+import de.laser.addressbook.Person
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.annotations.RefdataInfo

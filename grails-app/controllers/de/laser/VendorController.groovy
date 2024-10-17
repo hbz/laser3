@@ -1,6 +1,8 @@
 package de.laser
 
 import de.laser.addressbook.Contact
+import de.laser.addressbook.Person
+import de.laser.addressbook.PersonRole
 import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
 import de.laser.auth.User

@@ -1,6 +1,6 @@
 package de.laser.addressbook
 
-import de.laser.Person
+
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.annotations.RefdataInfo

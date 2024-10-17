@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.addressbook.Contact
+import de.laser.addressbook.Person
 import de.laser.annotations.DebugInfo
 import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper

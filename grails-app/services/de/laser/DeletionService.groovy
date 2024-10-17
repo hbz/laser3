@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.addressbook.Person
 import de.laser.api.v0.ApiToolkit
 import de.laser.auth.User
 import de.laser.finance.*

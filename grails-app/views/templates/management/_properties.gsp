@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.properties.SubscriptionProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.storage.RDStore; de.laser.AuditConfig" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.properties.SubscriptionProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.addressbook.Person; de.laser.storage.RDStore; de.laser.AuditConfig" %>
 <laser:serviceInjection/>
     <%
         SortedSet<PropertyDefinition> allProperties = new TreeSet<PropertyDefinition>()

@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.addressbook.Address
 import de.laser.addressbook.Contact
+import de.laser.addressbook.PersonRole
 import de.laser.config.ConfigMapper
 import de.laser.exceptions.SyncException
 import de.laser.http.BasicHttpClient

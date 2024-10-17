@@ -1,4 +1,4 @@
-<%@ page import="de.laser.UserSetting; de.laser.Person; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.storage.RDStore; de.laser.*" %>
+<%@ page import="de.laser.UserSetting; de.laser.addressbook.Person; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.storage.RDStore; de.laser.*" %>
 <laser:serviceInjection />
 <!doctype html>
 <html>

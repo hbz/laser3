@@ -2,7 +2,7 @@ package de.laser.api.v0
 
 
 import de.laser.Org
-import de.laser.Person
+import de.laser.addressbook.Person
 import de.laser.wekb.TitleInstancePackagePlatform
 import groovy.sql.GroovyRowResult
 

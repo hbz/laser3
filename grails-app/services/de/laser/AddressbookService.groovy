@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.addressbook.Address
 import de.laser.addressbook.Contact
+import de.laser.addressbook.Person
 import de.laser.auth.User
 import de.laser.helper.Params
 import de.laser.storage.RDStore
@@ -11,7 +12,7 @@ import grails.gorm.transactions.Transactional
 
 /**
  * This service handles retrieval and processing of contact data
- * @see Person
+ * @see de.laser.addressbook.Person
  * @see de.laser.addressbook.Address
  * @see de.laser.addressbook.Contact
  */
@@ -26,7 +27,7 @@ class AddressbookService {
      * Retrieves all private contacts for the given tenant institution
      * @param tenant the institution ({@link Org}) whose private contacts should be retrieved
      * @return a list of private person contacts maintained by the given tenant
-     * @see Person
+     * @see de.laser.addressbook.Person
      */
     List<Person> getPrivatePersonsByTenant(Org tenant) {
         List result = []

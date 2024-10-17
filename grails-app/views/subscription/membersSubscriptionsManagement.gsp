@@ -1,4 +1,4 @@
-<%@ page import="de.laser.License; de.laser.Person; de.laser.storage.RDStore; de.laser.FormService" %>
+<%@ page import="de.laser.License; de.laser.addressbook.Person; de.laser.storage.RDStore; de.laser.FormService" %>
 <laser:htmlStart message="subscriptionsManagement.subscriptions.members" serviceInjection="true"/>
 
 <ui:breadcrumbs>

@@ -2,6 +2,7 @@ package de.laser.reporting.export.local
 
 import de.laser.*
 import de.laser.addressbook.Address
+import de.laser.addressbook.Person
 import de.laser.utils.LocaleUtils
 import de.laser.storage.BeanStore
 import de.laser.utils.DateUtils
