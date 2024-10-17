@@ -446,19 +446,23 @@
 
     JSPC.app.updateSelectionCache = function (index,checked) {
         let filterParams = {
-                    filter: "${params.filter}",
-                    pkgFilter: "${params.pkgfilter}",
-                    asAt: "${params.asAt}",
-                    series_names: ${params.list("series_names")},
-                    subject_references: ${params.list("subject_references")},
-                    ddcs: ${params.list("ddcs")},
-                    languages: ${params.list("languages")},
-                    yearsFirstOnline: ${params.list("yearsFirstOnline")},
-                    identifier: "${params.identifier}",
-                    title_types: ${params.list("title_types")},
-                    publishers: ${params.list("pulishers")},
-                    coverageDepth: ${params.list("coverageDepth")},
-                    hasPerpetualAccess: "${params.hasPerpetualAccess}"
+                hasPerpetualAccess: "${params.hasPerpetualAccess}",
+                filter: "${params.filter}",
+                pkgFilter: "${params.pkgfilter}",
+                asAt: "${params.asAt}",
+                coverageDepth: "${params.coverageDepth}",
+                series_names: "${params.list("series_names")}",
+                subject_references: "${params.list("subject_references")}",
+                ddcs: "${params.list("ddcs")}",
+                languages: "${params.list("languages")}",
+                yearsFirstOnline: "${params.list("yearsFirstOnline")}",
+                identifier: "${params.identifier}",
+                medium: "${params.list("medium")}",
+                title_types: "${params.list("title_types")}",
+                publishers: "${params.list("publishers")}",
+                hasPerpetualAccess: "${params.hasPerpetualAccess}",
+                titleGroup: "${params.titleGroup}",
+                status: "${params.list("status")}",
         };
         $.ajax({
             url: "<g:createLink controller="ajax" action="updateChecked" />",
