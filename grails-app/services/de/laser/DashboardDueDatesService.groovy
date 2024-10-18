@@ -136,7 +136,7 @@ class DashboardDueDatesService {
                         log.debug("DashboardDueDatesService UPDATE: " + das);
                     }
                     else { // insert
-                        das = new DashboardDueDate(obj, user, user.formalOrg)
+                        das = new DashboardDueDate(obj, user)
                         das.save()
                         dashboarEntriesToInsert << das
                         log.debug("DashboardDueDatesService INSERT: " + das);
@@ -184,7 +184,7 @@ class DashboardDueDatesService {
                 boolean userWantsEmailReminder = RDStore.YN_YES.equals(user.getSetting(UserSetting.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO).rdValue)
                 if (userWantsEmailReminder) {
                     if (user.formalOrg) {
-                        List<DashboardDueDate> dashboardEntries = getDashboardDueDates(user, user.formalOrg)
+                        List<DashboardDueDate> dashboardEntries = getDashboardDueDates(user)
                         _sendEmail(user, user.formalOrg, dashboardEntries)
                         userCount++
                     }
@@ -327,44 +327,41 @@ class DashboardDueDatesService {
     /**
      * Gets all due dates of the given user in the given context org; matching hidden=false and done=false
      * @param user the {@link User} whose due dates are to be queried
-     * @param org the {@link Org} whose context is requested
      * @return a {@link List} of {@link DashboardDueDate} entries to be processed
      */
-    List<DashboardDueDate> getDashboardDueDates(User user, Org org) {
+    List<DashboardDueDate> getDashboardDueDates(User user) {
         DashboardDueDate.executeQuery(
                 """select das from DashboardDueDate as das join das.dueDateObject ddo 
                         where das.responsibleUser = :user and das.responsibleOrg = :org and das.isHidden = :isHidden and ddo.isDone = :isDone
                         order by ddo.date""",
-                [user: user, org: org, isHidden: false, isDone: false])
+                [user: user, org: user.formalOrg, isHidden: false, isDone: false])
     }
 
     /**
      * Gets all due dates of the given user in the given context org; matching hidden=false and done=false with pagination
      * @param user the {@link User} whose due dates are to be queried
-     * @param org the {@link Org} whose context is requested
      * @param max the maximum count of entries to load
      * @param offset the number of entry to start from
      * @return a {@link List} of {@link DashboardDueDate} entries to be processed
      */
-    List<DashboardDueDate> getDashboardDueDates(User user, Org org, max, offset){
+    List<DashboardDueDate> getDashboardDueDates(User user, max, offset){
         DashboardDueDate.executeQuery(
                 """select das from DashboardDueDate as das join das.dueDateObject ddo 
                 where das.responsibleUser = :user and das.responsibleOrg = :org and das.isHidden = :isHidden and ddo.isDone = :isDone
                 order by ddo.date""",
-                [user: user, org: org, isHidden: false, isDone: false], [max: max, offset: offset])
+                [user: user, org: user.formalOrg, isHidden: false, isDone: false], [max: max, offset: offset])
     }
 
     /**
      * Counts the {@link DashboardDueDate}s the responsible user has set, matching hidden=false and done=false
      * @param user the user whose due dates should be counted
-     * @param org the institution responsible for the due date
      * @return the count of the due dates matching the flags
      */
-    int countDashboardDueDates(User user, Org org){
+    int countDashboardDueDates(User user){
         return DashboardDueDate.executeQuery(
                 """select count(*) from DashboardDueDate as das join das.dueDateObject ddo 
                 where das.responsibleUser = :user and das.responsibleOrg = :org and das.isHidden = :isHidden and ddo.isDone = :isDone""",
-                [user: user, org: org, isHidden: false, isDone: false])[0]
+                [user: user, org: user.formalOrg, isHidden: false, isDone: false])[0]
     }
 
 }

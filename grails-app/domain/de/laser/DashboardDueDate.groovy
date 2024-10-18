@@ -116,9 +116,8 @@ class DashboardDueDate {
      * Sets up a new due date reminder with the given parameters
      * @param obj the object (of type {@link Subscription}, {@link AbstractPropertyWithCalculatedLastUpdated}, {@link Task} or {@link SurveyInfo} for which the reminder should be set up
      * @param responsibleUser the {@link User} who should be reminded
-     * @param responsibleOrg the {@link Org} to which the reminded user belongs to
      */
-    DashboardDueDate(def object, User responsibleUser, Org responsibleOrg){
+    DashboardDueDate(def object, User responsibleUser){
         String attribute_value_de   = getAttributeValue(object, responsibleUser, Locale.GERMAN)
         String attribute_value_en   = getAttributeValue(object, responsibleUser, Locale.ENGLISH)
         String attribute_name       = getAttributeName(object, responsibleUser)
@@ -127,7 +126,7 @@ class DashboardDueDate {
         withTransaction {
             Date now = new Date()
             this.responsibleUser = responsibleUser
-            this.responsibleOrg = responsibleOrg
+            this.responsibleOrg = responsibleUser.formalOrg
             // this.isHidden = false // TODO
             this.dateCreated = now
             this.lastUpdated = now
