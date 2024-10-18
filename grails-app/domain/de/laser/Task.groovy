@@ -108,20 +108,13 @@ class Task {
     List getObjects() {
         List result = []
 
-        if (license)
-            result << [controller: 'license', icon: Icon.LICENSE, object: license]
-        if (org)
-            result << [controller: 'organisation', icon: Icon.ORG, object: org]
-        if (provider)
-            result << [controller: 'provider', icon: Icon.PROVIDER, object: provider]
-        if (vendor)
-            result << [controller: 'vendor', icon: Icon.VENDOR, object: vendor]
-        if (subscription)
-            result << [controller: 'subscription', icon: Icon.SUBSCRIPTION, object: subscription]
-        if (surveyConfig)
-            result << [controller: 'survey', icon: Icon.SURVEY, object: surveyConfig]
-        if (tipp)
-            result << [controller: 'tipp', icon: Icon.TIPP, object: tipp]
+        if (license)        { result << [controller: 'license', icon: Icon.LICENSE, object: license] }
+        if (org)            { result << [controller: 'organisation', icon: Icon.ORG, object: org] }
+        if (provider)       { result << [controller: 'provider', icon: Icon.PROVIDER, object: provider] }
+        if (subscription)   { result << [controller: 'subscription', icon: Icon.SUBSCRIPTION, object: subscription] }
+        if (surveyConfig)   { result << [controller: 'survey', icon: Icon.SURVEY, object: surveyConfig] }
+        if (tipp)           { result << [controller: 'tipp', icon: Icon.TIPP, object: tipp] }
+        if (vendor)         { result << [controller: 'vendor', icon: Icon.VENDOR, object: vendor] }
 
         result
     }
@@ -184,27 +177,13 @@ class Task {
      */
     String getObjectName() {
         String name = ''
-        if (license) {
-            name = license.reference
-        }
-        else if (org) {
-            name = org.name
-        }
-        else if (provider) {
-            name = provider.name
-        }
-        else if (vendor) {
-            name = vendor.name
-        }
-        else if (subscription) {
-            name = subscription.name
-        }
-        else if (surveyConfig) {
-            name = surveyConfig.surveyInfo.name
-        }
-        else if (tipp) {
-            name = tipp.name
-        }
+        if (license)            { name = license.reference }
+        else if (org)           { name = org.name }
+        else if (provider)      { name = provider.name }
+        else if (subscription)  { name = subscription.name }
+        else if (surveyConfig)  { name = surveyConfig.surveyInfo.name }
+        else if (tipp)          { name = tipp.name }
+        else if (vendor)        { name = vendor.name }
         name
     }
 }

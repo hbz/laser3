@@ -583,7 +583,7 @@ class DeletionService {
         List invoices           = Invoice.findAllByOwner(org)
         List orderings          = Order.findAllByOwner(org)
 
-        List dashboardDueDates  = DashboardDueDate.findAllByResponsibleOrg(org)
+        List dashboardDueDates  = DashboardDueDate.executeQuery('select distinct d from DashboardDueDate d where d.responsibleUser.formalOrg = :org', [org: org])
         List documents          = Doc.findAllByOwner(org)
         List pendingChanges     = PendingChange.findAllByOwner(org)
         List tasks              = Task.findAllByOrg(org)
