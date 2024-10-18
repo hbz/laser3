@@ -21,7 +21,7 @@
         <div class="header">KBART Exports</div>
 
         <ui:exportDropdownItem>
-            <g:link class="item kbartExport" action="renewEntitlementsWithSurvey"
+            <g:link class="item kbartExport" action="exportRenewalEntitlements"
                     id="${subscription.id}"
                     params="${[surveyConfigID: surveyConfig.id,
                                exportKBart   : true,
@@ -29,7 +29,7 @@
         </ui:exportDropdownItem>
 
         <ui:exportDropdownItem>
-            <g:link class="item kbartExport" action="renewEntitlementsWithSurvey"
+            <g:link class="item kbartExport" action="exportRenewalEntitlements"
                     id="${subscription.id}"
                     params="${[surveyConfigID: surveyConfig.id,
                                exportKBart   : true,
@@ -39,7 +39,7 @@
         <g:if test="${countCurrentPermanentTitles > 0}">
 
             <ui:exportDropdownItem>
-                <g:link class="item kbartExport" action="renewEntitlementsWithSurvey"
+                <g:link class="item kbartExport" action="exportRenewalEntitlements"
                         id="${subscription.id}"
                         params="${[surveyConfigID: surveyConfig.id,
                                    exportKBart   : true,
@@ -52,7 +52,7 @@
         <div class="header">${message(code: 'default.button.exports.xls')}s</div>
 
         <ui:exportDropdownItem>
-            <g:link class="item" action="renewEntitlementsWithSurvey"
+            <g:link class="item" action="exportRenewalEntitlements"
                     id="${subscription.id}"
                     params="${[surveyConfigID: surveyConfig.id,
                                exportXLS     : true,
@@ -60,7 +60,7 @@
         </ui:exportDropdownItem>
 
         <ui:exportDropdownItem>
-            <g:link class="item" action="renewEntitlementsWithSurvey"
+            <g:link class="item" action="exportRenewalEntitlements"
                     id="${subscription.id}"
                     params="${[surveyConfigID: surveyConfig.id,
                                exportXLS   : true,
@@ -69,7 +69,7 @@
 
         <g:if test="${countCurrentPermanentTitles > 0}">
             <ui:exportDropdownItem>
-                <g:link class="item" action="renewEntitlementsWithSurvey"
+                <g:link class="item" action="exportRenewalEntitlements"
                         id="${subscription.id}"
                         params="${[surveyConfigID : surveyConfig.id,
                                    exportXLS     : true,

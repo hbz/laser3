@@ -2191,6 +2191,18 @@ class SubscriptionController {
     }
 
     /**
+     * Call to load the selection list for the title renewal. The list may be exported as a (configurable) Excel table with usage data for each title
+     * @return the title list for selection; either as HTML table or as Excel export, configured with the given parameters
+     */
+    @DebugInfo(isInstUser_or_ROLEADMIN = [], ctrlService = 1)
+    @Secured(closure = {
+        ctx.contextService.isInstUser_or_ROLEADMIN()
+    })
+    def exportRenewalEntitlements() {
+
+    }
+
+    /**
      * Call to process the title selection with the given input parameters
      * @return a redirect to the referer
      */

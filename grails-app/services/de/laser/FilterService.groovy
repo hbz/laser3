@@ -1319,9 +1319,17 @@ class FilterService {
 
     Map<String,Object> getIssueEntitlementSubsetQuery(Map params) {
         log.debug 'getIssueEntitlementSubsetQuery'
-
-        Map<String, Object> result = [:], queryParams = [:]
+        Map<String, Object> result = [:], clauses = getIssueEntitlementSubsetArguments(params)
         String query = "select ie.id from IssueEntitlement ie join ie.tipp tipp where tipp.id in (:subset) "
+
+        result.query = query + "and ${clauses.arguments} order by tipp.sortname"
+        result.queryParams = clauses.queryParams
+
+        result
+    }
+
+    Map<String, Object> getIssueEntitlementSubsetArguments(Map params) {
+        Map<String, Object> result = [:], queryParams = [:]
         Set<String> queryArgs = []
 
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -1354,144 +1362,31 @@ class FilterService {
                 queryParams.titleGroup = params.titleGroup
             }
         }
-        /*
-        String base_qry
-        Map<String,Object> qry_params = [subscriptions: subscriptions]
-        boolean filterSet = false
-        if (params.titleGroup && !params.forCount) {
-            if(params.titleGroup == 'notInGroups'){
-                base_qry += " and not exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ie = ie) "
-            }else {
-                base_qry += " and exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ieGroup.id = :titleGroup and iegi.ie = ie) "
-                qry_params.titleGroup = params.long('titleGroup')
-            }
-        }
-
-        if (params.inTitleGroups && (params.inTitleGroups != '') && !params.forCount) {
-            if(params.inTitleGroups == RDStore.YN_YES.id.toString()) {
-                base_qry += " and exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ie = ie) "
-            }else{
-                base_qry += " and not exists ( select iegi from IssueEntitlementGroupItem as iegi where iegi.ie = ie) "
-            }
-        }
-
-        if (params.ddcs) {
-            base_qry += " and exists ( select ddc.id from DeweyDecimalClassification ddc where ddc.tipp = tipp and ddc.ddc.id in (:ddcs) ) "
-            qry_params.ddcs = Params.getLongList_forCommaSeparatedString(params, 'ddcs') // ?
-            filterSet = true
-        }
-
-        if (params.languages) {
-            base_qry += " and exists ( select lang.id from Language lang where lang.tipp = tipp and lang.language.id in (:languages) ) "
-            qry_params.languages = Params.getLongList_forCommaSeparatedString(params, 'languages')  // ?
-            filterSet = true
-        }
-
-        if (params.subject_references && params.subject_references != "" && listReaderWrapper(params, 'subject_references')) {
-            Set<String> subjectQuery = []
-            params.list('subject_references').each { String subReference ->
-                subjectQuery << "genfunc_filter_matcher(tipp.subjectReference, '${subReference.toLowerCase()}') = true"
-            }
-            base_qry += " and (${subjectQuery.join(" or ")}) "
-            filterSet = true
-        }
-
-        if (params.series_names && params.series_names != "" && listReaderWrapper(params, 'series_names')) {
-            base_qry += " and lower(ie.tipp.seriesName) in (:series_names)"
-            qry_params.series_names = params.list('series_names').collect { ""+it.toLowerCase()+"" }
-            filterSet = true
-        }
-
-        if(params.summaryOfContent) {
-            base_qry += " and lower(tipp.summaryOfContent) like :summaryOfContent "
-            qry_params.summaryOfContent = "%${params.summaryOfContent.trim().toLowerCase()}%"
-        }
-
-        if(params.ebookFirstAutorOrFirstEditor) {
-            base_qry += " and (lower(tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(tipp.firstEditor) like :ebookFirstAutorOrFirstEditor) "
-            qry_params.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor.trim().toLowerCase()}%"
-        }
-
-        if(params.dateFirstOnlineFrom) {
-            base_qry += " and (tipp.dateFirstOnline is not null AND tipp.dateFirstOnline >= :dateFirstOnlineFrom) "
-            qry_params.dateFirstOnlineFrom = sdf.parse(params.dateFirstOnlineFrom)
-
-        }
-        if(params.dateFirstOnlineTo) {
-            base_qry += " and (tipp.dateFirstOnline is not null AND tipp.dateFirstOnline <= :dateFirstOnlineTo) "
-            qry_params.dateFirstOnlineTo = sdf.parse(params.dateFirstOnlineTo)
-        }
-
-        if(params.yearsFirstOnline) {
-            base_qry += " and (Year(tipp.dateFirstOnline) in (:yearsFirstOnline)) "
-            qry_params.yearsFirstOnline = Params.getLongList_forCommaSeparatedString(params, 'yearsFirstOnline').collect { Integer.valueOf(it.toString()) }
-        }
-
-        if (params.identifier) {
-            base_qry += "and ( exists ( from Identifier ident where ident.tipp.id = tipp.id and ident.value like :identifier ) ) "
-            qry_params.identifier = "${params.identifier}"
-            filterSet = true
-        }
-
-        if (params.publishers) {
-            //(exists (select orgRole from OrgRole orgRole where orgRole.tipp = ie.tipp and orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and orgRole.org.name in (:publishers)) )
-            base_qry += "and lower(tipp.publisherName) in (:publishers) "
-            qry_params.publishers = listReaderWrapper(params, 'publishers').collect { it.toLowerCase() }
-            filterSet = true
-        }
-
-        if (params.title_types && params.title_types != "" && listReaderWrapper(params, 'title_types')) {
-            base_qry += " and lower(tipp.titleType) in (:title_types)"
-            qry_params.title_types = listReaderWrapper(params, 'title_types').collect { ""+it.toLowerCase()+"" }
-            filterSet = true
-        }
-
-        if (params.medium) {
-            base_qry += " and tipp.medium.id in (:medium) "
-            qry_params.medium = Params.getLongList_forCommaSeparatedString(params, 'medium')  // ?
-            filterSet = true
-        }
-
-        if (params.hasPerpetualAccess && !params.hasPerpetualAccessBySubs) {
-            //may become a performance bottleneck; keep under observation!
-            String permanentTitleQuery = "select pt from PermanentTitle pt where pt.tipp = ie.tipp and pt.owner in (:subscribers)"
-            qry_params.subscribers = subscriptions.collect { Subscription s -> s.getSubscriberRespConsortia() }
-            if (params.long('hasPerpetualAccess') == RDStore.YN_YES.id) {
-                base_qry += "and exists(${permanentTitleQuery}) "
-            }else{
-                base_qry += "and not exists(${permanentTitleQuery}) "
-            }
-            filterSet = true
-        }
-
-        if (params.hasPerpetualAccess && params.hasPerpetualAccessBySubs) {
-            if (params.long('hasPerpetualAccess') == RDStore.YN_NO.id) {
-                base_qry += "and ie.tipp.hostPlatformURL not in (select ie2.tipp.hostPlatformURL from IssueEntitlement as ie2 where ie2.perpetualAccessBySub in (:subs)) "
-                qry_params.subs = listReaderWrapper(params, 'hasPerpetualAccessBySubs')
-            }else {
-                base_qry += "and ie.tipp.hostPlatformURL in (select ie2.tipp.hostPlatformURL from IssueEntitlement as ie2 where ie2.perpetualAccessBySub in (:subs)) "
-                qry_params.subs = listReaderWrapper(params, 'hasPerpetualAccessBySubs')
-            }
-            filterSet = true
-        }
-
-        result.filterSet = filterSet
-        */
         String arguments = queryArgs.join(' and ')
-        result.query = query + "and ${arguments} order by tipp.sortname"
         result.queryParams = queryParams
+        result.arguments = arguments
+        result
+    }
+
+    Map<String, Object> getIssueEntitlementSubsetSQLQuery(Map params) {
+        log.debug 'getIssueEntitlementSubsetSQLQuery'
+        String query = "select ie_id, tipp_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_id = any(:tippIDs) "
+        Map<String, Object> result = [:], clauses = getIssueEntitlementSubsetSQLArguments(params)
+        result.query = query + "and ${clauses.arguments} order by tipp_sort_name"
+        result.queryParams = clauses.queryParams
+        result.arrayParams = clauses.arrayParams
 
         result
     }
 
-    Map<String,Object> getIssueEntitlementSubsetSQLQuery(Map params) {
-        log.debug 'getIssueEntitlementSubsetSQLQuery'
-
-        Map<String, Object> result = [:], queryParams = [:], arrayParams = [tippIDs: params.tippIDs]
-        String query = "select ie_id, tipp_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_id = any(:tippIDs) " //continue here: implement batch array query to resolve sorting problem
+    Map<String, Object> getIssueEntitlementSubsetSQLArguments(Map params) {
+        Map<String, Object> result = [:], queryParams = [:], arrayParams = [:]
         Set<String> queryArgs = []
 
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+
+        if (params.tippIDs)
+            arrayParams.tippIDs = params.tippIDs
 
         if (params.subscriptions) {
             queryArgs << 'ie_subscription_fk = any(:subscriptions)'
@@ -1523,10 +1418,9 @@ class FilterService {
         }
 
         String arguments = queryArgs.join(' and ')
-        result.query = query + "and ${arguments} order by tipp_sort_name"
+        result.arguments = arguments
         result.queryParams = queryParams
         result.arrayParams = arrayParams
-
         result
     }
 
@@ -1881,10 +1775,16 @@ class FilterService {
      */
     Map<String,Object> getTippSubsetQuery(Map params) {
         log.debug 'getTippSubsetQuery'
+        Map<String, Object> result = [:], clauses = getTippSubsetArguments(params)
+        String query = 'select tipp.id from TitleInstancePackagePlatform tipp where'
+        result.query = query+" ${clauses.arguments} order by tipp.sortname"
+        result.queryParams = clauses.queryParams
+        result
+    }
+
+    Map<String, Object> getTippSubsetArguments(Map params) {
         Map<String, Object> result = [:], queryParams = [:]
         Set<String> queryArgs = []
-        String query = 'select tipp.id from TitleInstancePackagePlatform tipp where'
-
         if(params.packages) {
             queryArgs << 'tipp.pkg in (:packages)'
             queryParams.packages = params.packages
@@ -1982,7 +1882,7 @@ class FilterService {
         }
         String arguments = queryArgs.join(' and ')
         result.queryParams = queryParams
-        result.query = query+" ${arguments} order by tipp.sortname"
+        result.arguments = arguments
         result
     }
 
@@ -2007,6 +1907,7 @@ class FilterService {
      *  params: params,
      *  subJoin: subJoin]
      */
+    @Deprecated
     Map<String, Object> prepareTitleSQLQuery(Map configMap, String entitlementInstance, Sql sql) {
         String query = "", join = "", subJoin = "", orderClause = "", refdata_value_col = configMap.format == 'kbart' ? 'rdv_value' : I10nTranslation.getRefdataValueColumn(LocaleUtils.getCurrentLocale())
         List whereClauses = []
