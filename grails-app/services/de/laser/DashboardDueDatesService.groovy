@@ -122,10 +122,9 @@ class DashboardDueDatesService {
                     String oid = genericOIDService.getOID(obj)
                     DashboardDueDate das = DashboardDueDate.executeQuery(
                             """select das from DashboardDueDate as das join das.dueDateObject ddo 
-                            where das.responsibleUser = :user and das.responsibleOrg = :org and ddo.attribute_name = :attribute_name and ddo.oid = :oid
+                            where das.responsibleUser = :user and ddo.attribute_name = :attribute_name and ddo.oid = :oid
                             order by ddo.date""",
                             [user: user,
-                             org: user.formalOrg,
                              attribute_name: attributeName,
                              oid: oid
                             ])[0]
@@ -332,9 +331,9 @@ class DashboardDueDatesService {
     List<DashboardDueDate> getDashboardDueDates(User user) {
         DashboardDueDate.executeQuery(
                 """select das from DashboardDueDate as das join das.dueDateObject ddo 
-                        where das.responsibleUser = :user and das.responsibleOrg = :org and das.isHidden = :isHidden and ddo.isDone = :isDone
+                        where das.responsibleUser = :user and das.isHidden = :isHidden and ddo.isDone = :isDone
                         order by ddo.date""",
-                [user: user, org: user.formalOrg, isHidden: false, isDone: false])
+                [user: user, isHidden: false, isDone: false])
     }
 
     /**
@@ -347,9 +346,9 @@ class DashboardDueDatesService {
     List<DashboardDueDate> getDashboardDueDates(User user, max, offset){
         DashboardDueDate.executeQuery(
                 """select das from DashboardDueDate as das join das.dueDateObject ddo 
-                where das.responsibleUser = :user and das.responsibleOrg = :org and das.isHidden = :isHidden and ddo.isDone = :isDone
+                where das.responsibleUser = :user and das.isHidden = :isHidden and ddo.isDone = :isDone
                 order by ddo.date""",
-                [user: user, org: user.formalOrg, isHidden: false, isDone: false], [max: max, offset: offset])
+                [user: user, isHidden: false, isDone: false], [max: max, offset: offset])
     }
 
     /**
@@ -360,8 +359,8 @@ class DashboardDueDatesService {
     int countDashboardDueDates(User user){
         return DashboardDueDate.executeQuery(
                 """select count(*) from DashboardDueDate as das join das.dueDateObject ddo 
-                where das.responsibleUser = :user and das.responsibleOrg = :org and das.isHidden = :isHidden and ddo.isDone = :isDone""",
-                [user: user, org: user.formalOrg, isHidden: false, isDone: false])[0]
+                where das.responsibleUser = :user and das.isHidden = :isHidden and ddo.isDone = :isDone""",
+                [user: user, isHidden: false, isDone: false])[0]
     }
 
 }
