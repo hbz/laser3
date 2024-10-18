@@ -1314,21 +1314,21 @@ class SubscriptionService {
      * @return true if the adding was successful, false otherwise
      * @throws EntitlementCreationException
      */
-    boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, pickAndChoosePerpetualAccess, issueEntitlementGroup) throws EntitlementCreationException {
+    boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, pickAndChoosePerpetualAccess, issueEntitlementGroup) {
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(gokbId)
         if (tipp == null) {
-            throw new EntitlementCreationException("Unable to tipp ${gokbId}")
+            log.error("Unable to tipp ${gokbId}")
         }else if(PermanentTitle.findByOwnerAndTipp(sub.getSubscriberRespConsortia(), tipp)){
-            throw new EntitlementCreationException("Unable to create IssueEntitlement because IssueEntitlement exist as PermanentTitle")
+            log.error("Unable to create IssueEntitlement because IssueEntitlement exist as PermanentTitle")
         }
         else if(IssueEntitlement.findAllBySubscriptionAndTippAndStatusInList(sub, tipp, [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_RETIRED])) {
-            throw new EntitlementCreationException("Unable to create IssueEntitlement because IssueEntitlement exist with tipp ${gokbId}")
+            log.error("Unable to create IssueEntitlement because IssueEntitlement exist with tipp ${gokbId}")
         }
         else if(IssueEntitlement.findBySubscriptionAndTippAndStatus(sub, tipp, RDStore.TIPP_STATUS_EXPECTED)) {
             IssueEntitlement expected = IssueEntitlement.findBySubscriptionAndTippAndStatus(sub, tipp, RDStore.TIPP_STATUS_EXPECTED)
             expected.status = RDStore.TIPP_STATUS_CURRENT
             if(!expected.save())
-                throw new EntitlementCreationException(expected.errors.getAllErrors().toListString())
+                log.error(expected.errors.getAllErrors().toListString())
         }
         else {
             IssueEntitlement new_ie = new IssueEntitlement(
@@ -1365,7 +1365,7 @@ class SubscriptionService {
                     IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(ie: new_ie, ieGroup: issueEntitlementGroup)
 
                     if (!issueEntitlementGroupItem.save()) {
-                        throw new EntitlementCreationException(issueEntitlementGroupItem.errors)
+                        log.error(issueEntitlementGroupItem.errors)
                     }
                 }
 
@@ -1391,7 +1391,7 @@ class SubscriptionService {
                             issueEntitlement: new_ie
                     )
                     if(!ieCoverage.save()) {
-                        throw new EntitlementCreationException(ieCoverage.errors)
+                        log.error(ieCoverage.errors)
                     }
                 }
                 if(withPriceData) {
@@ -1407,13 +1407,13 @@ class SubscriptionService {
                         )
                         pi.setGlobalUID()
                         if (!pi.save()) {
-                            throw new EntitlementCreationException(pi.errors)
+                            log.error(pi.errors)
                         }
                     }
                 }
                 else return true
             } else {
-                throw new EntitlementCreationException(new_ie.errors)
+                log.error(new_ie.errors)
             }
         }
     }
