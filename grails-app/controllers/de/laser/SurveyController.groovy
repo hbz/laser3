@@ -1684,6 +1684,13 @@ class SurveyController {
     })
      Map<String,Object> deleteDocuments() {
         log.debug("deleteDocuments ${params}")
+        if(params.instanceId){
+            params.surveyConfigID = params.instanceId
+            SurveyConfig surveyConfig = SurveyConfig.get(params.long('surveyConfigID'))
+            if(surveyConfig) {
+                params.id = surveyConfig.surveyInfo.id
+            }
+        }
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if(result.status == SurveyControllerService.STATUS_ERROR) {
             if (!result.result) {

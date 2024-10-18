@@ -6396,9 +6396,15 @@ class ExportClickMeService {
                     row.add(createTableCell(format, reminderMailDate))
                 }  else if (fieldKey == 'survey.person') {
                     String person = ""
-                    if (participantResult.surveyOrg.person && participantResult.surveyOrg.person.contacts) {
-                        person = participantResult.surveyOrg.person.contacts.collect {it.content}.join('; ')
+                    if (participantResult.surveyOrg && participantResult.surveyOrg.person && participantResult.surveyOrg.person.contacts) {
+                        List emails = []
+                        participantResult.surveyOrg.person.contacts.each {
+                            if(it.contentType == RDStore.CCT_EMAIL)
+                                emails << it.content
+                        }
+                        person = emails.join('; ')
                     }
+
                     row.add(createTableCell(format, person, participantResult.surveyOrg && surveyService.modificationToContactInformation(participantResult.surveyOrg) ? 'negative' : ''))
                 }
                 else if (fieldKey == 'survey.address') {
