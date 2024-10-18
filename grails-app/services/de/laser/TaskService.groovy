@@ -27,17 +27,6 @@ class TaskService {
     MessageSource messageSource
 
     /**
-     * Called from view for edit override
-     * Checks if the given task may be edited by the given user
-     * @param task the task to be checked
-     * @param user the user accessing the task
-     * @return true if the user is creator or responsible of the task or the user belongs to the institution responsible for the task
-     */
-    boolean isTaskEditableBy(Task task, User user) {
-        task.creator == user || task.responsibleUser?.id == user.id || task.responsibleOrg?.id == user.formalOrg.id
-    }
-
-    /**
      * Loads the user's tasks for the given object
      * @param user the user whose tasks should be retrieved
      * @param object the object to which the tasks are attached
@@ -81,6 +70,9 @@ class TaskService {
             case 'Org':
                 tasks.addAll(Task.findAllByOrg(obj as Org, pparams))
                 break
+            case 'Provider':
+                tasks.addAll(Task.findAllByProvider(obj as Provider, pparams))
+                break
             case 'Subscription':
                 tasks.addAll(Task.findAllBySubscription(obj as Subscription, pparams))
                 break
@@ -89,6 +81,9 @@ class TaskService {
                 break
             case 'TitleInstancePackagePlatform':
                 tasks.addAll(Task.findAllByTipp(obj as TitleInstancePackagePlatform, pparams))
+                break
+            case 'Vendor':
+                tasks.addAll(Task.findAllByVendor(obj as Vendor, pparams))
                 break
         }
         tasks
@@ -188,26 +183,18 @@ class TaskService {
      * @param queryMap eventual filter parameters
      * @return a (filtered) list of tasks
      */
-    List<Task> getTasksByResponsibility(User user, Org org, Map queryMap) { // TODO
+    List<Task> getTasksByResponsibility(User user, Map queryMap) {
         List<Task> tasks = []
 
-        String query
-        Map<String, Object> params = [:]
+        if (user) {
+            String query = 't.responsibleUser = :user'
+            Map params   = [user: user]
 
-        if (user && org) {
-            query  = '( t.responsibleUser = :user or t.responsibleOrg = :org )'
-            params = [user: user, org: org]
-        }
-        else if (user) {
-            query  = 't.responsibleUser = :user'
-            params = [user: user]
-        }
-        else if (org) {
-            query  = 't.responsibleOrg = :org'
-            params = [org: org]
-        }
+            if (user.formalOrg) {
+                query  = '( t.responsibleUser = :user or t.responsibleOrg = :org )'
+                params = [user: user, org: user.formalOrg]
+            }
 
-        if (query) {
             query = 'select distinct(t) from Task t where ' + query + ' ' + queryMap.query
             query = _addDefaultOrder("t", query)
 
@@ -573,32 +560,5 @@ class TaskService {
             }
         }
         query
-    }
-
-    /**
-     * Adds an order to the task query if not specified
-     * @param tableAlias the joined table name
-     * @param params the sorting parameter map
-     * @return the query string with the order clause
-     */
-    private Map _addDefaultOrder(String tableAlias, Map params){
-        if (params) {
-            if (tableAlias){
-                if ( ! params.sort) {
-                    params << [sort: tableAlias+'.endDate', order: 'asc']
-                }
-            } else {
-                if ( ! params.sort) {
-                    params << [sort: 'endDate', order: 'asc']
-                }
-            }
-        } else {
-            if (tableAlias) {
-                params = [sort: tableAlias+'.endDate', order: 'asc']
-            } else {
-                params = [sort: 'endDate', order: 'asc']
-            }
-        }
-        params
     }
 }

@@ -116,7 +116,7 @@ class DashboardDueDatesService {
         List<User> users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
         users.each { user ->
             if (user.formalOrg) {
-                List dueObjects = queryService.getDueObjectsCorrespondingUserSettings(user.formalOrg, user)
+                List dueObjects = queryService.getDueObjectsCorrespondingUserSettings(user)
                 dueObjects.each { obj ->
                     String attributeName = DashboardDueDate.getAttributeName(obj, user)
                     String oid = genericOIDService.getOID(obj)

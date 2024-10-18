@@ -29,7 +29,7 @@
             </thead>
             <tbody>
             <g:each in="${cmbTaskInstanceList}" var="taskInstance">
-                <g:set var="overwriteEditable" value="${editable || taskService.isTaskEditableBy(taskInstance, contextService.getUser())}" />
+                <g:set var="overwriteEditable" value="${editable || accessService.hasAccessToTask(taskInstance)}" />
                 <tr>
                     <td>
                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${taskInstance.endDate}"/>
