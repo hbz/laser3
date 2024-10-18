@@ -30,15 +30,7 @@ class AddressbookService {
      * @see de.laser.addressbook.Person
      */
     List<Person> getPrivatePersonsByTenant(Org tenant) {
-        List result = []
-
-        Person.findAllByTenant(tenant)?.each{ prs ->
-            if (! prs.isPublic) {
-                if (! result.contains(prs)) {
-                    result << prs
-                }
-            }
-        }
+        List result = Person.findAllByTenantAndIsPublic(tenant, false)
         result
     }
 
@@ -59,8 +51,7 @@ class AddressbookService {
      * @return true if the user is affiliated at least as INST_EDITOR with the given tenant or institution or is a global admin, false otherwise
      */
     boolean isContactEditable(Contact contact, User user) {
-        Org org = contact.getPrs()?.tenant
-        userService.hasFormalAffiliation_or_ROLEADMIN(user, org, 'INST_EDITOR')
+        userService.hasFormalAffiliation_or_ROLEADMIN(user, contact.prs?.tenant, 'INST_EDITOR')
     }
 
     /**
@@ -218,12 +209,6 @@ class AddressbookService {
                 break
         }
 
-        /*
-        if (params.prs) {
-            qParts << "( genfunc_filter_matcher(p.last_name, :prsName) = true OR genfunc_filter_matcher(p.middle_name, :prsName) = true OR genfunc_filter_matcher(p.first_name, :prsName) = true )"
-            qParams << [prsName: "${params.prs}"]
-        }
-        */
         if (params.org && params.org instanceof Org) {
             qParts << "org = :org"
             qParams << [org: params.org]

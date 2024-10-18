@@ -4,12 +4,10 @@
 
         <div class="ui item person-details">
             <div class="header">
-
                     ${person.title}
                     ${person.first_name}
                     ${person.middle_name}
                     ${person.last_name}
-
             </div>
 
             <g:if test="${overwriteEditable}">
@@ -21,26 +19,21 @@
                     </button>
                 </div>
             </g:if>
-
         </div><!-- .person-details -->
 
         <g:if test="${person.contacts}">
-
             <g:each in="${person.contacts.toSorted()}" var="contact">
                 <laser:render template="/addressbook/contact"
                           model="${[contact: contact, tmplShowDeleteButton: tmplShowDeleteButton, overwriteEditable: overwriteEditable]}"/>
             </g:each>
-
         </g:if>
 
         <g:if test="${!personRole && !tmplHideLinkToAddressbook}">
-
             <g:each in="${person.roleLinks}" var="role">
                 <div class="item">
                     <g:link controller="organisation" action="addressbook" id="${role.org.id}">${role.org}</g:link>
                 </div>
             </g:each>
-
         </g:if>
 
     </div><!-- .la-flex-list -->
@@ -52,12 +45,10 @@
         <div class="ui item person-details">
             <div class="content la-space-right">
                 <div class="header">
-
                         ${personRole.prs.title}
                         ${personRole.prs.first_name}
                         ${personRole.prs.middle_name}
                         ${personRole.prs.last_name}
-
                 </div>
                 <g:if test="${personRole.functionType}">
                     (${personRole.functionType.getI10n('value')})

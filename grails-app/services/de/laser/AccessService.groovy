@@ -16,9 +16,7 @@ class AccessService {
     static final String CHECK_EDIT = 'CHECK_EDIT'                       // TODO
     static final String CHECK_VIEW_AND_EDIT = 'CHECK_VIEW_AND_EDIT'     // TODO
 
-    AddressbookService addressbookService
     ContextService contextService
-    UserService userService
 
     // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
     boolean hasAccessToDocument(DocContext dctx) {
@@ -110,17 +108,12 @@ class AccessService {
                 }
             }
         }
+        //else if (dctx.link && dctx.link.owner.id == ctxOrg.id) {
+            // .. ??
+        //}
         else if ( dctx.surveyConfig ) {
             // .. TODO TODO TODO
         }
-
-//        license:        License,
-//        subscription:   Subscription,
-//        link:           Links,            <<<--- TODO ?
-//        org:            Org,
-//        surveyConfig:   SurveyConfig,
-//        provider:       Provider,
-//        vendor:         Vendor
 
         return check
     }
@@ -142,14 +135,6 @@ class AccessService {
             check = true
         }
 
-//        License         license
-//        Org             org
-//        Provider        provider
-//        Vendor          vendor
-//        Subscription    subscription
-//        SurveyConfig    surveyConfig
-//        TitleInstancePackagePlatform tipp
-
         return check
     }
 
@@ -163,11 +148,6 @@ class AccessService {
         else if (workflow.owner.id == contextService.getOrg().id) {
             check = true
         }
-//        Subscription subscription
-//        License license
-//        Org org
-//        Provider provider
-//        Vendor vendor
 
         return check
     }
@@ -185,6 +165,9 @@ class AccessService {
         else if (address.org && address.org.id == contextService.getOrg().id) {
             check = true
         }
+        else if (address.provider || address.vendor) {
+            check = true
+        }
 
         return check
     }
@@ -196,8 +179,13 @@ class AccessService {
         if (!contact) {
             // .. invalid
         }
-        else if (contact.prs && contact.prs.tenant && contact.prs.tenant.id == contextService.getOrg().id) {
-            check = true
+        else if (contact.prs) {
+            if (contact.prs.isPublic) {
+                check = true
+            }
+            else if (contact.prs.tenant && contact.prs.tenant.id == contextService.getOrg().id) {
+                check = true
+            }
         }
 
         return check
@@ -209,6 +197,9 @@ class AccessService {
 
         if (!person) {
             // .. invalid
+        }
+        else if (person.isPublic) {
+            check = true
         }
         else if (person.tenant && person.tenant.id == contextService.getOrg().id) {
             check = true
