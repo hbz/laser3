@@ -5,6 +5,7 @@ import de.laser.addressbook.Contact
 import de.laser.addressbook.Person
 import de.laser.addressbook.PersonRole
 import de.laser.annotations.DebugInfo
+import de.laser.helper.Params
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyOrg
 import de.laser.wekb.Provider
@@ -94,8 +95,6 @@ class AddressbookController {
         // moved from PersonController.createPerson()
 
         Person.withTransaction {
-            Org contextOrg = contextService.getOrg()
-
             String referer = request.getHeader('referer')
             if(!referer.contains('tab')) {
                 if(referer.contains('?'))
@@ -129,7 +128,7 @@ class AddressbookController {
                         personRoleVendor = Vendor.get(params.personRoleVendor)
                     }
                     else {
-                        personRoleOrg = contextOrg
+                        personRoleOrg = contextService.getOrg()
                     }
 
                     if (params.functionType) {
@@ -219,7 +218,7 @@ class AddressbookController {
         List args   = [message(code: 'address.label'), params.id]
 
         if (obj) {
-            if (accessService.hasAccessToAddress(obj) || addressbookService.isAddressEditable(obj, contextService.getUser())) { // TODO
+            if (accessService.hasAccessToAddress(obj) || addressbookService.isAddressEditable(obj, contextService.getUser())) { // TODO: || -> &&
                 Address.withTransaction {
                     try {
                         List changeList = SurveyOrg.findAllByAddress(obj)
@@ -255,7 +254,7 @@ class AddressbookController {
         Contact obj = Contact.get(params.id)
         List args   = [message(code: 'contact.label'), params.id]
 
-        if (accessService.hasAccessToContact(obj)) {
+        if (accessService.hasAccessToContact(obj) || addressbookService.isContactEditable(obj, contextService.getUser())) { // TODO: || -> &&
             try {
                 obj.delete() // TODO: check perms
                 flash.message = message(code: 'default.deleted.message', args: args)
@@ -280,7 +279,7 @@ class AddressbookController {
         List args  = [message(code: 'person.label'), params.id]
 
         if (obj) {
-            if (accessService.hasAccessToPerson(obj) || addressbookService.isPersonEditable(obj, contextService.getUser())) { // TODO
+            if (accessService.hasAccessToPerson(obj) || addressbookService.isPersonEditable(obj, contextService.getUser())) { // TODO: || -> &&
                 Person.withTransaction {
                     try {
                         List changeList = SurveyOrg.findAllByPerson(obj)
@@ -345,7 +344,7 @@ class AddressbookController {
         String referer  = request.getHeader('referer')
 
         if (obj) {
-            if (accessService.hasAccessToAddress(obj) || addressbookService.isAddressEditable(obj, contextService.getUser())) { // TODO
+            if (accessService.hasAccessToAddress(obj) || addressbookService.isAddressEditable(obj, contextService.getUser())) { // TODO: || -> &&
                 if (params.version) {
                     Long version = params.long('version')
                     if (obj.version > version) {
@@ -403,6 +402,190 @@ class AddressbookController {
             }
             else {
                 flash.error = message(code: 'default.noPermissions')
+            }
+        }
+        else {
+            flash.error = message(code: 'default.not.found.message', args: args)
+        }
+        redirect(url: referer)
+    }
+
+    /**
+     * Takes the submitted parameters and updates the person contact based on the given parameter map
+     * @return redirect to the referer -> the updated view of the person contact
+     */
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], withTransaction = 1)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
+    })
+    def editPerson() {
+        // moved from PersonController.editPerson()
+        Person obj      = Person.get(params.id)
+        List args       = [message(code: 'person.label'), params.id]
+        String referer  = request.getHeader('referer')
+
+        if (obj) {
+            Person.withTransaction {
+                if (accessService.hasAccessToPerson(obj) || addressbookService.isPersonEditable(obj, contextService.getUser())) { // TODO: || -> &&
+
+                    if (!params.functionType && !params.positionType) {
+                        flash.error = message(code: 'person.create.missing_function') as String
+                        redirect(url: referer)
+                        return
+                    }
+
+                    obj.properties = params
+
+                    if (!obj.save()) {
+                        log.info(obj.errors)
+                        flash.error = message(code: 'default.not.updated.message', args: args)
+                        redirect(url: referer)
+                        return
+                    }
+
+                    if (!referer.contains('tab')) {
+                        if (referer.contains('?'))
+                            referer += '&tab=contacts'
+                        else
+                            referer += '?tab=contacts'
+                    } else referer = referer.replaceAll('tab=addresses', 'tab=contacts')
+
+                    Org personRoleOrg
+                    Provider personRoleProvider
+                    Vendor personRoleVendor
+                    if (params.personRoleOrg)           { personRoleOrg = Org.get(params.personRoleOrg) }
+                    else if (params.personRoleProvider) { personRoleProvider = Provider.get(params.personRoleProvider) }
+                    else if (params.personRoleVendor)   { personRoleVendor = Vendor.get(params.personRoleVendor) }
+                    else                                { personRoleOrg = contextService.getOrg() }
+
+                    if (params.functionType) {
+                        params.list('functionType').each {
+                            Map<String, Object> findCfg = [ prs: obj, functionType: RefdataValue.get(it) ]
+
+                            if (personRoleOrg)           { findCfg.org = personRoleOrg }
+                            else if (personRoleProvider) { findCfg.provider = personRoleProvider }
+                            else if (personRoleVendor)   { findCfg.vendor = personRoleVendor }
+
+                            PersonRole personRole = PersonRole.findWhere(findCfg)
+
+                            if (!personRole) {
+                                personRole = new PersonRole(findCfg)
+                                if (personRole.save()) {
+                                    log.debug("adding PersonRole ${personRole}")
+                                }
+                                else {
+                                    log.error("problem saving new PersonRole ${personRole}")
+                                }
+                            }
+                            else {
+                                log.debug("ignore adding PersonRole because of existing duplicate")
+                            }
+                        }
+                    }
+
+                    if (personRoleOrg) {
+                        obj.getPersonRoleByOrg(personRoleOrg).each { psr ->
+                            if (psr.functionType && !(psr.functionType.id in Params.getLongList(params, 'functionType'))) {
+                                obj.removeFromRoleLinks(psr)
+                                psr.delete()
+                            }
+                            else if (psr.positionType && !(psr.positionType.id in Params.getLongList(params, 'positionType'))) {
+                                obj.removeFromRoleLinks(psr)
+                                psr.delete()
+                            }
+                        }
+                    }
+                    else if (personRoleProvider) {
+                        obj.getPersonRoleByProvider(personRoleProvider).each { psr ->
+                            if (psr.functionType && !(psr.functionType.id in Params.getLongList(params, 'functionType'))) {
+                                obj.removeFromRoleLinks(psr)
+                                psr.delete()
+                            }
+                            else if (psr.positionType && !(psr.positionType.id in Params.getLongList(params, 'positionType'))) {
+                                obj.removeFromRoleLinks(psr)
+                                psr.delete()
+                            }
+                        }
+                    }
+                    else if (personRoleVendor) {
+                        obj.getPersonRoleByVendor(personRoleVendor).each { psr ->
+                            if (psr.functionType && !(psr.functionType.id in Params.getLongList(params, 'functionType'))) {
+                                obj.removeFromRoleLinks(psr)
+                                psr.delete()
+                            }
+                            else if (psr.positionType && !(psr.positionType.id in Params.getLongList(params, 'positionType'))) {
+                                obj.removeFromRoleLinks(psr)
+                                psr.delete()
+                            }
+                        }
+                    }
+
+                    if (params.positionType) {
+                        params.list('positionType').each {
+                            Map<String, Object> findCfg = [ prs: obj, positionType: RefdataValue.get(it) ]
+
+                            if (personRoleOrg)           { findCfg.org = personRoleOrg }
+                            else if (personRoleProvider) { findCfg.provider = personRoleProvider }
+                            else if (personRoleVendor)   { findCfg.vendor = personRoleVendor }
+
+                            PersonRole personRole = PersonRole.findWhere(findCfg)
+
+                            if (!personRole) {
+                                personRole = new PersonRole(findCfg)
+                                if (personRole.save()) {
+                                    log.debug("adding PersonRole ${personRole}")
+                                }
+                                else {
+                                    log.error("problem saving new PersonRole ${personRole}")
+                                }
+                            } else {
+                                log.debug("ignore adding PersonRole because of existing duplicate")
+                            }
+                        }
+                    }
+
+                    Set<Long> toDelete = []
+                    obj.contacts.each { contact ->
+                        if (!params.containsKey('contact' + contact.id)) {
+                            toDelete << contact.id
+                        }
+                        else {
+                            if (params."content${contact.id}") {
+                                contact.content = params."content${contact.id}"
+                                contact.save()
+                            }
+                            if (params."contactLang${contact.id}") {
+                                contact.language = RefdataValue.get(params."contactLang${contact.id}")
+                                contact.save()
+                            }
+                        }
+                    }
+
+                    Contact.executeUpdate('delete from Contact c where c.id in (:ids)', [ids: toDelete])
+
+                    if (params.content) {
+                        params.list('content').eachWithIndex { content, i ->
+                            if (content) {
+                                RefdataValue rdvCT = RefdataValue.get(params.list('contentType.id')[i])
+                                RefdataValue contactLang = params.list('contactLang.id')[i] ? RefdataValue.get(params.list('contactLang.id')[i]) : null
+                                if (RDStore.CCT_EMAIL == rdvCT) {
+                                    if (!formService.validateEmailAddress(content)) {
+                                        flash.error = message(code: 'contact.create.email.error') as String
+                                        return
+                                    }
+                                }
+                                Contact contact = new Contact(prs: obj, contentType: rdvCT, language: contactLang, type: RDStore.CONTACT_TYPE_JOBRELATED, content: content)
+                                contact.save()
+                            }
+                        }
+                    }
+
+                    flash.message = message(code: 'default.updated.message', args: [message(code: 'person.label'), obj.toString()]) as String
+                    redirect(url: referer)
+                }
+                else {
+                    flash.error = message(code: 'default.noPermissions')
+                }
             }
         }
         else {

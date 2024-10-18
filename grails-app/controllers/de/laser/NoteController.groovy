@@ -22,8 +22,10 @@ class NoteController {
 	@Secured(['ROLE_USER'])
 	@Transactional
 	def createNote() {
+		String referer = request.getHeader('referer')
+
 		// processing form#modalCreateNote
-		log.debug("Create note referer was ${request.getHeader('referer')} or ${request.request.RequestURL}")
+		log.debug("Create note referer was ${referer} or ${request.request.RequestURL}")
 
 		User user = contextService.getUser()
 		Class dc = CodeUtils.getDomainClass( params.ownerclass )
@@ -56,7 +58,7 @@ class NoteController {
 			log.debug("no type")
 		}
 
-		redirect(url: request.getHeader('referer'))
+		redirect(url: referer)
 	}
 
 	/**
@@ -68,6 +70,7 @@ class NoteController {
 	})
 	def editNote() {
 		// processing form#modalEditNote
+		String referer = request.getHeader('referer')
 
 		Doc.withTransaction {
 			switch (request.method) {
@@ -76,14 +79,14 @@ class NoteController {
 					DocContext docContext = DocContext.get(params.long('dctx'))
 					if (! accessService.hasAccessToDocNote(docContext)) {
 						flash.error = message(code: 'default.noPermissions') as String
-						redirect(url: request.getHeader('referer'))
+						redirect(url: referer)
 						return
 					}
 
 					Doc docInstance = docContext.owner
 					if (!docInstance) {
 						flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.note.label'), params.id]) as String
-						redirect(url: request.getHeader('referer'))
+						redirect(url: referer)
 						return
 					}
 
@@ -96,7 +99,7 @@ class NoteController {
 									[message(code: 'default.note.label')] as Object[],
 									'Another user has updated this Doc while you were editing'
 							)
-							redirect(url: request.getHeader('referer'))
+							redirect(url: referer)
 							return
 						}
 					}
@@ -106,12 +109,12 @@ class NoteController {
 						docInstance.owner = contextService.getOrg()
 
 					if (!docInstance.save()) {
-						redirect(url: request.getHeader('referer'))
+						redirect(url: referer)
 						return
 					}
 
 					flash.message = message(code: 'default.updated.message', args: [message(code: 'default.note.label'), docInstance.title]) as String
-					redirect(url: request.getHeader('referer'))
+					redirect(url: referer)
 					return
 					break
 			}

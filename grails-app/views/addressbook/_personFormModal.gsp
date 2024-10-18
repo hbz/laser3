@@ -229,7 +229,6 @@
                                     </option>
                                 </g:each>
                             </select>
-
                         </div>
 
                     </div>
@@ -279,7 +278,6 @@
                             <g:else>
                                 <i class="${Icon.SYM.EMAIL} large la-js-contactIcon"></i>
                             </g:else>
-
                         </div>
                         <div class="field wide four">
                             <input type="text" name="contact${contact.id}" readonly value="${contact.contentType.getI10n('value')}"/>
@@ -320,8 +318,6 @@
                                        value="${contactInstance?.contentType?.id}"/>
                         </div>
 
-
-
                         <div class="field four wide">
                             <ui:select class="ui search dropdown" name="contactLang.id"
                                        from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)}"
@@ -330,7 +326,6 @@
                                        value="${contactInstance?.language?.id}"
                                        noSelection="['null': message(code: 'person.contacts.selectLang.default')]"/>
                         </div>
-
 
                         <div class="field eight wide">
                             <g:textField class="la-js-contactContent" data-validate="contactContent"  id="content" name="content" value="${contactInstance?.content}"/>

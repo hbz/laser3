@@ -42,6 +42,8 @@ class TaskController  {
 		ctx.contextService.isInstEditor_or_ROLEADMIN()
 	})
     def createTask() {
+		String referer = request.getHeader('referer')
+
 		Task.withTransaction {
 			Org contextOrg = contextService.getOrg()
 			SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -86,13 +88,13 @@ class TaskController  {
 
 				if (!taskInstance.save()) {
 					flash.error = message(code: 'default.not.created.message', args: [message(code: 'task.label')]) as String
-					redirect(url: request.getHeader('referer'))
+					redirect(url: referer)
 					return
 				}
 
 				flash.message = message(code: 'default.created.message', args: [message(code: 'task.label'), taskInstance.title]) as String
 
-				redirect(url: request.getHeader('referer'))
+				redirect(url: referer)
 		}
     }
 
@@ -106,6 +108,7 @@ class TaskController  {
 	})
 	@Check404()
     def editTask() {
+		String referer = request.getHeader('referer')
 		Task.withTransaction {
             Map<String, Object> result = [
 					contextOrg : contextService.getOrg()
@@ -114,7 +117,7 @@ class TaskController  {
 
 			if (!accessService.hasAccessToTask(taskInstance)) {
 				flash.error = message(code: 'default.noPermissions') as String
-				redirect(url: request.getHeader('referer'))
+				redirect(url: referer)
 				return
 			}
 
@@ -134,7 +137,7 @@ class TaskController  {
 					)
 
 					result.taskInstance = taskInstance
-					redirect(url: request.getHeader('referer'))
+					redirect(url: referer)
 					return
 				}
 			}
@@ -153,51 +156,14 @@ class TaskController  {
 			if (!taskInstance.save()) {
 				result.taskInstance = taskInstance
 				flash.error = message(code: 'default.not.updated.message', args: [message(code: 'task.label'), taskInstance.title]) as String
-				redirect(url: request.getHeader('referer'))
+				redirect(url: referer)
 				return
 			}
 
 			flash.message = message(code: 'default.updated.message', args: [message(code: 'task.label'), taskInstance.title]) as String
-			redirect(url: request.getHeader('referer'))
+			redirect(url: referer)
 		}
     }
-
-//	/**
-//	 * Call to delete the given task instance
-//	 * @return a redirect to the referer
-//	 */
-//	@DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
-//	@Secured(closure = {
-//		ctx.contextService.isInstEditor_or_ROLEADMIN()
-//	})
-//    def delete() {
-//		Task.withTransaction {
-//			Task taskInstance = Task.get(params.id)
-//			String tasktitel = taskInstance.title
-//
-//			if (!taskInstance) {
-//				flash.message = message(code: 'default.not.found.message', args: [message(code: 'task.label'), params.id]) as String
-//				redirect(url: request.getHeader('referer'))
-//				return
-//			}
-//
-//			if (taskInstance.creator != contextService.getUser()) {
-//				flash.error = message(code: 'task.delete.norights', args: [tasktitel]) as String
-//				redirect(url: request.getHeader('referer'))
-//				return
-//			}
-//
-//			try {
-//				taskInstance.delete()
-//				flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), tasktitel]) as String
-//				redirect(url: request.getHeader('referer'))
-//			}
-//			catch (DataIntegrityViolationException e) {
-//				flash.error = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), tasktitel]) as String
-//				redirect(url: request.getHeader('referer'))
-//			}
-//		}
-//    }
 
 	/**
 	 * Deletes the given task

@@ -711,7 +711,7 @@ class AjaxHtmlController {
             result.isPublic = result.personInstance.isPublic
             result.editable = addressbookService.isPersonEditable(result.personInstance, contextService.getUser())
             result.tmplShowDeleteButton = result.editable
-            result.url = [controller: 'person', action: 'editPerson', id: result.personInstance.id]
+            result.url = [controller: 'addressbook', action: 'editPerson', id: result.personInstance.id]
             result.contextOrg = contextService.getOrg()
 
             render template: "/addressbook/personFormModal", model: result
