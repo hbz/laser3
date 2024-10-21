@@ -304,19 +304,23 @@ body.survey_copyElementsIntoSurvey nav.tabular .item .content .description
     color: #00b5ad;
 }
 
-/* -- flyouts -- */
+/* -- flyouts / markdown -- */
 
-#help-content.markdown > .content {
+#help-content.la-markdown > .content {
     padding-top: 70px;
 }
-#help-content.markdown > .basic.actions {
+#help-content.la-markdown > .basic.actions {
     padding: 1rem 1.5rem;
     border-top: 1px solid #E9E9E9;
 }
 
+.la-markdown img {
+    max-width: 100%;
+}
+
 /* todo .. fix markup and remove */
 
-.ui.flyout:not(.markdown) {
+.ui.flyout:not(.la-markdown) {
     padding: 50px 0 10px 0;
     overflow: scroll
 }
