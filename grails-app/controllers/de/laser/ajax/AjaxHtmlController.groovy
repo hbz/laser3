@@ -413,7 +413,10 @@ class AjaxHtmlController {
     /**
      * Opens the edit modal for the given note
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
+    })
     def editNote() {
         Map<String, Object> result = [ params: params ]
 
@@ -449,7 +452,10 @@ class AjaxHtmlController {
     /**
      * Opens the task creation modal
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
+    })
     def createTask() {
         Org contextOrg = contextService.getOrg()
         Map<String, Object> result = taskService.getPreconditions(contextOrg)
@@ -461,7 +467,10 @@ class AjaxHtmlController {
     /**
      * Opens the task editing modal
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_or_ROLEADMIN()
+    })
     def editTask() {
         Map<String, Object> result = [ params: params ]
         Task task = Task.get(params.id)
@@ -497,7 +506,10 @@ class AjaxHtmlController {
     /**
      * Opens the address creation modal and sets the underlying parameters
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
+    })
     def createAddress() {
         Map<String, Object> model = [:]
         model.prsId = params.prsId
@@ -563,7 +575,10 @@ class AjaxHtmlController {
     /**
      * Opens the edit modal for an existing address
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
+    })
     def editAddress() {
         Map<String, Object> model = [:]
         model.addressInstance = Address.get(params.id)
@@ -588,7 +603,10 @@ class AjaxHtmlController {
     /**
      * Opens the contact entity creation modal and sets the underlying parameters
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
+    })
     def createPerson() {
         Map<String, Object> result = [:]
         result.contextOrg = contextService.getOrg()
@@ -662,7 +680,10 @@ class AjaxHtmlController {
     /**
      * Opens the edit modal for an existing contact entity
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
+    })
     def editPerson() {
         Map<String, Object> result = [:]
         Org contextOrg = contextService.getOrg()

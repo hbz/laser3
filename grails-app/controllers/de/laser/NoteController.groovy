@@ -21,6 +21,10 @@ class NoteController {
 	 */
 	@Secured(['ROLE_USER'])
 	@Transactional
+	@DebugInfo(isInstEditor_or_ROLEADMIN = [])
+	@Secured(closure = {
+		ctx.contextService.isInstEditor_or_ROLEADMIN()
+	})
 	def createNote() {
 		String referer = request.getHeader('referer')
 
@@ -45,10 +49,10 @@ class NoteController {
 
 				log.debug("Setting new context type to ${params.ownertp}..")
 
-				DocContext doc_context = new DocContext(
+				DocContext docctx = new DocContext(
 						"${params.ownertp}": instance,
 						owner: doc_content)
-				doc_context.save()
+				docctx.save()
 			}
 			else {
 				log.debug("no instance")
@@ -73,27 +77,15 @@ class NoteController {
 		String referer = request.getHeader('referer')
 
 		Doc.withTransaction {
-			switch (request.method) {
-				case 'POST':
-					//					Doc docInstance = Doc.findByIdAndContentType(params.long('id'), Doc.CONTENT_TYPE_STRING)
-					DocContext docContext = DocContext.get(params.long('dctx'))
-					if (! accessService.hasAccessToDocNote(docContext)) {
-						flash.error = message(code: 'default.noPermissions') as String
-						redirect(url: referer)
-						return
-					}
+			DocContext docctx = DocContext.get(params.long('dctx'))
+			if (accessService.hasAccessToDocNote(docctx)) {
 
-					Doc docInstance = docContext.owner
-					if (!docInstance) {
-						flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.note.label'), params.id]) as String
-						redirect(url: referer)
-						return
-					}
-
+				Doc doc = docctx.owner
+				if (doc) {
 					if (params.version) {
 						Long version = params.long('version')
-						if (docInstance.version > version) {
-							docInstance.errors.rejectValue(
+						if (doc.version > version) {
+							doc.errors.rejectValue(
 									'version',
 									'default.optimistic.locking.failure',
 									[message(code: 'default.note.label')] as Object[],
@@ -103,22 +95,28 @@ class NoteController {
 							return
 						}
 					}
+					doc.properties = params
 
-					docInstance.properties = params
-					if (!docInstance.owner)
-						docInstance.owner = contextService.getOrg()
+					if (!doc.owner)
+						doc.owner = contextService.getOrg()
 
-					if (!docInstance.save()) {
-						redirect(url: referer)
-						return
+					if (doc.save()) {
+						flash.message = message(code: 'default.updated.message', args: [message(code: 'default.note.label'), doc.title])
 					}
-
-					flash.message = message(code: 'default.updated.message', args: [message(code: 'default.note.label'), docInstance.title]) as String
-					redirect(url: referer)
-					return
-					break
+					else {
+						// todo
+					}
+				}
+				else {
+					flash.error = message(code: 'default.not.found.message', args: [message(code: 'default.note.label'), params.id])
+				}
+			}
+			else {
+				flash.error = message(code: 'default.noPermissions')
 			}
 		}
+
+		redirect(url: referer)
 	}
 
 	@DebugInfo(isInstEditor_or_ROLEADMIN = [])
@@ -143,7 +141,8 @@ class NoteController {
 
 		if (params.redirectTab) {
 			redirect controller: params.redirectController, action: params.redirectAction, id: params.instanceId, params: [tab: params.redirectTab] // subscription.membersSubscriptionsManagement
-		} else {
+		}
+		else {
 			redirect controller: params.redirectController, action: params.redirectAction, id: params.instanceId
 		}
 	}
