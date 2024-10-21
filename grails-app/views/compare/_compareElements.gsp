@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.Subscription; de.laser.storage.RDStore; de.laser.AuditConfig; de.laser.interfaces.CalculatedType; de.laser.Person; de.laser.License" %>
+<%@ page import="de.laser.addressbook.PersonRole; de.laser.addressbook.Person; de.laser.ui.Icon; de.laser.Subscription; de.laser.storage.RDStore; de.laser.AuditConfig; de.laser.interfaces.CalculatedType; de.laser.License" %>
 <laser:serviceInjection/>
 
 <ui:greySegment>

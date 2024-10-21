@@ -248,7 +248,7 @@ class ApiLicense {
         //result.packages         = exportHelperService.getStubCollection(lic.pkgs, exportHelperService.PACKAGE_STUB) // de.laser.wekb.Package
         /*result.persons          = exportHelperService.resolvePrsLinks(
                 lic.prsLinks, exportHelperService.NO_CONSTRAINT, exportHelperService.NO_CONSTRAINT, context
-        ) // de.laser.PersonRole
+        ) // de.laser.addressbook.PersonRole
         */
         ApiToolkit.cleanUp(result, true, true)
     }

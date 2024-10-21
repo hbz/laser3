@@ -1,6 +1,6 @@
 package changelogs
 
-import de.laser.Address
+import de.laser.addressbook.Address
 import de.laser.RefdataValue
 
 databaseChangeLog = {

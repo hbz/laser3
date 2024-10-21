@@ -1,8 +1,7 @@
 package de.laser.api.v0.entities
 
-import de.laser.Address
+import de.laser.addressbook.Address
 import de.laser.Combo
-import de.laser.DeletionService
 import de.laser.Identifier
 import de.laser.IdentifierNamespace
 import de.laser.Org
@@ -145,12 +144,12 @@ class ApiOrg {
         // References
         Map<String, Object> queryParams = [org:org]
 
-        result.publicAddresses     = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.org = :org and a.tenant = null', queryParams), ApiReader.NO_CONSTRAINT) // de.laser.Address w/o tenant
-        result.privateAddresses    = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.org = :org and a.tenant = :context', queryParams+[context: context]), ApiReader.NO_CONSTRAINT) // de.laser.Address w/ tenant
+        result.publicAddresses     = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.org = :org and a.tenant = null', queryParams), ApiReader.NO_CONSTRAINT) // de.laser.addressbook.Address w/o tenant
+        result.privateAddresses    = ApiCollectionReader.getAddressCollection(Address.executeQuery('select a from Address a where a.org = :org and a.tenant = :context', queryParams+[context: context]), ApiReader.NO_CONSTRAINT) // de.laser.addressbook.Address w/ tenant
         result.identifiers  = ApiCollectionReader.getIdentifierCollection(org.ids) // de.laser.Identifier
         result.persons      = ApiCollectionReader.getPrsLinkCollection(
                 org.prsLinks, ApiReader.NO_CONSTRAINT, ApiReader.NO_CONSTRAINT, context
-        ) // de.laser.PersonRole
+        ) // de.laser.addressbook.PersonRole
 
         result.orgAccessPoints	= ApiCollectionReader.getOrgAccessPointCollection(org.accessPoints)
 

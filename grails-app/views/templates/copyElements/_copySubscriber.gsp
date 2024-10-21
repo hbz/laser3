@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.Person; de.laser.SubscriptionsQueryService; java.text.SimpleDateFormat; de.laser.storage.RDStore; de.laser.FormService" %>
+<%@ page import="de.laser.ui.Btn; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.addressbook.Person; de.laser.SubscriptionsQueryService; java.text.SimpleDateFormat; de.laser.storage.RDStore; de.laser.FormService" %>
 <laser:serviceInjection/>
 
     <g:if test="${!copyObject}">

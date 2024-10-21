@@ -1,5 +1,7 @@
-package de.laser
+package de.laser.mail
 
+import de.laser.Org
+import de.laser.RefdataValue
 import de.laser.annotations.RefdataInfo
 import de.laser.storage.RDConstants
 

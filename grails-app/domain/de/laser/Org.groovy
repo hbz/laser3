@@ -1,5 +1,8 @@
 package de.laser
 
+import de.laser.addressbook.Address
+import de.laser.addressbook.Person
+import de.laser.addressbook.PersonRole
 import de.laser.annotations.RefdataInfo
 import de.laser.auth.Role
 import de.laser.auth.User
@@ -199,12 +202,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
              country(nullable:true)
               region(nullable:true)
             eInvoicePortal(nullable:true)
-//        , validator: {RefdataValue val, Org obj, errors ->
-//                  if ( ! val.owner.desc.endsWith(obj.country.toString().toLowerCase())){
-//                      errors.rejectValue('region', 'regionDoesNotBelongToSelectedCountry')
-//                      return false
-//                  }
-//              })
       libraryNetwork(nullable:true)
           funderType(nullable:true)
        funderHskType(nullable:true)
@@ -364,10 +361,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     boolean isCustomerType_Consortium() {
         this.getCustomerType() in [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO ]
     }
-
-//    boolean isCustomerType_Consortium_or_Support() {
-//        this.getCustomerType() in [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO, CustomerTypeService.ORG_SUPPORT ] // hasPerm(ORG_CONSORTIUM_BASIC)
-//    }
 
     boolean isCustomerType_Support() {
         this.getCustomerType() == CustomerTypeService.ORG_SUPPORT
@@ -588,7 +581,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     /**
      * Retrieves the general contact persons of this organisation
      * @param onlyPublic should only the public contacts being retieved?
-     * @return a {@link List} of {@link Person}s marked as general contacts of this organisation
+     * @return a {@link List} of {@link de.laser.addressbook.Person}s marked as general contacts of this organisation
      */
     List<Person> getGeneralContactPersons(boolean onlyPublic) {
         if (onlyPublic) {

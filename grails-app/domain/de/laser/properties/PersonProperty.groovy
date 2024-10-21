@@ -1,12 +1,12 @@
 package de.laser.properties
 
 import de.laser.Org
-import de.laser.Person
+import de.laser.addressbook.Person
 import de.laser.RefdataValue
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 
 /**
- * The class's name is what it does: a property (implicitly private) to a {@link de.laser.Person}.
+ * The class's name is what it does: a property (implicitly private) to a {@link Person}.
  * Unlike other properties, they are only visible by the owner organisation itself.
  */
 class PersonProperty extends AbstractPropertyWithCalculatedLastUpdated {

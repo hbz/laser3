@@ -34,10 +34,10 @@ import de.laser.ReportingFilter
 import de.laser.ReportingGlobalService
 import de.laser.ReportingLocalService
 import de.laser.Subscription
-import de.laser.Address
+import de.laser.addressbook.Address
 import de.laser.Doc
-import de.laser.Person
-import de.laser.PersonRole
+import de.laser.addressbook.Person
+import de.laser.addressbook.PersonRole
 import de.laser.SubscriptionPackage
 import de.laser.SubscriptionService
 import de.laser.storage.BeanStore
@@ -711,7 +711,7 @@ class AjaxHtmlController {
             result.isPublic = result.personInstance.isPublic
             result.editable = addressbookService.isPersonEditable(result.personInstance, contextService.getUser())
             result.tmplShowDeleteButton = result.editable
-            result.url = [controller: 'person', action: 'editPerson', id: result.personInstance.id]
+            result.url = [controller: 'addressbook', action: 'editPerson', id: result.personInstance.id]
             result.contextOrg = contextService.getOrg()
 
             render template: "/addressbook/personFormModal", model: result

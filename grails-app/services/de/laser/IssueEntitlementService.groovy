@@ -41,11 +41,11 @@ class IssueEntitlementService {
             tippIds = tippIds.intersect(identifierMatches)
         }
         //process here the issue entitlement-related parameters
-        Map<String, Object> queryPart3 = filterService.getIssueEntitlementSubsetQuery(issueEntitlementConfigMap)
+        Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetQuery(issueEntitlementConfigMap)
 
         tippIds.collate(65000).each { List<Long> subset ->
-            queryPart3.queryParams.subset = subset
-            ieIds.addAll(IssueEntitlement.executeQuery(queryPart3.query, queryPart3.queryParams))
+            queryPart2.queryParams.subset = subset
+            ieIds.addAll(IssueEntitlement.executeQuery(queryPart2.query, queryPart2.queryParams))
         }
         SortedSet<IssueEntitlement> result = new TreeSet<IssueEntitlement>()
         Set<Long> ieSubset = ieIds.drop(configMap.offset).take(configMap.max)

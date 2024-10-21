@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.addressbook.Contact
 import de.laser.properties.PropertyDefinition
 import de.laser.remote.ApiSource
 import de.laser.storage.RDStore

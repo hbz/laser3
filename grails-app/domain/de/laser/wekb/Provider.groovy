@@ -1,12 +1,12 @@
 package de.laser.wekb
 
-import de.laser.Address
+import de.laser.addressbook.Address
 import de.laser.AlternativeName
 import de.laser.DocContext
 import de.laser.Identifier
 import de.laser.Org
-import de.laser.Person
-import de.laser.PersonRole
+import de.laser.addressbook.Person
+import de.laser.addressbook.PersonRole
 import de.laser.RefdataValue
 import de.laser.Task
 import de.laser.annotations.RefdataInfo

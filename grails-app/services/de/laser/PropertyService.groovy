@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.addressbook.Person
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.survey.SurveyConfig
 import de.laser.utils.CodeUtils

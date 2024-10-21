@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.addressbook.PersonRole; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
 <laser:htmlStart message="mail.sendMail.label" serviceInjection="true"/>
 
 <ui:breadcrumbs>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.PersonRole; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.addressbook.PersonRole; de.laser.CustomerTypeService; de.laser.storage.RDStore;" %>
 <laser:serviceInjection/>
 
 <g:set var="showOnlyPublic" value="${true}"/>

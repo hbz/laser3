@@ -1,11 +1,14 @@
-package de.laser
+package de.laser.addressbook
 
+
+import de.laser.RefdataCategory
+import de.laser.RefdataValue
 import de.laser.annotations.RefdataInfo
 import de.laser.storage.RDConstants
 import groovy.util.logging.Slf4j
 
 /**
- * A contact address for a given {@link Person} or {@link Org}. Note that physical addresses are stored as {@link Address}es;
+ * A contact address for a given {@link Person}. Note that physical addresses are stored as {@link Address}es;
  * the more appropriate name for this domain would be ContactDetails because the Person domain class represents the actual contact
  * @see Address
  * @see Person
@@ -57,7 +60,7 @@ class Contact implements Comparable<Contact>{
     }
 
     /**
-     * Maps to {@link RefdataCategory#getAllRefdataValues()}
+     * Maps to {@link de.laser.RefdataCategory#getAllRefdataValues()}
      * @param category the category (one of {@link RDConstants#CONTACT_CONTENT_TYPE} or {@link RDConstants#CONTACT_TYPE}) to look for
      * @return a {@link List} of all reference data values of the given category
      */

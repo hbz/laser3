@@ -2,6 +2,8 @@ package de.laser.ctrl
 
 
 import de.laser.*
+import de.laser.addressbook.Address
+import de.laser.addressbook.Contact
 import de.laser.auth.User
 import de.laser.oap.OrgAccessPoint
 import de.laser.storage.RDConstants

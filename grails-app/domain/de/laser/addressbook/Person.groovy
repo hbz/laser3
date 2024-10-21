@@ -1,5 +1,10 @@
-package de.laser
+package de.laser.addressbook
 
+import de.laser.License
+import de.laser.Org
+import de.laser.RefdataCategory
+import de.laser.RefdataValue
+import de.laser.Subscription
 import de.laser.annotations.RefdataInfo
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.properties.PersonProperty
@@ -17,8 +22,8 @@ import groovy.util.logging.Slf4j
  * implemented by the {@link PersonRole} structure. As the contact details towards a person may vary from institution to
  * institution, contact details such as addresses are stored separately from the person instance. Moreover, contacts may
  * be public or private, i.e. visibility is restricted to the institution which set up the contact
- * @see Address
- * @see Contact
+ * @see de.laser.addressbook.Address
+ * @see de.laser.addressbook.Contact
  * @see PersonRole
  */
 @Slf4j
@@ -100,7 +105,7 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
      * @param category the reference data category to look for
      * @return a {@link List} of {@link RefdataValue}s matching the given category
      * @see RefdataValue
-     * @see RefdataCategory#getAllRefdataValues(java.lang.String)
+     * @see de.laser.RefdataCategory#getAllRefdataValues(java.lang.String)
      */
     static List<RefdataValue> getAllRefdataValues(String category) {
         RefdataCategory.getAllRefdataValues(category)
@@ -216,7 +221,7 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
      * Gets all public contacts attached to the given organisation and object, matching to the given responsibility.
      * If org is null, this method gets ALL public responsibilities attached to the given object; if the object is missing, too, get all public responsibilities
      * @param target the {@link Org} to which the contacts are attached to
-     * @param obj the object (one of {@link License}, {@link de.laser.wekb.Package} or {@link Subscription}) for which the requested persons are responsible
+     * @param obj the object (one of {@link de.laser.License}, {@link de.laser.wekb.Package} or {@link de.laser.Subscription}) for which the requested persons are responsible
      * @param resp the responsibility of the persons requested
      * @return a {@link List} of persons attached to the given organisation and object and matching to the given responsibility
      */

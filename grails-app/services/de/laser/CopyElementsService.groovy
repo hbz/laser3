@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.addressbook.PersonRole
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.exceptions.CreationException
 import de.laser.finance.CostItem

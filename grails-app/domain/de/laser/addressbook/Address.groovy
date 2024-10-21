@@ -1,5 +1,8 @@
-package de.laser
+package de.laser.addressbook
 
+import de.laser.Org
+import de.laser.RefdataCategory
+import de.laser.RefdataValue
 import de.laser.annotations.RefdataInfo
 import de.laser.storage.RDConstants
 import de.laser.wekb.Provider
@@ -7,8 +10,8 @@ import de.laser.wekb.Vendor
 import groovy.util.logging.Slf4j
 
 /**
- * A physical address of an {@link Org}. Email-addresses and other contact possibilities than the physical address are represented by the {@link Contact} domain
- * @see Contact
+ * A physical address of an {@link Org}. Email-addresses and other contact possibilities than the physical address are represented by the {@link de.laser.addressbook.Contact} domain
+ * @see de.laser.addressbook.Contact
  */
 @Slf4j
 class Address {
