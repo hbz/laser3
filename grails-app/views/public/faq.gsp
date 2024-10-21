@@ -13,7 +13,7 @@
     </g:each>
 </div>
 
-<div class="ui bottom attached segment">
+<div class="ui bottom attached segment la-markdown">
     <ui:renderMarkdown faq="${topic}" />
 </div>
 

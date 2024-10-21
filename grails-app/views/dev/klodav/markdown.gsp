@@ -37,16 +37,9 @@
             <li>{{${tk.key}}} -> ${tk.value}</li>
         </g:each>
     </ul>
-
-%{--    <p class="ui header small">Formatter</p>--}%
-%{--    <ul>--}%
-%{--        <g:each in="${helpService.getMarkdownFormatter().getOptions().getAll()}" var="opt">--}%
-%{--            <li>${opt}</li>--}%
-%{--        </g:each>--}%
-%{--    </ul>--}%
 </div>
 
-<div class="ui segment">
+<div class="ui segment la-markdown">
     <ui:renderMarkdown file="test.md" />
     <hr />
     Source (modified) : <a href="https://gist.github.com/allysonsilva/85fff14a22bbdf55485be947566cc09e" target="_blank">allysonsilva/Full-Markdown.md @ GitHub</a>
