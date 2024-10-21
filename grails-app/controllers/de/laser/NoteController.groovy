@@ -19,9 +19,8 @@ class NoteController {
 	/**
 	 * Creates a new note for a {@link Subscription}, {@link License} or {@link Org}
 	 */
-	@Secured(['ROLE_USER'])
-	@Transactional
-	@DebugInfo(isInstEditor_or_ROLEADMIN = [])
+//	@Transactional
+	@DebugInfo(isInstEditor_or_ROLEADMIN = [], withTransaction = 1)
 	@Secured(closure = {
 		ctx.contextService.isInstEditor_or_ROLEADMIN()
 	})
@@ -31,35 +30,37 @@ class NoteController {
 		// processing form#modalCreateNote
 		log.debug("Create note referer was ${referer} or ${request.request.RequestURL}")
 
-		User user = contextService.getUser()
-		Class dc = CodeUtils.getDomainClass( params.ownerclass )
+		Doc.withTransaction {
+			User user = contextService.getUser()
+			Class dc = CodeUtils.getDomainClass( params.ownerclass )
 
-		if (dc) {
-			def instance = dc.get(params.ownerid)
-			if (instance) {
-				log.debug("Got owner instance ${instance}")
+			if (dc) {
+				def instance = dc.get(params.ownerid)
+				if (instance) {
+					log.debug("Got owner instance ${instance}")
 
-				Doc doc_content = new Doc(
-						contentType: Doc.CONTENT_TYPE_STRING,
-						title: params.noteTitle,
-						content: params.noteContent,
-						type: RDStore.DOC_TYPE_NOTE,
-						owner: contextService.getOrg(),
-						user: user).save()
+					Doc doc_content = new Doc(
+							contentType: Doc.CONTENT_TYPE_STRING,
+							title: params.noteTitle,
+							content: params.noteContent,
+							type: RDStore.DOC_TYPE_NOTE,
+							owner: contextService.getOrg(),
+							user: user).save()
 
-				log.debug("Setting new context type to ${params.ownertp}..")
+					log.debug("Setting new context type to ${params.ownertp}..")
 
-				DocContext docctx = new DocContext(
-						"${params.ownertp}": instance,
-						owner: doc_content)
-				docctx.save()
+					DocContext docctx = new DocContext(
+							"${params.ownertp}": instance,
+							owner: doc_content)
+					docctx.save()
+				}
+				else {
+					log.debug("no instance")
+				}
 			}
 			else {
-				log.debug("no instance")
+				log.debug("no type")
 			}
-		}
-		else {
-			log.debug("no type")
 		}
 
 		redirect(url: referer)

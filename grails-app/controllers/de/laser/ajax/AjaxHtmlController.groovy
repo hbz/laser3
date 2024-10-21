@@ -413,10 +413,7 @@ class AjaxHtmlController {
     /**
      * Opens the edit modal for the given note
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
-    })
+    @Secured(['ROLE_USER'])
     def editNote() {
         Map<String, Object> result = [ params: params ]
 
@@ -452,10 +449,7 @@ class AjaxHtmlController {
     /**
      * Opens the task creation modal
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
-    })
+    @Secured(['ROLE_USER'])
     def createTask() {
         Org contextOrg = contextService.getOrg()
         Map<String, Object> result = taskService.getPreconditions(contextOrg)
@@ -467,10 +461,7 @@ class AjaxHtmlController {
     /**
      * Opens the task editing modal
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
-    @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
-    })
+    @Secured(['ROLE_USER'])
     def editTask() {
         Map<String, Object> result = [ params: params ]
         Task task = Task.get(params.id)
@@ -506,10 +497,7 @@ class AjaxHtmlController {
     /**
      * Opens the address creation modal and sets the underlying parameters
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
-    })
+    @Secured(['ROLE_USER'])
     def createAddress() {
         Map<String, Object> model = [:]
         model.prsId = params.prsId
@@ -575,15 +563,13 @@ class AjaxHtmlController {
     /**
      * Opens the edit modal for an existing address
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
-    })
+    @Secured(['ROLE_USER'])
     def editAddress() {
-        Map<String, Object> model = [:]
-        model.addressInstance = Address.get(params.id)
+        Map<String, Object> model = [
+            addressInstance : Address.get(params.id)
+        ]
 
-        if (model.addressInstance){
+        if (accessService.hasAccessToAddress(model.addressInstance as Address)) {
             model.modalId = 'addressFormModal'
             String messageCode = 'person.address.label'
             model.typeId = model.addressInstance.type.id
@@ -598,15 +584,15 @@ class AjaxHtmlController {
 
             render template: "/addressbook/addressFormModal", model: model
         }
+        else {
+            render template: "/templates/generic_modal403", model: model
+        }
     }
 
     /**
      * Opens the contact entity creation modal and sets the underlying parameters
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
-    })
+    @Secured(['ROLE_USER'])
     def createPerson() {
         Map<String, Object> result = [:]
         result.contextOrg = contextService.getOrg()
@@ -673,23 +659,20 @@ class AjaxHtmlController {
         }
         result.url = [controller: 'addressbook', action: 'createPerson']
 
-
         render template: "/addressbook/personFormModal", model: result
     }
 
     /**
      * Opens the edit modal for an existing contact entity
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
-    })
+    @Secured(['ROLE_USER'])
     def editPerson() {
-        Map<String, Object> result = [:]
+        Map<String, Object> result = [
+            personInstance : Person.get(params.id)
+        ]
         Org contextOrg = contextService.getOrg()
-        result.personInstance = Person.get(params.id)
 
-        if (result.personInstance){
+        if (accessService.hasAccessToPerson(result.personInstance as Person)) {
             result.org = result.personInstance.getBelongsToOrg()
             result.vendor = PersonRole.executeQuery("select distinct(pr.vendor) from PersonRole as pr where pr.prs = :person ", [person: result.personInstance])[0]
             result.provider = PersonRole.executeQuery("select distinct(pr.provider) from PersonRole as pr where pr.prs = :person ", [person: result.personInstance])[0]
@@ -736,6 +719,9 @@ class AjaxHtmlController {
             result.contextOrg = contextService.getOrg()
 
             render template: "/addressbook/personFormModal", model: result
+        }
+        else {
+            render template: "/templates/generic_modal403", model: result
         }
     }
 
