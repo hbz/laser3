@@ -38,9 +38,9 @@ class TaskController  {
 	 * Processes the submitted input parameters and creates a new task for the given owner object
 	 * @return a redirect to the referer
 	 */
-	@DebugInfo(isInstEditor_or_ROLEADMIN = [], withTransaction = 1)
+	@DebugInfo(isInstEditor = [], withTransaction = 1)
 	@Secured(closure = {
-		ctx.contextService.isInstEditor_or_ROLEADMIN()
+		ctx.contextService.isInstEditor()
 	})
     def createTask() {
 		String referer = request.getHeader('referer')
@@ -103,9 +103,9 @@ class TaskController  {
 	 * Processes the submitted input and updates the given task instance with the given parameters
 	 * @return a redirect to the referer
 	 */
-	@DebugInfo(isInstUser_or_ROLEADMIN = [], withTransaction = 1)
+	@DebugInfo(isInstUser = [], withTransaction = 1)
 	@Secured(closure = {
-		ctx.contextService.isInstUser_or_ROLEADMIN()
+		ctx.contextService.isInstUser()
 	})
 	@Check404()
     def editTask() {
@@ -169,9 +169,9 @@ class TaskController  {
 	/**
 	 * Deletes the given task
 	 */
-	@DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+	@DebugInfo(isInstEditor = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
 	@Secured(closure = {
-		ctx.contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+		ctx.contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
 	})
 	def deleteTask() { // moved from AjaxController
 

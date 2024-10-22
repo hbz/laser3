@@ -124,6 +124,18 @@ class ContextService {
 
     // -- Formal checks @ user.formalOrg
 
+    boolean isInstUser(String orgPerms = null) {
+        _hasInstRoleAndPerm('INST_USER', orgPerms, false)
+    }
+
+    boolean isInstEditor(String orgPerms = null) {
+        _hasInstRoleAndPerm('INST_EDITOR', orgPerms, false)
+    }
+
+    boolean isInstAdm(String orgPerms = null) {
+        _hasInstRoleAndPerm('INST_ADM', orgPerms, false)
+    }
+
     /**
      * Checks if the context user belongs to an institution with the given customer types or is a superadmin
      * @param orgPerms the customer types to verify
@@ -186,6 +198,18 @@ class ContextService {
 
     // -- private
 
+    private boolean _hasInstRoleAndPerm(String instUserRole, String orgPerms, boolean denyCustomerTypeSupport) {
+        boolean check = userService.hasAffiliation_or_ROLEADMIN(getUser(), getOrg(), instUserRole)
+
+        if (check && denyCustomerTypeSupport) {
+            check = !getOrg().isCustomerType_Support()
+        }
+        if (check && orgPerms) {
+            check = _hasPerm(orgPerms)
+        }
+        check
+    }
+
     /**
      * Checks if the context user is either a superadmin or has the given role at the context institution and if this institution is of the given customer type
      * @param instUserRole the user role type to check
@@ -198,15 +222,8 @@ class ContextService {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
-        boolean check = userService.hasAffiliation_or_ROLEADMIN(getUser(), getOrg(), instUserRole)
 
-        if (check && denyCustomerTypeSupport) {
-            check = !getOrg().isCustomerType_Support()
-        }
-        if (check && orgPerms) {
-            check = _hasPerm(orgPerms)
-        }
-        check
+        _hasInstRoleAndPerm(instUserRole, orgPerms, denyCustomerTypeSupport)
     }
 
     /**

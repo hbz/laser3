@@ -23,7 +23,6 @@ import grails.plugin.springsecurity.annotation.Secured
 class AddressbookController {
 
     AccessService accessService
-    AddressbookService addressbookService
     ContextService contextService
     FormService formService
 
@@ -40,9 +39,9 @@ class AddressbookController {
     /**
      * Creates a new address with the given parameters
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], withTransaction = 1)
+    @DebugInfo(isInstEditor = [], withTransaction = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def createAddress() {
         // moved from AddressController.createAddress()
@@ -88,9 +87,9 @@ class AddressbookController {
      * @return redirect back to the referer -> an updated list of person contacts
      * @see de.laser.addressbook.Person
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], withTransaction = 1)
+    @DebugInfo(isInstEditor = [], withTransaction = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def createPerson() {
         // moved from PersonController.createPerson()
@@ -210,9 +209,9 @@ class AddressbookController {
 
     // --------------------------------- DELETE ---------------------------------
 
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def deleteAddress() {
         Address obj = Address.get(params.id)
@@ -247,9 +246,9 @@ class AddressbookController {
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def deleteContact() {
         Contact obj = Contact.get(params.id)
@@ -271,9 +270,9 @@ class AddressbookController {
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def deletePerson() {
         Person obj = Person.get(params.id)
@@ -308,9 +307,9 @@ class AddressbookController {
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def deletePersonRole() {
         PersonRole obj = PersonRole.get(params.id)
@@ -334,9 +333,9 @@ class AddressbookController {
     /**
      * Updates the given address with the given updated data
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], withTransaction = 1)
+    @DebugInfo(isInstEditor = [], withTransaction = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def editAddress() {
         // moved from AddressController.editAddress()
@@ -415,9 +414,9 @@ class AddressbookController {
      * Takes the submitted parameters and updates the person contact based on the given parameter map
      * @return redirect to the referer -> the updated view of the person contact
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], withTransaction = 1)
+    @DebugInfo(isInstEditor = [], withTransaction = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def editPerson() {
         // moved from PersonController.editPerson()

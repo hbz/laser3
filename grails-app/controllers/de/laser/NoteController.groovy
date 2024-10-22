@@ -21,9 +21,9 @@ class NoteController {
 	 * Creates a new note for a {@link Subscription}, {@link License} or {@link Org}
 	 */
 //	@Transactional
-	@DebugInfo(isInstEditor_or_ROLEADMIN = [], withTransaction = 1)
+	@DebugInfo(isInstEditor = [], withTransaction = 1)
 	@Secured(closure = {
-		ctx.contextService.isInstEditor_or_ROLEADMIN()
+		ctx.contextService.isInstEditor()
 	})
 	def createNote() {
 		String referer = request.getHeader('referer')
@@ -70,9 +70,9 @@ class NoteController {
 	/**
 	 * Edits an already existing note. The note to edit is given by params.id
 	 */
-	@DebugInfo(isInstEditor_or_ROLEADMIN = [], withTransaction = 1)
+	@DebugInfo(isInstEditor = [], withTransaction = 1)
 	@Secured(closure = {
-		ctx.contextService.isInstEditor_or_ROLEADMIN()
+		ctx.contextService.isInstEditor()
 	})
 	def editNote() {
 		// processing form#modalEditNote
@@ -121,9 +121,9 @@ class NoteController {
 		redirect(url: referer)
 	}
 
-	@DebugInfo(isInstEditor_or_ROLEADMIN = [])
+	@DebugInfo(isInstEditor = [])
 	@Secured(closure = {
-		ctx.contextService.isInstEditor_or_ROLEADMIN()
+		ctx.contextService.isInstEditor()
 	})
 	def deleteNote() {
 		log.debug("deleteNote: ${params}")

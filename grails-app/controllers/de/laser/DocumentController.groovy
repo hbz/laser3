@@ -40,9 +40,9 @@ class DocumentController {
      * Retrieves a document by its uuid
      * @return the document, null otherwise
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     def downloadDocument() {
         Doc doc = Doc.findByUuidAndContentType(params.id, Doc.CONTENT_TYPE_FILE)
@@ -66,9 +66,9 @@ class DocumentController {
     /**
      * Uploads a new document, specified by the upload form parameters, and sets the entered metadata to the new {@link DocContext} object
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], withTransaction = 1)
+    @DebugInfo(isInstEditor = [], withTransaction = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def uploadDocument() {
         log.debug('upload document ..')
@@ -216,9 +216,9 @@ class DocumentController {
     /**
      * Call for editing an existing document. Redirects back to the referer where result may be shown in case of an error
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def editDocument() {
         log.debug("editDocument: ${params}")
@@ -264,9 +264,9 @@ class DocumentController {
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def deleteDocument() {
         log.debug("deleteDocument: ${params}")

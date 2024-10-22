@@ -70,7 +70,7 @@
 %{--    institution (context org) : ${institution}--}%
 %{----!>--}%
 
-<g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_SUPPORT)}">
+<g:if test="${contextService.isInstEditor(CustomerTypeService.ORG_SUPPORT)}">
     <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: orgInstance, owntp: 'org', institution: institution]]}" />
 </g:if>
 

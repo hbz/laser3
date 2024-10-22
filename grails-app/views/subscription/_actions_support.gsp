@@ -96,7 +96,7 @@
     </g:if>
 </g:elseif>
 
-<g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_SUPPORT)}">
+<g:if test="${contextService.isInstEditor(CustomerTypeService.ORG_SUPPORT)}">
     <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: subscription, owntp: 'subscription']]}" />
 </g:if>
 
