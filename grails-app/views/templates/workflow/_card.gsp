@@ -1,7 +1,7 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.workflow.WfChecklist; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 <%
-    boolean editable2 = contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+    boolean editable2 = contextService.isInstEditor(CustomerTypeService.PERMS_PRO)
 %>
 
     <ui:card message="workflow.open.plural" class="workflows" href="#modalCreateWorkflow" editable="${editable || editable2}">

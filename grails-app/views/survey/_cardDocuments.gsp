@@ -13,7 +13,7 @@
             baseItems << it
         }
     }
-    boolean editable2 = contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
+    boolean editable2 = contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_PRO)
 
 %>
 

@@ -1235,7 +1235,7 @@ class AjaxHtmlController {
         result.referer = request.getHeader('referer')
 
         WfChecklist toCheck = result.clist as WfChecklist
-        if (!accessService.hasAccessToWorkflow(toCheck, Role.INST_EDITOR)) {
+        if (!accessService.hasAccessToWorkflow(toCheck, Role.INST_USER)) { // TODO
             render template: "/templates/generic_flyout403"
         }
         else {
@@ -1314,7 +1314,7 @@ class AjaxHtmlController {
         }
 
         WfChecklist toCheck = result.checklist ? result.checklist as WfChecklist : (result.checkpoint as WfCheckpoint).getChecklist()
-        if (!accessService.hasAccessToWorkflow(toCheck, Role.INST_EDITOR)) {
+        if (!accessService.hasAccessToWorkflow(toCheck, Role.INST_USER)) { // TODO
             render template: "/templates/generic_modal403"
         }
         else {

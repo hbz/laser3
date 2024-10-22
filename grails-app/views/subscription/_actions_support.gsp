@@ -13,7 +13,9 @@
 
 <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_SUPPORT)}">
     <ui:actionsDropdown>
-        <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
+        <g:if test="${contextService.isInstEditor(CustomerTypeService.ORG_SUPPORT)}">
+            <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
+        </g:if>
 
         <div class="divider"></div>
 

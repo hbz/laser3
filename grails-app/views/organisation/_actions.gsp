@@ -3,8 +3,9 @@
 
 <g:if test="${contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
     <ui:actionsDropdown>
-        <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
-
+        <g:if test="${contextService.isInstEditor( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
+            <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
+        </g:if>
 %{--                <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />--}% %{-- erms-4798 --}%
 
         <g:if test="${editable}">
@@ -68,7 +69,9 @@
 </g:if>
 <g:elseif test="${contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )}">
     <ui:actionsDropdown>
-        <ui:actionsDropdownItem message="template.notes.add" data-ui="modal" href="#modalCreateNote"/>
+        <g:if test="${contextService.isInstEditor( CustomerTypeService.ORG_INST_BASIC )}">
+            <ui:actionsDropdownItem message="template.notes.add" data-ui="modal" href="#modalCreateNote"/>
+        </g:if>
 
         <g:if test="${actionName in ['show', 'notes']}">
         </g:if>
