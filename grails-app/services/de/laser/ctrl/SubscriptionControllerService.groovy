@@ -3698,36 +3698,39 @@ class SubscriptionControllerService {
                 [result:result,status:STATUS_ERROR]
 
             }else if(params.process == "preliminary" && result.checked.size() > 0) {
-                Integer countTippsToAdd = 0
+                Integer countRows = 0
+                Integer count = 0
+                Integer countSelectTipps = 0
+                Integer countNotSelectTipps = 0
+
+                Org owner = result.subscription.getSubscriberRespConsortia()
                 result.checked.each {
+                    countRows++
                     TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findById(it.key)
                     if(tipp) {
-                        try {
+                        count++
 
-                            IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
+                        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
+                        if (!issueEntitlementGroup) {
+                            issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: result.subscription, name: result.surveyConfig.issueEntitlementGroupName).save()
+                        }
 
-                            if (!issueEntitlementGroup) {
-                                IssueEntitlementGroup.withTransaction {
-                                    issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: result.subscription, name: result.surveyConfig.issueEntitlementGroupName).save()
-                                }
-                            }
-
+                        if (PermanentTitle.findByOwnerAndTipp(owner, tipp)) {
+                            countNotSelectTipps++
+                        } else {
                             if (issueEntitlementGroup && subscriptionService.addEntitlement(result.subscription, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
                                 log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
-                                ++countTippsToAdd
+                                countSelectTipps++
+                            } else {
+                                countNotSelectTipps++
                             }
-                        }
-                        catch (EntitlementCreationException e) {
-                            log.debug("Error: Adding tipp ${tipp} to sub ${result.subscription.id}: " + e.getMessage())
-                            result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps', null, locale)
-                            [result: result, status: STATUS_ERROR]
                         }
                     }
                 }
-                if(countTippsToAdd > 0){
-                    Object[] args = [countTippsToAdd]
-                    result.message = messageSource.getMessage('renewEntitlementsWithSurvey.tippsToAdd',args,locale)
-                }
+
+                Object[] args = [count, countRows, countSelectTipps, countNotSelectTipps, BeanStore.getApplicationTagLib().createLink(controller: 'subscription', action: 'renewEntitlementsWithSurvey', params: [id: result.subscription.id, surveyConfigID: result.surveyConfig.id, tab: 'selectedIEs'])]
+                result.message = messageSource.getMessage('renewEntitlementsWithSurvey.issueEntitlementSelect.selectProcess', args, locale)
+
 
                 userCache.remove('selectedTitles')
                 [result:result,status:STATUS_OK]
