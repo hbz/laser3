@@ -3712,9 +3712,7 @@ class SubscriptionControllerService {
 
                         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
                         if (!issueEntitlementGroup) {
-                            IssueEntitlementGroup.withTransaction {
-                                issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: result.subscription, name: result.surveyConfig.issueEntitlementGroupName).save()
-                            }
+                            issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: result.subscription, name: result.surveyConfig.issueEntitlementGroupName).save()
                         }
 
                         if (PermanentTitle.findByOwnerAndTipp(owner, tipp)) {
