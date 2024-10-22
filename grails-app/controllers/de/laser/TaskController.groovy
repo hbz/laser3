@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.annotations.Check404
+import de.laser.auth.Role
 import de.laser.auth.User
  
 import de.laser.utils.DateUtils
@@ -115,7 +116,7 @@ class TaskController  {
 			]
 			Task taskInstance = Task.get(params.id)
 
-			if (!accessService.hasAccessToTask(taskInstance)) {
+			if (!accessService.hasAccessToTask(taskInstance, Role.INST_USER)) {
 				flash.error = message(code: 'default.noPermissions') as String
 				redirect(url: referer)
 				return
@@ -177,7 +178,7 @@ class TaskController  {
 		if (params.deleteId) {
 			Task.withTransaction {
 				Task dTask = Task.get(params.deleteId)
-				if (accessService.hasAccessToTask(dTask)) {
+				if (accessService.hasAccessToTask(dTask, Role.INST_EDITOR)) {
 					try {
 						flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title]) as String
 						dTask.delete()

@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.auth.Role
 import de.laser.helper.Params
 import de.laser.interfaces.CalculatedType
 import de.laser.storage.RDConstants
@@ -46,7 +47,7 @@ class DocstoreService {
         if (params.deleteId) {
             DocContext docctx = DocContext.get(params.deleteId)
 
-            if (accessService.hasAccessToDocument(docctx)) {
+            if (accessService.hasAccessToDocument(docctx, Role.INST_EDITOR)) {
                 docctx.status = RDStore.DOC_CTX_STATUS_DELETED
                 docctx.save()
             }

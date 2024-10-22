@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.auth.Role
 import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
 import de.laser.workflow.*
@@ -164,7 +165,7 @@ class WorkflowService {
         result.checkpoint = cpoint
 
         try {
-            if (accessService.hasAccessToWorkflow(cpoint.checklist)) {
+            if (accessService.hasAccessToWorkflow(cpoint.checklist, Role.INST_EDITOR)) {
                 cpoint.delete()
                 result.checkpoint = null // gap
                 result.status = OP_STATUS_DONE
@@ -411,7 +412,7 @@ class WorkflowService {
             try {
                 result.checklist = WfChecklist.get(cmd[2])
 
-                if (accessService.hasAccessToWorkflow(result.checklist)) {
+                if (accessService.hasAccessToWorkflow(result.checklist, Role.INST_EDITOR)) {
                     WfCheckpoint.executeUpdate('delete from WfCheckpoint cp where cp.checklist = :cl', [cl: result.checklist])
                     result.checklist.delete()
 

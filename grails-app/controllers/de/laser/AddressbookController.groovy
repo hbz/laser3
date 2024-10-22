@@ -5,6 +5,7 @@ import de.laser.addressbook.Contact
 import de.laser.addressbook.Person
 import de.laser.addressbook.PersonRole
 import de.laser.annotations.DebugInfo
+import de.laser.auth.Role
 import de.laser.helper.Params
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyOrg
@@ -218,7 +219,7 @@ class AddressbookController {
         List args   = [message(code: 'address.label'), params.id]
 
         if (obj) {
-            if (accessService.hasAccessToAddress(obj) || addressbookService.isAddressEditable(obj, contextService.getUser())) { // TODO: || -> &&
+            if (accessService.hasAccessToAddress(obj, Role.INST_EDITOR)) { // TODO: || -> &&
                 Address.withTransaction {
                     try {
                         List changeList = SurveyOrg.findAllByAddress(obj)
@@ -254,7 +255,7 @@ class AddressbookController {
         Contact obj = Contact.get(params.id)
         List args   = [message(code: 'contact.label'), params.id]
 
-        if (accessService.hasAccessToContact(obj) || addressbookService.isContactEditable(obj, contextService.getUser())) { // TODO: || -> &&
+        if (accessService.hasAccessToContact(obj, Role.INST_EDITOR)) { // TODO: || -> &&
             try {
                 obj.delete() // TODO: check perms
                 flash.message = message(code: 'default.deleted.message', args: args)
@@ -279,7 +280,7 @@ class AddressbookController {
         List args  = [message(code: 'person.label'), params.id]
 
         if (obj) {
-            if (accessService.hasAccessToPerson(obj) || addressbookService.isPersonEditable(obj, contextService.getUser())) { // TODO: || -> &&
+            if (accessService.hasAccessToPerson(obj, Role.INST_EDITOR)) { // TODO: || -> &&
                 Person.withTransaction {
                     try {
                         List changeList = SurveyOrg.findAllByPerson(obj)
@@ -344,7 +345,7 @@ class AddressbookController {
         String referer  = request.getHeader('referer')
 
         if (obj) {
-            if (accessService.hasAccessToAddress(obj) || addressbookService.isAddressEditable(obj, contextService.getUser())) { // TODO: || -> &&
+            if (accessService.hasAccessToAddress(obj, Role.INST_EDITOR)) { // TODO: || -> &&
                 if (params.version) {
                     Long version = params.long('version')
                     if (obj.version > version) {
@@ -426,7 +427,7 @@ class AddressbookController {
 
         if (obj) {
             Person.withTransaction {
-                if (accessService.hasAccessToPerson(obj) || addressbookService.isPersonEditable(obj, contextService.getUser())) { // TODO: || -> &&
+                if (accessService.hasAccessToPerson(obj, Role.INST_EDITOR)) { // TODO: || -> &&
 
                     if (!params.functionType && !params.positionType) {
                         flash.error = message(code: 'person.create.missing_function') as String

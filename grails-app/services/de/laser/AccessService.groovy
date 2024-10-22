@@ -17,9 +17,10 @@ class AccessService {
     static final String CHECK_VIEW_AND_EDIT = 'CHECK_VIEW_AND_EDIT'     // TODO
 
     ContextService contextService
+    UserService userService
 
     // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
-    boolean hasAccessToDocument(DocContext dctx) {
+    boolean hasAccessToDocument(DocContext dctx, String instUserRole) {
         // moved from ajaxHtmlController.documentPreview()$checkPermission
         // logic based on /views/templates/documents/card
         boolean check = false
@@ -74,11 +75,11 @@ class AccessService {
             }
         }
 
-        return check
+        return (check && _checkCtxFormal(instUserRole))
     }
 
     // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
-    boolean hasAccessToDocNote(DocContext dctx) {
+    boolean hasAccessToDocNote(DocContext dctx, String instUserRole) {
         boolean check = false
         Org ctxOrg = contextService.getOrg()
 
@@ -115,11 +116,11 @@ class AccessService {
             // .. TODO TODO TODO
         }
 
-        return check
+        return (check && _checkCtxFormal(instUserRole))
     }
 
     // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
-    boolean hasAccessToTask(Task task) {
+    boolean hasAccessToTask(Task task, String instUserRole) {
         boolean check = false
 
         if (!task) {
@@ -135,11 +136,11 @@ class AccessService {
             check = true
         }
 
-        return check
+        return (check && _checkCtxFormal(instUserRole))
     }
 
     // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
-    boolean hasAccessToWorkflow(WfChecklist workflow) {
+    boolean hasAccessToWorkflow(WfChecklist workflow, String instUserRole) {
         boolean check = false
 
         if (!workflow) {
@@ -149,11 +150,11 @@ class AccessService {
             check = true
         }
 
-        return check
+        return (check && _checkCtxFormal(instUserRole))
     }
 
     // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
-    boolean hasAccessToAddress(Address address) {
+    boolean hasAccessToAddress(Address address, String instUserRole) {
         boolean check = false
 
         if (!address) {
@@ -169,11 +170,12 @@ class AccessService {
             check = true
         }
 
-        return check
+        // userService.hasFormalAffiliation_or_ROLEADMIN(user, address.tenant ?: address.org, 'INST_EDITOR')
+        return (check && _checkCtxFormal(instUserRole)) // TODO
     }
 
     // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
-    boolean hasAccessToContact(Contact contact) {
+    boolean hasAccessToContact(Contact contact, String instUserRole) {
         boolean check = false
 
         if (!contact) {
@@ -188,11 +190,12 @@ class AccessService {
             }
         }
 
-        return check
+        // userService.hasFormalAffiliation_or_ROLEADMIN(user, contact.prs?.tenant, 'INST_EDITOR')
+        return (check && _checkCtxFormal(instUserRole)) // TODO
     }
 
     // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
-    boolean hasAccessToPerson(Person person) {
+    boolean hasAccessToPerson(Person person, String instUserRole) {
         boolean check = false
 
         if (!person) {
@@ -205,6 +208,16 @@ class AccessService {
             check = true
         }
 
-        return check
+        // userService.hasFormalAffiliation_or_ROLEADMIN(user, person.tenant, 'INST_EDITOR')
+        return (check && _checkCtxFormal(instUserRole)) // TODO
+    }
+
+    boolean _checkCtxFormal(String instUserRole) {
+        if (instUserRole) {
+            return userService.hasFormalAffiliation(contextService.getUser(), contextService.getOrg(), instUserRole) // TODO
+        }
+        else {
+            true
+        }
     }
 }

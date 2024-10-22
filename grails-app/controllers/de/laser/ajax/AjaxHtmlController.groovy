@@ -14,6 +14,7 @@ import de.laser.AddressbookService
 import de.laser.AccessService
 import de.laser.WekbNewsService
 import de.laser.WorkflowService
+import de.laser.auth.Role
 import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
@@ -418,7 +419,7 @@ class AjaxHtmlController {
         Map<String, Object> result = [ params: params ]
 
         DocContext dctx = DocContext.findById(params.long('dctx'))
-        if (accessService.hasAccessToDocNote(dctx)) {
+        if (accessService.hasAccessToDocNote(dctx, Role.INST_EDITOR)) {
             result.docContext   = dctx
             result.noteInstance = dctx.owner
             render template: "/templates/notes/modal_edit", model: result
@@ -436,7 +437,7 @@ class AjaxHtmlController {
         Map<String, Object> result = [ params: params ]
 
         DocContext dctx = DocContext.findById(params.long('dctx'))
-        if (accessService.hasAccessToDocNote(dctx)) {
+        if (accessService.hasAccessToDocNote(dctx, Role.INST_USER)) { // TODO ???
             result.docContext   = dctx
             result.noteInstance = dctx.owner
             render template: "/templates/notes/modal_read", model: result
@@ -466,7 +467,7 @@ class AjaxHtmlController {
         Map<String, Object> result = [ params: params ]
         Task task = Task.get(params.id)
 
-        if (accessService.hasAccessToTask(task)) {
+        if (accessService.hasAccessToTask(task, Role.INST_USER)) { // TODO ???
             result.taskInstance = task
             result.contextOrg = contextService.getOrg()
             render template: "/templates/tasks/modal_edit", model: result
@@ -484,7 +485,7 @@ class AjaxHtmlController {
         Map<String, Object> result = [ params: params ]
         Task task = Task.get(params.id)
 
-        if (accessService.hasAccessToTask(task)) {
+        if (accessService.hasAccessToTask(task, Role.INST_USER)) { // TODO ???
             result.taskInstance = task
             result.contextOrg = contextService.getOrg()
             render template: "/templates/tasks/modal_read", model: result
@@ -569,7 +570,7 @@ class AjaxHtmlController {
             addressInstance : Address.get(params.id)
         ]
 
-        if (accessService.hasAccessToAddress(model.addressInstance as Address)) {
+        if (accessService.hasAccessToAddress(model.addressInstance as Address, Role.INST_EDITOR)) {
             model.modalId = 'addressFormModal'
             String messageCode = 'person.address.label'
             model.typeId = model.addressInstance.type.id
@@ -672,7 +673,7 @@ class AjaxHtmlController {
         ]
         Org contextOrg = contextService.getOrg()
 
-        if (accessService.hasAccessToPerson(result.personInstance as Person)) {
+        if (accessService.hasAccessToPerson(result.personInstance as Person, Role.INST_EDITOR)) {
             result.org = result.personInstance.getBelongsToOrg()
             result.vendor = PersonRole.executeQuery("select distinct(pr.vendor) from PersonRole as pr where pr.prs = :person ", [person: result.personInstance])[0]
             result.provider = PersonRole.executeQuery("select distinct(pr.provider) from PersonRole as pr where pr.prs = :person ", [person: result.personInstance])[0]
@@ -713,7 +714,8 @@ class AjaxHtmlController {
             result.showContacts = params.showContacts == "true" ? true : ''
             result.addContacts = params.showContacts == "true" ? true : ''
             result.isPublic = result.personInstance.isPublic
-            result.editable = addressbookService.isPersonEditable(result.personInstance, contextService.getUser())
+//            result.editable = addressbookService.isPersonEditable(result.personInstance, contextService.getUser())
+            result.editable = true // ??
             result.tmplShowDeleteButton = result.editable
             result.url = [controller: 'addressbook', action: 'editPerson', id: result.personInstance.id]
             result.contextOrg = contextService.getOrg()
@@ -1233,7 +1235,7 @@ class AjaxHtmlController {
         result.referer = request.getHeader('referer')
 
         WfChecklist toCheck = result.clist as WfChecklist
-        if (!accessService.hasAccessToWorkflow(toCheck)) {
+        if (!accessService.hasAccessToWorkflow(toCheck, Role.INST_EDITOR)) {
             render template: "/templates/generic_flyout403"
         }
         else {
@@ -1312,7 +1314,7 @@ class AjaxHtmlController {
         }
 
         WfChecklist toCheck = result.checklist ? result.checklist as WfChecklist : (result.checkpoint as WfCheckpoint).getChecklist()
-        if (!accessService.hasAccessToWorkflow(toCheck)) {
+        if (!accessService.hasAccessToWorkflow(toCheck, Role.INST_EDITOR)) {
             render template: "/templates/generic_modal403"
         }
         else {
@@ -1379,7 +1381,7 @@ class AjaxHtmlController {
             DocContext docCtx = DocContext.findById(params.long('dctx'))
 
             if (docCtx) {
-                if (accessService.hasAccessToDocument(docCtx)) {
+                if (accessService.hasAccessToDocument(docCtx, Role.INST_USER)) { // TODO ???
                     Doc doc = docCtx.owner
 
                     result.docCtx = docCtx

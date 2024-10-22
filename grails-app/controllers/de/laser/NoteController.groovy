@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.annotations.DebugInfo
+import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.storage.RDStore
 import de.laser.utils.CodeUtils
@@ -79,7 +80,7 @@ class NoteController {
 
 		Doc.withTransaction {
 			DocContext docctx = DocContext.get(params.long('dctx'))
-			if (accessService.hasAccessToDocNote(docctx)) {
+			if (accessService.hasAccessToDocNote(docctx, Role.INST_EDITOR)) {
 
 				Doc doc = docctx.owner
 				if (doc) {
@@ -130,7 +131,7 @@ class NoteController {
 		if (params.deleteId) {
 			DocContext docctx = DocContext.get(params.deleteId)
 
-			if (accessService.hasAccessToDocNote(docctx)) {
+			if (accessService.hasAccessToDocNote(docctx, Role.INST_EDITOR)) {
 				docctx.status = RDStore.DOC_CTX_STATUS_DELETED
 				docctx.save()
 				flash.message = message(code: 'default.deleted.general.message')
