@@ -217,8 +217,8 @@ class AddressbookController {
 
         def owner           = genericOIDService.resolveOID(params.ownObj)
         def parent          = genericOIDService.resolveOID(params.parent)
-        Person person       = (Person) genericOIDService.resolveOID(params.person)
-        RefdataValue role   = (RefdataValue) genericOIDService.resolveOID(params.role)
+        Person person       = Person.get(params.long('person'))
+        RefdataValue role   = RefdataValue.get(params.long('role'))
 
         PersonRole newPrsRole
         List<PersonRole> existingPrsRole
