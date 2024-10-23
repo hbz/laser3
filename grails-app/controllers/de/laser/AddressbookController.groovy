@@ -11,6 +11,7 @@ import de.laser.storage.RDStore
 import de.laser.survey.SurveyOrg
 import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
+import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 
 /**
@@ -25,6 +26,7 @@ class AddressbookController {
     AccessService accessService
     ContextService contextService
     FormService formService
+    GenericOIDService genericOIDService
 
     @DebugInfo(isInstUser_or_ROLEADMIN = [])
     @Secured(closure = {
@@ -205,6 +207,52 @@ class AddressbookController {
             }
             redirect(url: referer)
         }
+    }
+
+    @Secured(['ROLE_USER'])
+    @Transactional
+    def createPersonRole() {
+        // moved from AjaxController.addPrsRole()
+        // TODO: check perms
+
+        def owner           = genericOIDService.resolveOID(params.ownObj)
+        def parent          = genericOIDService.resolveOID(params.parent)
+        Person person       = (Person) genericOIDService.resolveOID(params.person)
+        RefdataValue role   = (RefdataValue) genericOIDService.resolveOID(params.role)
+
+        PersonRole newPrsRole
+        List<PersonRole> existingPrsRole
+
+        if (owner && person && role) {
+            newPrsRole = new PersonRole(prs: person)
+
+            if (owner instanceof Org)           { newPrsRole.org = owner }
+            else if(owner instanceof Provider)  { newPrsRole.provider = owner }
+            else if(owner instanceof Vendor)    { newPrsRole.vendor = owner }
+
+            if (parent) {
+                newPrsRole.responsibilityType = role
+                newPrsRole.setReference(parent)
+
+                String[] ref = newPrsRole.getReference().split(":")
+                String query = "select pr from PersonRole pr where pr.prs = :prs and (pr.org = :owner or pr.provider = :owner or pr.vendor = :owner) and pr.responsibilityType = :responsibilityType and ${ref[0]} = :parent"
+                existingPrsRole = PersonRole.executeQuery(query, [prs:person, owner: owner, responsibilityType: role, parent: parent])
+            }
+            else {
+                newPrsRole.functionType = role
+                existingPrsRole = PersonRole.executeQuery('select pr from PersonRole pr where pr.prs = :prs and (pr.org = :owner or pr.provider = :owner or pr.vendor = :owner) and pr.functionType = :functionType', [prs:person, owner: owner, functionType: role])
+            }
+        }
+
+        if (! existingPrsRole && newPrsRole && newPrsRole.save()) {
+            //flash.message = message(code: 'default.success')
+        }
+        else {
+            log.error("Problem saving new person role ..")
+            //flash.error = message(code: 'default.error')
+        }
+
+        redirect(url: request.getHeader('referer'))
     }
 
     // --------------------------------- DELETE ---------------------------------

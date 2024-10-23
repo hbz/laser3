@@ -47,7 +47,7 @@
                                 ${modalPrsLinkRole.getI10n("value")}
                             </td>
                             <td>
-                                <g:form class="ui form" url="[controller:'ajax', action:'addPrsRole']" method="post">
+                                <g:form class="ui form" url="[controller:'addressbook', action:'createPersonRole']" method="post">
                                     <input type="hidden" name="parent" value="${parent}"/>
                                     <input type="hidden" name="person" value="${p.class.name}:${p.id}" />
                                     <input type="hidden" name="role" value="${role}"/>
