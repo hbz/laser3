@@ -24,7 +24,7 @@
             <g:link class="item kbartExport" action="exportRenewalEntitlements"
                     id="${subscription.id}"
                     params="${[surveyConfigID: surveyConfig.id,
-                               exportKBart   : true,
+                               exportConfig   : 'kbart',
                                tab           : 'allTipps']}">${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}</g:link>
         </ui:exportDropdownItem>
 
@@ -32,7 +32,7 @@
             <g:link class="item kbartExport" action="exportRenewalEntitlements"
                     id="${subscription.id}"
                     params="${[surveyConfigID: surveyConfig.id,
-                               exportKBart   : true,
+                               exportConfig   : 'kbart',
                                tab           : 'selectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}</g:link>
         </ui:exportDropdownItem>
 
@@ -42,7 +42,7 @@
                 <g:link class="item kbartExport" action="exportRenewalEntitlements"
                         id="${subscription.id}"
                         params="${[surveyConfigID: surveyConfig.id,
-                                   exportKBart   : true,
+                                   exportConfig   : 'kbart',
                                    tab           : 'currentPerpetualAccessIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentTitles')}</g:link>
             </ui:exportDropdownItem>
         </g:if>
@@ -55,7 +55,7 @@
             <g:link class="item" action="exportRenewalEntitlements"
                     id="${subscription.id}"
                     params="${[surveyConfigID: surveyConfig.id,
-                               exportXLS     : true,
+                               exportConfig     : 'xls',
                                tab           : 'allTipps']}">${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}</g:link>
         </ui:exportDropdownItem>
 
@@ -63,7 +63,7 @@
             <g:link class="item" action="exportRenewalEntitlements"
                     id="${subscription.id}"
                     params="${[surveyConfigID: surveyConfig.id,
-                               exportXLS   : true,
+                               exportConfig   : 'xls',
                                tab           : 'selectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}</g:link>
         </ui:exportDropdownItem>
 
@@ -72,7 +72,7 @@
                 <g:link class="item" action="exportRenewalEntitlements"
                         id="${subscription.id}"
                         params="${[surveyConfigID : surveyConfig.id,
-                                   exportXLS     : true,
+                                   exportConfig     : 'xls',
                                    tab           : 'currentPerpetualAccessIEs']}">
                     ${message(code: 'renewEntitlementsWithSurvey.currentTitles')}
                 </g:link>

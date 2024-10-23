@@ -69,9 +69,9 @@ class IssueEntitlementService {
 
     Map<String, Object> calculateListPriceSumsForTitles(Set<Long> titleIDs) {
         String mainQry = "select pi_tipp_fk, pi_list_price, row_number() over (partition by pi_tipp_fk order by pi_date_created desc) as rn, count(*) over (partition by pi_tipp_fk) as cn from price_item where pi_list_price is not null and pi_list_currency_rv_fk = :currency and pi_tipp_fk = any(:tippIDs)"
-        List eurCheck = batchQueryService.longArrayQuery("select sum(pi.pi_list_price) as list_price_eur from (${mainQry}) as pi where pi.rn = 1", [currency: RDStore.CURRENCY_EUR.id], [tippIDs: titleIDs]),
-             usdCheck = batchQueryService.longArrayQuery("select sum(pi.pi_list_price) as list_price_usd from (${mainQry}) as pi where pi.rn = 1", [currency: RDStore.CURRENCY_USD.id], [tippIDs: titleIDs]),
-             gbpCheck = batchQueryService.longArrayQuery("select sum(pi.pi_list_price) as list_price_gbp from (${mainQry}) as pi where pi.rn = 1", [currency: RDStore.CURRENCY_GBP.id], [tippIDs: titleIDs])
+        List eurCheck = batchQueryService.longArrayQuery("select sum(pi.pi_list_price) as list_price_eur from (${mainQry}) as pi where pi.rn = 1", [tippIDs: titleIDs], [currency: RDStore.CURRENCY_EUR.id]),
+             usdCheck = batchQueryService.longArrayQuery("select sum(pi.pi_list_price) as list_price_usd from (${mainQry}) as pi where pi.rn = 1", [tippIDs: titleIDs], [currency: RDStore.CURRENCY_USD.id]),
+             gbpCheck = batchQueryService.longArrayQuery("select sum(pi.pi_list_price) as list_price_gbp from (${mainQry}) as pi where pi.rn = 1", [tippIDs: titleIDs], [currency: RDStore.CURRENCY_GBP.id])
         BigDecimal listPriceSumEUR = eurCheck[0]['list_price_eur']
         BigDecimal listPriceSumUSD = usdCheck[0]['list_price_usd']
         BigDecimal listPriceSumGBP = gbpCheck[0]['list_price_gbp']
@@ -79,13 +79,15 @@ class IssueEntitlementService {
     }
 
     Map<String, Object> getParameterGenerics(configMap) {
+        String sort = configMap.containsKey('sort') ? configMap.sort : 'tipp.sortname'
+        String order = configMap.containsKey('order') ? configMap.order : 'asc'
         Map<String, Object> titleConfigMap = [packages: configMap.packages, platforms: configMap.platforms, ddcs: configMap.ddcs, languages: configMap.languages,
                                               subject_references: configMap.subject_references, series_names: configMap.series_names, summaryOfContent: configMap.summaryOfContent,
                                               ebookFirstAutorOrFirstEditor: configMap.ebookFirstAutorOrFirstEditor, dateFirstOnlineFrom: configMap.dateFirstOnlineFrom,
                                               dateFirstOnlineTo: configMap.dateFirstOnlineFrom, yearsFirstOnline: configMap.yearsFirstOnline, publishers: configMap.publishers,
-                                              coverageDepth: configMap.coverageDepth, title_types: configMap.title_types, medium: configMap.medium],
-                            identifierConfigMap = [packages: configMap.packages, titleNS: IdentifierNamespace.CORE_TITLE_NS, titleObj: IdentifierNamespace.NS_TITLE],
-                            issueEntitlementConfigMap = [subscription: configMap.subscription, asAt: configMap.asAt, hasPerpetualAccess: configMap.hasPerpetualAccess, titleGroup: configMap.titleGroup]
+                                              coverageDepth: configMap.coverageDepth, title_types: configMap.title_types, medium: configMap.medium, sort: sort, order: order],
+                            identifierConfigMap = [packages: configMap.packages, titleNS: IdentifierNamespace.CORE_TITLE_NS, titleObj: IdentifierNamespace.NS_TITLE, sort: sort, order: order],
+                            issueEntitlementConfigMap = [subscription: configMap.subscription, asAt: configMap.asAt, hasPerpetualAccess: configMap.hasPerpetualAccess, titleGroup: configMap.titleGroup, sort: sort, order: order]
         [titleConfigMap: titleConfigMap, identifierConfigMap: identifierConfigMap, issueEntitlementConfigMap: issueEntitlementConfigMap]
     }
 }

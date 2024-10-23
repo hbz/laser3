@@ -1651,39 +1651,22 @@ class SubscriptionService {
             [result: null, status: SubscriptionControllerService.STATUS_ERROR]
         }
         else  {
-            SwissKnife.setPaginationParams(result, params, (User) result.user)
-            result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
-            result.surveyInfo = result.surveyConfig.surveyInfo
-            result.subscriber = result.subscription.getSubscriberRespConsortia()
-            Map rtParams = FilterLogic.resolveTabAndStatusForRenewalTabsMenu(params)
-            if (rtParams.tab)    { params.tab = rtParams.tab }
-            if (rtParams.subTab) { params.subTab = rtParams.subTab }
-            if (rtParams.status) { params.status = rtParams.status }
-            Map<String, Object> configMap = params.clone()
-            params.sort = params.sort ?: 'tipp.sortname'
-            params.order = params.order ?: 'asc'
-            Subscription baseSub = result.surveyConfig.subscription ?: result.subscription.instanceOf
-            result.baseSub = baseSub
-            configMap.subscription = result.subscription
-            configMap.packages = baseSub.packages.pkg
-            result.packageInstance = baseSub.packages.pkg[0] //there was an if check about baseSub.pkg
+            result.putAll(getRenewalGenerics(params))
             IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
             if(result.surveyConfig.pickAndChoosePerpetualAccess) {
                 result.countCurrentPermanentTitles = surveyService.countPerpetualAccessTitlesBySubAndNotInIEGroup(result.subscription, result.surveyConfig)
             }
             if(issueEntitlementGroup) {
-                configMap.titleGroup = issueEntitlementGroup
                 result.titleGroup = issueEntitlementGroup
                 if(!result.surveyConfig.pickAndChoosePerpetualAccess)
                     result.countCurrentPermanentTitles = countCurrentIssueEntitlementsNotInIEGroup(result.subscription, issueEntitlementGroup)
             }
             else {
-                configMap.titleGroup = null
                 result.titleGroup = null
                 if(!result.surveyConfig.pickAndChoosePerpetualAccess)
                     result.countCurrentPermanentTitles = 0
             }
-            Map<String, Object> parameterGenerics = issueEntitlementService.getParameterGenerics(configMap)
+            Map<String, Object> parameterGenerics = issueEntitlementService.getParameterGenerics(result.configMap)
             Map<String, Object> titleConfigMap = parameterGenerics.titleConfigMap,
                                 identifierConfigMap = parameterGenerics.identifierConfigMap,
                                 issueEntitlementConfigMap = parameterGenerics.issueEntitlementConfigMap
@@ -1692,8 +1675,8 @@ class SubscriptionService {
             //build up title data
             Map<String, Object> query = filterService.getTippSubsetQuery(titleConfigMap)
             Set<Long> tippIDs = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
-            if(configMap.identifier) {
-                tippIDs = tippIDs.intersect(issueEntitlementService.getTippsByIdentifier(identifierConfigMap, configMap.identifier))
+            if(result.identifier) {
+                tippIDs = tippIDs.intersect(issueEntitlementService.getTippsByIdentifier(identifierConfigMap, result.identifier))
             }
             switch(params.tab) {
                 case 'allTipps':
@@ -1701,7 +1684,7 @@ class SubscriptionService {
                     result.tippsListPriceSumEUR = listPriceSums.listPriceSumEUR
                     result.tippsListPriceSumUSD = listPriceSums.listPriceSumUSD
                     result.tippsListPriceSumGBP = listPriceSums.listPriceSumGBP
-                    result.titlesList = tippIDs ? TitleInstancePackagePlatform.findAllByIdInList(tippIDs.drop(result.offset).take(result.max), [sort: params.sort, order: params.order]) : []
+                    result.titlesList = tippIDs ? TitleInstancePackagePlatform.findAllByIdInList(tippIDs.drop(result.offset).take(result.max), [sort: result.sort, order: result.order]) : []
                     result.num_rows = tippIDs.size()
                     break
                 case 'selectedIEs':
@@ -1709,10 +1692,10 @@ class SubscriptionService {
                         issueEntitlementConfigMap.tippIDs = tippIDs
                         Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetSQLQuery(issueEntitlementConfigMap)
                         Set<Long> sourceIEs = [], sourceTIPPs = []
-                        List<GroovyRowResult> rows = batchQueryService.longArrayQuery(queryPart2.query, queryPart2.queryParams, queryPart2.arrayParams)
+                        List<GroovyRowResult> rows = batchQueryService.longArrayQuery(queryPart2.query, queryPart2.arrayParams, queryPart2.queryParams)
                         sourceIEs.addAll(rows["ie_id"])
                         sourceTIPPs.addAll(rows["tipp_id"])
-                        result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max), [sort: params.sort, order: params.order]) : []
+                        result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max), [sort: result.sort, order: result.order]) : []
                         result.num_rows = sourceIEs.size()
                         Map<String, Object> listPriceSums = issueEntitlementService.calculateListPriceSumsForTitles(sourceTIPPs)
                         result.iesTotalListPriceSumEUR = listPriceSums.listPriceSumEUR
@@ -1752,12 +1735,12 @@ class SubscriptionService {
                         issueEntitlementConfigMap.tippIDs = tippIDs
                         Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetSQLQuery(issueEntitlementConfigMap)
                         Set<Long> sourceIEs = [], sourceTIPPs = []
-                        List<GroovyRowResult> rows = batchQueryService.longArrayQuery(queryPart2.query, queryPart2.queryParams, queryPart2.arrayParams)
+                        List<GroovyRowResult> rows = batchQueryService.longArrayQuery(queryPart2.query, queryPart2.arrayParams, queryPart2.queryParams)
                         sourceIEs.addAll(rows["ie_id"])
                         sourceTIPPs.addAll(rows["tipp_id"])
-                        List<GroovyRowResult> ptRows = batchQueryService.longArrayQuery("select pt_ie_fk from permanent_title where pt_tipp_fk = any(:tippIDs) and pt_owner_fk = any(:subscribers)", [:], [tippIDs: tippIDs, subscribers: subscriptions.collect { Subscription s -> s.getSubscriberRespConsortia().id }])
+                        List<GroovyRowResult> ptRows = batchQueryService.longArrayQuery("select pt_ie_fk from permanent_title where pt_tipp_fk = any(:tippIDs) and pt_owner_fk = any(:subscribers)", [tippIDs: tippIDs, subscribers: subscriptions.collect { Subscription s -> s.getSubscriberRespConsortia().id }])
                         sourceIEs = sourceIEs.intersect(ptRows["pt_ie_fk"])
-                        result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max), [sort: params.sort, order: params.order]) : []
+                        result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max), [sort: result.sort, order: result.order]) : []
                         result.num_rows = sourceIEs.size()
                         Map<String, Object> listPriceSums = issueEntitlementService.calculateListPriceSumsForTitles(sourceTIPPs)
                         result.iesTotalListPriceSumEUR = listPriceSums.listPriceSumEUR
@@ -1769,46 +1752,6 @@ class SubscriptionService {
                         result.num_rows = 0
                     }
                     break
-                /* else if (params.tab == 'currentPerpetualAccessIEs') {
-                    params.sort = params.sort ?: 'tipp.sortname'
-                    params.order = params.order ?: 'asc'
-                    GrailsParameterMap parameterMap = params.clone()
-                    Map query = [:]
-                    if (subscriptions) {
-                        parameterMap.status = [RDStore.TIPP_STATUS_CURRENT.id]
-                        parameterMap.hasPerpetualAccess = RDStore.YN_YES.id
-                        query = filterService.getIssueEntitlementQuery(parameterMap, subscriptions)
-                        //List<Long> previousIes = previousSubscription ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
-                        sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
-                    }
-                    result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs, [sort: params.sort, order: params.order, offset: result.offset, max: result.max]) : []
-                    result.num_rows = sourceIEs ? IssueEntitlement.countByIdInList(sourceIEs) : 0
-
-                    //sql bridge
-                    Sql sql = GlobalService.obtainSqlConnection()
-                    String mainQry = "select pi_tipp_fk, pi_list_price, row_number() over (partition by pi_tipp_fk order by pi_date_created desc) as rn, count(*) over (partition by pi_tipp_fk) as cn from price_item where pi_list_price is not null and pi_list_currency_rv_fk = :currency and pi_tipp_fk in (select ie_tipp_fk from issue_entitlement where ie_id = any(:ieIDs))"
-                    result.iesTotalListPriceSumEUR = sql.rows('select sum(pi.pi_list_price) as list_price_eur from (' +
-                            mainQry +
-                            ') as pi where pi.rn = 1', [currency: RDStore.CURRENCY_EUR.id, ieIDs: sql.getDataSource().getConnection().createArrayOf('bigint', sourceIEs as Object[])])[0]['list_price_eur']
-                    result.iesTotalListPriceSumUSD = sql.rows('select sum(pi.pi_list_price) as list_price_usd from (' +
-                            mainQry +
-                            ') as pi where pi.rn = 1', [currency: RDStore.CURRENCY_USD.id, ieIDs: sql.getDataSource().getConnection().createArrayOf('bigint', sourceIEs as Object[])])[0]['list_price_usd']
-                    result.iesTotalListPriceSumGBP = sql.rows('select sum(pi.pi_list_price) as list_price_gbp from (' +
-                            mainQry +
-                            ') as pi where pi.rn = 1', [currency: RDStore.CURRENCY_GBP.id, ieIDs: sql.getDataSource().getConnection().createArrayOf('bigint', sourceIEs as Object[])])[0]['list_price_gbp']
-                    sql.close()
-
-                    result.iesTotalListPriceSumEUR = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
-                            'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_EUR, ieIDs: sourceIEs])[0] ?: 0
-
-                    result.iesTotalListPriceSumUSD = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
-                            'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_USD, ieIDs: sourceIEs])[0] ?: 0
-
-                    result.iesTotalListPriceSumGBP = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
-                            'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_GBP, ieIDs: sourceIEs])[0] ?: 0
-
-                }
-                 */
             }
             [result: result, status: SubscriptionControllerService.STATUS_OK]
         }
@@ -2017,6 +1960,80 @@ class SubscriptionService {
             }
         }
         */
+    }
+
+    Map<String, Object> exportRenewalEntitlements(GrailsParameterMap params) {
+        Map<String,Object> result = getRenewalGenerics(params)
+        Locale locale = LocaleUtils.getCurrentLocale()
+        if (!result) {
+            [result: null, status: SubscriptionControllerService.STATUS_ERROR]
+        }
+        else  {
+            IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
+            if(issueEntitlementGroup) {
+                result.titleGroup = issueEntitlementGroup
+            }
+            else {
+                result.titleGroup = null
+            }
+            Map<String, Object> parameterGenerics = issueEntitlementService.getParameterGenerics(result.configMap)
+            Map<String, Object> titleConfigMap = parameterGenerics.titleConfigMap,
+                                identifierConfigMap = parameterGenerics.identifierConfigMap,
+                                issueEntitlementConfigMap = parameterGenerics.issueEntitlementConfigMap
+            if(params.tab == "currentPerpetualAccessIEs")
+                titleConfigMap.tippStatus = [RDStore.TIPP_STATUS_CURRENT.id]
+            //build up title data
+            Map<String, Object> query = filterService.getTippSubsetQuery(titleConfigMap)
+            Set<Long> tippIDs = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+            if(result.identifier) {
+                tippIDs = tippIDs.intersect(issueEntitlementService.getTippsByIdentifier(identifierConfigMap, result.identifier))
+            }
+            switch(params.tab) {
+                //continue here: migrate export settings
+                case 'allTipps': List<GroovyRowResult> perpetuallyPurchasedTitleRows = batchQueryService.longArrayQuery('select pt_tipp_fk from permanent_title join title_instance_package_platform on pt_tipp_fk = tipp_id where pt_owner_fk = :subscriber and tipp_host_platform_url in (select t2.tipp_host_platform_url from title_instance_package_platform as t2 where t2.tipp_id = any(:tippIDs))', [tippIDs: tippIDs], [subscriber: result.subscriber.id])
+                    Set<Long> perpetuallyPurchasedTitleIDs = []
+                    if(perpetuallyPurchasedTitleRows)
+                        perpetuallyPurchasedTitleIDs.addAll(perpetuallyPurchasedTitleRows['pt_tipp_fk'])
+                    result.exportData = exportService.generateTitleExport(tippIDs, perpetuallyPurchasedTitleIDs, true)
+                    result.filename = escapeService.escapeString(messageSource.getMessage('renewEntitlementsWithSurvey.selectableTitles', null, locale) + '_' + result.baseSub.dropdownNamingConvention())
+                    break
+                case 'selectedIEs':
+                    if(issueEntitlementGroup) {
+                        issueEntitlementConfigMap.tippIDs = tippIDs
+                        Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetSQLQuery(issueEntitlementConfigMap)
+                        Set<Long> sourceIEs = [], sourceTIPPs = []
+                        List<GroovyRowResult> rows = batchQueryService.longArrayQuery(queryPart2.query, queryPart2.arrayParams, queryPart2.queryParams)
+                        sourceIEs.addAll(rows["ie_id"])
+                        sourceTIPPs.addAll(rows["tipp_id"])
+                    }
+                    result.filename = escapeService.escapeString(messageSource.getMessage('renewEntitlementsWithSurvey.currentTitlesSelect', null, locale) + '_' + result.subscription.dropdownNamingConvention())
+                    break
+                case 'currentPerpetualAccessIEs':
+                    Set<Subscription> subscriptions = []
+                    if(result.surveyConfig.pickAndChoosePerpetualAccess) {
+                        subscriptions = linksGenerationService.getSuccessionChain(result.subscription, 'sourceSubscription')
+                    }
+                    else {
+                        subscriptions << result.subscription
+                    }
+                    if(subscriptions) {
+                        issueEntitlementConfigMap.tippIDs = tippIDs
+                        Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetSQLQuery(issueEntitlementConfigMap)
+                        Set<Long> sourceIEs = [], sourceTIPPs = []
+                        List<GroovyRowResult> rows = batchQueryService.longArrayQuery(queryPart2.query, queryPart2.arrayParams, queryPart2.queryParams)
+                        sourceIEs.addAll(rows["ie_id"])
+                        sourceTIPPs.addAll(rows["tipp_id"])
+                        List<GroovyRowResult> ptRows = batchQueryService.longArrayQuery("select pt_ie_fk from permanent_title where pt_tipp_fk = any(:tippIDs) and pt_owner_fk = any(:subscribers)", [tippIDs: tippIDs, subscribers: subscriptions.collect { Subscription s -> s.getSubscriberRespConsortia().id }])
+                        sourceIEs = sourceIEs.intersect(ptRows["pt_ie_fk"])
+                    }
+                    else {
+                        result.sourceIEs = []
+                    }
+                    result.filename = escapeService.escapeString(messageSource.getMessage('renewEntitlementsWithSurvey.currentTitles', null, locale) + '_' + result.subscription.dropdownNamingConvention())
+                    break
+            }
+            [result: result, status: SubscriptionControllerService.STATUS_OK]
+        }
     }
 
     /**
@@ -3939,6 +3956,30 @@ class SubscriptionService {
             }
         }
         return [orgList: orgList, processCount: processCount, processRow: processRow, wrongOrgs: wrongOrgs.join(', '), truncatedRows: truncatedRows.join(', ')]
+    }
+
+    Map<String, Object> getRenewalGenerics(GrailsParameterMap params) {
+        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+        if(result) {
+            SwissKnife.setPaginationParams(result, params, (User) result.user)
+            result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+            result.surveyInfo = result.surveyConfig.surveyInfo
+            result.subscriber = result.subscription.getSubscriberRespConsortia()
+            Map rtParams = FilterLogic.resolveTabAndStatusForRenewalTabsMenu(params)
+            if (rtParams.tab)    { params.tab = rtParams.tab }
+            if (rtParams.subTab) { params.subTab = rtParams.subTab }
+            if (rtParams.status) { params.status = rtParams.status }
+            result.sort = params.sort ?: 'tipp.sortname'
+            result.order = params.order ?: 'asc'
+            Map<String, Object> configMap = params.clone()
+            Subscription baseSub = result.surveyConfig.subscription ?: result.subscription.instanceOf
+            result.baseSub = baseSub
+            configMap.subscription = result.subscription
+            configMap.packages = baseSub.packages.pkg
+            result.packageInstance = baseSub.packages.pkg[0] //there was an if check about baseSub.pkg
+            result.configMap = configMap
+        }
+        result
     }
 
 }
