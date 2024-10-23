@@ -1603,7 +1603,6 @@ class AjaxController {
             return
         }
 
-
         if (params.owner) {
             DueDateObject dueDateObject = (DueDateObject) genericOIDService.resolveOID(params.owner)
             if (dueDateObject){
@@ -1676,7 +1675,7 @@ class AjaxController {
      * @return redirects to the referer
      */
     @Transactional
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
     def unsetAffiliation() {
         String[] keys = params.key.split(':')
         if (keys.size() == 3) {

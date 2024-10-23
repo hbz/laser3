@@ -209,49 +209,54 @@ class AddressbookController {
         }
     }
 
-    @Secured(['ROLE_USER'])
-    @Transactional
+    @DebugInfo(isInstEditor = [])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor()
+    })
     def createPersonRole() {
         // moved from AjaxController.addPrsRole()
-        // TODO: check perms
 
         def owner           = genericOIDService.resolveOID(params.ownObj)
         def parent          = genericOIDService.resolveOID(params.parent)
         Person person       = Person.get(params.long('person'))
         RefdataValue role   = RefdataValue.get(params.long('role'))
 
-        PersonRole newPrsRole
-        List<PersonRole> existingPrsRole
+        if (accessService.hasAccessToPerson(person, AccessService.WRITE)) {
+            PersonRole newPrsRole
+            List<PersonRole> existingPrsRole
 
-        if (owner && person && role) {
-            newPrsRole = new PersonRole(prs: person)
+            if (owner && role) {
+                newPrsRole = new PersonRole(prs: person)
 
-            if (owner instanceof Org)           { newPrsRole.org = owner }
-            else if(owner instanceof Provider)  { newPrsRole.provider = owner }
-            else if(owner instanceof Vendor)    { newPrsRole.vendor = owner }
+                if (owner instanceof Org)           { newPrsRole.org = owner }
+                else if(owner instanceof Provider)  { newPrsRole.provider = owner }
+                else if(owner instanceof Vendor)    { newPrsRole.vendor = owner }
 
-            if (parent) {
-                newPrsRole.responsibilityType = role
-                newPrsRole.setReference(parent)
+                if (parent) {
+                    newPrsRole.responsibilityType = role
+                    newPrsRole.setReference(parent)
 
-                String[] ref = newPrsRole.getReference().split(":")
-                String query = "select pr from PersonRole pr where pr.prs = :prs and (pr.org = :owner or pr.provider = :owner or pr.vendor = :owner) and pr.responsibilityType = :responsibilityType and ${ref[0]} = :parent"
-                existingPrsRole = PersonRole.executeQuery(query, [prs:person, owner: owner, responsibilityType: role, parent: parent])
+                    String[] ref = newPrsRole.getReference().split(":")
+                    String query = "select pr from PersonRole pr where pr.prs = :prs and (pr.org = :owner or pr.provider = :owner or pr.vendor = :owner) and pr.responsibilityType = :responsibilityType and ${ref[0]} = :parent"
+                    existingPrsRole = PersonRole.executeQuery(query, [prs:person, owner: owner, responsibilityType: role, parent: parent])
+                }
+                else {
+                    newPrsRole.functionType = role
+                    existingPrsRole = PersonRole.executeQuery('select pr from PersonRole pr where pr.prs = :prs and (pr.org = :owner or pr.provider = :owner or pr.vendor = :owner) and pr.functionType = :functionType', [prs:person, owner: owner, functionType: role])
+                }
+            }
+
+            if (! existingPrsRole && newPrsRole && newPrsRole.save()) {
+                //flash.message = message(code: 'default.success')
             }
             else {
-                newPrsRole.functionType = role
-                existingPrsRole = PersonRole.executeQuery('select pr from PersonRole pr where pr.prs = :prs and (pr.org = :owner or pr.provider = :owner or pr.vendor = :owner) and pr.functionType = :functionType', [prs:person, owner: owner, functionType: role])
+                log.error("Problem saving new person role ..")
+                flash.error = message(code: 'default.error')
             }
         }
-
-        if (! existingPrsRole && newPrsRole && newPrsRole.save()) {
-            //flash.message = message(code: 'default.success')
-        }
         else {
-            log.error("Problem saving new person role ..")
-            //flash.error = message(code: 'default.error')
+            flash.error = message(code: 'default.noPermissions')
         }
-
         redirect(url: request.getHeader('referer'))
     }
 
@@ -362,16 +367,18 @@ class AddressbookController {
     def deletePersonRole() {
         PersonRole obj = PersonRole.get(params.id)
         if (obj) {
-            try {
-                obj.delete() // TODO: check perms
+            if (accessService.hasAccessToPerson(obj.prs, AccessService.WRITE)) {
+                try {
+                    obj.delete()
+                }
+                catch (Exception e) {
+                    log.debug(e.getMessage())
+                    flash.error = message(code: 'default.delete.error.general.message')
+                }
             }
-            catch (Exception e) {
-                log.debug(e.getMessage())
-                flash.error = message(code: 'default.delete.error.general.message')
+            else {
+                flash.error = message(code: 'default.noPermissions')
             }
-        }
-        else {
-            flash.error = message(code: 'default.delete.error.general.message')
         }
         redirect(url: request.getHeader('referer'))
     }
