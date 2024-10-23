@@ -47,7 +47,7 @@ class DocstoreService {
         if (params.deleteId) {
             DocContext docctx = DocContext.get(params.deleteId)
 
-            if (accessService.hasAccessToDocument(docctx, Role.INST_EDITOR)) {
+            if (accessService.hasAccessToDocument(docctx, AccessService.WRITE)) {
                 docctx.status = RDStore.DOC_CTX_STATUS_DELETED
                 docctx.save()
             }

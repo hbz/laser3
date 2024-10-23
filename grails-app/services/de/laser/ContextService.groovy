@@ -125,15 +125,15 @@ class ContextService {
     // -- Formal checks @ user.formalOrg
 
     boolean isInstUser(String orgPerms = null) {
-        _hasInstRoleAndPerm('INST_USER', orgPerms, false)
+        _hasInstRoleAndPerm(Role.INST_USER, orgPerms, false)
     }
 
     boolean isInstEditor(String orgPerms = null) {
-        _hasInstRoleAndPerm('INST_EDITOR', orgPerms, false)
+        _hasInstRoleAndPerm(Role.INST_EDITOR, orgPerms, false)
     }
 
     boolean isInstAdm(String orgPerms = null) {
-        _hasInstRoleAndPerm('INST_ADM', orgPerms, false)
+        _hasInstRoleAndPerm(Role.INST_ADM, orgPerms, false)
     }
 
     /**
@@ -143,7 +143,7 @@ class ContextService {
      * @see CustomerTypeService
      */
     boolean isInstUser_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN('INST_USER', orgPerms, false)
+        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_USER, orgPerms, false)
     }
 
     /**
@@ -153,7 +153,7 @@ class ContextService {
      * @see CustomerTypeService
      */
     boolean isInstEditor_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN('INST_EDITOR', orgPerms, false)
+        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_EDITOR, orgPerms, false)
     }
 
     /**
@@ -163,7 +163,7 @@ class ContextService {
      * @see CustomerTypeService
      */
     boolean isInstAdm_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN('INST_ADM', orgPerms, false)
+        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_ADM, orgPerms, false)
     }
 
     /**
@@ -173,7 +173,7 @@ class ContextService {
      * @see CustomerTypeService
      */
     boolean isInstUser_denySupport_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN('INST_USER', orgPerms, true)
+        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_USER, orgPerms, true)
     }
 
     /**
@@ -183,7 +183,7 @@ class ContextService {
      * @see CustomerTypeService
      */
     boolean isInstEditor_denySupport_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN('INST_EDITOR', orgPerms, true)
+        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_EDITOR, orgPerms, true)
     }
 
     /**
@@ -193,7 +193,7 @@ class ContextService {
      * @see CustomerTypeService
      */
     boolean isInstAdm_denySupport_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN('INST_ADM', orgPerms, true)
+        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_ADM, orgPerms, true)
     }
 
     // -- private

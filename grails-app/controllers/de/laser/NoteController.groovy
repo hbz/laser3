@@ -80,7 +80,7 @@ class NoteController {
 
 		Doc.withTransaction {
 			DocContext docctx = DocContext.get(params.long('dctx'))
-			if (accessService.hasAccessToDocNote(docctx, Role.INST_EDITOR)) {
+			if (accessService.hasAccessToDocNote(docctx, AccessService.WRITE)) {
 
 				Doc doc = docctx.owner
 				if (doc) {
@@ -131,7 +131,7 @@ class NoteController {
 		if (params.deleteId) {
 			DocContext docctx = DocContext.get(params.deleteId)
 
-			if (accessService.hasAccessToDocNote(docctx, Role.INST_EDITOR)) {
+			if (accessService.hasAccessToDocNote(docctx, AccessService.WRITE)) {
 				docctx.status = RDStore.DOC_CTX_STATUS_DELETED
 				docctx.save()
 				flash.message = message(code: 'default.deleted.general.message')

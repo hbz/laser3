@@ -165,7 +165,7 @@ class WorkflowService {
         result.checkpoint = cpoint
 
         try {
-            if (accessService.hasAccessToWorkflow(cpoint.checklist, Role.INST_EDITOR)) {
+            if (accessService.hasAccessToWorkflow(cpoint.checklist, AccessService.WRITE)) {
                 cpoint.delete()
                 result.checkpoint = null // gap
                 result.status = OP_STATUS_DONE
@@ -412,7 +412,7 @@ class WorkflowService {
             try {
                 result.checklist = WfChecklist.get(cmd[2])
 
-                if (accessService.hasAccessToWorkflow(result.checklist, Role.INST_EDITOR)) {
+                if (accessService.hasAccessToWorkflow(result.checklist, AccessService.WRITE)) {
                     WfCheckpoint.executeUpdate('delete from WfCheckpoint cp where cp.checklist = :cl', [cl: result.checklist])
                     result.checklist.delete()
 

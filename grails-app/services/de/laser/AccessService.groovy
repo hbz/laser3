@@ -4,6 +4,7 @@ import de.laser.addressbook.Address
 import de.laser.addressbook.Contact
 import de.laser.addressbook.Person
 import de.laser.annotations.UnstableFeature
+import de.laser.auth.Role
 import de.laser.storage.RDStore
 import de.laser.workflow.WfChecklist
 import grails.gorm.transactions.Transactional
@@ -16,11 +17,25 @@ class AccessService {
     static final String CHECK_EDIT = 'CHECK_EDIT'                       // TODO
     static final String CHECK_VIEW_AND_EDIT = 'CHECK_VIEW_AND_EDIT'     // TODO
 
+    public static final String READ    = 'READ'
+    public static final String WRITE   = 'WRITE'
+
     ContextService contextService
     UserService userService
 
     // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
-    boolean hasAccessToDocument(DocContext dctx, String instUserRole) {
+    // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
+    // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
+
+    // NO CUSTOMER_TYPE CHECKS HERE ..
+    // NO CUSTOMER_TYPE CHECKS HERE ..
+    // NO CUSTOMER_TYPE CHECKS HERE ..
+
+    // NO INST_USER CHECKS FOR READ .. TODO
+    // NO INST_USER CHECKS FOR READ .. TODO
+    // NO INST_USER CHECKS FOR READ .. TODO
+
+    boolean hasAccessToDocument(DocContext dctx, String perm) {
         // moved from ajaxHtmlController.documentPreview()$checkPermission
         // logic based on /views/templates/documents/card
         boolean check = false
@@ -34,7 +49,12 @@ class AccessService {
             // .. invalid
         }
         else if (doc.owner.id == ctxOrg.id) {
-            check = true
+            if (perm == WRITE) {
+                check = userService.hasFormalAffiliation(contextService.getUser(), ctxOrg, Role.INST_EDITOR)
+            }
+            else {
+                check = true
+            }
         }
         else if (dctx.shareConf) {
             if (dctx.shareConf == RDStore.SHARE_CONF_UPLOADER_ORG) {
@@ -43,26 +63,34 @@ class AccessService {
             else if (dctx.shareConf == RDStore.SHARE_CONF_UPLOADER_AND_TARGET) {
                 // .. if (doc.owner.id == ctxOrg.id)
                 if (dctx.targetOrg.id == ctxOrg.id) {
-                    check = true
+                    if (perm == READ) {
+                        check = true
+                    }
                 }
             }
             else if (dctx.shareConf == RDStore.SHARE_CONF_ALL) {
                 // .. context based restrictions must be applied // todo --> problem?
-                check = true
+                if (perm == READ) {
+                    check = true
+                }
             }
         }
         else if (dctx.sharedFrom) {
             if (dctx.license) {
                 dctx.license.orgRelations.each {
                     if (it.org.id == ctxOrg.id && it.roleType in [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]) {
-                        check = true
+                        if (perm == READ) {
+                            check = true
+                        }
                     }
                 }
             }
             else if (dctx.subscription) {
                 dctx.subscription.orgRelations.each {
                     if (it.org.id == ctxOrg.id && it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER]) {
-                        check = true
+                        if (perm == READ) {
+                            check = true
+                        }
                     }
                 }
             }
@@ -71,15 +99,13 @@ class AccessService {
         else if ( dctx.surveyConfig ) {
             Map orgIdMap = dctx.surveyConfig.getSurveyOrgsIDs()
             if (ctxOrg.id in orgIdMap.orgsWithSubIDs || ctxOrg.id in orgIdMap.orgsWithoutSubIDs) {
-                check = true
+                check = true // ??? READ | WRITE
             }
         }
-
-        return (check && _checkCtxFormal(instUserRole))
+        return check
     }
 
-    // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
-    boolean hasAccessToDocNote(DocContext dctx, String instUserRole) {
+    boolean hasAccessToDocNote(DocContext dctx, String perm) {
         boolean check = false
         Org ctxOrg = contextService.getOrg()
 
@@ -91,20 +117,29 @@ class AccessService {
             // .. invalid
         }
         else if (doc.owner.id == ctxOrg.id) {
-            check = true
+            if (perm == WRITE) {
+                check = userService.hasFormalAffiliation(contextService.getUser(), ctxOrg, Role.INST_EDITOR)
+            }
+            else {
+                check = true
+            }
         }
         else if (dctx.sharedFrom) {
             if (dctx.license) {
                 dctx.license.orgRelations.each {
                     if (it.org.id == ctxOrg.id && it.roleType in [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]) {
-                        check = true
+                        if (perm == READ) {
+                            check = true
+                        }
                     }
                 }
             }
             else if (dctx.subscription) {
                 dctx.subscription.orgRelations.each {
                     if (it.org.id == ctxOrg.id && it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER]) {
-                        check = true
+                        if (perm == READ) {
+                            check = true
+                        }
                     }
                 }
             }
@@ -115,109 +150,130 @@ class AccessService {
         else if ( dctx.surveyConfig ) {
             // .. TODO TODO TODO
         }
-
-        return (check && _checkCtxFormal(instUserRole))
+        return check
     }
 
-    // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
-    boolean hasAccessToTask(Task task, String instUserRole) {
+    boolean hasAccessToTask(Task task, String perm) {
         boolean check = false
+        Org ctxOrg = contextService.getOrg()
 
         if (!task) {
             // .. invalid
         }
-        else if (task.creator && task.creator.id == contextService.getUser().id) {
-            check = true
+        else if (task.creator && task.creator.id == ctxOrg.id) {
+            if (perm == WRITE) {
+                check = userService.hasFormalAffiliation(contextService.getUser(), ctxOrg, Role.INST_EDITOR)
+            }
+            else {
+                check = true
+            }
         }
-        else if (task.responsibleOrg && task.responsibleOrg.id == contextService.getOrg().id) {
-            check = true
+        else if (task.responsibleOrg && task.responsibleOrg.id == ctxOrg.id) {
+            if (perm == WRITE) {
+                check = userService.hasFormalAffiliation(contextService.getUser(), ctxOrg, Role.INST_EDITOR)
+            }
+            else {
+                check = true
+            }
         }
-        else if (task.responsibleUser && task.responsibleUser.id != contextService.getUser().id) {
-            check = true
+        else if (task.responsibleUser && task.responsibleUser.id != ctxOrg.id) {
+            check = true // ???
         }
-
-        return (check && _checkCtxFormal(instUserRole))
+        return check
     }
 
-    // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
-    boolean hasAccessToWorkflow(WfChecklist workflow, String instUserRole) {
+    boolean hasAccessToWorkflow(WfChecklist workflow, String perm) {
         boolean check = false
+        Org ctxOrg = contextService.getOrg()
 
         if (!workflow) {
             // .. invalid
         }
-        else if (workflow.owner.id == contextService.getOrg().id) {
-            check = true
+        else if (workflow.owner.id == ctxOrg.id) {
+            if (perm == WRITE) {
+                check = userService.hasFormalAffiliation(contextService.getUser(), ctxOrg, Role.INST_EDITOR)
+            }
+            else {
+                check = true
+            }
         }
-
-        return (check && _checkCtxFormal(instUserRole))
+        return check
     }
 
-    // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
-    boolean hasAccessToAddress(Address address, String instUserRole) {
+    boolean hasAccessToAddress(Address address, String perm) {
         boolean check = false
+        Org ctxOrg = contextService.getOrg()
 
         if (!address) {
             // .. invalid
         }
-        else if (address.tenant && address.tenant.id == contextService.getOrg().id) {
-            check = true
+        else if (address.tenant && address.tenant.id == ctxOrg.id) {
+            if (perm == WRITE) {
+                check = userService.hasFormalAffiliation(contextService.getUser(), ctxOrg, Role.INST_EDITOR)
+            }
+            else {
+                check = true
+            }
         }
-        else if (address.org && address.org.id == contextService.getOrg().id) {
-            check = true
+        else if (address.org && address.org.id == ctxOrg.id) {
+            if (perm == READ) {
+                check = true
+            }
+            // userService.hasFormalAffiliation_or_ROLEADMIN(user, address.tenant ?: address.org, 'INST_EDITOR') // ?????
         }
         else if (address.provider || address.vendor) {
-            check = true
+            if (perm == READ) {
+                check = true
+            }
         }
-
-        // userService.hasFormalAffiliation_or_ROLEADMIN(user, address.tenant ?: address.org, 'INST_EDITOR')
-        return (check && _checkCtxFormal(instUserRole)) // TODO
+        return check
     }
 
-    // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
-    boolean hasAccessToContact(Contact contact, String instUserRole) {
+    boolean hasAccessToContact(Contact contact, String perm) {
         boolean check = false
+        Org ctxOrg = contextService.getOrg()
 
         if (!contact) {
             // .. invalid
         }
         else if (contact.prs) {
-            if (contact.prs.isPublic) {
-                check = true
+            if (contact.prs.tenant && contact.prs.tenant.id == ctxOrg.id) {
+                if (perm == WRITE) {
+                    check = userService.hasFormalAffiliation(contextService.getUser(), ctxOrg, Role.INST_EDITOR)
+                }
+                else {
+                    check = true
+                }
             }
-            else if (contact.prs.tenant && contact.prs.tenant.id == contextService.getOrg().id) {
-                check = true
+            else if (contact.prs.isPublic) {
+                if (perm == READ) {
+                    check = true
+                }
             }
         }
-
-        // userService.hasFormalAffiliation_or_ROLEADMIN(user, contact.prs?.tenant, 'INST_EDITOR')
-        return (check && _checkCtxFormal(instUserRole)) // TODO
+        return check
     }
 
-    // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
-    boolean hasAccessToPerson(Person person, String instUserRole) {
+    boolean hasAccessToPerson(Person person, String perm) {
         boolean check = false
+        Org ctxOrg = contextService.getOrg()
 
         if (!person) {
             // .. invalid
         }
+        else if (person.tenant && person.tenant.id == ctxOrg.id) {
+            if (perm == WRITE) {
+                check = userService.hasFormalAffiliation(contextService.getUser(), ctxOrg, Role.INST_EDITOR)
+            }
+            else {
+                check = true
+            }
+        }
         else if (person.isPublic) {
-            check = true
+            if (perm == READ) {
+                check = true
+            }
         }
-        else if (person.tenant && person.tenant.id == contextService.getOrg().id) {
-            check = true
-        }
-
-        // userService.hasFormalAffiliation_or_ROLEADMIN(user, person.tenant, 'INST_EDITOR')
-        return (check && _checkCtxFormal(instUserRole)) // TODO
-    }
-
-    boolean _checkCtxFormal(String instUserRole) {
-        if (instUserRole) {
-            return userService.hasFormalAffiliation(contextService.getUser(), contextService.getOrg(), instUserRole) // TODO
-        }
-        else {
-            true
-        }
+        return check
     }
 }

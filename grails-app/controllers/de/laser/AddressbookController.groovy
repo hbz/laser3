@@ -218,7 +218,7 @@ class AddressbookController {
         List args   = [message(code: 'address.label'), params.id]
 
         if (obj) {
-            if (accessService.hasAccessToAddress(obj, Role.INST_EDITOR)) { // TODO: || -> &&
+            if (accessService.hasAccessToAddress(obj, AccessService.WRITE)) {
                 Address.withTransaction {
                     try {
                         List changeList = SurveyOrg.findAllByAddress(obj)
@@ -254,9 +254,9 @@ class AddressbookController {
         Contact obj = Contact.get(params.id)
         List args   = [message(code: 'contact.label'), params.id]
 
-        if (accessService.hasAccessToContact(obj, Role.INST_EDITOR)) { // TODO: || -> &&
+        if (accessService.hasAccessToContact(obj, AccessService.WRITE)) {
             try {
-                obj.delete() // TODO: check perms
+                obj.delete()
                 flash.message = message(code: 'default.deleted.message', args: args)
             }
             catch (Exception e) {
@@ -279,7 +279,7 @@ class AddressbookController {
         List args  = [message(code: 'person.label'), params.id]
 
         if (obj) {
-            if (accessService.hasAccessToPerson(obj, Role.INST_EDITOR)) { // TODO: || -> &&
+            if (accessService.hasAccessToPerson(obj, AccessService.WRITE)) {
                 Person.withTransaction {
                     try {
                         List changeList = SurveyOrg.findAllByPerson(obj)
@@ -344,7 +344,7 @@ class AddressbookController {
         String referer  = request.getHeader('referer')
 
         if (obj) {
-            if (accessService.hasAccessToAddress(obj, Role.INST_EDITOR)) { // TODO: || -> &&
+            if (accessService.hasAccessToAddress(obj, AccessService.WRITE)) {
                 if (params.version) {
                     Long version = params.long('version')
                     if (obj.version > version) {
@@ -426,7 +426,7 @@ class AddressbookController {
 
         if (obj) {
             Person.withTransaction {
-                if (accessService.hasAccessToPerson(obj, Role.INST_EDITOR)) { // TODO: || -> &&
+                if (accessService.hasAccessToPerson(obj, AccessService.WRITE)) {
 
                     if (!params.functionType && !params.positionType) {
                         flash.error = message(code: 'person.create.missing_function') as String

@@ -49,7 +49,7 @@ class DocumentController {
         if (doc) {
             boolean check = false
 
-            DocContext.findAllByOwner(doc).each{dctx -> check = check || accessService.hasAccessToDocument(dctx, Role.INST_USER) }  // TODO
+            DocContext.findAllByOwner(doc).each{dctx -> check = check || accessService.hasAccessToDocument(dctx, AccessService.READ) }
             if (check) {
                 String filename = doc.filename ?: messageSource.getMessage('template.documents.missing', null, LocaleUtils.getCurrentLocale())
                 doc.render(response, filename)
@@ -224,7 +224,7 @@ class DocumentController {
         log.debug("editDocument: ${params}")
 
         DocContext docctx = DocContext.get(params.docctx)
-        if (accessService.hasAccessToDocument(docctx, Role.INST_EDITOR)) {
+        if (accessService.hasAccessToDocument(docctx, AccessService.WRITE)) {
             // moved from DocumentControllerService.editDocument()
 
             Class dc = CodeUtils.getDomainClass(params.ownerclass)
@@ -274,7 +274,7 @@ class DocumentController {
         if (params.deleteId) {
             DocContext docctx = DocContext.get(params.deleteId)
 
-            if (accessService.hasAccessToDocument(docctx, Role.INST_EDITOR)) {
+            if (accessService.hasAccessToDocument(docctx, AccessService.WRITE)) {
                 docctx.status = RDStore.DOC_CTX_STATUS_DELETED
                 docctx.save()
                 flash.message = message(code: 'default.deleted.general.message')
