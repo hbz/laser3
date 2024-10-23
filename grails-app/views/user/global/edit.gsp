@@ -235,7 +235,7 @@
                                                 <td>${rl.role.authority}</td>
                                                 <td class="x">
                                                     <g:if test="${editable}">
-                                                        <g:link controller="ajax" action="removeUserRole" params='${[user:"${user.class.name}:${user.id}",role:"${rl.role.class.name}:${rl.role.id}"]}'
+                                                        <g:link controller="ajax" action="removeUserRole" params='${[user:"${user.id}",role:"${rl.role.id}"]}'
                                                                 class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                                 role="button"
                                                                 data-confirm-tokenMsg="${message(code:'confirm.dialog.unlink.user.role')}"
@@ -253,13 +253,13 @@
                                             <tr>
                                                 <td colspan="2">
                                                     <g:form class="ui form" controller="ajax" action="addUserRole">
-                                                        <input type="hidden" name="user" value="${user.class.name}:${user.id}"/>
+                                                        <input type="hidden" name="user" value="${user.id}"/>
                                                         <div class="ui fields">
                                                             <div class="field">
                                                                 <g:select from="${Role.findAllByRoleType('global')}"
                                                                           class="ui dropdown fluid"
                                                                           name="role"
-                                                                          optionKey="${{ it.class.name + ':' + it.id }}"
+                                                                          optionKey="${{ it.id }}"
                                                                           optionValue="${{ it.getI10n('authority') }}"
                                                                           noSelection="${['': message(code: 'default.select.choose.label')]}"
                                                                 />

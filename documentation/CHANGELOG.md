@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6030    23.10.2024  dev     3.5         David   Bug         Unerlaubtes Erlangen von Adminrechten
+
 6028    18.10.2024  dev     3.5         David   Feature     DashboardDueDate.responsibleOrg
 
 5971    18.10.2024  dev     3.5         David   Feature     Refactoring: Aufgaben
