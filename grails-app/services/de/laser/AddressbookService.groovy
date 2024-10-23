@@ -21,7 +21,6 @@ class AddressbookService {
 
     ContextService contextService
     PropertyService propertyService
-    UserService userService
 
     /**
      * Retrieves all private contacts for the given tenant institution
@@ -32,36 +31,6 @@ class AddressbookService {
     List<Person> getPrivatePersonsByTenant(Org tenant) {
         List result = Person.findAllByTenantAndIsPublic(tenant, false)
         result
-    }
-
-    /**
-     * Checks whether the given address is editable by the given user
-     * @param address the address which should be accessed
-     * @param user the user whose grants should be checked
-     * @return true if the user is affiliated at least as INST_EDITOR with the given tenant or institution or is a global admin, false otherwise
-     */
-    boolean isAddressEditable(Address address, User user) {
-        userService.hasFormalAffiliation_or_ROLEADMIN(user, address.tenant ?: address.org, 'INST_EDITOR')
-    }
-
-    /**
-     * Checks whether the given contact is editable by the given user
-     * @param address the contact which should be accessed
-     * @param user the user whose grants should be checked
-     * @return true if the user is affiliated at least as INST_EDITOR with the given tenant or institution or is a global admin, false otherwise
-     */
-    boolean isContactEditable(Contact contact, User user) {
-        userService.hasFormalAffiliation_or_ROLEADMIN(user, contact.prs?.tenant, 'INST_EDITOR')
-    }
-
-    /**
-     * Checks whether the given person is editable by the given user
-     * @param person the person which should be accessed
-     * @param user the user whose grants should be checked
-     * @return true if the user is affiliated at least as INST_EDITOR with the given tenant or is a global admin, false otherwise
-     */
-    boolean isPersonEditable(Person person, User user) {
-        userService.hasFormalAffiliation_or_ROLEADMIN(user, person.tenant, 'INST_EDITOR')
     }
 
     /**

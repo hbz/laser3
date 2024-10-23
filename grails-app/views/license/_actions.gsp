@@ -70,6 +70,6 @@
     </ui:actionsDropdown>
 </g:if>
 
-<g:if test="${contextService.isInstEditor_or_ROLEADMIN()}">
+<g:if test="${contextService.isInstEditor()}">
     <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: license, owntp: 'license', inContextOrg: inContextOrg]]}" />
 </g:if>

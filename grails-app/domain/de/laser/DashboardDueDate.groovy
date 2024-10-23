@@ -16,7 +16,6 @@ import org.springframework.context.MessageSource
 class DashboardDueDate {
 
     User responsibleUser
-    Org  responsibleOrg
     DueDateObject dueDateObject
     boolean isHidden = false
     Date dateCreated
@@ -116,9 +115,8 @@ class DashboardDueDate {
      * Sets up a new due date reminder with the given parameters
      * @param obj the object (of type {@link Subscription}, {@link AbstractPropertyWithCalculatedLastUpdated}, {@link Task} or {@link SurveyInfo} for which the reminder should be set up
      * @param responsibleUser the {@link User} who should be reminded
-     * @param responsibleOrg the {@link Org} to which the reminded user belongs to
      */
-    DashboardDueDate(def object, User responsibleUser, Org responsibleOrg){
+    DashboardDueDate(def object, User responsibleUser){
         String attribute_value_de   = getAttributeValue(object, responsibleUser, Locale.GERMAN)
         String attribute_value_en   = getAttributeValue(object, responsibleUser, Locale.ENGLISH)
         String attribute_name       = getAttributeName(object, responsibleUser)
@@ -127,7 +125,6 @@ class DashboardDueDate {
         withTransaction {
             Date now = new Date()
             this.responsibleUser = responsibleUser
-            this.responsibleOrg = responsibleOrg
             // this.isHidden = false // TODO
             this.dateCreated = now
             this.lastUpdated = now
@@ -159,7 +156,6 @@ class DashboardDueDate {
         id                      column: 'das_id'
         version                 column: 'das_version'
         responsibleUser         column: 'das_responsible_user_fk', index: 'das_responsible_user_idx'
-        responsibleOrg          column: 'das_responsible_org_fk',  index: 'das_responsible_org_idx'
         isHidden                column: 'das_is_hidden'
         dueDateObject           column: 'das_ddobj_fk', lazy: false, index: 'das_ddobj_idx'
         dateCreated             column: 'das_date_created'
@@ -168,7 +164,6 @@ class DashboardDueDate {
 
     static constraints = {
         responsibleUser         (nullable:true)
-        responsibleOrg          (nullable:true)
         dueDateObject           (nullable:true)
         dateCreated             (nullable:true)
         lastUpdated             (nullable:true)

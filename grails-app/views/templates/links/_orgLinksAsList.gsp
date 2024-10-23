@@ -60,7 +60,7 @@
                                           relation: role,
                                           roleObject: roleObject,
                                           parent: genericOIDService.getOID(roleObject),
-                                          role: genericOIDService.getOID(modalPrsLinkRole)
+                                          role: modalPrsLinkRole
                                   ]"/>
                         </g:if>
                     </g:if>

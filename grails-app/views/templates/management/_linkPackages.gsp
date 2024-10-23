@@ -4,7 +4,6 @@
 <g:if test="${filteredSubscriptions}">
     <g:if test="${controllerName == "subscription"}">
         <div class="ui segment">
-%{--            <h3 class="ui header"><g:message code="subscriptionsManagement.package.label" args="${args.superOrgType}"/></h3>--}%
             <g:if test="${validPackages}">
                 <div class="ui middle aligned selection list">
                     <g:each in="${validPackages}" var="subPkg">
@@ -36,7 +35,6 @@
     <g:form action="${actionName}" params="[tab: params.tab, id: params.id]" data-confirm-id="processLinkPackagesMembers_form"
             method="post"
             class="ui form packagesForm">
-        <%--<g:hiddenField id="plpm_id_${params.id}" name="id" value="${params.id}"/>--%>
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
         <div class="ui segments">

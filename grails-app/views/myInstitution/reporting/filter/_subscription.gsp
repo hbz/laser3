@@ -171,7 +171,7 @@
             <div class="ui bottom attached tab segment" data-tab="sub-filter-tab-help">
                 <div class="field">
                     <div style="text-align:center; padding:2em 0">
-                        <img class="ui fluid image" alt="${message(code:'reporting.ui.global.help')}" src="${resource(dir: 'help', file: 'reporting/global.subscriptions.png')}"/>
+                        <img class="ui fluid image" alt="${message(code:'reporting.ui.global.help')}" src="${resource(dir: 'media', file: 'reporting/global.subscriptions.png')}"/>
                     </div>
                 </div>
             </div><!-- .tab -->

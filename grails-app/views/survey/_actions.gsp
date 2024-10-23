@@ -1,8 +1,6 @@
 <%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.Org" %>
 <laser:serviceInjection/>
 
-
-
 <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
     <g:if test="${subscription}">
         <g:set var="previous" value="${subscription._getCalculatedPrevious()}"/>
@@ -15,11 +13,13 @@
             <laser:render template="actionsCreate"/>
         </g:if>
         <g:else>
+
+            <g:if test="${contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
                 <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
                 <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
                 <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />
                 <div class="divider"></div>
-
+            </g:if>
 
             <ui:actionsDropdownItem controller="survey" action="copySurvey" params="[id: params.id]"
                                     message="copySurvey.label"/>
@@ -191,7 +191,7 @@
     </ui:modal>
 </g:if>
 
-<g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO) && (actionName != 'currentSurveysConsortia' && actionName != 'workflowsSurveysConsortia')}">
+<g:if test="${contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_PRO) && (actionName != 'currentSurveysConsortia' && actionName != 'workflowsSurveysConsortia')}">
     <laser:render template="/templates/notes/modal_create" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
     <laser:render template="/templates/tasks/modal_create" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
     <laser:render template="/templates/documents/modal" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>

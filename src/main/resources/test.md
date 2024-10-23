@@ -624,7 +624,7 @@ Underscores
 
 # Various
 
-![Image not found]({{current_server_webapp}}/help/reporting/global.packages.png "{{current_server_webapp}}")
+![Image not found]({{current_server_webapp}}/media/reporting/global.packages.png "{{current_server_webapp}}")
 
 | Option | Description |
 |--------|-------------|

@@ -1,7 +1,7 @@
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService" %>
 <laser:serviceInjection />
 
-<g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)}">
+<g:if test="${contextService.isInstEditor(CustomerTypeService.PERMS_PRO)}">
     <ui:actionsDropdown>
         <ui:actionsDropdownItem data-ui="modal" href="#modalCreateTask" message="task.create.reportTitleToProvider"/>
     </ui:actionsDropdown>

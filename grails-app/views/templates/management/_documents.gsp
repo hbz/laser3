@@ -4,7 +4,6 @@
 
     <g:if test="${controllerName == "subscription"}">
         <div class="ui segment">
-%{--            <h3 class="ui header"><g:message code="subscriptionsManagement.subscription" args="${args.superOrgType}"/></h3>--}%
             <laser:render template="/templates/documents/table"
                       model="${[instance: subscription, context: 'documents', redirect: actionName, owntp: 'subscription']}"/>
         </div>

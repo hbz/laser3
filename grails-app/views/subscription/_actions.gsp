@@ -93,7 +93,9 @@
 
 <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
     <ui:actionsDropdown>
-        <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
+        <g:if test="${contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+            <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
+        </g:if>
 
         <div class="divider"></div>
 
@@ -227,7 +229,7 @@
         </g:if>
     </ui:actionsDropdown>
 </g:if>
-<g:elseif test="${contextService.isInstEditor_or_ROLEADMIN()}">
+<g:elseif test="${contextService.isInstEditor()}">
     <ui:actionsDropdown>
         <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
 
@@ -237,7 +239,7 @@
         </g:if>
     </ui:actionsDropdown>
 </g:elseif>
-<g:elseif test="${contextService.isInstUser_or_ROLEADMIN()}">
+<g:elseif test="${contextService.isInstUser()}">
     <g:if test="${actionName == 'members' && subscriptionService.getValidSubChilds(subscription)}">
         <ui:actionsDropdown>
             <ui:actionsDropdownItem data-ui="modal" id="copyMailAddresses" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
@@ -246,7 +248,9 @@
 </g:elseif>
 
 <g:if test="${contextService.isInstEditor_or_ROLEADMIN()}">
-    <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: subscription, owntp: 'subscription', inContextOrg: inContextOrg]]}" />
+    <g:if test="${contextService.isInstEditor()}">
+        <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: subscription, owntp: 'subscription', inContextOrg: inContextOrg]]}" />
+    </g:if>
     <laser:render template="financeImportTemplate" />
 </g:if>
 

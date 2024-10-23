@@ -40,7 +40,6 @@ class User {
         username    blank: false, unique: true
         password    blank: false, password: true
         display     blank: true, nullable: true
-        email       blank: true, nullable: true
         image       blank: true, nullable: true
         formalOrg                nullable: true
         formalRole               nullable: true

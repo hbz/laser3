@@ -36,10 +36,10 @@
                                 </g:each>
                             </td>
                             <td class="x">
-                                <g:form class="ui form" url="[controller:'ajax', action:'addPrsRole']" method="post">
+                                <g:form class="ui form" url="[controller:'addressbook', action:'createPersonRole']" method="post">
                                     <input type="hidden" name="parent" value="${parent}"/>
-                                    <input type="hidden" name="person" value="${p.class.name}:${p.id}" />
-                                    <input type="hidden" name="role" value="${role}"/>
+                                    <input type="hidden" name="person" value="${p.id}" />
+                                    <input type="hidden" name="role" value="${role.id}"/>
                                     <input type="hidden" name="ownObj" value="${genericOIDService.getOID(ownObj)}" />
 
                                     <input type="submit" class="${Btn.POSITIVE}" name="save" value="${message(code:'default.button.link.label')}"/>
@@ -64,10 +64,10 @@
                                 </g:each>
                             </td>
                             <td class="x">
-                                <g:form class="ui form" url="[controller:'ajax', action:'addPrsRole']" method="post">
+                                <g:form class="ui form" url="[controller:'addressbook', action:'createPersonRole']" method="post">
                                     <input type="hidden" name="parent" value="${parent}"/>
-                                    <input type="hidden" name="person" value="${p.class.name}:${p.id}" />
-                                    <input type="hidden" name="role" value="${role}"/>
+                                    <input type="hidden" name="person" value="${p.id}" />
+                                    <input type="hidden" name="role" value="${role.id}"/>
                                     <input type="hidden" name="ownObj" value="${genericOIDService.getOID(ownObj)}" />
 
                                     <input type="submit" class="${Btn.POSITIVE}" name="save" value="${message(code:'default.button.link.label')}"/>
