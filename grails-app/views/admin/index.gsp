@@ -110,8 +110,8 @@
                     case 'warning'  : tdClass = 'warning'; break
                     case 'error'    : tdClass = 'error'; break
                 }
-                if (el.hasChanged) {
-                    tdClass += ' sf_underline'
+                if (! el.hasChanged) {
+                    tdClass += ' sf_simple'
                 }
             %>
             <tr>

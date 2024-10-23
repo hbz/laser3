@@ -1,8 +1,7 @@
 package de.laser
 
-
+import de.laser.auth.Role
 import de.laser.auth.User
-import de.laser.ctrl.DocumentControllerService
 import de.laser.config.ConfigDefaults
 import de.laser.interfaces.ShareSupport
 import de.laser.storage.RDStore
@@ -27,7 +26,6 @@ import org.springframework.transaction.TransactionStatus
 class DocumentController {
 
     ContextService contextService
-    DocumentControllerService documentControllerService
     MessageSource messageSource
     AccessService accessService
 
@@ -42,16 +40,16 @@ class DocumentController {
      * Retrieves a document by its uuid
      * @return the document, null otherwise
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     def downloadDocument() {
         Doc doc = Doc.findByUuidAndContentType(params.id, Doc.CONTENT_TYPE_FILE)
         if (doc) {
             boolean check = false
 
-            DocContext.findAllByOwner(doc).each{dctx -> check = check || accessService.hasAccessToDocument(dctx) }  // TODO
+            DocContext.findAllByOwner(doc).each{dctx -> check = check || accessService.hasAccessToDocument(dctx, AccessService.READ) }
             if (check) {
                 String filename = doc.filename ?: messageSource.getMessage('template.documents.missing', null, LocaleUtils.getCurrentLocale())
                 doc.render(response, filename)
@@ -68,9 +66,9 @@ class DocumentController {
     /**
      * Uploads a new document, specified by the upload form parameters, and sets the entered metadata to the new {@link DocContext} object
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], withTransaction = 1)
+    @DebugInfo(isInstEditor = [], withTransaction = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def uploadDocument() {
         log.debug('upload document ..')
@@ -136,20 +134,20 @@ class DocumentController {
                         }
 
                         //link the document to the target object
-                        DocContext doc_context = new DocContext(
+                        DocContext docctx = new DocContext(
                                 "${params.ownertp}": instance,
                                 owner: doc_content
                         )
                         //set sharing settings (counts iff document is linked to an Org, are null otherwise)
-                        doc_context.shareConf = RefdataValue.get(params.shareConf) ?: null
-                        doc_context.targetOrg = params.targetOrg ? Org.get(params.targetOrg) : null
+                        docctx.shareConf = RefdataValue.get(params.shareConf) ?: null
+                        docctx.targetOrg = params.targetOrg ? Org.get(params.targetOrg) : null
                         //set sharing setting for license or subscription documents
                         if(params.setSharing) {
-                            doc_context.isShared = true
+                            docctx.isShared = true
                         }
-                        doc_context.save()
-                        if(doc_context.isShared) {
-                            ((ShareSupport) instance).updateShare(doc_context)
+                        docctx.save()
+                        if(docctx.isShared) {
+                            ((ShareSupport) instance).updateShare(docctx)
                         }
 
                         //attach document to all survey participants (= SurveyConfigs)
@@ -216,22 +214,59 @@ class DocumentController {
     }
 
     /**
-     * Call for editing an existing document, see {@link DocumentControllerService#editDocument()} for the editing implementation. Redirects back to the referer where result may be shown in case of an error
+     * Call for editing an existing document. Redirects back to the referer where result may be shown in case of an error
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = 1)
+    @DebugInfo(isInstEditor = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def editDocument() {
-        Map<String,Object> ctrlResult = documentControllerService.editDocument(params)
-        if(ctrlResult.status == DocumentControllerService.STATUS_ERROR) {
-            flash.error = message(code:'template.documents.edit.error') as String
+        log.debug("editDocument: ${params}")
+
+        DocContext docctx = DocContext.get(params.docctx)
+        if (accessService.hasAccessToDocument(docctx, AccessService.WRITE)) {
+            // moved from DocumentControllerService.editDocument()
+
+            Class dc = CodeUtils.getDomainClass(params.ownerclass)
+            if (dc) {
+
+                def instance = dc.get(params.ownerid)
+                if (instance) {
+                    Doc doc = docctx.owner
+
+                    doc.title = params.upload_title ?: doc.filename
+                    doc.confidentiality = params.confidentiality ? RefdataValue.getByValueAndCategory(params.confidentiality, RDConstants.DOCUMENT_CONFIDENTIALITY) : null
+                    doc.type = params.doctype ? RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE) : null
+                    doc.owner = contextService.getOrg()
+                    doc.save()
+
+                    // 4644 docctx.doctype = params.doctype ? RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE) : null
+                    if(params.targetOrg)
+                        docctx.targetOrg = Org.get(params.targetOrg)
+                    docctx.shareConf = RefdataValue.get(params.shareConf) ?: null
+                    docctx.save()
+
+                    log.debug("Doc updated and new doc context updated on ${params.ownertp} for ${params.ownerid}")
+                }
+                else {
+                    flash.error = message(code:'template.documents.edit.error')
+                    log.error("Unable to locate document owner instance for class ${params.ownerclass}:${params.ownerid}")
+                }
+            }
+            else {
+                flash.error = message(code:'template.documents.edit.error')
+                log.warn("Unable to locate domain class when processing generic doc upload. ownerclass was ${params.ownerclass}")
+            }
+        }
+        else {
+            flash.error = message(code: 'default.noPermissions')
         }
         redirect(url: request.getHeader('referer'))
     }
 
+    @DebugInfo(isInstEditor = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def deleteDocument() {
         log.debug("deleteDocument: ${params}")
@@ -239,7 +274,7 @@ class DocumentController {
         if (params.deleteId) {
             DocContext docctx = DocContext.get(params.deleteId)
 
-            if (accessService.hasAccessToDocument(docctx)) {
+            if (accessService.hasAccessToDocument(docctx, AccessService.WRITE)) {
                 docctx.status = RDStore.DOC_CTX_STATUS_DELETED
                 docctx.save()
                 flash.message = message(code: 'default.deleted.general.message')
@@ -250,7 +285,8 @@ class DocumentController {
         }
         if (params.redirectTab) {
             redirect controller: params.redirectController, action: params.redirectAction, id: params.instanceId, params: [tab: params.redirectTab] // subscription.membersSubscriptionsManagement
-        } else {
+        }
+        else {
             redirect controller: params.redirectController, action: params.redirectAction, id: params.instanceId
         }
     }

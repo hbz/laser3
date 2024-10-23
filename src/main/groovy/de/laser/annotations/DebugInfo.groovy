@@ -15,6 +15,10 @@ import java.lang.annotation.Target
 
     // contextService
 
+    String[] isInstUser()      default ['']                             // [orgPerms]
+    String[] isInstEditor()    default ['']                             // [orgPerms]
+    String[] isInstAdm()       default ['']                             // [orgPerms]
+
     String[] isInstUser_or_ROLEADMIN()      default ['']                // [orgPerms]
     String[] isInstEditor_or_ROLEADMIN()    default ['']                // [orgPerms]
     String[] isInstAdm_or_ROLEADMIN()       default ['']                // [orgPerms]

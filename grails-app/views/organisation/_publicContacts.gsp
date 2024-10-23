@@ -80,7 +80,7 @@
                             person                 : prs,
                             personRole             : PersonRole.findByOrgAndFunctionTypeAndPrs(orgInstance, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, prs),
                             personContext          : orgInstance,
-                            tmplShowDeleteButton   : (contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
+                            tmplShowDeleteButton   : (contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
                             tmplShowFunctions      : false,
                             tmplShowPositions      : true,
                             tmplShowResponsiblities: true,
@@ -89,7 +89,7 @@
                             controller             : 'organisation',
                             action                 : 'show',
                             id                     : orgInstance.id,
-                            editable               : (contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
+                            editable               : (contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
                             noSelection            : true
                     ]}"/>
                 </g:each>

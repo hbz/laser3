@@ -5,11 +5,13 @@ import de.laser.addressbook.Contact
 import de.laser.addressbook.Person
 import de.laser.addressbook.PersonRole
 import de.laser.annotations.DebugInfo
+import de.laser.auth.Role
 import de.laser.helper.Params
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyOrg
 import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
+import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 
 /**
@@ -22,9 +24,9 @@ import grails.plugin.springsecurity.annotation.Secured
 class AddressbookController {
 
     AccessService accessService
-    AddressbookService addressbookService
     ContextService contextService
     FormService formService
+    GenericOIDService genericOIDService
 
     @DebugInfo(isInstUser_or_ROLEADMIN = [])
     @Secured(closure = {
@@ -39,9 +41,9 @@ class AddressbookController {
     /**
      * Creates a new address with the given parameters
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], withTransaction = 1)
+    @DebugInfo(isInstEditor = [], withTransaction = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def createAddress() {
         // moved from AddressController.createAddress()
@@ -87,9 +89,9 @@ class AddressbookController {
      * @return redirect back to the referer -> an updated list of person contacts
      * @see de.laser.addressbook.Person
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], withTransaction = 1)
+    @DebugInfo(isInstEditor = [], withTransaction = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def createPerson() {
         // moved from PersonController.createPerson()
@@ -207,18 +209,64 @@ class AddressbookController {
         }
     }
 
+    @Secured(['ROLE_USER'])
+    @Transactional
+    def createPersonRole() {
+        // moved from AjaxController.addPrsRole()
+        // TODO: check perms
+
+        def owner           = genericOIDService.resolveOID(params.ownObj)
+        def parent          = genericOIDService.resolveOID(params.parent)
+        Person person       = (Person) genericOIDService.resolveOID(params.person)
+        RefdataValue role   = (RefdataValue) genericOIDService.resolveOID(params.role)
+
+        PersonRole newPrsRole
+        List<PersonRole> existingPrsRole
+
+        if (owner && person && role) {
+            newPrsRole = new PersonRole(prs: person)
+
+            if (owner instanceof Org)           { newPrsRole.org = owner }
+            else if(owner instanceof Provider)  { newPrsRole.provider = owner }
+            else if(owner instanceof Vendor)    { newPrsRole.vendor = owner }
+
+            if (parent) {
+                newPrsRole.responsibilityType = role
+                newPrsRole.setReference(parent)
+
+                String[] ref = newPrsRole.getReference().split(":")
+                String query = "select pr from PersonRole pr where pr.prs = :prs and (pr.org = :owner or pr.provider = :owner or pr.vendor = :owner) and pr.responsibilityType = :responsibilityType and ${ref[0]} = :parent"
+                existingPrsRole = PersonRole.executeQuery(query, [prs:person, owner: owner, responsibilityType: role, parent: parent])
+            }
+            else {
+                newPrsRole.functionType = role
+                existingPrsRole = PersonRole.executeQuery('select pr from PersonRole pr where pr.prs = :prs and (pr.org = :owner or pr.provider = :owner or pr.vendor = :owner) and pr.functionType = :functionType', [prs:person, owner: owner, functionType: role])
+            }
+        }
+
+        if (! existingPrsRole && newPrsRole && newPrsRole.save()) {
+            //flash.message = message(code: 'default.success')
+        }
+        else {
+            log.error("Problem saving new person role ..")
+            //flash.error = message(code: 'default.error')
+        }
+
+        redirect(url: request.getHeader('referer'))
+    }
+
     // --------------------------------- DELETE ---------------------------------
 
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def deleteAddress() {
         Address obj = Address.get(params.id)
         List args   = [message(code: 'address.label'), params.id]
 
         if (obj) {
-            if (accessService.hasAccessToAddress(obj) || addressbookService.isAddressEditable(obj, contextService.getUser())) { // TODO: || -> &&
+            if (accessService.hasAccessToAddress(obj, AccessService.WRITE)) {
                 Address.withTransaction {
                     try {
                         List changeList = SurveyOrg.findAllByAddress(obj)
@@ -246,17 +294,17 @@ class AddressbookController {
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def deleteContact() {
         Contact obj = Contact.get(params.id)
         List args   = [message(code: 'contact.label'), params.id]
 
-        if (accessService.hasAccessToContact(obj) || addressbookService.isContactEditable(obj, contextService.getUser())) { // TODO: || -> &&
+        if (accessService.hasAccessToContact(obj, AccessService.WRITE)) {
             try {
-                obj.delete() // TODO: check perms
+                obj.delete()
                 flash.message = message(code: 'default.deleted.message', args: args)
             }
             catch (Exception e) {
@@ -270,16 +318,16 @@ class AddressbookController {
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def deletePerson() {
         Person obj = Person.get(params.id)
         List args  = [message(code: 'person.label'), params.id]
 
         if (obj) {
-            if (accessService.hasAccessToPerson(obj) || addressbookService.isPersonEditable(obj, contextService.getUser())) { // TODO: || -> &&
+            if (accessService.hasAccessToPerson(obj, AccessService.WRITE)) {
                 Person.withTransaction {
                     try {
                         List changeList = SurveyOrg.findAllByPerson(obj)
@@ -307,9 +355,9 @@ class AddressbookController {
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
+    @DebugInfo(isInstEditor = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def deletePersonRole() {
         PersonRole obj = PersonRole.get(params.id)
@@ -333,9 +381,9 @@ class AddressbookController {
     /**
      * Updates the given address with the given updated data
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], withTransaction = 1)
+    @DebugInfo(isInstEditor = [], withTransaction = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def editAddress() {
         // moved from AddressController.editAddress()
@@ -344,7 +392,7 @@ class AddressbookController {
         String referer  = request.getHeader('referer')
 
         if (obj) {
-            if (accessService.hasAccessToAddress(obj) || addressbookService.isAddressEditable(obj, contextService.getUser())) { // TODO: || -> &&
+            if (accessService.hasAccessToAddress(obj, AccessService.WRITE)) {
                 if (params.version) {
                     Long version = params.long('version')
                     if (obj.version > version) {
@@ -414,9 +462,9 @@ class AddressbookController {
      * Takes the submitted parameters and updates the person contact based on the given parameter map
      * @return redirect to the referer -> the updated view of the person contact
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], withTransaction = 1)
+    @DebugInfo(isInstEditor = [], withTransaction = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def editPerson() {
         // moved from PersonController.editPerson()
@@ -426,7 +474,7 @@ class AddressbookController {
 
         if (obj) {
             Person.withTransaction {
-                if (accessService.hasAccessToPerson(obj) || addressbookService.isPersonEditable(obj, contextService.getUser())) { // TODO: || -> &&
+                if (accessService.hasAccessToPerson(obj, AccessService.WRITE)) {
 
                     if (!params.functionType && !params.positionType) {
                         flash.error = message(code: 'person.create.missing_function') as String

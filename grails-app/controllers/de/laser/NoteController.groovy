@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.annotations.DebugInfo
+import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.storage.RDStore
 import de.laser.utils.CodeUtils
@@ -19,43 +20,48 @@ class NoteController {
 	/**
 	 * Creates a new note for a {@link Subscription}, {@link License} or {@link Org}
 	 */
-	@Secured(['ROLE_USER'])
-	@Transactional
+//	@Transactional
+	@DebugInfo(isInstEditor = [], withTransaction = 1)
+	@Secured(closure = {
+		ctx.contextService.isInstEditor()
+	})
 	def createNote() {
 		String referer = request.getHeader('referer')
 
 		// processing form#modalCreateNote
 		log.debug("Create note referer was ${referer} or ${request.request.RequestURL}")
 
-		User user = contextService.getUser()
-		Class dc = CodeUtils.getDomainClass( params.ownerclass )
+		Doc.withTransaction {
+			User user = contextService.getUser()
+			Class dc = CodeUtils.getDomainClass( params.ownerclass )
 
-		if (dc) {
-			def instance = dc.get(params.ownerid)
-			if (instance) {
-				log.debug("Got owner instance ${instance}")
+			if (dc) {
+				def instance = dc.get(params.ownerid)
+				if (instance) {
+					log.debug("Got owner instance ${instance}")
 
-				Doc doc_content = new Doc(
-						contentType: Doc.CONTENT_TYPE_STRING,
-						title: params.noteTitle,
-						content: params.noteContent,
-						type: RDStore.DOC_TYPE_NOTE,
-						owner: contextService.getOrg(),
-						user: user).save()
+					Doc doc_content = new Doc(
+							contentType: Doc.CONTENT_TYPE_STRING,
+							title: params.noteTitle,
+							content: params.noteContent,
+							type: RDStore.DOC_TYPE_NOTE,
+							owner: contextService.getOrg(),
+							user: user).save()
 
-				log.debug("Setting new context type to ${params.ownertp}..")
+					log.debug("Setting new context type to ${params.ownertp}..")
 
-				DocContext doc_context = new DocContext(
-						"${params.ownertp}": instance,
-						owner: doc_content)
-				doc_context.save()
+					DocContext docctx = new DocContext(
+							"${params.ownertp}": instance,
+							owner: doc_content)
+					docctx.save()
+				}
+				else {
+					log.debug("no instance")
+				}
 			}
 			else {
-				log.debug("no instance")
+				log.debug("no type")
 			}
-		}
-		else {
-			log.debug("no type")
 		}
 
 		redirect(url: referer)
@@ -64,36 +70,24 @@ class NoteController {
 	/**
 	 * Edits an already existing note. The note to edit is given by params.id
 	 */
-	@DebugInfo(isInstEditor_or_ROLEADMIN = [], withTransaction = 1)
+	@DebugInfo(isInstEditor = [], withTransaction = 1)
 	@Secured(closure = {
-		ctx.contextService.isInstEditor_or_ROLEADMIN()
+		ctx.contextService.isInstEditor()
 	})
 	def editNote() {
 		// processing form#modalEditNote
 		String referer = request.getHeader('referer')
 
 		Doc.withTransaction {
-			switch (request.method) {
-				case 'POST':
-					//					Doc docInstance = Doc.findByIdAndContentType(params.long('id'), Doc.CONTENT_TYPE_STRING)
-					DocContext docContext = DocContext.get(params.long('dctx'))
-					if (! accessService.hasAccessToDocNote(docContext)) {
-						flash.error = message(code: 'default.noPermissions') as String
-						redirect(url: referer)
-						return
-					}
+			DocContext docctx = DocContext.get(params.long('dctx'))
+			if (accessService.hasAccessToDocNote(docctx, AccessService.WRITE)) {
 
-					Doc docInstance = docContext.owner
-					if (!docInstance) {
-						flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.note.label'), params.id]) as String
-						redirect(url: referer)
-						return
-					}
-
+				Doc doc = docctx.owner
+				if (doc) {
 					if (params.version) {
 						Long version = params.long('version')
-						if (docInstance.version > version) {
-							docInstance.errors.rejectValue(
+						if (doc.version > version) {
+							doc.errors.rejectValue(
 									'version',
 									'default.optimistic.locking.failure',
 									[message(code: 'default.note.label')] as Object[],
@@ -103,27 +97,33 @@ class NoteController {
 							return
 						}
 					}
+					doc.properties = params
 
-					docInstance.properties = params
-					if (!docInstance.owner)
-						docInstance.owner = contextService.getOrg()
+					if (!doc.owner)
+						doc.owner = contextService.getOrg()
 
-					if (!docInstance.save()) {
-						redirect(url: referer)
-						return
+					if (doc.save()) {
+						flash.message = message(code: 'default.updated.message', args: [message(code: 'default.note.label'), doc.title])
 					}
-
-					flash.message = message(code: 'default.updated.message', args: [message(code: 'default.note.label'), docInstance.title]) as String
-					redirect(url: referer)
-					return
-					break
+					else {
+						// todo
+					}
+				}
+				else {
+					flash.error = message(code: 'default.not.found.message', args: [message(code: 'default.note.label'), params.id])
+				}
+			}
+			else {
+				flash.error = message(code: 'default.noPermissions')
 			}
 		}
+
+		redirect(url: referer)
 	}
 
-	@DebugInfo(isInstEditor_or_ROLEADMIN = [])
+	@DebugInfo(isInstEditor = [])
 	@Secured(closure = {
-		ctx.contextService.isInstEditor_or_ROLEADMIN()
+		ctx.contextService.isInstEditor()
 	})
 	def deleteNote() {
 		log.debug("deleteNote: ${params}")
@@ -131,7 +131,7 @@ class NoteController {
 		if (params.deleteId) {
 			DocContext docctx = DocContext.get(params.deleteId)
 
-			if (accessService.hasAccessToDocNote(docctx)) {
+			if (accessService.hasAccessToDocNote(docctx, AccessService.WRITE)) {
 				docctx.status = RDStore.DOC_CTX_STATUS_DELETED
 				docctx.save()
 				flash.message = message(code: 'default.deleted.general.message')
@@ -143,7 +143,8 @@ class NoteController {
 
 		if (params.redirectTab) {
 			redirect controller: params.redirectController, action: params.redirectAction, id: params.instanceId, params: [tab: params.redirectTab] // subscription.membersSubscriptionsManagement
-		} else {
+		}
+		else {
 			redirect controller: params.redirectController, action: params.redirectAction, id: params.instanceId
 		}
 	}

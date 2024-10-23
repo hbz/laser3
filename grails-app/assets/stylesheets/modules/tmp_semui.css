@@ -257,7 +257,7 @@ h1.header.icon > i.tools    { background-color:#f3a43b; border-color:#f3a43b; co
 
 /* -- simple format helper -- */
 
-*.sf_underline  { text-decoration: underline dotted; }
+*.sf_simple  { font-style: italic; color: #6e6e6e; }
 
 /* Temp Identifier Bugfix for 3.0, for 3.1 already fixed in LESS Structure - has to delete later */
 
@@ -304,19 +304,23 @@ body.survey_copyElementsIntoSurvey nav.tabular .item .content .description
     color: #00b5ad;
 }
 
-/* -- flyouts -- */
+/* -- flyouts / markdown -- */
 
-#help-content.markdown > .content {
+#help-content.la-markdown > .content {
     padding-top: 70px;
 }
-#help-content.markdown > .basic.actions {
+#help-content.la-markdown > .basic.actions {
     padding: 1rem 1.5rem;
     border-top: 1px solid #E9E9E9;
 }
 
+.la-markdown img {
+    max-width: 100%;
+}
+
 /* todo .. fix markup and remove */
 
-.ui.flyout:not(.markdown) {
+.ui.flyout:not(.la-markdown) {
     padding: 50px 0 10px 0;
     overflow: scroll
 }

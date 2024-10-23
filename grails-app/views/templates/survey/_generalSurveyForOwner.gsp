@@ -146,7 +146,7 @@
 
             <div id="container-notes">
                     <laser:render template="/templates/notes/card"
-                                  model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)]}"/>
+                                  model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_PRO)]}"/>
             </div>
 
             <div id="container-documents">
