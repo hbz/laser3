@@ -1987,11 +1987,8 @@ class AjaxController {
         outs.close()
     }
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
     def addUserRole() {
-        // TODO -- check permissions
-        // TODO -- check permissions
-        // TODO -- check permissions
         User user = genericOIDService.resolveOID(params.user) as User
         Role role = genericOIDService.resolveOID(params.role) as Role
         if (user && role) {
@@ -2007,7 +2004,7 @@ class AjaxController {
     /**
      * Revokes the given role from the given user
      */
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
     def removeUserRole() {
         User user = genericOIDService.resolveOID(params.user) as User
         Role role = genericOIDService.resolveOID(params.role) as Role

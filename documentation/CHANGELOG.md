@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6030    23.10.2024  rc-3.4  3.4.12      David   Bug         Unerlaubtes Erlangen von Adminrechten
+
 6029    18.10.2024  rc-3.4  3.4.12      Andreas Bug         Tippfehler in Referenzwert behoben
 
 6024    17.10.2024  rc-3.4  3.4.12      Andreas Bug         500er beim Eintragen negativer Posten ohne Wert
