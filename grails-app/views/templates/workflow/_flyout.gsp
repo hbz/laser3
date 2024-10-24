@@ -3,7 +3,7 @@
 
 <g:if test="${clist}">
     <%
-        boolean checkedEditable = workflowService.hasUserPerm_edit()
+        boolean checkedEditable = workflowService.hasWRITE()
     %>
 
     <g:set var="clistInfo" value="${clist.getInfo()}" />

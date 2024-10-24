@@ -133,7 +133,7 @@
             ${tasksCount} ${message(code:'myinst.dash.task.label')}
         </a>
 
-        <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
+        <g:if test="${workflowService.hasREAD()}"><!-- TODO: workflows-permissions -->
             <a class="${us_dashboard_tab.value == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
                 <i class="${Icon.WORKFLOW} large"></i>
                 ${allChecklistsCount} ${message(code:'workflow.plural')}
@@ -195,7 +195,7 @@
             </div>
         </div>
 
-        <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
+        <g:if test="${workflowService.hasREAD()}"><!-- TODO: workflows-permissions -->
             <div id="wfFlyout" class="ui eight wide flyout"></div>
 
             <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Workflows' ? 'active':''}" data-tab="workflows">
@@ -265,7 +265,7 @@
                                         ${DateUtils.getLocalizedSDF_noTime().format(clist.dateCreated)}
                                     </td>
                                     <td class="center aligned">
-                                        <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+                                        <g:if test="${workflowService.hasWRITE()}"><!-- TODO: workflows-permissions -->
                                             <button class="${Btn.MODERN.SIMPLE}" data-wfId="${clist.id}"><i class="${Icon.CMD.EDIT}"></i></button>
 
                                             <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
