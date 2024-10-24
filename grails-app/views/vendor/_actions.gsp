@@ -3,7 +3,7 @@
 
 <g:if test="${contextService.isInstEditor( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
     <ui:actionsDropdown>
-        <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
+        <laser:render template="/templates/sidebar/actions" />
         <g:if test="${editable}">
             <g:if test="${actionName == 'addressbook'}">
                 <div class="divider"></div>
@@ -39,7 +39,7 @@
 </g:else>
 
 <g:if test="${contextService.isInstEditor()}">
-    <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: vendor, owntp: 'vendor', institution: institution]]}" />
+    <laser:render template="/templates/sidebar/modals" model="${[tmplConfig: [ownobj: vendor, owntp: 'vendor', institution: institution]]}" />
 </g:if>
 
 

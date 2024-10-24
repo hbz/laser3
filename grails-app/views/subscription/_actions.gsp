@@ -94,7 +94,7 @@
 <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
     <ui:actionsDropdown>
         <g:if test="${contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
-            <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
+            <laser:render template="/templates/sidebar/actions" />
         </g:if>
 
         <div class="divider"></div>
@@ -247,10 +247,10 @@
     </g:if>
 </g:elseif>
 
+<g:if test="${contextService.isInstEditor()}">
+    <laser:render template="/templates/sidebar/modals" model="${[tmplConfig: [ownobj: subscription, owntp: 'subscription', inContextOrg: inContextOrg]]}" />
+</g:if>
 <g:if test="${contextService.isInstEditor_or_ROLEADMIN()}">
-    <g:if test="${contextService.isInstEditor()}">
-        <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: subscription, owntp: 'subscription', inContextOrg: inContextOrg]]}" />
-    </g:if>
     <laser:render template="financeImportTemplate" />
 </g:if>
 

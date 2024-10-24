@@ -198,18 +198,6 @@ class ContextService {
 
     // -- private
 
-    private boolean _hasInstRoleAndPerm(String instUserRole, String orgPerms, boolean denyCustomerTypeSupport) {
-        boolean check = userService.hasAffiliation_or_ROLEADMIN(getUser(), getOrg(), instUserRole)
-
-        if (check && denyCustomerTypeSupport) {
-            check = !getOrg().isCustomerType_Support()
-        }
-        if (check && orgPerms) {
-            check = _hasPerm(orgPerms)
-        }
-        check
-    }
-
     /**
      * Checks if the context user is either a superadmin or has the given role at the context institution and if this institution is of the given customer type
      * @param instUserRole the user role type to check
@@ -224,6 +212,18 @@ class ContextService {
         }
 
         _hasInstRoleAndPerm(instUserRole, orgPerms, denyCustomerTypeSupport)
+    }
+
+    private boolean _hasInstRoleAndPerm(String instUserRole, String orgPerms, boolean denyCustomerTypeSupport) {
+        boolean check = userService.hasFormalAffiliation(getUser(), getOrg(), instUserRole)
+
+        if (check && denyCustomerTypeSupport) {
+            check = !getOrg().isCustomerType_Support()
+        }
+        if (check && orgPerms) {
+            check = _hasPerm(orgPerms)
+        }
+        check
     }
 
     /**

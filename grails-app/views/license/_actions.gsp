@@ -18,7 +18,7 @@
 </g:if>
 <g:if test="${userService.hasFormalAffiliation(user, institution, 'INST_EDITOR')}">
     <ui:actionsDropdown>
-        <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
+        <laser:render template="/templates/sidebar/actions" />
         <g:if test="${editable}">
             <g:if test="${license.getLicensingConsortium()?.id == institution.id}">
                 <g:if test="${!( license.instanceOf )}">
@@ -71,5 +71,5 @@
 </g:if>
 
 <g:if test="${contextService.isInstEditor()}">
-    <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: license, owntp: 'license', inContextOrg: inContextOrg]]}" />
+    <laser:render template="/templates/sidebar/modals" model="${[tmplConfig: [ownobj: license, owntp: 'license', inContextOrg: inContextOrg]]}" />
 </g:if>

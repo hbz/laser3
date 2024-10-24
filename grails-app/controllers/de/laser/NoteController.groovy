@@ -14,6 +14,8 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class NoteController {
 
+	// NO CUSTOMER_TYPE / PERM required
+
 	ContextService contextService
 	AccessService accessService
 
