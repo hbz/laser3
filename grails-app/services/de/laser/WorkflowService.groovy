@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.auth.Role
+
 import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
 import de.laser.workflow.*
@@ -94,7 +94,7 @@ class WorkflowService {
             if (cmd[1] == WfChecklist.KEY) {
 
                 if (cmd[0] == 'create') { // actions > modal
-                    result = createChecklist(params)
+                    result = _createChecklist(params)
                 }
                 else if (cmd[0] == 'instantiate') { // actions > modal
                     result.status = OP_STATUS_ERROR
@@ -107,19 +107,19 @@ class WorkflowService {
                     }
                 }
                 else if (cmd[0] == 'delete') { // table
-                    result = deleteChecklist( cmd )
+                    result = _deleteChecklist( cmd )
                 }
             }
             else if (cmd[1] == WfCheckpoint.KEY) {
 
                 if (cmd[0] == 'create') { // flyout
-                    result = createCheckpoint(params)
+                    result = _createCheckpoint(params)
                 }
                 else if (cmd[0] == 'delete') {  // flyout
-                    result = deleteCheckpoint( cmd )
+                    result = _deleteCheckpoint( cmd )
                 }
                 else if (cmd[0] in ['moveUp', 'moveDown']) { // flyout
-                    result = moveCheckpoint( cmd )
+                    result = _moveCheckpoint( cmd )
                 }
                 else if (cmd[0] == 'modal') { // table
                     ParamsHelper ph = getNewParamsHelper( cmd[1], params )
@@ -157,8 +157,8 @@ class WorkflowService {
      * @param cmd the command as array [command, key, workflow checkpoint]
      * @return the deletion result with the new empty position
      */
-    Map<String, Object> deleteCheckpoint(String[] cmd) {
-        log.debug('deleteCheckpoint() ' + cmd)
+    private Map<String, Object> _deleteCheckpoint(String[] cmd) {
+        log.debug('_deleteCheckpoint() ' + cmd)
 
         Map<String, Object> result = [ cmd: cmd[0], key: cmd[1] ]
         WfCheckpoint cpoint = WfCheckpoint.get( cmd[2] )
@@ -186,8 +186,8 @@ class WorkflowService {
      * @param cmd the command in structure [command (moveUp or moveDown), key, workflow point]
      * @return the movement result status: {@link #OP_STATUS_DONE} if successful, {@link #OP_STATUS_ERROR} on failure
      */
-    Map<String, Object> moveCheckpoint(String[] cmd) {
-        log.debug('moveCheckpoint() ' + cmd)
+    private Map<String, Object> _moveCheckpoint(String[] cmd) {
+        log.debug('_moveCheckpoint() ' + cmd)
 
         Map<String, Object> result = [ cmd: cmd[0], key: cmd[1] ]
         WfCheckpoint cpoint = WfCheckpoint.get( cmd[2] )
@@ -223,8 +223,8 @@ class WorkflowService {
      * @param params the request parameter map, containing the data for the new workflow checklist
      * @return a {@link Map} containing the creation result
      */
-    Map<String, Object> createChecklist(GrailsParameterMap params) {
-        log.debug( 'createChecklist() ' + params )
+    private Map<String, Object> _createChecklist(GrailsParameterMap params) {
+        log.debug( '_createChecklist() ' + params )
 
         String[] cmd = (params.cmd as String).split(':')
         ParamsHelper ph = getNewParamsHelper( cmd[1], params )
@@ -270,7 +270,7 @@ class WorkflowService {
                                 tmp.WF_CHECKPOINT_checklist = clist.id
                                 tmp.cmd = 'create:WF_CHECKPOINT'
 
-                                Map<String, Object> tmpResult = createCheckpoint(tmp)
+                                Map<String, Object> tmpResult = _createCheckpoint(tmp)
                                 saved = saved && (tmpResult.status == OP_STATUS_DONE)
                             }
                         }
@@ -299,8 +299,8 @@ class WorkflowService {
      * @param params the request parameter map
      * @return a {@link Map} containing the creation result
      */
-    Map<String, Object> createCheckpoint(GrailsParameterMap params) {
-        log.debug( 'createCheckpoint() ' + params )
+    private Map<String, Object> _createCheckpoint(GrailsParameterMap params) {
+        log.debug( '_createCheckpoint() ' + params )
 
         String[] cmd = (params.cmd as String).split(':')
         ParamsHelper ph = getNewParamsHelper( cmd[1], params )
@@ -402,8 +402,8 @@ class WorkflowService {
      * @param cmd the command to be executed, in structure [command, key, list]
      * @return a {@link Map} confirming the deletion for [command, key]
      */
-    Map<String, Object> deleteChecklist(String[] cmd) {
-        log.debug('deleteChecklist() ' + cmd)
+    private Map<String, Object> _deleteChecklist(String[] cmd) {
+        log.debug('_deleteChecklist() ' + cmd)
 
         Map<String, Object> result = [ cmd: cmd[0], key: cmd[1] ]
 
@@ -503,29 +503,21 @@ class WorkflowService {
 
     /**
      * Checks if the current user has reading rights
-     * @return true if the context user belongs to a PRO customer consortium or is a superadmin, false otherwise
-     * @see CustomerTypeService#ORG_CONSORTIUM_PRO
-     * @see ContextService#isInstAdm_or_ROLEADMIN()
+     * @return true if the context user belongs to a PRO customer, false otherwise
+     * @see CustomerTypeService#PERMS_PRO
+     * @see ContextService#isInstUser()
      */
-    boolean hasUserPerm_read() {
-        Org ctxOrg = contextService.getOrg()
-        if (ctxOrg && (ctxOrg.isCustomerType_Pro() || ctxOrg.isCustomerType_Support()) && contextService.isInstUser_or_ROLEADMIN()) {
-            return true
-        }
-        false
+    boolean hasREAD() {
+        contextService.isInstUser(CustomerTypeService.PERMS_PRO)
     }
 
     /**
      * Checks if the current user has editing rights
-     * @return true if the context user is at least {@link de.laser.auth.Role#INST_EDITOR} at a PRO customer consortium or is a superadmin, false otherwise
-     * @see CustomerTypeService#ORG_CONSORTIUM_PRO
-     * @see ContextService#isInstAdm_or_ROLEADMIN()
+     * @return true if the context user is at least {@link de.laser.auth.Role#INST_EDITOR} at a PRO customer, false otherwise
+     * @see CustomerTypeService#PERMS_PRO
+     * @see ContextService#isInstEditor()
      */
-    boolean hasUserPerm_edit() {
-        Org ctxOrg = contextService.getOrg()
-        if (ctxOrg && (ctxOrg.isCustomerType_Pro() || ctxOrg.isCustomerType_Support()) && contextService.isInstEditor_or_ROLEADMIN()) {
-            return true
-        }
-        false
+    boolean hasWRITE() {
+        contextService.isInstEditor(CustomerTypeService.PERMS_PRO)
     }
 }

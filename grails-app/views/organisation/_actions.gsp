@@ -4,7 +4,7 @@
 <g:if test="${contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
     <ui:actionsDropdown>
         <g:if test="${contextService.isInstEditor( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
-            <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
+            <laser:render template="/templates/sidebar/actions" />
         </g:if>
 %{--                <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />--}% %{-- erms-4798 --}%
 
@@ -148,7 +148,7 @@
 %{----!>--}%
 
 <g:if test="${contextService.isInstEditor()}">
-    <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: orgInstance, owntp: 'org', institution: institution]]}" />
+    <laser:render template="/templates/sidebar/modals" model="${[tmplConfig: [ownobj: orgInstance, owntp: 'org', institution: institution]]}" />
 </g:if>
 
 

@@ -14,22 +14,22 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class NoteController {
 
+	// NO CUSTOMER_TYPE / PERM required
+
 	ContextService contextService
 	AccessService accessService
 
 	/**
 	 * Creates a new note for a {@link Subscription}, {@link License} or {@link Org}
 	 */
-//	@Transactional
 	@DebugInfo(isInstEditor = [], withTransaction = 1)
 	@Secured(closure = {
 		ctx.contextService.isInstEditor()
 	})
 	def createNote() {
-		String referer = request.getHeader('referer')
-
 		// processing form#modalCreateNote
-		log.debug("Create note referer was ${referer} or ${request.request.RequestURL}")
+		String referer = request.getHeader('referer')
+//		log.debug("Create note referer was ${referer} or ${request.request.RequestURL}")
 
 		Doc.withTransaction {
 			User user = contextService.getUser()
@@ -56,11 +56,11 @@ class NoteController {
 					docctx.save()
 				}
 				else {
-					log.debug("no instance")
+					flash.error = message(code: 'default.save.error.general.message')
 				}
 			}
 			else {
-				log.debug("no type")
+				flash.error = message(code: 'default.save.error.general.message')
 			}
 		}
 
@@ -106,7 +106,7 @@ class NoteController {
 						flash.message = message(code: 'default.updated.message', args: [message(code: 'default.note.label'), doc.title])
 					}
 					else {
-						// todo
+						flash.error = message(code: 'default.save.error.general.message')
 					}
 				}
 				else {

@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5976    24.10.2024  dev     3.5         David   Feature     Rechteprüfung: Anmerkungen
+
+6017    24.10.2024  dev     3.5         David   Feature     Neue Addressbook-Komponente
+
 6030    23.10.2024  rc-3.4  3.4.12      David   Bug         Unerlaubtes Erlangen von Adminrechten
 
 6028    18.10.2024  dev     3.5         David   Feature     DashboardDueDate.responsibleOrg

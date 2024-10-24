@@ -102,7 +102,7 @@ class MyInstitutionControllerService {
         result.dueDatesCount = dashboardDueDatesService.countDashboardDueDates( result.user as User )
 
         prf.setBenchmark('workflows')
-        if (workflowService.hasUserPerm_edit()) {
+        if (workflowService.hasWRITE()) {
             if (params.cmd) {
                 String[] cmd = params.cmd.split(':')
 
@@ -113,7 +113,7 @@ class MyInstitutionControllerService {
             }
         }
 
-        if (workflowService.hasUserPerm_read()){
+        if (workflowService.hasREAD()){
             List<WfChecklist> workflows = []
 
             workflowService.sortByLastUpdated( WfChecklist.findAllByOwner(result.institution) ).each { clist ->
