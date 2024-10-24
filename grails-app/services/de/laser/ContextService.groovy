@@ -350,16 +350,16 @@ class ContextService {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
-        Org ctx   = contextService.getOrg()
-        User user = contextService.getUser()
+        Org ctx   = getOrg()
+        User user = getUser()
 
         // combo check @ contextUser/contextOrg
-        boolean check1 = userService.hasAffiliation_or_ROLEADMIN(user, ctx, instUserRole) && contextService._hasPerm(orgPerms)
+        boolean check1 = userService.hasAffiliation_or_ROLEADMIN(user, ctx, instUserRole) && _hasPerm(orgPerms)
         boolean check2 = (orgToCheck.id == ctx.id) || Combo.findByToOrgAndFromOrg(ctx, orgToCheck)
 
         // orgToCheck check @ otherOrg
         boolean check3 = (orgToCheck.id == ctx.id) && SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-        // boolean check3 = (ctx.id == orgToCheck.id) && contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN(null) // legacy - no affiliation given
+        // boolean check3 = (ctx.id == orgToCheck.id) && getUser()?.hasCtxAffiliation_or_ROLEADMIN(null) // legacy - no affiliation given
 
         (check1 && check2) || check3
     }
