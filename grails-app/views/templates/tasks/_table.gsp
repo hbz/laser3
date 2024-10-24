@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.AccessService; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDConstants" %>
 <laser:serviceInjection />
 
 <g:set var="institution" value="${contextService.getOrg()}"/>
@@ -29,7 +29,7 @@
             </thead>
             <tbody>
             <g:each in="${cmbTaskInstanceList}" var="taskInstance">
-                <g:set var="overwriteEditable" value="${editable || accessService.hasAccessToTask(taskInstance)}" />
+                <g:set var="overwriteEditable" value="${editable || accessService.hasAccessToTask(taskInstance, AccessService.WRITE)}" />
                 <tr>
                     <td>
                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${taskInstance.endDate}"/>
