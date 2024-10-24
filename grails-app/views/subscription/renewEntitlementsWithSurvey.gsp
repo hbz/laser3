@@ -21,7 +21,7 @@
         <div class="header">KBART Exports</div>
 
         <ui:exportDropdownItem>
-            <g:link class="item kbartExport" action="exportRenewalEntitlements"
+            <g:link class="item normalExport" action="exportRenewalEntitlements"
                     id="${subscription.id}"
                     params="${[surveyConfigID: surveyConfig.id,
                                exportConfig   : 'kbart',
@@ -29,7 +29,7 @@
         </ui:exportDropdownItem>
 
         <ui:exportDropdownItem>
-            <g:link class="item kbartExport" action="exportRenewalEntitlements"
+            <g:link class="item normalExport" action="exportRenewalEntitlements"
                     id="${subscription.id}"
                     params="${[surveyConfigID: surveyConfig.id,
                                exportConfig   : 'kbart',
@@ -39,7 +39,7 @@
         <g:if test="${countCurrentPermanentTitles > 0}">
 
             <ui:exportDropdownItem>
-                <g:link class="item kbartExport" action="exportRenewalEntitlements"
+                <g:link class="item normalExport" action="exportRenewalEntitlements"
                         id="${subscription.id}"
                         params="${[surveyConfigID: surveyConfig.id,
                                    exportConfig   : 'kbart',
@@ -52,27 +52,27 @@
         <div class="header">${message(code: 'default.button.exports.xls')}s</div>
 
         <ui:exportDropdownItem>
-            <g:link class="item" action="exportRenewalEntitlements"
+            <g:link class="item normalExport" action="exportRenewalEntitlements"
                     id="${subscription.id}"
                     params="${[surveyConfigID: surveyConfig.id,
-                               exportConfig     : 'xls',
+                               exportConfig     : 'xlsx',
                                tab           : 'allTipps']}">${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}</g:link>
         </ui:exportDropdownItem>
 
         <ui:exportDropdownItem>
-            <g:link class="item" action="exportRenewalEntitlements"
+            <g:link class="item normalExport" action="exportRenewalEntitlements"
                     id="${subscription.id}"
                     params="${[surveyConfigID: surveyConfig.id,
-                               exportConfig   : 'xls',
+                               exportConfig   : 'xlsx',
                                tab           : 'selectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}</g:link>
         </ui:exportDropdownItem>
 
         <g:if test="${countCurrentPermanentTitles > 0}">
             <ui:exportDropdownItem>
-                <g:link class="item" action="exportRenewalEntitlements"
+                <g:link class="item normalExport" action="exportRenewalEntitlements"
                         id="${subscription.id}"
                         params="${[surveyConfigID : surveyConfig.id,
-                                   exportConfig     : 'xls',
+                                   exportConfig     : 'xlsx',
                                    tab           : 'currentPerpetualAccessIEs']}">
                     ${message(code: 'renewEntitlementsWithSurvey.currentTitles')}
                 </g:link>
@@ -433,18 +433,19 @@
             window.location.href = url;
     });
 
-    $('.kbartExport').click(function(e) {
+    $('.normalExport').click(function(e) {
         e.preventDefault();
         $('#globalLoadingIndicator').show();
+        $("#downloadWrapper").hide();
         $.ajax({
             url: $(this).attr('href'),
             type: 'POST',
             contentType: false
         }).done(function(response){
-            $("#downloadWrapper").html(response);
+            $("#downloadWrapper").html(response).show();
             $('#globalLoadingIndicator').hide();
         }).fail(function(resp, status){
-            $("#downloadWrapper").text('Es ist zu einem Fehler beim Abruf gekommen');
+            $("#downloadWrapper").text('Es ist zu einem Fehler beim Abruf gekommen').show();
             $('#globalLoadingIndicator').hide();
         });
     });

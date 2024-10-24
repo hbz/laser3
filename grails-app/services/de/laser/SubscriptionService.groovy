@@ -39,6 +39,7 @@ import groovy.sql.BatchingPreparedStatementWrapper
 import groovy.sql.BatchingStatementWrapper
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
+import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
 import org.springframework.web.multipart.MultipartFile
@@ -1733,6 +1734,7 @@ class SubscriptionService {
                     }
                     if(subscriptions) {
                         issueEntitlementConfigMap.tippIDs = tippIDs
+                        issueEntitlementConfigMap.hasPerpetualAccess = RDStore.YN_YES.id
                         Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetSQLQuery(issueEntitlementConfigMap)
                         Set<Long> sourceIEs = [], sourceTIPPs = []
                         List<GroovyRowResult> rows = batchQueryService.longArrayQuery(queryPart2.query, queryPart2.arrayParams, queryPart2.queryParams)
@@ -1968,69 +1970,112 @@ class SubscriptionService {
         if (!result) {
             [result: null, status: SubscriptionControllerService.STATUS_ERROR]
         }
-        else  {
-            IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
-            if(issueEntitlementGroup) {
-                result.titleGroup = issueEntitlementGroup
-            }
-            else {
-                result.titleGroup = null
-            }
-            Map<String, Object> parameterGenerics = issueEntitlementService.getParameterGenerics(result.configMap)
-            Map<String, Object> titleConfigMap = parameterGenerics.titleConfigMap,
-                                identifierConfigMap = parameterGenerics.identifierConfigMap,
-                                issueEntitlementConfigMap = parameterGenerics.issueEntitlementConfigMap
-            if(params.tab == "currentPerpetualAccessIEs")
-                titleConfigMap.tippStatus = [RDStore.TIPP_STATUS_CURRENT.id]
-            //build up title data
-            Map<String, Object> query = filterService.getTippSubsetQuery(titleConfigMap)
-            Set<Long> tippIDs = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
-            if(result.identifier) {
-                tippIDs = tippIDs.intersect(issueEntitlementService.getTippsByIdentifier(identifierConfigMap, result.identifier))
-            }
+        else {
+            String filename, extension
             switch(params.tab) {
-                //continue here: migrate export settings
-                case 'allTipps': List<GroovyRowResult> perpetuallyPurchasedTitleRows = batchQueryService.longArrayQuery('select pt_tipp_fk from permanent_title join title_instance_package_platform on pt_tipp_fk = tipp_id where pt_owner_fk = :subscriber and tipp_host_platform_url in (select t2.tipp_host_platform_url from title_instance_package_platform as t2 where t2.tipp_id = any(:tippIDs))', [tippIDs: tippIDs], [subscriber: result.subscriber.id])
-                    Set<Long> perpetuallyPurchasedTitleIDs = []
-                    if(perpetuallyPurchasedTitleRows)
-                        perpetuallyPurchasedTitleIDs.addAll(perpetuallyPurchasedTitleRows['pt_tipp_fk'])
-                    result.exportData = exportService.generateTitleExport(tippIDs, perpetuallyPurchasedTitleIDs, true)
-                    result.filename = escapeService.escapeString(messageSource.getMessage('renewEntitlementsWithSurvey.selectableTitles', null, locale) + '_' + result.baseSub.dropdownNamingConvention())
+                case 'allTipps': filename = escapeService.escapeString(messageSource.getMessage('renewEntitlementsWithSurvey.selectableTitles', null, locale) + '_' + result.subscription.dropdownNamingConvention())
                     break
-                case 'selectedIEs':
+                case 'selectedIEs': filename = escapeService.escapeString(messageSource.getMessage('renewEntitlementsWithSurvey.currentTitlesSelect', null, locale) + '_' + result.subscription.dropdownNamingConvention())
+                    break
+                case 'currentPerpetualAccessIEs': filename = escapeService.escapeString(messageSource.getMessage('renewEntitlementsWithSurvey.currentTitles', null, locale) + '_' + result.subscription.dropdownNamingConvention())
+                    break
+            }
+            switch(params.exportConfig) {
+                case 'kbart': extension = '.tsv'
+                    break
+                case 'xlsx': extension = '.xlsx'
+                    break
+            }
+            if(filename && extension) {
+                result.filename = filename
+                filename += extension
+                result.token = filename
+                String dir = GlobalService.obtainFileStorageLocation()
+                File f = new File(dir+'/'+filename)
+                if(!f.exists()) {
+                    IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
                     if(issueEntitlementGroup) {
-                        issueEntitlementConfigMap.tippIDs = tippIDs
-                        Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetSQLQuery(issueEntitlementConfigMap)
-                        Set<Long> sourceIEs = [], sourceTIPPs = []
-                        List<GroovyRowResult> rows = batchQueryService.longArrayQuery(queryPart2.query, queryPart2.arrayParams, queryPart2.queryParams)
-                        sourceIEs.addAll(rows["ie_id"])
-                        sourceTIPPs.addAll(rows["tipp_id"])
-                    }
-                    result.filename = escapeService.escapeString(messageSource.getMessage('renewEntitlementsWithSurvey.currentTitlesSelect', null, locale) + '_' + result.subscription.dropdownNamingConvention())
-                    break
-                case 'currentPerpetualAccessIEs':
-                    Set<Subscription> subscriptions = []
-                    if(result.surveyConfig.pickAndChoosePerpetualAccess) {
-                        subscriptions = linksGenerationService.getSuccessionChain(result.subscription, 'sourceSubscription')
+                        result.titleGroup = issueEntitlementGroup
                     }
                     else {
-                        subscriptions << result.subscription
+                        result.titleGroup = null
                     }
-                    if(subscriptions) {
-                        issueEntitlementConfigMap.tippIDs = tippIDs
-                        Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetSQLQuery(issueEntitlementConfigMap)
-                        Set<Long> sourceIEs = [], sourceTIPPs = []
-                        List<GroovyRowResult> rows = batchQueryService.longArrayQuery(queryPart2.query, queryPart2.arrayParams, queryPart2.queryParams)
-                        sourceIEs.addAll(rows["ie_id"])
-                        sourceTIPPs.addAll(rows["tipp_id"])
-                        List<GroovyRowResult> ptRows = batchQueryService.longArrayQuery("select pt_ie_fk from permanent_title where pt_tipp_fk = any(:tippIDs) and pt_owner_fk = any(:subscribers)", [tippIDs: tippIDs, subscribers: subscriptions.collect { Subscription s -> s.getSubscriberRespConsortia().id }])
-                        sourceIEs = sourceIEs.intersect(ptRows["pt_ie_fk"])
+                    Map<String, Object> parameterGenerics = issueEntitlementService.getParameterGenerics(result.configMap)
+                    Map<String, Object> titleConfigMap = parameterGenerics.titleConfigMap,
+                                        identifierConfigMap = parameterGenerics.identifierConfigMap,
+                                        issueEntitlementConfigMap = parameterGenerics.issueEntitlementConfigMap
+                    if(params.tab == "currentPerpetualAccessIEs")
+                        titleConfigMap.tippStatus = [RDStore.TIPP_STATUS_CURRENT.id]
+                    //build up title data
+                    Map<String, Object> query = filterService.getTippSubsetQuery(titleConfigMap), exportData = [:]
+                    Set<Long> tippIDs = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+                    if(result.identifier) {
+                        tippIDs = tippIDs.intersect(issueEntitlementService.getTippsByIdentifier(identifierConfigMap, result.identifier))
                     }
-                    else {
-                        result.sourceIEs = []
+                    switch(params.tab) {
+                        case 'allTipps': List<GroovyRowResult> perpetuallyPurchasedTitleRows = batchQueryService.longArrayQuery('select pt_tipp_fk from permanent_title join title_instance_package_platform on pt_tipp_fk = tipp_id where pt_owner_fk = :subscriber and tipp_host_platform_url in (select t2.tipp_host_platform_url from title_instance_package_platform as t2 where t2.tipp_id = any(:tippIDs))', [tippIDs: tippIDs], [subscriber: result.subscriber.id])
+                            Set<Long> perpetuallyPurchasedTitleIDs = []
+                            if(perpetuallyPurchasedTitleRows)
+                                perpetuallyPurchasedTitleIDs.addAll(perpetuallyPurchasedTitleRows['pt_tipp_fk'])
+                            exportData = exportService.generateTitleExport(tippIDs, perpetuallyPurchasedTitleIDs, true)
+                            break
+                        case 'selectedIEs':
+                            if(issueEntitlementGroup) {
+                                issueEntitlementConfigMap.tippIDs = tippIDs
+                                Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetSQLQuery(issueEntitlementConfigMap)
+                                Set<Long> sourceIEs = [], sourceTIPPs = []
+                                List<GroovyRowResult> rows = batchQueryService.longArrayQuery(queryPart2.query, queryPart2.arrayParams, queryPart2.queryParams)
+                                sourceIEs.addAll(rows["ie_id"])
+                                sourceTIPPs.addAll(rows["tipp_id"])
+                            }
+                            break
+                        case 'currentPerpetualAccessIEs':
+                            Set<Subscription> subscriptions = []
+                            if(result.surveyConfig.pickAndChoosePerpetualAccess) {
+                                subscriptions = linksGenerationService.getSuccessionChain(result.subscription, 'sourceSubscription')
+                            }
+                            else {
+                                subscriptions << result.subscription
+                            }
+                            if(subscriptions) {
+                                issueEntitlementConfigMap.tippIDs = tippIDs
+                                Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetSQLQuery(issueEntitlementConfigMap)
+                                Set<Long> sourceIEs = [], sourceTIPPs = []
+                                List<GroovyRowResult> rows = batchQueryService.longArrayQuery(queryPart2.query, queryPart2.arrayParams, queryPart2.queryParams)
+                                sourceIEs.addAll(rows["ie_id"])
+                                sourceTIPPs.addAll(rows["tipp_id"])
+                                List<GroovyRowResult> ptRows = batchQueryService.longArrayQuery("select pt_ie_fk from permanent_title where pt_tipp_fk = any(:tippIDs) and pt_owner_fk = any(:subscribers)", [tippIDs: tippIDs, subscribers: subscriptions.collect { Subscription s -> s.getSubscriberRespConsortia().id }])
+                                sourceIEs = sourceIEs.intersect(ptRows["pt_ie_fk"])
+                            }
+                            else {
+                                result.sourceIEs = []
+                            }
+                            break
                     }
-                    result.filename = escapeService.escapeString(messageSource.getMessage('renewEntitlementsWithSurvey.currentTitles', null, locale) + '_' + result.subscription.dropdownNamingConvention())
-                    break
+                    //continue here: migrate export settings
+                    FileOutputStream out = new FileOutputStream (f)
+                    switch(params.exportConfig) {
+                        case 'kbart':
+                            //Map < String, Collection > tableData = queryMap ? exportService. generateTitleExportKBART ( queryMap, domainClName ): [ titleRow: [ ], columnData: [ ] ]
+                            out.withWriter { Writer writer ->
+                                writer.write ( exportService.generateSeparatorTableString ( tableData.titleRow, tableData.columnData, '\t'))
+                            }
+                            out.flush()
+                            out.close()
+                            break
+                        case 'xlsx':
+                            Map sheetData = [:]
+                            sheetData[messageSource.getMessage('renewEntitlementsWithSurvey.selectableTitles', null, locale)] = exportData
+                            SXSSFWorkbook wb = exportService.generateXLSXWorkbook(sheetData)
+                            FileOutputStream fos = new FileOutputStream(f)
+                            //--> to document
+                            wb.write(fos)
+                            fos.flush()
+                            fos.close()
+                            wb.dispose()
+                            break
+                    }
+                }
             }
             [result: result, status: SubscriptionControllerService.STATUS_OK]
         }

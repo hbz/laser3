@@ -1941,55 +1941,20 @@ class SubscriptionController {
     })
     Map exportRenewalEntitlements() {
         Map<String, Object> ctrlResult = subscriptionService.exportRenewalEntitlements(params)
+        Map<String, Object> fileResult = [:]
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if(!ctrlResult.result) {
-                response.sendError(401)
-                return
+                fileResult.error = 401
             }
             else {
-                flash.error = ctrlResult.error
-                ctrlResult.result
+                fileResult.error = ctrlResult.error
             }
+            render template: '/templates/bulkItemDownload', model: fileResult
         }
         else {
-            /*
-            if(kbartPreselect) {
-                render template: 'entitlementProcessResult', model: ctrlResult.result
-            }
-            */
-            switch (params.exportConfig) {
-                case 'kbart':
-                    String dir = GlobalService.obtainFileStorageLocation()
-                    File f = new File(dir+'/'+ctrlResult.result.filename)
-                    if(!f.exists()) {
-                        FileOutputStream out = new FileOutputStream(f)
-                        String domainClName = TitleInstancePackagePlatform.class.name
-                        if(params.tab == 'allTipps') {
-                            domainClName = TitleInstancePackagePlatform.class.name
-                        }
-                        Map<String, Collection> tableData = queryMap ? exportService.generateTitleExportKBART(queryMap, domainClName) : [titleRow: [], columnData: []]
-                        out.withWriter { Writer writer ->
-                            writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
-                        }
-                        out.flush()
-                        out.close()
-                    }
-                    Map fileResult = [token: filename, filenameDisplay: filename, fileformat: 'kbart']
-                    render template: '/templates/bulkItemDownload', model: fileResult
-                    return
-                case 'xls':
-                    SXSSFWorkbook wb
-                    response.setHeader("Content-disposition", "attachment; filename=${ctrlResult.result.filename}.xlsx")
-                    response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                    Map sheetData = [:]
-                    sheetData[g.message(code: 'renewEntitlementsWithSurvey.selectableTitles')] = ctrlResult.result.exportData
-                    wb = exportService.generateXLSXWorkbook(sheetData)
-                    wb.write(response.outputStream)
-                    response.outputStream.flush()
-                    response.outputStream.close()
-                    wb.dispose()
-                    return
-            }
+            fileResult = [token: ctrlResult.result.token, filenameDisplay: ctrlResult.result.filename, fileformat: params.exportConfig]
+            render template: '/templates/bulkItemDownload', model: fileResult
+            return
         }
         /*
         Map<String,Object> ctrlResult, exportResult

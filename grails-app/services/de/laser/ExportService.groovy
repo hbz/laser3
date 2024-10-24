@@ -3498,7 +3498,7 @@ class ExportService {
 		List<String> otherTitleIdentifierNamespaces = otherTitleIdentifierNamespaceList['idns_ns']
 		titleHeaders.addAll(otherTitleIdentifierNamespaces)
 		if(withPick) {
-			titleHeaders << messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export')
+			titleHeaders << messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale)
 			titleHeaders << "Pick"
 		}
 		export.titleRow = titleHeaders
@@ -3960,13 +3960,17 @@ class ExportService {
 		Set<Long> tippIDs = configMap.tippIDs
 		List<String> otherTitleIdentifierNamespaces = configMap.otherTitleIdentifierNamespaces
 		String style = configMap.style
+		String valueCol
 		Map<String, Object> arrayParams = [:]
 		if(style)
 			style = "'${style}'"
-		else if(format == 'excel' && configMap.containsKey('perpetuallyPurchasedTitleIDs')) {
+		else if(format == 'xlsx' && configMap.containsKey('perpetuallyPurchasedTitleIDs')) {
 			style = "(select case when tipp_id = any(:perpetuallyPurchasedTitleIDs) then 'negative' else null end case)"
 			arrayParams.perpetuallyPurchasedTitleIDs = configMap.perpetuallyPurchasedTitleIDs
 		}
+		if(format == 'kbart')
+			valueCol = 'rdv_value'
+		else valueCol = I10nTranslation.getRefdataValueColumn(LocaleUtils.getCurrentLocale())
 		String rowQuery = "select tipp_id, create_cell('${format}', tipp_name, ${style}) as publication_title," +
 						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('monograph') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, IdentifierNamespace.NS_TITLE).id}) or (lower(tipp_title_type) in ('serial') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, IdentifierNamespace.NS_TITLE).id}))), ${style}) as print_identifier," +
 						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('monograph') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISBN, IdentifierNamespace.NS_TITLE).id}) or (lower(tipp_title_type) in ('serial') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, IdentifierNamespace.NS_TITLE).id}))), ${style}) as online_identifier," +
@@ -3996,7 +4000,7 @@ class ExportService {
 						"create_cell('${format}', to_char(tipp_last_updated, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), ${style}) as last_changed," +
 						"create_cell('${format}', to_char(tipp_access_start_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), ${style}) as access_start_date," +
 						"create_cell('${format}', to_char(tipp_access_end_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), ${style}) as access_end_date," +
-						"create_cell('${format}', (select rdv_value from refdata_value where rdv_id = tipp_medium_rv_fk), ${style}) as medium," +
+						"create_cell('${format}', (select ${valueCol} from refdata_value where rdv_id = tipp_medium_rv_fk), ${style}) as medium," +
 						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ZDB, IdentifierNamespace.NS_TITLE).id}), ${style}) as zdb_id," +
 						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, IdentifierNamespace.NS_TITLE).id}), ${style}) as doi_identifier," +
 						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EZB, IdentifierNamespace.NS_TITLE).id}), ${style}) as ezb_id," +
@@ -4009,9 +4013,9 @@ class ExportService {
 						"create_cell('${format}', null, ${style}) as superceding_publication_title_id," +
 						"create_cell('${format}', null, ${style}) as monograph_parent_collection_title," +
 						"create_cell('${format}', tipp_subject_reference, ${style}) as subject_area," +
-						"create_cell('${format}', (select rdv_value from refdata_value where rdv_id = tipp_status_rv_fk), ${style}) as status," +
+						"create_cell('${format}', (select ${valueCol} from refdata_value where rdv_id = tipp_status_rv_fk), ${style}) as status," +
 						"create_cell('${format}', (case when tipp_access_type_rv_fk = ${RDStore.TIPP_PAYMENT_PAID.id} then 'P' when tipp_access_type_rv_fk = ${RDStore.TIPP_PAYMENT_FREE.id} then 'F' else '' end), ${style}) as access_type," +
-						"create_cell('${format}', (select rdv_value from refdata_value where rdv_id = tipp_open_access_rv_fk), ${style}) as oa_type," +
+						"create_cell('${format}', (select ${valueCol} from refdata_value where rdv_id = tipp_open_access_rv_fk), ${style}) as oa_type," +
 						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ZDB_PPN).id}), ${style}) as zdb_ppn," +
 						"create_cell('${format}', (select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_EUR.id} order by pi_last_updated desc limit 1), ${style}) as listprice_eur," +
 						"create_cell('${format}', (select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_GBP.id} order by pi_last_updated desc limit 1), ${style}) as listprice_gbp," +
@@ -4024,9 +4028,10 @@ class ExportService {
 		}
 		if(configMap.withPick == true) {
 			rowQuery += ","
-			rowQuery += ""
+			rowQuery += "create_cell('${format}', (select ${valueCol} from refdata_value where rdv_id = (select case when tipp_id = any(:perpetuallyPurchasedTitleIDs) then ${RDStore.YN_NO.id} else ${RDStore.YN_YES.id} end case)), ${style}) as selectable,"
+			rowQuery += "create_cell('${format}', null, ${style}) as pick"
 		}
-		rowQuery += " from title_instance_package_platform left join tippcoverage on tc_tipp_fk = tipp_id where tipp_id = any(:tippIDs)"
+		rowQuery += " from title_instance_package_platform left join tippcoverage on tc_tipp_fk = tipp_id where tipp_id = any(:tippIDs) order by tipp_sort_name"
 		arrayParams.tippIDs = tippIDs
 		batchQueryService.longArrayQuery(rowQuery, arrayParams).collect { GroovyRowResult row ->
 			Long tippID = row.remove('tipp_id')
