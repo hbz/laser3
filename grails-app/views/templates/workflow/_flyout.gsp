@@ -22,6 +22,11 @@
                     ${message(code: 'workflow.edit.error')}
                 </div>
             </g:elseif>
+            <g:elseif test="${status == WorkflowService.OP_STATUS_FORBIDDEN}">
+                <div class="ui error message" style="margin-top:1em;text-align:left;font-size:14px;font-weight:normal;">
+                    ${message(code: 'default.noPermissions')}
+                </div>
+            </g:elseif>
             <g:else>
                 <div class="ui message info" style="margin-top:1em;text-align:left;font-size:14px;font-weight:normal;">
                     <div class="content">

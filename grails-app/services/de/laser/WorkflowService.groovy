@@ -21,8 +21,9 @@ class WorkflowService {
     ContextService contextService
     GenericOIDService genericOIDService
 
-    public static final String OP_STATUS_DONE  = 'OP_STATUS_DONE'
-    public static final String OP_STATUS_ERROR = 'OP_STATUS_ERROR'
+    public static final String OP_STATUS_DONE       = 'OP_STATUS_DONE'
+    public static final String OP_STATUS_ERROR      = 'OP_STATUS_ERROR'
+    public static final String OP_STATUS_FORBIDDEN  = 'OP_STATUS_FORBIDDEN'
 
     /**
      * Constructs a new ParamsHelper instance with the given key and parameter map
@@ -30,7 +31,7 @@ class WorkflowService {
      * @param params the request parameter map
      * @return the new {@link ParamsHelper} instance
      */
-    ParamsHelper getNewParamsHelper(String cmpKey, GrailsParameterMap params) {
+    private ParamsHelper _getNewParamsHelper(String cmpKey, GrailsParameterMap params) {
         new ParamsHelper(cmpKey, params)
     }
 
@@ -89,63 +90,74 @@ class WorkflowService {
         Map<String, Object> result = [:]
 
         if (params.cmd) {
-            String[] cmd = (params.cmd as String).split(':')
+            result.status = OP_STATUS_FORBIDDEN
 
-            if (cmd[1] == WfChecklist.KEY) {
+            if (hasWRITE()) {
+                String[] cmd = (params.cmd as String).split(':')
 
-                if (cmd[0] == 'create') { // actions > modal
-                    result = _createChecklist(params)
-                }
-                else if (cmd[0] == 'instantiate') { // actions > modal
-                    result.status = OP_STATUS_ERROR
+                if (cmd[1] == WfChecklist.KEY) {
 
-                    if (params.target && params.sourceId) {
-                        GrailsParameterMap clone = params.clone() as GrailsParameterMap
-                        clone.setProperty('cmd', params.cmd + ':' + params.sourceId)
+                    if (cmd[0] == 'create') { // actions > modal
+                        result = _createChecklist(params) // TODO check perms
+                    }
+                    else if (cmd[0] == 'instantiate') { // actions > modal
+                        result.status = OP_STATUS_ERROR
 
-                        result = instantiateChecklist(clone)
+                        if (params.target && params.sourceId) {
+                            GrailsParameterMap clone = params.clone() as GrailsParameterMap
+                            clone.setProperty('cmd', params.cmd + ':' + params.sourceId)
+
+                            result = instantiateChecklist(clone)
+                        }
+                    }
+                    else if (cmd[0] == 'delete') { // table
+                        if (accessService.hasAccessToWorkflow(WfChecklist.get(cmd[2]), AccessService.WRITE)) {
+                            result = _deleteChecklist(cmd)
+                        }
                     }
                 }
-                else if (cmd[0] == 'delete') { // table
-                    result = _deleteChecklist( cmd )
-                }
-            }
-            else if (cmd[1] == WfCheckpoint.KEY) {
+                else if (cmd[1] == WfCheckpoint.KEY) {
 
-                if (cmd[0] == 'create') { // flyout
-                    result = _createCheckpoint(params)
-                }
-                else if (cmd[0] == 'delete') {  // flyout
-                    result = _deleteCheckpoint( cmd )
-                }
-                else if (cmd[0] in ['moveUp', 'moveDown']) { // flyout
-                    result = _moveCheckpoint( cmd )
-                }
-                else if (cmd[0] == 'modal') { // table
-                    ParamsHelper ph = getNewParamsHelper( cmd[1], params )
+                    if (cmd[0] == 'create') { // flyout
+                        result = _createCheckpoint(params) // TODO check perms
+                    }
+                    else if (cmd[0] == 'delete') {  // flyout
+                        if (accessService.hasAccessToWorkflow(WfCheckpoint.get(cmd[2]).checklist, AccessService.WRITE)) {
+                            result = _deleteCheckpoint(cmd)
+                        }
+                    }
+                    else if (cmd[0] in ['moveUp', 'moveDown']) { // flyout
+                        if (accessService.hasAccessToWorkflow(WfCheckpoint.get(cmd[2]).checklist, AccessService.WRITE)) {
+                            result = _moveCheckpoint(cmd)
+                        }
+                    }
+                    else if (cmd[0] == 'modal') { // table
+                        if (accessService.hasAccessToWorkflow(WfCheckpoint.get(cmd[2]).checklist, AccessService.WRITE)) {
+                            ParamsHelper ph = _getNewParamsHelper( cmd[1], params )
 
-                    WfCheckpoint cpoint = WfCheckpoint.get( cmd[2] )
-                    boolean tChanged = false
+                            WfCheckpoint cpoint = WfCheckpoint.get( cmd[2] )
+                            boolean tChanged = false
 
-                    boolean done = ph.getChecked('done')
-                    if (done != cpoint.done) {
-                        cpoint.done = done
-                        tChanged = true
+                            boolean done = ph.getChecked('done')
+                            if (done != cpoint.done) {
+                                cpoint.done = done
+                                tChanged = true
+                            }
+                            Date date = ph.getDate('date')
+                            if (date != cpoint.date) {
+                                cpoint.date = date
+                                tChanged = true
+                            }
+                            String comment = ph.getString('comment')
+                            if (comment != cpoint.comment) {
+                                cpoint.comment = comment
+                                tChanged = true
+                            }
+                            if (tChanged) {
+                                result.status = cpoint.save() ? OP_STATUS_DONE : OP_STATUS_ERROR
+                            }
+                        }
                     }
-                    Date date = ph.getDate('date')
-                    if (date != cpoint.date) {
-                        cpoint.date = date
-                        tChanged = true
-                    }
-                    String comment = ph.getString('comment')
-                    if (comment != cpoint.comment) {
-                        cpoint.comment = comment
-                        tChanged = true
-                    }
-                    if (tChanged) {
-                        result.status = cpoint.save() ? OP_STATUS_DONE : OP_STATUS_ERROR
-                    }
-
                 }
             }
         }
@@ -165,14 +177,9 @@ class WorkflowService {
         result.checkpoint = cpoint
 
         try {
-            if (accessService.hasAccessToWorkflow(cpoint.checklist, AccessService.WRITE)) {
-                cpoint.delete()
-                result.checkpoint = null // gap
-                result.status = OP_STATUS_DONE
-            }
-            else {
-                result.status = OP_STATUS_ERROR // TODO
-            }
+            cpoint.delete()
+            result.checkpoint = null // gap
+            result.status = OP_STATUS_DONE
         }
         catch (Exception e) {
             result.status = OP_STATUS_ERROR
@@ -227,7 +234,7 @@ class WorkflowService {
         log.debug( '_createChecklist() ' + params )
 
         String[] cmd = (params.cmd as String).split(':')
-        ParamsHelper ph = getNewParamsHelper( cmd[1], params )
+        ParamsHelper ph = _getNewParamsHelper( cmd[1], params )
 
         WfChecklist clist   = new WfChecklist()
         clist.title         = ph.getString('title')
@@ -303,7 +310,7 @@ class WorkflowService {
         log.debug( '_createCheckpoint() ' + params )
 
         String[] cmd = (params.cmd as String).split(':')
-        ParamsHelper ph = getNewParamsHelper( cmd[1], params )
+        ParamsHelper ph = _getNewParamsHelper( cmd[1], params )
 
         WfCheckpoint cpoint = new WfCheckpoint()
         cpoint.title        = ph.getString('title')
@@ -330,7 +337,7 @@ class WorkflowService {
         log.debug('instantiateChecklist() ' + params)
 
         String[] cmd = (params.cmd as String).split(':')
-        ParamsHelper ph = getNewParamsHelper( cmd[1], params )
+        ParamsHelper ph = _getNewParamsHelper( cmd[1], params )
 
         Map<String, Object> result = [ cmd: cmd[0], key: cmd[1] ]
 
@@ -412,16 +419,11 @@ class WorkflowService {
             try {
                 result.checklist = WfChecklist.get(cmd[2])
 
-                if (accessService.hasAccessToWorkflow(result.checklist, AccessService.WRITE)) {
-                    WfCheckpoint.executeUpdate('delete from WfCheckpoint cp where cp.checklist = :cl', [cl: result.checklist])
-                    result.checklist.delete()
+                WfCheckpoint.executeUpdate('delete from WfCheckpoint cp where cp.checklist = :cl', [cl: result.checklist])
+                result.checklist.delete()
 
-                    result.status = OP_STATUS_DONE
-                    ts.flush() // TODO
-                }
-                else {
-                    result.status = OP_STATUS_ERROR // TODO
-                }
+                result.status = OP_STATUS_DONE
+                ts.flush() // TODO
             }
             catch (Exception e) {
                 result.status = OP_STATUS_ERROR
@@ -454,24 +456,26 @@ class WorkflowService {
      * @return a {@link List} of {@link WfChecklist} workflows attached to the given object
      */
     List<WfChecklist> getWorkflows(def obj, Org owner) {
-        if (obj instanceof License) {
-            WfChecklist.executeQuery('select wf from WfChecklist wf where wf.license = :lic and wf.owner = :ctxOrg', [lic: obj, ctxOrg: owner])
+        List result = []
+
+        if (hasREAD()) {
+            if (obj instanceof License) {
+                result = WfChecklist.executeQuery('select wf from WfChecklist wf where wf.license = :lic and wf.owner = :ctxOrg', [lic: obj, ctxOrg: owner])
+            }
+            else if (obj instanceof Org) {
+                result = WfChecklist.executeQuery('select wf from WfChecklist wf where wf.org = :org and wf.owner = :ctxOrg', [org: obj, ctxOrg: owner])
+            }
+            else if (obj instanceof Provider) {
+                result = WfChecklist.executeQuery('select wf from WfChecklist wf where wf.provider = :provider and wf.owner = :ctxOrg', [provider: obj, ctxOrg: owner])
+            }
+            else if (obj instanceof Subscription) {
+                result = WfChecklist.executeQuery('select wf from WfChecklist wf where wf.subscription = :sub and wf.owner = :ctxOrg', [sub: obj, ctxOrg: owner])
+            }
+            else if (obj instanceof Vendor) {
+                result = WfChecklist.executeQuery('select wf from WfChecklist wf where wf.vendor = :vendor and wf.owner = :ctxOrg', [vendor: obj, ctxOrg: owner])
+            }
         }
-        else if (obj instanceof Org) {
-            WfChecklist.executeQuery('select wf from WfChecklist wf where wf.org = :org and wf.owner = :ctxOrg', [org: obj, ctxOrg: owner])
-        }
-        else if (obj instanceof Provider) {
-            WfChecklist.executeQuery('select wf from WfChecklist wf where wf.provider = :provider and wf.owner = :ctxOrg', [provider: obj, ctxOrg: owner])
-        }
-        else if (obj instanceof Subscription) {
-            WfChecklist.executeQuery('select wf from WfChecklist wf where wf.subscription = :sub and wf.owner = :ctxOrg', [sub: obj, ctxOrg: owner])
-        }
-        else if (obj instanceof Vendor) {
-            WfChecklist.executeQuery('select wf from WfChecklist wf where wf.vendor = :vendor and wf.owner = :ctxOrg', [vendor: obj, ctxOrg: owner])
-        }
-        else {
-            return []
-        }
+        result
     }
 
     /**
@@ -481,24 +485,26 @@ class WorkflowService {
      * @return the number of {@link WfChecklist} workflows attached to the given object
      */
     int getWorkflowCount(def obj, Org owner) {
-        if (obj instanceof License) {
-            WfChecklist.executeQuery('select count(*) from WfChecklist wf where wf.license = :lic and wf.owner = :ctxOrg', [lic: obj, ctxOrg: owner])[0]
+        int result = 0
+
+        if (hasREAD()) {
+            if (obj instanceof License) {
+                result = WfChecklist.executeQuery('select count(*) from WfChecklist wf where wf.license = :lic and wf.owner = :ctxOrg', [lic: obj, ctxOrg: owner])[0]
+            }
+            else if (obj instanceof Org) {
+                result = WfChecklist.executeQuery('select count(*) from WfChecklist wf where wf.org = :org and wf.owner = :ctxOrg', [org: obj, ctxOrg: owner])[0]
+            }
+            else if (obj instanceof Provider) {
+                result = WfChecklist.executeQuery('select count(*) from WfChecklist wf where wf.provider = :provider and wf.owner = :ctxOrg', [provider: obj, ctxOrg: owner])[0]
+            }
+            else if (obj instanceof Subscription) {
+                result = WfChecklist.executeQuery('select count(*) from WfChecklist wf where wf.subscription = :sub and wf.owner = :ctxOrg', [sub: obj, ctxOrg: owner])[0]
+            }
+            else if (obj instanceof Vendor) {
+                result = WfChecklist.executeQuery('select count(*) from WfChecklist wf where wf.vendor = :vendor and wf.owner = :ctxOrg', [vendor: obj, ctxOrg: owner])[0]
+            }
         }
-        else if (obj instanceof Org) {
-            WfChecklist.executeQuery('select count(*) from WfChecklist wf where wf.org = :org and wf.owner = :ctxOrg', [org: obj, ctxOrg: owner])[0]
-        }
-        else if (obj instanceof Provider) {
-            WfChecklist.executeQuery('select count(*) from WfChecklist wf where wf.provider = :provider and wf.owner = :ctxOrg', [provider: obj, ctxOrg: owner])[0]
-        }
-        else if (obj instanceof Subscription) {
-            WfChecklist.executeQuery('select count(*) from WfChecklist wf where wf.subscription = :sub and wf.owner = :ctxOrg', [sub: obj, ctxOrg: owner])[0]
-        }
-        else if (obj instanceof Vendor) {
-            WfChecklist.executeQuery('select count(*) from WfChecklist wf where wf.vendor = :vendor and wf.owner = :ctxOrg', [vendor: obj, ctxOrg: owner])[0]
-        }
-        else {
-            return 0
-        }
+        result
     }
 
     /**
