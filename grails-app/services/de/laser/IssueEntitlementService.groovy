@@ -69,7 +69,7 @@ class IssueEntitlementService {
         TitleInstancePackagePlatform.executeQuery('select tipp.id from Identifier id join id.tipp tipp where tipp.pkg in (:packages) and lower(id.value) like :identifier and id.ns.ns in (:titleNS) and id.ns.nsType = :titleObj', identifierConfigMap)
     }
 
-    Map<String, Object> buildIdentifierInverseMap(Long tippIDs) {
+    Map<String, Object> buildIdentifierInverseMap(Set<Long> tippIDs) {
         Map<String, Object> result = [:]
         /*
         desired:
@@ -96,12 +96,12 @@ class IssueEntitlementService {
                 "(select json_agg(json_build_object(id_value, id_tipp_fk)) as print_identifier from identifier join identifier_namespace on id_ns_fk = idns_id where id_tipp_fk = any(:tippIDs) and idns_ns = any(:printIdentifiers)) as print," +
                 "(select json_agg(json_build_object(id_value, id_tipp_fk)) as online_identifier from identifier join identifier_namespace on id_ns_fk = idns_id where id_tipp_fk = any(:tippIDs) and idns_ns = any(:onlineIdentifiers)) as online," +
                 "(select json_agg(json_build_object(id_value, id_tipp_fk)) as doi from identifier join identifier_namespace on id_ns_fk = idns_id where id_tipp_fk = any(:tippIDs) and idns_ns = :doi) as doi," +
-                "(select json_agg(json_build_object(tipp_host_platform_url, tipp_id)) as url from title_instance_package_platform where id_tipp_fk = any(:tippIDs)) as url," +
+                "(select json_agg(json_build_object(tipp_host_platform_url, tipp_id)) as url from title_instance_package_platform where tipp_id = any(:tippIDs)) as url," +
                 "(select json_agg(json_build_object(id_value, id_tipp_fk)) as proprietary_identifier from identifier join identifier_namespace on id_ns_fk = idns_id where id_tipp_fk = any(:tippIDs) and idns_ns = :proprietary) as proprietary"
-        Object[] printIdentifierNamespaces = [IdentifierNamespace.ISBN, IdentifierNamespace.ISSN], onlineIdentifierNamespaces = [IdentifierNamespace.EISBN, IdentifierNamespace.EISSN]
-        Map<String, Object> arrayParams = [tippIDs: tippIDs, printIdentifiers: printIdentifierNamespaces, onlineIdentifiers: onlineIdentifierNamespaces, doi: IdentifierNamespace.DOI, proprietary: IdentifierNamespace.TITLE_ID]
+        Set<String> printIdentifierNamespaces = [IdentifierNamespace.ISBN, IdentifierNamespace.ISSN], onlineIdentifierNamespaces = [IdentifierNamespace.EISBN, IdentifierNamespace.EISSN]
+        Map<String, Object> arrayParams = [tippIDs: tippIDs, printIdentifiers: printIdentifierNamespaces, onlineIdentifiers: onlineIdentifierNamespaces], otherParams = [doi: IdentifierNamespace.DOI, proprietary: IdentifierNamespace.TITLE_ID]
         JsonSlurper slurper = new JsonSlurper()
-        List<GroovyRowResult> rows = batchQueryService.longArrayQuery(query, arrayParams)
+        List<GroovyRowResult> rows = batchQueryService.longArrayQuery(query, arrayParams, otherParams)
         Map<String, String> printIdentifiers = [:], onlineIdentifiers = [:], doi = [:], url = [:], proprietaryIdentifiers = [:]
         List printIds = rows[0]['print_identifier'] ? slurper.parseText(rows[0]['print_identifier'].toString()) : [],
              onlineIds = rows[0]['online_identifier'] ? slurper.parseText(rows[0]['online_identifier'].toString()) : [],

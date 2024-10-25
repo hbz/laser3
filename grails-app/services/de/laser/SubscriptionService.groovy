@@ -2087,10 +2087,6 @@ class SubscriptionService {
                                 startTime.add(Calendar.YEAR, -1)
                                 endTime.setTime(new Date())
                             }
-                            while (startTime.before(endTime)) {
-                                monthsInRing << startTime.getTime()
-                                startTime.add(Calendar.MONTH, 1)
-                            }
                             Map<String, Object> sushiQueryMap = [revision: params.revision,
                                                                  reportType: params.reportType,
                                                                  metricTypes: params.metricType,
@@ -2100,8 +2096,12 @@ class SubscriptionService {
                                                                  platform: Platform.get(params.platform),
                                                                  startDate: startTime.getTime(),
                                                                  endDate: endTime.getTime()]
+                            while (startTime.before(endTime)) {
+                                monthsInRing << startTime.getTime()
+                                startTime.add(Calendar.MONTH, 1)
+                            }
                             Map<String, Object> requestResponse = exportService.getReports(sushiQueryMap)
-                            if(requestResponse.containsKey("error") && requestResponse.error.code == 202) {
+                            if(requestResponse.containsKey("error") && requestResponse.error == 202) {
                                 result.status202 = true
                             }
                             else {
@@ -2166,7 +2166,7 @@ class SubscriptionService {
                                     }
                                 }
                                 userCache.put('progress', 60)
-                                exportData = exportService.generateTitleExport([format: params.exportConfig, tippIDs: tippIDs, usageData: allReports])
+                                exportData = exportService.generateTitleExport([format: params.exportConfig, tippIDs: tippIDs, monthHeaders: monthsInRing, usageData: allReports, withPick: true])
                             }
                             break
                     }

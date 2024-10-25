@@ -50,12 +50,14 @@
         <g:if test="${revision == AbstractReport.COUNTER_4}">
             <ui:msg class="info" showIcon="true" header="${message(code: 'default.usage.counter4reportInfo.header')}" message="default.usage.counter4reportInfo.text" hideClose="true"/>
         </g:if>
-        <g:form action="renewEntitlementsWithSurvey" name="stats" class="ui form" method="get">
+        <g:form action="exportRenewalEntitlements" name="stats" class="ui form" method="get">
             <g:hiddenField name="revision" value="${revision}"/>
             <g:hiddenField name="tab" value="usage"/>
             <g:hiddenField name="exportConfig" value="${de.laser.ExportService.EXCEL}"/>
             <g:each in="${params.keySet()}" var="param">
-                <g:hiddenField name="${param}" value="${params.get(param)}"/>
+                <g:if test="${!(param in ['tab', 'subTab', 'status'])}">
+                    <g:hiddenField name="${param}" value="${params.get(param)}"/>
+                </g:if>
             </g:each>
             <div class="four fields" id="filterDropdownWrapper">
                 <g:if test="${platformInstanceRecords.size() > 1}">
@@ -172,7 +174,7 @@
         let percentage = 0;
         setTimeout(function() {
             $.ajax({
-                url: "<g:createLink controller="ajaxJson" action="checkProgress" params="[cachePath: '/subscription/renewEntitlementsWithSurvey/generateRenewalExport']"/>"
+                url: "<g:createLink controller="ajaxJson" action="checkProgress" params="[cachePath: '/subscription/renewEntitlementsWithSurvey/generateExport']"/>"
             }).done(function(response){
                 percentage = response.percent;
                 $('#localLoadingIndicator div.label').text(response.label);
