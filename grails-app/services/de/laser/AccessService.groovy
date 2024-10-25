@@ -159,13 +159,16 @@ class AccessService {
         else if (checkCustomerType && !(ctxOrg.isCustomerType_Pro() || ctxOrg.isCustomerType_Support())) {
             // .. failed
         }
-        else if (task.creator && task.creator.id == ctxOrg.id) {
-            if (perm == WRITE) {
-                check = userService.hasFormalAffiliation(contextService.getUser(), ctxOrg, Role.INST_EDITOR)
-            }
-            else {
-                check = true
-            }
+        else if (task.creator && task.creator.id == contextService.getUser().id) {
+            check = true
+        }
+        else if (task.responsibleUser && task.responsibleUser.id == contextService.getUser().id) {
+//            if (perm == WRITE) {
+//                check = userService.hasFormalAffiliation(contextService.getUser(), ctxOrg, Role.INST_EDITOR)
+//            }
+//            else {
+                check = true // ?????
+//            }
         }
         else if (task.responsibleOrg && task.responsibleOrg.id == ctxOrg.id) {
             if (perm == WRITE) {
@@ -175,9 +178,7 @@ class AccessService {
                 check = true
             }
         }
-        else if (task.responsibleUser && task.responsibleUser.id != ctxOrg.id) {
-            check = true // ???
-        }
+
         return check
     }
 
