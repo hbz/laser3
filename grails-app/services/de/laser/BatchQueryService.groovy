@@ -106,10 +106,17 @@ class BatchQueryService {
         sql.close()
     }
 
-    List<GroovyRowResult> longArrayQuery(String query, Map queryParams, Map arrayParams) {
+    List<GroovyRowResult> longArrayQuery(String query, Map arrayParams, Map queryParams = [:]) {
         Sql sql = GlobalService.obtainSqlConnection()
         arrayParams.each { String k, v ->
-            queryParams.put(k, sql.getDataSource().getConnection().createArrayOf('bigint', v as Object[]))
+            String type
+            if(v[0] instanceof Long) {
+                type = 'bigint'
+            }
+            else {
+                type = 'varchar'
+            }
+            queryParams.put(k, sql.getDataSource().getConnection().createArrayOf(type, v as Object[]))
         }
         List<GroovyRowResult> result = sql.rows(query, queryParams)
         sql.close()

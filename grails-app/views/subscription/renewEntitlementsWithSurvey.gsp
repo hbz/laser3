@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.Subscription; de.laser.remote.ApiSource; de.laser.Org" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.Subscription; de.laser.remote.ApiSource; de.laser.Org; de.laser.ExportService" %>
 <laser:htmlStart message="subscription.details.renewEntitlements.label" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -21,28 +21,28 @@
         <div class="header">KBART Exports</div>
 
         <ui:exportDropdownItem>
-            <g:link class="item kbartExport" action="exportRenewalEntitlements"
+            <g:link class="item normalExport" action="exportRenewalEntitlements"
                     id="${subscription.id}"
                     params="${[surveyConfigID: surveyConfig.id,
-                               exportKBart   : true,
+                               exportConfig   : ExportService.KBART,
                                tab           : 'allTipps']}">${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}</g:link>
         </ui:exportDropdownItem>
 
         <ui:exportDropdownItem>
-            <g:link class="item kbartExport" action="exportRenewalEntitlements"
+            <g:link class="item normalExport" action="exportRenewalEntitlements"
                     id="${subscription.id}"
                     params="${[surveyConfigID: surveyConfig.id,
-                               exportKBart   : true,
+                               exportConfig   : ExportService.KBART,
                                tab           : 'selectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}</g:link>
         </ui:exportDropdownItem>
 
         <g:if test="${countCurrentPermanentTitles > 0}">
 
             <ui:exportDropdownItem>
-                <g:link class="item kbartExport" action="exportRenewalEntitlements"
+                <g:link class="item normalExport" action="exportRenewalEntitlements"
                         id="${subscription.id}"
                         params="${[surveyConfigID: surveyConfig.id,
-                                   exportKBart   : true,
+                                   exportConfig   : ExportService.KBART,
                                    tab           : 'currentPerpetualAccessIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentTitles')}</g:link>
             </ui:exportDropdownItem>
         </g:if>
@@ -52,27 +52,27 @@
         <div class="header">${message(code: 'default.button.exports.xls')}s</div>
 
         <ui:exportDropdownItem>
-            <g:link class="item" action="exportRenewalEntitlements"
+            <g:link class="item normalExport" action="exportRenewalEntitlements"
                     id="${subscription.id}"
                     params="${[surveyConfigID: surveyConfig.id,
-                               exportXLS     : true,
+                               exportConfig     : ExportService.EXCEL,
                                tab           : 'allTipps']}">${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}</g:link>
         </ui:exportDropdownItem>
 
         <ui:exportDropdownItem>
-            <g:link class="item" action="exportRenewalEntitlements"
+            <g:link class="item normalExport" action="exportRenewalEntitlements"
                     id="${subscription.id}"
                     params="${[surveyConfigID: surveyConfig.id,
-                               exportXLS   : true,
+                               exportConfig   : ExportService.EXCEL,
                                tab           : 'selectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}</g:link>
         </ui:exportDropdownItem>
 
         <g:if test="${countCurrentPermanentTitles > 0}">
             <ui:exportDropdownItem>
-                <g:link class="item" action="exportRenewalEntitlements"
+                <g:link class="item normalExport" action="exportRenewalEntitlements"
                         id="${subscription.id}"
                         params="${[surveyConfigID : surveyConfig.id,
-                                   exportXLS     : true,
+                                   exportConfig     : ExportService.EXCEL,
                                    tab           : 'currentPerpetualAccessIEs']}">
                     ${message(code: 'renewEntitlementsWithSurvey.currentTitles')}
                 </g:link>
@@ -433,18 +433,19 @@
             window.location.href = url;
     });
 
-    $('.kbartExport').click(function(e) {
+    $('.normalExport').click(function(e) {
         e.preventDefault();
         $('#globalLoadingIndicator').show();
+        $("#downloadWrapper").hide();
         $.ajax({
             url: $(this).attr('href'),
             type: 'POST',
             contentType: false
         }).done(function(response){
-            $("#downloadWrapper").html(response);
+            $("#downloadWrapper").html(response).show();
             $('#globalLoadingIndicator').hide();
         }).fail(function(resp, status){
-            $("#downloadWrapper").text('Es ist zu einem Fehler beim Abruf gekommen');
+            $("#downloadWrapper").text('Es ist zu einem Fehler beim Abruf gekommen').show();
             $('#globalLoadingIndicator').hide();
         });
     });

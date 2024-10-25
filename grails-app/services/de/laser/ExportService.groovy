@@ -29,6 +29,7 @@ import de.laser.wekb.Provider
 import de.laser.wekb.TIPPCoverage
 import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
+import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.GroovyRowResult
@@ -48,7 +49,6 @@ import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFDataFormat
 import org.apache.poi.xssf.usermodel.XSSFFont
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import org.hibernate.Session
 import org.springframework.context.MessageSource
 
 import java.awt.*
@@ -72,6 +72,10 @@ import java.util.List
 @Transactional
 class ExportService {
 
+	static final String EXCEL = 'xlsx'
+	static final String KBART = 'kbart'
+
+	BatchQueryService batchQueryService
 	ContextService contextService
 	FilterService filterService
 	GokbService gokbService
@@ -201,6 +205,8 @@ class ExportService {
 					int cellnum = 0
 					row = sheet.createRow(rownum)
 					rowData.each { cellData ->
+						if(cellData instanceof String)
+							cellData = JSON.parse(cellData)
 						cell = row.createCell(cellnum++)
 						if (cellData.field instanceof String) {
 							cell.setCellValue((String) cellData.field)
@@ -3110,305 +3116,6 @@ class ExportService {
 		else*/
 		rows.addAll(sql.rows(queryBase, queryClauseParts.params))
 		export.columnData = rows
-		/*
-		Map<String, Object> data = getTitleData(configMap+[format: 'kbart'], entitlementInstance, sql)
-        titleHeaders.addAll(data.otherTitleIdentifierNamespaces.idns_ns)
-		data.titles.eachWithIndex { GroovyRowResult title, int outer ->
-			if(entitlementInstance == IssueEntitlement.class.name && data.coverageMap.get(title['ie_id'])) {
-				data.coverageMap.get(title['ie_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
-					log.debug "now processing coverage statement ${inner} for record ${outer}"
-					covStmt.putAll(title)
-					rows.add(buildRow('kbart', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces))
-				}
-			}
-			else if(entitlementInstance == TitleInstancePackagePlatform.class.name && data.coverageMap.get(title['tipp_id'])) {
-				data.coverageMap.get(title['tipp_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
-					log.debug "now processing coverage statement ${inner} for record ${outer}"
-					covStmt.putAll(title)
-					rows.add(buildRow('kbart', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces))
-				}
-			}
-			else {
-				log.debug "now processing record ${outer}"
-				rows.add(buildRow('kbart', title, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces))
-			}
-		}
-		*/
-		/*
-		Set<IdentifierNamespace> otherTitleIdentifierNamespaces = getOtherIdentifierNamespaces(entitlementIDs,entitlementInstance)
-		titleHeaders.addAll(otherTitleIdentifierNamespaces.collect { IdentifierNamespace ns -> "${ns.ns}_identifer"})
-		int max = 500
-		TitleInstancePackagePlatform.withSession { Session sess ->
-			for(int offset = 0; offset < entitlementIDs.size(); offset+=max) {
-				List allRows = []
-				Set<TitleInstancePackagePlatform> titleInstances = []
-				//this double structure is necessary because the KBART standard foresees for each coverageStatement an own row with the full data
-				if(entitlementInstance == TitleInstancePackagePlatform.class.name) {
-					titleInstances.addAll(TitleInstancePackagePlatform.findAllByIdInList(entitlementIDs.drop(offset).take(max),[sort:'sortname']))
-					titleInstances.each { TitleInstancePackagePlatform tipp ->
-						if(!tipp.coverages && !tipp.priceItems) {
-							allRows << tipp
-						}
-						else if(tipp.coverages.size() > 1){
-							tipp.coverages.each { AbstractCoverage covStmt ->
-								allRows << covStmt
-							}
-						}
-						else {
-							allRows << tipp
-						}
-					}
-				}
-				else if(entitlementInstance == IssueEntitlement.class.name) {
-					Set<IssueEntitlement> issueEntitlements = IssueEntitlement.findAllByIdInList(entitlementIDs.drop(offset).take(max),[sort:'tipp.sortname'])
-					issueEntitlements.each { IssueEntitlement entitlement ->
-						titleInstances << entitlement.tipp
-						if(!entitlement.coverages && !entitlement.priceItems) {
-							allRows << entitlement
-						}
-						else if(entitlement.coverages.size() > 1){
-							entitlement.coverages.each { AbstractCoverage covStmt ->
-								allRows << covStmt
-							}
-						}
-						else {
-							allRows << entitlement
-						}
-					}
-				}
-				allRows.each { rowData ->
-					IssueEntitlement entitlement = getIssueEntitlement(rowData)
-					TitleInstancePackagePlatform tipp = getTipp(rowData)
-					AbstractCoverage covStmt = getCoverageStatement(rowData)
-
-					List row = []
-					//log.debug("processing ${tipp.name}")
-					//publication_title
-					row.add("${tipp.name}")
-
-					//print_identifier - namespace pISBN is proprietary for LAS:eR because no eISBN is existing and ISBN is used for eBooks as well
-					if(tipp.getIdentifierValue('pISBN'))
-						row.add(tipp.getIdentifierValue('pISBN'))
-					else if(tipp.getIdentifierValue('ISSN'))
-						row.add(tipp.getIdentifierValue('ISSN'))
-					else row.add(' ')
-					//online_identifier
-					if(tipp.getIdentifierValue('ISBN'))
-						row.add(tipp.getIdentifierValue('ISBN'))
-					else if(tipp.getIdentifierValue('eISSN'))
-						row.add(tipp.getIdentifierValue('eISSN'))
-					else row.add(' ')
-
-					if(covStmt) {
-						//date_first_issue_online
-						row.add(covStmt.startDate ? formatter.format(covStmt.startDate) : ' ')
-						//num_first_volume_online
-						row.add(covStmt.startVolume ?: ' ')
-						//num_first_issue_online
-						row.add(covStmt.startIssue ?: ' ')
-						//date_last_issue_online
-						row.add(covStmt.endDate ? formatter.format(covStmt.endDate) : ' ')
-						//num_last_volume_online
-						row.add(covStmt.endVolume ?: ' ')
-						//num_last_issue_online
-						row.add(covStmt.endIssue ?: ' ')
-					}
-					else {
-						//empty values for coverage fields
-						row.add(' ')
-						row.add(' ')
-						row.add(' ')
-						row.add(' ')
-						row.add(' ')
-						row.add(' ')
-					}
-					//title_url
-					row.add(tipp.hostPlatformURL ?: ' ')
-					//first_author (no value?)
-					row.add(tipp.firstAuthor ?: ' ')
-					//title_id (no value?)
-					row.add(' ')
-					if(covStmt) {
-						//embargo_information
-						row.add(covStmt.embargo ?: ' ')
-						//coverage_depth
-						row.add(covStmt.coverageDepth ?: ' ')
-						//notes
-						row.add(covStmt.coverageNote ?: ' ')
-					}
-					else {
-						//empty values for coverage fields
-						row.add(' ')
-						row.add(' ')
-						row.add(' ')
-					}
-					//publication_type
-					switch(tipp.titleType) {
-						case "Journal": row.add('serial')
-							break
-						case "Book": row.add('monograph')
-							break
-						case "Database": row.add('database')
-							break
-						default: row.add('other')
-							break
-					}
-					//publisher_name
-					row.add(tipp.publisherName)
-					if(tipp.titleType == 'Book') {
-						//date_monograph_published_print (no value unless BookInstance)
-						row.add(tipp.dateFirstInPrint ? formatter.format(tipp.dateFirstInPrint) : ' ')
-						//date_monograph_published_online (no value unless BookInstance)
-						row.add(tipp.dateFirstOnline ? formatter.format(tipp.dateFirstOnline) : ' ')
-						//monograph_volume (no value unless BookInstance)
-						row.add(tipp.volume ?: ' ')
-						//monograph_edition (no value unless BookInstance)
-						row.add(tipp.editionNumber ?: ' ')
-						//first_editor (no value unless BookInstance)
-						row.add(tipp.firstEditor ?: ' ')
-					}
-					else {
-						//empty values from date_monograph_published_print to first_editor
-						row.add(' ')
-						row.add(' ')
-						row.add(' ')
-						row.add(' ')
-						row.add(' ')
-					}
-					//parent_publication_title_id (no values defined for LAS:eR, must await GOKb)
-					row.add(' ')
-					//preceding_publication_title_id (no values defined for LAS:eR, must await GOKb)
-					row.add(' ')
-					/*
-                    switch(entitlement.tipp.payment) {
-                        case RDStore.TIPP_PAYMENT_OA: row.add('F')
-                            break
-                        case RDStore.TIPP_PAYMENT_PAID: row.add('P')
-                            break
-                        default: row.add(' ')
-                            break
-                    }
-					//package_name
-					row.add(tipp.pkg.name ?: ' ')
-					//package_id
-					row.add(joinIdentifiers(tipp.pkg.ids,IdentifierNamespace.PKG_ID,','))
-					//last_changed
-					row.add(tipp.lastUpdated ? formatter.format(tipp.lastUpdated) : ' ')
-					//access_start_date
-					row.add(entitlement?.accessStartDate ? formatter.format(entitlement.accessStartDate) : (tipp.accessStartDate ? formatter.format(tipp.accessStartDate) : ' ') )
-					//access_end_date
-					row.add(entitlement?.accessEndDate ? formatter.format(entitlement.accessEndDate) : (tipp.accessEndDate ? formatter.format(tipp.accessEndDate) : ' '))
-					//medium
-					row.add(tipp.medium ? tipp.medium.value : ' ')
-
-
-					//zdb_id
-					row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.ZDB,','))
-					//doi_identifier
-					row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.DOI,','))
-					//ezb_id
-					row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.EZB,','))
-					//title_gokb_uuid
-					row.add(tipp.gokbId)
-					//package_gokb_uid
-					row.add(tipp.pkg.gokbId)
-					//package_isci
-					row.add(joinIdentifiers(tipp.pkg.ids,IdentifierNamespace.ISCI,','))
-					//package_isil
-					row.add(joinIdentifiers(tipp.pkg.ids,IdentifierNamespace.ISIL_PAKETSIGEL,','))
-					//package_ezb_anchor
-					row.add(joinIdentifiers(tipp.pkg.ids,IdentifierNamespace.EZB_ANCHOR,','))
-					//ill_indicator
-					row.add(' ')
-					//superceding_publication_title_id
-					row.add(' ')
-					//monograph_parent_collection_title
-					row.add(tipp.seriesName ?: '')
-					//subject_area
-					row.add(tipp.subjectReference ?: '')
-					//status
-					row.add(tipp.status.value ?: '')
-					//access_type (no values defined for LAS:eR, must await GOKb)
-					row.add(tipp.accessType ? tipp.accessType.value : '')
-					//oa_type
-					row.add(tipp.openAccess ? tipp.openAccess.value : '')
-
-					//zdb_ppn
-					row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.ZDB_PPN,','))
-					if(entitlement) {
-                        //ezb_anchor
-                        row.add(joinIdentifiers(entitlement.subscription.ids,IdentifierNamespace.EZB_ANCHOR,','))
-                        //ezb_collection_id
-                        row.add(joinIdentifiers(entitlement.subscription.ids,IdentifierNamespace.EZB_COLLECTION_ID,','))
-                        //subscription_isil
-                        row.add(joinIdentifiers(entitlement.subscription.ids,IdentifierNamespace.ISIL_PAKETSIGEL,','))
-                        //subscription_isci
-                        row.add(joinIdentifiers(entitlement.subscription.ids,IdentifierNamespace.ISCI,','))
-                    }
-                    else {
-                        //empty values for subscription identifiers
-                        row.add(' ')
-                        row.add(' ')
-                        row.add(' ')
-                        row.add(' ')
-                    }
-					//ISSNs
-                    row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.ISSN,','))
-                    //eISSNs
-                    row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.EISSN,','))
-                    //pISBNs
-                    row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.PISBN,','))
-                    //ISBNs
-                    row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.PISBN,','))
-					//other identifier namespaces
-
-					if(entitlement?.priceItems) {
-						//listprice_eur
-						row.add(entitlement.priceItems.find {it.listCurrency == RDStore.CURRENCY_EUR}?.listPrice ?: ' ')
-						//listprice_gbp
-						row.add(entitlement.priceItems.find {it.listCurrency == RDStore.CURRENCY_GBP}?.listPrice ?: ' ')
-						//listprice_usd
-						row.add(entitlement.priceItems.find {it.listCurrency == RDStore.CURRENCY_USD}?.listPrice ?: ' ')
-						//localprice_eur
-						row.add(entitlement.priceItems.find {it.localCurrency == RDStore.CURRENCY_EUR}?.localPrice ?: ' ')
-						//localprice_gbp
-						row.add(entitlement.priceItems.find {it.localCurrency == RDStore.CURRENCY_GBP}?.localPrice ?: ' ')
-						//localprice_usd
-						row.add(entitlement.priceItems.find {it.localCurrency == RDStore.CURRENCY_USD}?.localPrice ?: ' ')
-					} else if (entitlementInstance == TitleInstancePackagePlatform.class.name && tipp.priceItems) {
-						//listprice_eur
-						row.add(tipp.priceItems.find { it.listCurrency == RDStore.CURRENCY_EUR }?.listPrice ?: ' ')
-						//listprice_gbp
-						row.add(tipp.priceItems.find { it.listCurrency == RDStore.CURRENCY_GBP }?.listPrice ?: ' ')
-						//listprice_usd
-						row.add(tipp.priceItems.find { it.listCurrency == RDStore.CURRENCY_USD }?.listPrice ?: ' ')
-						//localprice_eur
-						row.add(tipp.priceItems.find { it.localCurrency == RDStore.CURRENCY_EUR }?.localPrice ?: ' ')
-						//localprice_gbp
-						row.add(tipp.priceItems.find { it.localCurrency == RDStore.CURRENCY_GBP }?.localPrice ?: ' ')
-						//localprice_usd
-						row.add(tipp.priceItems.find { it.localCurrency == RDStore.CURRENCY_USD }?.localPrice ?: ' ')
-					}
-					else {
-						//empty values for price item columns
-						row.add(' ')
-						row.add(' ')
-						row.add(' ')
-						row.add(' ')
-						row.add(' ')
-						row.add(' ')
-					}
-
-					otherTitleIdentifierNamespaces.each { IdentifierNamespace ns ->
-						row.add(joinIdentifiers(tipp.ids,ns.ns,','))
-					}
-					export.columnData.add(row)
-				}
-				println("flushing after ${offset} ...")
-				sess.flush()
-			}
-		}
-		*/
 		log.debug("End generateTitleExportKBART")
 		export
 	}
@@ -3447,416 +3154,135 @@ class ExportService {
 		joined
 	}
 
-	/**
-	 * became a duplicate of generateTitleExportKBART - separate usage intended???
-	 */
-	@Deprecated
-	Map<String,List> generateTitleExportCSV(Collection entitlementIDs, String entitlementInstance) {
-		log.debug("Begin generateTitleExportCSV")
-		Set<IdentifierNamespace> otherTitleIdentifierNamespaces = getOtherIdentifierNamespaces(entitlementIDs,entitlementInstance)
-		List<String> titleHeaders = getBaseTitleHeadersForCSV()
-		titleHeaders.addAll(otherTitleIdentifierNamespaces.collect { IdentifierNamespace ns -> "${ns.ns}_identifer"})
-		Map<String,List> export = [titleRow:titleHeaders,rows:[]]
-		int max = 500
-		TitleInstancePackagePlatform.withSession { Session sess ->
-			for(int offset = 0; offset < entitlementIDs.size(); offset+=max) {
-				List allRows = []
-				Set<TitleInstancePackagePlatform> titleInstances = []
-				//this double structure is necessary because the KBART standard foresees for each coverageStatement an own row with the full data
-				if(entitlementInstance == TitleInstancePackagePlatform.class.name) {
-					titleInstances.addAll(TitleInstancePackagePlatform.findAllByIdInList(entitlementIDs.drop(offset).take(max),[sort:'sortname']))
-					titleInstances.each { TitleInstancePackagePlatform tipp ->
-						if(!tipp.coverages && !tipp.priceItems) {
-							allRows << tipp
-						}
-						else if(tipp.coverages.size() > 1){
-							tipp.coverages.each { AbstractCoverage covStmt ->
-								allRows << covStmt
-							}
-						}
-						else {
-							allRows << tipp
-						}
-					}
-				}
-				else if(entitlementInstance == IssueEntitlement.class.name) {
-					Set<IssueEntitlement> issueEntitlements = IssueEntitlement.findAllByIdInList(entitlementIDs.drop(offset).take(max),[sort:'tipp.sortname'])
-					issueEntitlements.each { IssueEntitlement entitlement ->
-						titleInstances << entitlement.tipp
-						if(!entitlement.coverages && !entitlement.priceItems) {
-							allRows << entitlement
-						}
-						else if(entitlement.coverages.size() > 1){
-							entitlement.coverages.each { AbstractCoverage covStmt ->
-								allRows << covStmt
-							}
-						}
-						else {
-							allRows << entitlement
-						}
-					}
-				}
-				allRows.each { rowData ->
-					IssueEntitlement entitlement = getIssueEntitlement(rowData)
-					TitleInstancePackagePlatform tipp = getTipp(rowData)
-					AbstractCoverage covStmt = getCoverageStatement(rowData)
-					List row = []
-					//log.debug("processing ${tipp.name}")
-					//publication_title
-					row.add("${tipp.name}")
-
-					//print_identifier
-					if(tipp.getIdentifierValue('ISBN'))
-						row.add(tipp.getIdentifierValue('ISBN'))
-					else if(tipp.getIdentifierValue('ISSN'))
-						row.add(tipp.getIdentifierValue('ISSN'))
-					else row.add(' ')
-					//online_identifier
-					if(tipp.getIdentifierValue('eISBN'))
-						row.add(tipp.getIdentifierValue('eISBN'))
-					else if(tipp.getIdentifierValue('eISSN'))
-						row.add(tipp.getIdentifierValue('eISSN'))
-					else row.add(' ')
-
-					if(covStmt) {
-						//date_first_issue_online
-						row.add(covStmt.startDate ? formatter.format(covStmt.startDate) : ' ')
-						//num_first_volume_online
-						row.add(covStmt.startVolume ?: ' ')
-						//num_first_issue_online
-						row.add(covStmt.startIssue ?: ' ')
-						//date_last_issue_online
-						row.add(covStmt.endDate ? formatter.format(covStmt.endDate) : ' ')
-						//num_last_volume_online
-						row.add(covStmt.endVolume ?: ' ')
-						//num_last_issue_online
-						row.add(covStmt.endIssue ?: ' ')
-					}
-					else {
-						//empty values for coverage fields
-						row.add(' ')
-						row.add(' ')
-						row.add(' ')
-						row.add(' ')
-						row.add(' ')
-						row.add(' ')
-					}
-					//title_url
-					row.add(tipp.hostPlatformURL ?: ' ')
-					//first_author (no value?)
-					row.add(tipp.firstAuthor ? tipp.firstAuthor.replaceAll(';', ',') : ' ')
-					//title_id (no value?)
-					row.add(' ')
-					if(covStmt) {
-						//embargo_information
-						row.add(covStmt.embargo ?: ' ')
-						//coverage_depth
-						row.add(covStmt.coverageDepth ?: ' ')
-						//notes
-						row.add(covStmt.coverageNote ?: ' ')
-					}
-					else {
-						//empty values for coverage fields
-						row.add(' ')
-						row.add(' ')
-						row.add(' ')
-					}
-					//publication_type
-					/*switch(tipp.titleType) {
-						case "Journal": row.add('serial')
-							break
-						case "Book": row.add('monograph')
-							break
-						case "Database": row.add('database')
-							break
-						default: row.add('other')
-							break
-					}*/
-					row.add(tipp.titleType)
-					//publisher_name
-					row.add(tipp.publisherName)
-					if(tipp.titleType == 'monograph') {
-						//date_monograph_published_print (no value unless BookInstance)
-						row.add(tipp.dateFirstInPrint ? formatter.format(tipp.dateFirstInPrint) : ' ')
-						//date_monograph_published_online (no value unless BookInstance)
-						row.add(tipp.dateFirstOnline ? formatter.format(tipp.dateFirstOnline) : ' ')
-						//monograph_volume (no value unless BookInstance)
-						row.add(tipp.volume ?: ' ')
-						//monograph_edition (no value unless BookInstance)
-						row.add(tipp.editionNumber ?: ' ')
-						//first_editor (no value unless BookInstance)
-						row.add(tipp.firstEditor ? tipp.firstEditor.replaceAll(';', ',') : ' ')
-					}
-					else {
-						//empty values from date_monograph_published_print to first_editor
-						row.add(' ')
-						row.add(' ')
-						row.add(' ')
-						row.add(' ')
-						row.add(' ')
-					}
-					//parent_publication_title_id (no values defined for LAS:eR, must await GOKb)
-					row.add(' ')
-					//preceding_publication_title_id (no values defined for LAS:eR, must await GOKb)
-					row.add(' ')
-					//access_type (no values defined for LAS:eR, must await GOKb)
-					row.add(tipp.accessType ? tipp.accessType.value : ' ')
-					/*
-                    switch(entitlement.tipp.payment) {
-                        case RDStore.TIPP_PAYMENT_OA: row.add('F')
-                            break
-                        case RDStore.TIPP_PAYMENT_PAID: row.add('P')
-                            break
-                        default: row.add(' ')
-                            break
-                    }*/
-					//package_name
-					row.add(tipp.pkg.name ?: ' ')
-					//package_id
-					row.add(joinIdentifiers(tipp.pkg.ids,IdentifierNamespace.PKG_ID,','))
-					//last_changed
-					row.add(tipp.lastUpdated ? formatter.format(tipp.lastUpdated) : ' ')
-					//access_start_date
-					row.add(entitlement?.accessStartDate ? formatter.format(entitlement.accessStartDate) : (tipp.accessStartDate ? formatter.format(tipp.accessStartDate) : ' ') )
-					//access_end_date
-					row.add(entitlement?.accessEndDate ? formatter.format(entitlement.accessEndDate) : (tipp.accessEndDate ? formatter.format(tipp.accessEndDate) : ' '))
-					//medium
-					row.add(tipp.medium ? tipp.medium.value : ' ')
-
-
-					//zdb_id
-					row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.ZDB,','))
-					//doi_identifier
-					row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.DOI,','))
-					//ezb_id
-					row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.EZB,','))
-					//title_gokb_uuid
-					row.add(tipp.gokbId)
-					//package_gokb_uid
-					row.add(tipp.pkg.gokbId)
-					//package_isci
-					row.add(joinIdentifiers(tipp.pkg.ids,IdentifierNamespace.ISCI,','))
-					//package_isil
-					row.add(joinIdentifiers(tipp.pkg.ids,IdentifierNamespace.ISIL_PAKETSIGEL,','))
-					//package_ezb_anchor
-					row.add(joinIdentifiers(tipp.pkg.ids,IdentifierNamespace.EZB_ANCHOR,','))
-					//ill_indicator
-					row.add(' ')
-					//superceding_publication_title_id
-					row.add(' ')
-					//monograph_parent_collection_title
-					row.add(tipp.seriesName ?: '')
-					//subject_area
-					row.add(tipp.subjectReference ?: '')
-					//status
-					row.add(tipp.status.value ?: '')
-					//access_type
-					row.add(tipp.accessType ? tipp.accessType.value : '')
-					//oa_type
-					row.add(tipp.openAccess ? tipp.openAccess.value : '')
-
-					//zdb_ppn
-					row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.ZDB_PPN,','))
-					/*if(entitlement) {
-                        //ezb_anchor
-                        row.add(joinIdentifiers(entitlement.subscription.ids,IdentifierNamespace.EZB_ANCHOR,','))
-                        //ezb_collection_id
-                        row.add(joinIdentifiers(entitlement.subscription.ids,IdentifierNamespace.EZB_COLLECTION_ID,','))
-                        //subscription_isil
-                        row.add(joinIdentifiers(entitlement.subscription.ids,IdentifierNamespace.ISIL_PAKETSIGEL,','))
-                        //subscription_isci
-                        row.add(joinIdentifiers(entitlement.subscription.ids,IdentifierNamespace.ISCI,','))
-                    }
-                    else {
-                        //empty values for subscription identifiers
-                        row.add(' ')
-                        row.add(' ')
-                        row.add(' ')
-                        row.add(' ')
-                    }*/
-					/*//ISSNs
-                    row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.ISSN,','))
-                    //eISSNs
-                    row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.EISSN,','))
-                    //pISBNs
-                    row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.PISBN,','))
-                    //ISBNs
-                    row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.PISBN,','))*/
-					//other identifier namespaces
-					DecimalFormat df = new DecimalFormat("###,##0.00")
-					df.decimalFormatSymbols = new DecimalFormatSymbols(LocaleUtils.getCurrentLocale())
-					if(entitlement?.priceItems) {
-						//listprice_eur
-						BigDecimal listEUR = entitlement.priceItems.find {it.listCurrency == RDStore.CURRENCY_EUR}?.listPrice
-						row.add(listEUR ? df.format(listEUR) : ' ')
-						//listprice_gbp
-						BigDecimal listGBP = entitlement.priceItems.find {it.listCurrency == RDStore.CURRENCY_GBP}?.listPrice
-						row.add(listGBP ? df.format(listGBP) : ' ')
-						//listprice_usd
-						BigDecimal listUSD = entitlement.priceItems.find {it.listCurrency == RDStore.CURRENCY_USD}?.listPrice
-						row.add(listUSD ? df.format(listUSD) : ' ')
-						//localprice_eur
-						BigDecimal localEUR = entitlement.priceItems.find {it.localCurrency == RDStore.CURRENCY_EUR}?.localPrice
-						row.add(localEUR ? df.format(localEUR) : ' ')
-						//localprice_gbp
-						BigDecimal localGBP = entitlement.priceItems.find {it.localCurrency == RDStore.CURRENCY_GBP}?.localPrice
-						row.add(localGBP ? df.format(localGBP) : ' ')
-						//localprice_usd
-						BigDecimal localUSD = entitlement.priceItems.find {it.localCurrency == RDStore.CURRENCY_USD}?.localPrice
-						row.add(localUSD ? df.format(localUSD) : ' ')
-					} else if (tipp.priceItems) {
-						//listprice_eur
-						BigDecimal listEUR = tipp.priceItems.find {it.listCurrency == RDStore.CURRENCY_EUR}?.listPrice
-						row.add(listEUR ? df.format(listEUR) : ' ')
-						//listprice_gbp
-						BigDecimal listGBP = tipp.priceItems.find {it.listCurrency == RDStore.CURRENCY_GBP}?.listPrice
-						row.add(listGBP ? df.format(listGBP) : ' ')
-						//listprice_usd
-						BigDecimal listUSD = tipp.priceItems.find { it.listCurrency == RDStore.CURRENCY_USD }?.listPrice
-						row.add(listUSD ? df.format(listUSD) : ' ')
-						//localprice_eur
-						BigDecimal localEUR = tipp.priceItems.find {it.localCurrency == RDStore.CURRENCY_EUR}?.localPrice
-						row.add(localEUR ? df.format(localEUR) : ' ')
-						//localprice_gbp
-						BigDecimal localGBP = tipp.priceItems.find {it.localCurrency == RDStore.CURRENCY_GBP}?.localPrice
-						row.add(localGBP ? df.format(localGBP) : ' ')
-						//localprice_usd
-						BigDecimal localUSD = tipp.priceItems.find { it.localCurrency == RDStore.CURRENCY_USD }?.localPrice
-						row.add(localUSD ? df.format(localUSD) : ' ')
-					}
-					else {
-						//empty values for price item columns
-						row.add(' ')
-						row.add(' ')
-						row.add(' ')
-						row.add(' ')
-						row.add(' ')
-						row.add(' ')
-					}
-					if(entitlement) {
-						//is Perpetual Access
-						row.add(entitlement.perpetualAccessBySub ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value'))
-					}else {
-						row.add(' ')
-					}
-
-					otherTitleIdentifierNamespaces.each { IdentifierNamespace ns ->
-						row.add(joinIdentifiers(tipp.ids,ns.ns,','))
-					}
-					export.rows.add(row)
-				}
-				log.debug("flush after ${offset} ...")
-				sess.flush()
-				sess.clear()
-			}
-		}
-
-		log.debug("End generateTitleExportCSV")
-		export
-	}
-
-	/**
-	 * Was initially set up for generating Excel-export; as for some reason, the CSV export has been abandoned, this export is now
-	 * generic export for non-KBART headers, used for purposes where the KBART headers are not needed in full.
-	 * To use this export for tab-separated values, access result.rows.field directly for the data; it is like PHP's array_column()
-	 * @param entitlementIDs the IDs of the issue entitlements or title instances to export
-	 * @param entitlementInstance the class name to look for the complete objects
-	 * @return a {@link Map} containing headers and data for export; it may be used for Excel worksheets as style information is defined in format-style maps or for
-	 * raw text output; access rows.field for the bare data
-	 */
-	Map<String, Object> generateTitleExportCustom(Map configMap, String entitlementInstance, List showStatsInMonthRings = [], Org subscriber = null, boolean checkPerpetuallyPurchasedTitles = false) {
-		log.debug("Begin generateTitleExportCustom")
-		Sql sql = GlobalService.obtainSqlConnection()
+	Map<String, Object> generateTitleExport(Map configMap) {
+		log.debug("Begin generateTitleExport")
+		Set<Long> tippIDs = configMap.tippIDs
+		boolean withPick = configMap.withPick
+		Map<String, Object> export = [:]
 		Locale locale = LocaleUtils.getCurrentLocale()
-		Map<String, Object> data = getTitleData(configMap, entitlementInstance, sql, showStatsInMonthRings, subscriber)
 		//log.debug("after title data")
-		List<String> titleHeaders = [
-				messageSource.getMessage('tipp.name',null,locale),
-				'Print Identifier',
-				'Online Identifier',
-				messageSource.getMessage('tipp.startDate',null,locale),
-				messageSource.getMessage('tipp.startVolume',null,locale),
-				messageSource.getMessage('tipp.startIssue',null,locale),
-				messageSource.getMessage('tipp.endDate',null,locale),
-				messageSource.getMessage('tipp.endVolume',null,locale),
-				messageSource.getMessage('tipp.endIssue',null,locale),
-				messageSource.getMessage('tipp.hostPlatformURL',null,locale),
-				messageSource.getMessage('tipp.firstAuthor',null,locale),
-				messageSource.getMessage('tipp.titleId',null,locale),
-				messageSource.getMessage('tipp.embargo',null,locale),
-				messageSource.getMessage('tipp.coverageDepth',null,locale),
-				messageSource.getMessage('tipp.coverageNote',null,locale),
-				messageSource.getMessage('tipp.titleType',null,locale),
-				messageSource.getMessage('tipp.publisher',null,locale),
-				messageSource.getMessage('tipp.dateFirstInPrint',null,locale),
-				messageSource.getMessage('tipp.dateFirstOnline',null,locale),
-				messageSource.getMessage('tipp.volume',null,locale),
-				messageSource.getMessage('tipp.editionNumber',null,locale),
-				messageSource.getMessage('tipp.firstEditor',null,locale),
-				messageSource.getMessage('tipp.parentTitleId',null,locale),
-				messageSource.getMessage('tipp.precedingTitleId',null,locale),
-				messageSource.getMessage('package.label',null,locale),
-				messageSource.getMessage('platform.label',null,locale),
-				messageSource.getMessage('tipp.lastUpdated',null,locale),
-				messageSource.getMessage('tipp.accessStartDate',null,locale),
-				messageSource.getMessage('tipp.accessEndDate',null,locale),
-				messageSource.getMessage('tipp.medium',null,locale),
-				IdentifierNamespace.ZDB,
-				IdentifierNamespace.DOI,
-				IdentifierNamespace.EZB,
-				messageSource.getMessage('tipp.tippWekbId',null,locale),
-				messageSource.getMessage('tipp.pkgWekbId',null,locale),
-				IdentifierNamespace.ISCI,
-				IdentifierNamespace.ISIL_PAKETSIGEL,
-				IdentifierNamespace.EZB_ANCHOR,
-				messageSource.getMessage('tipp.illIndicator',null,locale),
-				messageSource.getMessage('tipp.supersedingPublicationTitleId',null,locale),
-				messageSource.getMessage('tipp.seriesName',null,locale),
-				messageSource.getMessage('tipp.subjectReference',null,locale),
-				messageSource.getMessage('tipp.status',null,locale),
-				messageSource.getMessage('tipp.accessType',null,locale),
-				messageSource.getMessage('tipp.openAccess',null,locale),
-				IdentifierNamespace.ZDB_PPN,
-				messageSource.getMessage('tipp.listprice_eur',null,locale),
-				messageSource.getMessage('tipp.listprice_gbp',null,locale),
-				messageSource.getMessage('tipp.listprice_usd',null,locale),
-				messageSource.getMessage('tipp.localprice_eur',null,locale),
-				messageSource.getMessage('tipp.localprice_gbp',null,locale),
-				messageSource.getMessage('tipp.localprice_usd',null,locale)]
-		titleHeaders.addAll(data.coreTitleIdentifierNamespaces.collect { GroovyRowResult row -> row['idns_ns']})
-		titleHeaders.addAll(data.otherTitleIdentifierNamespaces.collect { GroovyRowResult row -> row['idns_ns']})
-		if(showStatsInMonthRings){
-			titleHeaders.addAll(showStatsInMonthRings.collect { Date month -> DateUtils.getSDF_yyyyMM().format(month) })
+		List<String> titleHeaders
+		if(configMap.format == ExportService.KBART) {
+			titleHeaders = ['publication_title',
+							'print_identifier',
+							'online_identifier',
+							'date_first_issue_online',
+							'num_first_vol_online',
+							'num_first_issue_online',
+							'date_last_issue_online',
+							'num_last_vol_online',
+							'num_last_issue_online',
+							'title_url',
+							'first_author',
+							'title_id',
+							'embargo_info',
+							'coverage_depth',
+							'notes',
+							'publication_type',
+							'publisher_name',
+							'date_monograph_published_print',
+							'date_monograph_published_online',
+							'monograph_volume',
+							'monograph_edition',
+							'first_editor',
+							'parent_publication_title_id',
+							'preceding_publication_title_id',
+							'package_name',
+							'platform_name',
+							'last_changed',
+							'access_start_date',
+							'access_end_date',
+							'medium',
+							'zdb_id',
+							'doi_identifier',
+							'ezb_id',
+							'title_wekb_uuid',
+							'package_wekb_uuid',
+							'package_isci',
+							'package_isil',
+							'package_ezb_anchor',
+							'ill_indicator',
+							'superceding_publication_title_id',
+							'series_name',
+							'subject_area',
+							'status',
+							'access_type',
+							'oa_type',
+							'zdb_ppn',
+							'listprice_eur',
+							'listprice_gbp',
+							'listprice_usd']
 		}
-		List rows = []
-		Map<String,List> export = [titles:titleHeaders, status202: data.status202]
-		if(!data.status202) {
-			data.titles.eachWithIndex { GroovyRowResult title, int outer ->
-				if(entitlementInstance == IssueEntitlement.class.name && data.coverageMap.get(title['ie_id'])) {
-					data.coverageMap.get(title['ie_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
-						log.debug "now processing coverage statement ${inner} for record ${outer}"
-						covStmt.putAll(title)
-						rows.add(buildRow('excel', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, checkPerpetuallyPurchasedTitles, showStatsInMonthRings, subscriber))
-					}
-				}
-				else if(entitlementInstance == TitleInstancePackagePlatform.class.name && data.coverageMap.get(title['tipp_id'])) {
-					data.coverageMap.get(title['tipp_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
-						log.debug "now processing coverage statement ${inner} for record ${outer}"
-						covStmt.putAll(title)
-						rows.add(buildRow('excel', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, checkPerpetuallyPurchasedTitles, showStatsInMonthRings, subscriber))
-					}
-				}
-				else {
-//				log.debug "now processing record ${outer}"
-					rows.add(buildRow('excel', title, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, checkPerpetuallyPurchasedTitles, showStatsInMonthRings, subscriber))
-				}
+		else {
+			titleHeaders = [messageSource.getMessage('tipp.name',null,locale),
+							'Print Identifier',
+							'Online Identifier',
+							messageSource.getMessage('tipp.startDate',null,locale),
+							messageSource.getMessage('tipp.startVolume',null,locale),
+							messageSource.getMessage('tipp.startIssue',null,locale),
+							messageSource.getMessage('tipp.endDate',null,locale),
+							messageSource.getMessage('tipp.endVolume',null,locale),
+							messageSource.getMessage('tipp.endIssue',null,locale),
+							messageSource.getMessage('tipp.hostPlatformURL',null,locale),
+							messageSource.getMessage('tipp.firstAuthor',null,locale),
+							messageSource.getMessage('tipp.titleId',null,locale),
+							messageSource.getMessage('tipp.embargo',null,locale),
+							messageSource.getMessage('tipp.coverageDepth',null,locale),
+							messageSource.getMessage('tipp.coverageNote',null,locale),
+							messageSource.getMessage('tipp.titleType',null,locale),
+							messageSource.getMessage('tipp.publisher',null,locale),
+							messageSource.getMessage('tipp.dateFirstInPrint',null,locale),
+							messageSource.getMessage('tipp.dateFirstOnline',null,locale),
+							messageSource.getMessage('tipp.volume',null,locale),
+							messageSource.getMessage('tipp.editionNumber',null,locale),
+							messageSource.getMessage('tipp.firstEditor',null,locale),
+							messageSource.getMessage('tipp.parentTitleId',null,locale),
+							messageSource.getMessage('tipp.precedingTitleId',null,locale),
+							messageSource.getMessage('package.label',null,locale),
+							messageSource.getMessage('platform.label',null,locale),
+							messageSource.getMessage('tipp.lastUpdated',null,locale),
+							messageSource.getMessage('tipp.accessStartDate',null,locale),
+							messageSource.getMessage('tipp.accessEndDate',null,locale),
+							messageSource.getMessage('tipp.medium',null,locale),
+							IdentifierNamespace.ZDB,
+							IdentifierNamespace.DOI,
+							IdentifierNamespace.EZB,
+							messageSource.getMessage('tipp.tippWekbId',null,locale),
+							messageSource.getMessage('tipp.pkgWekbId',null,locale),
+							IdentifierNamespace.ISCI,
+							IdentifierNamespace.ISIL_PAKETSIGEL,
+							IdentifierNamespace.EZB_ANCHOR,
+							messageSource.getMessage('tipp.illIndicator',null,locale),
+							messageSource.getMessage('tipp.supersedingPublicationTitleId',null,locale),
+							messageSource.getMessage('tipp.seriesName',null,locale),
+							messageSource.getMessage('tipp.subjectReference',null,locale),
+							messageSource.getMessage('tipp.status',null,locale),
+							messageSource.getMessage('tipp.accessType',null,locale),
+							messageSource.getMessage('tipp.openAccess',null,locale),
+							IdentifierNamespace.ZDB_PPN,
+							messageSource.getMessage('tipp.listprice_eur',null,locale),
+							messageSource.getMessage('tipp.listprice_gbp',null,locale),
+							messageSource.getMessage('tipp.listprice_usd',null,locale)]
+		}
+		if(tippIDs) {
+			//List<GroovyRowResult> coreTitleIdentifierNamespaces = batchQueryService.longArrayQuery("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id where id_tipp_fk = any(:tippIDs) and idns_ns in ('${coreTitleNSrestricted.join("','")}')", [tippIDs: titleIDs])
+			List<GroovyRowResult> otherTitleIdentifierNamespaceList = batchQueryService.longArrayQuery("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id where id_tipp_fk = any(:tippIDs) and not idns_id = any(:namespaces)", [tippIDs: tippIDs, namespaces: IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_TITLE_NS+IdentifierNamespace.TITLE_ID).id])
+			//titleHeaders.addAll(coreTitleIdentifierNamespaces['idns_ns'])
+			List<String> otherTitleIdentifierNamespaces = otherTitleIdentifierNamespaceList['idns_ns']
+			titleHeaders.addAll(otherTitleIdentifierNamespaces)
+			if(withPick) {
+				titleHeaders << messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale)
+				titleHeaders << "Pick"
 			}
+			export.columnData = buildRows(configMap)
 		}
-		export.rows = rows
+		else export.columnData = []
+		export.titleRow = titleHeaders
 		log.debug("End generateTitleExportCustom")
 		export
 	}
 
+	@Deprecated
 	Map<String, Object> generateRenewalExport(Map configMap, Set showStatsInMonthRings, Org subscriber) {
 		log.debug("Begin generateRenewalExport")
 		Sql sql = GlobalService.obtainSqlConnection()
@@ -4154,6 +3580,7 @@ class ExportService {
 	 * Gets the map of column headers for KBART export with their database query mappings
 	 * @return a map of column headers and SQL query parts
 	 */
+	@Deprecated
 	Map<String, String> getBaseTitleHeaders(String entitlementInstance, boolean checkPerpetuallyAccessToTitle = false) {
 		Locale locale = LocaleUtils.getCurrentLocale()
 		Map <String, String> mapping = [publication_title: 'tipp_name as publication_title',
@@ -4244,62 +3671,90 @@ class ExportService {
 		mapping
 	}
 
-	@Deprecated
-	List<String> getBaseTitleHeadersForCSV() {
-		['publication_title',
-		 'print_identifier',
-		 'online_identifier',
-		 'date_first_issue_online',
-		 'num_first_vol_online',
-		 'num_first_issue_online',
-		 'date_last_issue_online',
-		 'num_last_vol_online',
-		 'num_last_issue_online',
-		 'title_url',
-		 'first_author',
-		 'title_id',
-		 'embargo_info',
-		 'coverage_depth',
-		 'notes',
-		 'publication_type',
-		 'publisher_name',
-		 'date_monograph_published_print',
-		 'date_monograph_published_online',
-		 'monograph_volume',
-		 'monograph_edition',
-		 'first_editor',
-		 'parent_publication_title_id',
-		 'preceding_publication_title_id',
-		 'access_type',
-		 'package_name',
-		 'package_id',
-		 'last_changed',
-		 'access_start_date',
-		 'access_end_date',
-		 'medium',
-		 'zdb_id',
-		 'doi_identifier',
-		 'ezb_id',
-		 'title_wekb_uuid',
-		 'package_wekb_uuid',
-		 'package_isci',
-		 'package_isil',
-		 'package_ezb_anchor',
-		 'ill_indicator',
-		 'superceding_publication_title_id',
-		 'monograph_parent_collection_title',
-		 'subject_area',
-		 'status',
-		 'access_type',
-		 'oa_type',
-		 'zdb_ppn',
-		 'listprice_eur',
-		 'listprice_gbp',
-		 'listprice_usd',
-		 'localprice_eur',
-		 'localprice_gbp',
-		 'localprice_usd',
-		 'perpetual_access']
+	List buildRows(Map configMap) {
+		Locale locale = LocaleUtils.getCurrentLocale()
+		String format = configMap.format
+		Set<Long> tippIDs = configMap.tippIDs
+		List<String> otherTitleIdentifierNamespaces = configMap.otherTitleIdentifierNamespaces
+		String style = configMap.style
+		String valueCol
+		Map<String, Object> arrayParams = [:]
+		if(style)
+			style = "'${style}'"
+		else if(format == ExportService.EXCEL && configMap.containsKey('perpetuallyPurchasedTitleIDs')) {
+			style = "(select case when tipp_id = any(:perpetuallyPurchasedTitleIDs) then 'negative' else null end case)"
+			arrayParams.perpetuallyPurchasedTitleIDs = configMap.perpetuallyPurchasedTitleIDs
+		}
+		if(format == ExportService.KBART)
+			valueCol = 'rdv_value'
+		else valueCol = I10nTranslation.getRefdataValueColumn(LocaleUtils.getCurrentLocale())
+		String rowQuery = "select tipp_id, create_cell('${format}', tipp_name, ${style}) as publication_title," +
+						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('monograph') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, IdentifierNamespace.NS_TITLE).id}) or (lower(tipp_title_type) in ('serial') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, IdentifierNamespace.NS_TITLE).id}))), ${style}) as print_identifier," +
+						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('monograph') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISBN, IdentifierNamespace.NS_TITLE).id}) or (lower(tipp_title_type) in ('serial') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, IdentifierNamespace.NS_TITLE).id}))), ${style}) as online_identifier," +
+						"create_cell('${format}', to_char(tc_start_date, 'yyyy-MM-dd'), ${style}) as date_first_issue_online," +
+						"create_cell('${format}', tc_start_volume, ${style}) as num_first_vol_online," +
+						"create_cell('${format}', tc_start_issue, ${style}) as num_first_issue_online," +
+						"create_cell('${format}', to_char(tc_end_date, 'yyyy-MM-dd'), ${style}) as date_last_issue_online," +
+						"create_cell('${format}', tc_end_volume, ${style}) as num_last_vol_online," +
+						"create_cell('${format}', tc_end_issue, ${style}) as num_last_issue_online," +
+						"create_cell('${format}', tipp_host_platform_url, ${style}) as title_url," +
+						"create_cell('${format}', tipp_first_author, ${style}) as first_author," +
+						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType('title_id', IdentifierNamespace.NS_TITLE).id}), ${style}) as title_id," +
+						"create_cell('${format}', tc_embargo, ${style}) as embargo_info," +
+						"create_cell('${format}', tc_coverage_depth, ${style}) as coverage_depth," +
+						"create_cell('${format}', tc_coverage_note, ${style}) as notes," +
+						"create_cell('${format}', tipp_title_type, ${style}) as publication_type," +
+						"create_cell('${format}', tipp_publisher_name, ${style}) as publisher_name," +
+						"create_cell('${format}', to_char(tipp_date_first_in_print, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), ${style}) as date_monograph_published_print," +
+						"create_cell('${format}', to_char(tipp_date_first_online, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), ${style}) as date_monograph_published_online," +
+						"create_cell('${format}', tipp_volume, ${style}) as monograph_volume," +
+						"create_cell('${format}', tipp_edition_statement, ${style}) as monograph_edition," +
+						"create_cell('${format}', tipp_first_editor, ${style}) as first_editor," +
+						"create_cell('${format}', null, ${style}) as parent_publication_title_id," +
+						"create_cell('${format}', null, ${style}) as preceding_publication_title_id," +
+						"create_cell('${format}', (select pkg_name from package where pkg_id = tipp_pkg_fk), ${style}) as package_name," +
+						"create_cell('${format}', (select plat_name from platform where plat_id = tipp_plat_fk), ${style}) as platform_name," +
+						"create_cell('${format}', to_char(tipp_last_updated, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), ${style}) as last_changed," +
+						"create_cell('${format}', to_char(tipp_access_start_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), ${style}) as access_start_date," +
+						"create_cell('${format}', to_char(tipp_access_end_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), ${style}) as access_end_date," +
+						"create_cell('${format}', (select ${valueCol} from refdata_value where rdv_id = tipp_medium_rv_fk), ${style}) as medium," +
+						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ZDB, IdentifierNamespace.NS_TITLE).id}), ${style}) as zdb_id," +
+						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, IdentifierNamespace.NS_TITLE).id}), ${style}) as doi_identifier," +
+						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EZB, IdentifierNamespace.NS_TITLE).id}), ${style}) as ezb_id," +
+						"create_cell('${format}', tipp_gokb_id, ${style}) as title_wekb_uuid," +
+						"create_cell('${format}', (select pkg_gokb_id from package where pkg_id = tipp_pkg_fk), ${style}) as package_wekb_uuid," +
+						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_pkg_fk = tipp_pkg_fk and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ISCI).id}), ${style}) as package_isci," +
+						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_pkg_fk = tipp_pkg_fk and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType('isil', IdentifierNamespace.NS_PACKAGE).id}), ${style}) as package_isil," +
+						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_pkg_fk = tipp_pkg_fk and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EZB, IdentifierNamespace.NS_PACKAGE).id}), ${style}) as package_ezb_anchor," +
+						"create_cell('${format}', null, ${style}) as ill_indicator," +
+						"create_cell('${format}', null, ${style}) as superceding_publication_title_id," +
+						"create_cell('${format}', null, ${style}) as monograph_parent_collection_title," +
+						"create_cell('${format}', tipp_subject_reference, ${style}) as subject_area," +
+						"create_cell('${format}', (select ${valueCol} from refdata_value where rdv_id = tipp_status_rv_fk), ${style}) as status," +
+						"create_cell('${format}', (case when tipp_access_type_rv_fk = ${RDStore.TIPP_PAYMENT_PAID.id} then 'P' when tipp_access_type_rv_fk = ${RDStore.TIPP_PAYMENT_FREE.id} then 'F' else '' end), ${style}) as access_type," +
+						"create_cell('${format}', (select ${valueCol} from refdata_value where rdv_id = tipp_open_access_rv_fk), ${style}) as oa_type," +
+						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ZDB_PPN).id}), ${style}) as zdb_ppn," +
+						"create_cell('${format}', (select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_EUR.id} order by pi_last_updated desc limit 1), ${style}) as listprice_eur," +
+						"create_cell('${format}', (select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_GBP.id} order by pi_last_updated desc limit 1), ${style}) as listprice_gbp," +
+						"create_cell('${format}', (select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_USD.id} order by pi_last_updated desc limit 1), ${style}) as listprice_usd"
+		if(otherTitleIdentifierNamespaces) {
+			otherTitleIdentifierNamespaces.each { String other ->
+				rowQuery += ","
+				rowQuery += "create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(other, IdentifierNamespace.NS_TITLE).id}), ${style}) as ${other}"
+			}
+		}
+		if(configMap.withPick == true) {
+			rowQuery += ","
+			rowQuery += "create_cell('${format}', (select ${valueCol} from refdata_value where rdv_id = (select case when tipp_id = any(:perpetuallyPurchasedTitleIDs) then ${RDStore.YN_NO.id} else ${RDStore.YN_YES.id} end case)), ${style}) as selectable,"
+			rowQuery += "create_cell('${format}', null, ${style}) as pick"
+		}
+		rowQuery += " from title_instance_package_platform left join tippcoverage on tc_tipp_fk = tipp_id where tipp_id = any(:tippIDs) order by tipp_sort_name"
+		arrayParams.tippIDs = tippIDs
+		batchQueryService.longArrayQuery(rowQuery, arrayParams).collect { GroovyRowResult row ->
+			Long tippID = row.remove('tipp_id')
+			//TODO process here usage data
+			row.values()
+		}
 	}
 
 	/**

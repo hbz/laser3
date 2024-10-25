@@ -1777,7 +1777,7 @@ class FilterService {
         log.debug 'getTippSubsetQuery'
         Map<String, Object> result = [:], clauses = getTippSubsetArguments(params)
         String query = 'select tipp.id from TitleInstancePackagePlatform tipp where'
-        result.query = query+" ${clauses.arguments} order by tipp.sortname"
+        result.query = query+" ${clauses.arguments} order by ${params.sort} ${params.order}"
         result.queryParams = clauses.queryParams
         result
     }

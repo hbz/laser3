@@ -1104,23 +1104,6 @@ class SubscriptionController {
                 render template: '/templates/bulkItemDownload', model: fileResult
                 return
             }
-            /*else if(params.exportXLSX) {
-                response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
-                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                Map<String, Object> configMap = [:]
-                configMap.putAll(params)
-                configMap.sub = ctrlResult.result.subscription
-                configMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id //GORM sometimes does not initialise the sorted set
-                Map<String,List> export = exportService.generateTitleExportCustom(configMap, IssueEntitlement.class.name) //subscription given, all packages
-                Map sheetData = [:]
-                sheetData[message(code:'menu.my.titles')] = [titleRow:export.titles,columnData:export.rows]
-                SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
-                workbook.write(response.outputStream)
-                response.outputStream.flush()
-                response.outputStream.close()
-                workbook.dispose()
-                return
-            }*/
             else if(params.fileformat == 'xlsx') {
                 SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportIssueEntitlements(ctrlResult.result.entitlementIDs.id, selectedFields, ExportClickMeService.FORMAT.XLS)
                 response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
@@ -1321,19 +1304,6 @@ class SubscriptionController {
                 render template: '/templates/bulkItemDownload', model: fileResult
                 return
             }
-            /*else if(params.exportXLSX) {
-                response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
-                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                Map<String,List> export = exportService.generateTitleExportCustom(configMap, TitleInstancePackagePlatform.class.name) //subscription given
-                Map sheetData = [:]
-                sheetData[message(code:'menu.my.titles')] = [titleRow:export.titles,columnData:export.rows]
-                SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
-                workbook.write(response.outputStream)
-                response.outputStream.flush()
-                response.outputStream.close()
-                workbook.dispose()
-                return
-            }*/
             else if(params.fileformat == 'xlsx') {
                 SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(tipps, selectedFields, ExportClickMeService.FORMAT.XLS)
                 response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
@@ -1910,12 +1880,85 @@ class SubscriptionController {
     }
 
     @Deprecated
-    @Secured(['ROLE_ADMIN'])
-    Map renewEntitlementsWithSurvey_old() {
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+    })
+    def processRenewEntitlementsWithSurvey_old() {
+        /*
+        Map<String, Object> ctrlResult = subscriptionControllerService.processRenewEntitlementsWithSurvey(this,params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+            else flash.error = ctrlResult.result.error
+        }
+        else {
+            flash.message = ctrlResult.result.message
+        }
+        redirect(url: request.getHeader("referer"))
+        */
+    }
+
+    /**
+     * Call to load the selection list for the title renewal. The list may be exported as a (configurable) Excel table with usage data for each title
+     * @return the title list for selection; either as HTML table or as Excel export, configured with the given parameters
+     */
+    @DebugInfo(isInstUser_or_ROLEADMIN = [], ctrlService = 1)
+    @Secured(closure = {
+        ctx.contextService.isInstUser_or_ROLEADMIN()
+    })
+    def renewEntitlementsWithSurvey() {
+        Map<String,Object> ctrlResult = subscriptionService.renewEntitlementsWithSurvey(params)
+        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+            else flash.error = ctrlResult.result.error
+        }
+        else {
+            ctrlResult.result
+        }
+    }
+
+    /**
+     * Call to process the title selection with the given input parameters
+     * @return a redirect to the referer
+     */
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+    })
+    def processRenewEntitlementsWithSurvey() {
+
+    }
+
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = 1)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+    })
+    Map exportRenewalEntitlements() {
+        Map<String, Object> ctrlResult = subscriptionService.exportRenewalEntitlements(params)
+        Map<String, Object> fileResult = [:]
+        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if(!ctrlResult.result) {
+                fileResult.error = 401
+            }
+            else {
+                fileResult.error = ctrlResult.error
+            }
+            render template: '/templates/bulkItemDownload', model: fileResult
+        }
+        else {
+            fileResult = [token: ctrlResult.result.token, filenameDisplay: ctrlResult.result.filename, fileformat: params.exportConfig]
+            render template: '/templates/bulkItemDownload', model: fileResult
+            return
+        }
         /*
         Map<String,Object> ctrlResult, exportResult
         params.statsForSurvey = true
-        SXSSFWorkbook wb
         boolean kbartPreselect = params.containsKey('kbartPreselect')
         if(params.exportForImport) {
             if(params.reportType) {
@@ -2144,74 +2187,6 @@ class SubscriptionController {
             }
         }
         */
-    }
-
-    @Deprecated
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = 1)
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
-    })
-    def processRenewEntitlementsWithSurvey_old() {
-        /*
-        Map<String, Object> ctrlResult = subscriptionControllerService.processRenewEntitlementsWithSurvey(this,params)
-        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if (!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-            else flash.error = ctrlResult.result.error
-        }
-        else {
-            flash.message = ctrlResult.result.message
-        }
-        redirect(url: request.getHeader("referer"))
-        */
-    }
-
-    /**
-     * Call to load the selection list for the title renewal. The list may be exported as a (configurable) Excel table with usage data for each title
-     * @return the title list for selection; either as HTML table or as Excel export, configured with the given parameters
-     */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [], ctrlService = 1)
-    @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
-    })
-    def renewEntitlementsWithSurvey() {
-        Map<String,Object> ctrlResult = subscriptionService.renewEntitlementsWithSurvey(params)
-        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if (!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-            else flash.error = ctrlResult.result.error
-        }
-        else {
-            ctrlResult.result
-        }
-    }
-
-    /**
-     * Call to load the selection list for the title renewal. The list may be exported as a (configurable) Excel table with usage data for each title
-     * @return the title list for selection; either as HTML table or as Excel export, configured with the given parameters
-     */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [], ctrlService = 1)
-    @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
-    })
-    def exportRenewalEntitlements() {
-
-    }
-
-    /**
-     * Call to process the title selection with the given input parameters
-     * @return a redirect to the referer
-     */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = 1)
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
-    })
-    def processRenewEntitlementsWithSurvey() {
-
     }
 
     /**
