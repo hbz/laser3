@@ -467,7 +467,7 @@ class AjaxHtmlController {
         Map<String, Object> result = [ params: params ]
         Task task = Task.get(params.id)
 
-        if (accessService.hasAccessToTask(task, AccessService.WRITE)) {
+        if (accessService.hasAccessToTask(task, AccessService.WRITE, true)) {
             result.taskInstance = task
             result.contextOrg = contextService.getOrg()
             render template: "/templates/tasks/modal_edit", model: result
@@ -485,7 +485,7 @@ class AjaxHtmlController {
         Map<String, Object> result = [ params: params ]
         Task task = Task.get(params.id)
 
-        if (accessService.hasAccessToTask(task, AccessService.READ)) { // TODO ??? WRITE
+        if (accessService.hasAccessToTask(task, AccessService.READ, true)) { // TODO ??? WRITE
             result.taskInstance = task
             result.contextOrg = contextService.getOrg()
             render template: "/templates/tasks/modal_read", model: result
@@ -1213,7 +1213,7 @@ class AjaxHtmlController {
             String[] cmd = params.cmd.split(':')
 
             if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY] ) {
-                result.putAll( workflowService.executeCmd(params) )
+                result.putAll( workflowService.executeCmd(params) ) // TODO !!!
             }
         }
 //        if (params.info) {
@@ -1235,7 +1235,7 @@ class AjaxHtmlController {
         result.referer = request.getHeader('referer')
 
         WfChecklist toCheck = result.clist as WfChecklist
-        if (!accessService.hasAccessToWorkflow(toCheck, AccessService.READ)) {
+        if (!accessService.hasAccessToWorkflow(toCheck, AccessService.READ, true)) {
             render template: "/templates/generic_flyout403"
         }
         else {
@@ -1314,7 +1314,7 @@ class AjaxHtmlController {
         }
 
         WfChecklist toCheck = result.checklist ? result.checklist as WfChecklist : (result.checkpoint as WfCheckpoint).getChecklist()
-        if (!accessService.hasAccessToWorkflow(toCheck, AccessService.READ)) {
+        if (!accessService.hasAccessToWorkflow(toCheck, AccessService.READ, true)) {
             render template: "/templates/generic_modal403"
         }
         else {

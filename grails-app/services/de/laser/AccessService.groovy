@@ -27,10 +27,6 @@ class AccessService {
     // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
     // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
 
-    // NO CUSTOMER_TYPE CHECKS HERE ..
-    // NO CUSTOMER_TYPE CHECKS HERE ..
-    // NO CUSTOMER_TYPE CHECKS HERE ..
-
     // NO INST_USER CHECKS FOR READ .. TODO
     // NO INST_USER CHECKS FOR READ .. TODO
     // NO INST_USER CHECKS FOR READ .. TODO
@@ -153,12 +149,15 @@ class AccessService {
         return check
     }
 
-    boolean hasAccessToTask(Task task, String perm) {
+    boolean hasAccessToTask(Task task, String perm, boolean checkCustomerType = false) {
         boolean check = false
         Org ctxOrg = contextService.getOrg()
 
         if (!task) {
             // .. invalid
+        }
+        else if (checkCustomerType && !(ctxOrg.isCustomerType_Pro() || ctxOrg.isCustomerType_Support())) {
+            // .. failed
         }
         else if (task.creator && task.creator.id == ctxOrg.id) {
             if (perm == WRITE) {
@@ -182,12 +181,15 @@ class AccessService {
         return check
     }
 
-    boolean hasAccessToWorkflow(WfChecklist workflow, String perm) {
+    boolean hasAccessToWorkflow(WfChecklist workflow, String perm, boolean checkCustomerType = false) {
         boolean check = false
         Org ctxOrg = contextService.getOrg()
 
         if (!workflow) {
             // .. invalid
+        }
+        else if (checkCustomerType && !(ctxOrg.isCustomerType_Pro() || ctxOrg.isCustomerType_Support())) {
+            // .. failed
         }
         else if (workflow.owner.id == ctxOrg.id) {
             if (perm == WRITE) {

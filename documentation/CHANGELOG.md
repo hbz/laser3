@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5977    25.10.2024  dev     3.5         David   Feature     Rechteprüfung: Aufgaben
+
 6032    24.10.2024  dev     3.5         David   Bug         500er beim Aufruf einer Einrichtung als Konsortialstelle
 
 5976    24.10.2024  dev     3.5         David   Feature     Rechteprüfung: Anmerkungen
