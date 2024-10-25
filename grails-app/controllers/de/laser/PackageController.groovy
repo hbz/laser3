@@ -343,22 +343,6 @@ class PackageController {
             render template: '/templates/bulkItemDownload', model: fileResult
             return
         }
-        /*else if (params.exportXLSX) {
-            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String, Object> configMap = [:]
-            configMap.putAll(params)
-            configMap.pkgIds = [params.id]
-            Map<String, List> export = titlesList ? exportService.generateTitleExportCustom(configMap, TitleInstancePackagePlatform.class.name) : [] //no subscription needed
-            Map sheetData = [:]
-            sheetData[message(code: 'title.plural')] = [titleRow: export.titles, columnData: export.rows]
-            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
-            workbook.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            workbook.dispose()
-            return
-        }else */
         if(params.fileformat == 'xlsx') {
             List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
             SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(titlesList, selectedFields, ExportClickMeService.FORMAT.XLS)
@@ -546,22 +530,6 @@ class PackageController {
             render template: '/templates/bulkItemDownload', model: fileResult
             return
         }
-        /* else if (params.exportXLSX) {
-            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String, Object> configMap = [:]
-            configMap.putAll(params)
-            configMap.pkgIds = [params.id]
-            Map<String, List> export = exportService.generateTitleExportCustom(params, TitleInstancePackagePlatform.class.name) //no subscription needed
-            Map sheetData = [:]
-            sheetData[message(code: 'title.plural')] = [titleRow: export.titles, columnData: export.rows]
-            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
-            workbook.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            workbook.dispose()
-            return
-        }*/
         else if(params.fileformat == 'xlsx') {
             SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(tipps, selectedFields, ExportClickMeService.FORMAT.XLS)
             response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"

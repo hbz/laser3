@@ -52,7 +52,7 @@
         </g:if>
         <g:form action="renewEntitlementsWithSurvey" name="stats" class="ui form" method="get">
             <g:hiddenField name="revision" value="${revision}"/>
-            <g:hiddenField name="exportForImport" value="true"/>
+            <g:hiddenField name="exportConfig" value="allTitlesWithStats"/>
             <g:each in="${params.keySet()}" var="param">
                 <g:hiddenField name="${param}" value="${params.get(param)}"/>
             </g:each>
@@ -154,7 +154,7 @@
         $('#localLoadingIndicator').progress();
         let fd = new FormData($('#individuallyExportModal').find('form')[0]);
         $.ajax({
-            url: "<g:createLink action="renewEntitlementsWithSurvey"/>",
+            url: "<g:createLink action="exportRenewalEntitlements"/>",
             data: fd,
             type: 'POST',
             processData: false,
