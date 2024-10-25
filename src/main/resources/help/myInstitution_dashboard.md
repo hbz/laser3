@@ -1,6 +1,6 @@
 Das ist Ihre **Startseite** in LAS:eR.
 
-Hier finden Sie Links zu den wichtigsten Seiten in LAS:eR. Auf diese können Sie ebenfalls über die Reiter **Meine Objekte** und **Meine Einrichtung** zugreifen. 
+Unter Ihrem Einrichtungsnamen finden Sie Links zu den wichtigsten Seiten in LAS:eR. Auf diese können Sie zudem über die Reiter **Meine Objekte** und **Meine Einrichtung** zugreifen. 
 
 Darunter befinden sich Reiter mit Ihren aktuellen Informationen:
 
