@@ -19,7 +19,6 @@
     <ui:subNavItem controller="subscription" action="notes" params="${[id:params.id]}" counts="${notesCount}" message="default.notes.label" />
     <ui:subNavItem controller="subscription" action="tasks" params="${[id:params.id]}" counts="${tasksCount}" message="task.plural" />
     <ui:subNavItem controller="subscription" action="documents" params="${[id:params.id]}" counts="${docsCount}" message="default.documents.label" />
-
     <ui:subNavItem controller="subscription" action="workflows" counts="${checklistCount}" params="${[id:params.id]}" message="workflow.plural"/>
 
 </ui:subNav>

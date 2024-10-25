@@ -1,9 +1,6 @@
 <%@ page import="de.laser.AccessService; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDConstants" %>
 <laser:serviceInjection />
 
-<g:set var="institution" value="${contextService.getOrg()}"/>
-<g:set var="userIsInstEditorOrRoleAdmin" value="${userService.hasAffiliation_or_ROLEADMIN(user, institution, 'INST_EDITOR')}" />
-
 <div class="ui grid la-clear-before">
     <div class="sixteen wide column">
 
@@ -29,7 +26,7 @@
             </thead>
             <tbody>
             <g:each in="${cmbTaskInstanceList}" var="taskInstance">
-                <g:set var="overwriteEditable" value="${editable || accessService.hasAccessToTask(taskInstance, AccessService.WRITE)}" />
+                <g:set var="overwriteEditable" value="${accessService.hasAccessToTask(taskInstance, AccessService.WRITE)}" />
                 <tr>
                     <td>
                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${taskInstance.endDate}"/>
@@ -59,7 +56,7 @@
                         </g:if>
                     </td>
                     <td>
-                        <g:if test="${taskInstance.responsibleOrg?.id == institution.id || taskInstance.responsibleUser?.id == user.id}">
+                        <g:if test="${taskInstance.responsibleOrg?.id == contextService.getOrg().id || taskInstance.responsibleUser?.id == user.id}">
                             <i class="${Icon.SIG.MY_OBJECT} yellow"></i>
                         </g:if>
                         <g:if test="${taskInstance.responsibleOrg}"> ${taskInstance.responsibleOrg.sortname ?: taskInstance.responsibleOrg.name} <br /> </g:if>
@@ -86,12 +83,16 @@
 
                     <td class="center aligned">
                         <g:if test="${overwriteEditable}">
-                            <a onclick="JSPC.app.editTask(${taskInstance.id});" class="${Btn.MODERN.SIMPLE}"
-                               role="button" aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                            <a onclick="JSPC.app.editTask(${taskInstance.id});" class="${Btn.MODERN.SIMPLE}" role="button" aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                             </a>
                         </g:if>
-                        <g:if test="${(user == taskInstance.creator && userIsInstEditorOrRoleAdmin) || contextService.isInstAdm_or_ROLEADMIN()}">
+                        <g:elseif test="${accessService.hasAccessToTask(taskInstance, AccessService.READ)}">
+                            <a onclick="JSPC.app.readTask(${taskInstance.id});" class="${Btn.MODERN.SIMPLE}" role="button" aria-label="${message(code: 'ariaLabel.read.universal')}">
+                                <i aria-hidden="true" class="${Icon.CMD.READ}"></i>
+                            </a>
+                        </g:elseif>
+                        <g:if test="${overwriteEditable}"> %{-- TODO: responsibleOrg == contextOrg + INST_ADM ? --}%
                             <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
                                     data-confirm-term-how="delete"

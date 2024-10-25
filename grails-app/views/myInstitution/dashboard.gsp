@@ -178,14 +178,14 @@
             </a>
         </g:if>
 
-        <g:if test="${contextService.getOrg().isCustomerType_Pro()}">
+        <g:if test="${taskService.hasREAD()}">
             <a class="${us_dashboard_tab.value == 'Tasks' ? 'active item':'item'}" data-tab="tasks">
                 <i class="${Icon.TASK} large"></i>
                 ${tasksCount} ${message(code:'myinst.dash.task.label')}
             </a>
         </g:if>
 
-        <g:if test="${workflowService.hasREAD()}"><!-- TODO: workflows-permissions -->
+        <g:if test="${workflowService.hasREAD()}">
             <a class="${us_dashboard_tab.value == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
                 <i class="${Icon.WORKFLOW} large"></i>
                 ${allChecklistsCount} ${message(code:'workflow.plural')}
@@ -244,7 +244,7 @@
             </g:if>
         </div>
 
-        <g:if test="${contextService.getOrg().isCustomerType_Pro()}">
+        <g:if test="${taskService.hasREAD()}">
         <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Tasks' ? 'active':''}" data-tab="tasks">
 
             <div class="ui cards">
@@ -275,7 +275,7 @@
             </div>
         </g:if>
 
-        <g:if test="${workflowService.hasREAD()}"><!-- TODO: workflows-permissions -->
+        <g:if test="${workflowService.hasREAD()}">
             <div id="wfFlyout" class="ui eight wide flyout"></div>
 
             <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Workflows' ? 'active':''}" data-tab="workflows">
@@ -434,7 +434,11 @@
             };
 
             JSPC.app.dashboard.editTask = function (id) {
-                var func = bb8.ajax4SimpleModalFunction("#modalEditTask", "<g:createLink controller="ajaxHtml" action="editTask"/>?id=" + id, true);
+                var func = bb8.ajax4SimpleModalFunction("#modalEditTask", "<g:createLink controller="ajaxHtml" action="editTask"/>?id=" + id);
+                func();
+            };
+            JSPC.app.dashboard.readTask = function (id) {
+                var func = bb8.ajax4SimpleModalFunction("#modalReadTask", "<g:createLink controller="ajaxHtml" action="readTask"/>?id=" + id);
                 func();
             };
 

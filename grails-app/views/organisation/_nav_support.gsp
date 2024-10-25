@@ -29,7 +29,6 @@
     <ui:subNavItem controller="organisation" action="notes" params="${breadcrumbParams}" counts="${notesCount}" message="default.notes.label"/>
     <ui:subNavItem controller="organisation" action="tasks" params="${breadcrumbParams}" counts="${tasksCount}" message="menu.institutions.tasks"/>
     <ui:subNavItem controller="organisation" action="documents" params="${breadcrumbParams}" message="default.documents.label" />
-
     <ui:subNavItem controller="organisation" action="workflows" counts="${checklistCount}" params="${breadcrumbParams}" message="workflow.plural"/>
 
     <g:if test="${!inContextOrg}">
