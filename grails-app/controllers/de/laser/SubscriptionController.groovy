@@ -1880,7 +1880,7 @@ class SubscriptionController {
     }
 
     @Deprecated
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = 1)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
@@ -1927,7 +1927,7 @@ class SubscriptionController {
      * Call to process the title selection with the given input parameters
      * @return a redirect to the referer
      */
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = 1)
+    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
