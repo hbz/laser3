@@ -52,7 +52,8 @@
         </g:if>
         <g:form action="renewEntitlementsWithSurvey" name="stats" class="ui form" method="get">
             <g:hiddenField name="revision" value="${revision}"/>
-            <g:hiddenField name="exportConfig" value="allTitlesWithStats"/>
+            <g:hiddenField name="tab" value="usage"/>
+            <g:hiddenField name="exportConfig" value="${de.laser.ExportService.EXCEL}"/>
             <g:each in="${params.keySet()}" var="param">
                 <g:hiddenField name="${param}" value="${params.get(param)}"/>
             </g:each>

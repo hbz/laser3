@@ -159,13 +159,6 @@
 
     </ui:greySegment>
 </g:if>
-
-%{--<g:if test="${selectProcess}">
-    <ui:msg class="success" header="${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.label')}">
-            <g:message code="renewEntitlementsWithSurvey.issueEntitlementSelect.selectProcess"
-                       args="[selectProcess.processCount, selectProcess.processRows, selectProcess.countSelectTipps, selectProcess.countNotSelectTipps, g.createLink(controller: 'subscription', action: 'renewEntitlementsWithSurvey', params: [id: subscription.id, surveyConfigID: surveyConfig.id, tab: 'selectedIEs'])]"/>
-    </ui:msg>
-</g:if>--}%
 <g:if test="${editable}">
     <laser:render template="KBARTSelectionUploadFormModal"/>
 </g:if>
@@ -402,35 +395,6 @@
         JSPC.app.updateSelectionCache($(this).parents(".la-js-checkItem").attr("data-ieId"), $(this).prop('checked'));
     </g:if>
 
-    });
-
-    $(".statsExport").on('click', function(e) {
-        e.preventDefault();
-        /*
-        kept for reasons of debug*/
-        console.log($("#reportType").dropdown('get value'));
-        console.log($("#metricType").dropdown('get value'));
-        console.log($("#accessType").dropdown('get value'));
-        console.log($("#accessMethod").dropdown('get value'));
-
-        let url = $(this).attr('href')+'&reportType='+$("#reportType").dropdown('get value');
-        if($("#metricType").dropdown('get value').length > 0)
-            url+='&metricType='+$("#metricType").dropdown('get value');
-        if($("#accessType").dropdown('get value').length > 0)
-            url+='&accessType='+$("#accessType").dropdown('get value');
-        if($("#accessMethod").dropdown('get value').length > 0)
-            url+='&accessMethod='+$("#accessMethod").dropdown('get value');
-        if($("#platform").dropdown('get value').length > 0) {
-            $.each($("#platform").dropdown('get value'), function(i, val) {
-                url+='&platform='+val;
-            });
-        }
-        else {
-            url+='&platform='+$("#platform").val();
-        }
-        //do not forget to communicate that to the users!
-        if($("#reportType").dropdown('get value') !== '' && $("#reportType").dropdown('get value').length > 0)
-            window.location.href = url;
     });
 
     $('.normalExport').click(function(e) {

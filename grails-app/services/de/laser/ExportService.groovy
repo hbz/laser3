@@ -79,6 +79,7 @@ class ExportService {
 	ContextService contextService
 	FilterService filterService
 	GokbService gokbService
+	IssueEntitlementService issueEntitlementService
 	MessageSource messageSource
 	StatsSyncService statsSyncService
 	SubscriptionControllerService subscriptionControllerService
@@ -1676,8 +1677,9 @@ class ExportService {
 			pointsPerIteration = 40/requestResponse.items.size()
 			for(def reportItem: requestResponse.items) {
 				Map<String, String> identifierMap = buildIdentifierMap(reportItem, AbstractReport.COUNTER_5)
-				TitleInstancePackagePlatform tipp = subscriptionControllerService.matchReport(titles, propIdNamespace, identifierMap)
-				if(tipp) {
+				Long tippID = issueEntitlementService.matchReport(titles, identifierMap)
+				if(tippID) {
+					TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(tippID)
 					Set<Identifier> titleIDs = tipp.ids
 					Set<PriceItem> priceItems = []
 					if(showPriceDate)
@@ -1924,8 +1926,9 @@ class ExportService {
 			pointsPerIteration = 20/requestResponse.reports.size()
 			for (GPathResult reportItem: requestResponse.reports) {
 				Map<String, String> identifierMap = buildIdentifierMap(reportItem, AbstractReport.COUNTER_4)
-				TitleInstancePackagePlatform tipp = subscriptionControllerService.matchReport(titles, propIdNamespace, identifierMap)
-				if(tipp) {
+				Long tippID = issueEntitlementService.matchReport(titles, identifierMap)
+				if(tippID) {
+					TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(tippID)
 					Set<PriceItem> priceItems = []
 					if(showPriceDate)
 						priceItems.addAll(tipp.priceItems)
@@ -3688,7 +3691,10 @@ class ExportService {
 		if(format == ExportService.KBART)
 			valueCol = 'rdv_value'
 		else valueCol = I10nTranslation.getRefdataValueColumn(LocaleUtils.getCurrentLocale())
-		String rowQuery = "select tipp_id, create_cell('${format}', tipp_name, ${style}) as publication_title," +
+		String tippIDColumn = ''
+		if(configMap.containsKey('usageData'))
+			tipPIDColumn = 'tipp_id,'
+		String rowQuery = "select ${tippIDColumn} create_cell('${format}', tipp_name, ${style}) as publication_title," +
 						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('monograph') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, IdentifierNamespace.NS_TITLE).id}) or (lower(tipp_title_type) in ('serial') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, IdentifierNamespace.NS_TITLE).id}))), ${style}) as print_identifier," +
 						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('monograph') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISBN, IdentifierNamespace.NS_TITLE).id}) or (lower(tipp_title_type) in ('serial') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, IdentifierNamespace.NS_TITLE).id}))), ${style}) as online_identifier," +
 						"create_cell('${format}', to_char(tc_start_date, 'yyyy-MM-dd'), ${style}) as date_first_issue_online," +
@@ -3752,7 +3758,9 @@ class ExportService {
 		arrayParams.tippIDs = tippIDs
 		batchQueryService.longArrayQuery(rowQuery, arrayParams).collect { GroovyRowResult row ->
 			Long tippID = row.remove('tipp_id')
-			//TODO process here usage data
+			if(configMap.containsKey('usageData')) {
+
+			}
 			row.values()
 		}
 	}

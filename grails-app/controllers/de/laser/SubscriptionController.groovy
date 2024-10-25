@@ -1951,9 +1951,17 @@ class SubscriptionController {
             }
             render template: '/templates/bulkItemDownload', model: fileResult
         }
+        else if(ctrlResult.result.containsKey('status202')) {
+            fileResult.remove('token')
+            fileResult.error = 202
+            render template: '/templates/stats/usageReport', model: fileResult
+        }
         else {
             fileResult = [token: ctrlResult.result.token, filenameDisplay: ctrlResult.result.filename, fileformat: params.exportConfig]
-            render template: '/templates/bulkItemDownload', model: fileResult
+            if(params.tab == 'usage')
+                render template: '/templates/stats/usageReport', model: fileResult
+            else
+                render template: '/templates/bulkItemDownload', model: fileResult
             return
         }
         /*

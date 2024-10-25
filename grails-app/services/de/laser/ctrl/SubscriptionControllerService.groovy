@@ -81,7 +81,6 @@ class SubscriptionControllerService {
     ContextService contextService
     DocstoreService docstoreService
     FactService factService
-    EscapeService escapeService
     ExecutorService executorService
     ExecutorWrapperService executorWrapperService
     ExportService exportService
@@ -93,6 +92,7 @@ class SubscriptionControllerService {
     GlobalService globalService
     GlobalSourceSyncService globalSourceSyncService
     GokbService gokbService
+    IssueEntitlementService issueEntitlementService
     LinksGenerationService linksGenerationService
     ManagementService managementService
     MessageSource messageSource
@@ -389,7 +389,7 @@ class SubscriptionControllerService {
                         //c5usages.each { Counter5Report report -> }
                         for(Map reportItem : requestResponse.items) {
                             Map<String, String> identifierMap = exportService.buildIdentifierMap(reportItem, AbstractReport.COUNTER_5)
-                            boolean titleMatch = (params.reportType in Counter5Report.COUNTER_5_TITLE_REPORTS && matchReport(titles, propIdNamespace, identifierMap) != null) || params.reportType in Counter5Report.COUNTER_5_PLATFORM_REPORTS || params.reportType in Counter5Report.COUNTER_5_DATABASE_REPORTS
+                            boolean titleMatch = (params.reportType in Counter5Report.COUNTER_5_TITLE_REPORTS && issueEntitlementService.matchReport(titles, identifierMap) != null) || params.reportType in Counter5Report.COUNTER_5_PLATFORM_REPORTS || params.reportType in Counter5Report.COUNTER_5_DATABASE_REPORTS
                             if(titleMatch) {
                                 //counter 5.0
                                 if(reportItem.containsKey('Performance')) {
@@ -489,7 +489,7 @@ class SubscriptionControllerService {
                         //c4usages.each { Counter4Report report -> }
                         for(GPathResult reportItem: requestResponse.reports) {
                             Map<String, String> identifierMap = exportService.buildIdentifierMap(reportItem, AbstractReport.COUNTER_4)
-                            boolean titleMatch = (params.reportType in Counter4Report.COUNTER_4_TITLE_REPORTS && matchReport(titles, propIdNamespace, identifierMap) != null) || params.reportType in Counter4Report.COUNTER_4_PLATFORM_REPORTS
+                            boolean titleMatch = (params.reportType in Counter4Report.COUNTER_4_TITLE_REPORTS && issueEntitlementService.matchReport(titles, identifierMap) != null) || params.reportType in Counter4Report.COUNTER_4_PLATFORM_REPORTS
                             if(titleMatch) {
                                 for(GPathResult performance: reportItem.'ns2:ItemPerformance') {
                                     Date reportFrom = DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:Begin'.text())
@@ -883,6 +883,7 @@ class SubscriptionControllerService {
      * @param refSub the {@link Subscription} whose entitlements should be queried; if none existent, the underlying package's are being queried
      * @return
      */
+    @Deprecated
     Map<String, Object> fetchTitles(Subscription refSub, boolean allTitles = false) {
         Map<String, Object> result = [:]
         /*
@@ -945,129 +946,6 @@ class SubscriptionControllerService {
         result.put('url', url)
         result.put('proprietaryIdentifiers', proprietaryIdentifiers)
         result
-        /*
-        else if(fetchWhat == 'ids') {
-            String tippQry = "(select tipp from TitleInstancePackagePlatform tipp where tipp.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription = :refSub) and tipp.status = :current)"
-            if(subscriptionService.countCurrentIssueEntitlements(refSub) > 0)
-                tippQry = "(select ie.tipp from IssueEntitlement ie where ie.subscription = :refSub and ie.status = :current)"
-            //!!!!!! MAY BE A PERFORMANCE BOTTLENECK! OBSERVE CLOSELY !!!!!!!!!
-            query = "select new map(id.value as value, id.ns.ns as namespace, id.tipp as tipp) from Identifier id join id.tipp tipp where id.ns in (:namespaces) and tipp in ${tippQry} "
-            queryParams.namespaces = namespaces
-        }
-        if(params.data != 'fetchAll') {
-            if(params.series_names) {
-                query += " and title.seriesName in (:seriesName) "
-                queryParams.seriesName = params.list("series_names")
-            }
-            if(params.subject_references) {
-                Set<String> subjectQuery = []
-                params.list('subject_references').each { String subReference ->
-                    subjectQuery << "genfunc_filter_matcher(title.subjectReference, '${subReference.toLowerCase()}') = true"
-                }
-                query += " and (${subjectQuery.join(" or ")}) "
-            }
-            if(params.ddcs && params.list("ddcs").size() > 0) {
-                query += " and exists (select ddc.id from title.ddcs ddc where ddc.ddc.id in (:ddcs)) "
-                queryParams.ddcs = Params.getLongList(params, 'ddcs')
-            }
-            if(params.languages && params.list("languages").size() > 0) {
-                query += " and exists (select lang.id from title.languages lang where lang.language.id in (:languages)) "
-                queryParams.languages = Params.getLongList(params, 'languages')
-            }
-
-            if (params.filter) {
-                query += "and ( ( lower(title.name) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = title.id and ident.value like :identifier ) ) or ((lower(title.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(title.firstEditor) like :ebookFirstAutorOrFirstEditor)) ) "
-                queryParams.title = "%${params.filter.trim().toLowerCase()}%"
-                queryParams.identifier = "%${params.filter}%"
-                queryParams.ebookFirstAutorOrFirstEditor = "%${params.filter.trim().toLowerCase()}%"
-            }
-
-            if (params.pkgfilter && (params.pkgfilter != '')) {
-                query += " and title.pkg.id = :pkgId "
-                queryParams.pkgId = params.long('pkgfilter')
-            }
-
-            if(params.summaryOfContent) {
-                query += " and lower(title.summaryOfContent) like :summaryOfContent "
-                queryParams.summaryOfContent = "%${params.summaryOfContent.trim().toLowerCase()}%"
-            }
-
-            if(params.ebookFirstAutorOrFirstEditor) {
-                query += " and (lower(title.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(title.firstEditor) like :ebookFirstAutorOrFirstEditor) "
-                queryParams.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor.trim().toLowerCase()}%"
-            }
-
-            if(params.yearsFirstOnline) {
-                query += " and (Year(title.dateFirstOnline) in (:yearsFirstOnline)) "
-                queryParams.yearsFirstOnline = params.list('yearsFirstOnline').collect { Integer.parseInt(it) }
-            }
-
-            if (params.identifier) {
-                query += "and ( exists ( from Identifier ident where ident.tipp.id = title.id and ident.value like :identifier ) ) "
-                queryParams.identifier = "${params.identifier}"
-            }
-
-            if (params.publishers) {
-                query += "and lower(title.publisherName) in (:publishers) "
-                queryParams.publishers = params.list('publishers').collect { it.toLowerCase() }
-            }
-
-
-            if (params.title_types && params.title_types != "" && params.list('title_types')) {
-                query += " and lower(title.titleType) in (:title_types)"
-                queryParams.title_types = params.list('title_types').collect { ""+it.toLowerCase()+"" }
-            }
-        }
-        if(params.sort == "title.name")
-            query += " order by tipp.sortname ${params.order}, tipp.name ${params.order}"
-        else query += " order by tipp.sortname, tipp.name"
-
-        result.addAll(TitleInstancePackagePlatform.executeQuery(query, queryParams))
-
-        result
-        */
-    }
-
-    /**
-     * Determines to the given report the matching {@link TitleInstancePackagePlatform}. First, matching is attempted against
-     * the online identifier or e-ISBN; an attempt is also made with stripped parenthesis. If that fails, another attempt is
-     * made with the print identifier, again, with stripped parenthesis as well; if that fails, too, further attempts are made with
-     * DOI and the proprietary identifier of the provider
-     * @param titles the {@link Map} of titles, grouped by [namespace: [identifier value: title]]
-     * @param propIdNamespace the proprietary {@link IdentifierNamespace} of the platform resp. the provider
-     * @param report the COUNTER report result
-     * @return the matching {@link TitleInstancePackagePlatform} or null, if no match has been found
-     */
-    TitleInstancePackagePlatform matchReport(Map<String, Object> titles, IdentifierNamespace propIdNamespace, Map report) {
-        Long tipp = null
-        if(report.onlineIdentifier || report.isbn) {
-            tipp = titles.onlineIdentifiers.get(report.onlineIdentifier)
-            if(!tipp)
-                tipp = titles.onlineIdentifiers.get(report.onlineIdentifier?.replaceAll('-',''))
-            if(!tipp)
-                tipp = titles.onlineIdentifiers.get(report.isbn)
-            if(!tipp)
-                tipp = titles.onlineIdentifiers.get(report.isbn?.replaceAll('-',''))
-        }
-        if(!tipp && (report.printIdentifier || report.isbn)) {
-            tipp = titles.printIdentifiers.get(report.printIdentifier)
-            if(!tipp)
-                tipp = titles.printIdentifiers.get(report.printIdentifier?.replaceAll('-',''))
-            if(!tipp)
-                tipp = titles.printIdentifiers.get(report.isbn)
-            if(!tipp)
-                tipp = titles.printIdentifiers.get(report.isbn?.replaceAll('-',''))
-        }
-        if(!tipp && report.doi) {
-            tipp = titles.doi.get(report.doi)
-        }
-        if(!tipp && report.proprietaryIdentifier) {
-            if(!tipp)
-                tipp = titles.proprietaryIdentifiers.get(report.proprietaryIdentifier)
-        }
-        if(tipp)
-            TitleInstancePackagePlatform.get(tipp)
-        else null
     }
 
     /**
