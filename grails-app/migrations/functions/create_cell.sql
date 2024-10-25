@@ -1,10 +1,10 @@
 create or replace function create_cell(format text, cell_data text, cell_style text)
 	returns text
 	language plpgsql
-as
-$$
+    as $$
+
 declare
-	version constant numeric = 1;
+	VERSION CONSTANT NUMERIC = 2;
 begin
 	if format = 'xlsx' then
 		return json_build_object('field', cell_data, 'style', cell_style);

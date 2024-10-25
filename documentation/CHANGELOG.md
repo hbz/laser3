@@ -9,6 +9,8 @@
 
 5977    25.10.2024  dev     3.5         David   Feature     Rechteprüfung: Aufgaben
 
+6034    25.10.2024  dev     3.5         Andreas Feature     unnötige Menüpunkte im Adressbuch ausgegraut
+
 6032    24.10.2024  dev     3.5         David   Bug         500er beim Aufruf einer Einrichtung als Konsortialstelle
 
 5976    24.10.2024  dev     3.5         David   Feature     Rechteprüfung: Anmerkungen
