@@ -1556,7 +1556,13 @@ class SurveyController {
                              [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
 
                     result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
-                    result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(result.subscription)
+                    if(result.surveyConfig.pickAndChoosePerpetualAccess) {
+                        result.countCurrentPermanentTitles = surveyService.countPerpetualAccessTitlesBySubAndNotInIEGroup(result.subscription, result.surveyConfig)
+                    }
+                    else {
+                        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
+                        result.countCurrentPermanentTitles = issueEntitlementGroup ? subscriptionService.countCurrentIssueEntitlementsNotInIEGroup(subscriberSub, issueEntitlementGroup) : 0
+                    }
 
 /*                    if (result.surveyConfig.pickAndChoosePerpetualAccess) {
                         result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
@@ -1678,6 +1684,13 @@ class SurveyController {
     })
      Map<String,Object> deleteDocuments() {
         log.debug("deleteDocuments ${params}")
+        if(params.instanceId){
+            params.surveyConfigID = params.instanceId
+            SurveyConfig surveyConfig = SurveyConfig.get(params.long('surveyConfigID'))
+            if(surveyConfig) {
+                params.id = surveyConfig.surveyInfo.id
+            }
+        }
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if(result.status == SurveyControllerService.STATUS_ERROR) {
             if (!result.result) {

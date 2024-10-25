@@ -110,7 +110,7 @@
                                         class="ui icon negative button la-modern-button js-open-confirm-modal"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                         data-confirm-term-how="delete"
-                                        params='[id: surveyInfo.id, deleteId: "${docctx.id}"]'
+                                        params='[surveyConfigID: surveyConfig.id, id: surveyInfo.id, deleteId: "${docctx.id}"]'
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                     <i class="${Icons.CMD_DELETE} icon"></i>

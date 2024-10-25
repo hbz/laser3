@@ -104,9 +104,12 @@
         </ui:exportDropdownItem>
 
     </ui:exportDropdown>
-    <ui:actionsDropdown>
-        <ui:actionsDropdownItem data-ui="modal" id="selectEntitlementsWithKBART" href="#KBARTUploadForm" message="subscription.details.addEntitlements.menu"/>
-    </ui:actionsDropdown>
+    <g:if test="${editable}">
+        <ui:actionsDropdown>
+            <ui:actionsDropdownItem data-ui="modal" id="selectEntitlementsWithKBART" href="#KBARTUploadForm"
+                                    message="subscription.details.addEntitlements.menu"/>
+        </ui:actionsDropdown>
+    </g:if>
 </ui:controlButtons>
 
 <ui:h1HeaderWithIcon text="${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.name}">
@@ -176,14 +179,15 @@
     </ui:greySegment>
 </g:if>
 
-<g:if test="${selectProcess}">
+%{--<g:if test="${selectProcess}">
     <ui:msg class="positive" header="${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.label')}">
             <g:message code="renewEntitlementsWithSurvey.issueEntitlementSelect.selectProcess"
                        args="[selectProcess.processCount, selectProcess.processRows, selectProcess.countSelectTipps, selectProcess.countNotSelectTipps, g.createLink(controller: 'subscription', action: 'renewEntitlementsWithSurvey', params: [id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'selectedIEs'])]"/>
     </ui:msg>
+</g:if>--}%
+<g:if test="${editable}">
+    <laser:render template="KBARTSelectionUploadFormModal"/>
 </g:if>
-
-<laser:render template="KBARTSelectionUploadFormModal"/>
 
 <%--
 <g:if test="${(params.tab == 'allTipps') && editable}">
@@ -410,18 +414,18 @@
                 filter: "${params.filter}",
                 pkgFilter: "${params.pkgfilter}",
                 coverageDepth: "${params.coverageDepth}",
-                series_names: ${params.list("series_names")},
-                subject_references: ${params.list("subject_references")},
-                ddcs: ${params.list("ddcs")},
-                languages: ${params.list("languages")},
-                yearsFirstOnline: ${params.list("yearsFirstOnline")},
+                series_names: "${params.list("series_names")}",
+                subject_references: "${params.list("subject_references")}",
+                ddcs: "${params.list("ddcs")}",
+                languages: "${params.list("languages")}",
+                yearsFirstOnline: "${params.list("yearsFirstOnline")}",
                 identifier: "${params.identifier}",
-                medium: ${params.list("medium")},
-                title_types: ${params.list("title_types")},
-                publishers: ${params.list("pulishers")},
+                medium: "${params.list("medium")}",
+                title_types: "${params.list("title_types")}",
+                publishers: "${params.list("publishers")}",
                 hasPerpetualAccess: "${params.hasPerpetualAccess}",
                 titleGroup: "${params.titleGroup}",
-                status: ${params.list("status")},
+                status: "${params.list("status")}",
             };
             $.ajax({
                 url: "<g:createLink controller="ajax" action="updateChecked" />",

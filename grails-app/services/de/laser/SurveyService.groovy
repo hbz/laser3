@@ -1183,8 +1183,16 @@ class SurveyService {
                                     emailsToSurveyUsersOfOrg(surveyConfig.surveyInfo, org, false)
                                 }
 
-                                if(surveyConfig.invoicingInformation){
+                               /* if(surveyConfig.invoicingInformation){
                                     setDefaultInvoiceInformation(surveyConfig, org)
+                                }*/
+
+                                if(surveyConfig.pickAndChoose){
+                                    Subscription participantSub = surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(org)
+                                    IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, participantSub)
+                                    if (!issueEntitlementGroup && participantSub) {
+                                        new IssueEntitlementGroup(surveyConfig: surveyConfig, sub: participantSub, name: surveyConfig.issueEntitlementGroupName).save()
+                                    }
                                 }
                             }
                         }
@@ -2397,7 +2405,13 @@ class SurveyService {
                                  [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
 
                         result.countSelectedIEs = countIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
-                        result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(result.subscription)
+                        if(result.surveyConfig.pickAndChoosePerpetualAccess) {
+                            result.countCurrentPermanentTitles = countPerpetualAccessTitlesBySubAndNotInIEGroup(result.subscription, result.surveyConfig)
+                        }
+                        else {
+                            IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
+                            result.countCurrentPermanentTitles = issueEntitlementGroup ? subscriptionService.countCurrentIssueEntitlementsNotInIEGroup(result.subscription, issueEntitlementGroup) : 0
+                        }
 //                    if (result.surveyConfig.pickAndChoosePerpetualAccess) {
 //                        result.countCurrentIEs = countPerpetualAccessTitlesBySub(result.subscription)
 //                    } else {

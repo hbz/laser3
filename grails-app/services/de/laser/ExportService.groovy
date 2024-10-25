@@ -1065,17 +1065,19 @@ class ExportService {
 								rowno = 9
 								Map<String, Map<String, Object>> data = prepareDataWithDatabases(requestResponse, reportType)
 								double pointsPerIteration = 20/data.size()
-								data.each { String databaseName, Map<String, Object> databaseMetrics ->
-									databaseMetrics.each { String databaseMetricType, Map<String, Object> metricRow ->
-										columnHeaders.eachWithIndex { String colHeader, int c ->
-											cell = row.createCell(c)
-											cell.setCellValue(metricRow.get(colHeader))
+								data.each { String databaseName, Map<String, Object> databasePublishers ->
+									databasePublishers.each { String publisherName, Map<String, Object> databaseMetrics ->
+										databaseMetrics.each { String databaseMetricType, Map<String, Object> metricRow ->
+											columnHeaders.eachWithIndex { String colHeader, int c ->
+												cell = row.createCell(c)
+												cell.setCellValue(metricRow.get(colHeader))
+											}
 										}
+										row = sheet.createRow(rowno)
+										rowno++
+										i++
+										userCache.put('progress', 80+i*pointsPerIteration)
 									}
-									row = sheet.createRow(rowno)
-									rowno++
-									i++
-									userCache.put('progress', 80+i*pointsPerIteration)
 								}
 								break
 							case Counter4Report.DATABASE_REPORT_2:
@@ -1127,17 +1129,19 @@ class ExportService {
                                 }
                             */
 								row = sheet.createRow(rowno)
-								data.each { String databaseName, Map<String, Object> databaseMetrics ->
-									databaseMetrics.each { String databaseMetricType, Map<String, Object> metricRow ->
-										columnHeaders.eachWithIndex { String colHeader, int c ->
-											cell = row.createCell(c)
-											cell.setCellValue(metricRow.get(colHeader))
+								data.each { String databaseName, Map<String, Object> databasePublishers ->
+									databasePublishers.each { String publisherName, Map<String, Object> databaseMetrics ->
+										databaseMetrics.each { String databaseMetricType, Map<String, Object> metricRow ->
+											columnHeaders.eachWithIndex { String colHeader, int c ->
+												cell = row.createCell(c)
+												cell.setCellValue(metricRow.get(colHeader))
+											}
 										}
+										rowno++
+										row = sheet.createRow(rowno)
+										i++
+										userCache.put('progress', 80 + i * pointsPerIteration)
 									}
-									rowno++
-									row = sheet.createRow(rowno)
-									i++
-									userCache.put('progress', 80+i*pointsPerIteration)
 								}
 								break
 							case Counter4Report.PLATFORM_REPORT_1:
@@ -1145,17 +1149,19 @@ class ExportService {
 								rowno = 9
 								Map<String, Map<String, Object>> data = prepareDataWithDatabases(requestResponse, reportType)
 								double pointsPerIteration = 20/data.size()
-								data.each { String databaseName, Map<String, Object> databaseMetrics ->
-									databaseMetrics.each { String databaseMetricType, Map<String, Object> metricRow ->
-										columnHeaders.eachWithIndex { String colHeader, int c ->
-											cell = row.createCell(c)
-											cell.setCellValue(metricRow.get(colHeader))
+								data.each { String databaseName, Map<String, Object> databasePublishers ->
+									databasePublishers.each { String publisherName, Map<String, Object> databaseMetrics ->
+										databaseMetrics.each { String databaseMetricType, Map<String, Object> metricRow ->
+											columnHeaders.eachWithIndex { String colHeader, int c ->
+												cell = row.createCell(c)
+												cell.setCellValue(metricRow.get(colHeader))
+											}
 										}
+										row = sheet.createRow(rowno)
+										rowno++
+										i++
+										userCache.put('progress', 80 + i * pointsPerIteration)
 									}
-									row = sheet.createRow(rowno)
-									rowno++
-									i++
-									userCache.put('progress', 80+i*pointsPerIteration)
 								}
 								/*
                                 TODO migrate
@@ -1215,9 +1221,12 @@ class ExportService {
 										for(int c = 1; c < columnHeaders.size(); c++) {
 											cell = row.createCell(c)
 											def empty = ""
-											if(columnHeaders[c].matches('\\d{4}-\\d{2}'))
+											if(columnHeaders[c].matches('\\w{3}-\\d{4}')) {
 												empty = 0
-											cell.setCellValue(titleRow.get(columnHeaders[c]) ?: empty)
+												cell.setCellValue(titleRow.get(columnHeaders[c]) ?: empty)
+											}
+											else
+												cell.setCellValue(titleRow.get(columnHeaders[c]) ?: empty)
 										}
 										i++
 										userCache.put('progress', 80+i*pointsPerIteration)
@@ -1979,7 +1988,7 @@ class ExportService {
 							periodTotal += count
 							if (reportType != Counter4Report.JOURNAL_REPORT_5) {
 								titleRow.put("Reporting Period Total", periodTotal)
-								titleRow.put(DateUtils.getSDF_yyyyMM().format(reportFrom), count)
+								titleRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom), count)
 							}
 							switch (reportType) {
 								case Counter4Report.BOOK_REPORT_5: titleRow.put("User activity", metricType == 'search_reg' ? "Regular Searches" : "Searches: federated and automated")
@@ -2268,12 +2277,15 @@ class ExportService {
 				for (GPathResult performance: reportItem.'ns2:ItemPerformance') {
 					Date reportMonth = DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:Begin'.text())
 					for (GPathResult instance: performance.'ns2:Instance') {
-						String metricType = instance.'ns2:MetricType'.text()
+						String metricType = instance.'ns2:MetricType'.text(), publisherName = reportItem.'ns2:ItemPublisher'.text()
 						int periodTotal = 0, count = Integer.parseInt(instance.'ns2:Count'.text())
 						Map<String, Object> databaseRow = databaseRows.get(databaseName) as Map<String, Object>
 						if(!databaseRow)
 							databaseRow = [:]
-						Map<String, Object> metricRow = databaseRow.get(metricType) as Map<String, Object>
+						Map<String, Object> publisherRow = databaseRow.get(publisherName) as Map<String, Object>
+						if(!publisherRow)
+							publisherRow = [:]
+						Map<String, Object> metricRow = publisherRow.get(metricType) as Map<String, Object>
 						String metricHumanReadable
 						switch(metricType) {
 							case 'search_reg': metricHumanReadable = 'Regular Searches'
@@ -2292,7 +2304,7 @@ class ExportService {
 								break
 						}
 						if(!metricRow) {
-							metricRow = ['Database': databaseName, 'Publisher': reportItem.'ns2:ItemPublisher'.text(), 'Platform': reportItem.'ns2:ItemPlatform'.text()]
+							metricRow = ['Database': databaseName, 'Publisher': publisherName, 'Platform': reportItem.'ns2:ItemPlatform'.text()]
 						}
 						else periodTotal = metricRow.get('Reporting Period Total')
 						if(reportType == Counter4Report.DATABASE_REPORT_2)
@@ -2302,7 +2314,8 @@ class ExportService {
 						periodTotal += count
 						metricRow.put('Reporting Period Total', periodTotal)
 						metricRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.localeEN).format(reportMonth), count)
-						databaseRow.put(metricType, metricRow)
+						publisherRow.put(metricType, metricRow)
+						databaseRow.put(publisherName, publisherRow)
 						databaseRows.put(databaseName, databaseRow)
 					}
 				}
@@ -3915,6 +3928,8 @@ class ExportService {
 									if(!titleMatch)
 										titleMatch = identifierInverseMap.printIdentifiers.get(identifier.'ns2:Value'.text().replaceAll('-',''))
 									break
+								case 'url': titleMatch = identifierInverseMap.url.get(identifier.'ns2:Value'.text())
+									break
 								case 'doi': titleMatch = identifierInverseMap.doi.get(identifier.'ns2:Value'.text())
 									break
 								case 'proprietary_id': propIdNamespaces.each { String propIdNamespace ->
@@ -3950,11 +3965,11 @@ class ExportService {
 							switch(idData.Type.toLowerCase()) {
 								case 'isbn': titleMatch = identifierInverseMap.onlineIdentifiers.get(idData.Value)
 									if(!titleMatch)
-										titleMatch = identifierInverseMap.onlineIdentifiers.get(idData.Value)
+										titleMatch = identifierInverseMap.onlineIdentifiers.get(idData.Value.replaceAll('-',''))
 									if(!titleMatch)
 										titleMatch = identifierInverseMap.printIdentifiers.get(idData.Value.replaceAll('-',''))
 									if(!titleMatch)
-										titleMatch = identifierInverseMap.printIdentifiers.get(idData.Value.replaceAll('-',''))
+										titleMatch = identifierInverseMap.printIdentifiers.get(idData.Value)
 									break
 								case 'online_issn':
 								case 'online_isbn': titleMatch = identifierInverseMap.onlineIdentifiers.get(idData.Value)
@@ -3968,6 +3983,8 @@ class ExportService {
 									break
 								case 'doi': titleMatch = identifierInverseMap.doi.get(idData.Value)
 									break
+								case 'url': titleMatch = identifierInverseMap.url.get(idData.Value)
+									break
 								case 'proprietary_id': titleMatch = identifierInverseMap.proprietaryIdentifiers.get(idData.Value)
 									break
 							}
@@ -3979,9 +3996,10 @@ class ExportService {
 						if(reportItem.containsKey('Performance')) {
 							for(Map performance: reportItem.Performance) {
 								Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
-								for(Map instance: performance.Instance) {
-									reports.put(DateUtils.getSDF_yyyyMM().format(reportFrom), instance.Count)
-								}
+								//for(Map instance: performance.Instance) {
+								Map instance = performance.Instance[0]
+								reports.put(DateUtils.getSDF_yyyyMM().format(reportFrom), instance.Count)
+								//}
 							}
 						}
 						//counter 5.1
@@ -3989,9 +4007,10 @@ class ExportService {
 							for (Map struct : reportItem.Attribute_Performance) {
 								for (Map.Entry performance : struct.Performance) {
 									for (Map.Entry instance : performance) {
-										for (Map.Entry reportRow : instance.getValue()) {
-											reports.put(reportRow.getKey(), reportRow.getValue())
-										}
+										//for (Map.Entry reportRow : instance.getValue()) {
+										Map.Entry reportRow = instance.getValue()[0]
+										reports.put(reportRow.getKey(), reportRow.getValue())
+										//}
 									}
 								}
 							}
@@ -4023,8 +4042,9 @@ class ExportService {
 							excelRow << createCell('excel', RDStore.YN_NO.getI10n('value'), style)
 						else excelRow << createCell('excel', RDStore.YN_YES.getI10n('value'), style)
 					}
-					else
+					else {
 						excelRow << createCell('excel', value, style)
+					}
 				}
 				excelRows << excelRow
 				processed++
@@ -4130,8 +4150,8 @@ class ExportService {
 	Map<String, String> getBaseTitleHeaders(String entitlementInstance, boolean checkPerpetuallyAccessToTitle = false) {
 		Locale locale = LocaleUtils.getCurrentLocale()
 		Map <String, String> mapping = [publication_title: 'tipp_name as publication_title',
-		 print_identifier: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('monograph') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ISBN).id}) or (lower(tipp_title_type) in ('serial') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ISSN).id}))) as print_identifier",
-		 online_identifier: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('monograph') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.EISBN).id}) or (lower(tipp_title_type) in ('serial') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.EISSN).id}))) as online_identifier",
+		 print_identifier: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('monograph') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, IdentifierNamespace.NS_TITLE).id}) or (lower(tipp_title_type) in ('serial') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, IdentifierNamespace.NS_TITLE).id}))) as print_identifier",
+		 online_identifier: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('monograph') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISBN, IdentifierNamespace.NS_TITLE).id}) or (lower(tipp_title_type) in ('serial') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, IdentifierNamespace.NS_TITLE).id}))) as online_identifier",
 		 date_first_issue_online: '',
 		 num_first_vol_online: '',
 		 num_first_issue_online: '',
@@ -4140,7 +4160,7 @@ class ExportService {
 		 num_last_issue_online: '',
 		 title_url: 'tipp_host_platform_url as title_url',
 		 first_author: 'tipp_first_author as first_author',
-		 title_id: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNs('title_id').id}) as title_id",
+		 title_id: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType('title_id', IdentifierNamespace.NS_TITLE).id}) as title_id",
 		 embargo_info: '',
 		 coverage_depth: '',
 		 notes: '',
@@ -4159,8 +4179,8 @@ class ExportService {
 		 access_start_date: "to_char(tipp_access_start_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') as access_start_date",
 		 access_end_date: "to_char(tipp_access_end_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') as access_end_date",
 		 medium: '(select rdv_value from refdata_value where rdv_id = tipp_medium_rv_fk) as medium',
-		 zdb_id: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ZDB).id}) as zdb_id",
-		 doi_identifier: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = '${IdentifierNamespace.findByNs(IdentifierNamespace.DOI).id}') as doi_identifier",
+		 zdb_id: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ZDB, IdentifierNamespace.NS_TITLE).id}) as zdb_id",
+		 doi_identifier: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = '${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, IdentifierNamespace.NS_TITLE).id}') as doi_identifier",
 		 ezb_id: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = '${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EZB, IdentifierNamespace.NS_TITLE).id}') as ezb_id",
 		 title_wekb_uuid: 'tipp_gokb_id as title_wekb_uuid',
 		 package_wekb_uuid: 'pkg_gokb_id as package_wekb_uuid',
@@ -4487,7 +4507,7 @@ class ExportService {
 		if(entitlementInstance == TitleInstancePackagePlatform.class.name) {
 			identifiers = sql.rows("select id_tipp_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id ${queryData.join} where ${queryData.where}", queryData.params)
 			coverages = sql.rows("select tc_tipp_fk, tc_start_date as startDate, tc_start_volume as startVolume, tc_start_issue as startIssue, tc_end_date as endDate, tc_end_volume as endIssue, tc_end_issue as endIssue, tc_coverage_note as coverageNote, tc_coverage_depth as coverageDepth, tc_embargo as embargo from tippcoverage join title_instance_package_platform on tc_tipp_fk = tipp_id ${queryData.join} where ${queryData.where}", queryData.params)
-			priceItems = sql.rows("select pd.pi_tipp_fk, pd.pi_list_price, (select rdv_value from refdata_value where rdv_id = pd.pi_list_currency_rv_fk) as pi_list_currency, pd.pi_local_price, (select rdv_value from refdata_value where rdv_id = pd.pi_local_currency_rv_fk) as pi_local_currency from (select *, row_number() over (partition by pi_tipp_fk order by pi_date_created desc) as rn, count(*) over (partition by pi_tipp_fk) as cn from price_item join title_instance_package_platform on pi_tipp_fk = tipp_id ${queryData.join} where ${queryData.where}) as pd where pd.rn = 1", queryData.params)
+			priceItems = sql.rows("select pd.pi_tipp_fk, pd.pi_list_price, (select rdv_value from refdata_value where rdv_id = pd.pi_list_currency_rv_fk) as pi_list_currency, pd.pi_local_price, (select rdv_value from refdata_value where rdv_id = pd.pi_local_currency_rv_fk) as pi_local_currency from (select *, row_number() over (partition by pi_list_currency_rv_fk, pi_tipp_fk order by pi_date_created desc) as rn, count(*) over (partition by pi_tipp_fk) as cn from price_item join title_instance_package_platform on pi_tipp_fk = tipp_id ${queryData.join} where ${queryData.where}) as pd where pd.rn = 1", queryData.params)
 			//log.debug("select pi_tipp_fk, pi_list_price, (select rdv_value from refdata_value where rdv_id = pi_list_currency_rv_fk) as pi_list_currency, pi_local_price, (select rdv_value from refdata_value where rdv_id = pi_local_currency_rv_fk) as pi_local_currency from price_item join title_instance_package_platform on pi_tipp_fk = tipp_id ${queryData.join} where ${queryData.where}")
 			//log.debug(queryData.params.toMapString())
 			coreTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id ${queryData.join} where idns_ns in ('${coreTitleNSrestricted.join("','")}') and ${queryData.where}", queryData.params)

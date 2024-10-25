@@ -176,6 +176,17 @@ class PersonRole implements Comparable<PersonRole>{
         result.first()
     }
 
+    static Set<PersonRole> getAllRolesByOwner(Person p, owner) {
+        Set<PersonRole> result = []
+        if(owner instanceof Org)
+            result.addAll(PersonRole.findAllByPrsAndOrgAndFunctionTypeIsNotNull(p, owner as Org))
+        else if(owner instanceof Provider)
+            result.addAll(PersonRole.findAllByPrsAndProviderAndFunctionTypeIsNotNull(p, owner as Provider))
+        else if(owner instanceof Vendor)
+            result.addAll(PersonRole.findAllByPrsAndVendorAndFunctionTypeIsNotNull(p, owner as Vendor))
+        result
+    }
+
     /**
      * Comparator method between two person role links; compared are the function types; if they are equal, the person last, then first names are being compared with each other
      * @param that the object to compare with
