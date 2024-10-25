@@ -1065,17 +1065,19 @@ class ExportService {
 								rowno = 9
 								Map<String, Map<String, Object>> data = prepareDataWithDatabases(requestResponse, reportType)
 								double pointsPerIteration = 20/data.size()
-								data.each { String databaseName, Map<String, Object> databaseMetrics ->
-									databaseMetrics.each { String databaseMetricType, Map<String, Object> metricRow ->
-										columnHeaders.eachWithIndex { String colHeader, int c ->
-											cell = row.createCell(c)
-											cell.setCellValue(metricRow.get(colHeader))
+								data.each { String databaseName, Map<String, Object> databasePublishers ->
+									databasePublishers.each { String publisherName, Map<String, Object> databaseMetrics ->
+										databaseMetrics.each { String databaseMetricType, Map<String, Object> metricRow ->
+											columnHeaders.eachWithIndex { String colHeader, int c ->
+												cell = row.createCell(c)
+												cell.setCellValue(metricRow.get(colHeader))
+											}
 										}
+										row = sheet.createRow(rowno)
+										rowno++
+										i++
+										userCache.put('progress', 80+i*pointsPerIteration)
 									}
-									row = sheet.createRow(rowno)
-									rowno++
-									i++
-									userCache.put('progress', 80+i*pointsPerIteration)
 								}
 								break
 							case Counter4Report.DATABASE_REPORT_2:
@@ -1127,17 +1129,19 @@ class ExportService {
                                 }
                             */
 								row = sheet.createRow(rowno)
-								data.each { String databaseName, Map<String, Object> databaseMetrics ->
-									databaseMetrics.each { String databaseMetricType, Map<String, Object> metricRow ->
-										columnHeaders.eachWithIndex { String colHeader, int c ->
-											cell = row.createCell(c)
-											cell.setCellValue(metricRow.get(colHeader))
+								data.each { String databaseName, Map<String, Object> databasePublishers ->
+									databasePublishers.each { String publisherName, Map<String, Object> databaseMetrics ->
+										databaseMetrics.each { String databaseMetricType, Map<String, Object> metricRow ->
+											columnHeaders.eachWithIndex { String colHeader, int c ->
+												cell = row.createCell(c)
+												cell.setCellValue(metricRow.get(colHeader))
+											}
 										}
+										rowno++
+										row = sheet.createRow(rowno)
+										i++
+										userCache.put('progress', 80 + i * pointsPerIteration)
 									}
-									rowno++
-									row = sheet.createRow(rowno)
-									i++
-									userCache.put('progress', 80+i*pointsPerIteration)
 								}
 								break
 							case Counter4Report.PLATFORM_REPORT_1:
@@ -1145,17 +1149,19 @@ class ExportService {
 								rowno = 9
 								Map<String, Map<String, Object>> data = prepareDataWithDatabases(requestResponse, reportType)
 								double pointsPerIteration = 20/data.size()
-								data.each { String databaseName, Map<String, Object> databaseMetrics ->
-									databaseMetrics.each { String databaseMetricType, Map<String, Object> metricRow ->
-										columnHeaders.eachWithIndex { String colHeader, int c ->
-											cell = row.createCell(c)
-											cell.setCellValue(metricRow.get(colHeader))
+								data.each { String databaseName, Map<String, Object> databasePublishers ->
+									databasePublishers.each { String publisherName, Map<String, Object> databaseMetrics ->
+										databaseMetrics.each { String databaseMetricType, Map<String, Object> metricRow ->
+											columnHeaders.eachWithIndex { String colHeader, int c ->
+												cell = row.createCell(c)
+												cell.setCellValue(metricRow.get(colHeader))
+											}
 										}
+										row = sheet.createRow(rowno)
+										rowno++
+										i++
+										userCache.put('progress', 80 + i * pointsPerIteration)
 									}
-									row = sheet.createRow(rowno)
-									rowno++
-									i++
-									userCache.put('progress', 80+i*pointsPerIteration)
 								}
 								/*
                                 TODO migrate
@@ -1215,9 +1221,12 @@ class ExportService {
 										for(int c = 1; c < columnHeaders.size(); c++) {
 											cell = row.createCell(c)
 											def empty = ""
-											if(columnHeaders[c].matches('\\d{4}-\\d{2}'))
+											if(columnHeaders[c].matches('\\w{3}-\\d{4}')) {
 												empty = 0
-											cell.setCellValue(titleRow.get(columnHeaders[c]) ?: empty)
+												cell.setCellValue(titleRow.get(columnHeaders[c]) ?: empty)
+											}
+											else
+												cell.setCellValue(titleRow.get(columnHeaders[c]) ?: empty)
 										}
 										i++
 										userCache.put('progress', 80+i*pointsPerIteration)
@@ -1979,7 +1988,7 @@ class ExportService {
 							periodTotal += count
 							if (reportType != Counter4Report.JOURNAL_REPORT_5) {
 								titleRow.put("Reporting Period Total", periodTotal)
-								titleRow.put(DateUtils.getSDF_yyyyMM().format(reportFrom), count)
+								titleRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom), count)
 							}
 							switch (reportType) {
 								case Counter4Report.BOOK_REPORT_5: titleRow.put("User activity", metricType == 'search_reg' ? "Regular Searches" : "Searches: federated and automated")
@@ -2268,12 +2277,15 @@ class ExportService {
 				for (GPathResult performance: reportItem.'ns2:ItemPerformance') {
 					Date reportMonth = DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:Begin'.text())
 					for (GPathResult instance: performance.'ns2:Instance') {
-						String metricType = instance.'ns2:MetricType'.text()
+						String metricType = instance.'ns2:MetricType'.text(), publisherName = reportItem.'ns2:ItemPublisher'.text()
 						int periodTotal = 0, count = Integer.parseInt(instance.'ns2:Count'.text())
 						Map<String, Object> databaseRow = databaseRows.get(databaseName) as Map<String, Object>
 						if(!databaseRow)
 							databaseRow = [:]
-						Map<String, Object> metricRow = databaseRow.get(metricType) as Map<String, Object>
+						Map<String, Object> publisherRow = databaseRow.get(publisherName) as Map<String, Object>
+						if(!publisherRow)
+							publisherRow = [:]
+						Map<String, Object> metricRow = publisherRow.get(metricType) as Map<String, Object>
 						String metricHumanReadable
 						switch(metricType) {
 							case 'search_reg': metricHumanReadable = 'Regular Searches'
@@ -2292,7 +2304,7 @@ class ExportService {
 								break
 						}
 						if(!metricRow) {
-							metricRow = ['Database': databaseName, 'Publisher': reportItem.'ns2:ItemPublisher'.text(), 'Platform': reportItem.'ns2:ItemPlatform'.text()]
+							metricRow = ['Database': databaseName, 'Publisher': publisherName, 'Platform': reportItem.'ns2:ItemPlatform'.text()]
 						}
 						else periodTotal = metricRow.get('Reporting Period Total')
 						if(reportType == Counter4Report.DATABASE_REPORT_2)
@@ -2302,7 +2314,8 @@ class ExportService {
 						periodTotal += count
 						metricRow.put('Reporting Period Total', periodTotal)
 						metricRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.localeEN).format(reportMonth), count)
-						databaseRow.put(metricType, metricRow)
+						publisherRow.put(metricType, metricRow)
+						databaseRow.put(publisherName, publisherRow)
 						databaseRows.put(databaseName, databaseRow)
 					}
 				}
