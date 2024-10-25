@@ -2017,17 +2017,17 @@ class SubscriptionService {
                             Set<Long> perpetuallyPurchasedTitleIDs = []
                             if(perpetuallyPurchasedTitleRows)
                                 perpetuallyPurchasedTitleIDs.addAll(perpetuallyPurchasedTitleRows['pt_tipp_fk'])
-                            exportData = exportService.generateTitleExport(tippIDs, perpetuallyPurchasedTitleIDs, true)
+                            exportData = exportService.generateTitleExport([format: params.exportConfig, tippIDs: tippIDs, perpetuallyPurchasedTitleIDs: perpetuallyPurchasedTitleIDs, withPick: true])
                             break
                         case 'selectedIEs':
+                            Set<Long> sourceTIPPs = []
                             if(issueEntitlementGroup) {
                                 issueEntitlementConfigMap.tippIDs = tippIDs
                                 Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetSQLQuery(issueEntitlementConfigMap)
-                                Set<Long> sourceIEs = [], sourceTIPPs = []
                                 List<GroovyRowResult> rows = batchQueryService.longArrayQuery(queryPart2.query, queryPart2.arrayParams, queryPart2.queryParams)
-                                sourceIEs.addAll(rows["ie_id"])
                                 sourceTIPPs.addAll(rows["tipp_id"])
                             }
+                            exportData = exportService.generateTitleExport([format: params.exportConfig, tippIDs: sourceTIPPs])
                             break
                         case 'currentPerpetualAccessIEs':
                             Set<Subscription> subscriptions = []
@@ -2037,33 +2037,28 @@ class SubscriptionService {
                             else {
                                 subscriptions << result.subscription
                             }
+                            Set<Long> sourceTIPPs = []
                             if(subscriptions) {
                                 issueEntitlementConfigMap.tippIDs = tippIDs
                                 Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetSQLQuery(issueEntitlementConfigMap)
-                                Set<Long> sourceIEs = [], sourceTIPPs = []
                                 List<GroovyRowResult> rows = batchQueryService.longArrayQuery(queryPart2.query, queryPart2.arrayParams, queryPart2.queryParams)
-                                sourceIEs.addAll(rows["ie_id"])
                                 sourceTIPPs.addAll(rows["tipp_id"])
-                                List<GroovyRowResult> ptRows = batchQueryService.longArrayQuery("select pt_ie_fk from permanent_title where pt_tipp_fk = any(:tippIDs) and pt_owner_fk = any(:subscribers)", [tippIDs: tippIDs, subscribers: subscriptions.collect { Subscription s -> s.getSubscriberRespConsortia().id }])
-                                sourceIEs = sourceIEs.intersect(ptRows["pt_ie_fk"])
+                                List<GroovyRowResult> ptRows = batchQueryService.longArrayQuery("select pt_tipp_fk from permanent_title where pt_tipp_fk = any(:tippIDs) and pt_owner_fk = any(:subscribers)", [tippIDs: tippIDs, subscribers: subscriptions.collect { Subscription s -> s.getSubscriberRespConsortia().id }])
+                                sourceTIPPs = sourceTIPPs.intersect(ptRows["pt_tipp_fk"])
                             }
-                            else {
-                                result.sourceIEs = []
-                            }
+                            exportData = exportService.generateTitleExport([format: params.exportConfig, tippIDs: sourceTIPPs])
                             break
                     }
-                    //continue here: migrate export settings
                     FileOutputStream out = new FileOutputStream (f)
                     switch(params.exportConfig) {
-                        case 'kbart':
-                            //Map < String, Collection > tableData = queryMap ? exportService. generateTitleExportKBART ( queryMap, domainClName ): [ titleRow: [ ], columnData: [ ] ]
+                        case ExportService.KBART:
                             out.withWriter { Writer writer ->
-                                writer.write ( exportService.generateSeparatorTableString ( tableData.titleRow, tableData.columnData, '\t'))
+                                writer.write ( exportService.generateSeparatorTableString ( exportData.titleRow, exportData.columnData, '\t'))
                             }
                             out.flush()
                             out.close()
                             break
-                        case 'xlsx':
+                        case ExportService.EXCEL:
                             Map sheetData = [:]
                             sheetData[messageSource.getMessage('renewEntitlementsWithSurvey.selectableTitles', null, locale)] = exportData
                             SXSSFWorkbook wb = exportService.generateXLSXWorkbook(sheetData)

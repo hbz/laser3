@@ -6,7 +6,7 @@ $$
 declare
 	version constant numeric = 1;
 begin
-	if format = 'excel' then
+	if format = 'xlsx' then
 		return json_build_object('field', cell_data, 'style', cell_style);
 	else
 		if format = 'kbart' and (cell_data is null or cell_data = '') then
