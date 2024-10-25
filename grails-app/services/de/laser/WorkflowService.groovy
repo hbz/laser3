@@ -508,7 +508,7 @@ class WorkflowService {
     }
 
     /**
-     * Checks if the current user has reading rights
+     * Checks if the current user has *potential* reading rights
      * @return true if the context user belongs to a PRO customer, false otherwise
      * @see CustomerTypeService#PERMS_PRO
      * @see ContextService#isInstUser()
@@ -518,7 +518,7 @@ class WorkflowService {
     }
 
     /**
-     * Checks if the current user has editing rights
+     * Checks if the current user has *potential* editing rights
      * @return true if the context user is at least {@link de.laser.auth.Role#INST_EDITOR} at a PRO customer, false otherwise
      * @see CustomerTypeService#PERMS_PRO
      * @see ContextService#isInstEditor()
