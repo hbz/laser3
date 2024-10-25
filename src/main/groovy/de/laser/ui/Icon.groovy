@@ -110,7 +110,7 @@ class Icon {
         public static String DELETE     = 'trash alternate outline icon'
         @UIDoc(usage = 'Only for Buttons/Links with command: Download file')
         public static String DOWNLOAD   = 'download icon'
-        @UIDoc(usage = 'Only for Buttons/Links with command: Edit element')
+        @UIDoc(usage = 'Only for Buttons/Links with command: Edit element (see also READ)')
         public static String EDIT       = 'write icon'
         @UIDoc(usage = 'Only for Buttons/Links with command: Erase element')
         public static String ERASE      = 'eraser icon'
@@ -121,6 +121,8 @@ class Icon {
         @UIDoc(usage = 'Only for Buttons/Links with command: Move element down (see also MOVE_UP)')
         public static String MOVE_DOWN  = 'arrow down icon'
         @UIDoc(usage = 'Only for Buttons/Links with command: Remove element (see also ADD)')
+        public static String READ       = 'search icon'                                                     // TODO
+        @UIDoc(usage = 'Only for Buttons/Links with command: Read element (see also EDIT)')
         public static String REMOVE     = 'minus icon'
         @UIDoc(usage = 'Only for Buttons/Links with command: Replace element')
         public static String REPLACE    = 'sync icon'
