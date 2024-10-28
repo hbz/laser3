@@ -50,9 +50,9 @@ class ProviderController {
             'list' : 'menu.public.all_providers'
     ]
 
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     def index() {
         redirect 'list'
@@ -66,9 +66,9 @@ class ProviderController {
      * @see OrganisationService#exportOrg(java.util.List, java.lang.Object, boolean, java.lang.String)
      * @see ExportClickMeService#getExportOrgFields(java.lang.String)
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     def list() {
         Map<String, Object> result = [institution: contextService.getOrg(), user: contextService.getUser()], queryParams = [:]
@@ -235,9 +235,9 @@ class ProviderController {
         }
     }
 
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     def show() {
         Map<String, Object> result = providerService.getResultGenericsAndCheckAccess(params)

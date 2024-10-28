@@ -49,17 +49,17 @@ class VendorController {
             'list' : 'menu.public.all_vendors'
     ]
 
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     def index() {
         redirect 'list'
     }
 
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     def list() {
         Profiler prf = new Profiler()
@@ -217,9 +217,9 @@ class VendorController {
         }
     }
 
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     @Check404(domain=Vendor)
     def show() {

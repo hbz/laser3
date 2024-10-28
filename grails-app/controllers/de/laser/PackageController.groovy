@@ -68,9 +68,9 @@ class PackageController {
      * Lists current packages in the we:kb ElasticSearch index.
      * @return Data from we:kb ES
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport()
     })
     def index() {
         Map<String, Object> result = [:]
@@ -180,9 +180,9 @@ class PackageController {
      * Shows the details of the package. Consider that an active connection to a we:kb ElasticSearch index has to exist
      * because some data will not be mirrored to the app
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport()
     })
     @Check404()
     def show() {
@@ -283,9 +283,9 @@ class PackageController {
      * @see GlobalService#obtainFileStorageLocation()
      * @see #downloadLargeFile()
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport()
     })
     @Check404()
     def current() {
@@ -383,9 +383,9 @@ class PackageController {
      * @return a downloadable file stream, providing a previously generated file
      * @see #current()
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport()
     })
     def downloadLargeFile() {
         byte[] output = []
@@ -424,9 +424,9 @@ class PackageController {
      * Call to see planned titles of the package
      * @return {@link #planned_expired_deleted(java.lang.String)}
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport()
     })
     def planned() {
         planned_expired_deleted("planned")
@@ -436,9 +436,9 @@ class PackageController {
      * Call to see expired titles of the package
      * @return {@link #planned_expired_deleted(java.lang.String)}
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport()
     })
     def expired() {
         planned_expired_deleted("expired")
@@ -448,9 +448,9 @@ class PackageController {
      * Call to see deleted titles of the package
      * @return {@link #planned_expired_deleted(java.lang.String)}
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport()
     })
     def deleted() {
         planned_expired_deleted("deleted")
@@ -464,9 +464,9 @@ class PackageController {
      * @return a HTML table showing the holding or the holding rendered as KBART or Excel worksheet
      * @see TitleInstancePackagePlatform
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport()
     })
     def planned_expired_deleted(String func) {
         log.debug("planned_expired_deleted ${params}");
@@ -562,9 +562,9 @@ class PackageController {
      * Shows the title changes done in the package
      * @see PendingChange
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport()
     })
     @Check404()
     def tippChanges() {
@@ -687,9 +687,9 @@ class PackageController {
         }
     }
 
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport()
     })
     @Check404()
     def linkedSubscriptions() {

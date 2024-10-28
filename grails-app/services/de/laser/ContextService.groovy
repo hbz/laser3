@@ -179,6 +179,36 @@ class ContextService {
     }
 
     /**
+     * Shortcut for {@link de.laser.UserService#hasFormalAffiliation(de.laser.auth.User, de.laser.Org, java.lang.String)}
+     * with {@link de.laser.ContextService#getUser()}, {@link de.laser.ContextService#getOrg()} and ROLE.INST_USER
+     * <br>
+     * Restriction: {@link de.laser.Org#isCustomerType_Support()} is FALSE
+     */
+    boolean isInstUser_denySupport(String orgPerms = null) {
+        _hasInstRoleAndPerm(Role.INST_USER, orgPerms, true)
+    }
+
+    /**
+     * Shortcut for {@link de.laser.UserService#hasFormalAffiliation(de.laser.auth.User, de.laser.Org, java.lang.String)}
+     * with {@link de.laser.ContextService#getUser()}, {@link de.laser.ContextService#getOrg()} and ROLE.INST_EDITOR
+     * <br>
+     * Restriction: {@link de.laser.Org#isCustomerType_Support()} is FALSE
+     */
+    boolean isInstEditor_denySupport(String orgPerms = null) {
+        _hasInstRoleAndPerm(Role.INST_EDITOR, orgPerms, true)
+    }
+
+    /**
+     * Shortcut for {@link de.laser.UserService#hasFormalAffiliation(de.laser.auth.User, de.laser.Org, java.lang.String)}
+     * with {@link de.laser.ContextService#getUser()}, {@link de.laser.ContextService#getOrg()} and ROLE.INST_ADM
+     * <br>
+     * Restriction: {@link de.laser.Org#isCustomerType_Support()} is FALSE
+     */
+    boolean isInstAdm_denySupport(String orgPerms = null) {
+        _hasInstRoleAndPerm(Role.INST_ADM, orgPerms, true)
+    }
+
+    /**
      * Same as {@link #isInstUser_or_ROLEADMIN()}, but support-type customers get access denied
      * @param orgPerms the customer types to verify
      * @return true if the given permissions are granted, false otherwise
