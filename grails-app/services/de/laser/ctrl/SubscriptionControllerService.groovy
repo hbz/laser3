@@ -1964,7 +1964,8 @@ class SubscriptionControllerService {
 
             IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
             if (!issueEntitlementGroup) {
-                    issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: result.surveyConfig.issueEntitlementGroupName).save()
+                String groupName = IssueEntitlementGroup.countBySubAndName(subscriberSub,  result.surveyConfig.issueEntitlementGroupName) > 0 ? (IssueEntitlementGroup.countBySubAndNameIlike(subscriberSub, result.surveyConfig.issueEntitlementGroupName) + 1) : result.surveyConfig.issueEntitlementGroupName
+                issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: groupName).save()
             }
 
             result.titleGroupID = issueEntitlementGroup ? issueEntitlementGroup.id.toString() : null
@@ -3712,6 +3713,8 @@ class SubscriptionControllerService {
 
                         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
                         if (!issueEntitlementGroup) {
+                            String groupName = IssueEntitlementGroup.countBySubAndName(result.subscription,  result.surveyConfig.issueEntitlementGroupName) > 0 ? (IssueEntitlementGroup.countBySubAndNameIlike(result.subscription, result.surveyConfig.issueEntitlementGroupName) + 1) : result.surveyConfig.issueEntitlementGroupName
+
                             issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: result.subscription, name: result.surveyConfig.issueEntitlementGroupName).save()
                         }
 
