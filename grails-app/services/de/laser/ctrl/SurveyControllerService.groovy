@@ -2610,7 +2610,7 @@ class SurveyControllerService {
                                             Subscription participantSub = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(org)
                                             IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, participantSub)
                                             if (!issueEntitlementGroup && participantSub) {
-                                                String groupName = IssueEntitlementGroup.countBySubAndName(subscription, result.surveyConfig.issueEntitlementGroupName) > 0 ? (IssueEntitlementGroup.countBySubAndNameIlike(subscription, result.surveyConfig.issueEntitlementGroupName) + 1) : result.surveyConfig.issueEntitlementGroupName
+                                                String groupName = IssueEntitlementGroup.countBySubAndName(participantSub, result.surveyConfig.issueEntitlementGroupName) > 0 ? (IssueEntitlementGroup.countBySubAndNameIlike(participantSub, result.surveyConfig.issueEntitlementGroupName) + 1) : result.surveyConfig.issueEntitlementGroupName
                                                 new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: participantSub, name: groupName).save()
                                             }
                                         }
