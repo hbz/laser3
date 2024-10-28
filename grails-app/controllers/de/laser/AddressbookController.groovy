@@ -28,9 +28,9 @@ class AddressbookController {
     FormService formService
     GenericOIDService genericOIDService
 
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     def index() {
         redirect controller: 'myInstitution', action: 'addressbook'
