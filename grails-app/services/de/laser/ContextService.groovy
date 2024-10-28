@@ -313,9 +313,9 @@ class ContextService {
      * @return true if the context organisation is a consortium or an institution looking at its own data, false otherwise
      */
     // TODO
-    boolean is_INST_EDITOR_or_ROLEADMIN_with_PERMS_BASIC(boolean inContextOrg) {
+    boolean is_INST_EDITOR_with_PERMS_BASIC(boolean inContextOrg) {
         boolean check = false
-        if (isInstEditor_or_ROLEADMIN()) {
+        if (isInstEditor()) {
             check = _hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) || (_hasPerm(CustomerTypeService.ORG_INST_BASIC) && inContextOrg)
         }
         check
