@@ -606,7 +606,7 @@
                         </td>
                     </g:if>
                 </g:each>
-                <td>
+                <td class="x">
                     <g:link controller="survey" action="evaluationParticipant"
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
                             class="${Btn.MODERN.SIMPLE_TOOLTIP}"
@@ -617,13 +617,11 @@
                     <g:if test="${surveyConfig.subscription}">
                         <g:set var="participantSub" value="${surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(participant)}"/>
                             <g:if test="${participantSub}">
-                                <br/>
                                 <g:link controller="subscription" action="show" id="${participantSub.id}"
                                         class="${Btn.ICON.SIMPLE} orange la-modern-button"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
                             </g:if>
                     </g:if>
 
-                    <br/>
                     <a href="#" class="ui button blue icon la-modern-button mailInfos-flyout-trigger" data-orgId="${participant.id}" data-subId="${surveyConfig.subscription?.id}" data-surveyConfigId="${surveyConfig.id}">
                         <i class="ui info icon"></i>
                     </a>
