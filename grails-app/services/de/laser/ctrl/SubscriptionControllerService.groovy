@@ -3715,7 +3715,7 @@ class SubscriptionControllerService {
                         if (!issueEntitlementGroup) {
                             String groupName = IssueEntitlementGroup.countBySubAndName(result.subscription,  result.surveyConfig.issueEntitlementGroupName) > 0 ? (IssueEntitlementGroup.countBySubAndNameIlike(result.subscription, result.surveyConfig.issueEntitlementGroupName) + 1) : result.surveyConfig.issueEntitlementGroupName
 
-                            issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: result.subscription, name: result.surveyConfig.issueEntitlementGroupName).save()
+                            issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: result.subscription, name: groupName).save()
                         }
 
                         if (PermanentTitle.findByOwnerAndTipp(owner, tipp)) {
