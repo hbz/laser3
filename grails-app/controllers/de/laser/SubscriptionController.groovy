@@ -1493,7 +1493,7 @@ class SubscriptionController {
                     IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
 
                     if (!issueEntitlementGroup) {
-                        String groupName = IssueEntitlementGroup.countBySubAndName(result.subscription,  result.surveyConfig.issueEntitlementGroupName) > 0 ? (IssueEntitlementGroup.countBySubAndNameIlike(subscriberSub, result.surveyConfig.issueEntitlementGroupName) + 1) : result.surveyConfig.issueEntitlementGroupName
+                        String groupName = IssueEntitlementGroup.countBySubAndName(result.subscription,  result.surveyConfig.issueEntitlementGroupName) > 0 ? (IssueEntitlementGroup.countBySubAndNameIlike(result.subscription, result.surveyConfig.issueEntitlementGroupName) + 1) : result.surveyConfig.issueEntitlementGroupName
 
                         IssueEntitlementGroup.withTransaction {
                             issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: result.subscription, name: groupName).save()
