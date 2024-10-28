@@ -476,7 +476,7 @@ class ProviderService {
         result.wekbApi = apiSource
         if (params.id) {
             result.provider = Provider.get(params.id)
-            result.editable = userService.hasFormalAffiliation_or_ROLEADMIN(user, org,'INST_EDITOR')
+            result.editable = contextService.isInstEditor()
             //set isMyOrg-flag for relations context -> provider
             int relationCheck = OrgRole.executeQuery('select count(oo) from ProviderRole pvr join pvr.subscription sub, OrgRole oo where pvr.subscription = oo.org and oo.org = :context and sub.status = :current', [context: org, current: RDStore.SUBSCRIPTION_CURRENT])[0]
             result.isMyProvider = relationCheck > 0

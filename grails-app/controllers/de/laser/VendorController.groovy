@@ -227,8 +227,8 @@ class VendorController {
         if(params.containsKey('id')) {
             Vendor vendor = Vendor.get(params.id)
             result.vendor = vendor
-            result.editable = vendor.gokbId ? false : userService.hasFormalAffiliation_or_ROLEADMIN(result.user, result.institution, 'INST_EDITOR')
-            result.subEditable = userService.hasFormalAffiliation_or_ROLEADMIN(result.user, result.institution, 'INST_EDITOR')
+            result.editable = vendor.gokbId ? false : contextService.isInstEditor()
+            result.subEditable = contextService.isInstEditor()
             result.isMyVendor = vendorService.isMyVendor(vendor, result.institution)
             String subscriptionConsortiumFilter = '', licenseConsortiumFilter = ''
             if(result.institution.isCustomerType_Consortium()) {
