@@ -11,4 +11,4 @@ Unter den Links befinden sich Reiter mit Ihren aktuellen Informationen:
 + **Aufgaben**: Hier sehen Sie alle offenen Aufgaben für Sie als Bearbeiter oder für alle Nutzer Ihrer Einrichtung.
 + **Workflows**: Hier sehen Sie alle von Ihrer Einrichtung erstellten Workflows. 
 
-Sämtliche Benachrichtigungen über anstehende Fristen lassen sich auf Ihrem **Benutzerprofil** verwalten.
+Sämtliche Benachrichtigungen über anstehende Fristen lassen über Ihr **Benutzerprofil** verwalten.
