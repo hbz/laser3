@@ -162,9 +162,6 @@
 <g:if test="${editable}">
     <laser:render template="KBARTSelectionUploadFormModal"/>
 </g:if>
-
-<laser:render template="KBARTSelectionUploadFormModal"/>
-
         <laser:render template="/templates/filter/tipp_ieFilter" model="[notShow: params.tab == 'allTipps', fillDropdownsWithPackage: params.tab == 'allTipps']"/>
 
 <h3 class="ui icon header la-clear-before la-noMargin-top">
@@ -258,7 +255,7 @@
             <g:if test="${params.tab != 'stats'}">
                 <div class="eight wide field" style="text-align: left;">
                     <g:if test="${editable && params.tab == 'allTipps'}">
-                        <button type="submit" name="process" id="processButton" value="preliminary" class="${Btn.POSITIVE}">
+                        <button type="submit" name="process" id="processButton" value="add" class="${Btn.POSITIVE}">
                             ${checkedCount} <g:message code="renewEntitlementsWithSurvey.preliminary"/></button>
                     </g:if>
 

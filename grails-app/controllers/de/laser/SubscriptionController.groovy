@@ -1485,34 +1485,37 @@ class SubscriptionController {
 
         String filename = params.kbartPreselect.originalFilename
         result.putAll(subscriptionService.tippSelectForSurvey(params.kbartPreselect, baseSub, result.surveyConfig, subscriberSub))
-            if (result.selectedTipps) {
-
-                result.selectedTipps.each { String tippKey ->
-                    TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(tippKey)
-                    if (tipp) {
-                        try {
-                            if (!issueEntitlementGroup) {
-                                IssueEntitlementGroup.withTransaction {
-                                    issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: result.surveyConfig.issueEntitlementGroupName)
-                                    if (!issueEntitlementGroup.save())
-                                        log.error(issueEntitlementGroup.getErrors().getAllErrors().toListString())
-                                    else {
-                                        result.titleGroupID = issueEntitlementGroup.id.toString()
-                                        result.titleGroup = issueEntitlementGroup
-                                    }
-                                }
-                            }
-
-                            if (issueEntitlementGroup && subscriptionService.addEntitlement(subscriberSub, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
-                                log.debug("selectEntitlementsWithKBARTForSurvey: Added tipp ${tipp.gokbId} to sub ${subscriberSub.id}")
-                            }
-                        }
-                        catch (EntitlementCreationException e) {
-                            log.debug("Error selectEntitlementsWithKBARTForSurvey: Adding tipp ${tipp} to sub ${subscriberSub.id}: " + e.getMessage())
-                        }
+        if (result.selectedTipps) {
+            if (!issueEntitlementGroup) {
+                IssueEntitlementGroup.withTransaction {
+                    issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: result.surveyConfig.issueEntitlementGroupName)
+                    if (!issueEntitlementGroup.save())
+                        log.error(issueEntitlementGroup.getErrors().getAllErrors().toListString())
+                    else {
+                        result.titleGroupID = issueEntitlementGroup.id.toString()
+                        result.titleGroup = issueEntitlementGroup
                     }
                 }
             }
+            if(issueEntitlementGroup) {
+                subscriptionService.bulkAddEntitlements(subscriberSub, result.selectedTipps, result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)
+            }
+            /*
+            result.selectedTipps.each { String tippKey ->
+            TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(tippKey)
+                if (tipp) {
+                    try {
+                        if (issueEntitlementGroup && subscriptionService.addEntitlement(subscriberSub, tipp.gokbId, null, false, result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
+                            log.debug("selectEntitlementsWithKBARTForSurvey: Added tipp ${tipp.gokbId} to sub ${subscriberSub.id}")
+                        }
+                    }
+                    catch (EntitlementCreationException e) {
+                        log.debug("Error selectEntitlementsWithKBARTForSurvey: Adding tipp ${tipp} to sub ${subscriberSub.id}: " + e.getMessage())
+                    }
+                }
+            }
+            */
+        }
 
         result.tippSelectForSurveySuccess = true
         params.remove("kbartPreselect")
@@ -1589,39 +1592,12 @@ class SubscriptionController {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def processAddIssueEntitlementsSurvey() {
-        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
-        result.editable = surveyService.isEditableSurvey(result.institution, result.surveyConfig.surveyInfo)
-        if (result.subscription) {
-            if(result.editable && params.singleTitle) {
-                TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(params.singleTitle)
-                try {
-
-                    IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
-
-                    if (!issueEntitlementGroup) {
-                        IssueEntitlementGroup.withTransaction {
-                            issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: result.subscription, name: result.surveyConfig.issueEntitlementGroupName).save()
-                        }
-                    }
-
-                    if (issueEntitlementGroup && subscriptionService.addEntitlement(result.subscription, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
-                        flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp.name]) as String
-                    } else {
-                        log.error("no issueEntitlementGroup found and no issueEntitlementGroup created, because it is not set a issueEntitlementGroupName in survey config!")
-                    }
-                }
-                catch (EntitlementCreationException e) {
-                    flash.error = e.getMessage()
-                }
-
-            }
-        } else {
-            log.error("Unable to locate subscription instance")
-        }
-
+        Map<String, Object> result = subscriptionService.addSingleEntitlementSurvey(params)
+        if(result.containsKey('message'))
+            flash.message = result.message
+        else if(result.containsKey('error'))
+            flash.error = result.error
         redirect(url: request.getHeader("referer"))
-
     }
 
     /**
@@ -1638,19 +1614,10 @@ class SubscriptionController {
         result.editable = surveyService.isEditableSurvey(result.institution, result.surveyConfig.surveyInfo)
 
         if(result.editable){
-
-            IssueEntitlement issueEntitlement = IssueEntitlement.findById(params.long('singleTitle'))
             IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
-            if(issueEntitlement && issueEntitlementGroup) {
-                IssueEntitlementGroupItem issueEntitlementGroupItem = IssueEntitlementGroupItem.findByIeGroupAndIe(issueEntitlementGroup, issueEntitlement)
-                if(issueEntitlementGroupItem) {
-                    IssueEntitlementGroup.withTransaction {
-                        issueEntitlementGroupItem.delete()
-                    }
-
-                    if (subscriptionService.deleteEntitlementbyID(result.subscription, params.singleTitle))
-                        log.debug("Deleted ie ${params.singleTitle} from sub ${result.subscription.id}")
-                }
+            if(IssueEntitlement.countById(params.long('singleTitle')) && issueEntitlementGroup) {
+                if (subscriptionService.deleteEntitlementByID(result.subscription, params.singleTitle, issueEntitlementGroup))
+                    log.debug("Deleted ie ${params.singleTitle} from sub ${result.subscription.id}")
             }
         }
 
@@ -1932,7 +1899,18 @@ class SubscriptionController {
         ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
     })
     def processRenewEntitlementsWithSurvey() {
-
+        Map<String, Object> ctrlResult = subscriptionService.processRenewEntitlementsWithSurvey(params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+            else flash.error = ctrlResult.result.error
+        }
+        else {
+            flash.message = ctrlResult.result.message
+        }
+        redirect(url: request.getHeader("referer"))
     }
 
     @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], ctrlService = 1)
@@ -1964,237 +1942,6 @@ class SubscriptionController {
                 render template: '/templates/bulkItemDownload', model: fileResult
             return
         }
-        /*
-        Map<String,Object> ctrlResult, exportResult
-        params.statsForSurvey = true
-        boolean kbartPreselect = params.containsKey('kbartPreselect')
-        if(params.exportForImport) {
-            if(params.reportType) {
-                ctrlResult = subscriptionControllerService.renewEntitlementsWithSurvey(this, params)
-                EhcacheWrapper userCache = contextService.getUserCache("/subscription/renewEntitlementsWithSurvey/generateRenewalExport")
-                userCache.put('progress', 0)
-                params.loadFor = params.tab
-                String token = "renewal_${params.reportType}_${params.platform}_${ctrlResult.result.subscriber.id}_${ctrlResult.result.subscriberSub.id}"
-                if(params.metricType) {
-                    token += '_'+params.list('metricType').join('_')
-                }
-                if(params.accessType) {
-                    token += '_'+params.list('accessType').join('_')
-                }
-                if(params.accessMethod) {
-                    token += '_'+params.list('accessMethod').join('_')
-                }
-                String dir = ConfigMapper.getStatsReportSaveLocation() ?: '/usage'
-                File folder = new File(dir)
-                if (!folder.exists()) {
-                    folder.mkdir()
-                }
-                File f = new File(dir+'/'+token)
-                Map<String, String> fileResult = [token: token]
-                if(!f.exists()) {
-                    SortedSet<Date> monthsInRing = new TreeSet<Date>()
-                    Calendar startTime = GregorianCalendar.getInstance(), endTime = GregorianCalendar.getInstance()
-                    if (ctrlResult.result.subscriberSub.startDate && ctrlResult.result.subscriberSub.endDate) {
-                        startTime.setTime(ctrlResult.result.subscriberSub.startDate)
-                        if (ctrlResult.result.subscriberSub.endDate < new Date())
-                            endTime.setTime(ctrlResult.result.subscriberSub.endDate)
-                    }
-                    else if (ctrlResult.result.subscriberSub.startDate) {
-                        startTime.setTime(ctrlResult.result.subscriberSub.startDate)
-                        endTime.setTime(new Date())
-                    }
-                    else {
-                        //test access e.g.
-                        startTime.set(Calendar.MONTH, 0)
-                        startTime.set(Calendar.DAY_OF_MONTH, 1)
-                        startTime.add(Calendar.YEAR, -1)
-                        endTime.setTime(new Date())
-                    }
-                    while (startTime.before(endTime)) {
-                        monthsInRing << startTime.getTime()
-                        startTime.add(Calendar.MONTH, 1)
-                    }
-                    //List<String> perpetuallyPurchasedTitleURLs = TitleInstancePackagePlatform.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (select oo.sub from OrgRole oo where oo.org = :org and oo.roleType in (:roleTypes)) and tipp.status = :tippStatus and ie.status = :tippStatus and ie.perpetualAccessBySub is not null',
-                    //       [org: ctrlResult.result.subscriber, tippStatus: RDStore.TIPP_STATUS_CURRENT, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS]])
-                    List<String> perpetuallyPurchasedTitleURLs = PermanentTitle.executeQuery('select pt.tipp.hostPlatformURL from PermanentTitle pt where pt.owner = :owner and pt.tipp.id in (select ti.id from TitleInstancePackagePlatform as ti where ti.pkg in (:pkgs))',
-                            [owner: ctrlResult.result.subscriber, pkgs: ctrlResult.result.parentSubscription.packages?.pkg])
-                    IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(ctrlResult.result.surveyConfig, ctrlResult.result.subscriberSub)
-                    if (issueEntitlementGroup) {
-                        perpetuallyPurchasedTitleURLs.addAll(IssueEntitlementGroupItem.executeQuery("select ie.tipp.hostPlatformURL from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup",
-                                [ieGroup: issueEntitlementGroup]))
-                    }
-
-                    Map<String, Object> queryMap = [:]
-                    queryMap.sort = 'tipp.sortname'
-                    queryMap.order = 'asc'
-                    queryMap.revision = params.revision
-                    queryMap.reportType = params.reportType
-                    queryMap.metricTypes = params.metricType
-                    queryMap.accessTypes = params.accessType
-                    queryMap.accessMethods = params.accessMethod
-                    queryMap.platform = Platform.get(params.platform)
-                    //queryMap.sub = ctrlResult.result.subscription
-                    queryMap.status = RDStore.TIPP_STATUS_CURRENT.id
-                    queryMap.pkgIds = ctrlResult.result.parentSubscription.packages?.pkg?.id
-                    queryMap.refSub = ctrlResult.result.parentSubscription
-                    Map<String, Object> export = exportService.generateRenewalExport(queryMap, monthsInRing, ctrlResult.result.subscriber)
-                    //Map<String, List> export = exportService.generateTitleExportCustom(queryMap, TitleInstancePackagePlatform.class.name, monthsInRing.sort { Date monthA, Date monthB -> monthA <=> monthB }, ctrlResult.result.subscriber, true)
-                    if(!export.status202) {
-                        String refYes = RDStore.YN_YES.getI10n('value')
-                        String refNo = RDStore.YN_NO.getI10n('value')
-                        userCache.put('progress', 100) //debug only
-                        export.rows.eachWithIndex { def field, int index ->
-                            if(export.rows[index][0] && export.rows[index][0].style == 'negative'){
-                                export.rows[index] << [field: refNo, style: 'negative']
-                            }else {
-                                export.rows[index] << [field: refYes, style: null]
-                            }
-                        }
-                        Map sheetData = [:]
-                        sheetData[g.message(code: 'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow: export.titles, columnData: export.rows]
-                        wb = exportService.generateXLSXWorkbook(sheetData)
-                        userCache.put('progress', 100)
-                        FileOutputStream fos = new FileOutputStream(f)
-                        //--> to document
-                        wb.write(fos)
-                        fos.flush()
-                        fos.close()
-                        wb.dispose()
-                    }
-                    else {
-                        userCache.put('progress', 100)
-                        fileResult.remove('token')
-                        fileResult.error = 202
-                    }
-                    render template: '/templates/stats/usageReport', model: fileResult
-                    return
-                }
-                else {
-                    render template: '/templates/stats/usageReport', model: fileResult
-                    return
-                }
-            }
-            else {
-                flash.error = message(code: 'default.stats.error.noReportSelected')
-            }
-        }
-        else {
-            ctrlResult = subscriptionControllerService.renewEntitlementsWithSurvey(this, params)
-        }
-        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if(!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-            else {
-                flash.error = ctrlResult.result.error
-                ctrlResult.result
-            }
-        }
-        else if(kbartPreselect) {
-            render template: 'entitlementProcessResult', model: ctrlResult.result
-        }
-        else {
-            Map queryMap = [:]
-            String filename
-            if(params.tab == 'allTipps') {
-                queryMap = [status: [RDStore.TIPP_STATUS_CURRENT.id], pkgIds: ctrlResult.result.parentSubscription.packages?.pkg?.id]
-                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.selectableTitles') + '_' + ctrlResult.result.parentSubscription.dropdownNamingConvention())
-            }
-            if(params.tab == 'selectedIEs') {
-                if(ctrlResult.result.titleGroupID) {
-                    queryMap = [sub: ctrlResult.result.subscriberSub, notStatus: RDStore.TIPP_STATUS_REMOVED.id, pkgIds: ctrlResult.result.parentSubscription.packages?.pkg?.id, titleGroup: ctrlResult.result.titleGroupID]
-                }
-                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect') + '_' + ctrlResult.result.subscriberSub.dropdownNamingConvention())
-            }
-
-            if(params.tab == 'currentPerpetualAccessIEs') {
-                Set<Subscription> subscriptions = []
-                Set<Long> packageIds = [], subscribers = []
-                if(ctrlResult.result.surveyConfig.pickAndChoosePerpetualAccess) {
-                    subscriptions = linksGenerationService.getSuccessionChain(ctrlResult.result.subscriberSub, 'sourceSubscription')
-                    subscriptions.each { Subscription s ->
-                        packageIds.addAll(s.packages?.pkg?.id)
-                        subscribers.add(s.getSubscriberRespConsortia().id)
-                    }
-                    //in SubscriptionControllerService, these equivalent assignments are commented out as of June 2nd, 2023 - I make coherency to the more recent state TODO @moe!
-                    //subscriptions << ctrlResult.result.subscriberSub
-                    //packageIds.addAll(ctrlResult.result.subscriberSub.packages?.pkg?.id)
-                }
-                queryMap = [subscriptions: subscriptions, ieStatus: RDStore.TIPP_STATUS_CURRENT, subscribers: subscribers, hasPerpetualAccess: RDStore.YN_YES.id.toString()]
-
-                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentTitles') + '_' + ctrlResult.result.subscriberSub.dropdownNamingConvention())
-            }
-
-            if (params.exportKBart) {
-                String dir = GlobalService.obtainFileStorageLocation()
-                File f = new File(dir+'/'+filename)
-                if(!f.exists()) {
-                    FileOutputStream out = new FileOutputStream(f)
-                    String domainClName = TitleInstancePackagePlatform.class.name
-                     if(params.tab == 'allTipps') {
-                         domainClName = TitleInstancePackagePlatform.class.name
-                     }
-                    Map<String, Collection> tableData = queryMap ? exportService.generateTitleExportKBART(queryMap, domainClName) : [titleRow: [], columnData: []]
-                    out.withWriter { Writer writer ->
-                        writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
-                    }
-                    out.flush()
-                    out.close()
-                }
-                Map fileResult = [token: filename, filenameDisplay: filename, fileformat: 'kbart']
-                render template: '/templates/bulkItemDownload', model: fileResult
-                return
-            }else if (params.exportXLS) {
-                String domainClName = TitleInstancePackagePlatform.class.name
-                 if(params.tab == 'allTipps') {
-                      domainClName = TitleInstancePackagePlatform.class.name
-                  }
-
-                //List<String> perpetuallyPurchasedTitleURLs = PermanentTitle.executeQuery('select pt.tipp.hostPlatformURL from PermanentTitle pt where pt.owner = :owner and pt.tipp.id in (select ti.id from TitleInstancePackagePlatform as ti where ti.pkg in (:pkgs))',
-                //                        [owner: ctrlResult.result.subscriber, pkgs: ctrlResult.result.parentSubscription.packages?.pkg])
-                //List<String> perpetuallyPurchasedTitleURLs = TitleInstancePackagePlatform.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (select oo.sub from OrgRole oo where oo.org = :org and oo.roleType in (:roleTypes)) and tipp.status = :tippStatus and ie.status = :tippStatus and ie.perpetualAccessBySub is not null',
-                //        [org: ctrlResult.result.subscriber, tippStatus: RDStore.TIPP_STATUS_CURRENT, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS]])
-
-                IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(ctrlResult.result.surveyConfig, ctrlResult.result.subscriberSub)
-                 if (issueEntitlementGroup) {
-                     perpetuallyPurchasedTitleURLs.addAll(IssueEntitlementGroupItem.executeQuery("select ie.tipp.hostPlatformURL from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup",
-                             [ieGroup: issueEntitlementGroup]))
-                 }
-
-                response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
-                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                Map<String, Object> export = queryMap ? exportService.generateTitleExportCustom(queryMap, domainClName, [], ctrlResult.result.subscriber, params.tab == 'allTipps') : [titles: [], rows: []]
-                Map sheetData = [:]
-
-                if(params.tab == 'allTipps') {
-                    export.titles << message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs.export')
-                    export.titles << "Pick"
-
-                    String refYes = RDStore.YN_YES.getI10n('value')
-                    String refNo = RDStore.YN_NO.getI10n('value')
-                    export.rows.eachWithIndex { def field, int index ->
-                        if (export.rows[index][0] && export.rows[index][0].style == 'negative') {
-                            export.rows[index] << [field: refNo, style: 'negative']
-                        } else {
-                            export.rows[index] << [field: refYes, style: null]
-                        }
-
-                    }
-                }
-                sheetData[g.message(code: 'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow: export.titles, columnData: export.rows]
-                wb = exportService.generateXLSXWorkbook(sheetData)
-                wb.write(response.outputStream)
-                response.outputStream.flush()
-                response.outputStream.close()
-                wb.dispose()
-                return
-            }
-            else {
-                ctrlResult.result
-            }
-        }
-        */
     }
 
     /**
