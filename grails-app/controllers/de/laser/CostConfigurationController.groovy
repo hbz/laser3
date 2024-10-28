@@ -33,7 +33,6 @@ class CostConfigurationController {
         Map<String, Object> result = [:]
 
         Org org = contextService.getOrg()
-        User user = contextService.getUser()
         List costItemElementConfigurations = []
         List<RefdataValue> costItemElements = RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_ELEMENT)
 
@@ -44,7 +43,7 @@ class CostConfigurationController {
             }
         }
 
-        result.editable = userService.hasFormalAffiliation(user, org, 'INST_EDITOR')
+        result.editable = contextService.isInstEditor()
         result.costItemElementConfigurations = costItemElementConfigurations
         result.costItemElements = costItemElements
         result.institution = org

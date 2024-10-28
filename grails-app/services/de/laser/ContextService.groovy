@@ -124,14 +124,26 @@ class ContextService {
 
     // -- Formal checks @ user.formalOrg
 
+    /**
+     * Shortcut for {@link de.laser.UserService#hasFormalAffiliation(de.laser.auth.User, de.laser.Org, java.lang.String)}
+     * with {@link de.laser.ContextService#getUser()}, {@link de.laser.ContextService#getOrg()} and ROLE.INST_USER
+     */
     boolean isInstUser(String orgPerms = null) {
         _hasInstRoleAndPerm(Role.INST_USER, orgPerms, false)
     }
 
+    /**
+     * Shortcut for {@link de.laser.UserService#hasFormalAffiliation(de.laser.auth.User, de.laser.Org, java.lang.String)}
+     * with {@link de.laser.ContextService#getUser()}, {@link de.laser.ContextService#getOrg()} and ROLE.INST_EDITOR
+     */
     boolean isInstEditor(String orgPerms = null) {
         _hasInstRoleAndPerm(Role.INST_EDITOR, orgPerms, false)
     }
 
+    /**
+     * Shortcut for {@link de.laser.UserService#hasFormalAffiliation(de.laser.auth.User, de.laser.Org, java.lang.String)}
+     * with {@link de.laser.ContextService#getUser()}, {@link de.laser.ContextService#getOrg()} and ROLE.INST_ADM
+     */
     boolean isInstAdm(String orgPerms = null) {
         _hasInstRoleAndPerm(Role.INST_ADM, orgPerms, false)
     }

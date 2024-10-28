@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
+<%@ page import="de.laser.AccessService; de.laser.ui.Btn; de.laser.ui.Icon" %>
 <laser:serviceInjection/>
 
     <table class="ui celled sortable table la-table la-js-responsive-table">
@@ -61,7 +61,7 @@
                         </g:if>
 
                         <g:if test="${! docctx.sharedFrom}">
-                        <g:if test="${userService.hasFormalAffiliation(contextService.getUser(), contextService.getOrg(), 'INST_EDITOR')}">
+                        <g:if test="${accessService.hasAccessToDocNote(docctx, AccessService.WRITE)}">
                             <a onclick="JSPC.app.editNote(${docctx.id});" class="${Btn.MODERN.SIMPLE}" role="button" aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                             </a>
