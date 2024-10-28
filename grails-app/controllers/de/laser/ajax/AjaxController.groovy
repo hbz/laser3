@@ -1555,8 +1555,7 @@ class AjaxController {
             else            flash.error += message(code:'dashboardDueDate.err.toShow.doesNotExist')
         }
 
-        result.is_inst_admin = userService.hasFormalAffiliation(result.user, result.institution, 'INST_ADM')
-        result.editable = userService.hasFormalAffiliation(result.user, result.institution, 'INST_EDITOR')
+        result.editable = contextService.isInstEditor()
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.dashboardDueDatesOffset = result.offset
@@ -1624,8 +1623,7 @@ class AjaxController {
             else          flash.error += message(code:'dashboardDueDate.err.toSetUndone.doesNotExist')
         }
 
-        result.is_inst_admin = userService.hasFormalAffiliation(result.user, result.institution, 'INST_ADM')
-        result.editable = userService.hasFormalAffiliation(result.user, result.institution, 'INST_EDITOR')
+        result.editable = contextService.isInstEditor()
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.dashboardDueDatesOffset = result.offset

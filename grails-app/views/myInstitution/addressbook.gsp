@@ -14,30 +14,6 @@
         <ui:exportDropdownItem>
             <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.ADDRESSBOOK]"/>
         </ui:exportDropdownItem>
-        <%--
-        <g:if test="${filterSet == true}">
-            <ui:exportDropdownItem>
-                <g:link class="item js-open-confirm-modal" params="${params+[exportXLS: true]}" action="addressbook"
-                        data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}" data-confirm-term-how="ok">
-                    <g:message code="default.button.exports.xls"/>
-                </g:link>
-            </ui:exportDropdownItem>
-            <ui:exportDropdownItem>
-                <g:link class="item js-open-confirm-modal" params="${params+[format: 'csv']}" action="addressbook"
-                        data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}" data-confirm-term-how="ok">
-                    <g:message code="default.button.exports.csv"/>
-                </g:link>
-            </ui:exportDropdownItem>
-        </g:if>
-        <g:else>
-            <ui:exportDropdownItem>
-                <g:link class="item" params="${params+[exportXLS: true]}" action="addressbook"><g:message code="default.button.exports.xls"/></g:link>
-            </ui:exportDropdownItem>
-            <ui:exportDropdownItem>
-                <g:link class="item" params="${params+[format: 'csv']}" action="addressbook"><g:message code="default.button.exports.csv"/></g:link>
-            </ui:exportDropdownItem>
-        </g:else>
-        --%>
     </ui:exportDropdown>
     <ui:actionsDropdown>
         <g:if test="${editable}">
@@ -53,9 +29,9 @@
                     <i class="${Icon.ACP_PRIVATE}"></i><g:message code="person.create_new.contactPersonForInstitution.label"/>
                 </a>
             </g:if>
-            <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForPublic');">
+            <%--<a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForPublic');">
                 <i class="${Icon.ACP_PRIVATE}"></i><g:message code="person.create_new.contactPersonForPublic.label"/>
-            </a>
+            </a>--%>
 
             <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForProvider');">
                 <i class="${Icon.ADDRESS}"></i><g:message code="address.add.addressForProvider.label"/>
@@ -68,9 +44,9 @@
                     <i class="${Icon.ADDRESS}"></i><g:message code="address.add.addressForInstitution.label"/>
                 </a>
             </g:if>
-            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForPublic');">
+            <%--<a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForPublic');">
                 <i class="${Icon.ADDRESS}"></i><g:message code="address.add.addressForPublic.label"/>
-            </a>
+            </a>--%>
 
             <div class="divider"></div>
         </g:if>

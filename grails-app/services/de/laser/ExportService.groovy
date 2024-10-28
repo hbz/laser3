@@ -79,6 +79,7 @@ class ExportService {
 	ContextService contextService
 	FilterService filterService
 	GokbService gokbService
+	IssueEntitlementService issueEntitlementService
 	MessageSource messageSource
 	StatsSyncService statsSyncService
 	SubscriptionControllerService subscriptionControllerService
@@ -1676,8 +1677,9 @@ class ExportService {
 			pointsPerIteration = 40/requestResponse.items.size()
 			for(def reportItem: requestResponse.items) {
 				Map<String, String> identifierMap = buildIdentifierMap(reportItem, AbstractReport.COUNTER_5)
-				TitleInstancePackagePlatform tipp = subscriptionControllerService.matchReport(titles, propIdNamespace, identifierMap)
-				if(tipp) {
+				Long tippID = issueEntitlementService.matchReport(titles, identifierMap)
+				if(tippID) {
+					TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(tippID)
 					Set<Identifier> titleIDs = tipp.ids
 					Set<PriceItem> priceItems = []
 					if(showPriceDate)
@@ -1924,8 +1926,9 @@ class ExportService {
 			pointsPerIteration = 20/requestResponse.reports.size()
 			for (GPathResult reportItem: requestResponse.reports) {
 				Map<String, String> identifierMap = buildIdentifierMap(reportItem, AbstractReport.COUNTER_4)
-				TitleInstancePackagePlatform tipp = subscriptionControllerService.matchReport(titles, propIdNamespace, identifierMap)
-				if(tipp) {
+				Long tippID = issueEntitlementService.matchReport(titles, identifierMap)
+				if(tippID) {
+					TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(tippID)
 					Set<PriceItem> priceItems = []
 					if(showPriceDate)
 						priceItems.addAll(tipp.priceItems)
@@ -3270,8 +3273,14 @@ class ExportService {
 			//titleHeaders.addAll(coreTitleIdentifierNamespaces['idns_ns'])
 			List<String> otherTitleIdentifierNamespaces = otherTitleIdentifierNamespaceList['idns_ns']
 			titleHeaders.addAll(otherTitleIdentifierNamespaces)
+			if(configMap.containsKey('monthHeaders')) {
+				titleHeaders.addAll(configMap.monthHeaders.collect { Date month -> DateUtils.getSDF_yyyyMM().format(month) })
+			}
 			if(withPick) {
-				titleHeaders << messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale)
+				if(configMap.format == KBART)
+					titleHeaders << "to_be_selected"
+				else
+					titleHeaders << messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale)
 				titleHeaders << "Pick"
 			}
 			export.columnData = buildRows(configMap)
@@ -3688,7 +3697,10 @@ class ExportService {
 		if(format == ExportService.KBART)
 			valueCol = 'rdv_value'
 		else valueCol = I10nTranslation.getRefdataValueColumn(LocaleUtils.getCurrentLocale())
-		String rowQuery = "select tipp_id, create_cell('${format}', tipp_name, ${style}) as publication_title," +
+		String specialRenewColumns = ''
+		if(configMap.containsKey('usageData'))
+			specialRenewColumns = "tipp_id, ${style} as style,"
+		String rowQuery = "select ${specialRenewColumns} create_cell('${format}', tipp_name, ${style}) as publication_title," +
 						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('monograph') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, IdentifierNamespace.NS_TITLE).id}) or (lower(tipp_title_type) in ('serial') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, IdentifierNamespace.NS_TITLE).id}))), ${style}) as print_identifier," +
 						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('monograph') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISBN, IdentifierNamespace.NS_TITLE).id}) or (lower(tipp_title_type) in ('serial') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, IdentifierNamespace.NS_TITLE).id}))), ${style}) as online_identifier," +
 						"create_cell('${format}', to_char(tc_start_date, 'yyyy-MM-dd'), ${style}) as date_first_issue_online," +
@@ -3743,18 +3755,42 @@ class ExportService {
 				rowQuery += "create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(other, IdentifierNamespace.NS_TITLE).id}), ${style}) as ${other}"
 			}
 		}
-		if(configMap.withPick == true) {
+		if(!configMap.containsKey('usageData') && configMap.withPick == true) {
 			rowQuery += ","
 			rowQuery += "create_cell('${format}', (select ${valueCol} from refdata_value where rdv_id = (select case when tipp_id = any(:perpetuallyPurchasedTitleIDs) then ${RDStore.YN_NO.id} else ${RDStore.YN_YES.id} end case)), ${style}) as selectable,"
 			rowQuery += "create_cell('${format}', null, ${style}) as pick"
 		}
 		rowQuery += " from title_instance_package_platform left join tippcoverage on tc_tipp_fk = tipp_id where tipp_id = any(:tippIDs) order by tipp_sort_name"
 		arrayParams.tippIDs = tippIDs
-		batchQueryService.longArrayQuery(rowQuery, arrayParams).collect { GroovyRowResult row ->
-			Long tippID = row.remove('tipp_id')
-			//TODO process here usage data
-			row.values()
+		List exportRows = batchQueryService.longArrayQuery(rowQuery, arrayParams)
+		if(configMap.containsKey('usageData')) {
+			exportRows.collect { GroovyRowResult row ->
+				Long tippID = row.remove('tipp_id')
+				String cellStyle = row.remove('style')
+				Map titleReport = configMap.usageData.containsKey(tippID) ? configMap.usageData.get(tippID) : null
+				configMap.monthHeaders.each { Date month ->
+					String value
+					String monthKey = DateUtils.getSDF_yyyyMM().format(month)
+					if(titleReport) {
+						value = titleReport.containsKey(monthKey) ? titleReport.get(monthKey) : ' '
+					}
+					else {
+						value = ' '
+					}
+					row.put(monthKey, createCell(format, value, cellStyle))
+				}
+				if(configMap.containsKey('withPick')) {
+					//implicite check
+					if(cellStyle == 'negative') {
+						row.put('selectable', createCell(format, RDStore.YN_NO.getI10n('value'), cellStyle))
+					}
+					else row.put('selectable', createCell(format, RDStore.YN_YES.getI10n('value'), cellStyle))
+					row.put('pick', createCell(format, '', cellStyle))
+				}
+				row.values()
+			}
 		}
+		else exportRows
 	}
 
 	/**
@@ -3925,10 +3961,10 @@ class ExportService {
 	 * @return the table cell in the appropriate format; either as {@link Map} in structure [field: data, style: style]
 	 */
 	def createCell(String format, data, String style = null) {
-		if(format == 'excel')
+		if(format == EXCEL)
 			[field: data, style: style]
 		else {
-			if(format == 'kbart' && (data == '' || data == null))
+			if(format == KBART && (data == '' || data == null))
 				' '
 			else "${data}"
 		}

@@ -1,9 +1,11 @@
-<%@page import="de.laser.storage.RDConstants; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore" %>
+<%@page import="de.laser.AccessService; de.laser.storage.RDConstants; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore" %>
+<laser:serviceInjection />
+<g:set var="overwriteEditable" value="${accessService.hasAccessToTask(tsk, AccessService.WRITE)}" />
 
 <div class="ui card">
     <div class="ui label">
         <div class="right floated author">
-            Status: <ui:xEditableRefData config="${RDConstants.TASK_STATUS}" owner="${tsk}" field="status" />
+            Status: <ui:xEditableRefData config="${RDConstants.TASK_STATUS}" owner="${tsk}" field="status" overwriteEditable="${overwriteEditable}" />
         </div>
     </div>
 
@@ -11,7 +13,12 @@
         <div class="meta">
             <div class="">Fällig: <strong><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk?.endDate}"/></strong></div>
         </div>
-        <a class="header" onclick="JSPC.app.dashboard.editTask(${tsk?.id});">${tsk?.title}</a>
+        <g:if test="${overwriteEditable}">
+            <a class="header" onclick="JSPC.app.dashboard.editTask(${tsk?.id});">${tsk?.title}</a>
+        </g:if>
+        <g:else>
+            <a class="header" onclick="JSPC.app.dashboard.readTask(${tsk?.id});">${tsk?.title}</a>
+        </g:else>
 
         <div class="description">
             <g:if test="${tsk.description}">

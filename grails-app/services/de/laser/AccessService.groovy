@@ -27,10 +27,6 @@ class AccessService {
     // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
     // NO ROLE_ADMIN/ROLE_YODA CHECKS HERE ..
 
-    // NO CUSTOMER_TYPE CHECKS HERE ..
-    // NO CUSTOMER_TYPE CHECKS HERE ..
-    // NO CUSTOMER_TYPE CHECKS HERE ..
-
     // NO INST_USER CHECKS FOR READ .. TODO
     // NO INST_USER CHECKS FOR READ .. TODO
     // NO INST_USER CHECKS FOR READ .. TODO
@@ -50,7 +46,7 @@ class AccessService {
         }
         else if (doc.owner.id == ctxOrg.id) {
             if (perm == WRITE) {
-                check = userService.hasFormalAffiliation(contextService.getUser(), ctxOrg, Role.INST_EDITOR)
+                check = contextService.isInstEditor()
             }
             else {
                 check = true
@@ -118,7 +114,7 @@ class AccessService {
         }
         else if (doc.owner.id == ctxOrg.id) {
             if (perm == WRITE) {
-                check = userService.hasFormalAffiliation(contextService.getUser(), ctxOrg, Role.INST_EDITOR)
+                check = contextService.isInstEditor()
             }
             else {
                 check = true
@@ -153,45 +149,52 @@ class AccessService {
         return check
     }
 
-    boolean hasAccessToTask(Task task, String perm) {
+    boolean hasAccessToTask(Task task, String perm, boolean checkCustomerType = false) {
         boolean check = false
         Org ctxOrg = contextService.getOrg()
 
         if (!task) {
             // .. invalid
         }
-        else if (task.creator && task.creator.id == ctxOrg.id) {
-            if (perm == WRITE) {
-                check = userService.hasFormalAffiliation(contextService.getUser(), ctxOrg, Role.INST_EDITOR)
-            }
-            else {
-                check = true
-            }
+        else if (checkCustomerType && !(ctxOrg.isCustomerType_Pro() || ctxOrg.isCustomerType_Support())) {
+            // .. failed
+        }
+        else if (task.creator && task.creator.id == contextService.getUser().id) {
+            check = true
+        }
+        else if (task.responsibleUser && task.responsibleUser.id == contextService.getUser().id) {
+//            if (perm == WRITE) {
+//                check = contextService.isInstEditor()
+//            }
+//            else {
+                check = true // ?????
+//            }
         }
         else if (task.responsibleOrg && task.responsibleOrg.id == ctxOrg.id) {
             if (perm == WRITE) {
-                check = userService.hasFormalAffiliation(contextService.getUser(), ctxOrg, Role.INST_EDITOR)
+                check = contextService.isInstEditor()
             }
             else {
                 check = true
             }
         }
-        else if (task.responsibleUser && task.responsibleUser.id != ctxOrg.id) {
-            check = true // ???
-        }
+
         return check
     }
 
-    boolean hasAccessToWorkflow(WfChecklist workflow, String perm) {
+    boolean hasAccessToWorkflow(WfChecklist workflow, String perm, boolean checkCustomerType = false) {
         boolean check = false
         Org ctxOrg = contextService.getOrg()
 
         if (!workflow) {
             // .. invalid
         }
+        else if (checkCustomerType && !(ctxOrg.isCustomerType_Pro() || ctxOrg.isCustomerType_Support())) {
+            // .. failed
+        }
         else if (workflow.owner.id == ctxOrg.id) {
             if (perm == WRITE) {
-                check = userService.hasFormalAffiliation(contextService.getUser(), ctxOrg, Role.INST_EDITOR)
+                check = contextService.isInstEditor()
             }
             else {
                 check = true
@@ -209,7 +212,7 @@ class AccessService {
         }
         else if (address.tenant && address.tenant.id == ctxOrg.id) {
             if (perm == WRITE) {
-                check = userService.hasFormalAffiliation(contextService.getUser(), ctxOrg, Role.INST_EDITOR)
+                check = contextService.isInstEditor()
             }
             else {
                 check = true
@@ -239,7 +242,7 @@ class AccessService {
         else if (contact.prs) {
             if (contact.prs.tenant && contact.prs.tenant.id == ctxOrg.id) {
                 if (perm == WRITE) {
-                    check = userService.hasFormalAffiliation(contextService.getUser(), ctxOrg, Role.INST_EDITOR)
+                    check = contextService.isInstEditor()
                 }
                 else {
                     check = true
@@ -263,7 +266,7 @@ class AccessService {
         }
         else if (person.tenant && person.tenant.id == ctxOrg.id) {
             if (perm == WRITE) {
-                check = userService.hasFormalAffiliation(contextService.getUser(), ctxOrg, Role.INST_EDITOR)
+                check = contextService.isInstEditor()
             }
             else {
                 check = true

@@ -541,7 +541,7 @@ class VendorService {
                                       wekbApi: ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)]
         if(params.id) {
             result.vendor = Vendor.get(params.id)
-            result.editable = userService.hasFormalAffiliation_or_ROLEADMIN(contextUser, contextOrg, 'INST_EDITOR')
+            result.editable = contextService.isInstEditor()
             int tc1 = taskService.getTasksByResponsibilityAndObject(result.user, result.vendor).size()
             int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.vendor).size()
             result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''

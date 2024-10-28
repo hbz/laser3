@@ -54,8 +54,6 @@ class MyInstitutionControllerService {
             return [status: STATUS_ERROR, result: result]
         }
 
-        result.is_inst_admin = userService.hasFormalAffiliation(result.user, result.institution, 'INST_ADM')
-
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.acceptedOffset = 0
         result.pendingOffset = 0
@@ -234,9 +232,12 @@ class MyInstitutionControllerService {
         result.showConsortiaFunctions = org.isCustomerType_Consortium()
         switch (params.action) {
             case [ 'processEmptyLicense', 'currentLicenses', 'currentSurveys', 'dashboard', 'getChanges', 'getSurveys', 'emptyLicense', 'surveyInfoFinish' ]:
-                result.editable = userService.hasFormalAffiliation(user, org, 'INST_EDITOR')
+                result.editable = contextService.isInstEditor()
                 break
-            case [ 'addressbook', 'budgetCodes', 'tasks' ]:
+            case [ 'addressbook', 'tasks' ]:
+                result.editable = contextService.isInstEditor()
+                break
+            case [ 'budgetCodes' ]:
                 result.editable = userService.hasFormalAffiliation_or_ROLEADMIN(user, org, 'INST_EDITOR')
                 break
             case 'surveyInfos':

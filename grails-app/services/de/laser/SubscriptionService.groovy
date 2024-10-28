@@ -5,6 +5,7 @@ import de.laser.addressbook.PersonRole
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.base.AbstractReport
 import de.laser.cache.EhcacheWrapper
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.exceptions.CreationException
@@ -18,6 +19,8 @@ import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.properties.SubscriptionProperty
 import de.laser.remote.ApiSource
+import de.laser.stats.Counter4Report
+import de.laser.stats.Counter5Report
 import de.laser.stats.SushiCallError
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -39,6 +42,7 @@ import groovy.sql.BatchingPreparedStatementWrapper
 import groovy.sql.BatchingStatementWrapper
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
+import groovy.xml.slurpersupport.GPathResult
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
@@ -1971,6 +1975,8 @@ class SubscriptionService {
             [result: null, status: SubscriptionControllerService.STATUS_ERROR]
         }
         else {
+            EhcacheWrapper userCache = contextService.getUserCache("/subscription/renewEntitlementsWithSurvey/generateExport")
+            userCache.put('progress', 0)
             String filename, extension
             switch(params.tab) {
                 case 'allTipps': filename = escapeService.escapeString(messageSource.getMessage('renewEntitlementsWithSurvey.selectableTitles', null, locale) + '_' + result.subscription.dropdownNamingConvention())
@@ -1979,11 +1985,23 @@ class SubscriptionService {
                     break
                 case 'currentPerpetualAccessIEs': filename = escapeService.escapeString(messageSource.getMessage('renewEntitlementsWithSurvey.currentTitles', null, locale) + '_' + result.subscription.dropdownNamingConvention())
                     break
+                case 'usage':
+                    filename = "renewal_${params.reportType}_${params.platform}_${result.subscriber.id}_${result.subscription.id}"
+                    if(params.metricType) {
+                        filename += '_'+params.list('metricType').join('_')
+                    }
+                    if(params.accessType) {
+                        filename += '_'+params.list('accessType').join('_')
+                    }
+                    if(params.accessMethod) {
+                        filename += '_'+params.list('accessMethod').join('_')
+                    }
+                    break
             }
             switch(params.exportConfig) {
-                case 'kbart': extension = '.tsv'
+                case ExportService.KBART: extension = '.tsv'
                     break
-                case 'xlsx': extension = '.xlsx'
+                case ExportService.EXCEL: extension = '.xlsx'
                     break
             }
             if(filename && extension) {
@@ -2012,6 +2030,7 @@ class SubscriptionService {
                     if(result.identifier) {
                         tippIDs = tippIDs.intersect(issueEntitlementService.getTippsByIdentifier(identifierConfigMap, result.identifier))
                     }
+                    userCache.put('progress', 20)
                     switch(params.tab) {
                         case 'allTipps': List<GroovyRowResult> perpetuallyPurchasedTitleRows = batchQueryService.longArrayQuery('select pt_tipp_fk from permanent_title join title_instance_package_platform on pt_tipp_fk = tipp_id where pt_owner_fk = :subscriber and tipp_host_platform_url in (select t2.tipp_host_platform_url from title_instance_package_platform as t2 where t2.tipp_id = any(:tippIDs))', [tippIDs: tippIDs], [subscriber: result.subscriber.id])
                             Set<Long> perpetuallyPurchasedTitleIDs = []
@@ -2048,30 +2067,136 @@ class SubscriptionService {
                             }
                             exportData = exportService.generateTitleExport([format: params.exportConfig, tippIDs: sourceTIPPs])
                             break
-                    }
-                    FileOutputStream out = new FileOutputStream (f)
-                    switch(params.exportConfig) {
-                        case ExportService.KBART:
-                            out.withWriter { Writer writer ->
-                                writer.write ( exportService.generateSeparatorTableString ( exportData.titleRow, exportData.columnData, '\t'))
+                        case 'usage':
+                            userCache.put('progress', 30)
+                            SortedSet<Date> monthsInRing = new TreeSet<Date>()
+                            Calendar startTime = GregorianCalendar.getInstance(), endTime = GregorianCalendar.getInstance()
+                            if (result.subscription.startDate && result.subscription.endDate) {
+                                startTime.setTime(result.subscription.startDate)
+                                if (result.subscription.endDate < new Date())
+                                    endTime.setTime(result.subscription.endDate)
                             }
-                            out.flush()
-                            out.close()
+                            else if (result.subscription.startDate) {
+                                startTime.setTime(result.subscription.startDate)
+                                endTime.setTime(new Date())
+                            }
+                            else {
+                                //test access e.g.
+                                startTime.set(Calendar.MONTH, 0)
+                                startTime.set(Calendar.DAY_OF_MONTH, 1)
+                                startTime.add(Calendar.YEAR, -1)
+                                endTime.setTime(new Date())
+                            }
+                            Map<String, Object> sushiQueryMap = [revision: params.revision,
+                                                                 reportType: params.reportType,
+                                                                 metricTypes: params.metricType,
+                                                                 accessTypes: params.accessType,
+                                                                 accessMethods: params.accessMethod,
+                                                                 customer: result.subscriber,
+                                                                 platform: Platform.get(params.platform),
+                                                                 startDate: startTime.getTime(),
+                                                                 endDate: endTime.getTime()]
+                            while (startTime.before(endTime)) {
+                                monthsInRing << startTime.getTime()
+                                startTime.add(Calendar.MONTH, 1)
+                            }
+                            Map<String, Object> requestResponse = exportService.getReports(sushiQueryMap)
+                            if(requestResponse.containsKey("error") && requestResponse.error == 202) {
+                                result.status202 = true
+                            }
+                            else {
+                                userCache.put('progress', 40)
+                                Map<String, Object> identifierInverseMap = issueEntitlementService.buildIdentifierInverseMap(tippIDs)
+                                Map<Long, Map> allReports = [:]
+                                Long titleMatch
+                                int matched = 0
+                                if(params.reportType in Counter5Report.COUNTER_5_REPORTS) {
+                                    double pointsPerMatch = 20/requestResponse.items.size()
+                                    for(def reportItem: requestResponse.items) {
+                                        titleMatch = issueEntitlementService.matchReport(identifierInverseMap, exportService.buildIdentifierMap(reportItem, AbstractReport.COUNTER_5))
+                                        if(titleMatch) {
+                                            Map<String, Integer> reports = allReports.containsKey(titleMatch) ? allReports.get(titleMatch) : [:]
+                                            //counter 5.0
+                                            if(reportItem.containsKey('Performance')) {
+                                                for(Map performance: reportItem.Performance) {
+                                                    Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
+                                                    //for(Map instance: performance.Instance) {
+                                                    Map instance = performance.Instance[0]
+                                                    reports.put(DateUtils.getSDF_yyyyMM().format(reportFrom), instance.Count)
+                                                    //}
+                                                }
+                                            }
+                                            //counter 5.1
+                                            else if(reportItem.containsKey('Attribute_Performance')) {
+                                                for (Map struct : reportItem.Attribute_Performance) {
+                                                    for (Map.Entry performance : struct.Performance) {
+                                                        for (Map.Entry instance : performance) {
+                                                            //for (Map.Entry reportRow : instance.getValue()) {
+                                                            Map.Entry reportRow = instance.getValue()[0]
+                                                            reports.put(reportRow.getKey(), reportRow.getValue())
+                                                            //}
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            allReports.put(titleMatch, reports)
+                                        }
+                                        matched++
+                                        double increment = matched*pointsPerMatch
+                                        userCache.put('progress', 40+increment)
+                                    }
+                                }
+                                else if(params.reportType in Counter4Report.COUNTER_4_REPORTS) {
+                                    double pointsPerMatch = 20/requestResponse.reports.size()
+                                    for (GPathResult reportItem: requestResponse.reports) {
+                                        titleMatch = issueEntitlementService.matchReport(identifierInverseMap, exportService.buildIdentifierMap(reportItem, AbstractReport.COUNTER_4))
+                                        if(titleMatch) {
+                                            Map<String, Integer> reports = allReports.containsKey(titleMatch) ? allReports.get(titleMatch) : [:]
+                                            for(GPathResult performance: reportItem.'ns2:ItemPerformance') {
+                                                Date reportFrom = DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:Begin'.text())
+                                                for(GPathResult instance: performance.'ns2:Instance'.findAll { instCand -> instCand.'ns2:MetricType'.text() == configMap.metricTypes }) {
+                                                    reports.put(DateUtils.getSDF_yyyyMM().format(reportFrom), Integer.parseInt(instance.'ns2:Count'.text()))
+                                                }
+                                            }
+                                            allReports.put(titleMatch, reports)
+                                        }
+                                        matched++
+                                        double increment = matched*pointsPerMatch
+                                        userCache.put('progress', 40+increment)
+                                    }
+                                }
+                                userCache.put('progress', 60)
+                                exportData = exportService.generateTitleExport([format: params.exportConfig, tippIDs: tippIDs, monthHeaders: monthsInRing, usageData: allReports, withPick: true])
+                            }
                             break
-                        case ExportService.EXCEL:
-                            Map sheetData = [:]
-                            sheetData[messageSource.getMessage('renewEntitlementsWithSurvey.selectableTitles', null, locale)] = exportData
-                            SXSSFWorkbook wb = exportService.generateXLSXWorkbook(sheetData)
-                            FileOutputStream fos = new FileOutputStream(f)
-                            //--> to document
-                            wb.write(fos)
-                            fos.flush()
-                            fos.close()
-                            wb.dispose()
-                            break
+                    }
+                    if(!result.containsKey('status202')) {
+                        userCache.put('progress', 80)
+                        FileOutputStream out = new FileOutputStream (f)
+                        switch(params.exportConfig) {
+                            case ExportService.KBART:
+                                out.withWriter { Writer writer ->
+                                    writer.write ( exportService.generateSeparatorTableString ( exportData.titleRow, exportData.columnData, '\t'))
+                                }
+                                out.flush()
+                                out.close()
+                                break
+                            case ExportService.EXCEL:
+                                Map sheetData = [:]
+                                sheetData[messageSource.getMessage('renewEntitlementsWithSurvey.selectableTitles', null, locale)] = exportData
+                                SXSSFWorkbook wb = exportService.generateXLSXWorkbook(sheetData)
+                                FileOutputStream fos = new FileOutputStream(f)
+                                //--> to document
+                                wb.write(fos)
+                                fos.flush()
+                                fos.close()
+                                wb.dispose()
+                                break
+                        }
                     }
                 }
             }
+            userCache.put('progress', 100)
             [result: result, status: SubscriptionControllerService.STATUS_OK]
         }
     }

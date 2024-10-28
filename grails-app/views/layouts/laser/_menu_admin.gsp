@@ -54,8 +54,6 @@
         <ui:link addItemAttributes="true" controller="admin" action="manageRefdatas">${message(code:'menu.admin.manageRefdatas')}</ui:link>
 
         <div class="divider"></div>
-        <!-- TODO: workflows-permissions -->
-        %{-- <ui:link addItemAttributes="true" controller="admin" action="manageWorkflows">${message(code:'menu.admin.manageWorkflows')}</ui:link> --}%
         <ui:link addItemAttributes="true" controller="usage">${message(code:'menu.admin.manageUsageStats')}</ui:link>
 
         <div class="divider"></div>

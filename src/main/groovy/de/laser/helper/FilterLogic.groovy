@@ -94,7 +94,7 @@ class FilterLogic {
 
         if (params.tab) {
             switch(params.tab) {
-                case 'allTipps': result.status = [RDStore.TIPP_STATUS_CURRENT]
+                case ['allTipps', 'usage']: result.status = [RDStore.TIPP_STATUS_CURRENT]
                     break
                 case 'selectedIEs': Map stResult = resolveTabAndStatusForTitleTabsMenu(params, 'IEs')
                     result.subTab = stResult.tab

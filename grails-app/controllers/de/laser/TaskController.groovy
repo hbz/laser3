@@ -110,6 +110,7 @@ class TaskController  {
 	@Check404()
     def editTask() {
 		String referer = request.getHeader('referer')
+
 		Task.withTransaction {
             Map<String, Object> result = [
 					contextOrg : contextService.getOrg()
@@ -169,7 +170,7 @@ class TaskController  {
 	/**
 	 * Deletes the given task
 	 */
-	@DebugInfo(isInstEditor = [CustomerTypeService.PERMS_PRO])
+	@DebugInfo(isInstEditor = [CustomerTypeService.PERMS_PRO], withTransaction = 1)
 	@Secured(closure = {
 		ctx.contextService.isInstEditor(CustomerTypeService.PERMS_PRO)
 	})
@@ -200,9 +201,6 @@ class TaskController  {
 			redirect action: 'show', id: params.id, controller: params.returnToShow
 			return
 		}
-		else {
-			redirect(url: request.getHeader('referer'))
-			return
-		}
+		redirect(url: request.getHeader('referer'))
 	}
 }
