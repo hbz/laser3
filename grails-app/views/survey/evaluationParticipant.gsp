@@ -20,9 +20,9 @@
             </g:link>
         </ui:exportDropdownItem>
     </ui:exportDropdown>--}%
-    <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_SURVEY_STARTED.id]}">
+    <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_SURVEY_STARTED.id, RDStore.SURVEY_SURVEY_COMPLETED.id, RDStore.SURVEY_IN_EVALUATION.id]}">
         <ui:actionsDropdown>
-            <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
+            <g:if test="${surveyInfo.status.id == RDStore.SURVEY_SURVEY_STARTED.id && surveyConfig.isResultsSetFinishByOrg(participant)}">
                 <ui:actionsDropdownItem controller="survey" action="actionsForParticipant"
                                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id, actionForParticipant: 'openSurveyAgainForParticipant']"
                                                message="openSurveyAgainForParticipant.button"/>
