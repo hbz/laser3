@@ -53,10 +53,9 @@
 
 #### de.laser.UserService
 
-    boolean hasAffiliation_or_ROLEADMIN (User userToCheck, Org orgToCheck, String instUserRole)
+    boolean hasAffiliation (User userToCheck, Org orgToCheck, String instUserRole)
 
     boolean hasFormalAffiliation (User userToCheck, Org orgToCheck, String instUserRole)
-    boolean hasFormalAffiliation_or_ROLEADMIN (User userToCheck, Org orgToCheck, String instUserRole)
 
 
 ### Various

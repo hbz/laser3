@@ -970,7 +970,7 @@ class OrganisationController  {
                 result.editable_identifier = true
         }
         else
-            result.editable_identifier = userService.hasFormalAffiliation_or_ROLEADMIN(result.user, result.orgInstance, 'INST_EDITOR')
+            result.editable_identifier = userService.hasFormalAffiliation(result.user, result.orgInstance, 'INST_EDITOR')
 
         result.orgInstance.createCoreIdentifiersIfNotExist()
 
@@ -1944,13 +1944,13 @@ class OrganisationController  {
                 isEditable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
                 break
             case 'properties':
-                isEditable = userService.hasFormalAffiliation_or_ROLEADMIN(user, Org.get(params.id), 'INST_EDITOR')
+                isEditable = userService.hasFormalAffiliation(user, Org.get(params.id), 'INST_EDITOR')
                 break
             case 'users':
-                isEditable = userService.hasFormalAffiliation_or_ROLEADMIN(user, Org.get(params.id), 'INST_ADM')
+                isEditable = userService.hasFormalAffiliation(user, Org.get(params.id), 'INST_ADM')
                 break
             case [ 'addOrgType', 'deleteOrgType' ]:
-                isEditable = userService.hasFormalAffiliation_or_ROLEADMIN(user, Org.get(params.org), 'INST_ADM')
+                isEditable = userService.hasFormalAffiliation(user, Org.get(params.org), 'INST_ADM')
                 break
             case 'contacts':
                 if (inContextOrg) {
@@ -1985,7 +1985,7 @@ class OrganisationController  {
                 }
                 break
             default:
-                isEditable = userService.hasFormalAffiliation_or_ROLEADMIN(user, org,'INST_EDITOR')
+                isEditable = userService.hasFormalAffiliation(user, org,'INST_EDITOR')
         }
         // println '>>> isEditable: ' + isEditable + ' >>> ' + params.action
         isEditable

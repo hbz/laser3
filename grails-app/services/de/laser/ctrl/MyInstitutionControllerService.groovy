@@ -238,7 +238,7 @@ class MyInstitutionControllerService {
                 result.editable = contextService.isInstEditor()
                 break
             case [ 'budgetCodes' ]:
-                result.editable = userService.hasFormalAffiliation_or_ROLEADMIN(user, org, 'INST_EDITOR')
+                result.editable = userService.hasFormalAffiliation(user, org, 'INST_EDITOR')
                 break
             case 'surveyInfos':
                 result.editable = surveyService.isEditableSurvey(org, SurveyInfo.get(params.id) ?: null)
@@ -252,7 +252,7 @@ class MyInstitutionControllerService {
                 result.changeProperties = contextService.isInstEditor()
                 break
             default:
-                result.editable = userService.hasFormalAffiliation_or_ROLEADMIN(user, org, 'INST_EDITOR')
+                result.editable = userService.hasFormalAffiliation(user, org, 'INST_EDITOR')
         }
 
         result

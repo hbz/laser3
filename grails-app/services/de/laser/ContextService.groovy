@@ -302,13 +302,13 @@ class ContextService {
             check = SpringSecurityUtils.ifAnyGranted(attrs.specRole ?: [])
 
             if (!check) {
-                boolean instRoleCheck = attrs.instRole ? BeanStore.getUserService().hasAffiliation_or_ROLEADMIN(user, org, attrs.instRole) : true
+                boolean instRoleCheck = attrs.instRole ? BeanStore.getUserService().hasAffiliation(user, org, attrs.instRole) : true
                 boolean orgPermCheck  = attrs.orgPerm ? _hasPerm(attrs.orgPerm) : true
 
                 check = instRoleCheck && orgPermCheck
 
                 if (attrs.instRole && attrs.affiliationOrg && check) { // ???
-                    check = BeanStore.getUserService().hasAffiliation_or_ROLEADMIN(user, attrs.affiliationOrg, attrs.instRole)
+                    check = BeanStore.getUserService().hasAffiliation(user, attrs.affiliationOrg, attrs.instRole)
                     // check = user.hasOrgAffiliation_or_ROLEADMIN(attrs.affiliationOrg, attrs.instRole)
                 }
             }
@@ -346,7 +346,7 @@ class ContextService {
         User user = getUser()
 
         // combo check @ contextUser/contextOrg
-        boolean check1 = userService.hasAffiliation_or_ROLEADMIN(user, ctx, instUserRole) && _hasPerm(orgPerms)
+        boolean check1 = userService.hasFormalAffiliation(user, ctx, instUserRole) && _hasPerm(orgPerms)
         boolean check2 = (orgToCheck.id == ctx.id) || Combo.findByToOrgAndFromOrg(ctx, orgToCheck)
 
         // orgToCheck check @ otherOrg
