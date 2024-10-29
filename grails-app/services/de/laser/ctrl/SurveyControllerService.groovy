@@ -2601,7 +2601,8 @@ class SurveyControllerService {
                                             Subscription participantSub = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(org)
                                             IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, participantSub)
                                             if (!issueEntitlementGroup && participantSub) {
-                                                new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: participantSub, name: result.surveyConfig.issueEntitlementGroupName).save()
+                                                String groupName = IssueEntitlementGroup.countBySubAndName(participantSub, result.surveyConfig.issueEntitlementGroupName) > 0 ? (IssueEntitlementGroup.countBySubAndNameIlike(participantSub, result.surveyConfig.issueEntitlementGroupName) + 1) : result.surveyConfig.issueEntitlementGroupName
+                                                new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: participantSub, name: groupName).save()
                                             }
                                         }
                                     }
@@ -2801,7 +2802,8 @@ class SurveyControllerService {
                                     Subscription participantSub = config.subscription.getDerivedSubscriptionForNonHiddenSubscriber(org)
                                     IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(config, participantSub)
                                     if (!issueEntitlementGroup && participantSub) {
-                                        new IssueEntitlementGroup(surveyConfig: config, sub: participantSub, name: config.issueEntitlementGroupName).save()
+                                        String groupName = IssueEntitlementGroup.countBySubAndName(participantSub, config.issueEntitlementGroupName) > 0 ? (IssueEntitlementGroup.countBySubAndNameIlike(participantSub, config.issueEntitlementGroupName) + 1) : config.issueEntitlementGroupName
+                                        new IssueEntitlementGroup(surveyConfig: config, sub: participantSub, name: groupName).save()
                                     }
                                 }
                             }

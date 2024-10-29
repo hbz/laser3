@@ -42,7 +42,23 @@
         <g:each in="${titleGroups.sort{it.name}}" var="titleGroup" status="i">
             <tr>
                 <td>${i + 1}</td>
-                <td><ui:xEditable owner="${titleGroup}" field="name"/></td>
+                <td><ui:xEditable owner="${titleGroup}" field="name"/>
+                    <g:if test="${titleGroup.surveyConfig}">
+                        <br>
+                        <g:if test="${(contextOrg.isCustomerType_Consortium())}">
+                                <g:link controller="survey" action="evaluationParticipant"
+                                        params="[id: titleGroup.surveyConfig.surveyInfo.id, surveyConfigID: titleGroup.surveyConfig.id, participant: institution.id]">
+                                    (<g:message code="survey.label"/>: ${titleGroup.surveyConfig.surveyInfo.name})
+                                </g:link>
+                        </g:if>
+                        <g:else>
+                                <g:link controller="myInstitution" action="surveyInfos" id="${titleGroup.surveyConfig.surveyInfo.id}"
+                                        params="[surveyConfigID: titleGroup.surveyConfig.id]">
+                                    (<g:message code="survey.label"/>: ${titleGroup.surveyConfig.surveyInfo.name})
+                                </g:link>
+                        </g:else>
+                    </g:if>
+                </td>
                 <td><ui:xEditable owner="${titleGroup}" field="description"/></td>
                 <td>
                     <g:link action="index" id="${params.id}" params="[titleGroup: titleGroup.id]">
