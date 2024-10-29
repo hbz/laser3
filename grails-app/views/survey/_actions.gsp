@@ -1,7 +1,7 @@
 <%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.Org" %>
 <laser:serviceInjection/>
 
-<g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
+<g:if test="${contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
     <g:if test="${subscription}">
         <g:set var="previous" value="${subscription._getCalculatedPrevious()}"/>
         <g:set var="successor" value="${subscription._getCalculatedSuccessor()}"/>

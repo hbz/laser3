@@ -229,7 +229,7 @@
                             </td>
 
                         <td class="x">
-                            <g:if test="${editable && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )}">
+                            <g:if test="${editable && contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_PRO )}">
 
                                     <g:link class="${Btn.POSITIVE}"
                                             controller="survey" action="addSubtoIssueEntitlementsSurvey"

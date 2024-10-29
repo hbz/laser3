@@ -38,7 +38,14 @@
 
 #### de.laser.ContextService
 
-    boolean isInstUser_or_ROLEADMIN (String orgPerms)
+    boolean isInstUser (String orgPerms)
+    boolean isInstEditor (String orgPerms)
+    boolean isInstAdm (String orgPerms)
+
+    boolean isInstUser_denySupport (String orgPerms)
+    boolean isInstEditor_denySupport (String orgPerms)
+    boolean isInstAdm_denySupport (String orgPerms)
+
     boolean isInstEditor_or_ROLEADMIN (String orgPerms)
     boolean isInstAdm_or_ROLEADMIN (String orgPerms)
 

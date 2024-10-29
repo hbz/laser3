@@ -149,16 +149,6 @@ class ContextService {
     }
 
     /**
-     * Checks if the context user belongs to an institution with the given customer types or is a superadmin
-     * @param orgPerms the customer types to verify
-     * @return true if the given permissions are granted, false otherwise
-     * @see CustomerTypeService
-     */
-    boolean isInstUser_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_USER, orgPerms, false)
-    }
-
-    /**
      * Checks if the context user belongs as an editor to an institution with the given customer types or is a superadmin
      * @param orgPerms the customer types to verify
      * @return true if the given permissions are granted, false otherwise
@@ -206,36 +196,6 @@ class ContextService {
      */
     boolean isInstAdm_denySupport(String orgPerms = null) {
         _hasInstRoleAndPerm(Role.INST_ADM, orgPerms, true)
-    }
-
-    /**
-     * Same as {@link #isInstUser_or_ROLEADMIN()}, but support-type customers get access denied
-     * @param orgPerms the customer types to verify
-     * @return true if the given permissions are granted, false otherwise
-     * @see CustomerTypeService
-     */
-    boolean isInstUser_denySupport_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_USER, orgPerms, true)
-    }
-
-    /**
-     * Same as {@link #isInstEditor_or_ROLEADMIN()}, but support-type customers get access denied
-     * @param orgPerms the customer types to verify
-     * @return true if the given permissions are granted, false otherwise
-     * @see CustomerTypeService
-     */
-    boolean isInstEditor_denySupport_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_EDITOR, orgPerms, true)
-    }
-
-    /**
-     * Same as {@link #isInstAdm_or_ROLEADMIN()}, but support-type customers get access denied
-     * @param orgPerms the customer types to verify
-     * @return true if the given permissions are granted, false otherwise
-     * @see CustomerTypeService
-     */
-    boolean isInstAdm_denySupport_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_ADM, orgPerms, true)
     }
 
     // -- private

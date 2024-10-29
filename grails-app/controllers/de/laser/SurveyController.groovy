@@ -1625,7 +1625,7 @@ class SurveyController {
                 return
             }
         }
-        if (!contextService.isInstUser_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )) {
+        if (!contextService.isInstUser( CustomerTypeService.ORG_CONSORTIUM_PRO )) {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 

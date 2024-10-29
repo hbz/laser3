@@ -9,11 +9,9 @@
     </ui:exportDropdown>
 </g:if>
 
-<g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_SUPPORT)}">
+<g:if test="${contextService.isInstEditor(CustomerTypeService.ORG_SUPPORT)}">
     <ui:actionsDropdown>
-        <g:if test="${contextService.isInstEditor(CustomerTypeService.ORG_SUPPORT)}">
-            <laser:render template="/templates/sidebar/actions" />
-        </g:if>
+        <laser:render template="/templates/sidebar/actions" />
 
         <g:if test="${editable}">
             <g:if test="${license.getLicensingConsortium()?.id == institution.id}">

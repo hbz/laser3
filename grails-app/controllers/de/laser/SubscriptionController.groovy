@@ -2319,7 +2319,7 @@ class SubscriptionController {
                     break
                 case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
                     ctrlResult.result << copyElementsService.copyObjectElements_DocsTasksWorkflows(params)
-                    if (ctrlResult.result.isConsortialObjects && contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)){
+                    if (ctrlResult.result.isConsortialObjects && contextService.isInstUser(CustomerTypeService.ORG_CONSORTIUM_BASIC)){
                         params.workFlowPart = CopyElementsService.WORKFLOW_SUBSCRIBER
                         ctrlResult.result << copyElementsService.loadDataFor_Subscriber(params)
                     } else {

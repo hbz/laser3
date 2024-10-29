@@ -371,7 +371,7 @@
                         if (org.hasInstAdminEnabled())
                             instAdminIcon = '<i class="' + Icon.SYM.YES + ' large green"></i>'
                     %>
-                    <g:if test="${contextService.isInstAdm_or_ROLEADMIN()}">
+                    <g:if test="${contextService.isInstAdm()}">
                         <br /><g:link controller="organisation" action="users"
                                     params="${[id: org.id]}">${raw(instAdminIcon)}</g:link>
                     </g:if>
