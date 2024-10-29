@@ -31,9 +31,9 @@ class IssueEntitlementController {
     /**
      * Shows the given issue entitlement details
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [], withTransaction = 0)
+    @DebugInfo(isInstUser_denySupport = [], withTransaction = 0)
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport()
     })
     @Check404()
     def show() {
@@ -120,9 +120,9 @@ class IssueEntitlementController {
       result
     }
 
-    @DebugInfo(isInstEditor_denySupport_or_ROLEADMIN = [], withTransaction = 1)
+    @DebugInfo(isInstEditor_denySupport = [], withTransaction = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstEditor_denySupport()
     })
     @Deprecated
     def delete() {

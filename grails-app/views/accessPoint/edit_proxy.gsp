@@ -9,9 +9,9 @@
 
 <laser:render template="breadcrumb" model="${[accessPoint: accessPoint, params: params]}"/>
 
-<g:set var="isInstEditorOrRoleAdminWithPermsBasic" value="${contextService.is_INST_EDITOR_or_ROLEADMIN_with_PERMS_BASIC(inContextOrg)}"/>
+<g:set var="isInstEditorWithPermsBasic" value="${contextService.is_INST_EDITOR_with_PERMS_BASIC(inContextOrg)}"/>
 
-<g:if test="${isInstEditorOrRoleAdminWithPermsBasic}">
+<g:if test="${isInstEditorWithPermsBasic}">
     <ui:controlButtons>
         <ui:exportDropdown>
             <ui:exportDropdownItem>
@@ -85,7 +85,7 @@
                     <td>${accessPointData.ipRange}</td>
                     <td>${accessPointData.ipCidr}</td>
                     <td class="center aligned">
-                        <g:if test="${isInstEditorOrRoleAdminWithPermsBasic}">
+                        <g:if test="${isInstEditorWithPermsBasic}">
                             <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}" params="[orgInstance: orgInstance.id]"
                                     class="${Btn.ICON.NEGATIVE}"
                                     role="button"
@@ -99,7 +99,7 @@
             </tbody>
         </table>
 
-        <g:if test="${!accessPoint.hasProperty('entityId') && isInstEditorOrRoleAdminWithPermsBasic}">
+        <g:if test="${!accessPoint.hasProperty('entityId') && isInstEditorWithPermsBasic}">
             <div class="ui divider"></div>
 
             <div class="content">
@@ -148,7 +148,7 @@
                 <td>${accessPointData.ipRange}</td>
                 <td>${accessPointData.ipCidr}</td>
                 <td class="center aligned">
-                    <g:if test="${isInstEditorOrRoleAdminWithPermsBasic}">
+                    <g:if test="${isInstEditorWithPermsBasic}">
                         <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}" params="[orgInstance: orgInstance.id]"
                                 class="${Btn.ICON.NEGATIVE}"
                                 role="button"
@@ -162,7 +162,7 @@
         </tbody>
     </table>
 
-    <g:if test="${!accessPoint.hasProperty('entityId') && isInstEditorOrRoleAdminWithPermsBasic}">
+    <g:if test="${!accessPoint.hasProperty('entityId') && isInstEditorWithPermsBasic}">
         <div class="ui divider"></div>
 
         <div class="content">

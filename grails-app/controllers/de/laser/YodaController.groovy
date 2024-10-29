@@ -529,6 +529,21 @@ class YodaController {
                                 mInfo.debug.affil       = 'INST_ADM'
                                 mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
+                            if (da.isInstUser_denySupport() != ([''] as String[])) {
+                                mInfo.debug.test        = 'isInstUser_denySupport()' //  + da.isInstUser_denySupport().toList()
+                                mInfo.debug.perm        = da.isInstUser_denySupport().toList()[0]
+                                mInfo.debug.affil       = 'INST_USER'
+                            }
+                            if (da.isInstEditor_denySupport() != ([''] as String[])) {
+                                mInfo.debug.test        = 'isInstEditor_denySupport()' //  + da.isInstEditor_denySupport().toList()
+                                mInfo.debug.perm        = da.isInstEditor_denySupport().toList()[0]
+                                mInfo.debug.affil       = 'INST_EDITOR'
+                            }
+                            if (da.isInstAdm_denySupport() != ([''] as String[])) {
+                                mInfo.debug.test        = 'isInstAdm_denySupport()' //  + da.isInstAdm_denySupport().toList()
+                                mInfo.debug.perm        = da.isInstAdm_denySupport().toList()[0]
+                                mInfo.debug.affil       = 'INST_ADM'
+                            }
                             if (da.isInstUser_denySupport_or_ROLEADMIN() != ([''] as String[])) {
                                 mInfo.debug.test        = 'isInstUser_denySupport_or_ROLEADMIN()' //  + da.isInstUser_denySupport_or_ROLEADMIN().toList()
                                 mInfo.debug.perm        = da.isInstUser_denySupport_or_ROLEADMIN().toList()[0]

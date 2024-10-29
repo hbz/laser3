@@ -873,9 +873,9 @@ class OrganisationController  {
      * Shows the details of the organisation to display
      * @return the details view of the given orgainsation
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     @Check404(domain=Org)
     def show() {
@@ -1474,9 +1474,9 @@ class OrganisationController  {
      * @return a table view of the reader numbers, grouped by semesters on the one hand, due dates on the other
      * @see ReaderNumber
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     @Check404(domain=Org)
     def readerNumber() {
@@ -1558,9 +1558,9 @@ class OrganisationController  {
      * @return a list view of access points
      * @see de.laser.oap.OrgAccessPoint
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     @Check404(domain=Org)
     def accessPoints() {
@@ -1835,9 +1835,9 @@ class OrganisationController  {
      * Call to list the contacts the context institution has attached to the given organisation
      * @return a table view of the contacts
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     @Check404(domain=Org)
     def contacts() {

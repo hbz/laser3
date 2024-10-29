@@ -40,9 +40,9 @@ class TitleController  {
      * Call to the list of all title instances recorded in the system
      * @return the result of {@link #list()}
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport()
     })
     def index() {
         redirect controller: 'title', action: 'list', params: params
@@ -52,9 +52,9 @@ class TitleController  {
      * Lists all recorded title in the app; the result may be filtered
      * @return a list of {@link de.laser.wekb.TitleInstancePackagePlatform}s
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport()
     })
     def list() {
         log.debug("list : ${params}")
@@ -141,9 +141,9 @@ class TitleController  {
      * Lists all recorded title in the app; the result may be filtered
      * @return a list of {@link TitleInstancePackagePlatform}s
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport()
     })
     def listES() {
         log.debug("titleSearch : ${params}")
