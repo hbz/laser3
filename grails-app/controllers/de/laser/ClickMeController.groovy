@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.annotations.DebugInfo
 import de.laser.storage.BeanStore
 import de.laser.survey.SurveyConfig
 import de.laser.utils.DateUtils
@@ -13,7 +14,10 @@ class ClickMeController {
     ContextService contextService
     EscapeService escapeService
 
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser()
+    })
     Map<String,Object> exportClickMeModal() {
         Map<String,Object> result = [:]
 

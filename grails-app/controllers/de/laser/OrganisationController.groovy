@@ -53,13 +53,11 @@ class OrganisationController  {
     ExportClickMeService exportClickMeService
     FilterService filterService
     GenericOIDService genericOIDService
-    GokbService gokbService
     IdentifierService identifierService
     InfoService infoService
     LinksGenerationService linksGenerationService
     OrganisationControllerService organisationControllerService
     OrganisationService organisationService
-    PropertyService propertyService
     TaskService taskService
     UserControllerService userControllerService
     UserService userService

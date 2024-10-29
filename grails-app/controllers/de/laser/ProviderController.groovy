@@ -337,7 +337,10 @@ class ProviderController {
     /**
      * Links two providers with the given params
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstEditor = [])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor()
+    })
     def link() {
         linksGenerationService.linkProviderVendor(params, ProviderLink.class.name)
         redirect action: 'show', id: params.context
@@ -346,7 +349,10 @@ class ProviderController {
     /**
      * Removes the given link between two providers
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstEditor = [])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor()
+    })
     def unlink() {
         linksGenerationService.unlinkProviderVendor(params)
         redirect action: 'show', id: params.id
