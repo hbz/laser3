@@ -511,12 +511,6 @@ class YodaController {
                                 mInfo.debug.perm        = da.isInstAdm().toList()[0]
                                 mInfo.debug.affil       = 'INST_ADM'
                             }
-                            if (da.isInstEditor_or_ROLEADMIN() != ([''] as String[])) {
-                                mInfo.debug.test        = 'isInstEditor_or_ROLEADMIN()' //  + da.isInstEditor_or_ROLEADMIN().toList()
-                                mInfo.debug.perm        = da.isInstEditor_or_ROLEADMIN().toList()[0]
-                                mInfo.debug.affil       = 'INST_EDITOR'
-                                mInfo.debug.specRole    = 'ROLE_ADMIN'
-                            }
                             if (da.isInstAdm_or_ROLEADMIN() != ([''] as String[])) {
                                 mInfo.debug.test        = 'isInstAdm_or_ROLEADMIN()' //  + da.isInstAdm_or_ROLEADMIN().toList()
                                 mInfo.debug.perm        = da.isInstAdm_or_ROLEADMIN().toList()[0]

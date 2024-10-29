@@ -149,16 +149,6 @@ class ContextService {
     }
 
     /**
-     * Checks if the context user belongs as an editor to an institution with the given customer types or is a superadmin
-     * @param orgPerms the customer types to verify
-     * @return true if the given permissions are granted, false otherwise
-     * @see CustomerTypeService
-     */
-    boolean isInstEditor_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_EDITOR, orgPerms, false)
-    }
-
-    /**
      * Checks if the context user belongs as a local administrator to an institution with the given customer types or is a superadmin
      * @param orgPerms the customer types to verify
      * @return true if the given permissions are granted, false otherwise
@@ -264,7 +254,7 @@ class ContextService {
      */
     // TODO
     boolean is_ORG_COM_EDITOR_or_ROLEADMIN() {
-        isInstEditor_or_ROLEADMIN() && _hasPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_EDITOR, null, false) && _hasPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     }
 
     /**

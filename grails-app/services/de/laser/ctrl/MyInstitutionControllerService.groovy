@@ -136,7 +136,7 @@ class MyInstitutionControllerService {
         Map<String, Object> result = getResultGenerics(controller, params)
         params.tab = params.tab ?: ExportClickMeService.ADDRESSBOOK
 
-        result.editable = BeanStore.getContextService().isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+        result.editable = BeanStore.getContextService().isInstEditor(CustomerTypeService.PERMS_PRO)
 
         List notShowClickMe = []
 
@@ -169,7 +169,7 @@ class MyInstitutionControllerService {
 
     Map<String, Object> exportConfigsActions(MyInstitutionController controller, GrailsParameterMap params) {
         Map<String, Object> result = getResultGenerics(controller, params)
-        result.editable = BeanStore.getContextService().isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+        result.editable = BeanStore.getContextService().isInstEditor(CustomerTypeService.PERMS_PRO)
         result.tab = params.tab ?: ExportClickMeService.ADDRESSBOOK
         if(result.editable) {
             if (params.cmd == 'delete' && params.id) {
@@ -249,7 +249,7 @@ class MyInstitutionControllerService {
                 break
             case 'managePropertyDefinitions':
                 result.editable = false
-                result.changeProperties = contextService.isInstEditor_or_ROLEADMIN()
+                result.changeProperties = contextService.isInstEditor()
                 break
             default:
                 result.editable = userService.hasFormalAffiliation_or_ROLEADMIN(user, org, 'INST_EDITOR')

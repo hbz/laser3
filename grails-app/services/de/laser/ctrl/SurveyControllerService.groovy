@@ -2197,7 +2197,7 @@ class SurveyControllerService {
         }
         else {
 
-        result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        result.editable = contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
          if (!result.editable) {
                         [result: null, status: STATUS_ERROR]

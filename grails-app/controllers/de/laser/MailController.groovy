@@ -44,7 +44,7 @@ class MailController {
             switch (result.objectType) {
                 case SurveyInfo.class.name:
 
-                    result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+                    result.editable = contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
                     if (!result.editable) {
                         flash.error = g.message(code: "default.notAutorized.message")
@@ -117,7 +117,7 @@ class MailController {
                     break
                 case Org.class.name:
 
-                    result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+                    result.editable = contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
                     if (!result.editable) {
                         flash.error = g.message(code: "default.notAutorized.message")
@@ -214,7 +214,7 @@ class MailController {
 
             switch (params.objectType) {
                 case SurveyInfo.class.name:
-                    result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+                    result.editable = contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
                     if (!result.editable) {
                         flash.error = g.message(code: "default.notAutorized.message")
@@ -239,7 +239,7 @@ class MailController {
                     return
                     break
                 case Org.class.name:
-                    result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+                    result.editable = contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
                     if (!result.editable) {
                         flash.error = g.message(code: "default.notAutorized.message")

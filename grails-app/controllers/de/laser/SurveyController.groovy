@@ -103,7 +103,7 @@ class SurveyController {
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
 
-        result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        result.editable = contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
@@ -191,7 +191,7 @@ class SurveyController {
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
 
-        result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        result.editable = contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
@@ -263,7 +263,7 @@ class SurveyController {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
-        result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        result.editable = contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
         result
     }
@@ -280,7 +280,7 @@ class SurveyController {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
-        result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        result.editable = true
 
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Date startDate = params.startDate ? sdf.parse(params.startDate) : null
@@ -358,7 +358,7 @@ class SurveyController {
             date_restriction = sdf.parse(params.validOn)
         }
 
-        result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        result.editable = true
 
         if (!params.status) {
             if (params.isSiteReloaded != "yes") {
@@ -438,7 +438,7 @@ class SurveyController {
             date_restriction = sdf.parse(params.validOn)
         }
 
-        result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        result.editable = true
 
         if (!params.status) {
             if (params.isSiteReloaded != "yes") {
@@ -507,7 +507,7 @@ class SurveyController {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
-        result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        result.editable = true
 
         result.subscription = Subscription.get( params.long('sub') )
         if (!result.subscription) {
@@ -532,7 +532,7 @@ class SurveyController {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
-        result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        result.editable = true
 
         result.subscription = Subscription.get( params.long('sub') )
         result.pickAndChoose = true
@@ -557,7 +557,7 @@ class SurveyController {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
-        result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        result.editable = true
 
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Date startDate = params.startDate ? sdf.parse(params.startDate) : null
@@ -666,7 +666,7 @@ class SurveyController {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
-        result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        result.editable = true
 
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Date startDate = params.startDate ? sdf.parse(params.startDate) : null

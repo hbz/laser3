@@ -49,7 +49,7 @@ class ClickMeController {
         result.currentTabNotice = false
         result.overrideFormat = null
         result.showClickMeConfigSave = true
-        result.enableClickMeConfigSave = BeanStore.getContextService().isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+        result.enableClickMeConfigSave = BeanStore.getContextService().isInstEditor(CustomerTypeService.PERMS_PRO)
         result.multiMap = false
 
         if(params.clickMeConfigId)
