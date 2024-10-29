@@ -1493,7 +1493,9 @@ class SubscriptionController {
                         try {
                             if (!issueEntitlementGroup) {
                                 IssueEntitlementGroup.withTransaction {
-                                    issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: result.surveyConfig.issueEntitlementGroupName)
+                                    String groupName = IssueEntitlementGroup.countBySubAndName(subscriberSub,  result.surveyConfig.issueEntitlementGroupName) > 0 ? (IssueEntitlementGroup.countBySubAndNameIlike(subscriberSub, result.surveyConfig.issueEntitlementGroupName) + 1) : result.surveyConfig.issueEntitlementGroupName
+
+                                    issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: groupName)
                                     if (!issueEntitlementGroup.save())
                                         log.error(issueEntitlementGroup.getErrors().getAllErrors().toListString())
                                     else {
@@ -1600,8 +1602,10 @@ class SubscriptionController {
                     IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
 
                     if (!issueEntitlementGroup) {
+                        String groupName = IssueEntitlementGroup.countBySubAndName(result.subscription,  result.surveyConfig.issueEntitlementGroupName) > 0 ? (IssueEntitlementGroup.countBySubAndNameIlike(result.subscription, result.surveyConfig.issueEntitlementGroupName) + 1) : result.surveyConfig.issueEntitlementGroupName
+
                         IssueEntitlementGroup.withTransaction {
-                            issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: result.subscription, name: result.surveyConfig.issueEntitlementGroupName).save()
+                            issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: result.subscription, name: groupName).save()
                         }
                     }
 
