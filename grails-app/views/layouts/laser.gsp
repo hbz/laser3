@@ -269,9 +269,10 @@
                     console.log("$(this).scrollTop(): " + $(this).scrollTop());
                     console.log("$(window).height(): " + $(window).height());
                     if ($(this).scrollTop() > $(window).height() - 300) {
-                        $('#la-js-topButton').fadeIn();
+                      console.log("test")
+                        $('#la-js-topButton').fadeTo('slow',1);
                     } else {
-                        $('#la-js-topButton').fadeOut();
+                        $('#la-js-topButton').fadeTo('slow',0);
                     }
                 });
             })
