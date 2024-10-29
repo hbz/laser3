@@ -317,7 +317,10 @@ class VendorController {
     /**
      * Links two vendors with the given params
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstEditor = [])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor()
+    })
     def link() {
         linksGenerationService.linkProviderVendor(params, VendorLink.class.name)
         redirect action: 'show', id: params.context
@@ -326,7 +329,10 @@ class VendorController {
     /**
      * Removes the given link between two vendors
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstEditor = [])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor()
+    })
     def unlink() {
         linksGenerationService.unlinkProviderVendor(params)
         redirect action: 'show', id: params.id
