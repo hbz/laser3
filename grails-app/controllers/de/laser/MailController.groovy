@@ -44,13 +44,7 @@ class MailController {
             switch (result.objectType) {
                 case SurveyInfo.class.name:
 
-                    result.editable = contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_PRO )
-
-                    if (!result.editable) {
-                        flash.error = g.message(code: "default.notAutorized.message")
-                        redirect(url: request.getHeader('referer'))
-                    }
-
+                    result.editable = true
                     result.surveyInfo = SurveyInfo.get(Long.parseLong(result.objectId))
                     result.surveyConfig = result.surveyInfo.surveyConfigs[0]
 
@@ -117,13 +111,7 @@ class MailController {
                     break
                 case Org.class.name:
 
-                    result.editable = contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_PRO )
-
-                    if (!result.editable) {
-                        flash.error = g.message(code: "default.notAutorized.message")
-                        redirect(url: request.getHeader('referer'))
-                    }
-
+                    result.editable = true
                     result.surveyList = []
 
                     if (params.list('selectedSurveys')) {
@@ -214,13 +202,8 @@ class MailController {
 
             switch (params.objectType) {
                 case SurveyInfo.class.name:
-                    result.editable = contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
-                    if (!result.editable) {
-                        flash.error = g.message(code: "default.notAutorized.message")
-                        redirect(url: request.getHeader('referer'))
-                    }
-
+                    result.editable = true
                     result.surveyInfo = SurveyInfo.get(Long.parseLong(result.objectId))
 
                     result.editable = (result.surveyInfo && result.surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED]) ? result.editable : false
@@ -239,13 +222,8 @@ class MailController {
                     return
                     break
                 case Org.class.name:
-                    result.editable = contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
-                    if (!result.editable) {
-                        flash.error = g.message(code: "default.notAutorized.message")
-                        redirect(url: request.getHeader('referer'))
-                    }
-
+                    result.editable = true
                     result.surveyList = []
 
                     if (params.list('selectedSurveys')) {
@@ -281,6 +259,4 @@ class MailController {
 
         redirect(url: request.getHeader("referer"))
     }
-
-
 }

@@ -997,7 +997,7 @@ class CopyElementsService {
      */
     boolean deleteTasks(List<Long> toDeleteTasks, Object targetObject, def flash) {
         Locale locale = LocaleUtils.getCurrentLocale()
-        boolean isInstAdm = contextService.isInstAdm_or_ROLEADMIN()
+        boolean isInstAdm = contextService.isInstAdm()
         def userId = contextService.getUser().id
         toDeleteTasks.each { deleteTaskId ->
             Task dTask = Task.get(deleteTaskId)
@@ -1026,7 +1026,7 @@ class CopyElementsService {
         log.debug('toDeleteWorkflows: ' + toDeleteWorkflows)
 
         Locale locale = LocaleUtils.getCurrentLocale()
-        boolean isInstAdm = contextService.isInstAdm_or_ROLEADMIN()
+        boolean isInstAdm = contextService.isInstAdm()
         Long orgId = contextService.getOrg().id
 
         toDeleteWorkflows.each { deleteWorkflowId ->
