@@ -415,6 +415,9 @@ class AddressbookController {
                     try {
                         obj.properties = params
 
+                        if(!params.containsKey('region'))
+                            obj.region = null
+
                         List<RefdataValue> typesToRemove = []
                         obj.type.each {
                             if (!(it.toString() in params.list('type.id'))) {

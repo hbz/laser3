@@ -88,7 +88,10 @@
         }
 
         var dropdownSelectedObjects = $('#selectedObjects');
-        var selectedObjects = ${raw(objects?.id as String)};
+        var selectedObjects = [];
+        <g:each in="${objects.id}" var="objId">
+            selectedObjects.push(${objId})
+        </g:each>
 
         dropdownSelectedObjects.empty();
 

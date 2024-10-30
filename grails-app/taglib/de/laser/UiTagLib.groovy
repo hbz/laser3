@@ -1036,6 +1036,37 @@ class UiTagLib {
         }
     }
 
+    def costSign = { attrs, body ->
+        if(attrs.ci) {
+            de.laser.finance.CostItem ci = attrs.ci
+            switch(ci.costItemElementConfiguration) {
+                case RDStore.CIEC_POSITIVE: out << '<span class="la-popup-tooltip" data-position="right center" data-content="'+message(code:'financials.costItemConfiguration.positive')+'"><i class="'+Icon.FNC.COST_POSITIVE+'"></i></span>'
+                    break
+                case RDStore.CIEC_NEGATIVE: out << '<span class="la-popup-tooltip" data-position="right center" data-content="'+message(code:'financials.costItemConfiguration.negative')+'"><i class="'+Icon.FNC.COST_NEGATIVE+'"></i></span>'
+                    break
+                case RDStore.CIEC_NEUTRAL: out << '<span class="la-popup-tooltip" data-position="right center" data-content="'+message(code:'financials.costItemConfiguration.neutral')+'"><i class="'+Icon.FNC.COST_NEUTRAL+'"></i></span>'
+                    break
+                default: out << '<span class="la-popup-tooltip" data-position="right center" data-content="'+ message(code:'financials.costItemConfiguration.notSet') +'"><i class="'+Icon.FNC.COST_NOT_SET+'"></i></span>'
+                    break
+            }
+        }
+    }
+
+    // moved from Package.getPackageSize()
+    def pkgSize = { attrs, body ->
+
+        if (attrs.pkg) {
+            de.laser.wekb.Package pkg = attrs.pkg as de.laser.wekb.Package
+            def c1 = de.laser.wekb.TitleInstancePackagePlatform.executeQuery('select count(*) from TitleInstancePackagePlatform tipp where tipp.pkg = :ctx and tipp.status = :current', [ctx: pkg, current:RDStore.TIPP_STATUS_CURRENT])[0]
+            out << '('
+            out << '<span data-tooltip="Titel im Paket"><i class="' + Icon.TIPP + '"></i> ' + c1 + '</span>'
+            out << ')'
+        }
+        else {
+            out << '[ ERROR @ ui:pkgSize ]'
+        }
+    }
+
     // moved from SubscriptionPackage.getIEandPackageSize() // TODO: icons
     def ieAndPkgSize = { attrs, body ->
 

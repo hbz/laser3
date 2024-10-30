@@ -41,7 +41,16 @@
                 <tr>
                     <td>${message(code: "myinst.subscriptionImport.${mpg}", args: args ?: '')}</td>
                     <td>${message(code: "myinst.subscriptionImport.description.${mpg}") ?: ''}</td>
-                    <td>${message(code: "myinst.subscriptionImport.format.${mpg}", args: [raw("<ul><li>${args.join('</li><li>')}</li></ul>")]) ?: ''}</td>
+                    <td>
+                        ${message(code: "myinst.subscriptionImport.format.${mpg}")}
+                        <g:if test="${args}">
+                            <ul>
+                                <g:each in="${args}" var="arg">
+                                    <li>${arg}</li>
+                                </g:each>
+                            </ul>
+                        </g:if>
+                    </td>
                 </tr>
             </g:each>
             </tbody>
