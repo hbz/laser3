@@ -15,6 +15,7 @@ import de.laser.remote.ApiSource
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.base.AbstractCoverage
+import de.laser.storage.RDConstants
 import de.laser.system.SystemEvent
 import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
@@ -1424,44 +1425,56 @@ class ExportService {
 						data = [:]
 						List reportItems = []
 						if(requestResponse.items.size() > 1) {
-							reportItems.addAll(requestResponse.items.findAll{ Map itemCand -> platform.name.toLowerCase().contains(itemCand.Platform.toLowerCase()) || itemCand.Platform.toLowerCase().contains(platform.name.toLowerCase()) })
+							String platformDataType
+							if(result.subscription.packages[0].pkg.contentType in [RefdataValue.getByValueAndCategory('Book', RDConstants.PACKAGE_CONTENT_TYPE), RefdataValue.getByValueAndCategory('Journal', RDConstants.PACKAGE_CONTENT_TYPE)])
+								platformDataType = result.subscription.packages.pkg[0].contentType
+							reportItems.addAll(requestResponse.items.findAll{ Map itemCand ->
+								platform.name.toLowerCase().contains(itemCand.Platform.toLowerCase()) || itemCand.Platform.toLowerCase().contains(platform.name.toLowerCase())
+							})
+							if(!reportItems) {
+								reportItems.addAll(requestResponse.items.findAll{ Map itemCand ->
+									platformDataType == itemCand.Data_Type
+								})
+							}
 						}
 						else {
 							reportItems.addAll(requestResponse.items)
 						}
-						pointsPerIteration = 20/reportItems.size()
-						for(def reportItem: reportItems) {
-							for(Map performance: reportItem.Performance) {
-								Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
-								for(Map instance: performance.Instance) {
-									int periodTotal, reportCount = instance.Count as int
-									Map<String, Object> metricRow = data.containsKey(instance.Metric_Type) ? data.get(instance.Metric_Type) : [:]
-									Map<String, Object> platformRow = metricRow.containsKey(reportItem.Platform) ? metricRow.get(reportItem.Platform) : [:]
-									Map<String, Object> dataTypeRow = platformRow.get(reportItem.Data_Type)
-									if(!dataTypeRow) {
-										dataTypeRow = ['Data_Type': reportItem.Data_Type, 'Platform': reportItem.Platform, 'Metric_Type': instance.Metric_Type]
-										periodTotal = 0
-									}
-									else periodTotal = dataTypeRow.get('Reporting_Period_Total') as int
-									dataTypeRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom), reportCount)
-									periodTotal += reportCount
-									dataTypeRow.put('Reporting_Period_Total', periodTotal)
-									platformRow.put(reportItem.Data_Type, dataTypeRow)
-									metricRow.put(reportItem.Platform, platformRow)
-									data.put(instance.Metric_Type, metricRow)
-								}
-							}
-							int i = 0
-							for (Map.Entry<String, Object> metricRow: data) {
-								for (Map.Entry<String, Object> platformRow: metricRow.getValue()) {
-									for (Map.Entry<String, Object> dataTypeRow : platformRow.getValue()) {
-										row = sheet.createRow(i + rowno)
-										for (int c = 0; c < columnHeaders.size(); c++) {
-											cell = row.createCell(c)
-											cell.setCellValue(dataTypeRow.getValue().get(columnHeaders[c]) ?: "")
+						if(reportItems.size() > 0) {
+							pointsPerIteration = 20/reportItems.size()
+							for(def reportItem: reportItems) {
+								for(Map performance: reportItem.Performance) {
+									Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
+									for(Map instance: performance.Instance) {
+										int periodTotal, reportCount = instance.Count as int
+										Map<String, Object> metricRow = data.containsKey(instance.Metric_Type) ? data.get(instance.Metric_Type) : [:]
+										Map<String, Object> platformRow = metricRow.containsKey(reportItem.Platform) ? metricRow.get(reportItem.Platform) : [:]
+										Map<String, Object> dataTypeRow = platformRow.get(reportItem.Data_Type)
+										if(!dataTypeRow) {
+											dataTypeRow = ['Data_Type': reportItem.Data_Type, 'Platform': reportItem.Platform, 'Metric_Type': instance.Metric_Type]
+											periodTotal = 0
 										}
-										i++
-										userCache.put('progress', 80+i*pointsPerIteration)
+										else periodTotal = dataTypeRow.get('Reporting_Period_Total') as int
+										dataTypeRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom), reportCount)
+										periodTotal += reportCount
+										dataTypeRow.put('Reporting_Period_Total', periodTotal)
+										platformRow.put(reportItem.Data_Type, dataTypeRow)
+										metricRow.put(reportItem.Platform, platformRow)
+										data.put(instance.Metric_Type, metricRow)
+									}
+								}
+								int i = 0
+								for (Map.Entry<String, Object> metricRow: data) {
+									for (Map.Entry<String, Object> platformRow: metricRow.getValue()) {
+										for (Map.Entry<String, Object> dataTypeRow : platformRow.getValue()) {
+											row = sheet.createRow(i + rowno)
+											for (int c = 0; c < columnHeaders.size(); c++) {
+												cell = row.createCell(c)
+												cell.setCellValue(dataTypeRow.getValue().get(columnHeaders[c]) ?: "")
+											}
+											i++
+											userCache.put('progress', 80+i*pointsPerIteration)
+										}
 									}
 								}
 							}
