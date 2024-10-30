@@ -188,7 +188,7 @@ class OrganisationControllerService {
 
                     if(surveyOrg.person) {
                         billingContactsList = Contact.executeQuery("select c.content from PersonRole pr " +
-                                "join pr.prs p join p.contacts c where pr.id = :personId and c.contentType = :type",
+                                "join pr.prs p join p.contacts c where pr.prs.id = :personId and c.contentType = :type",
                                 [personId: surveyOrg.person.id, type: RDStore.CCT_EMAIL])
                     }
                 }

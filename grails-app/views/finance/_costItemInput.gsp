@@ -230,7 +230,7 @@
                                    value="${costItem.sub.getName()}" />
                             <input name="newSubscription" id="newSubscription_${idSuffix}"
                                    type="hidden"
-                                   value="${Subscription.class.name + ':' + costItem.sub.id}" />
+                                   value="${costItem.sub.id}" />
                         </g:if>
                         <g:else>
                             <g:if test="${subscription}">
@@ -239,7 +239,7 @@
                                        value="${subscription.getName()}" />
                                 <input name="newSubscription" id="newSubscription_${idSuffix}"
                                        type="hidden"
-                                       value="${Subscription.class.name + ':' + subscription.id}" />
+                                       value="${subscription.id}" />
                             </g:if>
                             <g:else>
                                 <div class="ui search selection dropdown newCISelect" id="newSubscription_${idSuffix}">
@@ -263,9 +263,9 @@
                                 <g:select name="newLicenseeTarget" id="newLicenseeTarget_${idSuffix}" class="ui dropdown multiple search"
                                           from="${validSubChilds}" multiple="multiple"
                                           optionValue="${{it.name ? it.getSubscriberRespConsortia().dropdownNamingConvention(institution) : it.label}}"
-                                          optionKey="${{Subscription.class.name + ':' + it.id}}"
+                                          optionKey="id"
                                           noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                          value="${Subscription.class.name + ':forParent'}"
+                                          value="forParent"
                                 />
                             </g:elseif>
                             <g:else>
@@ -273,9 +273,9 @@
                                 <g:select name="newLicenseeTarget" id="newLicenseeTarget_${idSuffix}" class="ui dropdown multiple search"
                                           from="${validSubChilds}" multiple="multiple"
                                           optionValue="${{it.name ? it.getSubscriberRespConsortia().dropdownNamingConvention(institution) : it.label}}"
-                                          optionKey="${{Subscription.class.name + ':' + it.id}}"
+                                          optionKey="id"
                                           noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                          value="${Subscription.class.name + ':' + costItem?.sub?.id}"
+                                          value="${costItem?.sub?.id}"
                                 />
                             </g:else>
                         </g:if>
@@ -287,16 +287,16 @@
                             <label>${message(code:'financials.newCosts.package')}</label>
                             <g:if test="${costItem?.sub}">
                                 <g:select name="newPackage" id="newPackage_${idSuffix}" class="ui dropdown search"
-                                          from="${[{}] + costItem?.sub?.packages?.pkg}"
+                                          from="${costItem?.sub?.packages?.pkg}"
                                           optionValue="${{it?.name ?: message(code:'financials.newCosts.noPackageLink')}}"
-                                          optionKey="${{Package.class.name + ':' + it?.id}}"
+                                          optionKey="id"
                                           noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                          value="${Package.class.name + ':' + costItem?.pkg?.id}" />
+                                          value="${costItem?.pkg?.id}" />
                             </g:if>
                             <g:else>
                             <%--<input name="newPackage" class="ui" disabled="disabled" data-subFilter="" data-disableReset="true" />--%>
                                 <div class="ui search selection dropdown newCISelect" id="newPackage_${idSuffix}">
-                                    <input type="hidden" name="newPackage" value="${costItem?.pkg ? "${Package.class.name}:${costItem.pkg.id}" : params.newPackage}">
+                                    <input type="hidden" name="newPackage" value="${costItem?.pkg ? "${costItem.pkg.id}" : params.newPackage}">
                                     <i class="dropdown icon"></i>
                                     <input type="text" class="search">
                                     <div class="default text"></div>
@@ -307,7 +307,7 @@
                             <%-- the distinction between subMode (= sub) and general view is done already in the controller! --%>
                             <label>${message(code:'financials.newCosts.singleEntitlement')}</label>
                             <div class="ui search selection dropdown newCISelect" id="newIE_${idSuffix}">
-                                <input type="hidden" name="newIE" value="${costItem?.issueEntitlement ? "${IssueEntitlement.class.name}:${costItem.issueEntitlement.id}" : params.newIE}">
+                                <input type="hidden" name="newIE" value="${costItem?.issueEntitlement ? "${costItem.issueEntitlement.id}" : params.newIE}">
                                 <i class="dropdown icon"></i>
                                 <input type="text" class="search">
                                 <div class="default text"></div>
@@ -317,7 +317,7 @@
                         <div class="field">
                             <label>${message(code:'financials.newCosts.titleGroup')}</label>
                             <div class="ui search selection dropdown newCISelect" id="newTitleGroup_${idSuffix}" >
-                                <input type="hidden" name="newTitleGroup" value="${costItem?.issueEntitlementGroup ? "${IssueEntitlementGroup.class.name}:${costItem.issueEntitlementGroup.id}" : params.newTitleGroup}">
+                                <input type="hidden" name="newTitleGroup" value="${costItem?.issueEntitlementGroup ? "${costItem.issueEntitlementGroup.id}" : params.newTitleGroup}">
                                 <i class="dropdown icon"></i>
                                 <input type="text" class="search">
                                 <div class="default text"></div>
@@ -412,9 +412,9 @@
     <%
         String contextSub = ""
         if(costItem && costItem.sub)
-            contextSub = genericOIDService.getOID(costItem.sub)
+            contextSub = costItem.sub.id
         else if(subscription)
-            contextSub = genericOIDService.getOID(subscription)
+            contextSub = subscription.id
     %>
     JSPC.app.ajaxDropdown = function(selector, url, valuesString) {
         let values = [];
@@ -527,7 +527,7 @@
         <g:if test="${pickedSubscriptions}">
             let licenseeTargets = [];
             <g:each in="${pickedSubscriptions}" var="pickedSub">
-                licenseeTargets.push('${pickedSub}');
+                licenseeTargets.push(${pickedSub});
             </g:each>
             JSPC.app.finance${idSuffix}.newLicenseeTarget.dropdown("set selected",licenseeTargets);
             <g:if test="${pickedSubscriptions.size() > 9}">
@@ -544,7 +544,7 @@
                 if(!values[0].match(/:null|:for/)) {
                      context = values[0];
                 }
-                else context = "${contextSub}";
+                else context = ${contextSub};
             }
             else if(JSPC.app.finance${idSuffix}.newLicenseeTarget.length === 0)
                 context = JSPC.app.finance${idSuffix}.newSubscription.dropdown('get value');

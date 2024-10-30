@@ -480,7 +480,7 @@ class FinanceController  {
         Set<String> pickedSubscriptions = []
         JSON.parse(params.preselectedSubscriptions).each { String ciId ->
             CostItem ci = CostItem.get(Long.parseLong(ciId))
-            pickedSubscriptions << genericOIDService.getOID(ci.sub)
+            pickedSubscriptions << ci.sub.id
         }
         result.pickedSubscriptions = pickedSubscriptions
         result.idSuffix = "new"

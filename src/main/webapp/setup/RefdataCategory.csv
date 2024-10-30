@@ -6,6 +6,7 @@ address.type,Art der Adresse,Address Type
 archiving.agency,Archivierungsplattform,Archiving Agency
 authority,Autorität,Authority
 billingTime, Rechnungzeitpunkt, Time of billing
+calendar.quarter,Kalender Quartal,Calendar Quarter
 category.a.f,Preiskategorie Beck,Price category Beck
 category.bautabellen,Preiskategorie Bautabellen,Price category Bautabellen
 category.detail.inspiration,Preiskategorie DETAIL inspiration,Price category DETAIL inspiration
