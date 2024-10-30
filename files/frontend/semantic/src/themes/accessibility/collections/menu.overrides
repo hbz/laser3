@@ -41,6 +41,19 @@
   z-index: @la-contextBarZIndex;
   background-color: #004678;
   color: @white;
+  &.la-local {
+    box-shadow: 0px 4px 0px 0px @yellow;
+  }
+  &.la-dev {
+    box-shadow: 0px 4px 0px 0px @green;
+  }
+  &.la-qa {
+    box-shadow: 0px 4px 0px 0px @red;
+
+  }
+  &.la-test{
+    box-shadow: 0px 4px 0px 0px @blue;
+  }
   .la-menue-button {
     color: @white;
     background-color: transparent!important;

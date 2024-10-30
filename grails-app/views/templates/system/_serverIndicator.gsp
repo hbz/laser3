@@ -2,15 +2,27 @@
 <%@ page import="de.laser.utils.AppUtils" %>
 
 <g:if test="${currentServer == AppUtils.LOCAL}">
-    <div class="ui yellow label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.local')}"></div>
+    <laser:script file="${this.getGroovyPageFileName()}">
+        $('#contextBar').addClass('la-local');
+        $('#login .card').addClass('la-local');
+    </laser:script>
 </g:if>
 <g:if test="${currentServer == AppUtils.DEV}">
-    <div class="ui green label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.dev')}"></div>
+    <laser:script file="${this.getGroovyPageFileName()}">
+        $('#contextBar').addClass('la-dev');
+        $('#login .card').addClass('la-dev');
+    </laser:script>
 </g:if>
 <g:if test="${currentServer == AppUtils.QA}">
-    <div class="ui red label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.qa')}"></div>
+    <laser:script file="${this.getGroovyPageFileName()}">
+        $('#contextBar').addClass('la-qa');
+        $('#login .card').addClass('la-qa');
+    </laser:script>
 </g:if>
 <g:if test="${currentServer == AppUtils.TEST}">
-    <div class="ui blue label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.test')}"></div>
+    <laser:script file="${this.getGroovyPageFileName()}">
+        $('#contextBar').addClass('la-test');
+        $('#login .card').addClass('la-test');
+    </laser:script>
 </g:if>
 

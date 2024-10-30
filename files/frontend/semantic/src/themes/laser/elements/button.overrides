@@ -363,34 +363,22 @@ a i.circular.la-gokb:hover {
 }
 /* debug info */
 
-#showSystemInfo {
+a#showSystemInfo {
     bottom: 45px;
-    right: 1.5vw;
+    right: 10px;
 }
 
-#showDebugInfo {
+a#showDebugInfo {
     bottom: 45px;
-    right: 1.5vw;
-    margin-right: 55px;
+    right: 55px;
 }
 
-#system-profiler {
+div#system-profiler {
     bottom: 10px;
-    right: 1.5vw;
+    right: 10px;
 }
-.la-scrollTopButton {
+button.la-scrollTopButton {
   position: fixed;;
   bottom: 88px;
-  right: 1.5vw;
-  margin-right: 55px;
-}
-@media only screen and (min-width: @widescreenMonitorBreakpoint) {
-    #system-profiler, #showSystemInfo, #showDebugInfo, .la-scrollTopButton {
-        right: 2vw;
-    }
-}
-@media only screen and (min-width: @extraWidescreenMonitorBreakpoint) {
-    #system-profiler, #showSystemInfo, #showDebugInfo, .la-scrollTopButton {
-        right: 9vw;
-    }
+  right: 0;
 }
