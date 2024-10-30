@@ -185,7 +185,7 @@
                                     <div class="item">
                                         <div class="content">
                                             <g:link controller="package" action="show" id="${pkg.id}">
-                                                ${pkg.name}<br/>${raw(pkg.getPackageSize())}
+                                                ${pkg.name}<br/><ui:pkgSize pkg="${pkg}"/>
                                             </g:link>
                                         </div>
                                     </div>

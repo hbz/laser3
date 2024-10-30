@@ -22,7 +22,7 @@
                 <div class="ui field">
                 <div class="ui checkbox">
                     <g:checkBox name="show.subscriber" value="true" checked="false" onchange="JSPC.app.adjustDropdown()"/>
-                    <label for="show.subscriber">${message(code: 'default.compare.show.subscriber.name')}</label>
+                    <label for="show.subscriber">${message(code: 'default.compare.show.licensee.name')}</label>
                 </div>
                 </div>
             </g:if>
@@ -75,7 +75,10 @@
         }
 
         var dropdownSelectedObjects = $('#selectedObjects');
-        var selectedObjects = ${raw(objects?.id as String)};
+        var selectedObjects = [];
+        <g:each in="${objects.id}" var="objId">
+            selectedObjects.push(${objId})
+        </g:each>
 
         dropdownSelectedObjects.empty();
 

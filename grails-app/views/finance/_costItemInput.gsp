@@ -525,7 +525,11 @@
         },
         preselectMembers: function () {
         <g:if test="${pickedSubscriptions}">
-            JSPC.app.finance${idSuffix}.newLicenseeTarget.dropdown("set selected",[${raw(pickedSubscriptions.join(','))}]);
+            let licenseeTargets = [];
+            <g:each in="${pickedSubscriptions}" var="pickedSub">
+                licenseeTargets.push('${pickedSub}');
+            </g:each>
+            JSPC.app.finance${idSuffix}.newLicenseeTarget.dropdown("set selected",licenseeTargets);
             <g:if test="${pickedSubscriptions.size() > 9}">
                 JSPC.app.finance${idSuffix}.newLicenseeTarget.parent('div').toggle();
             </g:if>

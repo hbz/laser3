@@ -127,25 +127,6 @@
         </g:if>
         <g:else>
             <g:each in="${data.costItems}" var="ci" status="jj">
-                <%
-                    String icon = '<i class="' + Icon.FNC.COST_NOT_SET + '"></i>'
-                    String dataTooltip = message(code:'financials.costItemConfiguration.notSet')
-
-                    switch (ci.costItemElementConfiguration) {
-                        case RDStore.CIEC_POSITIVE:
-                            dataTooltip = message(code:'financials.costItemConfiguration.positive')
-                            icon = '<i class="' + Icon.FNC.COST_POSITIVE + '"></i>'
-                            break
-                        case RDStore.CIEC_NEGATIVE:
-                            dataTooltip = message(code:'financials.costItemConfiguration.negative')
-                            icon = '<i class="' + Icon.FNC.COST_NEGATIVE + '"></i>'
-                            break
-                        case RDStore.CIEC_NEUTRAL:
-                            dataTooltip = message(code:'financials.costItemConfiguration.neutral')
-                            icon = '<i class="' + Icon.FNC.COST_NEUTRAL + '"></i>'
-                            break
-                    }
-                %>
                 <tr id="bulkdelete-b${ci.id}">
                     <g:if test="${tmplShowCheckbox && editable}">
                         <td>
@@ -181,7 +162,7 @@
                             </g:each>
                             <br />
                         </g:if>
-                        ${raw(ci.costTitle?.replaceAll(/(.{50})/,'$1&shy;'))}
+                        ${ci.costTitle}
                     </td>
                     <g:if test="${!fixedSubscription}">
                         <td>
@@ -197,7 +178,7 @@
                         </td>
                     </g:if>
                     <td>
-                        <span class="la-popup-tooltip" data-position="right center" data-content="${dataTooltip}">${raw(icon)}</span>
+                        <ui:costSign ci="${ci}"/>
                     </td>
                     <td>
                         ${ci.billingCurrency ?: 'EUR'}

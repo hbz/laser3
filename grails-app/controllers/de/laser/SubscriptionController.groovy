@@ -1172,6 +1172,13 @@ class SubscriptionController {
                 Map<String, Object> configMap = [subscription: targetSub, packages: targetPkg, offset: result.offset, max: result.max]
                 configMap.putAll(params)
                 result.putAll(issueEntitlementService.getIssueEntitlements(configMap))
+                Set<SubscriptionPackage> deletedSPs = result.subscription.packages.findAll { SubscriptionPackage sp -> sp.pkg.packageStatus in [RDStore.PACKAGE_STATUS_DELETED, RDStore.PACKAGE_STATUS_REMOVED] }
+                if(deletedSPs) {
+                    result.deletedSPs = []
+                    deletedSPs.each { SubscriptionPackage sp ->
+                        result.deletedSPs << [name:sp.pkg.name,uuid:sp.pkg.gokbId]
+                    }
+                }
             }
             result
         }

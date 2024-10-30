@@ -2,7 +2,7 @@ Guten Tag,
 
 für Sie wurde ein neues Passwort für die Nutzung der vom hbz-betriebenen ERM-Dienstleistung LAS:eR eingerichtet.
 
-Ihr Passwort lautet: ${raw(newPass)}
+Ihr Passwort lautet: ${newPass}
 
 Bitte loggen Sie sich unter ${serverURL}/login/auth mit Ihrem Benutzernamen und dem oben angegebenen Passwort ein und ändern Sie das Passwort umgehend in Ihrem Benutzerprofil.
 

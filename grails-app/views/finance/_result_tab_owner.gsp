@@ -62,39 +62,13 @@
         </g:if>
         <g:else>
             <g:each in="${data.costItems}" var="ci" status="jj">
-                <%
-                    def elementSign = 'notSet'
-                    String icon = ''
-                    String dataTooltip = ""
-                    if(ci.costItemElementConfiguration) {
-                        elementSign = ci.costItemElementConfiguration
-                    }
-                    switch(elementSign) {
-                        case RDStore.CIEC_POSITIVE:
-                            dataTooltip = message(code:'financials.costItemConfiguration.positive')
-                            icon = '<i class="' + Icon.FNC.COST_POSITIVE + '"></i>'
-                            break
-                        case RDStore.CIEC_NEGATIVE:
-                            dataTooltip = message(code:'financials.costItemConfiguration.negative')
-                            icon = '<i class="' + Icon.FNC.COST_NEGATIVE + '"></i>'
-                            break
-                        case RDStore.CIEC_NEUTRAL:
-                            dataTooltip = message(code:'financials.costItemConfiguration.neutral')
-                            icon = '<i class="' + Icon.FNC.COST_NEUTRAL + '"></i>'
-                            break
-                        default:
-                            dataTooltip = message(code:'financials.costItemConfiguration.notSet')
-                            icon = '<i class="' + Icon.FNC.COST_NOT_SET + '"></i>'
-                            break
-                    }
-                %>
                 <tr id="bulkdelete-b${ci.id}">
                     <td>
                         <% int offset = offsets.ownOffset ?: 0 %>
                         ${ jj + 1 + offset }
                     </td>
                     <td>
-                        ${raw(ci.costTitle?.replaceAll(/(.{50})/,'$1&shy;'))}
+                        ${ci.costTitle}
                     </td>
                     <g:if test="${!fixedSubscription}">
                         <td>
@@ -103,7 +77,7 @@
                         </td>
                     </g:if>
                     <td>
-                        <span class="la-popup-tooltip" data-position="right center" data-content="${dataTooltip}">${raw(icon)}</span>
+                        <ui:costSign ci="${ci}"/>
                     </td>
                     <td>
                         <g:formatNumber number="${ci.costInBillingCurrency ?: 0.0}" type="currency" currencyCode="${ci.billingCurrency ?: 'EUR'}"/>
