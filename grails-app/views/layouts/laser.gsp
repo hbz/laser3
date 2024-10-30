@@ -260,14 +260,13 @@
                 $('#la-js-topButton').on('click', function() {
                     scrollToTop()
                 });
-                // Funktion zum Scrollen nach oben
+                // Function to scroll up
                 function scrollToTop() {
                     $('html, body').animate({ scrollTop: 0 }, 'slow');
                 }
                 // show button only if scrolling down on long sites
                 $(window).scroll(function() {
                     if ( $(this).scrollTop() > 200 ) {
-                      console.log("test")
                         $('#la-js-topButton').stop().fadeTo('slow',1);
                     } else {
                         $('#la-js-topButton').stop().fadeTo('slow',0);
