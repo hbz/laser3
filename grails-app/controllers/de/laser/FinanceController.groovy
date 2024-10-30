@@ -34,6 +34,7 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class FinanceController  {
 
+    ContextService contextService
     DeletionService deletionService
     DocstoreService docstoreService
     EscapeService escapeService
@@ -156,7 +157,7 @@ class FinanceController  {
     def financialsExport()  {
         log.debug("Financial Export :: ${params}")
         Map<String, Object> result = financeControllerService.getResultGenerics(params+[forExport:true])
-        if (!userService.hasFormalAffiliation(result.user, result.institution, 'INST_USER')) {
+        if (! contextService.isInstUser()) {
             flash.error = message(code: 'financials.permission.unauthorised', args: [result.institution? result.institution.name : 'N/A']) as String
             response.sendError(HttpStatus.SC_FORBIDDEN)
             return

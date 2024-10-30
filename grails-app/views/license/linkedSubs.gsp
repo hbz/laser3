@@ -5,7 +5,7 @@
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
     <ui:controlButtons>
-        <g:if test="${userService.hasFormalAffiliation(user, institution, 'INST_EDITOR')}">
+        <g:if test="${contextService.isInstEditor()}">
             <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
         </g:if>
     </ui:controlButtons>

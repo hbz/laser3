@@ -221,6 +221,7 @@ class UserService {
      * @param instUserRole the user's role (permission grant) in the institution to be checked
      * @return true if the given user has {@link Role#ROLE_ADMIN} rights; the result of {@link #hasFormalAffiliation(de.laser.auth.User, de.laser.Org, java.lang.String)} otherwise
      */
+    @Deprecated
     boolean hasFormalAffiliation_or_ROLEADMIN(User userToCheck, Org orgToCheck, String instUserRole) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true

@@ -120,7 +120,7 @@ class OrganisationController  {
 
         Boolean hasAccess = (
                 (result.inContextOrg && userService.hasFormalAffiliation(result.user, result.orgInstance, 'INST_ADM')) ||
-                (isComboRelated && userService.hasFormalAffiliation(result.user, result.institution, 'INST_ADM')) ||
+                (isComboRelated && contextService.isInstAdm()) ||
                 SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         )
 
@@ -966,7 +966,7 @@ class OrganisationController  {
 
         if (contextService.getOrg().isCustomerType_Consortium()) {
             List<Long> consortia = Combo.executeQuery('select c.id from Combo c where c.type = :type and c.fromOrg = :target and c.toOrg = :context',[type:RDStore.COMBO_TYPE_CONSORTIUM,target:result.orgInstance,context:result.institution])
-            if(consortia.size() == 1 && userService.hasFormalAffiliation(result.user, result.institution, 'INST_EDITOR'))
+            if (consortia.size() == 1 && contextService.isInstEditor())
                 result.editable_identifier = true
         }
         else
@@ -978,16 +978,14 @@ class OrganisationController  {
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, result.institution)
         result.isComboRelated = isComboRelated
 
-        result.hasAccessToCustomeridentifier = ((inContextOrg && userService.hasFormalAffiliation(result.user, result.institution, 'INST_USER')) ||
-                (isComboRelated && userService.hasFormalAffiliation(result.user, result.institution, 'INST_USER')) ||
+        result.hasAccessToCustomeridentifier = ((inContextOrg && contextService.isInstUser()) || (isComboRelated && contextService.isInstUser()) ||
                 SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) && OrgSetting.get(result.orgInstance, OrgSetting.KEYS.CUSTOMER_TYPE) != OrgSetting.SETTING_NOT_FOUND
 
         // TODO: erms-5495
 
         if (result.hasAccessToCustomeridentifier) {
 
-            result.editable_customeridentifier = (inContextOrg && userService.hasFormalAffiliation(result.user, result.institution, 'INST_EDITOR')) ||
-                    (isComboRelated && userService.hasFormalAffiliation(result.user, result.institution, 'INST_EDITOR')) ||
+            result.editable_customeridentifier = (inContextOrg && contextService.isInstEditor()) || (isComboRelated && contextService.isInstEditor()) ||
                     SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
             // adding default settings

@@ -7,7 +7,7 @@
 <laser:serviceInjection />
 
 
-<%-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${userService.hasFormalAffiliation(user, contextService.getOrg(), 'INST_EDITOR')} --%>
+<%-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${contextService.isInstEditor()} --%>
 <g:set var="overwriteEditable" value="${editable || contextService.isInstEditor( CustomerTypeService.ORG_INST_PRO ) || contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_BASIC )}" />
 
 <g:if test="${newProp}">

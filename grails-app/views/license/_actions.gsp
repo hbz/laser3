@@ -16,7 +16,7 @@
         </ui:exportDropdownItem>
     </ui:exportDropdown>
 </g:if>
-<g:if test="${userService.hasFormalAffiliation(user, institution, 'INST_EDITOR')}">
+<g:if test="${contextService.isInstEditor()}">
     <ui:actionsDropdown>
         <laser:render template="/templates/sidebar/actions" />
         <g:if test="${editable}">
