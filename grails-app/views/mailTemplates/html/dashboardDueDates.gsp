@@ -11,7 +11,7 @@
         </style>
     </head>
     <body>
-        <g:set var="userName" value="${war(user.username)}"/>
+        <g:set var="userName" value="${raw(user.username)}"/>
         <g:set var="orgName" value="${raw(org.name)}"/>
         <g:set var="language" value="${user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value}"/>
         <table>

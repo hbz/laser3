@@ -511,11 +511,17 @@
                 + '?country=' + selectedCountry + '&format=json',
                 success: function (data) {
                     $.each(data, function (key, entry) {
-                        if(entry.id == ${addressInstance?.region?.id}){
-                            dropdownRegion.append($('<option></option>').attr('value', entry.id).attr('selected', 'selected').text(entry.${"value_" + languageSuffix}));
-                        }else{
+                        <g:if test="${addressInstance?.region}">
+                            if(entry.id == ${addressInstance.region.id}){
+                                dropdownRegion.append($('<option></option>').attr('value', entry.id).attr('selected', 'selected').text(entry.${"value_" + languageSuffix}));
+                            }
+                            else{
+                                dropdownRegion.append($('<option></option>').attr('value', entry.id).text(entry.${"value_" + languageSuffix}));
+                            }
+                        </g:if>
+                        <g:else>
                             dropdownRegion.append($('<option></option>').attr('value', entry.id).text(entry.${"value_" + languageSuffix}));
-                        }
+                        </g:else>
                      });
                 }
             });
