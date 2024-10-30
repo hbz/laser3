@@ -267,11 +267,14 @@
                 // show button only if scrolling down on long sites
                 $(window).scroll(function() {
                     if ( $(this).scrollTop() > 200 ) {
-                        $('#la-js-topButton').stop().fadeTo('slow',1);
+                        $('button#la-js-topButton').stop().fadeTo('slow',1);
                     } else {
-                        $('#la-js-topButton').stop().fadeTo('slow',0);
+                        $('button#la-js-topButton').stop().fadeTo('slow',0);
                     }
                 });
+                if ( !$('#system-profiler').length || !$('#showDebugInfo').length || !$('#showSystemInfo').length ){
+                    $('button#la-js-topButton').css("bottom","10px");
+                }
             })
         </script>
     </body>
