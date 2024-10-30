@@ -1,11 +1,10 @@
 <%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 
-<g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_SUPPORT)}">
+<g:if test="${contextService.isInstEditor(CustomerTypeService.ORG_SUPPORT)}">
     <ui:actionsDropdown>
-        <g:if test="${contextService.isInstEditor(CustomerTypeService.ORG_SUPPORT)}">
-            <laser:render template="/templates/sidebar/actions" />
-        </g:if>
+        <laser:render template="/templates/sidebar/actions" />
+
         <g:if test="${editable}">
             <g:if test="${actionName == 'show'}">
 %{--                <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />--}%%{-- --}%%{-- erms-4798 --}%

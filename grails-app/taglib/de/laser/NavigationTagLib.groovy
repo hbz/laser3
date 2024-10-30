@@ -288,7 +288,7 @@ class NavigationTagLib {
             )
         }
         else {
-            if (userService.hasAffiliation_or_ROLEADMIN(contextService.getUser(), contextService.getOrg(), attrs.instRole as String)) {
+            if (userService.hasFormalAffiliation(contextService.getUser(), contextService.getOrg(), attrs.instRole as String)) {
                 out << '<div class="item disabled"  '
                 out << 'role="menuitem">' + linkBody + '</div>'
             }

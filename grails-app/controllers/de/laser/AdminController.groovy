@@ -1307,10 +1307,7 @@ SELECT * FROM (
      * Lists current packages in the we:kb ElasticSearch index.
      * @return Data from we:kb ES
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
-    @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
-    })
+    @Secured(['ROLE_ADMIN'])
     def packageLaserVsWekb() {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()

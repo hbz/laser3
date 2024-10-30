@@ -29,7 +29,10 @@ class DocumentController {
     MessageSource messageSource
     AccessService accessService
 
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstUser = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser()
+    })
     def index() {
         redirect(action: 'downloadDocument', params: params)
 //        response.sendError(HttpStatus.SC_FORBIDDEN)

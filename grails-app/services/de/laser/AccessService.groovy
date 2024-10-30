@@ -46,7 +46,7 @@ class AccessService {
         }
         else if (doc.owner.id == ctxOrg.id) {
             if (perm == WRITE) {
-                check = userService.hasFormalAffiliation(contextService.getUser(), ctxOrg, Role.INST_EDITOR)
+                check = contextService.isInstEditor()
             }
             else {
                 check = true
@@ -114,7 +114,7 @@ class AccessService {
         }
         else if (doc.owner.id == ctxOrg.id) {
             if (perm == WRITE) {
-                check = userService.hasFormalAffiliation(contextService.getUser(), ctxOrg, Role.INST_EDITOR)
+                check = contextService.isInstEditor()
             }
             else {
                 check = true
@@ -164,7 +164,7 @@ class AccessService {
         }
         else if (task.responsibleUser && task.responsibleUser.id == contextService.getUser().id) {
 //            if (perm == WRITE) {
-//                check = userService.hasFormalAffiliation(contextService.getUser(), ctxOrg, Role.INST_EDITOR)
+//                check = contextService.isInstEditor()
 //            }
 //            else {
                 check = true // ?????
@@ -172,7 +172,7 @@ class AccessService {
         }
         else if (task.responsibleOrg && task.responsibleOrg.id == ctxOrg.id) {
             if (perm == WRITE) {
-                check = userService.hasFormalAffiliation(contextService.getUser(), ctxOrg, Role.INST_EDITOR)
+                check = contextService.isInstEditor()
             }
             else {
                 check = true
@@ -194,7 +194,7 @@ class AccessService {
         }
         else if (workflow.owner.id == ctxOrg.id) {
             if (perm == WRITE) {
-                check = userService.hasFormalAffiliation(contextService.getUser(), ctxOrg, Role.INST_EDITOR)
+                check = contextService.isInstEditor()
             }
             else {
                 check = true
@@ -212,7 +212,7 @@ class AccessService {
         }
         else if (address.tenant && address.tenant.id == ctxOrg.id) {
             if (perm == WRITE) {
-                check = userService.hasFormalAffiliation(contextService.getUser(), ctxOrg, Role.INST_EDITOR)
+                check = contextService.isInstEditor()
             }
             else {
                 check = true
@@ -222,7 +222,7 @@ class AccessService {
             if (perm == READ) {
                 check = true
             }
-            // userService.hasFormalAffiliation_or_ROLEADMIN(user, address.tenant ?: address.org, 'INST_EDITOR') // ?????
+            // userService.hasFormalAffiliation(user, address.tenant ?: address.org, 'INST_EDITOR') // ?????
         }
         else if (address.provider || address.vendor) {
             if (perm == READ) {
@@ -242,7 +242,7 @@ class AccessService {
         else if (contact.prs) {
             if (contact.prs.tenant && contact.prs.tenant.id == ctxOrg.id) {
                 if (perm == WRITE) {
-                    check = userService.hasFormalAffiliation(contextService.getUser(), ctxOrg, Role.INST_EDITOR)
+                    check = contextService.isInstEditor()
                 }
                 else {
                     check = true
@@ -266,7 +266,7 @@ class AccessService {
         }
         else if (person.tenant && person.tenant.id == ctxOrg.id) {
             if (perm == WRITE) {
-                check = userService.hasFormalAffiliation(contextService.getUser(), ctxOrg, Role.INST_EDITOR)
+                check = contextService.isInstEditor()
             }
             else {
                 check = true

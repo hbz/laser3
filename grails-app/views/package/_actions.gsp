@@ -5,14 +5,14 @@
 <g:set var="org" value="${contextService.getOrg()}"/>
 
 <ui:actionsDropdown>
-    <g:if test="${(editable || contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)) && !['list'].contains(actionName) && packageInstance}">
+    <g:if test="${(editable || contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)) && !['list'].contains(actionName) && packageInstance}">
         <ui:actionsDropdownItem message="package.show.linkToSub" data-ui="modal" href="#linkToSubModal"/>
     </g:if>
 
 %{--    <ui:actionsDropdownItemDisabled controller="package" action="compare" message="menu.public.comp_pkg"/>--}%
 </ui:actionsDropdown>
 
-<g:if test="${(editable || contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)) && !['list'].contains(actionName) && packageInstance}">
+<g:if test="${(editable || contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)) && !['list'].contains(actionName) && packageInstance}">
     <ui:modal id="linkToSubModal" contentClass="scrolling" message="package.show.linkToSub" msgSave="${message(code: 'default.button.link.label')}">
 
         <g:form class="ui form" url="[controller: 'package', action: 'processLinkToSub', id: params.id]">

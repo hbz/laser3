@@ -17,7 +17,7 @@
         }
     }
 
-    boolean editable2 = userService.hasFormalAffiliation(contextService.getUser(), contextService.getOrg(), 'INST_EDITOR')
+    boolean editable2 = contextService.isInstEditor()
 %>
 
     <ui:card message="license.notes" class="notes ${css_class}" href="#modalCreateNote" editable="${editable || editable2}">

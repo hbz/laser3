@@ -151,6 +151,9 @@
                 <th class="center aligned la-no-uppercase">
                     <ui:multiYearIcon isConsortial="true" />
                 </th>
+                <th>
+                    ${message(code: 'subscription.details.internalComment')}
+                </th>
                 <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </tr>
             </thead>
@@ -272,6 +275,9 @@
                             <ui:multiYearIcon isConsortial="true" color="orange" />
                         </g:if>
                     </td>
+                    <td class="center aligned" ">
+                        <ui:xEditableAsIcon owner="${sub}" class="ui icon center aligned" iconClass="sticky note circular inverted" field="comment" type="textarea" emptyTooltip="${message(code: 'subscription.details.internalComment')}"/>
+                    </td>
                     <td class="x">
 
                         <g:link controller="subscription" action="show" id="${sub.id}" class="${Btn.MODERN.SIMPLE}"
@@ -313,7 +319,6 @@
                                 </span>
                             </g:else>
 
-                        <ui:xEditableAsIcon owner="${sub}" class="ui icon center aligned" iconClass="sticky note circular inverted" field="comment" type="textarea" emptyTooltip="${message(code: 'subscription.details.internalComment')}"/>
 
                         <a href="#" class="ui button blue icon la-modern-button mailInfos-flyout-trigger" data-orgId="${subscr.id}" data-subId="${sub.id}">
                             <i class="ui info icon"></i>

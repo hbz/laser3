@@ -43323,13 +43323,25 @@ a.ui.ui.ui.inverted.basic.black.label:hover {
   width: 1.5vw;
 }
 
+#subscriptionTransfer-content {
+  margin-right: 1.5vw;
+}
+
 @media only screen and (min-width: 1920px) {
+  #subscriptionTransfer-content {
+    margin-right: 2vw;
+  }
+
   .ui.label.la-server-label {
     width: 2vw;
   }
 }
 
 @media only screen and (min-width: 2600px) {
+  #subscriptionTransfer-content {
+    margin-right: 9vw;
+  }
+
   .ui.label.la-server-label {
     width: 9vw;
   }

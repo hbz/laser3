@@ -124,36 +124,28 @@ class ContextService {
 
     // -- Formal checks @ user.formalOrg
 
+    /**
+     * Shortcut for {@link de.laser.UserService#hasFormalAffiliation(de.laser.auth.User, de.laser.Org, java.lang.String)}
+     * with {@link de.laser.ContextService#getUser()}, {@link de.laser.ContextService#getOrg()} and ROLE.INST_USER
+     */
     boolean isInstUser(String orgPerms = null) {
         _hasInstRoleAndPerm(Role.INST_USER, orgPerms, false)
     }
 
+    /**
+     * Shortcut for {@link de.laser.UserService#hasFormalAffiliation(de.laser.auth.User, de.laser.Org, java.lang.String)}
+     * with {@link de.laser.ContextService#getUser()}, {@link de.laser.ContextService#getOrg()} and ROLE.INST_EDITOR
+     */
     boolean isInstEditor(String orgPerms = null) {
         _hasInstRoleAndPerm(Role.INST_EDITOR, orgPerms, false)
     }
 
+    /**
+     * Shortcut for {@link de.laser.UserService#hasFormalAffiliation(de.laser.auth.User, de.laser.Org, java.lang.String)}
+     * with {@link de.laser.ContextService#getUser()}, {@link de.laser.ContextService#getOrg()} and ROLE.INST_ADM
+     */
     boolean isInstAdm(String orgPerms = null) {
         _hasInstRoleAndPerm(Role.INST_ADM, orgPerms, false)
-    }
-
-    /**
-     * Checks if the context user belongs to an institution with the given customer types or is a superadmin
-     * @param orgPerms the customer types to verify
-     * @return true if the given permissions are granted, false otherwise
-     * @see CustomerTypeService
-     */
-    boolean isInstUser_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_USER, orgPerms, false)
-    }
-
-    /**
-     * Checks if the context user belongs as an editor to an institution with the given customer types or is a superadmin
-     * @param orgPerms the customer types to verify
-     * @return true if the given permissions are granted, false otherwise
-     * @see CustomerTypeService
-     */
-    boolean isInstEditor_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_EDITOR, orgPerms, false)
     }
 
     /**
@@ -167,33 +159,33 @@ class ContextService {
     }
 
     /**
-     * Same as {@link #isInstUser_or_ROLEADMIN()}, but support-type customers get access denied
-     * @param orgPerms the customer types to verify
-     * @return true if the given permissions are granted, false otherwise
-     * @see CustomerTypeService
+     * Shortcut for {@link de.laser.UserService#hasFormalAffiliation(de.laser.auth.User, de.laser.Org, java.lang.String)}
+     * with {@link de.laser.ContextService#getUser()}, {@link de.laser.ContextService#getOrg()} and ROLE.INST_USER
+     * <br>
+     * Restriction: {@link de.laser.Org#isCustomerType_Support()} is FALSE
      */
-    boolean isInstUser_denySupport_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_USER, orgPerms, true)
+    boolean isInstUser_denySupport(String orgPerms = null) {
+        _hasInstRoleAndPerm(Role.INST_USER, orgPerms, true)
     }
 
     /**
-     * Same as {@link #isInstEditor_or_ROLEADMIN()}, but support-type customers get access denied
-     * @param orgPerms the customer types to verify
-     * @return true if the given permissions are granted, false otherwise
-     * @see CustomerTypeService
+     * Shortcut for {@link de.laser.UserService#hasFormalAffiliation(de.laser.auth.User, de.laser.Org, java.lang.String)}
+     * with {@link de.laser.ContextService#getUser()}, {@link de.laser.ContextService#getOrg()} and ROLE.INST_EDITOR
+     * <br>
+     * Restriction: {@link de.laser.Org#isCustomerType_Support()} is FALSE
      */
-    boolean isInstEditor_denySupport_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_EDITOR, orgPerms, true)
+    boolean isInstEditor_denySupport(String orgPerms = null) {
+        _hasInstRoleAndPerm(Role.INST_EDITOR, orgPerms, true)
     }
 
     /**
-     * Same as {@link #isInstAdm_or_ROLEADMIN()}, but support-type customers get access denied
-     * @param orgPerms the customer types to verify
-     * @return true if the given permissions are granted, false otherwise
-     * @see CustomerTypeService
+     * Shortcut for {@link de.laser.UserService#hasFormalAffiliation(de.laser.auth.User, de.laser.Org, java.lang.String)}
+     * with {@link de.laser.ContextService#getUser()}, {@link de.laser.ContextService#getOrg()} and ROLE.INST_ADM
+     * <br>
+     * Restriction: {@link de.laser.Org#isCustomerType_Support()} is FALSE
      */
-    boolean isInstAdm_denySupport_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_ADM, orgPerms, true)
+    boolean isInstAdm_denySupport(String orgPerms = null) {
+        _hasInstRoleAndPerm(Role.INST_ADM, orgPerms, true)
     }
 
     // -- private
@@ -262,7 +254,7 @@ class ContextService {
      */
     // TODO
     boolean is_ORG_COM_EDITOR_or_ROLEADMIN() {
-        isInstEditor_or_ROLEADMIN() && _hasPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_EDITOR, null, false) && _hasPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     }
 
     /**
@@ -271,9 +263,9 @@ class ContextService {
      * @return true if the context organisation is a consortium or an institution looking at its own data, false otherwise
      */
     // TODO
-    boolean is_INST_EDITOR_or_ROLEADMIN_with_PERMS_BASIC(boolean inContextOrg) {
+    boolean is_INST_EDITOR_with_PERMS_BASIC(boolean inContextOrg) {
         boolean check = false
-        if (isInstEditor_or_ROLEADMIN()) {
+        if (isInstEditor()) {
             check = _hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) || (_hasPerm(CustomerTypeService.ORG_INST_BASIC) && inContextOrg)
         }
         check
@@ -310,13 +302,13 @@ class ContextService {
             check = SpringSecurityUtils.ifAnyGranted(attrs.specRole ?: [])
 
             if (!check) {
-                boolean instRoleCheck = attrs.instRole ? BeanStore.getUserService().hasAffiliation_or_ROLEADMIN(user, org, attrs.instRole) : true
+                boolean instRoleCheck = attrs.instRole ? BeanStore.getUserService().hasAffiliation(user, org, attrs.instRole) : true
                 boolean orgPermCheck  = attrs.orgPerm ? _hasPerm(attrs.orgPerm) : true
 
                 check = instRoleCheck && orgPermCheck
 
                 if (attrs.instRole && attrs.affiliationOrg && check) { // ???
-                    check = BeanStore.getUserService().hasAffiliation_or_ROLEADMIN(user, attrs.affiliationOrg, attrs.instRole)
+                    check = BeanStore.getUserService().hasAffiliation(user, attrs.affiliationOrg, attrs.instRole)
                     // check = user.hasOrgAffiliation_or_ROLEADMIN(attrs.affiliationOrg, attrs.instRole)
                 }
             }
@@ -354,7 +346,7 @@ class ContextService {
         User user = getUser()
 
         // combo check @ contextUser/contextOrg
-        boolean check1 = userService.hasAffiliation_or_ROLEADMIN(user, ctx, instUserRole) && _hasPerm(orgPerms)
+        boolean check1 = userService.hasFormalAffiliation(user, ctx, instUserRole) && _hasPerm(orgPerms)
         boolean check2 = (orgToCheck.id == ctx.id) || Combo.findByToOrgAndFromOrg(ctx, orgToCheck)
 
         // orgToCheck check @ otherOrg

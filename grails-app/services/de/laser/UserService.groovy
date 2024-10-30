@@ -183,17 +183,13 @@ class UserService {
     }
 
     /**
-     * Checks the user's permissions in the given institution or if it is a superuser; is a substitution call for
-     * {@link #hasFormalAffiliation(de.laser.auth.User, de.laser.Org, java.lang.String)} if not a superuser
+     * Checks the user's permissions in the given institution
      * @param userToCheck the user to check
      * @param instUserRole the user's role (permission grant) in the institution to be checked
      * @param orgToCheck the institution to which affiliation should be checked
-     * @return true if the given permission is granted to the user in the given institution (or a missing one overridden by global roles; having at least ROLE_USER rights), false otherwise
+     * @return true if the given permission is granted to the user in the given institution, false otherwise
      */
-    boolean hasAffiliation_or_ROLEADMIN(User userToCheck, Org orgToCheck, String instUserRole) {
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-            return true // may the force be with you
-        }
+    boolean hasAffiliation(User userToCheck, Org orgToCheck, String instUserRole) {
         if (! SpringSecurityUtils.ifAnyGranted('ROLE_USER')) {
             return false // min restriction fail
         }
@@ -215,21 +211,6 @@ class UserService {
             return false
         }
         _checkUserOrgRole(userToCheck, orgToCheck, instUserRole)
-    }
-
-    /**
-     * Substitution call for {@link #hasFormalAffiliation(de.laser.auth.User, de.laser.Org, java.lang.String)}; may be
-     * overridden by {@link Role#ROLE_ADMIN} before
-     * @param userToCheck the user to check
-     * @param orgToCheck the institution to which affiliation should be checked
-     * @param instUserRole the user's role (permission grant) in the institution to be checked
-     * @return true if the given user has {@link Role#ROLE_ADMIN} rights; the result of {@link #hasFormalAffiliation(de.laser.auth.User, de.laser.Org, java.lang.String)} otherwise
-     */
-    boolean hasFormalAffiliation_or_ROLEADMIN(User userToCheck, Org orgToCheck, String instUserRole) {
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-            return true
-        }
-        hasFormalAffiliation(userToCheck, orgToCheck, instUserRole)
     }
 
     /**
@@ -301,7 +282,7 @@ class UserService {
             return hasComboInstAdmPivileges(editor, user.formalOrg)
         }
         else {
-            return contextService.isInstAdm_denySupport_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+            return contextService.isInstAdm_denySupport(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         }
     }
 }

@@ -73,7 +73,7 @@
                 <g:sortableColumn property="ci.startDate" title="${message(code:'financials.dateFrom')}" params="${sorting}" scope="col" class="la-smaller-table-head" />
                 <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="${sorting}" scope="col" rowspan="2"/>
                 <%-- editable must be checked here as well because of the consortia preview! --%>
-                <g:if test="${editable && contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+                <g:if test="${editable && contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
                     <th class="la-action-info" scope="col" rowspan="2"><g:message code="default.actions.label"/></th>
                 </g:if>
             </g:if>
@@ -93,7 +93,7 @@
                 <g:sortableColumn property="costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" rowspan="2"/>
                 <g:sortableColumn property="startDate" title="${message(code:'financials.dateFrom')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" class="la-smaller-table-head" />
                 <g:sortableColumn property="costItemElement" title="${message(code:'financials.costItemElement')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" rowspan="2"/>
-                <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+                <g:if test="${contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
                     <th class="la-action-info" scope="col" rowspan="2"><g:message code="default.actions.label"/></th>
                 </g:if>
             </g:else>
@@ -241,7 +241,7 @@
                     <td>
                         ${ci.costItemElement?.getI10n("value")}
                     </td>
-                        <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                        <g:if test="${contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                             <td class="x">
                                 <g:if test="${fixedSubscription}">
                                     <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"cons", offset: params.offset]' class="${Btn.MODERN.SIMPLE} trigger-modal" data-id_suffix="edit_${ci.id}"
@@ -276,7 +276,7 @@
                                 </g:link>
                             </td>
                         </g:if>
-                        <g:elseif test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_INST_PRO)}">
+                        <g:elseif test="${contextService.isInstEditor(CustomerTypeService.ORG_INST_PRO)}">
                             <td class="x">
                                 <g:if test="${fixedSubscription}">
                                     <span class="la-popup-tooltip" data-position="top right" data-content="${message(code:'financials.costItem.transfer.tooltip')}">
