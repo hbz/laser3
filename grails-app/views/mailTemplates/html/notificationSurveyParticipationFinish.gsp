@@ -13,7 +13,7 @@
 </head>
 <body>
 
-<g:set var="userName" value="${user.getDisplayName()}"/>
+<g:set var="userName" value="${raw(user.getDisplayName())}"/>
 <g:set var="language" value="${user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value}"/>
 
 ${message(code: 'email.text.title', locale: language)} ${userName},

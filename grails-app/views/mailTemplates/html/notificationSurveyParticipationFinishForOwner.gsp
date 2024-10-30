@@ -13,8 +13,8 @@
 </head>
 <body>
 
-<g:set var="userName" value="${user ? user.getDisplayName() : 'User'}"/>
-<g:set var="orgName" value="${org.name}"/>
+<g:set var="userName" value="${user ? raw(user.getDisplayName()) : 'User'}"/>
+<g:set var="orgName" value="${raw(org.name)}"/>
 <g:set var="language" value="${user ? user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.storage.RDConstants.LANGUAGE)).value : 'de'}"/>
 <g:set var="grailsApplication" bean="grailsApplication"/>
 <g:set var="surveyUrl" value="${"/survey/evaluationParticipant/${survey.id}?surveyConfigID=${survey.surveyConfigs[0].id}&participant=${org.id}"}"/>
