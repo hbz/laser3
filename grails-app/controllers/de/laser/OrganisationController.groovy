@@ -959,6 +959,8 @@ class OrganisationController  {
         }
         result.editable_identifier = !result.orgInstance.gokbId && result.editable
 
+        boolean userIsAdmin = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+
         //this is a flag to check whether the page has been called directly after creation
         result.fromCreate = params.fromCreate ? true : false
         if(!params.tab)
@@ -970,7 +972,7 @@ class OrganisationController  {
                 result.editable_identifier = true
         }
         else
-            result.editable_identifier = userService.hasFormalAffiliation_or_ROLEADMIN(result.user, result.orgInstance, 'INST_EDITOR')
+            result.editable_identifier = userIsAdmin || userService.hasFormalAffiliation(result.orgInstance, 'INST_EDITOR')
 
         result.orgInstance.createCoreIdentifiersIfNotExist()
 
@@ -978,15 +980,14 @@ class OrganisationController  {
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, result.institution)
         result.isComboRelated = isComboRelated
 
-        result.hasAccessToCustomeridentifier = ((inContextOrg && contextService.isInstUser()) || (isComboRelated && contextService.isInstUser()) ||
-                SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) && OrgSetting.get(result.orgInstance, OrgSetting.KEYS.CUSTOMER_TYPE) != OrgSetting.SETTING_NOT_FOUND
+        result.hasAccessToCustomeridentifier = (userIsAdmin || (inContextOrg && contextService.isInstUser()) || (isComboRelated && contextService.isInstUser()))
+                 && OrgSetting.get(result.orgInstance, OrgSetting.KEYS.CUSTOMER_TYPE) != OrgSetting.SETTING_NOT_FOUND
 
         // TODO: erms-5495
 
         if (result.hasAccessToCustomeridentifier) {
 
-            result.editable_customeridentifier = (inContextOrg && contextService.isInstEditor()) || (isComboRelated && contextService.isInstEditor()) ||
-                    SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+            result.editable_customeridentifier = userIsAdmin || (inContextOrg && contextService.isInstEditor()) || (isComboRelated && contextService.isInstEditor())
 
             // adding default settings
             organisationService.initMandatorySettings(result.orgInstance)
@@ -1014,7 +1015,7 @@ class OrganisationController  {
                 if(params.sort) {
                     sort = " order by ${params.sort} ${params.order}"
                 }
-                if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+                if (userIsAdmin) {
                     result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
                 } else if (inContextOrg) {
 
@@ -1160,7 +1161,7 @@ class OrganisationController  {
     def users() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
-        result.editable = _checkIsEditable(result.user, result.orgInstance)
+        result.editable = _checkIsEditable(result.orgInstance)
 
         if (! result.editable) {
             boolean instAdminExists = (result.orgInstance as Org).hasInstAdminEnabled()
@@ -1263,10 +1264,9 @@ class OrganisationController  {
                 orgInstance: Org.get(params.id),
                 manipulateAffiliations: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         ]
-        // TODO: --> CHECK LOGIC IMPLEMENTATION <--
-        // TODO: userIsYoda != SpringSecurityUtils.ifAnyGranted('ROLE_YODA') @ user.hasMinRole('ROLE_YODA')
 
-        result.editable = _checkIsEditable(result.user, contextService.getOrg()) /// ??????
+        // result.editable = _checkIsEditable(result.user, contextService.getOrg()) /// TODO: ALWAYS TRUE
+        result.editable = _checkIsEditable(contextService.getOrg()) /// TODO: ERMS-6044
         result.availableOrgs = [ result.orgInstance ]
 
         render view: '/user/global/edit', model: result
@@ -1621,7 +1621,7 @@ class OrganisationController  {
             redirect action: 'list'
             return
         }
-        result.editable = _checkIsEditable(result.user, orgInstance)
+        result.editable = _checkIsEditable(orgInstance)
 
         if (result.editable) {
             orgInstance.orgType_new = RefdataValue.get(params.orgType) // TODO - refactoring
@@ -1648,7 +1648,7 @@ class OrganisationController  {
             return
         }
 
-        result.editable = _checkIsEditable(result.user, orgInstance)
+        result.editable = _checkIsEditable(orgInstance)
 
         if (result.editable) {
             orgInstance.removeFromOrgType(RefdataValue.get(params.removeOrgType))
@@ -1683,7 +1683,7 @@ class OrganisationController  {
             redirect(url: request.getHeader('referer'))
             return
         }
-        result.editable = _checkIsEditable(result.user, result.orgInstance)
+        result.editable = _checkIsEditable(result.orgInstance)
 
         if (result.editable) {
             result.orgInstance.addToSubjectGroup(subjectGroup: RefdataValue.get(params.subjectGroup))
@@ -1707,7 +1707,7 @@ class OrganisationController  {
             redirect(url: request.getHeader('referer'))
             return
         }
-        result.editable = _checkIsEditable(result.user, result.orgInstance)
+        result.editable = _checkIsEditable(result.orgInstance)
         if (result.editable) {
             if(params.containsKey('frontend')) {
                 RefdataValue newFrontend = RefdataValue.get(params.frontend)
@@ -1918,33 +1918,35 @@ class OrganisationController  {
 
 
     /**
-     * Helper method to determine the edit rights the given user has for the given organisation in the given view
-     * @param user the user whose rights should be checked
+     * Helper method to determine the edit rights the current user has for the given organisation in the given view
      * @param org the target organisation
      * @return true if edit rights are granted to the given user/org/view context, false otherwise
      */
-    private boolean _checkIsEditable(User user, Org org) {
+    private boolean _checkIsEditable(Org org) {
         boolean isEditable = false
         Org contextOrg = contextService.getOrg()
+
         boolean inContextOrg = org.id == contextOrg.id
-        boolean userHasEditableRights = userService.hasFormalAffiliation_or_ROLEADMIN(user, contextOrg, 'INST_EDITOR')
-        boolean userIsYoda            = user.isYoda()
+        boolean userIsYoda            = contextService.getUser().isYoda()
+        boolean userIsAdmin           = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        boolean userHasEditableRights = userIsAdmin || contextService.isInstEditor()
 
         switch(params.action){
             case 'editUser':
                 isEditable = true
+                // TODO: NO PERM CHECK!! ERMS-6044
                 break
             case 'delete':
-                isEditable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+                isEditable = userIsAdmin
                 break
             case 'properties':
-                isEditable = userService.hasFormalAffiliation_or_ROLEADMIN(user, Org.get(params.id), 'INST_EDITOR')
+                isEditable = userIsAdmin || userService.hasFormalAffiliation(Org.get(params.id), 'INST_EDITOR')
                 break
             case 'users':
-                isEditable = userService.hasFormalAffiliation_or_ROLEADMIN(user, Org.get(params.id), 'INST_ADM')
+                isEditable = userIsAdmin || userService.hasFormalAffiliation(Org.get(params.id), 'INST_ADM')
                 break
             case [ 'addOrgType', 'deleteOrgType' ]:
-                isEditable = userService.hasFormalAffiliation_or_ROLEADMIN(user, Org.get(params.org), 'INST_ADM')
+                isEditable = userIsAdmin || userService.hasFormalAffiliation(Org.get(params.org), 'INST_ADM')
                 break
             case 'contacts':
                 if (inContextOrg) {
@@ -1979,7 +1981,7 @@ class OrganisationController  {
                 }
                 break
             default:
-                isEditable = userService.hasFormalAffiliation_or_ROLEADMIN(user, org,'INST_EDITOR')
+                isEditable = userIsAdmin || userService.hasFormalAffiliation(org,'INST_EDITOR')
         }
         // println '>>> isEditable: ' + isEditable + ' >>> ' + params.action
         isEditable

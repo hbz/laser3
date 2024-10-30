@@ -60,8 +60,6 @@
     boolean hasAffiliation (Org orgToCheck, String instUserRole)
     boolean hasFormalAffiliation (Org orgToCheck, String instUserRole)
 
-    boolean hasFormalAffiliation_or_ROLEADMIN (User userToCheck, Org orgToCheck, String instUserRole)
-
 
 ### Various
 

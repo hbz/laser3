@@ -214,29 +214,6 @@ class UserService {
     }
 
     /**
-     * Substitution call for {@link #hasFormalAffiliation(de.laser.Org, java.lang.String)};
-     * may be overridden by {@link Role#ROLE_ADMIN} before
-     * @param userToCheck the user to check
-     * @param orgToCheck the institution to which affiliation should be checked
-     * @param instUserRole the user's role (permission grant) in the institution to be checked
-     * @return true if the given user has {@link Role#ROLE_ADMIN} rights; the result of {@link #hasFormalAffiliation(de.laser.Org, java.lang.String)} otherwise
-     */
-    @Deprecated
-    boolean hasFormalAffiliation_or_ROLEADMIN(User userToCheck, Org orgToCheck, String instUserRole) {
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-            return true
-        }
-
-        if (! userToCheck || ! orgToCheck) {
-            return false
-        }
-        if (orgToCheck.id != contextService.getOrg().id) { // NEW CONSTRAINT
-            return false
-        }
-        _checkUserOrgRole(userToCheck, orgToCheck, instUserRole)
-    }
-
-    /**
      * Checks if the given institution role is granted to the given user at the given institution. The role
      * may be granted implicitly by another role
      * @param userToCheck the user to check
