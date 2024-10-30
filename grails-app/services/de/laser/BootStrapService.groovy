@@ -21,12 +21,9 @@ import grails.converters.JSON
 import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
 import grails.util.Environment
-import groovy.sql.Sql
 import org.hibernate.SessionFactory
 import org.hibernate.query.NativeQuery
 import org.hibernate.type.TextType
-
-import javax.sql.DataSource
 
 /**
  * This service encapsulates methods called upon system startup; it defines system-wide constants, updates hard-coded translations and sets other globally relevant parameters
@@ -35,7 +32,6 @@ import javax.sql.DataSource
 class BootStrapService {
 
     CacheService cacheService
-    DataSource dataSource
     GrailsApplication grailsApplication
     RefdataReorderService refdataReorderService
     SessionFactory sessionFactory

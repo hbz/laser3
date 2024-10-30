@@ -97,9 +97,9 @@ class OrganisationController  {
      *     <li>oamonitor: permissions to the Open Access Monitor harvest access</li>
      * </ul>
      */
-    @DebugInfo(isInstAdm_denySupport = ['FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC'])
+    @DebugInfo(isInstAdm_denySupport_or_ROLEADMIN = ['FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC'])
     @Secured(closure = {
-        ctx.contextService.isInstAdm_denySupport( 'FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC' )
+        ctx.contextService.isInstAdm_denySupport_or_ROLEADMIN( 'FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC' )
     })
     @Check404(domain=Org)
     def settings() {
@@ -824,9 +824,9 @@ class OrganisationController  {
     }
 
     @UnstableFeature
-    @DebugInfo(isInstEditor = [CustomerTypeService.PERMS_PRO])
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.contextService.isInstEditor( CustomerTypeService.PERMS_PRO )
+        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_PRO )
     })
     @Check404(domain=Org)
     def info() {
@@ -871,9 +871,9 @@ class OrganisationController  {
      * Shows the details of the organisation to display
      * @return the details view of the given orgainsation
      */
-    @DebugInfo(isInstUser = [])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser()
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     @Check404(domain=Org)
     def show() {
@@ -945,9 +945,9 @@ class OrganisationController  {
      * @see Identifier
      * @see CustomerIdentifier
      */
-    @DebugInfo(isInstUser = [])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser()
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     @Check404(domain=Org)
     def ids() {
@@ -970,7 +970,7 @@ class OrganisationController  {
                 result.editable_identifier = true
         }
         else
-            result.editable_identifier = userService.hasFormalAffiliation(result.user, result.orgInstance, 'INST_EDITOR')
+            result.editable_identifier = userService.hasFormalAffiliation_or_ROLEADMIN(result.user, result.orgInstance, 'INST_EDITOR')
 
         result.orgInstance.createCoreIdentifiersIfNotExist()
 
@@ -1044,9 +1044,9 @@ class OrganisationController  {
      * @return the task table view
      * @see Task
      */
-    @DebugInfo(isInstUser = [CustomerTypeService.PERMS_PRO])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.contextService.isInstUser(CustomerTypeService.PERMS_PRO)
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     @Check404(domain=Org)
     def tasks() {
@@ -1065,9 +1065,9 @@ class OrganisationController  {
      * @return the workflow checklist view
      * @see de.laser.workflow.WfChecklist
      */
-    @DebugInfo(isInstUser = [CustomerTypeService.PERMS_PRO])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.contextService.isInstUser(CustomerTypeService.PERMS_PRO)
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     @Check404()
     def workflows() {
@@ -1084,9 +1084,9 @@ class OrganisationController  {
      * @see Doc
      * @see DocContext
      */
-    @DebugInfo(isInstUser = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.isInstUser(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     @Check404(domain=Org)
     def documents() {
@@ -1110,9 +1110,9 @@ class OrganisationController  {
      * @see Doc
      * @see DocContext
      */
-    @DebugInfo(isInstUser = [])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser()
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     @Check404(domain=Org)
     def notes() {
@@ -1128,9 +1128,9 @@ class OrganisationController  {
      * Call to delete the given customer identifier
      * @return the customer identifier table view
      */
-    @DebugInfo(isInstEditor = ['FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC'], ctrlService = 1)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = ['FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC'], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor( 'FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC' )
+        ctx.contextService.isInstEditor_or_ROLEADMIN( 'FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC' )
     })
     def deleteCustomerIdentifier() {
         Map<String,Object> ctrlResult = organisationControllerService.deleteCustomerIdentifier(this,params)
@@ -1154,9 +1154,9 @@ class OrganisationController  {
      * @return renders the user list template with the users affiliated to this institution
      * @see User
      */
-    @DebugInfo(isInstAdm = [])
+    @DebugInfo(isInstAdm_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstAdm()
+        ctx.contextService.isInstAdm_or_ROLEADMIN()
     })
     @Check404(domain=Org)
     def users() {
@@ -1214,9 +1214,9 @@ class OrganisationController  {
      * Data the given user may have authored will be reassigned to another user
      * @return the user deletion view where eventual conflicts are being listed
      */
-    @DebugInfo(isInstAdm = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
+    @DebugInfo(isInstAdm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.isInstAdm( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.contextService.isInstAdm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def deleteUser() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
@@ -1256,9 +1256,9 @@ class OrganisationController  {
      * Call to edit the given user profile
      * @return the profile editing template
      */
-    @DebugInfo(isInstAdm = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
+    @DebugInfo(isInstAdm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.isInstAdm( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.contextService.isInstAdm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def editUser() {
         Map result = [
@@ -1279,9 +1279,9 @@ class OrganisationController  {
      * Call to create a new user profile
      * @return the profile creation template
      */
-    @DebugInfo(isInstAdm = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
+    @DebugInfo(isInstAdm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.isInstAdm( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.contextService.isInstAdm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def createUser() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1295,9 +1295,9 @@ class OrganisationController  {
      * Takes the submitted parameters and creates a new user record with the given parameters
      * @return the user editing template in case of success, redirects back to the creation page otherwise
      */
-    @DebugInfo(isInstAdm = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
+    @DebugInfo(isInstAdm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.isInstAdm( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.contextService.isInstAdm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def processCreateUser() {
         def success = userService.addNewUser(params, flash)
@@ -1318,9 +1318,9 @@ class OrganisationController  {
      * Attaches the given user to the given institution
      * @return the user editing profile with the updated data
      */
-    @DebugInfo(isInstAdm = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
+    @DebugInfo(isInstAdm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.isInstAdm( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.contextService.isInstAdm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def setAffiliation() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
@@ -1388,9 +1388,9 @@ class OrganisationController  {
      * Call to list the public contacts of the given organisation
      * @return a table view of public contacts
      */
-    @DebugInfo(isInstUser = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.isInstUser(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     @Check404(domain=Org)
     def addressbook() {
@@ -1472,9 +1472,9 @@ class OrganisationController  {
      * @return a table view of the reader numbers, grouped by semesters on the one hand, due dates on the other
      * @see ReaderNumber
      */
-    @DebugInfo(isInstUser = [])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser()
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     @Check404(domain=Org)
     def readerNumber() {
@@ -1556,9 +1556,9 @@ class OrganisationController  {
      * @return a list view of access points
      * @see de.laser.oap.OrgAccessPoint
      */
-    @DebugInfo(isInstUser = [])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser()
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     @Check404(domain=Org)
     def accessPoints() {
@@ -1808,9 +1808,9 @@ class OrganisationController  {
      * (adds or removes a combo link between the institution and the consortium)
      * @see Combo
      */
-    @DebugInfo(isInstEditor = [CustomerTypeService.ORG_CONSORTIUM_BASIC], ctrlService = 1)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def toggleCombo() {
         Map<String,Object> ctrlResult = organisationControllerService.toggleCombo(this,params)
@@ -1833,9 +1833,9 @@ class OrganisationController  {
      * Call to list the contacts the context institution has attached to the given organisation
      * @return a table view of the contacts
      */
-    @DebugInfo(isInstUser = [])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser()
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     @Check404(domain=Org)
     def contacts() {
@@ -1905,9 +1905,9 @@ class OrganisationController  {
      * Shows the details of the organisation to display
      * @return the details view of the given orgainsation
      */
-    @DebugInfo(isInstUser = [])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser()
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     @Check404(domain=Org)
     def mailInfos() {
@@ -1931,10 +1931,8 @@ class OrganisationController  {
         boolean isEditable = false
         Org contextOrg = contextService.getOrg()
         boolean inContextOrg = org.id == contextOrg.id
-        boolean userHasEditableRights = contextService.isInstEditor()
+        boolean userHasEditableRights = userService.hasFormalAffiliation_or_ROLEADMIN(user, contextOrg, 'INST_EDITOR')
         boolean userIsYoda            = user.isYoda()
-        // TODO: --> CHECK LOGIC IMPLEMENTATION <--
-        // TODO: userIsYoda != SpringSecurityUtils.ifAnyGranted('ROLE_YODA') @ user.hasMinRole('ROLE_YODA')
 
         switch(params.action){
             case 'editUser':
@@ -1944,13 +1942,13 @@ class OrganisationController  {
                 isEditable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
                 break
             case 'properties':
-                isEditable = userService.hasFormalAffiliation(user, Org.get(params.id), 'INST_EDITOR')
+                isEditable = userService.hasFormalAffiliation_or_ROLEADMIN(user, Org.get(params.id), 'INST_EDITOR')
                 break
             case 'users':
-                isEditable = userService.hasFormalAffiliation(user, Org.get(params.id), 'INST_ADM')
+                isEditable = userService.hasFormalAffiliation_or_ROLEADMIN(user, Org.get(params.id), 'INST_ADM')
                 break
             case [ 'addOrgType', 'deleteOrgType' ]:
-                isEditable = userService.hasFormalAffiliation(user, Org.get(params.org), 'INST_ADM')
+                isEditable = userService.hasFormalAffiliation_or_ROLEADMIN(user, Org.get(params.org), 'INST_ADM')
                 break
             case 'contacts':
                 if (inContextOrg) {
@@ -1985,7 +1983,7 @@ class OrganisationController  {
                 }
                 break
             default:
-                isEditable = userService.hasFormalAffiliation(user, org,'INST_EDITOR')
+                isEditable = userService.hasFormalAffiliation_or_ROLEADMIN(user, org,'INST_EDITOR')
         }
         // println '>>> isEditable: ' + isEditable + ' >>> ' + params.action
         isEditable

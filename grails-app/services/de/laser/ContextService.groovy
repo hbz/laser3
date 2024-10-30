@@ -148,12 +148,23 @@ class ContextService {
         _hasInstRoleAndPerm(Role.INST_ADM, orgPerms, false)
     }
 
+    @Deprecated
+    boolean isInstUser_or_ROLEADMIN(String orgPerms = null) {
+        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_USER, orgPerms, false)
+    }
+
+    @Deprecated
+    boolean isInstEditor_or_ROLEADMIN(String orgPerms = null) {
+        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_EDITOR, orgPerms, false)
+    }
+
     /**
      * Checks if the context user belongs as a local administrator to an institution with the given customer types or is a superadmin
      * @param orgPerms the customer types to verify
      * @return true if the given permissions are granted, false otherwise
      * @see CustomerTypeService
      */
+    @Deprecated
     boolean isInstAdm_or_ROLEADMIN(String orgPerms = null) {
         _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_ADM, orgPerms, false)
     }
@@ -186,6 +197,11 @@ class ContextService {
      */
     boolean isInstAdm_denySupport(String orgPerms = null) {
         _hasInstRoleAndPerm(Role.INST_ADM, orgPerms, true)
+    }
+
+    @Deprecated
+    boolean isInstAdm_denySupport_or_ROLEADMIN(String orgPerms = null) {
+        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_ADM, orgPerms, true)
     }
 
     // -- private
