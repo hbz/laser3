@@ -1164,7 +1164,7 @@ class OrganisationController  {
 
         if (! result.editable) {
             boolean instAdminExists = (result.orgInstance as Org).hasInstAdminEnabled()
-            boolean comboCheck = userService.hasComboInstAdmPivileges(result.user as User, result.orgInstance as Org)
+            boolean comboCheck = userService.hasComboInstAdmPivileges(result.orgInstance as Org)
 
             result.editable = comboCheck && ! instAdminExists
         }
@@ -1266,7 +1266,7 @@ class OrganisationController  {
         // TODO: --> CHECK LOGIC IMPLEMENTATION <--
         // TODO: userIsYoda != SpringSecurityUtils.ifAnyGranted('ROLE_YODA') @ user.hasMinRole('ROLE_YODA')
 
-        result.editable = _checkIsEditable(result.user, contextService.getOrg())
+        result.editable = _checkIsEditable(result.user, contextService.getOrg()) /// ??????
         result.availableOrgs = [ result.orgInstance ]
 
         render view: '/user/global/edit', model: result

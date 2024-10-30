@@ -202,18 +202,8 @@ class UserService {
      * @return true if the given permission is granted to the user in the given institution which is also the context institution, false otherwise
      */
     boolean hasFormalAffiliation(Org orgToCheck, String instUserRole) {
-        hasFormalAffiliation(contextService.getUser(), orgToCheck, instUserRole)
-    }
+        User userToCheck = contextService.getUser()
 
-    /**
-     * Checks the user's permissions in the given institution
-     * @param userToCheck the user to check
-     * @param instUserRole the user's role (permission grant) in the institution to be checked
-     * @param orgToCheck the institution to which affiliation should be checked
-     * @return true if the given permission is granted to the user in the given institution which is also the context institution, false otherwise
-     */
-    @Deprecated
-    boolean hasFormalAffiliation(User userToCheck, Org orgToCheck, String instUserRole) {
         if (! userToCheck || ! orgToCheck) {
             return false
         }
@@ -236,7 +226,14 @@ class UserService {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
-        hasFormalAffiliation(userToCheck, orgToCheck, instUserRole)
+
+        if (! userToCheck || ! orgToCheck) {
+            return false
+        }
+        if (orgToCheck.id != contextService.getOrg().id) { // NEW CONSTRAINT
+            return false
+        }
+        _checkUserOrgRole(userToCheck, orgToCheck, instUserRole)
     }
 
     /**
@@ -276,19 +273,18 @@ class UserService {
     // -- todo: check logic
 
     /**
-     * Checks if the given user belongs as administrator to an institution linked to the given consortium
-     * @param user the user to check
+     * Checks if the current user belongs as administrator to an institution linked to the given consortium
      * @param org the consortium ({@link Org}) whose institutions should be checked
      * @return true if there is at least one institution belonging to the given consortium for which the user has {@link Role#INST_ADM} rights
      */
-    boolean hasComboInstAdmPivileges(User user, Org org) {
-        boolean result = hasFormalAffiliation(user, org, 'INST_ADM')
+    boolean hasComboInstAdmPivileges(Org org) {
+        boolean result = hasFormalAffiliation(org, 'INST_ADM')
 
         List<Org> topOrgs = Org.executeQuery(
                 'select c.toOrg from Combo c where c.fromOrg = :org and c.type = :type', [org: org, type: RDStore.COMBO_TYPE_CONSORTIUM]
         )
         topOrgs.each { top ->
-            if (hasFormalAffiliation(user, top as Org, 'INST_ADM')) {
+            if (hasFormalAffiliation(top as Org, 'INST_ADM')) {
                 result = true
             }
         }
@@ -304,8 +300,9 @@ class UserService {
      */
     boolean isUserEditableForInstAdm(User user) {
         if (user.formalOrg) {
-            User editor = contextService.getUser()
-            return hasComboInstAdmPivileges(editor, user.formalOrg)
+            // User editor = contextService.getUser()
+            // return hasComboInstAdmPivileges(editor, user.formalOrg)
+            return hasComboInstAdmPivileges(user.formalOrg)
         }
         else {
             return SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || contextService.isInstAdm_denySupport(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
