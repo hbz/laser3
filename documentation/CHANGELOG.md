@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5973    30.10.2024  dev     3.5         Andreas Feature     Tilgung von raw(), wo nicht zwingend erforderlich
+
 5977    25.10.2024  dev     3.5         David   Feature     Rechteprüfung: Aufgaben
 
 6034    25.10.2024  dev     3.5         Andreas Feature     unnötige Menüpunkte im Adressbuch ausgegraut
