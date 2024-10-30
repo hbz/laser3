@@ -79,26 +79,26 @@ class FinanceService {
                 }
             }else {
 
-                if (params.newSubscription?.contains("${Subscription.class.name}:")) {
-                    subsToDo << (Subscription) genericOIDService.resolveOID(params.newSubscription)
+                if (params.newSubscription) {
+                    subsToDo << Subscription.get(params.newSubscription)
                 }
                 switch (params.newLicenseeTarget) {
-                    case "${Subscription.class.name}:forParent":
+                    case "forParent":
                         // keep current
                         break
-                    case "${Subscription.class.name}:forAllSubscribers":
+                    case "forAllSubscribers":
                         // iterate over members
-                        Subscription parentSub = (Subscription) genericOIDService.resolveOID(params.newSubscription)
+                        Subscription parentSub = Subscription.get(params.newSubscription)
                         subsToDo = parentSub.getDerivedSubscriptions()
                         break
                     default:
                         if (params.newLicenseeTarget) {
                             subsToDo.clear()
                             if (params.newLicenseeTarget instanceof String)
-                                subsToDo << (Subscription) genericOIDService.resolveOID(params.newLicenseeTarget)
+                                subsToDo << Subscription.get(params.newLicenseeTarget)
                             else if (params.newLicenseeTarget instanceof String[]) {
                                 params.newLicenseeTarget.each { newLicenseeTarget ->
-                                    subsToDo << (Subscription) genericOIDService.resolveOID(newLicenseeTarget)
+                                    subsToDo << Subscription.get(newLicenseeTarget)
                                 }
                             }
                         }
@@ -106,17 +106,17 @@ class FinanceService {
                 }
             }
             Package pkg
-            if (params.newPackage?.contains("${de.laser.wekb.Package.class.name}:")) {
+            if (params.newPackage) {
                 try {
-                    if (params.newPackage.split(":")[1] != 'null') {
-                        pkg = (Package) genericOIDService.resolveOID(params.newPackage)
+                    if (params.newPackage != 'null') {
+                        pkg = Package.get(params.newPackage)
                     }
                 } catch (Exception e) {
                     log.error("Non-valid sub-package sent ${params.newPackage}",e)
                 }
             }
-            IssueEntitlement ie = params.newIE ? (IssueEntitlement) genericOIDService.resolveOID(params.newIE) : null
-            IssueEntitlementGroup issueEntitlementGroup = params.newTitleGroup ? (IssueEntitlementGroup) genericOIDService.resolveOID(params.newTitleGroup) : null
+            IssueEntitlement ie = params.newIE ? IssueEntitlement.get(params.newIE) : null
+            IssueEntitlementGroup issueEntitlementGroup = params.newTitleGroup ? IssueEntitlementGroup.get(params.newTitleGroup) : null
             Map<String, Object> configMap = setupConfigMap(params, result.institution)
             Boolean billingSumRounding = params.newBillingSumRounding == 'on'
             Boolean finalCostRounding = params.newFinalCostRounding == 'on'

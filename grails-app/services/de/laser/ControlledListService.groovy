@@ -31,6 +31,7 @@ class ControlledListService {
 
     ContextService contextService
     GenericOIDService genericOIDService
+    IssueEntitlementService issueEntitlementService
     MessageSource messageSource
 
     /**
@@ -244,7 +245,8 @@ class ControlledListService {
         LinkedHashMap filterParams = [org:org, orgRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIUM,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS], current:RDStore.SUBSCRIPTION_CURRENT]
         if(params.sub) {
             filter = '= :sub'
-            filterParams = ['sub':genericOIDService.resolveOID(params.sub)]
+            Subscription s = Subscription.get(params.sub)
+            filterParams = ['sub':issueEntitlementService.getTargetSubscription(s)]
         }
         if(params.pkg) {
             try {
@@ -268,7 +270,7 @@ class ControlledListService {
             result.each { res ->
                 Subscription s = (Subscription) res.subscription
 
-                issueEntitlements.results.add([name:"${res.tipp.name} (${res.tipp.titleType}) (${s.dropdownNamingConvention(org)})",value:genericOIDService.getOID(res)])
+                issueEntitlements.results.add([name:"${res.tipp.name} (${res.tipp.titleType}) (${s.dropdownNamingConvention(org)})",value:res.id])
             }
         }
         issueEntitlements
@@ -287,7 +289,8 @@ class ControlledListService {
         LinkedHashMap filterParams = [org:org, orgRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], current:RDStore.SUBSCRIPTION_CURRENT]
         if(params.sub) {
             filter = '= :sub'
-            filterParams = ['sub':genericOIDService.resolveOID(params.sub)]
+            Subscription s = Subscription.get(params.sub)
+            filterParams = ['sub':issueEntitlementService.getTargetSubscription(s)]
         }
 
         if(params.query && params.query.length() > 0) {
@@ -298,7 +301,7 @@ class ControlledListService {
         if(result.size() > 0) {
             result.each { res ->
                 Subscription s = (Subscription) res.sub
-                issueEntitlementGroup.results.add([name:"${res.name} (${s.dropdownNamingConvention(org)})",value:genericOIDService.getOID(res)])
+                issueEntitlementGroup.results.add([name:"${res.name} (${s.dropdownNamingConvention(org)})",value:res.id])
             }
         }
         issueEntitlementGroup
@@ -367,7 +370,7 @@ class ControlledListService {
             queryString += " and (genfunc_filter_matcher(s.name,:query) = true or genfunc_filter_matcher(orgRoles.org.sortname,:query) = true) "
         }
         if(params.ctx) {
-            Subscription ctx = (Subscription) genericOIDService.resolveOID(params.ctx)
+            Subscription ctx = Subscription.get(params.ctx)
             filter.ctx = ctx
             if (org.isCustomerType_Consortium())
                 queryString += " and (s = :ctx or s.instanceOf = :ctx)"
@@ -375,7 +378,7 @@ class ControlledListService {
                 queryString += " and s = :ctx"
         }
         else if(params.sub) {
-            filter.sub = genericOIDService.resolveOID(params.sub)
+            filter.sub = Subscription.get(params.sub)
             queryString += " and s = :sub"
         }
         if(params.status) {
@@ -402,7 +405,7 @@ class ControlledListService {
         subscriptions.each { row ->
             Subscription s = (Subscription) row[0]
             s.packages.each { sp ->
-                result.results.add([name:"${sp.pkg.name}/${s.dropdownNamingConvention(org)}",value:genericOIDService.getOID(sp.pkg)])
+                result.results.add([name:"${sp.pkg.name}/${s.dropdownNamingConvention(org)}",value:sp.pkg.id])
             }
         }
         result
