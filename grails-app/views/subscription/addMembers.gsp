@@ -397,7 +397,7 @@
         </g:if>
     </g:form>
 
-    <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+    <g:if test="${contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
         <hr />
 
             <ui:msg class="info" header="${message(code: 'myinst.noMembers.cons.header')}" hideClose="true" message="myinst.noMembers.body" args="${[createLink(controller:'myInstitution', action:'manageMembers'),message(code:'consortium.member.plural')]}"/>

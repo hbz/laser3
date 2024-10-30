@@ -7820,7 +7820,7 @@ class ExportClickMeService {
         def request = WebUtils.retrieveGrailsWebRequest().getCurrentRequest()
         GrailsParameterMap grailsParameterMap = new GrailsParameterMap(request)
 
-        if(grailsParameterMap.saveClickMeConfig && BeanStore.getContextService().isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)){
+        if(grailsParameterMap.saveClickMeConfig && BeanStore.getContextService().isInstEditor(CustomerTypeService.PERMS_PRO)){
             String jsonConfig = (new JSON(selectedExportFields)).toString()
             String clickMeConfigName = grailsParameterMap.clickMeConfigName
             String clickMeType = grailsParameterMap.clickMeType

@@ -33,9 +33,9 @@ class TippController  {
    * Shows the given title. The title may be called by database ID, we:kb UUID or globalUID
    * @return the details view of the title
    */
-  @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+  @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport()
     })
   @Check404(domain= TitleInstancePackagePlatform)
   def show() { 

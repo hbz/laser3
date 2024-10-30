@@ -2,7 +2,7 @@
 <laser:serviceInjection />
 
 
-    <g:set var="isInstAdm" value="${contextService.isInstAdm_or_ROLEADMIN()}"/>
+    <g:set var="isInstAdm" value="${contextService.isInstAdm()}"/>
 
     <g:if test="${!fromSurvey && !copyObject}">
         <laser:render template="/templates/copyElements/selectSourceAndTargetObject" model="[

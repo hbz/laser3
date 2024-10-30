@@ -11,11 +11,9 @@
         </ui:exportDropdown>
     </g:if>
 
-<g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_SUPPORT)}">
+<g:if test="${contextService.isInstEditor(CustomerTypeService.ORG_SUPPORT)}">
     <ui:actionsDropdown>
-        <g:if test="${contextService.isInstEditor(CustomerTypeService.ORG_SUPPORT)}">
-            <laser:render template="/templates/sidebar/actions" />
-        </g:if>
+        <laser:render template="/templates/sidebar/actions" />
 
         <div class="divider"></div>
 
@@ -90,7 +88,7 @@
         </g:if>
     </ui:actionsDropdown>
 </g:if>
-<g:elseif test="${contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.ORG_SUPPORT)}">
+<g:elseif test="${contextService.isInstUser(CustomerTypeService.ORG_SUPPORT)}">
     <g:if test="${actionName == 'members' && subscriptionService.getValidSubChilds(subscription)}">
         <ui:actionsDropdown>
             <ui:actionsDropdownItem data-ui="modal" id="copyMailAddresses" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>

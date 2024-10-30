@@ -159,11 +159,11 @@
                                                             ${dd.value.replaceAll('ORG_', '')}
                                                         </g:if>
                                                         <g:elseif test="${dd.key == 'test'}">
-                                                            <g:if test="${dd.value.contains('_denySupport_')}">
-                                                                [ - ] closure_denySupport
+                                                            <g:if test="${dd.value.contains('_denySupport')}">
+                                                                {denySupport}:
                                                             </g:if>
                                                             <g:else>
-                                                                [ + ] closure
+                                                                {}:
                                                             </g:else>
                                                         </g:elseif>
                                                         <g:else>
@@ -195,7 +195,7 @@
                                                     </g:if>
                                                     <g:if test="${dd.key == 'test'}">
                                                         <g:if test="${info.value.getAt('perm')?.contains('ORG_CONSORTIUM_BASIC') || info.value.getAt('perm')?.contains('ORG_CONSORTIUM_PRO') || info.value.getAt('perm')?.contains('ORG_SUPPORT')}">%{-- check with given perms --}%
-                                                            <g:if test="${! dd.value.contains('_denySupport_')}">
+                                                            <g:if test="${! dd.value.contains('_denySupport')}">
                                                                 <i class="${Icon.AUTH.ORG_SUPPORT}"></i>
                                                             </g:if>
                                                         </g:if>
@@ -211,7 +211,7 @@
                                                 <span class="la-long-tooltip" data-tooltip="Zugriff: ORG_CONSORTIUM_BASIC / ORG_CONSORTIUM_PRO">
                                                     <i class="${Icon.AUTH.ORG_CONSORTIUM_BASIC}"></i><i class="${Icon.AUTH.ORG_CONSORTIUM_PRO}"></i>
                                                 </span>
-                                                <g:if test="${! info.value.getAt('test').contains('_denySupport_')}">
+                                                <g:if test="${! info.value.getAt('test').contains('_denySupport')}">
                                                     <i class="${Icon.AUTH.ORG_SUPPORT}"></i>
                                                 </g:if>
                                             </g:if>

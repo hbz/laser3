@@ -41,7 +41,6 @@ class VendorController {
     LinksGenerationService linksGenerationService
     PropertyService propertyService
     TaskService taskService
-    UserService userService
     VendorService vendorService
     WorkflowService workflowService
 
@@ -49,17 +48,17 @@ class VendorController {
             'list' : 'menu.public.all_vendors'
     ]
 
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     def index() {
         redirect 'list'
     }
 
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     def list() {
         Profiler prf = new Profiler()
@@ -217,9 +216,9 @@ class VendorController {
         }
     }
 
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser()
     })
     @Check404(domain=Vendor)
     def show() {
@@ -273,9 +272,9 @@ class VendorController {
      * Creates a new provider organisation with the given parameters
      * @return the details view of the provider or the creation view in case of an error
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], withTransaction = 1)
+    @DebugInfo(isInstEditor = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], withTransaction = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.isInstEditor( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def createVendor() {
         Vendor.withTransaction {
@@ -300,9 +299,9 @@ class VendorController {
      * Call to create a new provider; offers first a query for the new name to insert in order to exclude duplicates
      * @return the empty form (with a submit to proceed with the new organisation) or a list of eventual name matches
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(isInstEditor = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.isInstEditor( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def findVendorMatches() {
 
@@ -318,7 +317,10 @@ class VendorController {
     /**
      * Links two vendors with the given params
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstEditor = [])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor()
+    })
     def link() {
         linksGenerationService.linkProviderVendor(params, VendorLink.class.name)
         redirect action: 'show', id: params.context
@@ -327,7 +329,10 @@ class VendorController {
     /**
      * Removes the given link between two vendors
      */
-    @Secured(['ROLE_USER'])
+    @DebugInfo(isInstEditor = [])
+    @Secured(closure = {
+        ctx.contextService.isInstEditor()
+    })
     def unlink() {
         linksGenerationService.unlinkProviderVendor(params)
         redirect action: 'show', id: params.id
