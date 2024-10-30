@@ -2407,14 +2407,6 @@ class SubscriptionControllerService {
                 result.entitlements = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp left join ie.coverages ic where ie.id in (:entIDs) '+orderClause,[entIDs:filteredIDs.id]) //please check eventual side effects on sorting! toSet() is needed because of coverage statement doublets!                result.journalsOnly = result.entitlements.find { IssueEntitlement ie -> ie.tipp.titleType != RDStore.TITLE_TYPE_JOURNAL.value } == null
             }
             else result.entitlements = []
-            Set<SubscriptionPackage> deletedSPs = result.subscription.packages.findAll { SubscriptionPackage sp -> sp.pkg.packageStatus in [RDStore.PACKAGE_STATUS_DELETED, RDStore.PACKAGE_STATUS_REMOVED] }
-            if(deletedSPs) {
-                result.deletedSPs = []
-                ApiSource source = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)
-                deletedSPs.each { sp ->
-                    result.deletedSPs << [name:sp.pkg.name,link:"${source.editUrl}/public/packageContent/?id=${sp.pkg.gokbId}"]
-                }
-            }
             /*
             Date now = new Date()
             if (now > result.subscription.endDate) {
@@ -3512,107 +3504,6 @@ class SubscriptionControllerService {
 
             result.discountScales = result.subscription.discountScales
             [result: result, status: STATUS_OK]
-        }
-    }
-
-    @Deprecated
-    Map<String,Object> processRenewEntitlementsWithSurvey(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-        if(!result) {
-            [result:null,status:STATUS_ERROR]
-        }
-        else {
-            Locale locale = LocaleUtils.getCurrentLocale()
-            result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
-            result.editable = surveyService.isEditableSurvey(result.institution, result.surveyConfig.surveyInfo)
-            if(!result.editable) {
-                [result:null,status:STATUS_ERROR]
-            }
-            EhcacheWrapper userCache = contextService.getUserCache("/subscription/renewEntitlementsWithSurvey/${params.id}?${params.tab}")
-            Map<String, Object> checkedCache = userCache.get('selectedTitles') ?: [:]
-
-            result.checkedCache = checkedCache.get('checked')
-            result.checked = result.checkedCache.findAll {it.value == 'checked'}
-
-
-            List removeFromCache = []
-
-            if(result.checked.size() < 1){
-                result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps',null,locale)
-                [result:result,status:STATUS_ERROR]
-
-            }else if(params.process == "preliminary" && result.checked.size() > 0) {
-                Integer countRows = 0
-                Integer count = 0
-                Integer countSelectTipps = 0
-                Integer countNotSelectTipps = 0
-
-                Org owner = result.subscription.getSubscriberRespConsortia()
-                result.checked.each {
-                    countRows++
-                    TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findById(it.key)
-                    if(tipp) {
-                        count++
-
-                        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
-                        if (!issueEntitlementGroup) {
-                            String groupName = IssueEntitlementGroup.countBySubAndName(result.subscription,  result.surveyConfig.issueEntitlementGroupName) > 0 ? (IssueEntitlementGroup.countBySubAndNameIlike(result.subscription, result.surveyConfig.issueEntitlementGroupName) + 1) : result.surveyConfig.issueEntitlementGroupName
-
-                            issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: result.subscription, name: groupName).save()
-                        }
-
-                        if (PermanentTitle.findByOwnerAndTipp(owner, tipp)) {
-                            countNotSelectTipps++
-                        } else {
-                            if (issueEntitlementGroup && subscriptionService.addEntitlement(result.subscription, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
-                                log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
-                                countSelectTipps++
-                            } else {
-                                countNotSelectTipps++
-                            }
-                        }
-                    }
-                }
-
-                Object[] args = [count, countRows, countSelectTipps, countNotSelectTipps, BeanStore.getApplicationTagLib().createLink(controller: 'subscription', action: 'renewEntitlementsWithSurvey', params: [id: result.subscription.id, surveyConfigID: result.surveyConfig.id, tab: 'selectedIEs'])]
-                result.message = messageSource.getMessage('renewEntitlementsWithSurvey.issueEntitlementSelect.selectProcess', args, locale)
-
-
-                userCache.remove('selectedTitles')
-                [result:result,status:STATUS_OK]
-
-            } else if(params.process == "remove" && result.checked.size() > 0) {
-                Integer countIEsToDelete = 0
-                result.checked.each {
-                    try {
-                        IssueEntitlement issueEntitlement = IssueEntitlement.findById(Long.parseLong(it.key.toString()))
-                        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
-                        if(issueEntitlement && issueEntitlementGroup) {
-                            IssueEntitlementGroupItem issueEntitlementGroupItem = IssueEntitlementGroupItem.findByIeGroupAndIe(issueEntitlementGroup, issueEntitlement)
-                            if (issueEntitlementGroupItem) {
-                                IssueEntitlementGroup.withTransaction {
-                                    issueEntitlementGroupItem.delete()
-                                }
-
-                                if (subscriptionService.deleteEntitlementbyID(result.subscription, it.key.toString())) {
-                                    ++countIEsToDelete
-                                }
-                            }
-                        }
-                    }
-                    catch (EntitlementCreationException e) {
-                        result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps',null,locale)
-                        [result:result,status:STATUS_ERROR]
-                    }
-                }
-                if(countIEsToDelete > 0){
-                    Object[] args = [countIEsToDelete]
-                    result.message = messageSource.getMessage('renewEntitlementsWithSurvey.tippsToDelete',args,locale)
-                }
-
-                userCache.remove('selectedTitles')
-                [result:result,status:STATUS_OK]
-            }
         }
     }
 

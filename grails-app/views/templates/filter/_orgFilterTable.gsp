@@ -366,17 +366,12 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('hasInstAdmin')}">
                 <td class="center aligned">
-                    <%
-                        String instAdminIcon = '<i class="' + Icon.SYM.NO + ' large red"></i>'
-                        if (org.hasInstAdminEnabled())
-                            instAdminIcon = '<i class="' + Icon.SYM.YES + ' large green"></i>'
-                    %>
                     <g:if test="${contextService.isInstAdm()}">
                         <br /><g:link controller="organisation" action="users"
-                                    params="${[id: org.id]}">${raw(instAdminIcon)}</g:link>
+                                    params="${[id: org.id]}"><i class="${Icon.SYM.NO} large red"></i></g:link>
                     </g:if>
                     <g:else>
-                        ${raw(instAdminIcon)}
+                        <i class="${Icon.SYM.YES} large green"></i>
                     </g:else>
                 </td>
             </g:if>

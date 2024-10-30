@@ -60,34 +60,7 @@
                         <g:each in="${costItemsSubsc}" var="costItem">
                             <tr>
                                 <td>
-                                    <%
-                                        elementSign = 'notSet'
-                                        icon = ''
-                                        dataTooltip = ""
-                                        if (costItem.costItemElementConfiguration) {
-                                            elementSign = costItem.costItemElementConfiguration
-                                        }
-                                        switch (elementSign) {
-                                            case RDStore.CIEC_POSITIVE:
-                                                dataTooltip = message(code: 'financials.costItemConfiguration.positive')
-                                                icon = '<i class="' + Icon.FNC.COST_POSITIVE + '"></i>'
-                                                break
-                                            case RDStore.CIEC_NEGATIVE:
-                                                dataTooltip = message(code: 'financials.costItemConfiguration.negative')
-                                                icon = '<i class="' + Icon.FNC.COST_NEGATIVE + '"></i>'
-                                                break
-                                            case RDStore.CIEC_NEUTRAL:
-                                                dataTooltip = message(code: 'financials.costItemConfiguration.neutral')
-                                                icon = '<i class="' + Icon.FNC.COST_NEUTRAL + '"></i>'
-                                                break
-                                            default:
-                                                dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
-                                                icon = '<i class="' + Icon.FNC.COST_NOT_SET + '"></i>'
-                                                break
-                                        }
-                                    %>
-                                    <span class="la-popup-tooltip" data-position="right center"
-                                          data-content="${dataTooltip}">${raw(icon)}</span>
+                                    <ui:costSign ci="${costItem}"/>
 
                                     ${costItem.costItemElement?.getI10n('value')}
                                 </td>
@@ -132,34 +105,7 @@
                                     <g:each in="${surveyCostItems}"
                                             var="costItemSurvey">
                                         <td>
-                                            <%
-                                                elementSign = 'notSet'
-                                                icon = ''
-                                                dataTooltip = ""
-                                                if (costItemSurvey.costItemElementConfiguration) {
-                                                    elementSign = costItemSurvey.costItemElementConfiguration
-                                                }
-                                                switch (elementSign) {
-                                                    case RDStore.CIEC_POSITIVE:
-                                                        dataTooltip = message(code: 'financials.costItemConfiguration.positive')
-                                                        icon = '<i class="' + Icon.FNC.COST_POSITIVE + '"></i>'
-                                                        break
-                                                    case RDStore.CIEC_NEGATIVE:
-                                                        dataTooltip = message(code: 'financials.costItemConfiguration.negative')
-                                                        icon = '<i class="' + Icon.FNC.COST_NEGATIVE + '"></i>'
-                                                        break
-                                                    case RDStore.CIEC_NEUTRAL:
-                                                        dataTooltip = message(code: 'financials.costItemConfiguration.neutral')
-                                                        icon = '<i class="' + Icon.FNC.COST_NEUTRAL + '"></i>'
-                                                        break
-                                                    default:
-                                                        dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
-                                                        icon = '<i class="' + Icon.FNC.COST_NOT_SET + '"></i>'
-                                                        break
-                                                }
-                                            %>
-                                            <span class="la-popup-tooltip" data-position="right center"
-                                                  data-content="${dataTooltip}">${raw(icon)}</span>
+                                            <ui:costSign ci="${costItemSurvey}"/>
 
                                             ${costItemSurvey.costItemElement?.getI10n('value')}
                                         </td>
@@ -247,35 +193,7 @@
                                     <td></td>
                                     <td></td>
                                     <td>
-                                        <%
-                                            elementSign = 'notSet'
-                                            icon = ''
-                                            dataTooltip = ""
-                                            if (costItemSurvey.costItemElementConfiguration) {
-                                                elementSign = costItemSurvey.costItemElementConfiguration
-                                            }
-                                            switch (elementSign) {
-                                                case RDStore.CIEC_POSITIVE:
-                                                    dataTooltip = message(code: 'financials.costItemConfiguration.positive')
-                                                    icon = '<i class="' + Icon.FNC.COST_POSITIVE + '"></i>'
-                                                    break
-                                                case RDStore.CIEC_NEGATIVE:
-                                                    dataTooltip = message(code: 'financials.costItemConfiguration.negative')
-                                                    icon = '<i class="' + Icon.FNC.COST_NEGATIVE + '"></i>'
-                                                    break
-                                                case RDStore.CIEC_NEUTRAL:
-                                                    dataTooltip = message(code: 'financials.costItemConfiguration.neutral')
-                                                    icon = '<i class="' + Icon.FNC.COST_NEUTRAL + '"></i>'
-                                                    break
-                                                default:
-                                                    dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
-                                                    icon = '<i class="' + Icon.FNC.COST_NOT_SET + '"></i>'
-                                                    break
-                                            }
-                                        %>
-
-                                        <span class="la-popup-tooltip" data-position="right center"
-                                              data-content="${dataTooltip}">${raw(icon)}</span>
+                                        <ui:costSign ci="${costItemSurvey}"/>
 
                                         ${costItemSurvey.costItemElement?.getI10n('value')}
 
@@ -341,34 +259,7 @@
                                 <td></td>
                                 <td></td>
                                 <td>
-                                    <%
-                                        elementSign = 'notSet'
-                                        icon = ''
-                                        dataTooltip = ""
-                                        if (costItemSurvey.costItemElementConfiguration) {
-                                            elementSign = costItemSurvey.costItemElementConfiguration
-                                        }
-                                        switch (elementSign) {
-                                            case RDStore.CIEC_POSITIVE:
-                                                dataTooltip = message(code: 'financials.costItemConfiguration.positive')
-                                                icon = '<i class="' + Icon.FNC.COST_POSITIVE + '"></i>'
-                                                break
-                                            case RDStore.CIEC_NEGATIVE:
-                                                dataTooltip = message(code: 'financials.costItemConfiguration.negative')
-                                                icon = '<i class="' + Icon.FNC.COST_NEGATIVE + '"></i>'
-                                                break
-                                            case RDStore.CIEC_NEUTRAL:
-                                                dataTooltip = message(code: 'financials.costItemConfiguration.neutral')
-                                                icon = '<i class="' + Icon.FNC.COST_NEUTRAL + '"></i>'
-                                                break
-                                            default:
-                                                dataTooltip = message(code: 'financials.costItemConfiguration.notSet')
-                                                icon = '<i class="' + Icon.FNC.COST_NOT_SET + '"></i>'
-                                                break
-                                        }
-                                    %>
-                                    <span class="la-popup-tooltip" data-position="right center"
-                                          data-content="${dataTooltip}">${raw(icon)}</span>
+                                    <ui:costSign ci="${costItemSurvey}"/>
 
                                     ${costItemSurvey.costItemElement?.getI10n('value')}
 

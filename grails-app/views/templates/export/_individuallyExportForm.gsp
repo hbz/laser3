@@ -442,12 +442,9 @@
     }).trigger('change');
 
     $('#${modalID} input[type="checkbox"]').on( 'change', function() {
-    <%
-        totalFields.eachWithIndex { def fields, int i ->
-            String tmp = '$("#numberOfChecked-tab-'+i+'").html($'+"('[data-tab=tab-" + i + "]" + ' input[type="checkbox"]' + "').filter(':checked').length);"
-            println raw(tmp)
-        }
-    %>
+        <g:each in="${totalFields}" var="${fields}" status="i">
+            $("#numberOfChecked-tab-${i}").html($'+"('[data-tab=tab-${i}]" + ' input[type="checkbox"]' + "').filter(':checked').length);
+        </g:each>
     }).trigger('change');
 
 </laser:script>

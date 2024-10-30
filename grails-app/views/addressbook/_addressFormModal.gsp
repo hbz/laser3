@@ -501,7 +501,6 @@
     JSPC.app.updateDropdown = function() {
         var dropdownRegion = $('#region');
         var selectedCountry = $("#country").val();
-        var selectedRegions = ${raw(params.list('region') as String)};
 
             dropdownRegion.empty();
             dropdownRegion.append('<option selected="true" disabled>${message(code: 'default.select.choose.label')}</option>');
@@ -512,11 +511,17 @@
                 + '?country=' + selectedCountry + '&format=json',
                 success: function (data) {
                     $.each(data, function (key, entry) {
-                        if(jQuery.inArray(entry.id, selectedRegions) >=0 ){
-                            dropdownRegion.append($('<option></option>').attr('value', entry.id).attr('selected', 'selected').text(entry.${"value_" + languageSuffix}));
-                        }else{
+                        <g:if test="${addressInstance?.region}">
+                            if(entry.id == ${addressInstance.region.id}){
+                                dropdownRegion.append($('<option></option>').attr('value', entry.id).attr('selected', 'selected').text(entry.${"value_" + languageSuffix}));
+                            }
+                            else{
+                                dropdownRegion.append($('<option></option>').attr('value', entry.id).text(entry.${"value_" + languageSuffix}));
+                            }
+                        </g:if>
+                        <g:else>
                             dropdownRegion.append($('<option></option>').attr('value', entry.id).text(entry.${"value_" + languageSuffix}));
-                        }
+                        </g:else>
                      });
                 }
             });

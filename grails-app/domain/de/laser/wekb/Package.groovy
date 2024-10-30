@@ -347,9 +347,4 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
             Marker.findByPkgAndUserAndType(this, user, type).delete(flush:true)
         }
     }
-
-    String getPackageSize(){
-
-        return '(<span data-tooltip="Titel im Paket"><i class="' + Icon.TIPP + '"></i></span>' + executeQuery('select count(*) from TitleInstancePackagePlatform tipp join tipp.pkg pkg where pkg = :ctx and tipp.status = :current',[ctx:this, current:RDStore.TIPP_STATUS_CURRENT])[0] + ')'
-    }
 }

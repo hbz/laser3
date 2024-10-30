@@ -201,40 +201,8 @@
                                             currencySymbol="${ci.billingCurrency ?: 'EUR'}" />
                         </g:if>
                     </td>
-
-                    <%  // TODO .. copied from finance/_result_tab_cons.gsp
-
-                    def elementSign = 'notSet'
-                    String icon = ''
-                    String dataTooltip = ""
-                    if (ci?.costItemElementConfiguration) {
-                        elementSign = ci.costItemElementConfiguration
-                    }
-
-                    switch(elementSign) {
-                        case RDStore.CIEC_POSITIVE:
-                            dataTooltip = message(code:'financials.costItemConfiguration.positive')
-                            icon = '<i class="' + Icon.FNC.COST_POSITIVE + '"></i>'
-                            break
-                        case RDStore.CIEC_NEGATIVE:
-                            dataTooltip = message(code:'financials.costItemConfiguration.negative')
-                            icon = '<i class="' + Icon.FNC.COST_NEGATIVE + '"></i>'
-                            break
-                        case RDStore.CIEC_NEUTRAL:
-                            dataTooltip = message(code:'financials.costItemConfiguration.neutral')
-                            icon = '<i class="' + Icon.FNC.COST_NEUTRAL + '"></i>'
-                            break
-                        default:
-                            dataTooltip = message(code:'financials.costItemConfiguration.notSet')
-                            icon = '<i class="' + Icon.FNC.COST_NOT_SET + '"></i>'
-                            break
-                    }
-                    %>
-
                     <td>
-                        <g:if test="${ci?.id}">
-                            <span data-position="top left" class="la-popup-tooltip" data-content="${dataTooltip}">${raw(icon)}</span>
-                        </g:if>
+                        <ui:costSign ci="${ci}"/>
 
                         <g:if test="${ci?.isVisibleForSubscriber}">
                             <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">

@@ -54,8 +54,10 @@
         <i class="${Icon.UI.ERROR}"></i>
         <ul class="list">
             <g:each in="${deletedSPs}" var="sp">
-                <li><g:message code="subscription.details.packagesDeleted.header"
-                               args="${[sp.name]}"/> ${message(code: "subscription.details.packagesDeleted.entry", args: [raw(link(url: sp.link) { 'we:kb' })])}</li>
+                <li>
+                    <g:message code="subscription.details.packagesDeleted.header" args="${[sp.name]}"/>
+                    <g:message code="subscription.details.packagesDeleted.entry"/> <ui:wekbIconLink type="package" gokbId="${sp.uuid}"/>
+                </li>
             </g:each>
         </ul>
     </div>
