@@ -3893,7 +3893,7 @@ class SubscriptionControllerService {
         if (!result.editable) {
             //the explicit comparison against bool(true) should ensure that not only the existence of the parameter is checked but also its proper value
             if(params.copyMyElements == true) {
-                if(contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_INST_PRO))
+                if(contextService.isInstEditor(CustomerTypeService.ORG_INST_PRO))
                     result
             }
             else null
@@ -4004,7 +4004,7 @@ class SubscriptionControllerService {
         }
         else {
             if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
-                result.editable = contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+                result.editable = contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
             }
         }
         result.consortialView = result.showConsortiaFunctions ?: result.contextOrg.isCustomerType_Consortium()

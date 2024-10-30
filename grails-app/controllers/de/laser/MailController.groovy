@@ -22,9 +22,9 @@ class MailController {
     /**
      * Call to create a custom mail, attached to the given type of object. Currently, only {@link SurveyInfo}s are being supported
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = 1)
+    @DebugInfo(isInstEditor = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
+        ctx.contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_PRO)
     })
     def createOwnMail() {
         log.debug("createOwnMail: " + params)
@@ -44,13 +44,7 @@ class MailController {
             switch (result.objectType) {
                 case SurveyInfo.class.name:
 
-                    result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
-
-                    if (!result.editable) {
-                        flash.error = g.message(code: "default.notAutorized.message")
-                        redirect(url: request.getHeader('referer'))
-                    }
-
+                    result.editable = true
                     result.surveyInfo = SurveyInfo.get(Long.parseLong(result.objectId))
                     result.surveyConfig = result.surveyInfo.surveyConfigs[0]
 
@@ -117,13 +111,7 @@ class MailController {
                     break
                 case Org.class.name:
 
-                    result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
-
-                    if (!result.editable) {
-                        flash.error = g.message(code: "default.notAutorized.message")
-                        redirect(url: request.getHeader('referer'))
-                    }
-
+                    result.editable = true
                     result.surveyList = []
 
                     if (params.list('selectedSurveys')) {
@@ -183,9 +171,9 @@ class MailController {
      * Sends the given mail. Depending on the object type the mail is attached to, certain procedures are being followed sending the mail
      * @return redirect back to the referer
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = 1)
+    @DebugInfo(isInstEditor = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
+        ctx.contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_PRO)
     })
     def processSendMail() {
         log.debug("processSendMail: " + params)
@@ -214,13 +202,8 @@ class MailController {
 
             switch (params.objectType) {
                 case SurveyInfo.class.name:
-                    result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
-                    if (!result.editable) {
-                        flash.error = g.message(code: "default.notAutorized.message")
-                        redirect(url: request.getHeader('referer'))
-                    }
-
+                    result.editable = true
                     result.surveyInfo = SurveyInfo.get(Long.parseLong(result.objectId))
 
                     result.editable = (result.surveyInfo && result.surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED]) ? result.editable : false
@@ -239,13 +222,8 @@ class MailController {
                     return
                     break
                 case Org.class.name:
-                    result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
-                    if (!result.editable) {
-                        flash.error = g.message(code: "default.notAutorized.message")
-                        redirect(url: request.getHeader('referer'))
-                    }
-
+                    result.editable = true
                     result.surveyList = []
 
                     if (params.list('selectedSurveys')) {
@@ -281,6 +259,4 @@ class MailController {
 
         redirect(url: request.getHeader("referer"))
     }
-
-
 }

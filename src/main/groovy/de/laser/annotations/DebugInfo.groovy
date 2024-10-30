@@ -23,13 +23,7 @@ import java.lang.annotation.Target
     String[] isInstEditor_denySupport()    default ['']                 // [orgPerms]
     String[] isInstAdm_denySupport()       default ['']                 // [orgPerms]
 
-    String[] isInstUser_or_ROLEADMIN()      default ['']                // [orgPerms]
-    String[] isInstEditor_or_ROLEADMIN()    default ['']                // [orgPerms]
     String[] isInstAdm_or_ROLEADMIN()       default ['']                // [orgPerms]
-
-    String[] isInstUser_denySupport_or_ROLEADMIN()      default ['']    // [orgPerms]
-    String[] isInstEditor_denySupport_or_ROLEADMIN()    default ['']    // [orgPerms]
-    String[] isInstAdm_denySupport_or_ROLEADMIN()       default ['']    // [orgPerms]
 
     // legacy
 

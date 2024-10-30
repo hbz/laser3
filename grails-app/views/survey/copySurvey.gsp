@@ -523,7 +523,7 @@
                         <g:if test="${!s.instanceOf}">
                             <g:set var="childSubIds" value="${Subscription.executeQuery('select s.id from Subscription s where s.instanceOf = :parent',[parent:s])}"/>
 
-                            <g:set var="editableAll" value="${editable && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO ) && (surveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL && SurveyConfig.executeQuery('select count(*) from SurveyConfig sc where sc.subscription = :sub and sc.subSurveyUseForTransfer = true', [sub: s])[0] == 0 || surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL)}"/>
+                            <g:set var="editableAll" value="${editable && contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_PRO ) && (surveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL && SurveyConfig.executeQuery('select count(*) from SurveyConfig sc where sc.subscription = :sub and sc.subSurveyUseForTransfer = true', [sub: s])[0] == 0 || surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL)}"/>
                             <tr>
                                 <td>
                                     <g:if test="${editableAll}">

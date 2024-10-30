@@ -275,7 +275,7 @@ class MailSendService {
         result.mailFrom = fromMail
         result.mailSubject = parameterMap.mailSubject
 
-        result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        result.editable = contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
         if (result.editable) {
             String replyToMail

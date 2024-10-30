@@ -7,7 +7,7 @@
     String documentMessage
     switch(ownobj.class.name) {
         case Org.class.name: documentMessage = "default.documents.label"
-            editable = userService.hasFormalAffiliation_or_ROLEADMIN(contextService.getUser(), contextOrg, 'INST_EDITOR')
+            editable = userService.hasFormalAffiliation(contextService.getUser(), contextOrg, 'INST_EDITOR')
             break
         default: documentMessage = "license.documents"
             break

@@ -149,26 +149,6 @@ class ContextService {
     }
 
     /**
-     * Checks if the context user belongs to an institution with the given customer types or is a superadmin
-     * @param orgPerms the customer types to verify
-     * @return true if the given permissions are granted, false otherwise
-     * @see CustomerTypeService
-     */
-    boolean isInstUser_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_USER, orgPerms, false)
-    }
-
-    /**
-     * Checks if the context user belongs as an editor to an institution with the given customer types or is a superadmin
-     * @param orgPerms the customer types to verify
-     * @return true if the given permissions are granted, false otherwise
-     * @see CustomerTypeService
-     */
-    boolean isInstEditor_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_EDITOR, orgPerms, false)
-    }
-
-    /**
      * Checks if the context user belongs as a local administrator to an institution with the given customer types or is a superadmin
      * @param orgPerms the customer types to verify
      * @return true if the given permissions are granted, false otherwise
@@ -206,36 +186,6 @@ class ContextService {
      */
     boolean isInstAdm_denySupport(String orgPerms = null) {
         _hasInstRoleAndPerm(Role.INST_ADM, orgPerms, true)
-    }
-
-    /**
-     * Same as {@link #isInstUser_or_ROLEADMIN()}, but support-type customers get access denied
-     * @param orgPerms the customer types to verify
-     * @return true if the given permissions are granted, false otherwise
-     * @see CustomerTypeService
-     */
-    boolean isInstUser_denySupport_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_USER, orgPerms, true)
-    }
-
-    /**
-     * Same as {@link #isInstEditor_or_ROLEADMIN()}, but support-type customers get access denied
-     * @param orgPerms the customer types to verify
-     * @return true if the given permissions are granted, false otherwise
-     * @see CustomerTypeService
-     */
-    boolean isInstEditor_denySupport_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_EDITOR, orgPerms, true)
-    }
-
-    /**
-     * Same as {@link #isInstAdm_or_ROLEADMIN()}, but support-type customers get access denied
-     * @param orgPerms the customer types to verify
-     * @return true if the given permissions are granted, false otherwise
-     * @see CustomerTypeService
-     */
-    boolean isInstAdm_denySupport_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_ADM, orgPerms, true)
     }
 
     // -- private
@@ -304,7 +254,7 @@ class ContextService {
      */
     // TODO
     boolean is_ORG_COM_EDITOR_or_ROLEADMIN() {
-        isInstEditor_or_ROLEADMIN() && _hasPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_EDITOR, null, false) && _hasPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     }
 
     /**
@@ -352,13 +302,13 @@ class ContextService {
             check = SpringSecurityUtils.ifAnyGranted(attrs.specRole ?: [])
 
             if (!check) {
-                boolean instRoleCheck = attrs.instRole ? BeanStore.getUserService().hasAffiliation_or_ROLEADMIN(user, org, attrs.instRole) : true
+                boolean instRoleCheck = attrs.instRole ? BeanStore.getUserService().hasAffiliation(user, org, attrs.instRole) : true
                 boolean orgPermCheck  = attrs.orgPerm ? _hasPerm(attrs.orgPerm) : true
 
                 check = instRoleCheck && orgPermCheck
 
                 if (attrs.instRole && attrs.affiliationOrg && check) { // ???
-                    check = BeanStore.getUserService().hasAffiliation_or_ROLEADMIN(user, attrs.affiliationOrg, attrs.instRole)
+                    check = BeanStore.getUserService().hasAffiliation(user, attrs.affiliationOrg, attrs.instRole)
                     // check = user.hasOrgAffiliation_or_ROLEADMIN(attrs.affiliationOrg, attrs.instRole)
                 }
             }
@@ -396,7 +346,7 @@ class ContextService {
         User user = getUser()
 
         // combo check @ contextUser/contextOrg
-        boolean check1 = userService.hasAffiliation_or_ROLEADMIN(user, ctx, instUserRole) && _hasPerm(orgPerms)
+        boolean check1 = userService.hasFormalAffiliation(user, ctx, instUserRole) && _hasPerm(orgPerms)
         boolean check2 = (orgToCheck.id == ctx.id) || Combo.findByToOrgAndFromOrg(ctx, orgToCheck)
 
         // orgToCheck check @ otherOrg

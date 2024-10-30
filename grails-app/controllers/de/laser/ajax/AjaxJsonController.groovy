@@ -1065,9 +1065,9 @@ class AjaxJsonController {
      * @return the issue entitlement holding view
      */
     /*
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = 1)
+    @DebugInfo(isInstEditor = [], ctrlService = 1)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.isInstEditor()
     })
     def removePriceItem() {
         Map<String,Object> ctrlResult = subscriptionControllerService.removePriceItem(params)

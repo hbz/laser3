@@ -51,7 +51,7 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
             </div>
         </div>
     </div>
-    <g:if test="${isConsortialObjects && contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+    <g:if test="${isConsortialObjects && contextService.isInstUser(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
         <div class="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_PROPERTIES] ? 'completed' : '')} step">
             <div class="content">
                 <div class="title">
@@ -83,7 +83,7 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
     <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
         <laser:render template="/templates/copyElements/copyDocsAndTasksAndWorkflows" />
     </g:elseif>
-    <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER && isConsortialObjects && contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+    <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER && isConsortialObjects && contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
         <laser:render template="/templates/copyElements/copySubscriber" />
     </g:elseif>
     <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES}">

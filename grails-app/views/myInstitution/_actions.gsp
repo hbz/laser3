@@ -5,7 +5,7 @@
 
 <g:if test="${actionName == 'currentSubscriptions'}">
     <ui:actionsDropdown>
-        <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+        <g:if test="${contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
             <ui:actionsDropdownItem controller="subscription" action="emptySubscription" message="menu.institutions.emptySubscription" />
             <ui:actionsDropdownItem controller="myInstitution" action="subscriptionImport" message="menu.institutions.subscriptionImport" />
             <div class="divider"></div>
@@ -14,7 +14,7 @@
     </ui:actionsDropdown>
 </g:if>
 <g:elseif test="${actionName == 'currentLicenses'}">
-    <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+    <g:if test="${contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
         <ui:actionsDropdown>
             <ui:actionsDropdownItem controller="myInstitution" action="emptyLicense" message="license.add.blank" />
 
@@ -25,7 +25,7 @@
 </g:elseif>
 %{-- todo - permissions --}%
 <g:elseif test="${actionName in ['manageMembers', 'addMembers']}">
-    <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+    <g:if test="${contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
         <ui:actionsDropdown>
             <g:if test="${comboType != null && comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
                 <ui:actionsDropdownItem controller="myInstitution" action="addMembers" message="menu.institutions.add_consortia_members" />
@@ -35,7 +35,7 @@
             </g:if>
         </ui:actionsDropdown>
     </g:if>
-    <g:elseif test="${contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+    <g:elseif test="${contextService.isInstUser(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
         <g:if test="${actionName == 'manageMembers'}">
             <ui:actionsDropdown>
                 <ui:actionsDropdownItem data-ui="modal" id="copyMailAddresses" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>

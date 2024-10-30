@@ -3,11 +3,9 @@
 
 <laser:serviceInjection />
 <ui:actionsDropdown>
-    <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+    <g:if test="${contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
         <g:if test="${actionName == 'edit_ip'}">
-            <g:if test="${contextService.isInstEditor_or_ROLEADMIN()}">
                 <g:link class="item" action="delete" id="${params.id}"><i class="${Icon.CMD.DELETE}"></i> Zugangskonfiguration löschen</g:link>
-            </g:if>
         </g:if>
     </g:if>
 </ui:actionsDropdown>

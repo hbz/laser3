@@ -41,7 +41,7 @@
                 </g:if>
                 <g:if test="${tmplConfigItem == 'surveyVendorsComments'}">
                     <th>
-                        <g:if test="${contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
+                        <g:if test="${contextService.isInstUser(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
                             ${message(code: 'surveyResult.participantComment')}
                         </g:if>
                         <g:else>
@@ -53,7 +53,7 @@
                         </g:else>
                     </th>
                     <th>
-                        <g:if test="${contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
+                        <g:if test="${contextService.isInstUser(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
                             ${message(code: 'surveyResult.commentOnlyForOwner')}
                             <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                   data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
@@ -243,7 +243,7 @@
                             <ui:xEditable owner="${surveyVendorResult}" type="textarea" field="comment"/>
                         </td>
                         <td>
-                            <g:if test="${contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
+                            <g:if test="${contextService.isInstUser(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
                                 <ui:xEditable owner="${surveyVendorResult}" type="textarea" field="ownerComment"/>
                             </g:if>
                             <g:else>
