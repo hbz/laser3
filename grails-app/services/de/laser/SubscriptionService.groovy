@@ -1421,6 +1421,7 @@ class SubscriptionService {
                 log.error(new_ie.errors)
             }
         }
+        false
     }
 
     Map<String, Object> selectEntitlementsWithKBART(MultipartFile kbartFile, Subscription subscription) {
@@ -1553,18 +1554,21 @@ class SubscriptionService {
      * @param id the database ID of the title to be removed
      * @return true if the deletion was successful, false otherwise
      */
-    boolean deleteEntitlementbyID(sub, id) {
-        IssueEntitlement ie = IssueEntitlement.findWhere(id: Long.parseLong(id), subscription: sub)
+    boolean deleteEntitlementByID(Subscription sub, String id, IssueEntitlementGroup ieg = null) {
+        IssueEntitlement ie = IssueEntitlement.get(id)
         if(ie == null) {
             return false
         }
         else {
-            ie.status = RDStore.TIPP_STATUS_REMOVED
-
+            if (ieg) {
+                IssueEntitlementGroupItem iegi = IssueEntitlementGroupItem.findByIeGroupAndIe(ieg, ie)
+                iegi.delete()
+            }
             PermanentTitle permanentTitle = PermanentTitle.findByOwnerAndTipp(sub.getSubscriberRespConsortia(), ie.tipp)
             if (permanentTitle) {
                 permanentTitle.delete()
             }
+            ie.status = RDStore.TIPP_STATUS_REMOVED
 
             if(ie.save()) {
                 return true
@@ -1589,18 +1593,20 @@ class SubscriptionService {
         Object[] keys = selectedTitles.toArray()
         sql.withTransaction {
             sql.executeUpdate('update issue_entitlement set ie_status_rv_fk = :current from title_instance_package_platform where ie_tipp_fk = tipp_id and ie_status_rv_fk = :expected and tipp_gokb_id = any(:keys) and ie_subscription_fk = :subId', [current: RDStore.TIPP_STATUS_CURRENT.id, expected: RDStore.TIPP_STATUS_EXPECTED.id, keys: sql.connection.createArrayOf('varchar', keys), subId: sub.id])
-            Set<Map<String, Object>> ieDirectMapSet = [], coverageDirectMapSet = [], priceItemDirectSet = []
+            Set<Map<String, Object>> ieDirectMapSet = []//, coverageDirectMapSet = [], priceItemDirectSet = []
             selectedTitles.each { String wekbId ->
                 log.debug "processing ${wekbId}"
                 List<GroovyRowResult> existingEntitlements = sql.rows('select ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId and ie_status_rv_fk = :current and tipp_gokb_id = :key',[subId: sub.id, current: RDStore.TIPP_STATUS_CURRENT.id, key: wekbId])
                 if(existingEntitlements.size() == 0) {
-                    Map<String, Object> configMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id], coverageMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id], priceMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id]
+                    Map<String, Object> configMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id]//, coverageMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id], priceMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id]
                     if(pickAndChoosePerpetualAccess || sub.hasPerpetualAccess){
                         configMap.perpetualAccessBySub = sub.id
                     }
                     ieDirectMapSet << configMap
+                    /*
                     coverageDirectMapSet << coverageMap
                     priceItemDirectSet << priceMap
+                    */
                 }
             }
             ieDirectMapSet.each { Map<String, Object> configMap ->
@@ -1626,6 +1632,7 @@ class SubscriptionService {
                     }
                 }
             }
+            /*
             coverageDirectMapSet.each { Map<String, Object> configMap ->
                 sql.withBatch("insert into issue_entitlement_coverage (ic_version, ic_date_created, ic_last_updated, ic_start_date, ic_start_issue, ic_start_volume, ic_end_date, ic_end_issue, ic_end_volume, ic_coverage_depth, ic_coverage_note, ic_embargo, ic_ie_fk) " +
                         "select 0, now(), now(), tc_start_date, tc_start_issue, tc_start_volume, tc_end_date, tc_end_issue, tc_end_volume, tc_coverage_depth, tc_coverage_note, tc_embargo, ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id join tippcoverage on tc_tipp_fk = tipp_id where ie_subscription_fk = :subId and tipp_gokb_id = :wekbId and ie_status_rv_fk != :removed") { BatchingStatementWrapper stmt ->
@@ -1638,6 +1645,7 @@ class SubscriptionService {
                     stmt.addBatch(configMap)
                 }
             }
+            */
         }
         sql.close()
     }
@@ -1867,52 +1875,44 @@ class SubscriptionService {
 
     /**
      * Takes the submitted input and adds the selected titles to the (preliminary) subscription holding from cache
-     * @param controller unused
      * @param params the request parameter map
      * @return OK if the selection (adding and/or removing of issue entitlements) was successful, ERROR otherwise
      */
-    Map<String,Object> processRenewEntitlementsWithSurvey(SubscriptionController controller, GrailsParameterMap params) {
-        /*
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+    Map<String,Object> processRenewEntitlementsWithSurvey(GrailsParameterMap params) {
+        Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result) {
-            [result:null,status:STATUS_ERROR]
+            [result: null, status: SubscriptionControllerService.STATUS_ERROR]
         }
         else {
             Locale locale = LocaleUtils.getCurrentLocale()
             result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
             result.editable = surveyService.isEditableSurvey(result.institution, result.surveyConfig.surveyInfo)
             if(!result.editable) {
-                [result:null,status:STATUS_ERROR]
+                [result: null, status: SubscriptionControllerService.STATUS_ERROR]
             }
             EhcacheWrapper userCache = contextService.getUserCache("/subscription/renewEntitlementsWithSurvey/${params.id}?${params.tab}")
             Map<String, Object> checkedCache = userCache.get('selectedTitles') ?: [:]
 
             result.checkedCache = checkedCache.get('checked')
-            result.checked = result.checkedCache.findAll {it.value == 'checked'}
-
-
-            List removeFromCache = []
-
+            result.checked = result.checkedCache.findAll { it.value == 'checked' }
             if(result.checked.size() < 1){
                 result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps',null,locale)
-                [result:result,status:STATUS_ERROR]
-
-            }else if(params.process == "preliminary" && result.checked.size() > 0) {
+                [result: result, status: SubscriptionControllerService.STATUS_ERROR]
+            }
+            else if(params.process == "add" && result.checked.size() > 0) {
                 Integer countTippsToAdd = 0
                 result.checked.each {
-                    TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findById(it.key)
+                    TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(it.key)
                     if(tipp) {
                         try {
 
                             IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
 
                             if (!issueEntitlementGroup) {
-                                IssueEntitlementGroup.withTransaction {
-                                    issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: result.subscription, name: result.surveyConfig.issueEntitlementGroupName).save()
-                                }
+                                issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: result.subscription, name: result.surveyConfig.issueEntitlementGroupName).save()
                             }
 
-                            if (issueEntitlementGroup && subscriptionService.addEntitlement(result.subscription, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
+                            if (issueEntitlementGroup && addEntitlement(result.subscription, tipp.gokbId, null, false, result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
                                 log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
                                 ++countTippsToAdd
                             }
@@ -1920,7 +1920,7 @@ class SubscriptionService {
                         catch (EntitlementCreationException e) {
                             log.debug("Error: Adding tipp ${tipp} to sub ${result.subscription.id}: " + e.getMessage())
                             result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps', null, locale)
-                            [result: result, status: STATUS_ERROR]
+                            [result: result, status: SubscriptionControllerService.STATUS_ERROR]
                         }
                     }
                 }
@@ -1928,44 +1928,57 @@ class SubscriptionService {
                     Object[] args = [countTippsToAdd]
                     result.message = messageSource.getMessage('renewEntitlementsWithSurvey.tippsToAdd',args,locale)
                 }
-
-                userCache.remove('selectedTitles')
-                [result:result,status:STATUS_OK]
-
-            } else if(params.process == "remove" && result.checked.size() > 0) {
+            }
+            else if(params.process == "remove" && result.checked.size() > 0) {
                 Integer countIEsToDelete = 0
                 result.checked.each {
-                    try {
-                        IssueEntitlement issueEntitlement = IssueEntitlement.findById(Long.parseLong(it.key.toString()))
-                        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
-                        if(issueEntitlement && issueEntitlementGroup) {
-                            IssueEntitlementGroupItem issueEntitlementGroupItem = IssueEntitlementGroupItem.findByIeGroupAndIe(issueEntitlementGroup, issueEntitlement)
-                            if (issueEntitlementGroupItem) {
-                                IssueEntitlementGroup.withTransaction {
-                                    issueEntitlementGroupItem.delete()
-                                }
-
-                                if (subscriptionService.deleteEntitlementbyID(result.subscription, it.key.toString())) {
-                                    ++countIEsToDelete
-                                }
-                            }
+                    IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
+                    if(IssueEntitlement.countById(Long.parseLong(it.key)) && issueEntitlementGroup) {
+                        if (deleteEntitlementByID(result.subscription, it.key, issueEntitlementGroup)) {
+                            ++countIEsToDelete
                         }
-                    }
-                    catch (EntitlementCreationException e) {
-                        result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps',null,locale)
-                        [result:result,status:STATUS_ERROR]
                     }
                 }
                 if(countIEsToDelete > 0){
                     Object[] args = [countIEsToDelete]
                     result.message = messageSource.getMessage('renewEntitlementsWithSurvey.tippsToDelete',args,locale)
                 }
-
-                userCache.remove('selectedTitles')
-                [result:result,status:STATUS_OK]
             }
+            userCache.remove('selectedTitles')
+            [result:result,status:SubscriptionControllerService.STATUS_OK]
         }
-        */
+    }
+
+    Map<String, Object> addSingleEntitlementSurvey(GrailsParameterMap params) {
+        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        result.editable = surveyService.isEditableSurvey(result.institution, result.surveyConfig.surveyInfo)
+        if (result.subscription) {
+            if(result.editable && params.containsKey('singleTitle')) {
+                TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(params.singleTitle)
+                try {
+
+                    IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
+
+                    if (!issueEntitlementGroup) {
+                        issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: result.subscription, name: result.surveyConfig.issueEntitlementGroupName).save()
+                    }
+
+                    if (issueEntitlementGroup && addEntitlement(result.subscription, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
+                        result.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp.name]) as String
+                    } else {
+                        log.error("no issueEntitlementGroup found and no issueEntitlementGroup created, because it is not set a issueEntitlementGroupName in survey config!")
+                    }
+                }
+                catch (EntitlementCreationException e) {
+                    result.error = e.getMessage()
+                }
+
+            }
+        } else {
+            log.error("Unable to locate subscription instance")
+        }
+        result
     }
 
     Map<String, Object> exportRenewalEntitlements(GrailsParameterMap params) {
@@ -2101,7 +2114,7 @@ class SubscriptionService {
                                 startTime.add(Calendar.MONTH, 1)
                             }
                             Map<String, Object> requestResponse = exportService.getReports(sushiQueryMap)
-                            if(requestResponse.containsKey("error") && requestResponse.error == 202) {
+                            if(requestResponse.containsKey("error") && requestResponse.error.code == 202) {
                                 result.status202 = true
                             }
                             else {
@@ -3323,46 +3336,44 @@ class SubscriptionService {
                         break
                 }
             }
-            //after having read off the header row, pop the first row
-            rows.remove(0)
-            rows.eachWithIndex { row, int i ->
+            rows.eachWithIndex { String row, int i ->
                 countRows++
                 log.debug("now processing entitlement ${i+1}")
                 ArrayList<String> cols = row.split('\t', -1)
                 if(cols.size() == titleRow.size()) {
-                    TitleInstancePackagePlatform match = null
-                    //cascade: 1. title_url, 2. title_id, 3. identifier map
-                    if(titleUrlCol >= 0 && cols[titleUrlCol] != null && !cols[titleUrlCol].trim().isEmpty()) {
-                        match = TitleInstancePackagePlatform.findByHostPlatformURLAndPkgInListAndStatus(cols[titleUrlCol].trim(), subPkgs, RDStore.TIPP_STATUS_CURRENT)
-                    }
-                    if(!match && titleIdCol >= 0 && cols[titleIdCol] != null && !cols[titleIdCol].trim().isEmpty()) {
-                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status = :currentStatus', [subPkgs: subPkgs, value: cols[titleIdCol].trim(), ns: namespaces.title_id, currentStatus: RDStore.TIPP_STATUS_CURRENT])
-                        if(matchList.size() == 1)
-                            match = matchList[0] as TitleInstancePackagePlatform
-                    }
+                    if (pickCol >= 0 && cols[pickCol] != null && !cols[pickCol].trim().isEmpty()) {
+                        TitleInstancePackagePlatform match = null
+                        //cascade: 1. title_url, 2. title_id, 3. identifier map
+                        if(titleUrlCol >= 0 && cols[titleUrlCol] != null && !cols[titleUrlCol].trim().isEmpty()) {
+                            match = TitleInstancePackagePlatform.findByHostPlatformURLAndPkgInListAndStatus(cols[titleUrlCol].trim(), subPkgs, RDStore.TIPP_STATUS_CURRENT)
+                        }
+                        if(!match && titleIdCol >= 0 && cols[titleIdCol] != null && !cols[titleIdCol].trim().isEmpty()) {
+                            List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status = :currentStatus', [subPkgs: subPkgs, value: cols[titleIdCol].trim(), ns: namespaces.title_id, currentStatus: RDStore.TIPP_STATUS_CURRENT])
+                            if(matchList.size() == 1)
+                                match = matchList[0] as TitleInstancePackagePlatform
+                        }
 
-                    if(!match && doiCol >= 0 && cols[doiCol] != null && !cols[doiCol].trim().isEmpty()) {
-                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status = :currentStatus', [subPkgs: subPkgs, value: cols[doiCol].trim(), ns: namespaces.doi, currentStatus: RDStore.TIPP_STATUS_CURRENT])
-                        if(matchList.size() == 1)
-                            match = matchList[0] as TitleInstancePackagePlatform
-                    }
-                    if(!match && onlineIdentifierCol >= 0 && cols[onlineIdentifierCol] != null && !cols[onlineIdentifierCol].trim().isEmpty()) {
-                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns in (:ns) and tipp.status = :currentStatus', [subPkgs: subPkgs, value: cols[onlineIdentifierCol].trim(), ns: [namespaces.eisbn, namespaces.eissn], currentStatus: RDStore.TIPP_STATUS_CURRENT])
-                        if(matchList.size() == 1)
-                            match = matchList[0] as TitleInstancePackagePlatform
-                    }
-                    if(!match && printIdentifierCol >= 0 && cols[printIdentifierCol] != null && !cols[printIdentifierCol].trim().isEmpty()) {
-                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns in (:ns) and tipp.status = :currentStatus', [subPkgs: subPkgs, value: cols[printIdentifierCol].trim(), ns: [namespaces.isbn, namespaces.issn], currentStatus: RDStore.TIPP_STATUS_CURRENT])
-                        if(matchList.size() == 1)
-                            match = matchList[0] as TitleInstancePackagePlatform
-                    }
-                    if(!match && zdbCol >= 0 && cols[zdbCol] != null && !cols[zdbCol].trim().isEmpty()) {
-                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status = :currentStatus', [subPkgs: subPkgs, value: cols[zdbCol].trim(), ns: namespaces.zdb, currentStatus: RDStore.TIPP_STATUS_CURRENT])
-                        if(matchList.size() == 1)
-                            match = matchList[0] as TitleInstancePackagePlatform
-                    }
-                    if(match) {
-                        if (pickCol >= 0 && cols[pickCol] != null && !cols[pickCol].trim().isEmpty()) {
+                        if(!match && doiCol >= 0 && cols[doiCol] != null && !cols[doiCol].trim().isEmpty()) {
+                            List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status = :currentStatus', [subPkgs: subPkgs, value: cols[doiCol].trim(), ns: namespaces.doi, currentStatus: RDStore.TIPP_STATUS_CURRENT])
+                            if(matchList.size() == 1)
+                                match = matchList[0] as TitleInstancePackagePlatform
+                        }
+                        if(!match && onlineIdentifierCol >= 0 && cols[onlineIdentifierCol] != null && !cols[onlineIdentifierCol].trim().isEmpty()) {
+                            List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns in (:ns) and tipp.status = :currentStatus', [subPkgs: subPkgs, value: cols[onlineIdentifierCol].trim(), ns: [namespaces.eisbn, namespaces.eissn], currentStatus: RDStore.TIPP_STATUS_CURRENT])
+                            if(matchList.size() == 1)
+                                match = matchList[0] as TitleInstancePackagePlatform
+                        }
+                        if(!match && printIdentifierCol >= 0 && cols[printIdentifierCol] != null && !cols[printIdentifierCol].trim().isEmpty()) {
+                            List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns in (:ns) and tipp.status = :currentStatus', [subPkgs: subPkgs, value: cols[printIdentifierCol].trim(), ns: [namespaces.isbn, namespaces.issn], currentStatus: RDStore.TIPP_STATUS_CURRENT])
+                            if(matchList.size() == 1)
+                                match = matchList[0] as TitleInstancePackagePlatform
+                        }
+                        if(!match && zdbCol >= 0 && cols[zdbCol] != null && !cols[zdbCol].trim().isEmpty()) {
+                            List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status = :currentStatus', [subPkgs: subPkgs, value: cols[zdbCol].trim(), ns: namespaces.zdb, currentStatus: RDStore.TIPP_STATUS_CURRENT])
+                            if(matchList.size() == 1)
+                                match = matchList[0] as TitleInstancePackagePlatform
+                        }
+                        if(match) {
                             count++
                             String cellEntry = cols[pickCol].trim()
                             if (cellEntry.toLowerCase() == RDStore.YN_YES.value_de.toLowerCase() || cellEntry.toLowerCase() == RDStore.YN_YES.value_en.toLowerCase()) {

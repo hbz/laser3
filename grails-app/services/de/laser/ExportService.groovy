@@ -3769,7 +3769,7 @@ class ExportService {
 				String cellStyle = row.remove('style')
 				Map titleReport = configMap.usageData.containsKey(tippID) ? configMap.usageData.get(tippID) : null
 				configMap.monthHeaders.each { Date month ->
-					String value
+					def value
 					String monthKey = DateUtils.getSDF_yyyyMM().format(month)
 					if(titleReport) {
 						value = titleReport.containsKey(monthKey) ? titleReport.get(monthKey) : ' '
