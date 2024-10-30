@@ -157,11 +157,6 @@ class FinanceController  {
     def financialsExport()  {
         log.debug("Financial Export :: ${params}")
         Map<String, Object> result = financeControllerService.getResultGenerics(params+[forExport:true])
-        if (! contextService.isInstUser()) {
-            flash.error = message(code: 'financials.permission.unauthorised', args: [result.institution? result.institution.name : 'N/A']) as String
-            response.sendError(HttpStatus.SC_FORBIDDEN)
-            return
-        }
         Map financialData = result.subscription ? financeService.getCostItemsForSubscription(params,result) : financeService.getCostItems(params,result)
         result.cost_item_tabs = [:]
         if(result.dataToDisplay.contains("own")) {

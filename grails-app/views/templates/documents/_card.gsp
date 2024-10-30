@@ -7,7 +7,7 @@
     String documentMessage
     switch(ownobj.class.name) {
         case Org.class.name: documentMessage = "default.documents.label"
-            editable = userService.hasFormalAffiliation(contextService.getUser(), contextOrg, 'INST_EDITOR')
+            editable = userService.hasFormalAffiliation(contextOrg, 'INST_EDITOR')
             break
         default: documentMessage = "license.documents"
             break
@@ -110,7 +110,7 @@
                             </g:elseif>
 
                             <%-- 3 --%>
-                            <g:if test="${!(ownobj instanceof Org) && !(ownobj instanceof Provider) && !(ownobj instanceof Vendor) && ownobj?.showUIShareButton() && userService.hasFormalAffiliation(contextService.getUser(), docctx.owner.owner, 'INST_EDITOR')}">
+                            <g:if test="${!(ownobj instanceof Org) && !(ownobj instanceof Provider) && !(ownobj instanceof Vendor) && ownobj?.showUIShareButton() && userService.hasFormalAffiliation(docctx.owner.owner, 'INST_EDITOR')}">
                                 <g:if test="${docctx?.isShared}">
                                     <span>
                                         <ui:remoteLink class="${Btn.MODERN.POSITIVE_TOOLTIP} js-no-wait-wheel"

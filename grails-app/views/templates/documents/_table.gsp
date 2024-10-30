@@ -192,13 +192,13 @@
                                 </g:if>
                                 <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                                 %{-- todo: !docctx.sharedFrom --}%
-                                <g:if test="${userService.hasFormalAffiliation(user, docctx.owner.owner, 'INST_EDITOR') && inOwnerOrg && !docctx.sharedFrom}">
+                                <g:if test="${userService.hasFormalAffiliation(docctx.owner.owner, 'INST_EDITOR') && inOwnerOrg && !docctx.sharedFrom}">
                                     <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-ui="modal" data-href="#modalEditDocument_${docctx.id}" data-content="${message(code:"template.documents.edit")}"><i class="${Icon.CMD.EDIT}"></i></button>
                                     <%
                                         securityWorkaroundList.add(docctx as DocContext)
                                     %>
                                 </g:if>
-                                <g:if test="${!docctx.sharedFrom && !docctx.isShared && userService.hasFormalAffiliation(user, docctx.owner.owner, 'INST_EDITOR') && inOwnerOrg}">
+                                <g:if test="${!docctx.sharedFrom && !docctx.isShared && userService.hasFormalAffiliation(docctx.owner.owner, 'INST_EDITOR') && inOwnerOrg}">
                                     <%
                                         String redirectId = actionName == 'membersSubscriptionsManagement' && instance.instanceOf ? instance.instanceOf.id : instance.id
                                     %>

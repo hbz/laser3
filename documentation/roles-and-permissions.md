@@ -1,7 +1,7 @@
 
 ## Roles and Permissions and more ..
 
-2023-08-07
+2024-10-30
 
 ### Customer Types
 
@@ -46,7 +46,11 @@
     boolean isInstEditor_denySupport (String orgPerms)
     boolean isInstAdm_denySupport (String orgPerms)
 
+    boolean isInstUser_or_ROLEADMIN (String orgPerms)
+    boolean isInstEditor_or_ROLEADMIN (String orgPerms)
     boolean isInstAdm_or_ROLEADMIN (String orgPerms)
+
+    boolean isInstAdm_denySupport_or_ROLEADMIN(String orgPerms = null)
 
 
 ### Affiliation Checks

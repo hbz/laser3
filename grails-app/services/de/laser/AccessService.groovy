@@ -222,7 +222,7 @@ class AccessService {
             if (perm == READ) {
                 check = true
             }
-            // userService.hasFormalAffiliation(user, address.tenant ?: address.org, 'INST_EDITOR') // ?????
+            // userService.hasFormalAffiliation(address.tenant ?: address.org, 'INST_EDITOR') // ?????
         }
         else if (address.provider || address.vendor) {
             if (perm == READ) {

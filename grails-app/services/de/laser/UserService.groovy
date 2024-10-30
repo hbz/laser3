@@ -183,17 +183,26 @@ class UserService {
     }
 
     /**
-     * Checks the user's permissions in the given institution
-     * @param userToCheck the user to check
+     * Checks the current user's permissions in the given institution
      * @param instUserRole the user's role (permission grant) in the institution to be checked
      * @param orgToCheck the institution to which affiliation should be checked
      * @return true if the given permission is granted to the user in the given institution, false otherwise
      */
-    boolean hasAffiliation(User userToCheck, Org orgToCheck, String instUserRole) {
+    boolean hasAffiliation(Org orgToCheck, String instUserRole) {
         if (! SpringSecurityUtils.ifAnyGranted('ROLE_USER')) {
             return false // min restriction fail
         }
-        _checkUserOrgRole(userToCheck, orgToCheck, instUserRole)
+        _checkUserOrgRole(contextService.getUser(), orgToCheck, instUserRole)
+    }
+
+    /**
+     * Checks the current user's permissions in the given institution
+     * @param instUserRole the user's role (permission grant) in the institution to be checked
+     * @param orgToCheck the institution to which affiliation should be checked
+     * @return true if the given permission is granted to the user in the given institution which is also the context institution, false otherwise
+     */
+    boolean hasFormalAffiliation(Org orgToCheck, String instUserRole) {
+        hasFormalAffiliation(contextService.getUser(), orgToCheck, instUserRole)
     }
 
     /**
@@ -203,6 +212,7 @@ class UserService {
      * @param orgToCheck the institution to which affiliation should be checked
      * @return true if the given permission is granted to the user in the given institution which is also the context institution, false otherwise
      */
+    @Deprecated
     boolean hasFormalAffiliation(User userToCheck, Org orgToCheck, String instUserRole) {
         if (! userToCheck || ! orgToCheck) {
             return false
@@ -214,12 +224,12 @@ class UserService {
     }
 
     /**
-     * Substitution call for {@link #hasFormalAffiliation(de.laser.auth.User, de.laser.Org, java.lang.String)};
+     * Substitution call for {@link #hasFormalAffiliation(de.laser.Org, java.lang.String)};
      * may be overridden by {@link Role#ROLE_ADMIN} before
      * @param userToCheck the user to check
      * @param orgToCheck the institution to which affiliation should be checked
      * @param instUserRole the user's role (permission grant) in the institution to be checked
-     * @return true if the given user has {@link Role#ROLE_ADMIN} rights; the result of {@link #hasFormalAffiliation(de.laser.auth.User, de.laser.Org, java.lang.String)} otherwise
+     * @return true if the given user has {@link Role#ROLE_ADMIN} rights; the result of {@link #hasFormalAffiliation(de.laser.Org, java.lang.String)} otherwise
      */
     @Deprecated
     boolean hasFormalAffiliation_or_ROLEADMIN(User userToCheck, Org orgToCheck, String instUserRole) {
@@ -288,17 +298,17 @@ class UserService {
     // -- todo: check logic
 
     /**
-     * Checks if the given user can be edited by the given editor user
+     * Checks if the given user can be edited by current user
      * @param user the user who should be edited
-     * @param editor the editor whose permissions should be checked
      * @return true if the user is an {@link Role#INST_ADM} of a consortium to which the target institution is belonging, a consortium administrator at all or a superadmin, false otherwise
      */
-    boolean isUserEditableForInstAdm(User user, User editor) {
+    boolean isUserEditableForInstAdm(User user) {
         if (user.formalOrg) {
+            User editor = contextService.getUser()
             return hasComboInstAdmPivileges(editor, user.formalOrg)
         }
         else {
-            return contextService.isInstAdm_denySupport(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+            return SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || contextService.isInstAdm_denySupport(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
         }
     }
 }

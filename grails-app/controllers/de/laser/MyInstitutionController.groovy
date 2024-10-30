@@ -2897,7 +2897,6 @@ class MyInstitutionController  {
         ]
         result.tmplConfig = [
                 editable: result.editable,
-                editor: result.user,
                 editLink: 'editUser',
                 deleteLink: 'deleteUser',
                 users: result.users,
@@ -2983,7 +2982,6 @@ class MyInstitutionController  {
     def createUser() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
         result.orgInstance = result.institution
-        result.editor = result.user
         result.inContextOrg = true
         result.availableOrgs = [ result.orgInstance ]
 

@@ -119,7 +119,7 @@ class OrganisationController  {
         result.contextOrg = result.institution //for the properties template
 
         Boolean hasAccess = (
-                (result.inContextOrg && userService.hasFormalAffiliation(result.user, result.orgInstance, 'INST_ADM')) ||
+                (result.inContextOrg && userService.hasFormalAffiliation(result.orgInstance, 'INST_ADM')) ||
                 (isComboRelated && contextService.isInstAdm()) ||
                 SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         )
@@ -1197,7 +1197,6 @@ class OrganisationController  {
         ]
         result.tmplConfig = [
                 editable: result.editable,
-                editor: result.user,
                 editLink: 'editUser',
                 deleteLink: 'deleteUser',
                 users: result.users,
@@ -1284,7 +1283,6 @@ class OrganisationController  {
     def createUser() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         result.availableOrgs = Org.get(params.id)
-        result.editor = result.user
 
         render view: '/user/global/create', model: result
     }
