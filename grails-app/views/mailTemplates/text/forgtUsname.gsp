@@ -2,7 +2,7 @@ Guten Tag,
 
 für Sie wurde ein Account für die Nutzung der vom hbz-betriebenen ERM-Dienstleistung LAS:eR eingerichtet.
 
-Ihr Benutzername lautet: ${user.username}
+Ihr Benutzername lautet: ${raw(user.username)}
 
 Falls Sie bisher noch nicht für die Nutzung von LAS:eR registriert waren, erhalten Sie zusätzlich mit separater E-Mail zeitnah das Initialpasswort.
 
