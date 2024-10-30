@@ -115,9 +115,6 @@ class BootStrapService {
 
             log.debug("setIdentifierNamespace ..")
             setIdentifierNamespace()
-
-            log.debug("adjustDatabasePermissions ..")
-            adjustDatabasePermissions()
         }
 
         log.debug("JSON.registerObjectMarshaller(Date) ..")
@@ -394,15 +391,6 @@ class BootStrapService {
         catch (Exception e) {
             log.warn('.. failed: ' + e.getMessage())
         }
-    }
-
-    /**
-     * Ensures database permissions for the backup and readonly users
-     */
-    void adjustDatabasePermissions() {
-
-        Sql sql = new Sql(dataSource)
-        sql.rows("SELECT * FROM grants_for_maintenance()")
     }
 
     /**
