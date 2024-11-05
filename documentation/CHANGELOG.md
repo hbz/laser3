@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6049    05.11.2024  rc-3.4  3.4.13      David   Feature     Meldung bereits vergebener Nutzername anpassen
+
 6044    05.11.2024  rc-3.4  3.4.13      David   Bug         Manipulation von fremden Nutzeraccounts
 
 6030    23.10.2024  rc-3.4  3.4.12      David   Bug         Unerlaubtes Erlangen von Adminrechten
