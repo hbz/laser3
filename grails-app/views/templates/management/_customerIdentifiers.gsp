@@ -1,4 +1,6 @@
 <%@ page import="de.laser.FormService; de.laser.ui.Btn; de.laser.ui.Icon" %>
+<laser:serviceInjection/>
+
 <div class="ui segment">
     <h3 class="ui header">
         <g:if test="${controllerName == "subscription"}">
@@ -63,8 +65,8 @@
                     //ERMS-5495 in conflict with ERMS-5647! overwriteEditable_ci is now set to editable; raise subject of kanban!
                     /*
                     boolean overwriteEditable_ci = contextService.getUser().isAdmin() ||
-                            userService.hasFormalAffiliation(contextService.getUser(), pair.owner, 'INST_EDITOR') ||
-                            userService.hasFormalAffiliation(contextService.getUser(), pair.customer, 'INST_EDITOR')
+                            userService.hasFormalAffiliation(pair.owner, 'INST_EDITOR') ||
+                            userService.hasFormalAffiliation(pair.customer, 'INST_EDITOR')
                      */
                 %>
                 <tr>

@@ -146,7 +146,7 @@ class SubscriptionService {
             date_restriction = sdf.parse(params.validOn)
         }
 
-        result.editable = userService.hasFormalAffiliation(contextUser, contextOrg, 'INST_EDITOR')
+        result.editable = userService.hasFormalAffiliation(contextOrg, 'INST_EDITOR')
 
         if (! params.status) {
             if (params.isSiteReloaded != "yes") {
@@ -259,7 +259,7 @@ class SubscriptionService {
         }
         SwissKnife.setPaginationParams(result, params, contextUser)
 
-        result.editable = userService.hasFormalAffiliation(contextUser, contextOrg, 'INST_EDITOR')
+        result.editable = userService.hasFormalAffiliation(contextOrg, 'INST_EDITOR')
 
         SimpleDateFormat sdfyear = DateUtils.getSDF_yyyy()
         String currentYear = sdfyear.format(new Date())

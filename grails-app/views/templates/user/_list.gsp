@@ -76,7 +76,7 @@
                     <%
                         boolean check = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
                         if (! check) {
-                            check = editable && userService.isUserEditableForInstAdm(us, editor)
+                            check = editable && userService.isUserEditableForInstAdm(us)
                         }
                     %>
 
@@ -115,7 +115,7 @@
                         %>
                         <g:if test="${check2}">
 
-                            <g:if test="${us.id == editor.id}">
+                            <g:if test="${us.id == contextService.getUser().id}">
                                 <g:link controller="profile" action="delete" class="${Btn.MODERN.NEGATIVE}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
