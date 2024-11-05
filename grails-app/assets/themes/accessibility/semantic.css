@@ -47595,7 +47595,7 @@ dd {
 
 aside.la-metabox {
   position: absolute !important;
-  width: inherit;
+  width: 100%;
   margin: 0 !important;
 }
 
@@ -63858,7 +63858,7 @@ a.ui.basic.inverted.black.card:hover,
     height: auto !important;
     margin: 1em 1em;
     padding: 0 !important;
-    width: calc(100% - 2em) !important;
+    width: 100% !important;
   }
 }
 

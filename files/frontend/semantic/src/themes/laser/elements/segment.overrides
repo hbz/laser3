@@ -67,7 +67,7 @@
 
 aside.la-metabox {
   position: absolute !important;
-  width: inherit;
+  width: 100%;
   margin: 0 !important;
 }
 aside.la-metabox + .la-metabox-spacer {
