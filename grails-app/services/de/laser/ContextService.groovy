@@ -149,11 +149,6 @@ class ContextService {
     }
 
     @Deprecated
-    boolean isInstUser_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_USER, orgPerms, false)
-    }
-
-    @Deprecated
     boolean isInstEditor_or_ROLEADMIN(String orgPerms = null) {
         _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_EDITOR, orgPerms, false)
     }
