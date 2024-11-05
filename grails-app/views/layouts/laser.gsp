@@ -197,7 +197,9 @@
                         <i class="clock icon"></i> <span></span>
                     </div>
                 </sec:ifAnyGranted>
-
+                <button style="display: none"  class="circular ui icon huge button icon la-scrollTopButton" id="la-js-topButton">
+                    <i class="angle double up icon"></i>
+                </button>
             </main>
         </div>
 
@@ -254,6 +256,25 @@
                 </g:if>
 
                 JSPC.app.workaround_targetBlank = function(e) { e.stopPropagation() }
+
+                $('#la-js-topButton').on('click', function() {
+                    scrollToTop()
+                });
+                // Function to scroll up
+                function scrollToTop() {
+                    $('html, body').animate({ scrollTop: 0 }, 'slow');
+                }
+                // show button only if scrolling down on long sites
+                $(window).scroll(function() {
+                    if ( $(this).scrollTop() > 200 ) {
+                        $('button#la-js-topButton').stop().fadeTo('slow',1);
+                    } else {
+                        $('button#la-js-topButton').stop().fadeTo('slow',0);
+                    }
+                });
+                if ( !$('#system-profiler').length || !$('#showDebugInfo').length || !$('#showSystemInfo').length ){
+                    $('button#la-js-topButton').css("bottom","10px");
+                }
             })
         </script>
     </body>

@@ -163,7 +163,7 @@
                             </td>
                         --}%
                         </g:if>
-                        <td class="center aligned x">
+                        <td class="x">
                             <g:if test="${docctx.isDocAFile()}">
                                 <g:if test="${instance?.respondsTo('showUIShareButton')}">
                                     <g:if test="${docctx.sharedFrom}">
@@ -213,6 +213,11 @@
                                         <i class="${Icon.CMD.DELETE}"></i>
                                     </g:link>
                                 </g:if>
+                                <g:else>
+                                    <div class="${Btn.ICON.SIMPLE} la-hidden">
+                                        <icon:placeholder /><%-- Hidden Fake Button --%>
+                                    </div>
+                                </g:else>
                             </g:if>
                         </td>
                     </tr>

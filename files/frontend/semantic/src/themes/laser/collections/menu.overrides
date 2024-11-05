@@ -42,7 +42,19 @@
   top: 50px;
   z-index: @la-contextBarZIndex;
   background-color: @laDecorationColor;
-  box-shadow: none;
+  &.la-local {
+    box-shadow: 0px 4px 0px 0px @yellow;
+  }
+  &.la-dev {
+    box-shadow: 0px 4px 0px 0px @green;
+  }
+  &.la-qa {
+    box-shadow: 0px 4px 0px 0px @red;
+
+  }
+  &.la-test{
+    box-shadow: 0px 4px 0px 0px @blue;
+  }
   .item {
     padding:0;
   }

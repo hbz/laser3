@@ -7017,36 +7017,25 @@ a i.circular.la-gokb:hover {
   margin-bottom: 1em;
 }
 
-#showSystemInfo {
+a#showSystemInfo {
   bottom: 45px;
-  right: 1.5vw;
+  right: 10px;
 }
 
-#showDebugInfo {
+a#showDebugInfo {
   bottom: 45px;
-  right: 1.5vw;
-  margin-right: 55px;
+  right: 55px;
 }
 
-#system-profiler {
+div#system-profiler {
   bottom: 10px;
-  right: 1.5vw;
+  right: 10px;
 }
 
-@media only screen and (min-width: 1920px) {
-  #system-profiler,
-  #showSystemInfo,
-  #showDebugInfo {
-    right: 2vw;
-  }
-}
-
-@media only screen and (min-width: 2600px) {
-  #system-profiler,
-  #showSystemInfo,
-  #showDebugInfo {
-    right: 9vw;
-  }
+button.la-scrollTopButton {
+  position: fixed;
+  bottom: 88px;
+  right: 0;
 }
 /*!
  * # Fomantic-UI 2.9.3 - Container
@@ -43323,30 +43312,6 @@ a.ui.ui.ui.inverted.basic.black.label:hover {
   width: 1.5vw;
 }
 
-#subscriptionTransfer-content {
-  margin-right: 1.5vw;
-}
-
-@media only screen and (min-width: 1920px) {
-  #subscriptionTransfer-content {
-    margin-right: 2vw;
-  }
-
-  .ui.label.la-server-label {
-    width: 2vw;
-  }
-}
-
-@media only screen and (min-width: 2600px) {
-  #subscriptionTransfer-content {
-    margin-right: 9vw;
-  }
-
-  .ui.label.la-server-label {
-    width: 9vw;
-  }
-}
-
 /* Label for survey types */
 
 .ui.label.survey-renewal,
@@ -56050,6 +56015,22 @@ Floated Menu / Item
   /* -- todo -- */
 }
 
+#contextBar.la-local {
+  box-shadow: 0px 4px 0px 0px #FBBD08;
+}
+
+#contextBar.la-dev {
+  box-shadow: 0px 4px 0px 0px #98B500;
+}
+
+#contextBar.la-qa {
+  box-shadow: 0px 4px 0px 0px #BB1600;
+}
+
+#contextBar.la-test {
+  box-shadow: 0px 4px 0px 0px #004678;
+}
+
 #contextBar .la-menue-button {
   color: #FFFFFF;
   background-color: transparent!important;
@@ -64222,6 +64203,22 @@ a.inverted.ui.card:hover,
 .la-padding-left-07em {
   padding-top: 1em;
   padding-left: 0.7em;
+}
+
+#login .card.la-local {
+  box-shadow: 0px 4px 0px 0px #FBBD08;
+}
+
+#login .card.la-dev {
+  box-shadow: 0px 4px 0px 0px #98B500;
+}
+
+#login .card.la-qa {
+  box-shadow: 0px 4px 0px 0px #BB1600;
+}
+
+#login .card.la-test {
+  box-shadow: 0px 4px 0px 0px #004678;
 }
 /*!
  * # Fomantic-UI 2.9.3 - Comment
