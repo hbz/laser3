@@ -1980,7 +1980,10 @@ class OrganisationController  {
 
         switch(params.action){
             case 'editUser':
-                isEditable = true
+                // TODO !!! fix callstack
+                // user = genericOIDService.resolveOID(params.uoid)
+                // user != contextService.getUser()
+                isEditable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || userService.isUserEditableForInstAdm(user, contextService.getUser())
                 break
             case 'delete':
                 isEditable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
