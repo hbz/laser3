@@ -36,7 +36,7 @@
             <div class="content">
                 <div class="title">
                     <g:link controller="survey" action="copySubPackagesAndIes"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, targetSubscriptionId: targetSubscription?.id]">
+                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id]">
                         ${message(code: 'copySubPackagesAndIes.label')}
                     </g:link>
                 </div>
@@ -62,43 +62,13 @@
         </div>
     </g:if>
 
-
-    <div class="${(actionName == 'copyProperties' && params.tab == 'surveyProperties') ? 'active' : ''} step">
-
-        <div class="content">
-            <div class="title">
-                <g:link controller="survey" action="copyProperties"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, tab: 'surveyProperties', targetSubscriptionId: targetSubscription?.id]">
-                    ${message(code: 'copyProperties.surveyProperties.short')}
-                </g:link>
-            </div>
-
-            <div class="description">
-                <i class="${Icon.SYM.PROPERTIES}"></i>${message(code: 'properties')}
-            </div>
-        </div>
-
-        <g:if test="${transferWorkflow && Boolean.valueOf(transferWorkflow.transferSurveyProperties)}">
-            <g:link controller="survey" action="setSurveyTransferConfig"
-                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, transferSurveyProperties: false]">
-                <i class="${Icon.SYM.YES} bordered large green"></i>
-            </g:link>
-        </g:if>
-        <g:else>
-            <g:link controller="survey" action="setSurveyTransferConfig"
-                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, transferSurveyProperties: true]">
-                <i class="${Icon.SYM.NO} bordered large red"></i>
-            </g:link>
-        </g:else>
-    </div>
-
     <g:if test="${surveyConfig.packageSurvey}">
         <div class="${(actionName == 'copySurveyPackages') ? 'active' : ''} step">
 
             <div class="content">
                 <div class="title">
                     <g:link controller="survey" action="copySurveyPackages"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, targetSubscriptionId: targetSubscription?.id]">
+                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id]">
                         ${message(code: 'copySurveyPackages.label')}
                     </g:link>
                 </div>
@@ -130,7 +100,7 @@
             <div class="content">
                 <div class="title">
                     <g:link controller="survey" action="copySurveyVendors"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, targetSubscriptionId: targetSubscription?.id]">
+                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id]">
                         ${message(code: 'copySurveyVendors.label')}
                     </g:link>
                 </div>
@@ -155,6 +125,35 @@
 
         </div>
     </g:if>
+
+    <div class="${(actionName == 'copyProperties' && params.tab == 'surveyProperties') ? 'active' : ''} step">
+
+        <div class="content">
+            <div class="title">
+                <g:link controller="survey" action="copyProperties"
+                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, tab: 'surveyProperties', targetSubscriptionId: targetSubscription?.id]">
+                    ${message(code: 'copyProperties.surveyProperties.short')}
+                </g:link>
+            </div>
+
+            <div class="description">
+                <i class="${Icon.SYM.PROPERTIES}"></i>${message(code: 'properties')}
+            </div>
+        </div>
+
+        <g:if test="${transferWorkflow && Boolean.valueOf(transferWorkflow.transferSurveyProperties)}">
+            <g:link controller="survey" action="setSurveyTransferConfig"
+                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, transferSurveyProperties: false]">
+                <i class="${Icon.SYM.YES} bordered large green"></i>
+            </g:link>
+        </g:if>
+        <g:else>
+            <g:link controller="survey" action="setSurveyTransferConfig"
+                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, transferSurveyProperties: true]">
+                <i class="${Icon.SYM.NO} bordered large red"></i>
+            </g:link>
+        </g:else>
+    </div>
 
 
 <g:if test="${surveyConfig.subscription}">
@@ -227,7 +226,7 @@
             <div class="content">
                 <div class="title">
                     <g:link controller="survey" action="copySurveyCostItems"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, targetSubscriptionId: targetSubscription?.id]">
+                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id]">
                         ${message(code: 'copySurveyCostItems.surveyCostItems')}
                     </g:link>
                 </div>
@@ -260,7 +259,7 @@
             <div class="content">
                 <div class="title">
                     <g:link controller="survey" action="copySurveyCostItemPackage"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, targetSubscriptionId: targetSubscription?.id]">
+                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id]">
                         ${message(code: 'surveyCostItemsPackages.label')}
                     </g:link>
                 </div>
