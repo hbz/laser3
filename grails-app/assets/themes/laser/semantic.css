@@ -47499,7 +47499,7 @@ aside.la-metabox + .la-metabox-spacer {
   border-top: none;
   border-left: none;
   border-right: none;
-  border-bottom: 1px solid #d3dae3;
+  border-bottom: 1px solid #d4d4d5;
 }
 
 .ui.segments.la-accordion-segments:last-child {
