@@ -895,8 +895,6 @@ class OrganisationController  {
             response.sendError(401)
             return
         }
-
-        result.availableOrgTypes = RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE)-RDStore.OT_CONSORTIUM
         result.missing = [:]
 
         if(result.inContextOrg && result.institution.eInvoice) {
