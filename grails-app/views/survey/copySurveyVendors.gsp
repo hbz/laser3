@@ -245,6 +245,14 @@
 
         </g:form>
     </ui:greySegment>
+
+    <div class="sixteen wide field" style="text-align: center;">
+        <g:link class="ui button" controller="survey" action="copyProperties"
+                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: 'surveyProperties', targetSubscriptionId: targetSubscription.id]">
+            ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
+        </g:link>
+    </div>
+
     <laser:script file="${this.getGroovyPageFileName()}">
         $('#membersListToggler').click(function () {
         if ($(this).prop('checked')) {

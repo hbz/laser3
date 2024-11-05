@@ -131,8 +131,8 @@
 
                     </g:if>
                     <g:else>
-                        <g:message code="surveyInfo.transferParticipants.noTransferProvider"
-                                   args="${superOrgType}"/>
+                        <label><g:message code="provider.plural"/>:</label>
+                        <g:message code="surveyInfo.transferParticipants.noTransferProvider" args="${superOrgType}"/>
                     </g:else>
                 </div>
             </g:if>
@@ -168,8 +168,8 @@
                         </div>
                     </g:if>
                     <g:else>
-                        <g:message code="surveyInfo.transferParticipants.noTransferVendor"
-                                   args="${superOrgType}"/>
+                        <label><g:message code="vendor.plural"/>:</label>
+                        <g:message code="surveyInfo.transferParticipants.noTransferVendor" args="${superOrgType}"/>
                     </g:else>
                 </div>
             </g:if>

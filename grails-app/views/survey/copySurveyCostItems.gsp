@@ -397,6 +397,16 @@
             </div>
         </g:form>
     </ui:greySegment>
+
+    <div class="sixteen wide field" style="text-align: center;">
+        <g:if test="${CostItem.executeQuery('select count(*) from CostItem costItem join costItem.surveyOrg surOrg where surOrg.surveyConfig = :survConfig and costItem.costItemStatus != :status and costItem.pkg is null', [survConfig: surveyConfig, status: RDStore.COST_ITEM_DELETED])[0] > 0}">
+            <g:link class="ui button" controller="survey" action="copySurveyCostItemPackage"
+                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription.id]">
+                ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
+            </g:link>
+        </g:if>
+    </div>
+
     <laser:script file="${this.getGroovyPageFileName()}">
         $('#costItemsToggler').click(function () {
             if ($(this).prop('checked')) {
