@@ -1265,8 +1265,7 @@ class OrganisationController  {
                 manipulateAffiliations: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         ]
 
-        // result.editable = _checkIsEditable(result.user, contextService.getOrg()) /// TODO: ALWAYS TRUE
-        result.editable = _checkIsEditable(contextService.getOrg()) /// TODO: ERMS-6044
+        result.editable = result.manipulateAffiliations || userService.isUserEditableForInstAdm(result.user)/// TODO: ERMS-6044
         result.availableOrgs = [ result.orgInstance ]
 
         render view: '/user/global/edit', model: result
@@ -1932,12 +1931,6 @@ class OrganisationController  {
         boolean userHasEditableRights = userIsAdmin || contextService.isInstEditor()
 
         switch(params.action){
-            case 'editUser':
-                // TODO !!! fix callstack
-                // user = genericOIDService.resolveOID(params.uoid)
-                // user != contextService.getUser()
-                isEditable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || userService.isUserEditableForInstAdm(user, contextService.getUser())
-                break
             case 'delete':
                 isEditable = userIsAdmin
                 break
