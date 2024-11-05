@@ -80,7 +80,7 @@ aside.la-metabox + .la-metabox-spacer {
   border-top: none;
   border-left: none;
   border-right: none;
-  border-bottom: 1px solid @solidBorderColor;
+  border-bottom: 1px solid @laDecorationColor;
   &:last-child {
     border-bottom:none;
   }

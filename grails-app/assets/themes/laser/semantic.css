@@ -6528,30 +6528,6 @@ i.icon.la-list-icon:before {
   background-color: #BB1600 !important;
 }
 
-/*.ui.green.button {
-  -webkit-box-shadow: 0 0 0 0 @laDecorationColor inset;
-  box-shadow: 0 0 0 0 @laDecorationColor inset;
-}
-.ui.green.button, .ui.green.buttons .button {
-  background-color: #98b500;
-  color: #fff;
-  text-shadow: none;
-  background-image: none;
-}
-
-.ui.dropdown {
-  cursor: pointer;
-  position: relative;
-  display: inline-block;
-  outline: 0;
-  text-align: left;
-  -webkit-transition: width .1s ease,-webkit-box-shadow .1s ease;
-  transition: width .1s ease,-webkit-box-shadow .1s ease;
-  transition: box-shadow .1s ease,width .1s ease;
-  transition: box-shadow .1s ease,width .1s ease,-webkit-box-shadow .1s ease;
-  -webkit-tap-highlight-color: transparent;
-}*/
-
 .ui.button.la-auditButton-header {
   vertical-align: super;
 }
@@ -47464,7 +47440,7 @@ aside.la-metabox + .la-metabox-spacer {
   border-top: none;
   border-left: none;
   border-right: none;
-  border-bottom: 1px solid #d4d4d5;
+  border-bottom: 1px solid #d3dae3;
 }
 
 .ui.segments.la-accordion-segments:last-child {
@@ -52173,19 +52149,19 @@ legend {
 .ui.celled.grid {
   width: 100%;
   margin: 1em 0;
-  box-shadow: 0 0 0 1px #d4d4d5;
+  box-shadow: 0 0 0 1px #d3dae3;
 }
 
 .ui.celled.grid > .row {
   width: 100% !important;
   margin: 0;
   padding: 0;
-  box-shadow: 0 -1px 0 0 #d4d4d5;
+  box-shadow: 0 -1px 0 0 #d3dae3;
 }
 
 .ui.celled.grid > .column:not(.row),
 .ui.celled.grid > .row > .column {
-  box-shadow: -1px 0 0 0 #d4d4d5;
+  box-shadow: -1px 0 0 0 #d3dae3;
 }
 
 .ui.celled.grid > .column:first-child,
@@ -52506,7 +52482,7 @@ legend {
   /* Celled Reversed */
 
   .ui[class*="mobile reversed"].celled.grid > .row > .column:first-child {
-    box-shadow: -1px 0 0 0 #d4d4d5;
+    box-shadow: -1px 0 0 0 #d3dae3;
   }
 
   .ui[class*="mobile reversed"].celled.grid > .row > .column:last-child {
@@ -52552,7 +52528,7 @@ legend {
   /* Celled Reversed */
 
   .ui[class*="tablet reversed"].celled.grid > .row > .column:first-child {
-    box-shadow: -1px 0 0 0 #d4d4d5;
+    box-shadow: -1px 0 0 0 #d3dae3;
   }
 
   .ui[class*="tablet reversed"].celled.grid > .row > .column:last-child {
@@ -52598,7 +52574,7 @@ legend {
   /* Celled Reversed */
 
   .ui[class*="computer reversed"].celled.grid > .row > .column:first-child {
-    box-shadow: -1px 0 0 0 #d4d4d5;
+    box-shadow: -1px 0 0 0 #d3dae3;
   }
 
   .ui[class*="computer reversed"].celled.grid > .row > .column:last-child {

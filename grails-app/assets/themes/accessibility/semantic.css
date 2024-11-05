@@ -52318,19 +52318,19 @@ legend {
 .ui.celled.grid {
   width: 100%;
   margin: 1em 0;
-  box-shadow: 0 0 0 1px #D4D4D5;
+  box-shadow: 0 0 0 1px #d3dae3;
 }
 
 .ui.celled.grid > .row {
   width: 100% !important;
   margin: 0;
   padding: 0;
-  box-shadow: 0 -1px 0 0 #D4D4D5;
+  box-shadow: 0 -1px 0 0 #d3dae3;
 }
 
 .ui.celled.grid > .column:not(.row),
 .ui.celled.grid > .row > .column {
-  box-shadow: -1px 0 0 0 #D4D4D5;
+  box-shadow: -1px 0 0 0 #d3dae3;
 }
 
 .ui.celled.grid > .column:first-child,
@@ -52651,7 +52651,7 @@ legend {
   /* Celled Reversed */
 
   .ui[class*="mobile reversed"].celled.grid > .row > .column:first-child {
-    box-shadow: -1px 0 0 0 #D4D4D5;
+    box-shadow: -1px 0 0 0 #d3dae3;
   }
 
   .ui[class*="mobile reversed"].celled.grid > .row > .column:last-child {
@@ -52697,7 +52697,7 @@ legend {
   /* Celled Reversed */
 
   .ui[class*="tablet reversed"].celled.grid > .row > .column:first-child {
-    box-shadow: -1px 0 0 0 #D4D4D5;
+    box-shadow: -1px 0 0 0 #d3dae3;
   }
 
   .ui[class*="tablet reversed"].celled.grid > .row > .column:last-child {
@@ -52743,7 +52743,7 @@ legend {
   /* Celled Reversed */
 
   .ui[class*="computer reversed"].celled.grid > .row > .column:first-child {
-    box-shadow: -1px 0 0 0 #D4D4D5;
+    box-shadow: -1px 0 0 0 #d3dae3;
   }
 
   .ui[class*="computer reversed"].celled.grid > .row > .column:last-child {
