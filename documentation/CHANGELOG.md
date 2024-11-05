@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6044    05.11.2024  rc-3.4  3.4.13      David   Bug         Manipulation von fremden Nutzeraccounts
+
 6030    23.10.2024  rc-3.4  3.4.12      David   Bug         Unerlaubtes Erlangen von Adminrechten
 
 6029    18.10.2024  rc-3.4  3.4.12      Andreas Bug         Tippfehler in Referenzwert behoben
