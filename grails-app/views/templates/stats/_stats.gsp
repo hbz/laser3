@@ -1,4 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Subscription; de.laser.wekb.Platform; de.laser.base.AbstractReport; de.laser.finance.CostItem; de.laser.properties.SubscriptionProperty; de.laser.storage.PropertyStore" %>
+<laser:serviceInjection/>
 
 <g:if test="${platformInstanceRecords.values().statisticsFormat.contains('COUNTER')}">
     <laser:serviceInjection/>
@@ -35,8 +36,8 @@
                 %{--                <g:set var="overwriteEditable_ci" value="${editable}" />--}%
                 <%
                     boolean overwriteEditable_ci = contextService.getUser().isAdmin() ||
-                            userService.hasFormalAffiliation(contextService.getUser(), pair.owner, 'INST_EDITOR') ||
-                            userService.hasFormalAffiliation(contextService.getUser(), pair.customer, 'INST_EDITOR')
+                            userService.hasFormalAffiliation(pair.owner, 'INST_EDITOR') ||
+                            userService.hasFormalAffiliation(pair.customer, 'INST_EDITOR')
                 %>
                 <tr>
                     <td>${pair.customer.sortname ?: pair.customer.name}</td>

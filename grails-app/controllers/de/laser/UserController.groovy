@@ -107,7 +107,6 @@ class UserController {
 
         result.tmplConfig = [
                 editable:result.editable,
-                editor: result.editor,
                 editLink: 'edit',
                 deleteLink: 'delete',
                 users: result.users,
