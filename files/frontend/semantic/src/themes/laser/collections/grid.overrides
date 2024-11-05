@@ -67,7 +67,8 @@
       Stackable
 --------------------*/
 @media only screen and (max-width: @computerBreakpoint  ) {
-    .ui.ui.grid>.row>[class*="center aligned"].column {
+    .ui.ui.grid>.row>[class*="right aligned"].column,
+    .ui.ui.grid>[class*="right aligned"].column {
         text-align: left;
     }
 }

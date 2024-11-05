@@ -53221,7 +53221,8 @@ legend {
 --------------------*/
 
 @media only screen and (max-width: 992px) {
-  .ui.ui.grid > .row > [class*="center aligned"].column {
+  .ui.ui.grid > .row > [class*="right aligned"].column,
+  .ui.ui.grid > [class*="right aligned"].column {
     text-align: left;
   }
 }

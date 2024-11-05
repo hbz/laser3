@@ -26,7 +26,7 @@
                                     ${sp.getCurrentIssueEntitlementCountOfPackage()} <g:message code="subscription.packages.currentTitles"/>
                                 </div>
 
-                                <div class="center aligned column">
+                                <div class="right aligned column">
                                     <g:if test="${sp.pkg.nominalPlatform}">
                                         <i aria-hidden="true" class="${Icon.PLATFORM} grey la-popup-tooltip" data-content="${message(code: 'platform.label')}"></i>
                                         <g:link controller="platform" action="show" id="${sp.pkg.nominalPlatform.id}">${sp.pkg.nominalPlatform.name}</g:link>
@@ -43,6 +43,27 @@
                                     </g:each>
                                 </g:if>
                                 --%>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="column">
+                                    <div>
+                                        <g:if test="${sp.pkg.provider}">
+                                            <i aria-hidden="true" class="${Icon.PROVIDER} grey outline la-popup-tooltip" data-content="${message(code: 'provider.label')}"></i>
+                                            <g:link controller="provider" action="show" id="${sp.pkg.provider.id}">${sp.pkg.provider.name}</g:link>
+                                            <g:if test="${sp.pkg.provider.homepage}"><ui:linkWithIcon href="${sp.pkg.provider.homepage.startsWith('http') ? sp.pkg.provider.homepage : 'http://' + sp.pkg.provider.homepage}"/></g:if>
+                                            <g:if test="${sp.pkg.provider.gokbId}"><ui:wekbIconLink type="provider" gokbId="${sp.pkg.provider.gokbId}"/></g:if>
+                                        </g:if>
+                                    </div>
+                                    <g:each in="${sp.pkg.vendors}" var="pv">
+                                        <g:set var="vendorRecord" value="${packageInstanceRecord.vendors.find { rec -> rec.vendorUuid == pv.vendor.gokbId }}"/>
+                                        <div>
+                                            <i aria-hidden="true" class="${Icon.VENDOR} grey la-popup-tooltip" data-content="${message(code: 'vendor.label')}"></i>
+                                            <g:link controller="vendor" action="show" id="${pv.vendor.id}">${pv.vendor.name}</g:link>
+                                            <g:if test="${vendorRecord && vendorRecord.homepage}"><ui:linkWithIcon href="${vendorRecord.homepage.startsWith('http') ? vendorRecord.homepage : 'http://' + vendorRecord.homepage}"/></g:if>
+                                            <g:if test="${pv.vendor.gokbId}"><ui:wekbIconLink type="vendor" gokbId="${pv.vendor.gokbId}"/></g:if>
+                                        </div>
+                                    </g:each>
                                 </div>
                                 <div class="seven wide right aligned column">
                                     <g:if test="${editmode}">
@@ -165,35 +186,14 @@
 
                                     <g:if test="${subscription.packages.size() > 1}">
                                         <a class="${Btn.SIMPLE} right floated" data-href="#showPackagesModal" data-ui="modal"><g:message
-                                                code="subscription.details.details.package.label"/></a>
+                                            code="subscription.details.details.package.label"/></a>
                                     </g:if>
 
                                     <g:if test="${subscription.packages.size() == 1}">
                                         <g:link class="${Btn.SIMPLE} right floated" controller="package" action="show"
                                                 id="${subscription.packages[0].pkg.id}"><g:message
-                                                code="subscription.details.details.package.label"/></g:link>
+                                            code="subscription.details.details.package.label"/></g:link>
                                     </g:if>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="six wide column">
-                                    <div>
-                                        <g:if test="${sp.pkg.provider}">
-                                            <i aria-hidden="true" class="${Icon.PROVIDER} grey outline la-popup-tooltip" data-content="${message(code: 'provider.label')}"></i>
-                                            <g:link controller="provider" action="show" id="${sp.pkg.provider.id}">${sp.pkg.provider.name}</g:link>
-                                            <g:if test="${sp.pkg.provider.homepage}"><ui:linkWithIcon href="${sp.pkg.provider.homepage.startsWith('http') ? sp.pkg.provider.homepage : 'http://' + sp.pkg.provider.homepage}"/></g:if>
-                                            <g:if test="${sp.pkg.provider.gokbId}"><ui:wekbIconLink type="provider" gokbId="${sp.pkg.provider.gokbId}"/></g:if>
-                                        </g:if>
-                                    </div>
-                                    <g:each in="${sp.pkg.vendors}" var="pv">
-                                        <g:set var="vendorRecord" value="${packageInstanceRecord.vendors.find { rec -> rec.vendorUuid == pv.vendor.gokbId }}"/>
-                                        <div>
-                                            <i aria-hidden="true" class="${Icon.VENDOR} grey la-popup-tooltip" data-content="${message(code: 'vendor.label')}"></i>
-                                            <g:link controller="vendor" action="show" id="${pv.vendor.id}">${pv.vendor.name}</g:link>
-                                            <g:if test="${vendorRecord && vendorRecord.homepage}"><ui:linkWithIcon href="${vendorRecord.homepage.startsWith('http') ? vendorRecord.homepage : 'http://' + vendorRecord.homepage}"/></g:if>
-                                            <g:if test="${pv.vendor.gokbId}"><ui:wekbIconLink type="vendor" gokbId="${pv.vendor.gokbId}"/></g:if>
-                                        </div>
-                                    </g:each>
                                 </div>
                             </div>
                         </div>
