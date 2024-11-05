@@ -53221,6 +53221,12 @@ legend {
 --------------------*/
 
 @media only screen and (max-width: 992px) {
+  .ui.ui.grid > .row > [class*="center aligned"].column {
+    text-align: left;
+  }
+}
+
+@media only screen and (max-width: 992px) {
   .ui.stackable.grid {
     width: auto;
   }
