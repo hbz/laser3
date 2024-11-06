@@ -186,6 +186,9 @@ aside.ui.accordion .title:not(.ui) {
             margin-top: 0.5em;
             font-size: 14px;
         }
+        .masthead .ui.ui.ui.ui.massive.button{
+            font-size: 1.3rem;
+        }
     }
 }
 .ui {
