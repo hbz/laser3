@@ -883,7 +883,6 @@ class SubscriptionControllerService {
      * @param refSub the {@link Subscription} whose entitlements should be queried; if none existent, the underlying package's are being queried
      * @return
      */
-    @Deprecated
     Map<String, Object> fetchTitles(Subscription refSub, boolean allTitles = false) {
         Map<String, Object> result = [:]
         /*

@@ -1405,7 +1405,7 @@ class FilterService {
 
         if (params.ieStatus) {
             queryArgs << 'ie_status_rv_fk = any(:ieStatus)'
-            arrayParams.ieStatus = params.ieStatus.id
+            arrayParams.ieStatus = Params.getLongList(params, 'ieStatus')
         }
 
         if (params.titleGroup) {

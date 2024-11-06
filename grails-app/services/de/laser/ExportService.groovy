@@ -796,13 +796,7 @@ class ExportService {
 		Subscription refSub
 		Org customer = result.subscription.getSubscriberRespConsortia()
 		boolean allTitles = false
-		if (params.statsForSurvey == true) {
-			if(params.loadFor == 'allTipps')
-				refSub = result.subscription.instanceOf //look at statistics of the whole set of titles, i.e. of the consortial parent subscription
-			else if(params.loadFor == 'holdingIEs')
-				refSub = result.subscription._getCalculatedPrevious() //look at the statistics of the member, i.e. the member's stock of the previous year
-		}
-		else if(subscriptionService.countCurrentIssueEntitlements(result.subscription) > 0){
+		if(subscriptionService.countCurrentIssueEntitlements(result.subscription) > 0){
 			refSub = result.subscription
 		}
 		else {
@@ -830,7 +824,12 @@ class ExportService {
 			userCache.put('label', 'Hole Titel ...')
 			titles = subscriptionControllerService.fetchTitles(refSub, allTitles)
 			userCache.put('progress', 10)
-			titlesSorted = TitleInstancePackagePlatform.executeQuery('select ie.tipp from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :refSub and ie.status = :current order by tipp.sortname, tipp.name', [refSub: refSub, current: RDStore.TIPP_STATUS_CURRENT])
+			Map<String, Object> sortedTitlesQueryParams = [refSub: refSub, current: RDStore.TIPP_STATUS_CURRENT]
+			if(!allTitles) {
+				titlesSorted = TitleInstancePackagePlatform.executeQuery('select ie.tipp from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :refSub and ie.status = :current order by tipp.sortname, tipp.name', sortedTitlesQueryParams)
+			}
+			else
+				titlesSorted = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription = :refSub) and tipp.status = :current order by tipp.sortname, tipp.name', sortedTitlesQueryParams)
 			userCache.put('progress', 20)
         }
 		//reportTypes.each { String reportType ->

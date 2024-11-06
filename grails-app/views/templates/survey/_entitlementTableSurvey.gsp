@@ -14,7 +14,7 @@
 
             <g:set var="tipp" value="${ie.tipp}"/>
             <g:set var="ieInNewSub"
-                   value="${listOfStatus ? surveyService.titleContainedBySubscription(subscriberSub, tipp, listOfStatus) : null}"/>
+                   value="${listOfStatus ? surveyService.titleContainedBySubscription(subscription, tipp, listOfStatus) : null}"/>
             <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
                 <g:set var="participantPerpetualAccessToTitle"
                        value="${surveyService.hasParticipantPerpetualAccessToTitle3(subscriber, tipp)}"/>
