@@ -9,18 +9,18 @@
           let data = {
               id: cell.attr("data-orgId"),
               subscription: cell.attr("data-subId"),
-              surveyConfigID: cell.attr("data-surveyConfigId"),
-              newLanguage: cell.attr("data-lang"),
+              surveyConfigID: cell.attr("data-surveyConfigId")
            };
 
-       $('#globalLoadingIndicator').show()
+       $('#globalLoadingIndicator').show();
+
            $.ajax ({
                url: "<g:createLink controller="ajaxHtml" action="infoFlyout"/>",
                  data: data
                 }).done (function (response) {
                     $('#infoFlyout').html (response)
-                    $('#infoFlyout').flyout('show')
                     $('#globalLoadingIndicator').hide()
+                    $('#infoFlyout').flyout('show')
 
                     r2d2.initDynamicUiStuff ('#infoFlyout')
                     r2d2.initDynamicXEditableStuff ('#infoFlyout')

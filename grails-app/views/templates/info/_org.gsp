@@ -12,36 +12,31 @@
 
     <div class="ui form">
 
-        <g:if test="${actionName == 'mailInfos' && controllerName == 'organisation'}">
-            <g:form controller="organisation" action="mailInfos" params="${[id: orgInstance.id, subscription: sub?.id, surveyConfigID: params.surveyConfigID]}">
-                <div class="field">
-                    <label for="newLanguage">${message(code: 'profile.language')}</label>
-                    <select id="newLanguage" name="newLanguage" class="ui search selection fluid dropdown" onchange="this.form.submit()">
-                        <g:each in="${[RDStore.LANGUAGE_DE, RDStore.LANGUAGE_EN]}" var="lan">
-                            <option <%=language == lan.value ? 'selected="selected"' : ''%> value="${lan.value}">${lan.getI10n('value')}</option>
-                        </g:each>
-                    </select>
-                </div>
-            </g:form>
-        </g:if>
-        <g:else>
+%{--        <g:if test="${actionName == 'mailInfos' && controllerName == 'organisation'}">--}%
+%{--            <g:form controller="organisation" action="mailInfos" params="${[id: orgInstance.id, subscription: sub?.id, surveyConfigID: params.surveyConfigID]}">--}%
+%{--                <div class="field">--}%
+%{--                    <label for="newLanguage">${message(code: 'profile.language')}</label>--}%
+%{--                    <select id="newLanguage" name="newLanguage" class="ui search selection fluid dropdown" onchange="this.form.submit()">--}%
+%{--                        <g:each in="${[RDStore.LANGUAGE_DE, RDStore.LANGUAGE_EN]}" var="lan">--}%
+%{--                            <option <%=language == lan.value ? 'selected="selected"' : ''%> value="${lan.value}">${lan.getI10n('value')}</option>--}%
+%{--                        </g:each>--}%
+%{--                    </select>--}%
+%{--                </div>--}%
+%{--            </g:form>--}%
+%{--        </g:if>--}%
+%{--        <g:else>--}%
             <div class="field">
-                <label for="newLanguage">${message(code: 'profile.language')}:</label>
-
-                <div class="ui buttons">
-                    <a href="#" class="ui button infoFlyout-trigger" data-orgId="${orgInstance.id}" data-subId="${params.subscription}"
-                       data-surveyConfigId="${params.surveyConfigID}" data-lang="${RDStore.LANGUAGE_DE.value}">
-                        ${RDStore.LANGUAGE_DE}
+                <label>${message(code: 'profile.language')}:</label>
+                <div>
+                    <a href="#" class="ui button infoFlyout-language" data-lang="${RDStore.LANGUAGE_DE.value}">
+                        ${message(code: 'default.language.label')}
                     </a>
-
-                    <div class="or" data-text="${message(code: 'default.or')}"></div>
-                    <a href="#" class="ui button infoFlyout-trigger" data-orgId="${orgInstance.id}" data-subId="${params.subscription}"
-                       data-surveyConfigId="${params.surveyConfigID}" data-lang="${RDStore.LANGUAGE_EN.value}">
-                        ${RDStore.LANGUAGE_EN}
+                    <a href="#" class="ui button infoFlyout-language" data-lang="${RDStore.LANGUAGE_EN.value}">
+                        ${message(code: 'default.english.label')}
                     </a>
                 </div>
             </div>
-        </g:else>
+%{--        </g:else>--}%
 
         <g:if test="${mailAddressOfProvider}">
             <div class="field">
@@ -52,8 +47,9 @@
 
         <g:if test="${mailAddressOfProviderWekb}">
             <div class="field">
-                <label for="mailAddressOfProviderWekb"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
-                                                          data-content="${message(code: 'org.isWekbCurated.header.label')}"></i>${message(code: 'provider.label')}: E-Mails
+                <label for="mailAddressOfProviderWekb">
+                    <i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code: 'org.isWekbCurated.header.label')}"></i>
+                    ${message(code: 'provider.label')}: E-Mails
                 </label>
 
                 <input type="text" name="mailAddressOfProviderWekb" id="mailAddressOfProviderWekb" readonly="readonly" value="${mailAddressOfProviderWekb}"/>
@@ -61,56 +57,53 @@
         </g:if>
 
         <g:if test="${mailText}">
-            <div class="field">
-                <label for="mailText">${message(code: 'mail.org.mailInfos')} (${orgInstance.name})</label>
-                <g:textArea id="emailText" name="mailText" rows="30" cols="1"
-                            style="width: 100%;">${mailText}</g:textArea>
+            <div class="content_lang_de">
+                <div class="field">
+                    <label for="mailText">${message(code: 'mail.org.mailInfos')} (${orgInstance.name})</label>
+                    <g:textArea id="mailText_de" name="mailText" rows="30" cols="1" style="width: 100%;">${mailText['de']}</g:textArea>
+                </div>
+
+                <button class="ui icon button right floated" onclick="JSPC.infoFlyout.copyToClipboard('mailText_de')">
+                    ${message(code: 'menu.institutions.copy_emailaddresses_to_clipboard')}
+                </button>
+            </div>
+            <div class="content_lang_en hidden">
+                <div class="field">
+                    <label for="mailText">${message(code: 'mail.org.mailInfos')} (${orgInstance.name})</label>
+                    <g:textArea id="mailText_en" name="mailText" rows="30" cols="1" style="width: 100%;">${mailText['en']}</g:textArea>
+                </div>
+
+                <button class="ui icon button right floated" onclick="JSPC.infoFlyout.copyToClipboard('mailText_en')">
+                    ${message(code: 'menu.institutions.copy_emailaddresses_to_clipboard')}
+                </button>
             </div>
 
-            <button class="ui icon button right floated" onclick="mailInfosCopyToClipboard()">
-                ${message(code: 'menu.institutions.copy_emailaddresses_to_clipboard')}
-            </button>
-        %{-- <button class="ui icon button right floated" onclick="mailInfosCopyToEmailProgram()">
+        %{-- <button class="ui icon button right floated" onclick="JSPC.infoFlyout.copyToEmailProgram()">
            ${message(code: 'menu.institutions.copy_emailaddresses_to_emailclient')}
          </button>--}%
+
         </g:if>
 
     </div>
 </div>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    mailInfosCopyToEmailProgram = function () {
-        var emailAdresses = $("#emailText").val();
-        window.location.href = "mailto:?&body=" + emailAdresses;
+    JSPC.infoFlyout = {
+        copyToEmailProgram: function (cid) {
+            window.location.href = "mailto:?&body=" + $('#' + cid).val();
+        },
+        copyToClipboard: function (cid) {
+            let content = $('#' + cid);
+            content.select();
+            document.execCommand('copy');
+            content.blur();
+        }
     }
 
-    mailInfosCopyToClipboard = function () {
-        $("#emailText").select();
-        document.execCommand("copy");
-    }
-
-      $('a.infoFlyout-trigger').on ('click', function(e) {
-         e.preventDefault()
-            let cell = $(this);
-            let data = {
-                id: cell.attr("data-orgId"),
-                subscription: cell.attr("data-subId"),
-                surveyConfigID: cell.attr("data-surveyConfigId"),
-                newLanguage: cell.attr("data-lang"),
-             };
-
-         $('#globalLoadingIndicator').show()
-             $.ajax ({
-                 url: "<g:createLink controller="ajaxHtml" action="infoFlyout"/>",
-                 data: data
-                }).done (function (response) {
-                    $('#infoFlyout').html (response)
-                    $('#infoFlyout').flyout('show')
-                    $('#globalLoadingIndicator').hide()
-
-                    r2d2.initDynamicUiStuff ('#infoFlyout')
-                    r2d2.initDynamicXEditableStuff ('#infoFlyout')
-                })
-        });
+    $('a.infoFlyout-language').on ('click', function(e) {
+        let lang = $(this).attr('data-lang');
+        $('.content_lang_de, .content_lang_en').addClass('hidden');
+        $('.content_lang_' + lang).removeClass('hidden');
+    });
 
 </laser:script>

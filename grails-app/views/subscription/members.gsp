@@ -320,7 +320,7 @@
                             </g:else>
 
 
-                        <a href="#" class="ui button blue icon la-modern-button infoFlyout-trigger" data-orgId="${subscr.id}" data-subId="${sub.id}">
+                        <a href="#" class="ui button icon la-modern-button infoFlyout-trigger" data-orgId="${subscr.id}" data-subId="${sub.id}">
                             <i class="ui info icon"></i>
                         </a>
                     </td>

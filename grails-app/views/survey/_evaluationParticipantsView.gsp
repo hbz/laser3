@@ -622,7 +622,7 @@
                             </g:if>
                     </g:if>
 
-                    <a href="#" class="ui button blue icon la-modern-button infoFlyout-trigger" data-orgId="${participant.id}" data-subId="${surveyConfig.subscription?.id}" data-surveyConfigId="${surveyConfig.id}">
+                    <a href="#" class="ui button icon la-modern-button infoFlyout-trigger" data-orgId="${participant.id}" data-subId="${surveyConfig.subscription?.id}" data-surveyConfigId="${surveyConfig.id}">
                         <i class="ui info icon"></i>
                     </a>
                 </td>
@@ -1229,7 +1229,7 @@
 
                     <br/>
                     <a href="#" class="ui icon infoFlyout-trigger" data-orgId="${participant.id}" data-subId="${surveyConfig.subscription?.id}" data-surveyConfigId="${surveyConfig.id}">
-                        <i class="icon info inverted"></i>
+                        <i class="icon info blue inverted"></i>
                     </a>
                 </td>
             </tr>

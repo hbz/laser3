@@ -65,10 +65,9 @@
 
                     <g:if test="${!inContextOrg && contextOrg.isCustomerType_Consortium()}">
                         <a href="#" class="ui icon la-float-right infoFlyout-trigger" data-orgId="${orgInstance.id}">
-                            <i class="icon circular info inverted"></i>
+                            <i class="icon circular blue info inverted"></i>
                         </a>
                     </g:if>
-
 
                     <dl>
                         <dt><g:message code="default.name.label" /></dt>
