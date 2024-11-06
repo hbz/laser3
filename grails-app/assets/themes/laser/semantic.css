@@ -6528,30 +6528,6 @@ i.icon.la-list-icon:before {
   background-color: #BB1600 !important;
 }
 
-/*.ui.green.button {
-  -webkit-box-shadow: 0 0 0 0 @laDecorationColor inset;
-  box-shadow: 0 0 0 0 @laDecorationColor inset;
-}
-.ui.green.button, .ui.green.buttons .button {
-  background-color: #98b500;
-  color: #fff;
-  text-shadow: none;
-  background-image: none;
-}
-
-.ui.dropdown {
-  cursor: pointer;
-  position: relative;
-  display: inline-block;
-  outline: 0;
-  text-align: left;
-  -webkit-transition: width .1s ease,-webkit-box-shadow .1s ease;
-  transition: width .1s ease,-webkit-box-shadow .1s ease;
-  transition: box-shadow .1s ease,width .1s ease;
-  transition: box-shadow .1s ease,width .1s ease,-webkit-box-shadow .1s ease;
-  -webkit-tap-highlight-color: transparent;
-}*/
-
 .ui.button.la-auditButton-header {
   vertical-align: super;
 }
@@ -47450,7 +47426,7 @@ dd {
 
 aside.la-metabox {
   position: absolute !important;
-  width: inherit;
+  width: 100%;
   margin: 0 !important;
 }
 
@@ -52173,19 +52149,19 @@ legend {
 .ui.celled.grid {
   width: 100%;
   margin: 1em 0;
-  box-shadow: 0 0 0 1px #d4d4d5;
+  box-shadow: 0 0 0 1px #d3dae3;
 }
 
 .ui.celled.grid > .row {
   width: 100% !important;
   margin: 0;
   padding: 0;
-  box-shadow: 0 -1px 0 0 #d4d4d5;
+  box-shadow: 0 -1px 0 0 #d3dae3;
 }
 
 .ui.celled.grid > .column:not(.row),
 .ui.celled.grid > .row > .column {
-  box-shadow: -1px 0 0 0 #d4d4d5;
+  box-shadow: -1px 0 0 0 #d3dae3;
 }
 
 .ui.celled.grid > .column:first-child,
@@ -52506,7 +52482,7 @@ legend {
   /* Celled Reversed */
 
   .ui[class*="mobile reversed"].celled.grid > .row > .column:first-child {
-    box-shadow: -1px 0 0 0 #d4d4d5;
+    box-shadow: -1px 0 0 0 #d3dae3;
   }
 
   .ui[class*="mobile reversed"].celled.grid > .row > .column:last-child {
@@ -52552,7 +52528,7 @@ legend {
   /* Celled Reversed */
 
   .ui[class*="tablet reversed"].celled.grid > .row > .column:first-child {
-    box-shadow: -1px 0 0 0 #d4d4d5;
+    box-shadow: -1px 0 0 0 #d3dae3;
   }
 
   .ui[class*="tablet reversed"].celled.grid > .row > .column:last-child {
@@ -52598,7 +52574,7 @@ legend {
   /* Celled Reversed */
 
   .ui[class*="computer reversed"].celled.grid > .row > .column:first-child {
-    box-shadow: -1px 0 0 0 #d4d4d5;
+    box-shadow: -1px 0 0 0 #d3dae3;
   }
 
   .ui[class*="computer reversed"].celled.grid > .row > .column:last-child {
@@ -53243,6 +53219,13 @@ legend {
 /*-------------------
       Stackable
 --------------------*/
+
+@media only screen and (max-width: 992px) {
+  .ui.ui.grid > .row > [class*="right aligned"].column,
+  .ui.ui.grid > [class*="right aligned"].column {
+    text-align: left;
+  }
+}
 
 @media only screen and (max-width: 992px) {
   .ui.stackable.grid {
@@ -63763,7 +63746,7 @@ a.ui.basic.inverted.black.card:hover,
     height: auto !important;
     margin: 1em 1em;
     padding: 0 !important;
-    width: calc(100% - 2em) !important;
+    width: 100% !important;
   }
 }
 

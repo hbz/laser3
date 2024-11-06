@@ -66,31 +66,6 @@
 }
 
 
-/*.ui.green.button {
-  -webkit-box-shadow: 0 0 0 0 @laDecorationColor inset;
-  box-shadow: 0 0 0 0 @laDecorationColor inset;
-}
-.ui.green.button, .ui.green.buttons .button {
-  background-color: #98b500;
-  color: #fff;
-  text-shadow: none;
-  background-image: none;
-}
-
-.ui.dropdown {
-  cursor: pointer;
-  position: relative;
-  display: inline-block;
-  outline: 0;
-  text-align: left;
-  -webkit-transition: width .1s ease,-webkit-box-shadow .1s ease;
-  transition: width .1s ease,-webkit-box-shadow .1s ease;
-  transition: box-shadow .1s ease,width .1s ease;
-  transition: box-shadow .1s ease,width .1s ease,-webkit-box-shadow .1s ease;
-  -webkit-tap-highlight-color: transparent;
-}*/
-
-
 .ui.button.la-auditButton-header {
   vertical-align: super;
 }

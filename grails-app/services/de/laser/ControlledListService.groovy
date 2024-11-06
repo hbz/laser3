@@ -332,7 +332,7 @@ class ControlledListService {
             ctx = genericOIDService.resolveOID(params.ctx)
         }
         switch(ctx?._getCalculatedType()) {
-            case [ CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE ]:
+            case [ CalculatedType.TYPE_LOCAL, CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE ]:
                 licFilter += " and l.instanceOf = null "
                 break
             case CalculatedType.TYPE_PARTICIPATION:
@@ -1458,9 +1458,11 @@ class ControlledListService {
                     providerNameFilter = "and ${providerNameFilter}"
                 qryParams.context = institution
                 String qryString1 = "select new map(concat('${Provider.class.name}:',p.id) as value,p.name as name,p.sortname as sortname) from SubscriptionPackage sp join sp.pkg pkg join pkg.provider p where sp.subscription in (select sub from OrgRole os join os.sub sub where os.org = :context ${consortiumFilter}) ${providerNameFilter} group by p.id order by p.sortname, p.name",
-                qryString2 = "select new map(concat('${Provider.class.name}:',p.id) as value,p.name as name,p.sortname as sortname) from Provider p where p.createdBy = :context ${providerNameFilter} order by p.sortname, p.name"
+                qryString2 = "select new map(concat('${Provider.class.name}:',p.id) as value,p.name as name,p.sortname as sortname) from Provider p where p.createdBy = :context ${providerNameFilter} order by p.sortname, p.name",
+                qryString3 = "select new map(concat('${Provider.class.name}:',p.id) as value,p.name as name,p.sortname as sortname) from ProviderRole pvr join pvr.provider p where pvr.subscription in (select sub from OrgRole os join os.sub sub where os.org = :context ${consortiumFilter}) ${providerNameFilter} group by p.id order by p.sortname, p.name"
                 results.addAll(Provider.executeQuery(qryString1, qryParams))
                 results.addAll(Provider.executeQuery(qryString2, qryParams))
+                results.addAll(Provider.executeQuery(qryString3, qryParams))
                 results.sort { Map rowA, Map rowB ->
                     int cmp = rowA.sortname <=> rowB.sortname
                     if(!cmp)
@@ -1517,9 +1519,11 @@ class ControlledListService {
                     vendorNameFilter = "and ${vendorNameFilter}"
                 qryParams.context = institution
                 String qryString1 = "select new map(concat('${Vendor.class.name}:',vendor.id) as value,vendor.name as name,vendor.sortname as sortname) from PackageVendor pv join pv.vendor vendor, SubscriptionPackage sp join sp.pkg pkg where sp.pkg = pv.pkg and sp.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context ${consortiumFilter}) ${vendorNameFilter} group by vendor.id order by vendor.sortname asc",
-                qryString2 = "select new map(concat('${Vendor.class.name}:',vendor.id) as value,vendor.name as name,vendor.sortname as sortname) from Vendor vendor where vendor.createdBy = :context ${vendorNameFilter} order by vendor.sortname asc"
+                qryString2 = "select new map(concat('${Vendor.class.name}:',vendor.id) as value,vendor.name as name,vendor.sortname as sortname) from Vendor vendor where vendor.createdBy = :context ${vendorNameFilter} order by vendor.sortname asc",
+                qryString3 = "select new map(concat('${Vendor.class.name}:',v.id) as value,v.name as name,v.sortname as sortname) from VendorRole vr join vr.vendor v where vr.subscription in (select sub from OrgRole os join os.sub sub where os.org = :context ${consortiumFilter}) ${vendorNameFilter} group by v.id order by v.sortname, v.name"
                 results.addAll(Vendor.executeQuery(qryString1, qryParams))
                 results.addAll(Vendor.executeQuery(qryString2, qryParams))
+                results.addAll(Vendor.executeQuery(qryString3, qryParams))
                 results.sort { Map rowA, Map rowB ->
                     int cmp = rowA.sortname <=> rowB.sortname
                     if(!cmp)
