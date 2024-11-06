@@ -189,6 +189,26 @@ class AddressbookService {
                         " ( genfunc_filter_matcher(provider.name, :name) = true or genfunc_filter_matcher(provider.sortname, :name) = true ))"
             qParams << [name: "${params.org}"]
         }
+        else if(params.vendor) {
+            if (params.vendor instanceof Vendor) {
+                qParts << "vendor = :vendor"
+                qParams << [vendor: params.vendor]
+            }
+            else if(params.vendor instanceof String) {
+                qParts << "( genfunc_filter_matcher(vendor.name, :name) = true or genfunc_filter_matcher(vendor.sortname, :name) = true )"
+                qParams << [name: "${params.vendor}"]
+            }
+        }
+        else if(params.provider) {
+            if (params.provider instanceof Provider) {
+                qParts << "provider = :provider"
+                qParams << [provider: params.provider]
+            }
+            else if(params.provider instanceof String) {
+                qParts << "( genfunc_filter_matcher(provider.name, :name) = true or genfunc_filter_matcher(provider.sortname, :name) = true )"
+                qParams << [name: "${params.provider}"]
+            }
+        }
 
         if (params.type) {
             qParts << "(exists (select at from a.type as at where at.id in (:selectedTypes))) "
