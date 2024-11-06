@@ -1,4 +1,5 @@
 <%@ page import="de.laser.storage.RDStore" %>
+
 <h1 class="ui header">
     <g:if test="${sub}">
         ${message(code: 'mail.sub.mailInfos')} ${sub.getLabel()}

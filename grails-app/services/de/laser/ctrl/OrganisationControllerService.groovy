@@ -41,13 +41,10 @@ class OrganisationControllerService {
     Map<String,Object> mailInfos(OrganisationController controller, GrailsParameterMap params) {
         User user = contextService.getUser()
         Org org = contextService.getOrg()
-        Map<String, Object> result = [user:user,
-                                      institution:org,
-                                      contextOrg: org]
+        Map<String, Object> result = [user:user, institution:org, contextOrg: org]
 
-
-        if (params.id) {
-            result.orgInstance = Org.get(params.id)
+        if (params.id_org) {
+            result.orgInstance = Org.get(params.id_org)
             if(result.orgInstance.id == org.id){
                 return null
             }
@@ -62,7 +59,7 @@ class OrganisationControllerService {
 
         if (result.orgInstance) {
             String customerIdentifier = ''
-            result.sub = Subscription.get(params.subscription)
+            result.sub = Subscription.get(params.id_subscription)
 
             if(result.sub) {
                 List contactListProvider = result.sub.providerRelations ? Contact.executeQuery("select c.content from PersonRole pr " +
@@ -170,8 +167,8 @@ class OrganisationControllerService {
             String billingAddress = addressList.collect { Address address -> address.getAddressForExport()}.join(";")
             String billingPostBox = postBoxList.collect { Address address -> address.getAddressForExport()}.join(";")
 
-            if(params.surveyConfigID){
-                SurveyConfig surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.long('surveyConfigID')) : null
+            if (params.id_surveyConfig){
+                SurveyConfig surveyConfig = SurveyConfig.get(params.id_surveyConfig)
                 if(surveyConfig && surveyConfig.invoicingInformation && surveyConfig.surveyInfo.owner == result.contextOrg){
                     SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, result.orgInstance)
                     if(surveyOrg.address) {

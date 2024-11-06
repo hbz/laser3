@@ -1005,7 +1005,7 @@
 
             <g:if test="${tmplConfigItem.equalsIgnoreCase('mailInfos')}">
                 <td class="center aligned">
-                    <a href="#" class="ui button icon la-modern-button infoFlyout-trigger" data-orgId="${org.id}">
+                    <a href="#" class="ui button icon la-modern-button infoFlyout-trigger" data-template="org" data-org="${org.id}">
                         <i class="ui info icon"></i>
                     </a>
                 </td>
