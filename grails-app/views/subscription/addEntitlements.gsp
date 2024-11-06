@@ -462,7 +462,7 @@
                 publishers: "${params.list("publishers")}",
                 hasPerpetualAccess: "${params.hasPerpetualAccess}",
                 titleGroup: "${params.titleGroup}",
-                status: "${params.list("status")}",
+                status: "${params.list("status") ?: ''}",
         };
         $.ajax({
             url: "<g:createLink controller="ajax" action="updateChecked" />",
