@@ -101,8 +101,7 @@
                                                 <i class="${Icon.CMD.DELETE}"></i>
                                             </ui:remoteLink>
                                         </g:if>
-                                        <div class="${Btn.MODERN.SIMPLE_TOOLTIP} la-show-button"
-                                             data-content="${message(code: 'altname.showAll')}">
+                                        <div class="${Btn.MODERN.SIMPLE_TOOLTIP} la-show-button" data-content="${message(code: 'altname.showAll')}">
                                             <i class="${Icon.CMD.SHOW_MORE}"></i>
                                         </div>
                                     </div>
@@ -147,6 +146,14 @@
                             <dd>
                                 ${orgInstance.getCustomerTypeI10n()}
 %{--                                <ui:customerTypeIcon org="${orgInstance}" />--}%
+                            </dd>
+                        </dl>
+                    </g:if>
+                    <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
+                        <dl>
+                            <dt><g:message code="org.orgType.label" /></dt>
+                            <dd>
+                                <ui:xEditableRefData owner="${orgInstance}" field="orgType_new" config="${RDConstants.ORG_TYPE}"/> %{-- ERMS-5927 ---}%
                             </dd>
                         </dl>
                     </g:if>
@@ -314,25 +321,6 @@
                                               model="${model}" />
                             </div>
                         </g:if>
-                    </div>
-                </div>
-            </g:if>
-
-
-            <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
-                <div class="ui card">
-                    <div class="content">
-                        <%-- ROLE_ADMIN: all --%>
-                        <dl>
-                            <dt><g:message code="org.orgType.label" /></dt>
-                            <dd>
-                                <laser:render template="orgTypeAsList"
-                                          model="${[org: orgInstance, orgType: orgInstance.orgType_new, availableOrgTypes: RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE), editable: isGrantedOrgRoleAdminOrOrgEditor]}"/>
-                            </dd>
-                        </dl>
-
-                        <laser:render template="orgTypeModal"
-                                  model="${[org: orgInstance, availableOrgTypes: RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE), editable: isGrantedOrgRoleAdminOrOrgEditor]}"/>
                     </div>
                 </div>
             </g:if>

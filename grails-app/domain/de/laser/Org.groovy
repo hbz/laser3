@@ -4,6 +4,7 @@ import de.laser.addressbook.Address
 import de.laser.addressbook.Person
 import de.laser.addressbook.PersonRole
 import de.laser.annotations.RefdataInfo
+import de.laser.annotations.UnstableFeature
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
@@ -262,6 +263,17 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     @Override
     def afterUpdate() {
         super.afterUpdateHandler()
+    }
+
+    @UnstableFeature
+    // TODO: ERMS-6009
+    RefdataValue getOrgType() {
+        if (isCustomerType_Inst()) {
+            RDStore.OT_INSTITUTION
+        }
+        else if (isCustomerType_Consortium()) {
+            RDStore.OT_CONSORTIUM
+        }
     }
 
     /**
