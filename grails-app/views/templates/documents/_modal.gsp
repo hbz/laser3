@@ -131,7 +131,7 @@
                     </dl>
                 </g:if>
                 <g:elseif test="${controllerName == 'organisation'}">
-                    <g:hiddenField name="targetOrg" value="${ownobj.id}"/>
+                    <g:hiddenField name="targetOrg" id="targetOrg-${labelId}" value="${ownobj.id}"/>
                 </g:elseif>
             </g:if>
             <%
