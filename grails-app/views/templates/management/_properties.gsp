@@ -346,7 +346,7 @@
                 </g:if>
             </div>
 
-            <div class="field required">
+            <div class="field">
                 <label for="filterPropValue">${message(code: 'subscription.property.value')}</label>
                 <g:if test="${propertiesFilterPropDef.isRefdataValueType()}">
                     <g:select class="ui search dropdown"
