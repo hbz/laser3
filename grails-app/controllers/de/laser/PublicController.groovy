@@ -149,9 +149,7 @@ class PublicController {
                 query += "    ( genfunc_filter_matcher(s.name, :q) = true  "
 
                 query += " or exists ("
-                query += "    select ogr from s.orgRelations as ogr where ("
-                query += "          genfunc_filter_matcher(ogr.org.name, :q) = true or genfunc_filter_matcher(ogr.org.sortname, :q) = true "
-                query += "      ) and ogr.roleType.value = 'Provider'"
+                query += "    select pvr from s.providerRelations as pvr where genfunc_filter_matcher(pvr.provider.name, :q) = true or genfunc_filter_matcher(pvr.provider.sortname, :q) = true "
                 query += "    )"
                 query += " ))"
 

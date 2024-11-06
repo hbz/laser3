@@ -304,6 +304,27 @@
 
         </g:form>
     </ui:greySegment>
+
+    <div class="sixteen wide field" style="text-align: center;">
+        <g:if test="${surveyConfig.packageSurvey}">
+            <g:link class="ui button" controller="survey" action="copySurveyPackages"
+                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription.id]">
+                ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
+            </g:link>
+        </g:if>
+        <g:elseif test="${surveyConfig.vendorSurvey}">
+            <g:link class="ui button" controller="survey" action="copySurveyVendors"
+                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription.id]">
+                ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
+            </g:link>
+        </g:elseif>
+        <g:else>
+            <g:link class="ui button" controller="survey" action="copyProperties"
+                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: 'surveyProperties', targetSubscriptionId: targetSubscription.id]">
+                ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
+            </g:link>
+        </g:else>
+    </div>
     <laser:script file="${this.getGroovyPageFileName()}">
         $('#membersListToggler').click(function () {
         if ($(this).prop('checked')) {

@@ -7,6 +7,18 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6054    06.11.2024  rc-3.4  3.4.13      Andreas Bug         GASCO-Suche nach Anbietern migriert
+
+--      06.11.2024  rc-3.4  3.4.13      Andreas Bug         Entfernen der Pflichtfeldkennung bei Massenvergabe von Merkmalen
+
+6052    06.11.2024  rc-3.4  3.4.13      Andreas Bug         falsche Abfrage bei Darstellung an Anbieter- und Lieferantenverträgen
+
+6051    06.11.2024  rc-3.4  3.4.13      Andreas Bug         falscher Skopus verhinderte das Auffinden von Verträgen
+
+6049    05.11.2024  rc-3.4  3.4.13      David   Feature     Meldung bereits vergebener Nutzername anpassen
+
+6044    05.11.2024  rc-3.4  3.4.13      David   Bug         Manipulation von fremden Nutzeraccounts
+
 6030    23.10.2024  rc-3.4  3.4.12      David   Bug         Unerlaubtes Erlangen von Adminrechten
 
 6029    18.10.2024  rc-3.4  3.4.12      Andreas Bug         Tippfehler in Referenzwert behoben

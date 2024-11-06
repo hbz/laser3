@@ -265,20 +265,23 @@
             clearable: true,
             minCharacters: 1
         });
-        <g:if test="${context instanceof Subscription || context instanceof License}">
-            <g:if test="${!subscriptionLicenseLink}">
-                <g:set var="firstProvider" value="${ProviderRole.findBySubscriptionOrLicense(context, context)?.provider}"/>
-            </g:if>
-            <g:if test="${firstProvider}">
-                let providerOID = "${genericOIDService.getOID(firstProvider)}";
-                let providerText = "${firstProvider.name}";
-                $("#providerFilter").dropdown('set value', providerOID).dropdown('set text', providerText);
-                initPairDropdown(providerOID);
-            </g:if>
-            <g:else>
-                initPairDropdown();
-            </g:else>
+        <%
+            Provider firstProvider
+            if(!subscriptionLicenseLink) {
+                if (context instanceof Subscription || context instanceof License) {
+                    firstProvider = ProviderRole.findBySubscriptionOrLicense(context, context)?.provider
+                }
+            }
+        %>
+        <g:if test="${firstProvider}">
+            let providerOID = "${genericOIDService.getOID(firstProvider)}";
+            let providerText = "${firstProvider.name}";
+            $("#providerFilter").dropdown('set value', providerOID).dropdown('set text', providerText);
+            initPairDropdown(providerOID);
         </g:if>
+        <g:else>
+            initPairDropdown();
+        </g:else>
         $("#providerFilter").change(function() {
             let selProv = $("#providerFilter").dropdown('get value');
             initPairDropdown(selProv);
