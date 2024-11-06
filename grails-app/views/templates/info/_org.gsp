@@ -29,13 +29,13 @@
                 <label for="newLanguage">${message(code: 'profile.language')}:</label>
 
                 <div class="ui buttons">
-                    <a href="#" class="ui button mailInfos-flyout-trigger" data-orgId="${orgInstance.id}" data-subId="${params.subscription}"
+                    <a href="#" class="ui button infoFlyout-trigger" data-orgId="${orgInstance.id}" data-subId="${params.subscription}"
                        data-surveyConfigId="${params.surveyConfigID}" data-lang="${RDStore.LANGUAGE_DE.value}">
                         ${RDStore.LANGUAGE_DE}
                     </a>
 
                     <div class="or" data-text="${message(code: 'default.or')}"></div>
-                    <a href="#" class="ui button mailInfos-flyout-trigger" data-orgId="${orgInstance.id}" data-subId="${params.subscription}"
+                    <a href="#" class="ui button infoFlyout-trigger" data-orgId="${orgInstance.id}" data-subId="${params.subscription}"
                        data-surveyConfigId="${params.surveyConfigID}" data-lang="${RDStore.LANGUAGE_EN.value}">
                         ${RDStore.LANGUAGE_EN}
                     </a>
@@ -89,7 +89,7 @@
         document.execCommand("copy");
     }
 
-      $('a.mailInfos-flyout-trigger').on ('click', function(e) {
+      $('a.infoFlyout-trigger').on ('click', function(e) {
          e.preventDefault()
             let cell = $(this);
             let data = {
@@ -101,15 +101,15 @@
 
          $('#globalLoadingIndicator').show()
              $.ajax ({
-                 url: "<g:createLink controller="ajaxHtml" action="mailInfosFlyout"/>",
+                 url: "<g:createLink controller="ajaxHtml" action="infoFlyout"/>",
                  data: data
                 }).done (function (response) {
-                    $('#mailInfosFlyout').html (response)
-                    $('#mailInfosFlyout').flyout('show')
+                    $('#infoFlyout').html (response)
+                    $('#infoFlyout').flyout('show')
                     $('#globalLoadingIndicator').hide()
 
-                    r2d2.initDynamicUiStuff ('#mailInfosFlyout')
-                    r2d2.initDynamicXEditableStuff ('#mailInfosFlyout')
+                    r2d2.initDynamicUiStuff ('#infoFlyout')
+                    r2d2.initDynamicXEditableStuff ('#infoFlyout')
                 })
         });
 

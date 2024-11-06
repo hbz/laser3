@@ -64,7 +64,7 @@
                 <div class="content">
 
                     <g:if test="${!inContextOrg && contextOrg.isCustomerType_Consortium()}">
-                        <a href="#" class="ui icon la-float-right mailInfos-flyout-trigger" data-orgId="${orgInstance.id}">
+                        <a href="#" class="ui icon la-float-right infoFlyout-trigger" data-orgId="${orgInstance.id}">
                             <i class="icon circular info inverted"></i>
                         </a>
                     </g:if>
@@ -929,7 +929,7 @@
     </aside>
 </div>
 
-<laser:render template="/templates/flyouts/mailInfos"/>
+<laser:render template="/templates/info/flyoutWrapper"/>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.createContact').click(function() {

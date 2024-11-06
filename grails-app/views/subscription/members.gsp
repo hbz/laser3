@@ -320,7 +320,7 @@
                             </g:else>
 
 
-                        <a href="#" class="ui button blue icon la-modern-button mailInfos-flyout-trigger" data-orgId="${subscr.id}" data-subId="${sub.id}">
+                        <a href="#" class="ui button blue icon la-modern-button infoFlyout-trigger" data-orgId="${subscr.id}" data-subId="${sub.id}">
                             <i class="ui info icon"></i>
                         </a>
                     </td>
@@ -349,7 +349,7 @@
         });
     </laser:script>
 
-<laser:render template="/templates/flyouts/mailInfos"/>
+<laser:render template="/templates/info/flyoutWrapper"/>
 
 <g:render template="/clickMe/export/js"/>
 

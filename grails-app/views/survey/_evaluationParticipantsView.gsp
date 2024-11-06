@@ -622,7 +622,7 @@
                             </g:if>
                     </g:if>
 
-                    <a href="#" class="ui button blue icon la-modern-button mailInfos-flyout-trigger" data-orgId="${participant.id}" data-subId="${surveyConfig.subscription?.id}" data-surveyConfigId="${surveyConfig.id}">
+                    <a href="#" class="ui button blue icon la-modern-button infoFlyout-trigger" data-orgId="${participant.id}" data-subId="${surveyConfig.subscription?.id}" data-surveyConfigId="${surveyConfig.id}">
                         <i class="ui info icon"></i>
                     </a>
                 </td>
@@ -1228,7 +1228,7 @@
                     </g:if>
 
                     <br/>
-                    <a href="#" class="ui icon mailInfos-flyout-trigger" data-orgId="${participant.id}" data-subId="${surveyConfig.subscription?.id}" data-surveyConfigId="${surveyConfig.id}">
+                    <a href="#" class="ui icon infoFlyout-trigger" data-orgId="${participant.id}" data-subId="${surveyConfig.subscription?.id}" data-surveyConfigId="${surveyConfig.id}">
                         <i class="icon info inverted"></i>
                     </a>
                 </td>
@@ -1374,7 +1374,7 @@
 </g:form>
 
 
-<laser:render template="/templates/flyouts/mailInfos"/>
+<laser:render template="/templates/info/flyoutWrapper"/>
 
 <laser:script file="${this.getGroovyPageFileName()}">
 <g:if test="${showCheckboxForParticipantsHasAccess || showCheckboxForParticipantsHasNoAccess}">

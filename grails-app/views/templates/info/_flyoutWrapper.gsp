@@ -1,11 +1,9 @@
 
-<div id="mailInfosFlyout" class="ui ten wide flyout">
-
-</div>
+<div id="infoFlyout" class="ui ten wide flyout"></div>
 
 <laser:script file="${this.getGroovyPageFileName()}">
 
-  $('a.mailInfos-flyout-trigger').on ('click', function(e) {
+  $('a.infoFlyout-trigger').on ('click', function(e) {
        e.preventDefault()
           let cell = $(this);
           let data = {
@@ -17,15 +15,15 @@
 
        $('#globalLoadingIndicator').show()
            $.ajax ({
-               url: "<g:createLink controller="ajaxHtml" action="mailInfosFlyout"/>",
+               url: "<g:createLink controller="ajaxHtml" action="infoFlyout"/>",
                  data: data
                 }).done (function (response) {
-                    $('#mailInfosFlyout').html (response)
-                    $('#mailInfosFlyout').flyout('show')
+                    $('#infoFlyout').html (response)
+                    $('#infoFlyout').flyout('show')
                     $('#globalLoadingIndicator').hide()
 
-                    r2d2.initDynamicUiStuff ('#mailInfosFlyout')
-                    r2d2.initDynamicXEditableStuff ('#mailInfosFlyout')
+                    r2d2.initDynamicUiStuff ('#infoFlyout')
+                    r2d2.initDynamicXEditableStuff ('#infoFlyout')
                 })
         });
 
