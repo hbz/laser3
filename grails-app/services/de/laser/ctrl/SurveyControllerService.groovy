@@ -2521,7 +2521,6 @@ class SurveyControllerService {
 
             if (!result.editable) {
                 [result: null, status: STATUS_ERROR]
-                return
             }
 
             switch (params.actionSurveyParticipants) {
