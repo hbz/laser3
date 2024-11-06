@@ -1683,9 +1683,11 @@ class SubscriptionService {
             Map<String, Object> titleConfigMap = parameterGenerics.titleConfigMap,
                                 identifierConfigMap = parameterGenerics.identifierConfigMap,
                                 issueEntitlementConfigMap = parameterGenerics.issueEntitlementConfigMap
-            if(params.tab == "currentPerpetualAccessIEs")
-                titleConfigMap.tippStatus = [RDStore.TIPP_STATUS_CURRENT.id]
             //build up title data
+            if(!result.configMap.containsKey('status')) {
+                titleConfigMap.tippStatus = [RDStore.TIPP_STATUS_CURRENT.id]
+                issueEntitlementConfigMap.ieStatus = [RDStore.TIPP_STATUS_CURRENT.id]
+            }
             Map<String, Object> query = filterService.getTippSubsetQuery(titleConfigMap)
             Set<Long> tippIDs = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
             if(result.identifier) {
@@ -2035,8 +2037,10 @@ class SubscriptionService {
                     Map<String, Object> titleConfigMap = parameterGenerics.titleConfigMap,
                                         identifierConfigMap = parameterGenerics.identifierConfigMap,
                                         issueEntitlementConfigMap = parameterGenerics.issueEntitlementConfigMap
-                    if(params.tab == "currentPerpetualAccessIEs")
+                    if(!result.configMap.containsKey('status')) {
                         titleConfigMap.tippStatus = [RDStore.TIPP_STATUS_CURRENT.id]
+                        issueEntitlementConfigMap.ieStatus = [RDStore.TIPP_STATUS_CURRENT.id]
+                    }
                     //build up title data
                     Map<String, Object> query = filterService.getTippSubsetQuery(titleConfigMap), exportData = [:]
                     Set<Long> tippIDs = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
@@ -4144,7 +4148,12 @@ class SubscriptionService {
             Map rtParams = FilterLogic.resolveTabAndStatusForRenewalTabsMenu(params)
             if (rtParams.tab)    { params.tab = rtParams.tab }
             if (rtParams.subTab) { params.subTab = rtParams.subTab }
-            if (rtParams.status) { params.status = rtParams.status }
+            if (rtParams.status) {
+                params.tippStatus = rtParams.status
+                params.ieStatus = rtParams.status
+                result.listOfStatus = Params.getRefdataList(params, 'status')
+            }
+            else result.listOfStatus = [RDStore.TIPP_STATUS_CURRENT]
             result.sort = params.sort ?: 'tipp.sortname'
             result.order = params.order ?: 'asc'
             Map<String, Object> configMap = params.clone()

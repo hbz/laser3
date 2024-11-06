@@ -127,14 +127,19 @@
                 <div class="divider"></div>
                 <ui:actionsDropdownItem controller="subscription" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
                 <g:if test="${subscription.packages}">
-                    <ui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
-                    <g:if test="${actionName == 'renewEntitlementsWithSurvey'}">
-                        <ui:actionsDropdownItem id="selectEntitlementsWithKBART" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: params.tab)}" message="subscription.details.addEntitlements.menu"/>
+                    <g:if test="${titleManipulation}">
+                        <ui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
+                        <g:if test="${actionName == 'renewEntitlementsWithSurvey'}">
+                            <ui:actionsDropdownItem id="selectEntitlementsWithKBART" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: params.tab)}" message="subscription.details.addEntitlements.menu"/>
+                        </g:if>
+                        <g:else>
+                            <ui:actionsDropdownItem id="selectEntitlementsWithKBART" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscription.id)}" message="subscription.details.addEntitlements.menu"/>
+                        </g:else>
                     </g:if>
                     <g:else>
-                        <ui:actionsDropdownItem id="selectEntitlementsWithKBART" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscription.id)}" message="subscription.details.addEntitlements.menu"/>
+                        <ui:actionsDropdownItemDisabled message="subscription.details.addEntitlements.label" tooltip="${message(code:'subscription.details.addEntitlements.holdingEntire')}"/>
+                        <ui:actionsDropdownItemDisabled message="subscription.details.addEntitlements.menu" tooltip="${message(code:'subscription.details.addEntitlements.holdingEntire')}"/>
                     </g:else>
-
                     <ui:actionsDropdownItem controller="subscription" action="manageEntitlementGroup" params="${[id:params.id]}" message="subscription.details.manageEntitlementGroup.label" />
                     <ui:actionsDropdownItem controller="subscription" action="index" notActive="true" params="${[id:params.id, issueEntitlementEnrichment: true]}" message="subscription.details.issueEntitlementEnrichment.label" />
                 </g:if>
@@ -188,9 +193,12 @@
             <g:if test="${contextService.getOrg().isCustomerType_Consortium_Pro() && showConsortiaFunctions && subscription.instanceOf == null }">
                 <ui:actionsDropdownItem controller="survey" action="addSubtoSubscriptionSurvey"
                                                params="${[sub:params.id]}" text="${message(code:'createSubscriptionSurvey.label')}" />
-
-                <ui:actionsDropdownItem controller="survey" action="addSubtoIssueEntitlementsSurvey"
-                                           params="${[sub:params.id]}" text="${message(code:'createIssueEntitlementsSurvey.label')}" />
+                <g:if test="${titleManipulationInherited}">
+                    <ui:actionsDropdownItem controller="survey" action="addSubtoIssueEntitlementsSurvey" params="${[sub:params.id]}" text="${message(code:'createIssueEntitlementsSurvey.label')}" />
+                </g:if>
+                <g:else>
+                    <ui:actionsDropdownItemDisabled message="createIssueEntitlementsSurvey.label" tooltip="${message(code: 'subscription.details.addEntitlements.holdingInherited')}" />
+                </g:else>
                 <div class="divider"></div>
             </g:if>
 

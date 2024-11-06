@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfigProperties; de.laser.storage.PropertyStore; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyPackageResult; de.laser.Doc; de.laser.DocContext; de.laser.IssueEntitlementGroup; de.laser.config.ConfigMapper; de.laser.survey.SurveyConfig; de.laser.survey.SurveyResult; de.laser.Org; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory; de.laser.survey.SurveyOrg" %>
+<%@ page import="de.laser.survey.SurveyConfigProperties; de.laser.storage.PropertyStore; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyPackageResult; de.laser.Doc; de.laser.DocContext; de.laser.IssueEntitlementGroup; de.laser.config.ConfigMapper; de.laser.survey.SurveyConfig; de.laser.survey.SurveyResult; de.laser.Org; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory; de.laser.survey.SurveyOrg; de.laser.ExportService" %>
 <laser:serviceInjection/>
 
 <g:if test="${showOpenParticipantsAgainButtons}">
@@ -117,6 +117,7 @@
 </ui:filter>
 
 
+<div id="downloadWrapper"></div>
 
 <g:form action="${processAction}" controller="${processController ?: 'survey'}" method="post" class="ui form"
         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab]">
@@ -159,6 +160,7 @@
     <g:set var="sumDiffEUR" value="${0}"/>
     <g:set var="sumDiffUSD" value="${0}"/>
     <g:set var="sumDiffGBP" value="${0}"/>
+
 
     <table class="ui celled sortable table la-js-responsive-table la-table">
         <thead>
@@ -562,11 +564,11 @@
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('downloadTitleList')}">
                         <td>
-                            <g:link controller="subscription" action="renewEntitlementsWithSurvey" id="${subParticipant.id}"
+                            <g:link controller="subscription" action="exportRenewalEntitlements" id="${subParticipant.id}"
                                     params="${[surveyConfigID: surveyConfig.id,
-                                               exportXLS   : true,
+                                               exportConfig: ExportService.EXCEL,
                                                tab           : 'selectedIEs']}"
-                                    class="${Btn.MODERN.SIMPLE_TOOLTIP}"
+                                    class="${Btn.MODERN.SIMPLE_TOOLTIP} normalExport"
                                     data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}" data-position="bottom left"
                                     target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                         </td>
@@ -1165,11 +1167,11 @@
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('downloadTitleList')}">
                         <td>
-                            <g:link controller="subscription" action="renewEntitlementsWithSurvey" id="${subParticipant.id}"
+                            <g:link controller="subscription" action="exportRenewalEntitlements" id="${subParticipant.id}"
                                     params="${[surveyConfigID: surveyConfig.id,
-                                               exportXLS   : true,
+                                               exportConfig   : ExportService.EXCEL,
                                                tab           : 'selectedIEs']}"
-                                    class="${Btn.MODERN.SIMPLE_TOOLTIP}"
+                                    class="${Btn.MODERN.SIMPLE_TOOLTIP} normalExport"
                                     data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}" data-position="bottom left"
                                     target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                         </td>
@@ -1440,15 +1442,32 @@ JSPC.app.adjustDropdown()
 JSPC.app.propertiesChanged = function (propertyDefinitionId) {
     $.ajax({
         url: '<g:createLink controller="survey" action="showPropertiesChanged" params="[tab: params.tab, surveyConfigID: surveyConfig.id, id: surveyInfo.id]"/>&propertyDefinitionId='+propertyDefinitionId,
-            success: function(result){
-                $("#dynamicModalContainer").empty();
-                $("#modalPropertiesChanged").remove();
+        success: function(result){
+            $("#dynamicModalContainer").empty();
+            $("#modalPropertiesChanged").remove();
 
-                $("#dynamicModalContainer").html(result);
-                $("#dynamicModalContainer .ui.modal").modal('show');
-            }
-        });
-    }
+            $("#dynamicModalContainer").html(result);
+            $("#dynamicModalContainer .ui.modal").modal('show');
+        }
+    });
+}
+
+$('.normalExport').click(function(e) {
+    e.preventDefault();
+    $('#globalLoadingIndicator').show();
+    $("#downloadWrapper").hide();
+    $.ajax({
+        url: $(this).attr('href'),
+        type: 'POST',
+        contentType: false
+    }).done(function(response){
+        $("#downloadWrapper").html(response).show();
+        $('#globalLoadingIndicator').hide();
+    }).fail(function(resp, status){
+        $("#downloadWrapper").text('Es ist zu einem Fehler beim Abruf gekommen').show();
+        $('#globalLoadingIndicator').hide();
+    });
+});
 
 </laser:script>
 
