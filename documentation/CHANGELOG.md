@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6054    06.11.2024  rc-3.4  3.4.13      Andreas Bug         GASCO-Suche nach Anbietern migriert
+
 --      06.11.2024  rc-3.4  3.4.13      Andreas Bug         Entfernen der Pflichtfeldkennung bei Massenvergabe von Merkmalen
 
 6052    06.11.2024  rc-3.4  3.4.13      Andreas Bug         falsche Abfrage bei Darstellung an Anbieter- und Lieferantenverträgen
