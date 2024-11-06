@@ -110,7 +110,7 @@ class BatchQueryService {
         Sql sql = GlobalService.obtainSqlConnection()
         arrayParams.each { String k, v ->
             String type
-            if(v[0] instanceof Long) {
+            if(k.toLowerCase().contains('ids') || v[0] instanceof Long) {
                 type = 'bigint'
             }
             else {
