@@ -1282,6 +1282,10 @@ class SubscriptionController {
                 response.sendError(401)
                 return
             }
+            else {
+                flash.error = ctrlResult.result
+                redirect action: 'show', params: [id: params.id]
+            }
         }
         else {
             String filename = "${escapeService.escapeString(ctrlResult.result.subscription.dropdownNamingConvention())}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
