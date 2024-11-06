@@ -21,6 +21,8 @@
 
 6041    30.10.2024  dev     3.5         David   Feature     Controller: ROLE_ADMIN-Ausnahmen entfernen
 
+5977    30.10.2024  dev     3.5         David   Feature     Rechteprüfung: Aufgaben
+
 5973    30.10.2024  dev     3.5         Andreas Feature     Tilgung von raw(), wo nicht zwingend erforderlich
 
 5977    25.10.2024  dev     3.5         David   Feature     Rechteprüfung: Aufgaben

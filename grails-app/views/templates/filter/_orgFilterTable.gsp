@@ -1005,7 +1005,7 @@
 
             <g:if test="${tmplConfigItem.equalsIgnoreCase('mailInfos')}">
                 <td class="center aligned">
-                    <a href="#" class="ui button blue icon la-modern-button mailInfos-flyout-trigger" data-orgId="${org.id}" >
+                    <a href="#" class="ui button icon la-modern-button infoFlyout-trigger" data-orgId="${org.id}">
                         <i class="ui info icon"></i>
                     </a>
                 </td>
@@ -1122,5 +1122,5 @@
 </g:if>
 
 <g:if test="${tmplConfigShow?.contains('mailInfos')}">
-    <laser:render template="/templates/flyouts/mailInfos"/>
+    <laser:render template="/templates/info/flyoutWrapper"/>
 </g:if>

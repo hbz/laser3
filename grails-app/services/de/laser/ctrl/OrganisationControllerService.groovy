@@ -28,11 +28,9 @@ class OrganisationControllerService {
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1
 
-    AccessPointService accessPointService
     ContextService contextService
     DocstoreService docstoreService
     FormService formService
-    GokbService gokbService
     LinksGenerationService linksGenerationService
     MessageSource messageSource
     TaskService taskService
@@ -105,7 +103,7 @@ class OrganisationControllerService {
                 }
             }
 
-            result.mailText = ""
+            result.mailText = [:]
 
             ReaderNumber readerNumberStudents
             ReaderNumber readerNumberStaff
@@ -249,9 +247,29 @@ class OrganisationControllerService {
 
             String vatID = result.orgInstance.getIdentifierByType(IdentifierNamespace.VAT)?.value
 
-            result.language = params.newLanguage && params.newLanguage in [RDStore.LANGUAGE_DE.value, RDStore.LANGUAGE_EN.value] ? params.newLanguage : 'de'
-            Locale language = new Locale(result.language)
-            result.mailText = groovyPageRenderer.render view: '/mailTemplates/text/orgInfos', contentType: "text", encoding: "UTF-8", model: [language            : language,
+//            result.language = params.newLanguage && params.newLanguage in [RDStore.LANGUAGE_DE.value, RDStore.LANGUAGE_EN.value] ? params.newLanguage : 'de'
+//            Locale language = new Locale(result.language)
+
+            String langDe = RDStore.LANGUAGE_DE.value
+            String langEn = RDStore.LANGUAGE_EN.value
+
+            result.mailText[langDe] = groovyPageRenderer.render view: '/mailTemplates/text/orgInfos', contentType: "text", encoding: "UTF-8", model: [language    : new Locale(langDe),
+                                                                                                                                              org                 : result.orgInstance,
+                                                                                                                                              customerIdentifier  : customerIdentifier,
+                                                                                                                                              sub                 : result.sub,
+                                                                                                                                              readerNumberStudents: readerNumberStudents,
+                                                                                                                                              readerNumberStaff   : readerNumberStaff,
+                                                                                                                                              readerNumberFTE     : readerNumberFTE,
+                                                                                                                                              currentSemester     : currentSemester,
+                                                                                                                                              generalContacts     : generalContacts,
+                                                                                                                                              responsibleAdmins   : responsibleAdmins,
+                                                                                                                                              billingContacts     : billingContacts,
+                                                                                                                                              accessPoints        : accessPoints,
+                                                                                                                                              billingAddress       : billingAddress,
+                                                                                                                                              billingPostBox: billingPostBox,
+                                                                                                                                              vatID: vatID]
+
+            result.mailText[langEn] = groovyPageRenderer.render view: '/mailTemplates/text/orgInfos', contentType: "text", encoding: "UTF-8", model: [language    : new Locale(langEn),
                                                                                                                                               org                 : result.orgInstance,
                                                                                                                                               customerIdentifier  : customerIdentifier,
                                                                                                                                               sub                 : result.sub,
