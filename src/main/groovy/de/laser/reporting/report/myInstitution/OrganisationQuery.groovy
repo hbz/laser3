@@ -34,7 +34,7 @@ class OrganisationQuery extends BaseQuery {
                     result
             )
         }
-        else if ( suffix in ['orgType_new', 'libraryType', 'region', 'country', 'libraryNetwork', 'funderType', 'funderHskType']) {
+        else if ( suffix in ['libraryType', 'region', 'country', 'libraryNetwork', 'funderType', 'funderHskType']) {
 
             _processSimpleRefdataQuery(params.query, suffix, idList, result)
         }

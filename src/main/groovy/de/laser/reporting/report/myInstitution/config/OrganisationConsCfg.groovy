@@ -28,7 +28,6 @@ class OrganisationConsCfg extends BaseConfig {
                             'legalInfo'         : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'libraryNetwork'    : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
                             'libraryType'       : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
-                            'orgType_new'           : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
                             'propertyKey'       : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'propertyValue'     : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'subjectGroup'      : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ]    // TODO custom_impl
@@ -36,16 +35,14 @@ class OrganisationConsCfg extends BaseConfig {
                     filter : [
                             default : [
                                     [ 'country', 'region', 'subjectGroup', 'libraryType' ],
-                                    [ 'libraryNetwork', 'funderType', 'funderHskType' ] ,
-                                    [ 'orgType_new', 'eInvoice' ],
-                                    [ 'customerType', 'legalInfo' ],
+                                    [ 'libraryNetwork', 'funderType', 'funderHskType' ],
+                                    [ 'customerType', 'legalInfo', 'eInvoice' ],
                                     [ 'propertyKey', 'propertyValue' ]
                             ]
                     ],
                     query : [
                             default : [
                                     org : [
-                                            'org-orgType_new' :         [ 'generic.org.orgType' ],
                                             'org-customerType' :    [ 'generic.org.customerType' ],
                                             'org-libraryType' :     [ 'generic.org.libraryType' ],
                                             'org-apiLevel' :        [ 'generic.org.apiLevel' ],

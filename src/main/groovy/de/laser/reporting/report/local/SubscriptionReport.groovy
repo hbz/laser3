@@ -686,9 +686,6 @@ class SubscriptionReport {
                 else if (params.query == 'member-libraryType') {
                     processSimpleMemberRefdataQuery(params.query, 'libraryType', idList, result)
                 }
-                else if (params.query == 'member-orgType_new') {
-                    processSimpleMemberRefdataQuery(params.query, 'orgType_new', idList, result)
-                }
                 else if (params.query == 'member-region') {
                     processSimpleMemberRefdataQuery(params.query, 'region', idList, result)
                 }

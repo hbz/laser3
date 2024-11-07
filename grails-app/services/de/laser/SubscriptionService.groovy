@@ -4167,4 +4167,14 @@ class SubscriptionService {
         result
     }
 
+
+    /**
+     * @return List<Long> with accessible (my) subscription ids
+     */
+    @Deprecated
+    List<Long> getCurrentSubscriptionIds(Org context) {
+        // moved from deleted OrgTypeService ..
+        return Subscription.executeQuery("select oo.sub.id from OrgRole oo where oo.org = :subOrg and oo.roleType in (:roleTypes)",
+                [subOrg: context, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIUM]])
+    }
 }

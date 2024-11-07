@@ -1625,59 +1625,6 @@ class OrganisationController  {
     }
 
     /**
-     * Assigns the given organisation type to the given organisation
-     */
-    @Transactional
-    @Secured(['ROLE_USER'])
-    def addOrgType() {
-        Map<String, Object> result = [:]
-        result.user = contextService.getUser()
-        Org orgInstance = Org.get(params.org)
-
-        if (!orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
-            redirect action: 'list'
-            return
-        }
-        result.editable = _checkIsEditable(orgInstance)
-
-        if (result.editable) {
-            orgInstance.orgType_new = RefdataValue.get(params.orgType) // TODO - refactoring
-            orgInstance.save()
-//            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
-        }
-
-        redirect action: 'show', id: orgInstance.id
-    }
-
-    /**
-     * Removes the given organisation type from the given organisation
-     */
-    @Transactional
-    @Secured(['ROLE_USER'])
-    def deleteOrgType() {
-        Map<String, Object> result = [:]
-        result.user = contextService.getUser()
-        Org orgInstance = Org.get(params.org)
-
-        if (!orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
-            redirect action: 'list'
-            return
-        }
-
-        result.editable = _checkIsEditable(orgInstance)
-
-        if (result.editable) {
-            orgInstance.removeFromOrgType(RefdataValue.get(params.removeOrgType))
-            orgInstance.save()
-//            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
-        }
-
-        redirect action: 'show', id: orgInstance.id
-    }
-
-    /**
      * Assigns the given subject group to the given organisation
      */
     @Transactional

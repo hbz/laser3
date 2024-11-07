@@ -41,7 +41,6 @@ class LicenseController {
     LicenseControllerService licenseControllerService
     LinksGenerationService linksGenerationService
     LicenseService licenseService
-    OrgTypeService orgTypeService
     PropertyService propertyService
     SubscriptionsQueryService subscriptionsQueryService
     SubscriptionService subscriptionService
@@ -140,9 +139,6 @@ class LicenseController {
         //a new query builder service for selection lists has been introduced
         //result.availableSubs = controlledListService.getSubscriptions(params+[status:SUBSCRIPTION_CURRENT]).results
         //result.availableSubs = []
-
-        result.availableLicensorList = orgTypeService.getOrgsForTypeLicensor().minus(result.visibleOrgRelations.collect { OrgRole oo -> oo.org })
-        result.existingLicensorIdList = []
 
         workflowService.executeCmdAndUpdateResult(result, params)
 

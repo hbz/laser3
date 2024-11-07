@@ -7,7 +7,6 @@ import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper
 import de.laser.convenience.Marker
 import de.laser.ctrl.MyInstitutionControllerService
-import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ctrl.UserControllerService
 import de.laser.remote.ApiSource
 import de.laser.reporting.report.ReportingCache
@@ -88,14 +87,11 @@ class MyInstitutionController  {
     ManagementService managementService
     MarkerService markerService
     MyInstitutionControllerService myInstitutionControllerService
-    OrganisationService organisationService
-    OrgTypeService orgTypeService
     PackageService packageService
     PropertyService propertyService
     ProviderService providerService
     ReportingGlobalService reportingGlobalService
     SubscriptionsQueryService subscriptionsQueryService
-    SubscriptionControllerService subscriptionControllerService
     SubscriptionService subscriptionService
     SurveyService surveyService
     TaskService taskService
@@ -802,9 +798,6 @@ class MyInstitutionController  {
             Org org = contextService.getOrg()
 
             boolean isConsOrSupport     = org.isCustomerType_Consortium() || org.isCustomerType_Support()
-            List<Long> defaultOrgType   = isConsOrSupport ? [RDStore.OT_CONSORTIUM.id] : [RDStore.OT_INSTITUTION.id]
-
-            params.asOrgType = params.asOrgType ? [params.long('asOrgType')] : defaultOrgType
 
             if (! contextService.isInstEditor()) {
                 flash.error = message(code:'myinst.error.noAdmin', args:[org.name]) as String

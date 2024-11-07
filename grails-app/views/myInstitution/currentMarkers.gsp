@@ -44,7 +44,7 @@
                     <th class="one wide">${message(code:'sidewide.number')}</th>
                     <th class="ten wide">
                         <g:if test="${objCat.value.first() instanceof Org}">
-                            <i class="${Icon.ORG} grey la-list-icon"></i> ???
+                            <i class="${Icon.ORG} grey la-list-icon"></i>
                         </g:if>
                         <g:elseif test="${objCat.value.first() instanceof Package}">
                             <i class="${Icon.PACKAGE} grey la-list-icon"></i> ${message(code:'package.label')}
@@ -62,7 +62,7 @@
                             <i class="${Icon.TIPP} grey la-list-icon"></i> ${message(code:'title')}
                         </g:elseif>
                     </th>
-                    <th class="three wide"></th>
+                    <th class="three wide">${message(code:'org.customerType.label')}</th>
                     <th class="one wide center aligned"><ui:myXIcon /></th>
                     <th class="one wide">${message(code:'default.actions.label')}</th>
                 </tr>
@@ -77,7 +77,7 @@
                                 <g:link controller="org" action="show" id="${obj.id}" target="_blank">${obj.name}</g:link>
                             </td>
                             <td>
-                                ${obj.orgType_new?.getI10n("value")}
+                                ${obj.getCustomerTypeI10n()}
                             </td>
                             <td class="center aligned">
                                 <g:if test="${obj.id in myXMap.currentOrgIdList}">
