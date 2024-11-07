@@ -1,6 +1,7 @@
 package de.laser.reporting.report.myInstitution
 
 import de.laser.ContextService
+import de.laser.CustomerTypeService
 import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.RefdataValue
@@ -38,15 +39,23 @@ class OrganisationFilter extends BaseFilter {
                 break
             case 'all-consortium':
                 queryParams.orgIdList = Org.executeQuery(
-                        'select o.id from Org o where o.orgType_new = :orgType and (o.status is null or o.status != :orgStatus)',
-                        [orgType: RDStore.OT_CONSORTIUM, orgStatus: RDStore.ORG_STATUS_DELETED]
+                        'select o.id from Org o, OrgSetting os where os.org = o and os.key = :ct and os.roleValue.authority in (:roles) and (o.status is null or o.status != :orgStatus)',
+                        [ct: OrgSetting.KEYS.CUSTOMER_TYPE, roles: [CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO], orgStatus: RDStore.ORG_STATUS_DELETED]
                 )
+//                queryParams.orgIdList = Org.executeQuery(
+//                        'select o.id from Org o where o.orgType_new = :orgType and (o.status is null or o.status != :orgStatus)',
+//                        [orgType: RDStore.OT_CONSORTIUM, orgStatus: RDStore.ORG_STATUS_DELETED]
+//                )
                 break
             case 'all-inst':
                 queryParams.orgIdList = Org.executeQuery(
-                        'select o.id from Org o where o.orgType_new = :orgType and (o.status is null or o.status != :orgStatus)',
-                        [orgStatus: RDStore.ORG_STATUS_DELETED, orgType: RDStore.OT_INSTITUTION]
+                        'select o.id from Org o, OrgSetting os where os.org = o and os.key = :ct and os.roleValue.authority in (:roles) and (o.status is null or o.status != :orgStatus)',
+                        [ct: OrgSetting.KEYS.CUSTOMER_TYPE, roles: [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO], orgStatus: RDStore.ORG_STATUS_DELETED]
                 )
+//                queryParams.orgIdList = Org.executeQuery(
+//                        'select o.id from Org o where o.orgType_new = :orgType and (o.status is null or o.status != :orgStatus)',
+//                        [orgStatus: RDStore.ORG_STATUS_DELETED, orgType: RDStore.OT_INSTITUTION]
+//                )
                 break
             case 'my-inst':
                 queryParams.orgIdList = Org.executeQuery(

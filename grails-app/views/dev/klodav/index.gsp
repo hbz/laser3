@@ -262,50 +262,6 @@
 
 <div class="ui segment">
     <p class="ui header">
-        <icon:database /> HQL
-    </p>
-    <%
-        String query = 'from Org o where'
-
-        println '<br/>#1 [ '  + Org.executeQuery(query + " (o.orgType_new != null and o.orgType_new.id = :orgType)", [orgType: RDStore.OT_INSTITUTION.id]).size()
-        println         ' , ' + Org.executeQuery(query + " (o.orgType_new != null and o.orgType_new.id = :orgType)", [orgType: null]).size()
-        println ' ]'
-
-        println '<br/>#3 [ '  + Org.executeQuery(query + " (o.orgType_new.id = :orgType)", [orgType: RDStore.OT_INSTITUTION.id]).size()
-        println         ' , ' + Org.executeQuery(query + " (o.orgType_new.id = :orgType)", [orgType: null]).size()
-        println ' ]'
-
-        println '<br/>#5 [ ' + Org.executeQuery(query + " (o.orgType_new != null and o.orgType_new = :orgType)", [orgType: RDStore.OT_INSTITUTION]).size()
-        println         ' , ' + Org.executeQuery(query + " (o.orgType_new != null and o.orgType_new = :orgType)", [orgType: null]).size()
-        println ' ]'
-
-        println '<br/>#7 [ ' + Org.executeQuery(query + " (o.orgType_new = :orgType)", [orgType: RDStore.OT_INSTITUTION]).size()
-        println         ' , ' + Org.executeQuery(query + " (o.orgType_new = :orgType)", [orgType: null]).size()
-        println ' ]'
-
-        println '<br/>#11 [ ' + Org.executeQuery(query + " (o.orgType_new != null and o.orgType_new.id in (:orgTypes))", [orgTypes: [RDStore.OT_INSTITUTION.id]]).size()
-        println         ' , ' + Org.executeQuery(query + " (o.orgType_new != null and o.orgType_new.id in (:orgTypes))", [orgTypes: null]).size()
-        println ' ]'
-
-        println '<br/>#13 [ ' + Org.executeQuery(query + " (o.orgType_new.id in (:orgTypes))", [orgTypes: [RDStore.OT_INSTITUTION.id]]).size()
-        println         ' , ' + Org.executeQuery(query + " (o.orgType_new.id in (:orgTypes))", [orgTypes: null]).size()
-        println ' ]'
-
-        println '<br/>#15 [ ' + Org.executeQuery(query + " (o.orgType_new != null and o.orgType_new in (:orgTypes))", [orgTypes: [RDStore.OT_INSTITUTION]]).size()
-        println         ' , ' + Org.executeQuery(query + " (o.orgType_new != null and o.orgType_new in (:orgTypes))", [orgTypes: null]).size()
-        println ' ]'
-
-        println '<br/>#17 [ ' + Org.executeQuery(query + " (o.orgType_new in (:orgTypes))", [orgTypes: [RDStore.OT_INSTITUTION]]).size()
-        println         ' , ' + Org.executeQuery(query + " (o.orgType_new in (:orgTypes))", [orgTypes: null]).size()
-        println ' ]'
-
-        println '<br/>#20 ' + Org.executeQuery(query + " (o.orgType_new.id in (:orgTypes))", [orgTypes: []]).size()
-        println '<br/>#21 ' + Org.executeQuery(query + " (o.orgType_new in (:orgTypes))", [orgTypes: []]).size()
-    %>
-</div>
-
-<div class="ui segment">
-    <p class="ui header">
         <i class="icon kiwi bird"></i> simple color helper
     </p>
     <p>
