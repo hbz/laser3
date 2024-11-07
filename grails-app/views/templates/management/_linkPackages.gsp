@@ -70,14 +70,26 @@
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
                     <div class="ui buttons">
-                        <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning || isUnlinkingRunning  ? 'disabled="disabled"' : ''} type="submit"
-                                name="processOption"
-                                value="linkwithoutIE">${message(code: 'subscriptionsManagement.linkwithoutIE')}</button>
+                        <g:if test="${!auditService.getAuditConfig(subscription, 'holdingSelection')}">
+                            <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning || isUnlinkingRunning  ? 'disabled="disabled"' : ''} type="submit"
+                                    name="processOption"
+                                    value="linkwithoutIE">${message(code: 'subscriptionsManagement.linkwithoutIE')}</button>
 
-                        <div class="or" data-text="${message(code: 'default.or')}"></div>
-                        <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning || isUnlinkingRunning ? 'disabled="disabled"' : ''} type="submit"
-                                name="processOption"
-                                value="linkwithIE">${message(code: 'subscriptionsManagement.linkwithIE')}</button>
+                            <div class="or" data-text="${message(code: 'default.or')}"></div>
+                            <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning || isUnlinkingRunning ? 'disabled="disabled"' : ''} type="submit"
+                                    name="processOption"
+                                    value="linkwithIE">${message(code: 'subscriptionsManagement.linkwithIE')}</button>
+                        </g:if>
+                        <g:elseif test="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+                            <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning || isUnlinkingRunning  ? 'disabled="disabled"' : ''} type="submit"
+                                    name="processOption"
+                                    value="linkwithoutIE">${message(code: 'subscriptionsManagement.linkGeneral')}</button>
+                        </g:elseif>
+                        <g:elseif test="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL}">
+                            <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning || isUnlinkingRunning ? 'disabled="disabled"' : ''} type="submit"
+                                    name="processOption"
+                                    value="linkwithIE">${message(code: 'subscriptionsManagement.linkwithIE')}</button>
+                        </g:elseif>
                     </div>
                 </div>
                 <div class="eight wide field" style="text-align: right;">
