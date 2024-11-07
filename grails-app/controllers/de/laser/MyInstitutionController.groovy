@@ -798,9 +798,6 @@ class MyInstitutionController  {
             Org org = contextService.getOrg()
 
             boolean isConsOrSupport     = org.isCustomerType_Consortium() || org.isCustomerType_Support()
-            List<Long> defaultOrgType   = isConsOrSupport ? [RDStore.OT_CONSORTIUM.id] : [RDStore.OT_INSTITUTION.id]
-
-            params.asOrgType = params.asOrgType ? [params.long('asOrgType')] : defaultOrgType
 
             if (! contextService.isInstEditor()) {
                 flash.error = message(code:'myinst.error.noAdmin', args:[org.name]) as String
