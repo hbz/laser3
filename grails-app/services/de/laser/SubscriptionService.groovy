@@ -1053,7 +1053,6 @@ class SubscriptionService {
         }
 
         if ( createEntitlements ) {
-            //continue with testing that!
             int batchStep = 5000
             int total = sql.rows("select count(*) from title_instance_package_platform where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :removed", [pkgId: pkg.id, removed: RDStore.TIPP_STATUS_REMOVED.id])[0]["count"]
             //List packageTitles = sql.rows("select * from title_instance_package_platform where tipp_pkg_fk = :pkgId and tipp_status_rv_fk = :current", [pkgId: pkg.id, current: RDStore.TIPP_STATUS_CURRENT.id])
