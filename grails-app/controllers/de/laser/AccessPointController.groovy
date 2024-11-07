@@ -28,7 +28,6 @@ class AccessPointController  {
     AccessPointControllerService accessPointControllerService
     AccessPointService accessPointService
     ContextService contextService
-    GenericOIDService genericOIDService
     EscapeService escapeService
     OrgTypeService orgTypeService
 

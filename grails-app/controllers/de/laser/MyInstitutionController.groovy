@@ -7,7 +7,6 @@ import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper
 import de.laser.convenience.Marker
 import de.laser.ctrl.MyInstitutionControllerService
-import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ctrl.UserControllerService
 import de.laser.remote.ApiSource
 import de.laser.reporting.report.ReportingCache
@@ -88,14 +87,11 @@ class MyInstitutionController  {
     ManagementService managementService
     MarkerService markerService
     MyInstitutionControllerService myInstitutionControllerService
-    OrganisationService organisationService
-    OrgTypeService orgTypeService
     PackageService packageService
     PropertyService propertyService
     ProviderService providerService
     ReportingGlobalService reportingGlobalService
     SubscriptionsQueryService subscriptionsQueryService
-    SubscriptionControllerService subscriptionControllerService
     SubscriptionService subscriptionService
     SurveyService surveyService
     TaskService taskService
