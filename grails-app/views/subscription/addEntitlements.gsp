@@ -14,7 +14,7 @@
 
 <ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" floated="true">
     <laser:render template="iconSubscriptionIsChild"/>
-<ui:xEditable owner="${subscription}" field="name"/>
+    <ui:xEditable owner="${subscription}" field="name"/>
 </ui:h1HeaderWithIcon>
 
 <h2 class="ui left aligned icon header la-clear-before">${message(code: 'subscription.details.addEntitlements.label')}</h2>
@@ -74,18 +74,6 @@
 </ui:modal>
 
 <div id="downloadWrapper"></div>
-
-<ui:tabs actionName="${actionName}">
-    %{-- num_tipp_rows instead of countAllTipps because otherwise, there are misleading counts --}%
-    <ui:tabsItem controller="subscription" action="addEntitlements"
-                 params="[id: subscription.id, tab: 'allTipps']"
-                 text="${message(code: "subscription.details.addEntitlements.allTipps")}" tab="allTipps"
-                 counts="${num_tipp_rows}"/>
-    <ui:tabsItem controller="subscription" action="addEntitlements"
-                 params="[id: subscription.id, tab: 'selectedTipps']"
-                 text="${message(code: "subscription.details.addEntitlements.selectedTipps")}" tab="selectedTipps"
-                 counts="${countSelectedTipps}"/>
-</ui:tabs>
 
 <div class="ui segment">
 

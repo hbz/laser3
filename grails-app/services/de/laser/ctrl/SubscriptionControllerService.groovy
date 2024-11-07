@@ -2558,6 +2558,7 @@ class SubscriptionControllerService {
      * @param params the request parameter map
      * @return the title list; with or without the enriched information from a KBART upload
      */
+    @Deprecated
     Map<String,Object> addEntitlements(GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
@@ -2596,18 +2597,6 @@ class SubscriptionControllerService {
             if(params.pkgfilter)
                 packages << Package.get(params.pkgfilter)
             else packages = result.subscription.packages?.pkg
-
-            /*int countAllTitles = TitleInstancePackagePlatform.executeQuery('''select count(*) from TitleInstancePackagePlatform as tipp where
-                                    tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = :subscription ) and 
-                                    ( not exists ( select ie from IssueEntitlement ie where ie.subscription = :subscription and ie.tipp.id = tipp.id and ie.status != :issueEntitlementStatus ) ) ''',
-            [subscription: result.subscription, issueEntitlementStatus: RDStore.TIPP_STATUS_REMOVED])[0]*/
-
-            params.tab = params.tab ?: 'allTipps'
-
-            if(params.tab == 'selectedTipps'){
-                Map gokbIds = checkedCache ?: [:]
-                params.gokbIds =  gokbIds ? gokbIds.findAll { it.value == 'checked' }.collect {it.key} : ['']
-            }
 
             Map<String, Object> query = filterService.getTippQuery(params, packages)
             result.filterSet = query.filterSet

@@ -979,6 +979,113 @@ class SubscriptionService {
     }
 
     /**
+     * Lists the titles in the package which have not yet been added to the subscription
+     * @param params the request parameter map
+     * @return the title list; with or without the enriched information from a KBART upload
+     */
+    Map<String,Object> addEntitlements(GrailsParameterMap params) {
+        Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+        if (!result) {
+            [result:null,status:SubscriptionControllerService.STATUS_ERROR]
+        }
+        else {
+            Locale locale = LocaleUtils.getCurrentLocale()
+            if(checkThreadRunning('PackageSync_'+result.subscription.id)) {
+                result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null,locale)
+            }
+            else if (checkThreadRunning('EntitlementEnrichment_'+result.subscription.id)) {
+                result.message = messageSource.getMessage('subscription.details.addEntitlements.thread.running', null, locale)
+                result.blockSubmit = true
+            }
+            SwissKnife.setPaginationParams(result, params, (User) result.user)
+            Map<String, Object> parameterGenerics = issueEntitlementService.getParameterGenerics(params)
+            Map<String, Object> titleConfigMap = parameterGenerics.titleConfigMap,
+                                identifierConfigMap = parameterGenerics.identifierConfigMap,
+                                issueEntitlementConfigMap = parameterGenerics.issueEntitlementConfigMap
+            if(params.filter) {
+                titleConfigMap.filter = params.filter
+            }
+            if(!params.containsKey('status')) {
+                //titleConfigMap.tippStatus = RDStore.TIPP_STATUS_CURRENT //activate if needed
+                issueEntitlementConfigMap.ieStatus = RDStore.TIPP_STATUS_CURRENT
+            }
+            else {
+                issueEntitlementConfigMap.ieStatus = Params.getRefdataList(params, 'status')
+            }
+            //process here the title-related parameters
+            Map<String, Object> queryPart1 = filterService.getTippSubsetQuery(titleConfigMap)
+            Set<Long> tippIds = TitleInstancePackagePlatform.executeQuery(queryPart1.query, queryPart1.queryParams)
+            if(params.identifier) {
+                tippIds = tippIds.intersect(issueEntitlementService.getTippsByIdentifier(identifierConfigMap, params.identifier))
+            }
+            tippIds.collate(65000).each { List<Long> subset ->
+                queryPart2.queryParams.subset = subset
+                tippIds.addAll(IssueEntitlement.executeQuery(queryPart2.query, queryPart2.queryParams))
+            }
+            [result:result,status:SubscriptionControllerService.STATUS_OK]
+            /*
+            List<TitleInstancePackagePlatform> tipps = []
+            EhcacheWrapper userCache = contextService.getUserCache("/subscription/addEntitlements/${params.id}")
+            Map checkedCache = userCache.get('selectedTitles')
+
+            if (!checkedCache || !params.containsKey('pagination')) {
+                checkedCache = [:]
+            }
+
+            result.subscriber = result.subscription.getSubscriberRespConsortia()
+            params.issueEntitlementStatus = RDStore.TIPP_STATUS_CURRENT
+            params.subscription = result.subscription
+            params.addEntitlements = true
+            List packages = []
+            if(params.pkgfilter)
+                packages << Package.get(params.pkgfilter)
+            else packages = result.subscription.packages?.pkg
+
+            params.tab = params.tab ?: 'allTipps'
+
+            if(params.tab == 'selectedTipps'){
+                Map gokbIds = checkedCache ?: [:]
+                params.gokbIds =  gokbIds ? gokbIds.findAll { it.value == 'checked' }.collect {it.key} : ['']
+            }
+
+            Map<String, Object> query = filterService.getTippQuery(params, packages)
+            result.filterSet = query.filterSet
+
+            if(result.subscription.packages?.pkg) {
+                Set<Long> tippIds = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+                Map<TitleInstancePackagePlatform, List<PermanentTitle>> permanentTitles = [:]
+                if(tippIds) {
+                    Set<Long> subset = tippIds.drop(result.offset).take(result.max)
+                    tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(subset, [sort: 'sortname']))
+                    tipps.each { TitleInstancePackagePlatform tipp ->
+                        List<PermanentTitle> pts = surveyService.listParticipantPerpetualAccessToTitle(result.institution, tipp)
+                        if(pts)
+                            permanentTitles.put(tipp, pts)
+                    }
+                }
+
+                result.num_tipp_rows = tippIds.size()
+                result.tipps = tipps
+                result.permanentTitles = permanentTitles
+                if(permanentTitles.size() == tipps.size() && tipps.size() > 0)
+                    result.allPerpetuallyBought = 'subscription.details.addEntitlements.allPerpetuallyBought'
+                result.tippIDs = tippIds
+                String filename
+                if(params.pagination) {
+                    result.checked = checkedCache
+                }
+            }
+
+            result.checkedCache = checkedCache.get('checked')
+            result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
+            result.countSelectedTipps = result.checkedCount
+
+            [result:result,status:STATUS_OK]
+             */
+        }
+    }
+
+    /**
      * Retrieves all visible organisational relationships for the given subscription, i.e. providers, agencies, etc.
      * @param subscription the subscription to retrieve the relations from
      * @return a sorted list of visible relations
