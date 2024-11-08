@@ -990,6 +990,7 @@ class SubscriptionService {
         }
         else {
             Locale locale = LocaleUtils.getCurrentLocale()
+            Map<String, Object> configMap = params.clone()
             if(checkThreadRunning('PackageSync_'+result.subscription.id)) {
                 result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null,locale)
             }
@@ -997,31 +998,36 @@ class SubscriptionService {
                 result.message = messageSource.getMessage('subscription.details.addEntitlements.thread.running', null, locale)
                 result.blockSubmit = true
             }
-            SwissKnife.setPaginationParams(result, params, (User) result.user)
-            Map<String, Object> parameterGenerics = issueEntitlementService.getParameterGenerics(params)
+            SwissKnife.setPaginationParams(result, configMap, (User) result.user)
+            configMap.packages = result.subscription.packages.pkg
+            configMap.subscription = result.subscription
+            Map<String, Object> parameterGenerics = issueEntitlementService.getParameterGenerics(configMap)
             Map<String, Object> titleConfigMap = parameterGenerics.titleConfigMap,
                                 identifierConfigMap = parameterGenerics.identifierConfigMap,
                                 issueEntitlementConfigMap = parameterGenerics.issueEntitlementConfigMap
-            if(params.filter) {
-                titleConfigMap.filter = params.filter
+            if(configMap.filter) {
+                titleConfigMap.filter = configMap.filter
             }
-            if(!params.containsKey('status')) {
+            if(!configMap.containsKey('status')) {
                 //titleConfigMap.tippStatus = RDStore.TIPP_STATUS_CURRENT //activate if needed
                 issueEntitlementConfigMap.ieStatus = RDStore.TIPP_STATUS_CURRENT
             }
             else {
-                issueEntitlementConfigMap.ieStatus = Params.getRefdataList(params, 'status')
+                issueEntitlementConfigMap.ieStatus = Params.getRefdataList(configMap, 'status')
             }
             //process here the title-related parameters
             Map<String, Object> queryPart1 = filterService.getTippSubsetQuery(titleConfigMap)
-            Set<Long> tippIds = TitleInstancePackagePlatform.executeQuery(queryPart1.query, queryPart1.queryParams)
-            if(params.identifier) {
-                tippIds = tippIds.intersect(issueEntitlementService.getTippsByIdentifier(identifierConfigMap, params.identifier))
+            Set<Long> tippIds = TitleInstancePackagePlatform.executeQuery(queryPart1.query, queryPart1.queryParams), addedTippIds = []
+            if(configMap.identifier) {
+                tippIds = tippIds.intersect(issueEntitlementService.getTippsByIdentifier(identifierConfigMap, configMap.identifier))
             }
+            Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetQuery(issueEntitlementConfigMap)
             tippIds.collate(65000).each { List<Long> subset ->
                 queryPart2.queryParams.subset = subset
-                tippIds.addAll(IssueEntitlement.executeQuery(queryPart2.query, queryPart2.queryParams))
+                addedTippIds.addAll(IssueEntitlement.executeQuery(queryPart2.query, queryPart2.queryParams))
             }
+            tippIds.removeAll(addedTippIds)
+            result.tippIDs = tippIds
             [result:result,status:SubscriptionControllerService.STATUS_OK]
             /*
             List<TitleInstancePackagePlatform> tipps = []
