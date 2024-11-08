@@ -40,6 +40,7 @@ cost.item.status,CostItemStatus,CostItemStatus
 cost.item.type,Typ,Type
 country,Land,Country
 coverage.depth,Umfang,Coverage depth
+curatory.group.type,Kuratorengruppentyp,CuratoryGroup Type
 currency,Währung,Currency
 customer.identifier.type,Kategorie der Kundennummer,Customer Identifier Type
 dbs.subject.group,DBS Fächergruppe,DBS Subject Group

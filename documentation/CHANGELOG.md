@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6059    08.11.2024  dev     3.5         David   Feature     CuratoryGroup.type als RefdataCategory anlegen
+
 6009    08.11.2024  dev     3.5         David   Feature     Org.orgType entfernen
 
 6054    06.11.2024  rc-3.4  3.4.13      Andreas Bug         GASCO-Suche nach Anbietern migriert
