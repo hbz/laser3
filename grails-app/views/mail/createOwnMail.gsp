@@ -150,7 +150,7 @@
             <div class="field">
                 <label for="mailSubject">${message(code: 'mail.sendMail.mailSubject')}</label>
 
-                <g:field type="text" name="mailSubject" id="mailSubject" readonly="true" value="${mailSubject}"/>
+                <g:field type="text" name="mailSubject" id="mailSubject" value="${mailSubject}"/>
             </div>
 
             <div class="field">
