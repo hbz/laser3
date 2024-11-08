@@ -93,7 +93,7 @@ class ApiUnsecuredMapReader {
 
         // References
         result.identifiers = ApiCollectionReader.getIdentifierCollection(org.ids) // de.laser.Identifier
-        result.type        = org.orgType_new ? [org.orgType_new.value] : []
+        result.type        = org.getOrgType() ? [org.getOrgType().value] : [] // TODO: ERMS-6009
 
         ApiToolkit.cleanUp(result, true, true)
     }

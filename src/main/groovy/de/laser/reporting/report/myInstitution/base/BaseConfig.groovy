@@ -337,17 +337,6 @@ class BaseConfig {
                         ]}
             ]
         }
-//        else if (key == CI_GENERIC_PACKAGE_OR_PROVIDER) {
-//            return [
-//                    label: messageSource.getMessage('provider.label', null, locale),
-//                    from: Org.executeQuery('select distinct(org) from Org org where org.orgType_new in (:otList)',
-//                            [ otList: [RDStore.OT_PROVIDER] ]).collect{[
-//                            id: it.id,
-//                            value_de: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
-//                            value_en: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
-//                    ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
-//            ]
-//        }
         else if (key == CI_GENERIC_PACKAGE_PLATFORM) {
             return [
                     label: messageSource.getMessage('platform.label', null, locale),

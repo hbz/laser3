@@ -148,14 +148,6 @@
                             </dd>
                         </dl>
                     </g:if>
-                    <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
-                        <dl>
-                            <dt><g:message code="org.orgType.label" /></dt>
-                            <dd>
-                                <ui:xEditableRefData owner="${orgInstance}" field="orgType_new" config="${RDConstants.ORG_TYPE}"/> %{-- ERMS-5927 ---}%
-                            </dd>
-                        </dl>
-                    </g:if>
                     <g:if test="${orgInstance.isCustomerType_Inst()}">
                         <dl>
                             <dt>

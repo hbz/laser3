@@ -9,6 +9,7 @@ import de.laser.DiscoverySystemIndex
 import de.laser.DocContext
 import de.laser.GenericOIDService
 import de.laser.HelpService
+import de.laser.OrgSetting
 import de.laser.PendingChangeService
 import de.laser.AddressbookService
 import de.laser.AccessService
@@ -95,6 +96,7 @@ class AjaxHtmlController {
     CacheService cacheService
     ContextService contextService
     ControlledListService controlledListService
+    CustomerTypeService customerTypeService
     CustomWkhtmltoxService wkhtmltoxService // custom
     GenericOIDService genericOIDService
     GokbService gokbService
@@ -512,7 +514,10 @@ class AjaxHtmlController {
                 if(params.orgId)
                     model.orgId = params.orgId
                 else
-                    model.orgList = Org.executeQuery("from Org o where (o.orgType_new != null and o.orgType_new.id = :orgType) order by LOWER(o.sortname) nulls last", [orgType: RDStore.OT_INSTITUTION.id])
+                    model.orgList = Org.executeQuery(
+                            "select o from Org o, OrgSetting os where os.org = o and os.key = :ct and os.roleValue in (:roles) order by LOWER(o.sortname) nulls last",
+                            [ct: OrgSetting.KEYS.CUSTOMER_TYPE, roles: customerTypeService.getOrgInstRoles()]
+                    )
                 model.tenant = model.contextOrg.id
                 break
             case 'addressForProvider':
@@ -618,7 +623,10 @@ class AjaxHtmlController {
                     result.modalText = message(code: "person.create_new.contactPersonForInstitution.label") + ' (' + result.org.toString() + ')'
                 } else {
                     result.modalText = message(code: "person.create_new.contactPersonForInstitution.label")
-                    result.orgList = Org.executeQuery("from Org o where (o.orgType_new != null and o.orgType_new.id = :orgType) order by LOWER(o.sortname)", [orgType: RDStore.OT_INSTITUTION.id])
+                    result.orgList = Org.executeQuery(
+                            "select o from Org o, OrgSetting os where os.org = o and os.key = :ct and os.roleValue in (:roles) order by LOWER(o.sortname)",
+                            [ct: OrgSetting.KEYS.CUSTOMER_TYPE, roles: customerTypeService.getOrgInstRoles()]
+                    )
                 }
                 break
             case 'contactPersonForProvider':

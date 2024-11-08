@@ -18,7 +18,6 @@ import de.laser.EscapeService
 import de.laser.FinanceService
 import de.laser.LicenseService
 import de.laser.LinksGenerationService
-import de.laser.OrgTypeService
 import de.laser.OrganisationService
 import de.laser.PropertyService
 import de.laser.ProviderService
@@ -266,13 +265,6 @@ class BeanStore {
      */
     static OrganisationService getOrganisationService() {
         Holders.grailsApplication.mainContext.getBean('organisationService') as OrganisationService
-    }
-
-    /**
-     * @return the currently holding {@link OrgTypeService}
-     */
-    static OrgTypeService getOrgTypeService() {
-        Holders.grailsApplication.mainContext.getBean('orgTypeService') as OrgTypeService
     }
 
     /**

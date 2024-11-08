@@ -28,9 +28,8 @@ class AccessPointController  {
     AccessPointControllerService accessPointControllerService
     AccessPointService accessPointService
     ContextService contextService
-    GenericOIDService genericOIDService
     EscapeService escapeService
-    OrgTypeService orgTypeService
+    SubscriptionService subscriptionService
 
     //static allowedMethods = [create: ['GET', 'POST'], delete: ['GET', 'POST'], dynamicSubscriptionList: ['POST'], dynamicPlatformList: ['POST']]
 
@@ -83,7 +82,7 @@ class AccessPointController  {
     })
     def dynamicSubscriptionList() {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
-        List<Long> currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
+        List<Long> currentSubIds = subscriptionService.getCurrentSubscriptionIds(orgAccessPoint.org)
         String qry = """
             Select p, sp, s from Platform p
             JOIN p.oapp as oapl
@@ -115,7 +114,7 @@ class AccessPointController  {
     })
     def dynamicPlatformList() {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
-        List<Long> currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
+        List<Long> currentSubIds = subscriptionService.getCurrentSubscriptionIds(orgAccessPoint.org)
         List<HashMap> linkedPlatforms = accessPointService.getLinkedPlatforms(params,orgAccessPoint)
         linkedPlatforms.each() {
             String qry2 = """
@@ -336,7 +335,7 @@ class AccessPointController  {
                 accessPointDataList = orgAccessPoint.getAccessPointMailDomains()
             }
 
-            List<Long> currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
+            List<Long> currentSubIds = subscriptionService.getCurrentSubscriptionIds(orgAccessPoint.org)
             List<HashMap> linkedPlatforms = accessPointService.getLinkedPlatforms(params, orgAccessPoint)
             linkedPlatforms.each() {
                 String qry2 = """

@@ -58,7 +58,6 @@ import java.time.Year
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxController {
 
-    AccessService accessService
     ContextService contextService
     DashboardDueDatesService dashboardDueDatesService
     EscapeService escapeService
@@ -69,27 +68,8 @@ class AjaxController {
     PropertyService propertyService
     SubscriptionControllerService subscriptionControllerService
     SubscriptionService subscriptionService
-    UserService userService
 
     def refdata_config = [
-    "ContentProvider" : [
-      domain:'Org',
-      countQry:"select count(*) from Org as o where (o.orgType_new != null and o.orgType_new.value = 'Provider') and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted')",
-      rowQry:"select o from Org as o where (o.orgType_new != null and o.orgType_new.value = 'Provider') and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted') order by o.name asc",
-      qryParams:[
-              [
-                param:'sSearch',
-                onameClosure: { value ->
-                    String result = '%'
-                    if ( value && ( value.length() > 0 ) )
-                        result = "%${value.trim().toLowerCase()}%"
-                    result
-                }
-              ]
-      ],
-      cols:['name'],
-      format:'map'
-    ],
     "Licenses" : [
       domain:'License',
       countQry:"select count(*) from License as l",
@@ -128,25 +108,7 @@ class AjaxController {
             ],
             cols:['name'],
             format:'map'
-    ],
-//    "CommercialOrgs" : [
-//            domain:'Org',
-//            countQry:"select count(*) from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted')",
-//            rowQry:"select o from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted') order by o.name asc",
-//            qryParams:[
-//                    [
-//                            param:'sSearch',
-//                            onameClosure: { value ->
-//                                String result = '%'
-//                                if ( value && ( value.length() > 0 ) )
-//                                    result = "%${value.trim().toLowerCase()}%"
-//                                result
-//                            }
-//                    ]
-//            ],
-//            cols:['name'],
-//            format:'map'
-//    ]
+    ]
   ]
 
     /**

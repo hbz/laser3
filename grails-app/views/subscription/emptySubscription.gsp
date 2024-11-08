@@ -32,13 +32,13 @@
                 </div>
 
                 <g:if test="${contextService.getOrg().isCustomerType_Support()}">
-                    <input type="hidden" id="asOrgType" name="type" value="${RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE.id}" />
+                    <input type="hidden" name="type" value="${RDStore.SUBSCRIPTION_TYPE_ADMINISTRATIVE.id}" />
                 </g:if>
                 <g:elseif test="${contextService.getOrg().isCustomerType_Consortium()}">
-                    <input type="hidden" id="asOrgType" name="type" value="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}" />
+                    <input type="hidden" name="type" value="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}" />
                 </g:elseif>
                 <g:elseif test="${contextService.getOrg().isCustomerType_Inst_Pro()}">
-                    <input type="hidden" id="asOrgType" name="type" value="${RDStore.SUBSCRIPTION_TYPE_LOCAL.id}" />
+                    <input type="hidden" name="type" value="${RDStore.SUBSCRIPTION_TYPE_LOCAL.id}" />
                 </g:elseif>
             <div class="field">
                 <br />

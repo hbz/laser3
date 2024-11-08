@@ -20,6 +20,7 @@ import grails.gorm.transactions.Transactional
 class AddressbookService {
 
     ContextService contextService
+    CustomerTypeService customerTypeService
     PropertyService propertyService
 
     /**
@@ -249,8 +250,9 @@ class AddressbookService {
         List qParts = []
         Map qParams = [:]
         if (params.showOnlyContactPersonForInstitution || params.exportOnlyContactPersonForInstitution){
-            qParts << "(org.orgType_new != null and org.orgType_new.id = :instType)"
-            qParams << [instType: RDStore.OT_INSTITUTION.id]
+            qParts  << "exists (select os from OrgSetting os where os.org = org and os.key = :ct and os.roleValue in (:roles))"
+            qParams << ['ct': OrgSetting.KEYS.CUSTOMER_TYPE]
+            qParams << ['roles': customerTypeService.getOrgInstRoles()]
         }
 
         if (params.showOnlyContactPersonForProvider || params.exportOnlyContactPersonForProvider){
