@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6057    08.11.2024  rc-3.4  3.4.14      Moe     Bug         Umfrage: Reminder Mail Betreff editieren
+
 6055    06.11.2024  rc-3.4  3.4.14      Moe     Bug         Im Export-Renewel auch die vat id voranhaken
 
 6054    06.11.2024  rc-3.4  3.4.13      Andreas Bug         GASCO-Suche nach Anbietern migriert
