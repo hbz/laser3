@@ -30,8 +30,7 @@ import javax.persistence.Transient
  *     <li>Licensee_Consortial (consortial membership)</li>
  *     <li>Licensing Consortium (consortial parenthood)</li>
  * </ul>
- * The role types listed above will never be taken by providers, agencies or similar; the linking of an {@link Org} to other objects permits thus determination of the organisation type itself. This is useful if the
- * organisation type ({@link Org#orgType_new}) set is empty because no one assigned a type.
+ * The role types listed above will never be taken by providers, agencies or similar.
  * Moreover, an organisation link may be inherited from a consortial parent object to its member children
  * @see Org
  * @see de.laser.wekb.Package

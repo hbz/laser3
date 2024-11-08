@@ -87,8 +87,8 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('platform')}">
                 <th>${message(code: 'platform')}</th>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('type')}">
-                <th>${message(code: 'default.type.label')}</th>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('customerType')}">
+                <th>${message(code: 'org.customerType.label')}</th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('region')}">
                 <th>${message(code: 'org.region.label')}</th>
@@ -630,9 +630,9 @@
                     </g:each>
                 </td>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('type')}">
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('customerType')}">
                 <td>
-                    ${org.orgType_new?.getI10n("value")}
+                    ${org.getCustomerTypeI10n()}
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('region')}">
@@ -1005,7 +1005,7 @@
 
             <g:if test="${tmplConfigItem.equalsIgnoreCase('mailInfos')}">
                 <td class="center aligned">
-                    <a href="#" class="ui button blue icon la-modern-button mailInfos-flyout-trigger" data-orgId="${org.id}" >
+                    <a href="#" class="ui button icon la-modern-button infoFlyout-trigger" data-template="org" data-org="${org.id}">
                         <i class="ui info icon"></i>
                     </a>
                 </td>
@@ -1122,5 +1122,5 @@
 </g:if>
 
 <g:if test="${tmplConfigShow?.contains('mailInfos')}">
-    <laser:render template="/templates/flyouts/mailInfos"/>
+    <laser:render template="/templates/info/flyoutWrapper"/>
 </g:if>

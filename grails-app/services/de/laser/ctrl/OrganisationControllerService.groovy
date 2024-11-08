@@ -28,11 +28,9 @@ class OrganisationControllerService {
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1
 
-    AccessPointService accessPointService
     ContextService contextService
     DocstoreService docstoreService
     FormService formService
-    GokbService gokbService
     LinksGenerationService linksGenerationService
     MessageSource messageSource
     TaskService taskService
@@ -43,13 +41,10 @@ class OrganisationControllerService {
     Map<String,Object> mailInfos(OrganisationController controller, GrailsParameterMap params) {
         User user = contextService.getUser()
         Org org = contextService.getOrg()
-        Map<String, Object> result = [user:user,
-                                      institution:org,
-                                      contextOrg: org]
+        Map<String, Object> result = [user:user, institution:org, contextOrg: org]
 
-
-        if (params.id) {
-            result.orgInstance = Org.get(params.id)
+        if (params.id_org) {
+            result.orgInstance = Org.get(params.id_org)
             if(result.orgInstance.id == org.id){
                 return null
             }
@@ -64,7 +59,7 @@ class OrganisationControllerService {
 
         if (result.orgInstance) {
             String customerIdentifier = ''
-            result.sub = Subscription.get(params.subscription)
+            result.sub = Subscription.get(params.id_subscription)
 
             if(result.sub) {
                 List contactListProvider = result.sub.providerRelations ? Contact.executeQuery("select c.content from PersonRole pr " +
@@ -105,7 +100,7 @@ class OrganisationControllerService {
                 }
             }
 
-            result.mailText = ""
+            result.mailText = [:]
 
             ReaderNumber readerNumberStudents
             ReaderNumber readerNumberStaff
@@ -172,8 +167,8 @@ class OrganisationControllerService {
             String billingAddress = addressList.collect { Address address -> address.getAddressForExport()}.join(";")
             String billingPostBox = postBoxList.collect { Address address -> address.getAddressForExport()}.join(";")
 
-            if(params.surveyConfigID){
-                SurveyConfig surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.long('surveyConfigID')) : null
+            if (params.id_surveyConfig){
+                SurveyConfig surveyConfig = SurveyConfig.get(params.id_surveyConfig)
                 if(surveyConfig && surveyConfig.invoicingInformation && surveyConfig.surveyInfo.owner == result.contextOrg){
                     SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, result.orgInstance)
                     if(surveyOrg.address) {
@@ -249,9 +244,29 @@ class OrganisationControllerService {
 
             String vatID = result.orgInstance.getIdentifierByType(IdentifierNamespace.VAT)?.value
 
-            result.language = params.newLanguage && params.newLanguage in [RDStore.LANGUAGE_DE.value, RDStore.LANGUAGE_EN.value] ? params.newLanguage : 'de'
-            Locale language = new Locale(result.language)
-            result.mailText = groovyPageRenderer.render view: '/mailTemplates/text/orgInfos', contentType: "text", encoding: "UTF-8", model: [language            : language,
+//            result.language = params.newLanguage && params.newLanguage in [RDStore.LANGUAGE_DE.value, RDStore.LANGUAGE_EN.value] ? params.newLanguage : 'de'
+//            Locale language = new Locale(result.language)
+
+            String langDe = RDStore.LANGUAGE_DE.value
+            String langEn = RDStore.LANGUAGE_EN.value
+
+            result.mailText[langDe] = groovyPageRenderer.render view: '/mailTemplates/text/orgInfos', contentType: "text", encoding: "UTF-8", model: [language    : new Locale(langDe),
+                                                                                                                                              org                 : result.orgInstance,
+                                                                                                                                              customerIdentifier  : customerIdentifier,
+                                                                                                                                              sub                 : result.sub,
+                                                                                                                                              readerNumberStudents: readerNumberStudents,
+                                                                                                                                              readerNumberStaff   : readerNumberStaff,
+                                                                                                                                              readerNumberFTE     : readerNumberFTE,
+                                                                                                                                              currentSemester     : currentSemester,
+                                                                                                                                              generalContacts     : generalContacts,
+                                                                                                                                              responsibleAdmins   : responsibleAdmins,
+                                                                                                                                              billingContacts     : billingContacts,
+                                                                                                                                              accessPoints        : accessPoints,
+                                                                                                                                              billingAddress       : billingAddress,
+                                                                                                                                              billingPostBox: billingPostBox,
+                                                                                                                                              vatID: vatID]
+
+            result.mailText[langEn] = groovyPageRenderer.render view: '/mailTemplates/text/orgInfos', contentType: "text", encoding: "UTF-8", model: [language    : new Locale(langEn),
                                                                                                                                               org                 : result.orgInstance,
                                                                                                                                               customerIdentifier  : customerIdentifier,
                                                                                                                                               sub                 : result.sub,
@@ -294,8 +309,6 @@ class OrganisationControllerService {
                 Combo newMember = new Combo(fromOrg:orgInstance,toOrg:result.institution,type: RDStore.COMBO_TYPE_CONSORTIUM)
                 newMember.save()
                 orgInstance.setDefaultCustomerType()
-//                orgInstance.addToOrgType(RDStore.OT_INSTITUTION) //RDStore adding causes a DuplicateKeyException - RefdataValue.getByValueAndCategory('Institution', RDConstants.ORG_TYPE)
-                orgInstance.orgType_new = RDStore.OT_INSTITUTION
                 result.orgInstance = orgInstance
                 Object[] args = [messageSource.getMessage('org.institution.label',null,locale), orgInstance.name]
                 result.message = messageSource.getMessage('default.created.message', args, locale)

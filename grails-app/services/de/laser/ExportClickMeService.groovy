@@ -1950,7 +1950,7 @@ class ExportClickMeService {
         }
 
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
-            exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+            exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns, defaultChecked:  it.ns == 'VAT' ? 'true' : 'false'])
         }
         Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription)', [subscription: surveyConfig.subscription]).each { Platform plat ->
             exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
@@ -2029,7 +2029,7 @@ class ExportClickMeService {
         fields.participantIdentifiers.fields.clear()
         fields.participantCustomerIdentifiers.fields.clear()
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
-            fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+            fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns, defaultChecked:  it.ns == 'VAT' ? 'true' : 'false']]
         }
         Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription)', [subscription: surveyConfig.subscription]).each { Platform plat ->
             fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name, defaultChecked: 'true']]
@@ -3040,10 +3040,10 @@ class ExportClickMeService {
     /**
      * Generic call from views
      * Gets the organisation fields for the given perspective configuration for the UI
-     * @param orgType the organisation type to be exported
+     * @param customerType the organisation type to be exported
      * @return the configuration map for the organisation export for UI
      */
-    Map<String, Object> getExportOrgFieldsForUI(String orgType) {
+    Map<String, Object> getExportOrgFieldsForUI(String customerType) {
 
         Org contextOrg = contextService.getOrg()
         Map<String, Object> fields = [:], contextParams = [ctx: contextOrg]
@@ -3059,7 +3059,7 @@ class ExportClickMeService {
         List<Map> subTabs = [[view: funcType.desc, label: funcType.getI10n('desc')], [view: posType.desc, label: posType.getI10n('desc')], [view: respType.desc, label: respType.getI10n('desc')]]
         String subTabActive = funcType.desc
 
-        switch(orgType) {
+        switch (customerType) {
             case 'consortium': fields.putAll(getDefaultExportConsortiaConfig())
                 fields.consortiumIdentifiers.fields.clear()
                 IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {

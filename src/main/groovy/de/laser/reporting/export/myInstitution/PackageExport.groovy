@@ -203,7 +203,7 @@ class PackageExport extends BaseDetailsExport {
                     }
                     else if (key == 'x-curatoryGroup') {
                         List<String> cgList = record?.get( esData.mapping )?.collect{ cg ->
-                            String cgType = RefdataValue.getByValueAndCategory(cg.type as String, RDConstants.ORG_TYPE)?.getI10n('value') ?: '(' + cg.type + ')'
+                            String cgType = RefdataValue.getByValueAndCategory(cg.type as String, RDConstants.CURATORY_GROUP_TYPE)?.getI10n('value') ?: '(' + cg.type + ')'
                             cg.name + ( cgType ? ' - ' + cgType : '')
                         }
                         content.add (cgList ? cgList.join( BaseDetailsExport.CSV_VALUE_SEPARATOR ) : '')

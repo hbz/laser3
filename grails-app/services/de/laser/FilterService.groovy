@@ -80,10 +80,6 @@ class FilterService {
             query << "((genfunc_filter_matcher(o.name, :orgNameContains) = true or genfunc_filter_matcher(o.sortname, :orgNameContains) = true) or exists(select alt.id from AlternativeName alt where alt.org = o and genfunc_filter_matcher(alt.name, :orgNameContains) = true) )"
              queryParams << [orgNameContains : "${params.orgNameContains}"]
         }
-        if (params.orgType) {
-            query << "(o.orgType_new != null and o.orgType_new.id in (:orgType))"
-            queryParams << [orgType: Params.getLongList(params, 'orgType')]
-        }
         if (params.orgStatus) {
             query << "o.status.id in (:orgStatus)"
             queryParams.orgStatus = Params.getLongList(params, 'orgStatus')
@@ -224,10 +220,6 @@ class FilterService {
             query << "(genfunc_filter_matcher(o.name, :orgNameContains1) = true or genfunc_filter_matcher(o.sortname, :orgNameContains2) = true) "
              queryParams << [orgNameContains1 : "${params.orgNameContains}"]
              queryParams << [orgNameContains2 : "${params.orgNameContains}"]
-        }
-        if (params.orgType) {
-            query << "(o.orgType_new != null and o.orgType_new.id in (:orgType))"
-            queryParams << [orgType : Params.getLongList(params, 'orgType')]
         }
         if (params.region) {
             query << "o.region.id in (:region)"
@@ -923,10 +915,6 @@ class FilterService {
             base_qry += " and (genfunc_filter_matcher(surveyOrg.org.name, :orgNameContains1) = true or genfunc_filter_matcher(surveyOrg.org.sortname, :orgNameContains2) = true) "
             queryParams << [orgNameContains1 : "${params.orgNameContains}"]
             queryParams << [orgNameContains2 : "${params.orgNameContains}"]
-        }
-        if (params.orgType) {
-            base_qry += " and (surveyOrg.org.orgType_new != null and surveyOrg.org.orgType_new.id = :orgType)"
-            queryParams << [orgType : params.long('orgType')]
         }
         if (params.region) {
             base_qry += " and surveyOrg.org.region.id in (:region)"

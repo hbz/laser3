@@ -156,21 +156,6 @@
                 </div>
             </g:if>
 
-            <g:if test="${field.equalsIgnoreCase('type')}">
-                <div class="field">
-                    <label for="orgType">${message(code: 'org.orgType.label')}</label>
-                    <g:if test="${orgTypes == null || orgTypes.isEmpty()}">
-                        <g:set var="orgTypes" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.ORG_TYPE])}" scope="request"/>
-                    </g:if>
-                    <ui:select class="ui dropdown search" id="orgType" name="orgType"
-                                  from="${orgTypes}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  value="${params.orgType}"
-                                  noSelection="${['':message(code:'default.select.choose.label')]}"/>
-                </div>
-            </g:if>
-
             <g:if test="${field.equalsIgnoreCase('orgStatus')}">
                 <div class="field">
                     <label for="orgStatus">${message(code: 'default.status.label')}</label>
@@ -271,14 +256,12 @@
             <g:if test="${field.equalsIgnoreCase('customerType')}">
                 <div class="field">
                     <label for="customerType">${message(code:'org.customerType.label')}</label>
-                    <ui:select id="customerType" name="customerType"
-                                  from="${[Role.findByAuthority('FAKE')] + Role.findAllByRoleType('org')}"
-                                  optionKey="id"
-                                  optionValue="authority"
-                                  value="${params.customerType}"
-                                  class="ui dropdown"
-                                  noSelection="${['':message(code:'default.select.choose.label')]}"
-                    />
+                    <select id="customerType" name="customerType" multiple="" class="ui dropdown search">
+                        <option value=""><g:message code="default.select.choose.label"/></option>
+                        <g:each in="${[Role.findByAuthority('FAKE')] + Role.findAllByRoleType('org')}" var="rr">
+                            <option <%=Params.getLongList(params, 'customerType').contains(rr.id) ? 'selected="selected"' : ''%> value="${rr.id}">${rr.getI10n('authority')}</option>
+                        </g:each>
+                    </select>
                 </div>
             </g:if>
             <g:if test="${field.equalsIgnoreCase('providers')}">

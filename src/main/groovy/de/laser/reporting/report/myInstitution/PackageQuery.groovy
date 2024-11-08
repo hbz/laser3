@@ -243,7 +243,7 @@ class PackageQuery extends BaseQuery {
                 }
                 struct.each {
                     Map<String, Object> cg = helper.get(it.key)
-                    String cgType = cg.type ? (RefdataValue.getByValueAndCategory(cg.type as String, RDConstants.ORG_TYPE)?.getI10n('value') ?: cg.type) : null
+                    String cgType = cg.type ? (RefdataValue.getByValueAndCategory(cg.type as String, RDConstants.CURATORY_GROUP_TYPE)?.getI10n('value') ?: cg.type) : null
                     List d = [Long.parseLong(cg.curatoryGroup.split(':')[1]), cg.name + ( cgType ? ' (' + cgType + ')' : '' ), it.value.size()]
                     result.data.add( d )
                     result.dataDetails.add([

@@ -1413,6 +1413,10 @@ aside.ui.accordion .title:not(.ui) {
     margin-top: 0.5em;
     font-size: 14px;
   }
+
+  .landingpage .masthead .ui.ui.ui.ui.massive.button {
+    font-size: 1.3rem;
+  }
 }
 
 .ui.la-eye-catcher .labeled.button {
@@ -7402,6 +7406,14 @@ button.la-scrollTopButton {
     width: 1440px;
     margin-left: auto;
     margin-right: auto;
+  }
+}
+
+/* Login Card in Mobiles */
+
+@media only screen and (max-width: 768px) {
+  #login .ui.card {
+    margin-top: 80px;
   }
 }
 /*!
@@ -53388,13 +53400,6 @@ legend {
 /*-------------------
       Stackable
 --------------------*/
-
-@media only screen and (max-width: 992px) {
-  .ui.ui.grid > .row > [class*="right aligned"].column,
-  .ui.ui.grid > [class*="right aligned"].column {
-    text-align: left;
-  }
-}
 
 @media only screen and (max-width: 992px) {
   .ui.stackable.grid {

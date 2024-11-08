@@ -651,34 +651,6 @@ class AjaxJsonController {
     }
 
     /**
-     * Retrieves a list of {@link Provider}s and their associated {@link Platform}s for dropdown display
-     * @return a {@link List} of {@link Map}s of structure
-     * {
-     *   name: provider name,
-     *   value: platform oid,
-     *   platforms: {
-     *     name: platform name,
-     *     value: platform oid
-     *   }
-     * }
-     */
-    @Secured(['ROLE_USER'])
-    def lookupProviderAndPlatforms() {
-        List result = []
-
-        List<Provider> provider = Org.executeQuery('SELECT p FROM Provider p', [ot: RDStore.OT_PROVIDER])
-        provider.each{ prov ->
-            Map<String, Object> pp = [name: prov.name, value: prov.class.name + ":" + prov.id, platforms:[]]
-
-            Platform.findAllByProvider(prov).each { plt ->
-                pp.platforms.add([name: plt.name, value: plt.class.name + ":" + plt.id])
-            }
-            result.add(pp)
-        }
-        render result as JSON
-    }
-
-    /**
      * Retrieves a list of cost item references for dropdown display
      * @return the result of {@link de.laser.ControlledListService#getReferences(grails.web.servlet.mvc.GrailsParameterMap)}
      */

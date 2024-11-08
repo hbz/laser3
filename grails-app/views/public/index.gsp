@@ -48,7 +48,7 @@
                 <div class="ui container">
 
                     <div class="ui grid">
-                        <div class="five wide column la-hero left aligned">
+                        <div class="five wide column la-hero left aligned" style="background-color: #447294;">
                             <h1 class="ui inverted header">
                                 ${message(code: 'landingpage.hero.h1')}
                             </h1>

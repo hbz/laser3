@@ -48,13 +48,13 @@ class SurveyController {
     ContextService contextService
     ComparisonService comparisonService
     CopyElementsService copyElementsService
+    CustomerTypeService customerTypeService
     DocstoreService docstoreService
     ExportClickMeService exportClickMeService
     ExportService exportService
     GenericOIDService genericOIDService
     FilterService filterService
     FinanceControllerService financeControllerService
-    FinanceService financeService
     LinksGenerationService linksGenerationService
     ProviderService providerService
     SubscriptionService subscriptionService
@@ -1083,7 +1083,8 @@ class SurveyController {
 
         String filename = "template_survey_participants_import"
 
-        params.orgType = RDStore.OT_INSTITUTION.id
+        //params.orgType = RDStore.OT_INSTITUTION.id
+        params.customerType = customerTypeService.getOrgInstRoles().id // ERMS-6009
         params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         params.sub = ctrlResult.subscription
 

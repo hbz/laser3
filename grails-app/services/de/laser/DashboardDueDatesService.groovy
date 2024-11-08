@@ -302,21 +302,31 @@ class DashboardDueDatesService {
                 dueDateRows << dashDueDateRow
             }
             if (isRemindCCbyEmail && ccAddress) {
-                mailService.sendMail {
-                    to      emailReceiver
-                    from    from
-                    cc      ccAddress
-                    replyTo replyTo
-                    subject mailSubject
-                    html    (view: "/mailTemplates/html/dashboardDueDates", model: [user: user, org: org, dueDates: dueDateRows])
+                try {
+                    mailService.sendMail {
+                        to emailReceiver
+                        from from
+                        cc ccAddress
+                        replyTo replyTo
+                        subject mailSubject
+                        html(view: "/mailTemplates/html/dashboardDueDates", model: [user: user, org: org, dueDates: dueDateRows])
+                    }
+                }
+                catch (Exception e) {
+                    log.error "Unable to perform email due to exception: ${e.message}"
                 }
             } else {
-                mailService.sendMail {
-                    to      emailReceiver
-                    from    from
-                    replyTo replyTo
-                    subject mailSubject
-                    html    (view: "/mailTemplates/html/dashboardDueDates", model: [user: user, org: org, dueDates: dueDateRows])
+                try {
+                    mailService.sendMail {
+                        to emailReceiver
+                        from from
+                        replyTo replyTo
+                        subject mailSubject
+                        html(view: "/mailTemplates/html/dashboardDueDates", model: [user: user, org: org, dueDates: dueDateRows])
+                    }
+                }
+                catch (Exception e) {
+                    log.error "Unable to perform email due to exception: ${e.message}"
                 }
             }
             log.debug("DashboardDueDatesService - finished sendEmail() to "+ user.displayName + " (" + user.email + ") " + org.name);

@@ -113,7 +113,7 @@ class OrgAccessPoint extends AbstractBase {
      */
     def getNotLinkedPlatforms()
     {
-        List currentSubIds = BeanStore.getOrgTypeService().getCurrentSubscriptionIds(org)
+        List currentSubIds = BeanStore.getSubscriptionService().getCurrentSubscriptionIds(org)
         // TODO check if this is enough
         if (!currentSubIds){
             return

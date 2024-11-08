@@ -44,6 +44,7 @@ class RDConstants {
     public static final String COUNTRY                = 'country'
     public static final String COVERAGE_DEPTH         = 'coverage.depth'
     public static final String CREATOR_TYPE           = 'creator.type'
+    public static final String CURATORY_GROUP_TYPE    = 'curatory.group.type'
     public static final String CURRENCY               = 'currency'
     public static final String CUSTOMER_IDENTIFIER_TYPE = 'customer.identifier.type'
 

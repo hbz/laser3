@@ -196,7 +196,7 @@
                                 <%
                                     String cgType
                                     if (curatoryGroup.type) {
-                                        cgType = RefdataValue.getByValueAndCategory(curatoryGroup.type as String, RDConstants.ORG_TYPE)?.getI10n('value') ?: GenericHelper.flagUnmatched( curatoryGroup.type )
+                                        cgType = RefdataValue.getByValueAndCategory(curatoryGroup.type as String, RDConstants.CURATORY_GROUP_TYPE)?.getI10n('value') ?: GenericHelper.flagUnmatched( curatoryGroup.type )
                                         cgType = '(' + cgType + ')'
                                     }
                                 %>

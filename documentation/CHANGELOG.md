@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6059    08.11.2024  dev     3.5         David   Feature     CuratoryGroup.type als RefdataCategory anlegen
+
+6009    08.11.2024  dev     3.5         David   Feature     Org.orgType entfernen
+
 6054    06.11.2024  rc-3.4  3.4.13      Andreas Bug         GASCO-Suche nach Anbietern migriert
 
 --      06.11.2024  rc-3.4  3.4.13      Andreas Bug         Entfernen der Pflichtfeldkennung bei Massenvergabe von Merkmalen
@@ -20,6 +24,8 @@
 6044    05.11.2024  rc-3.4  3.4.13      David   Bug         Manipulation von fremden Nutzeraccounts
 
 6041    30.10.2024  dev     3.5         David   Feature     Controller: ROLE_ADMIN-Ausnahmen entfernen
+
+5977    30.10.2024  dev     3.5         David   Feature     Rechteprüfung: Aufgaben
 
 5973    30.10.2024  dev     3.5         Andreas Feature     Tilgung von raw(), wo nicht zwingend erforderlich
 
