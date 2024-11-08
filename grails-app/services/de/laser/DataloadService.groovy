@@ -191,7 +191,7 @@ class DataloadService {
 
                 result.sortname = org.sortname
 
-                result.type = org.orgType_new.getMapForES() // todo - refactoring ?
+                result.type = org.getOrgType().getMapForES() // TODO: ERMS-6009
 
                 result.identifiers = []
                 org.ids?.each { ident ->

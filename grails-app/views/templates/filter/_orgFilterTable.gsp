@@ -87,8 +87,8 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('platform')}">
                 <th>${message(code: 'platform')}</th>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('type')}">
-                <th>${message(code: 'default.type.label')}</th>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('customerType')}">
+                <th>${message(code: 'org.customerType.label')}</th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('region')}">
                 <th>${message(code: 'org.region.label')}</th>
@@ -630,9 +630,9 @@
                     </g:each>
                 </td>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('type')}">
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('customerType')}">
                 <td>
-                    ${org.orgType_new?.getI10n("value")}
+                    ${org.getCustomerTypeI10n()}
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('region')}">

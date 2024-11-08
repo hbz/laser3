@@ -279,7 +279,8 @@ class OrganisationController  {
     })
     def listInstitution() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
-        params.orgType   = RDStore.OT_INSTITUTION.id
+        params.customerType = customerTypeService.getOrgInstRoles().id
+
         if(!params.sort)
             params.sort = " LOWER(o.sortname)"
         if(!params.orgStatus && !params.filterSet) {
@@ -824,8 +825,10 @@ class OrganisationController  {
         Map result = [institution:contextService.getOrg(), organisationMatches:[], members:memberMap, comboType:RDStore.COMBO_TYPE_CONSORTIUM]
         //searching members for consortium, i.e. the context org is a consortium
         if (params.proposedOrganisation) {
-            result.organisationMatches.addAll(Org.executeQuery("select o from Org as o where o.orgType_new = :institution and (lower(o.name) like :searchName or lower(o.sortname) like :searchName) ",
-                    [institution: RDStore.OT_INSTITUTION, searchName: "%${params.proposedOrganisation.toLowerCase()}%"]))
+            result.organisationMatches.addAll(Org.executeQuery(
+                    "select o from Org o, OrgSetting os where os.org = o and os.key = :ct and os.roleValue in (:roles) and (lower(o.name) like :searchName or lower(o.sortname) like :searchName) ",
+                    [ct: OrgSetting.KEYS.CUSTOMER_TYPE, roles: customerTypeService.getOrgInstRoles(), searchName: "%${params.proposedOrganisation.toLowerCase()}%"])
+            )
         }
         if (params.proposedOrganisationID) {
             result.organisationMatches.addAll(Org.executeQuery("select id.org from Identifier id where lower(id.value) like :identifier and lower(id.ns.ns) in (:namespaces) ",
@@ -1905,9 +1908,6 @@ class OrganisationController  {
                 break
             case 'users':
                 isEditable = userIsAdmin || userService.hasFormalAffiliation(Org.get(params.id), 'INST_ADM')
-                break
-            case [ 'addOrgType', 'deleteOrgType' ]:
-                isEditable = userIsAdmin || userService.hasFormalAffiliation(Org.get(params.org), 'INST_ADM')
                 break
             case 'contacts':
                 if (inContextOrg) {

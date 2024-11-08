@@ -8,6 +8,7 @@ import de.laser.CompareService
 import de.laser.ComparisonService
 import de.laser.ContextService
 import de.laser.CopyElementsService
+import de.laser.CustomerTypeService
 import de.laser.DocContext
 import de.laser.DocstoreService
 import de.laser.EscapeService
@@ -104,6 +105,7 @@ class SurveyControllerService {
     ComparisonService comparisonService
     ContextService contextService
     CopyElementsService copyElementsService
+    CustomerTypeService customerTypeService
     DocstoreService docstoreService
     EscapeService escapeService
     ExecutorService executorService
@@ -236,7 +238,8 @@ class SurveyControllerService {
         } else {
 
             // new: filter preset
-            params.orgType = RDStore.OT_INSTITUTION.id
+            //params.orgType = RDStore.OT_INSTITUTION.id
+            params.customerType = customerTypeService.getOrgInstRoles().id
 
            /* if (params.tab == 'selectedParticipants') {
                 params.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id)
@@ -249,7 +252,10 @@ class SurveyControllerService {
 
             GrailsParameterMap cloneParams = params.clone()
             cloneParams.removeAll { it.value != '' }
-            cloneParams.orgType = RDStore.OT_INSTITUTION.id
+
+            //cloneParams.orgType = RDStore.OT_INSTITUTION.id
+            cloneParams.customerType = customerTypeService.getOrgInstRoles().id
+
             //cloneParams.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id)
             cloneParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
             cloneParams.sub = result.subscription
@@ -322,7 +328,8 @@ class SurveyControllerService {
             result.orgConfigurations = orgConfigurations as JSON
 
             // new: filter preset
-            params.orgType = RDStore.OT_INSTITUTION.id
+            //params.orgType = RDStore.OT_INSTITUTION.id
+            params.customerType = customerTypeService.getOrgInstRoles().id
 
             result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
@@ -436,7 +443,8 @@ class SurveyControllerService {
             result.orgConfigurations = orgConfigurations as JSON
 
             // new: filter preset
-            params.orgType = RDStore.OT_INSTITUTION.id
+            //params.orgType = RDStore.OT_INSTITUTION.id
+            params.customerType = customerTypeService.getOrgInstRoles().id
 
             result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
