@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6055    06.11.2024  rc-3.4  3.4.14      Moe     Bug         Im Export-Renewel auch die vat id voranhaken
+
 6054    06.11.2024  rc-3.4  3.4.13      Andreas Bug         GASCO-Suche nach Anbietern migriert
 
 --      06.11.2024  rc-3.4  3.4.13      Andreas Bug         Entfernen der Pflichtfeldkennung bei Massenvergabe von Merkmalen
@@ -15,9 +17,21 @@
 
 6051    06.11.2024  rc-3.4  3.4.13      Andreas Bug         falscher Skopus verhinderte das Auffinden von Verträgen
 
+6050    06.11.2024  rc-3.4  3.4.13      Moe     Bug         Titel hinzufügen
+
 6049    05.11.2024  rc-3.4  3.4.13      David   Feature     Meldung bereits vergebener Nutzername anpassen
 
 6044    05.11.2024  rc-3.4  3.4.13      David   Bug         Manipulation von fremden Nutzeraccounts
+
+6036    31.10.2024  rc-3.4  3.4.13      Moe     Bug         Lizenzübertrag aus Lizenzumfrage: Umfrage-Lieferanten wird übersprungen
+
+--      29.10.2024  rc-3.4  3.4.13      Moe     Feature     neue Refdatas
+
+6035    29.10.2024  rc-3.4  3.4.13      Moe     Bug         Random-Rechnungskontakt in Einrichtungsinfos Ergbenisreiter Lizenzumfrage
+
+6039    28.10.2024  rc-3.4  3.4.13      Moe     Feature     Umfrage: Teilnehmer abschließen auch wenn Umfrage ausgelaufen ist
+
+6038    28.10.2024  rc-3.4  3.4.13      Moe     Bug         Titelgruppen mit selben Name  
 
 6030    23.10.2024  rc-3.4  3.4.12      David   Bug         Unerlaubtes Erlangen von Adminrechten
 
