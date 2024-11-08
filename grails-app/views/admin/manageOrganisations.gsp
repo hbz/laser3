@@ -13,7 +13,7 @@
         <g:form action="manageOrganisations" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow: [['name', 'identifier', 'type', 'customerType'],
+                              tmplConfigShow: [['name', 'identifier', 'customerType'],
                                                ['discoverySystemsFrontend', 'discoverySystemsIndex', 'apiLevel', 'serverAccess'],
                                                ['country&region', 'libraryNetwork', 'libraryType']],
                               tmplConfigFormFilter: true
@@ -29,7 +29,6 @@
                 <th>${message(code:'sidewide.number')}</th>
                 <th>${message(code: 'org.sortname.label')}</th>
                 <th>${message(code: 'org.fullName.label')}</th>
-                <th>${message(code: 'default.type.label')}</th>
                 <th>${message(code:'org.customerType.label')}</th>
                 <th>
                     ${message(code:'org.apiLevel.label')}
@@ -88,10 +87,6 @@
                                 gascoEntry = RDStore.YN_NO
                             }
                         %>
-                    </td>
-
-                    <td>
-                        ${org.orgType_new?.getI10n("value")}
                     </td>
 
                     <td>

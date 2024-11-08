@@ -41,13 +41,10 @@ class OrganisationControllerService {
     Map<String,Object> mailInfos(OrganisationController controller, GrailsParameterMap params) {
         User user = contextService.getUser()
         Org org = contextService.getOrg()
-        Map<String, Object> result = [user:user,
-                                      institution:org,
-                                      contextOrg: org]
+        Map<String, Object> result = [user:user, institution:org, contextOrg: org]
 
-
-        if (params.id) {
-            result.orgInstance = Org.get(params.id)
+        if (params.id_org) {
+            result.orgInstance = Org.get(params.id_org)
             if(result.orgInstance.id == org.id){
                 return null
             }
@@ -62,7 +59,7 @@ class OrganisationControllerService {
 
         if (result.orgInstance) {
             String customerIdentifier = ''
-            result.sub = Subscription.get(params.subscription)
+            result.sub = Subscription.get(params.id_subscription)
 
             if(result.sub) {
                 List contactListProvider = result.sub.providerRelations ? Contact.executeQuery("select c.content from PersonRole pr " +
@@ -170,8 +167,8 @@ class OrganisationControllerService {
             String billingAddress = addressList.collect { Address address -> address.getAddressForExport()}.join(";")
             String billingPostBox = postBoxList.collect { Address address -> address.getAddressForExport()}.join(";")
 
-            if(params.surveyConfigID){
-                SurveyConfig surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.long('surveyConfigID')) : null
+            if (params.id_surveyConfig){
+                SurveyConfig surveyConfig = SurveyConfig.get(params.id_surveyConfig)
                 if(surveyConfig && surveyConfig.invoicingInformation && surveyConfig.surveyInfo.owner == result.contextOrg){
                     SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, result.orgInstance)
                     if(surveyOrg.address) {
@@ -312,8 +309,6 @@ class OrganisationControllerService {
                 Combo newMember = new Combo(fromOrg:orgInstance,toOrg:result.institution,type: RDStore.COMBO_TYPE_CONSORTIUM)
                 newMember.save()
                 orgInstance.setDefaultCustomerType()
-//                orgInstance.addToOrgType(RDStore.OT_INSTITUTION) //RDStore adding causes a DuplicateKeyException - RefdataValue.getByValueAndCategory('Institution', RDConstants.ORG_TYPE)
-                orgInstance.orgType_new = RDStore.OT_INSTITUTION
                 result.orgInstance = orgInstance
                 Object[] args = [messageSource.getMessage('org.institution.label',null,locale), orgInstance.name]
                 result.message = messageSource.getMessage('default.created.message', args, locale)

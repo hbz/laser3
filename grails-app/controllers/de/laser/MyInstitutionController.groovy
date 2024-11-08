@@ -3290,7 +3290,7 @@ class MyInstitutionController  {
 
             // new: filter preset
             result.comboType = 'Consortium'
-            params.orgType = RDStore.OT_INSTITUTION.id
+            params.customerType = customerTypeService.getOrgInstRoles().id
 
             if (params.selectedOrgs) {
                 if (formService.validateToken(params)) {
@@ -3410,8 +3410,9 @@ class MyInstitutionController  {
                 idQuery = idQuery + ' and wf.vendor is not null'
             }
             if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION.id) {
-                idQuery = idQuery + ' and wf.org is not null and wf.org.orgType_new = :orgType'
-                queryParams.put('orgType', RDStore.OT_INSTITUTION)
+                idQuery = idQuery + ' and wf.org is not null and exists (select os from OrgSetting os where os.org = wf.org and os.key = :ct and os.roleValue in (:roles))'
+                queryParams.put('ct', OrgSetting.KEYS.CUSTOMER_TYPE)
+                queryParams.put('roles', customerTypeService.getOrgInstRoles())
             }
             else if (filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_LICENSE.id) {
                 idQuery = idQuery + ' and wf.license is not null'

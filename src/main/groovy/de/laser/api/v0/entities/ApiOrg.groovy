@@ -138,7 +138,7 @@ class ApiOrg {
         result.funderHskType  = org.funderHskType?.value
         result.subjectGroup   = org.subjectGroup?.collect { OrgSubjectGroup subjectGroup -> subjectGroup.subjectGroup.value }
         result.libraryNetwork = org.libraryNetwork?.value
-        result.type           = org.orgType_new ? [org.orgType_new.value] : []
+        result.type           = org.getOrgType() ? [org.getOrgType().value] : [] // TODO: ERMS-6009
         result.status         = org.status?.value
 
         // References

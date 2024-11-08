@@ -145,7 +145,7 @@ class ApiOAMonitor {
 
             // RefdataValues
 
-            result.type         = org.orgType_new ? [org.orgType_new.value] : []
+            result.type         = org.getOrgType() ? [org.getOrgType().value] : [] // TODO: ERMS-6009
             result.status       = org.status?.value
 
             // References

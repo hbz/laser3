@@ -64,7 +64,7 @@
                 <div class="content">
 
                     <g:if test="${!inContextOrg && contextOrg.isCustomerType_Consortium()}">
-                        <a href="#" class="ui icon la-float-right infoFlyout-trigger" data-orgId="${orgInstance.id}">
+                        <a href="#" class="ui icon la-float-right infoFlyout-trigger" data-template="org" data-org="${orgInstance.id}">
                             <i class="icon circular blue info inverted"></i>
                         </a>
                     </g:if>
@@ -145,14 +145,6 @@
                             <dd>
                                 ${orgInstance.getCustomerTypeI10n()}
 %{--                                <ui:customerTypeIcon org="${orgInstance}" />--}%
-                            </dd>
-                        </dl>
-                    </g:if>
-                    <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
-                        <dl>
-                            <dt><g:message code="org.orgType.label" /></dt>
-                            <dd>
-                                <ui:xEditableRefData owner="${orgInstance}" field="orgType_new" config="${RDConstants.ORG_TYPE}"/> %{-- ERMS-5927 ---}%
                             </dd>
                         </dl>
                     </g:if>
