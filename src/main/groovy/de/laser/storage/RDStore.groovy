@@ -136,7 +136,9 @@ class RDStore {
     public final static RefdataValue O_STATUS_CURRENT       = getRefdataValue('Current', RDConstants.ORG_STATUS)
     public final static RefdataValue O_STATUS_DELETED       = getRefdataValue('Deleted', RDConstants.ORG_STATUS)
 
+    @Deprecated
     public final static RefdataValue OT_CONSORTIUM          = getRefdataValue('Consortium', RDConstants.ORG_TYPE)   // TODO: ERMS-6009
+    @Deprecated
     public final static RefdataValue OT_INSTITUTION         = getRefdataValue('Institution', RDConstants.ORG_TYPE)  // TODO: ERMS-6009
 
     public final static RefdataValue PACKAGE_STATUS_DELETED     = getRefdataValue('Deleted', RDConstants.PACKAGE_STATUS)

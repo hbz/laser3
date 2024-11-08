@@ -260,8 +260,8 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         super.afterUpdateHandler()
     }
 
-    @UnstableFeature
     // TODO: ERMS-6009
+    @Deprecated
     RefdataValue getOrgType() {
         if (isCustomerType_Inst()) {
             RDStore.OT_INSTITUTION
