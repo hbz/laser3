@@ -63,11 +63,15 @@ class RDStore {
     public final static RefdataValue COST_ITEM_ELEMENT_CONSORTIAL_PRICE = getRefdataValue('price: consortial price', RDConstants.COST_ITEM_ELEMENT)
     public final static RefdataValue COST_ITEM_ELEMENT_BUDGET_TITLE_PICK = getRefdataValue('budget: title pick and choose', RDConstants.COST_ITEM_ELEMENT)
 
-    public final static RefdataValue CUSTOMER_IDENTIFIER_TYPE_DEFAULT = getRefdataValue('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE)
+    public final static RefdataValue CG_TYPE_OTHER      = getRefdataValue('other', RDConstants.CURATORY_GROUP_TYPE)
+    public final static RefdataValue CG_TYPE_PROVIDER   = getRefdataValue('provider', RDConstants.CURATORY_GROUP_TYPE)
+    public final static RefdataValue CG_TYPE_VENDOR     = getRefdataValue('vendor', RDConstants.CURATORY_GROUP_TYPE)
 
     public final static RefdataValue CURRENCY_EUR   = getRefdataValue('EUR', RDConstants.CURRENCY)
     public final static RefdataValue CURRENCY_GBP   = getRefdataValue('GBP', RDConstants.CURRENCY)
     public final static RefdataValue CURRENCY_USD   = getRefdataValue('USD', RDConstants.CURRENCY)
+
+    public final static RefdataValue CUSTOMER_IDENTIFIER_TYPE_DEFAULT = getRefdataValue('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE)
 
     public final static RefdataValue DOC_CONF_PUBLIC            = getRefdataValue('public', RDConstants.DOCUMENT_CONFIDENTIALITY)
     public final static RefdataValue DOC_CONF_INTERNAL          = getRefdataValue('internal', RDConstants.DOCUMENT_CONFIDENTIALITY)
@@ -137,9 +141,9 @@ class RDStore {
     public final static RefdataValue O_STATUS_DELETED       = getRefdataValue('Deleted', RDConstants.ORG_STATUS)
 
     @Deprecated
-    public final static RefdataValue OT_CONSORTIUM          = getRefdataValue('Consortium', RDConstants.ORG_TYPE)   // TODO: ERMS-6009
+    public final static RefdataValue OT_CONSORTIUM  = getRefdataValue('Consortium', RDConstants.ORG_TYPE)   // TODO: ERMS-6009
     @Deprecated
-    public final static RefdataValue OT_INSTITUTION         = getRefdataValue('Institution', RDConstants.ORG_TYPE)  // TODO: ERMS-6009
+    public final static RefdataValue OT_INSTITUTION = getRefdataValue('Institution', RDConstants.ORG_TYPE)  // TODO: ERMS-6009
 
     public final static RefdataValue PACKAGE_STATUS_DELETED     = getRefdataValue('Deleted', RDConstants.PACKAGE_STATUS)
     public final static RefdataValue PACKAGE_STATUS_REMOVED     = getRefdataValue('Removed', RDConstants.PACKAGE_STATUS)
