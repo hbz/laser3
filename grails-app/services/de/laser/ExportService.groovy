@@ -4215,7 +4215,7 @@ class ExportService {
 		 localprice_gbp: '',
 		 localprice_usd: '']
 		if(checkPerpetuallyAccessToTitle) {
-			mapping.put(messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale), "(select case when tipp_id in(select pt_tipp_fk from permanent_title join title_instance_package_platform as pt_tipp on pt_tipp_fk = pt_tipp.tipp_id where pt_tipp.tipp_host_platform_url = tipp_host_platform_url and pt_owner_fk = :subscriber) then true else false end) as ${messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale)}")
+			mapping.put(messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale), "(select case when tipp_host_platform_url in(select pt_tipp.tipp_host_platform_url from permanent_title join title_instance_package_platform as pt_tipp on pt_tipp_fk = pt_tipp.tipp_id where pt_owner_fk = :subscriber) then true else false end) as ${messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale)}")
 		}
 		if(entitlementInstance == IssueEntitlement.class.name) {
 			mapping.date_first_issue_online = "to_char(ic_start_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') as date_first_issue_online"
