@@ -1419,8 +1419,14 @@ class SubscriptionControllerService {
      * @param params the input parameter map
      * @return OK if the creation was successful, ERROR otherwise
      */
-    Map<String,Object> processAddMembers(SubscriptionController controller, GrailsParameterMap params) {
+    Map<String,Object> processAddMembers(GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+        /*
+        continue here with following procedure:
+        - packages to process: collect in map
+        - process that map on controller level for ensuring new transaction ==> make tabula rasa
+        - implement holding selection switch and remove then the checkbox in the view
+         */
         if (!result) {
             [result:null,status:STATUS_ERROR]
         }
@@ -1452,40 +1458,6 @@ class SubscriptionControllerService {
                             members << Org.findById(Long.valueOf(it))
                         }
                     }
-
-
-
-                    /*
-                    List<Subscription> synShareTargetList = []
-                    List<License> licensesToProcess = []
-                    Set<Package> packagesToProcess = []
-                    *//*
-                    result.subscription.packages.each { SubscriptionPackage sp ->
-                        packagesToProcess << sp.pkg
-                    }
-                    copy package data
-                    *//*
-                    if(params.linkAllPackages) {
-                        result.subscription.packages.each { SubscriptionPackage sp ->
-                            packagesToProcess << sp.pkg
-                        }
-                    }
-                    else if(params.packageSelection) {
-                        List packageIds = params.list("packageSelection")
-                        packageIds.each { spId ->
-                            packagesToProcess << SubscriptionPackage.get(spId).pkg
-                        }
-                    }
-                    if(params.generateSlavedLics == "all") {
-                        String query = "select l from License l where l.instanceOf in (select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType)"
-                        licensesToProcess.addAll(License.executeQuery(query, [subscription:result.subscription, linkType:RDStore.LINKTYPE_LICENSE]))
-                    }
-                    else if(params.generateSlavedLics == "partial") {
-                        List<String> licenseKeys = params.list("generateSlavedLicsReference")
-                        licenseKeys.each { String licenseKey ->
-                            licensesToProcess << genericOIDService.resolveOID(licenseKey)
-                        }
-                    }*/
                     List<String> excludes = PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key }
                     //excludes << 'freezeHolding'
                     excludes.add(PendingChangeConfiguration.TITLE_REMOVED)
@@ -1496,29 +1468,26 @@ class SubscriptionControllerService {
                     Set<AuditConfig> inheritedAttributes
 
 
-                    Map<String, List<Long>> memberSubIdsByParentSub = [:]
+                    Map<Long, List<Long>> memberSubIdsByParentSub = [:]
                     //needed for that the subscriptions are present in the moment of the parallel process
                     List<Subscription> subscriptions = [result.subscription]
-                    //Subscription.withNewSession { Session sess ->
 
                     if(members.size() > 0) {
                         Set<Subscription> nextSubs = linksGenerationService.getSuccessionChain(result.subscription, 'destinationSubscription')
-                        String query = "select l from License l where l.instanceOf in (select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType)"
                         nextSubs.each { Subscription nextSub ->
                             if (params.checkSubRunTimeMultiYear && params.containsKey('addToSubWithMultiYear_' + nextSub.id)) {
                                 subscriptions << nextSub
                             }
                         }
                         subscriptions.eachWithIndex { Subscription currParent, int c ->
-                            //very dirty and uglymost solution, if it works ...
                             List<Long> memberSubIds = []
-                            currParent = currParent.refresh()
                             List<Subscription> synShareTargetList = []
                             List<License> licensesToProcess = []
                             if (params["generateSlavedLics_${currParent.id}"] == "all") {
                                 String queryLic = "select l from License l where l.instanceOf in (select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType)"
                                 licensesToProcess.addAll(License.executeQuery(queryLic, [subscription: result.subscription, linkType: RDStore.LINKTYPE_LICENSE]))
-                            } else if (params["generateSlavedLics_${currParent.id}"] == "partial") {
+                            }
+                            else if (params["generateSlavedLics_${currParent.id}"] == "partial") {
                                 List<String> licenseKeys = params.list("generateSlavedLics_${currParent.id}")
                                 licenseKeys.each { String licenseKey ->
                                     licensesToProcess << genericOIDService.resolveOID(licenseKey)
@@ -1527,7 +1496,6 @@ class SubscriptionControllerService {
 
                             inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name, currParent.id, excludes)
                             members.each { Org cm ->
-                                log.debug("Generating separate slaved instances for members")
                                 int existSubForOrg = Subscription.executeQuery("select count(*) from OrgRole oo join oo.sub s where s.instanceOf = :sub and oo.org = :org", [sub: currParent, org: cm])[0]
                                 if (existSubForOrg == 0) {
                                     Date startDate = params.valid_from ? DateUtils.parseDateGeneric(params.valid_from) : null
@@ -1655,16 +1623,11 @@ class SubscriptionControllerService {
                                 currParent.syncAllShares(synShareTargetList)
 
                             if (memberSubIds) {
-                                memberSubIdsByParentSub.put("newMemberSubIds_${currParent.id}", memberSubIds)
+                                memberSubIdsByParentSub.put(currParent.id, memberSubIds)
                             }
-
-                            //sess.flush()
-                            globalService.cleanUpGorm()
                         }
 
-                        //}
-
-                        Map<String, Set<Package>> packagesToProcess = [:]
+                        Map<Long, Set<Package>> packagesToProcess = [:]
                         subscriptions.each { Subscription currParent ->
                             currParent = currParent.refresh()
                             Set<Package> packagesToProcessCurParent = []
@@ -1679,35 +1642,13 @@ class SubscriptionControllerService {
                                 }
                             }
                             if (packagesToProcessCurParent) {
-                                packagesToProcess.put("packagesToProcess_${currParent.id}", packagesToProcessCurParent)
+                                packagesToProcess.put(currParent.id, packagesToProcessCurParent)
                             }
                         }
-
-                        if (packagesToProcess && memberSubIdsByParentSub) {
-                            executorService.execute({
-                                Thread.currentThread().setName("PackageTransfer_" + subscriptions[0].id)
-                                Thread.sleep(1000) //to be sure ... wait until GORM has finished its work
-                                subscriptions.each { Subscription currParent ->
-                                    if (packagesToProcess.containsKey("packagesToProcess_${currParent.id}") && memberSubIdsByParentSub.containsKey("newMemberSubIds_${currParent.id}")) {
-                                        List<Subscription> updatedSubList = Subscription.findAllByIdInList(memberSubIdsByParentSub.get("newMemberSubIds_${currParent.id}"))
-                                        Set<Package> packagesToProcessCurParent = packagesToProcess.get("packagesToProcess_${currParent.id}")
-                                        if(updatedSubList && packagesToProcessCurParent) {
-                                            packagesToProcessCurParent.each { Package pkg ->
-                                                subscriptionService.cachePackageName("PackageTransfer_" + subscriptions[0].id, pkg.name)
-                                                boolean createEntitlements = params.get('linkWithEntitlements_'+currParent.id) == 'on'
-                                                subscriptionService.addToMemberSubscription(currParent, updatedSubList, pkg, createEntitlements)
-                                                /*
-                                            if()
-                                                subscriptionService.addToSubscriptionCurrentStock(memberSub, result.subscription, pkg)
-                                            else
-                                                subscriptionService.addToSubscription(memberSub, pkg, false)
-                                        */
-                                            }
-                                        }
-                                    }
-                                }
-                            })
-                        }
+                        if(packagesToProcess)
+                            result.packagesToProcess = packagesToProcess
+                        result.parentSubscriptions = subscriptions
+                        result.memberSubscriptions = memberSubIdsByParentSub
                     }
                 } else {
                     [result:result,status:STATUS_ERROR]
@@ -2208,9 +2149,14 @@ class SubscriptionControllerService {
                                 Package pkgToLink = Package.findByGokbId(pkgUUID)
                                 subscriptionService.addToSubscription(result.subscription, pkgToLink, createEntitlements)
                                 if(linkToChildren) {
-                                    subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, createEntitlementsForChildren)
+                                    if(holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL && auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
+                                        Subscription.findAllByInstanceOf(result.subscription).each { Subscription member ->
+                                            subscriptionService.addToSubscriptionCurrentStock(member, result.subscription, pkgToLink, true)
+                                        }
+                                    }
+                                    else
+                                        subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, createEntitlementsForChildren)
                                 }
-                                //subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                             }
                         }
                         catch (Exception e) {
@@ -2223,9 +2169,14 @@ class SubscriptionControllerService {
                         subscriptionService.cachePackageName("PackageTransfer_"+result.subscription.id, pkgToLink.name)
                         subscriptionService.addToSubscription(result.subscription, pkgToLink, createEntitlements)
                         if(linkToChildren) {
-                            subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, createEntitlementsForChildren)
+                            if(holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL && auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
+                                Subscription.findAllByInstanceOf(result.subscription).each { Subscription member ->
+                                    subscriptionService.addToSubscriptionCurrentStock(member, result.subscription, pkgToLink, true)
+                                }
+                            }
+                            else
+                                subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, createEntitlementsForChildren)
                         }
-                        //subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                     }
                     if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
                         globalService.notifyBackgroundProcessFinish(result.user.id, "PackageTransfer_${result.subscription.id}", messageSource.getMessage('subscription.details.linkPackage.thread.completed', [result.subscription.name] as Object[], LocaleUtils.getCurrentLocale()))

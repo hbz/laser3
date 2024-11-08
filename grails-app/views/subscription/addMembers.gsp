@@ -150,16 +150,18 @@
                                             <label for="linkAllPackages"><g:message code="myinst.addMembers.linkAllPackages"/></label>
                                         </div>
                                     </div>
-                                    <g:if test="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL}">
+                                    <div class="field">
+                                        <g:select class="ui search multiple dropdown"
+                                                  optionKey="id" optionValue="${{ it.getPackageName() }}"
+                                                  from="${validPackages}" name="packageSelection_${subscription.id}" value=""
+                                                  noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.package')}"]'/>
+                                    </div>
+                                    <g:if test="${!auditService.getAuditConfig(subscription, 'holdingSelection')}">
                                         <div class="field">
                                             <div class="ui checkbox">
                                                 <input type="checkbox" id="linkWithEntitlements" name="linkWithEntitlements_${subscription.id}">
                                                 <label for="linkWithEntitlements"><g:message code="myinst.addMembers.withEntitlements"/></label>
                                             </div>
-                                            <g:select class="ui search multiple dropdown"
-                                                      optionKey="id" optionValue="${{ it.getPackageName() }}"
-                                                      from="${validPackages}" name="packageSelection_${subscription.id}" value=""
-                                                      noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.package')}"]'/>
                                         </div>
                                     </g:if>
                                 </div>

@@ -43,6 +43,7 @@ import java.util.concurrent.ExecutorService
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SubscriptionController {
 
+    AuditService auditService
     BatchQueryService batchQueryService
     ContextService contextService
     CopyElementsService copyElementsService
@@ -801,7 +802,7 @@ class SubscriptionController {
         ctx.contextService.isInstEditor()
     })
     def processAddMembers() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.processAddMembers(this,params)
+        Map<String,Object> ctrlResult = subscriptionControllerService.processAddMembers(params)
         if (ctrlResult.error == SubscriptionControllerService.STATUS_ERROR) {
             if (ctrlResult.result) {
                 redirect controller: 'subscription', action: 'show', params: [id: ctrlResult.result.subscription.id]
@@ -812,6 +813,41 @@ class SubscriptionController {
             }
         }
         else {
+            if (ctrlResult.result.packagesToProcess && ctrlResult.result.memberSubscriptions) {
+                Map<String, Object> configMap = params.clone()
+                executorService.execute({
+                    Thread.currentThread().setName("PackageTransfer_" + ctrlResult.result.parentSubscriptions[0].id)
+                    ctrlResult.result.parentSubscriptions.each { Subscription currParent ->
+                        if (ctrlResult.result.packagesToProcess.containsKey(currParent.id) && ctrlResult.result.memberSubscriptions.containsKey(currParent.id)) {
+                            List<Subscription> updatedSubList = Subscription.findAllByIdInList(ctrlResult.result.memberSubscriptions.get(currParent.id))
+                            Set<Package> packagesToProcessCurParent = ctrlResult.result.packagesToProcess.get(currParent.id)
+                            if(updatedSubList && packagesToProcessCurParent) {
+                                packagesToProcessCurParent.each { Package pkg ->
+                                    subscriptionService.cachePackageName("PackageTransfer_" + ctrlResult.result.parentSubscriptions[0].id, pkg.name)
+                                    updatedSubList.each { Subscription currMember ->
+                                        /*
+                                        if(currParent.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL && !auditService.getAuditConfig(currParent, 'holdingSelection')) {
+                                            subscriptionService.addToMemberSubscription(currParent, [currMember], pkg, true)
+                                        }
+                                        */
+                                        if(currParent.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL) {
+                                            if(auditService.getAuditConfig(currParent, 'holdingSelection')) {
+                                                subscriptionService.addToSubscriptionCurrentStock(currMember, currParent, pkg, true)
+                                            }
+                                            else {
+                                                subscriptionService.addToSubscriptionCurrentStock(currMember, currParent, pkg, configMap.get('linkWithEntitlements_' + currParent.id) == 'on')
+                                            }
+                                        }
+                                        else {
+                                            subscriptionService.addToSubscriptionCurrentStock(currMember, currParent, pkg, configMap.get('linkWithEntitlements_' + currParent.id) == 'on')
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                })
+            }
 
             if(ctrlResult.result.selectSubMembersWithImport){
                 if(ctrlResult.result.selectSubMembersWithImport.truncatedRows){
