@@ -239,7 +239,7 @@ class SurveyControllerService {
 
             // new: filter preset
             //params.orgType = RDStore.OT_INSTITUTION.id
-            params.customerType = customerTypeService.getOrgInstRoles().id
+            params.customerType = customerTypeService.getOrgInstRoles().id // ERMS-6009
 
            /* if (params.tab == 'selectedParticipants') {
                 params.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id)
@@ -254,7 +254,7 @@ class SurveyControllerService {
             cloneParams.removeAll { it.value != '' }
 
             //cloneParams.orgType = RDStore.OT_INSTITUTION.id
-            cloneParams.customerType = customerTypeService.getOrgInstRoles().id
+            cloneParams.customerType = customerTypeService.getOrgInstRoles().id // ERMS-6009
 
             //cloneParams.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id)
             cloneParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
@@ -329,7 +329,7 @@ class SurveyControllerService {
 
             // new: filter preset
             //params.orgType = RDStore.OT_INSTITUTION.id
-            params.customerType = customerTypeService.getOrgInstRoles().id
+            params.customerType = customerTypeService.getOrgInstRoles().id // ERMS-6009
 
             result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
@@ -444,7 +444,7 @@ class SurveyControllerService {
 
             // new: filter preset
             //params.orgType = RDStore.OT_INSTITUTION.id
-            params.customerType = customerTypeService.getOrgInstRoles().id
+            params.customerType = customerTypeService.getOrgInstRoles().id // ERMS-6009
 
             result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
