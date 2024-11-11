@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Icon; de.laser.ui.Btn; de.laser.storage.RDStore" %>
 
 <h1 class="ui header">
     <g:if test="${sub}">
@@ -12,19 +12,6 @@
 <div class="content">
     <div class="ui form">
 
-%{--        <g:if test="${actionName == 'mailInfos' && controllerName == 'organisation'}">--}%
-%{--            <g:form controller="organisation" action="mailInfos" params="${[id: orgInstance.id, subscription: sub?.id, surveyConfigID: params.surveyConfigID]}">--}%
-%{--                <div class="field">--}%
-%{--                    <label for="newLanguage">${message(code: 'profile.language')}</label>--}%
-%{--                    <select id="newLanguage" name="newLanguage" class="ui search selection fluid dropdown" onchange="this.form.submit()">--}%
-%{--                        <g:each in="${[RDStore.LANGUAGE_DE, RDStore.LANGUAGE_EN]}" var="lan">--}%
-%{--                            <option <%=language == lan.value ? 'selected="selected"' : ''%> value="${lan.value}">${lan.getI10n('value')}</option>--}%
-%{--                        </g:each>--}%
-%{--                    </select>--}%
-%{--                </div>--}%
-%{--            </g:form>--}%
-%{--        </g:if>--}%
-
         <g:render template="flyoutLanguageSelector" />
 
         <g:if test="${mailAddressOfProvider}">
@@ -37,7 +24,7 @@
         <g:if test="${mailAddressOfProviderWekb}">
             <div class="field">
                 <label for="mailAddressOfProviderWekb">
-                    <i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code: 'org.isWekbCurated.header.label')}"></i>
+                    <i class="${Icon.WEKB} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code: 'org.isWekbCurated.header.label')}"></i>
                     ${message(code: 'provider.label')}: E-Mails
                 </label>
 
@@ -52,9 +39,12 @@
                     <g:textArea id="mailText_de" name="mailText" rows="30" cols="1">${mailText['de']}</g:textArea>
                 </div>
 
-                <button class="ui icon button right floated" onclick="JSPC.infoFlyout.copyToClipboard('mailText_de')">
-                    ${message(code: 'menu.institutions.copy_emailaddresses_to_clipboard')}
+                <button class="${Btn.SIMPLE} right floated" onclick="JSPC.infoFlyout.copyToClipboard('de')">
+                    ${message(code: 'mail.copyToClipboard')}
                 </button>
+%{--                <button class="${Btn.SIMPLE} right floated" onclick="JSPC.infoFlyout.copyToEmailProgram('de')">--}%
+%{--                    ${message(code: 'mail.openExternalMailer')}--}%
+%{--                </button>--}%
             </div>
             <div class="content_lang_en hidden">
                 <div class="field">
@@ -62,15 +52,13 @@
                     <g:textArea id="mailText_en" name="mailText" rows="30" cols="1">${mailText['en']}</g:textArea>
                 </div>
 
-                <button class="ui icon button right floated" onclick="JSPC.infoFlyout.copyToClipboard('mailText_en')">
-                    ${message(code: 'menu.institutions.copy_emailaddresses_to_clipboard')}
+                <button class="${Btn.SIMPLE} right floated" onclick="JSPC.infoFlyout.copyToClipboard('en')">
+                    ${message(code: 'mail.copyToClipboard')}
                 </button>
+%{--                <button class="${Btn.SIMPLE} right floated" onclick="JSPC.infoFlyout.copyToEmailProgram('en')">--}%
+%{--                    ${message(code: 'mail.openExternalMailer')}--}%
+%{--                </button>--}%
             </div>
-
-        %{-- <button class="ui icon button right floated" onclick="JSPC.infoFlyout.copyToEmailProgram()">
-           ${message(code: 'menu.institutions.copy_emailaddresses_to_emailclient')}
-         </button>--}%
-
         </g:if>
 
     </div>
@@ -81,17 +69,11 @@
         copyToEmailProgram: function (cid) {
             window.location.href = "mailto:?&body=" + $('#' + cid).val();
         },
-        copyToClipboard: function (cid) {
-            let content = $('#' + cid);
+        copyToClipboard: function (lang) {
+            let content = $('#infoFlyout #mailText_' + lang);
             content.select();
             document.execCommand('copy');
             content.blur();
         }
     }
-
-    $('a.infoFlyout-language').on ('click', function(e) {
-        let lang = $(this).attr('data-lang');
-        $('.content_lang_de, .content_lang_en').addClass('hidden');
-        $('.content_lang_' + lang).removeClass('hidden');
-    });
 </laser:script>

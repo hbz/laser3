@@ -2,7 +2,7 @@
 <div id="infoFlyout" class="ui eight wide flyout"></div>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    $('a.infoFlyout-trigger').on ('click', function(e) {
+    $('.infoFlyout-trigger').on ('click', function(e) {
         e.preventDefault();
         $('#globalLoadingIndicator').show();
 

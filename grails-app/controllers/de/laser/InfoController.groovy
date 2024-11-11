@@ -16,7 +16,7 @@ class InfoController {
 
     @Secured(['ROLE_USER'])
     def flyout() {
-        log.debug('ajaxHtmlController.infoFlyout ' + params)
+        log.debug('InfoController.infoFlyout ' + params)
         Map<String, Object> result = [:]
 
         if (params.template == 'org') {

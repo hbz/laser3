@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore" %>
 
 <h1 class="ui header">
     ${message(code:'tipp.reportTitleToProvider.mailto')}
@@ -30,11 +30,11 @@
                     <g:textArea id="mailText_de" name="mailText" readonly="readonly" rows="30" cols="1">${mailText['de']}</g:textArea>
                 </div>
 
-                <button class="ui icon button right floated" onclick="JSPC.infoFlyout.copyToClipboard('de')">
-                    ${message(code: 'menu.institutions.copy_emailaddresses_to_clipboard')}
+                <button class="${Btn.SIMPLE} right floated" onclick="JSPC.infoFlyout.copyToClipboard('de')">
+                    ${message(code: 'mail.copyToClipboard')}
                 </button>
-                <button class="ui icon button right floated" onclick="JSPC.infoFlyout.copyToEmailProgram('de')">
-                    ${message(code: 'menu.institutions.copy_emailaddresses_to_emailclient')}
+                <button class="${Btn.SIMPLE} right floated" onclick="JSPC.infoFlyout.copyToEmailProgram('de')">
+                    ${message(code: 'mail.openExternalMailer')}
                 </button>
             </div>
             <div class="content_lang_en hidden">
@@ -47,11 +47,11 @@
                     <g:textArea id="mailText_en" name="mailText" readonly="readonly" rows="30" cols="1">${mailText['en']}</g:textArea>
                 </div>
 
-                <button class="ui icon button right floated" onclick="JSPC.infoFlyout.copyToClipboard('en')">
-                    ${message(code: 'menu.institutions.copy_emailaddresses_to_clipboard')}
+                <button class="${Btn.SIMPLE} right floated" onclick="JSPC.infoFlyout.copyToClipboard('en')">
+                    ${message(code: 'mail.copyToClipboard')}
                 </button>
-                <button class="ui icon button right floated" onclick="JSPC.infoFlyout.copyToEmailProgram('en')">
-                    ${message(code: 'menu.institutions.copy_emailaddresses_to_emailclient')}
+                <button class="${Btn.SIMPLE} right floated" onclick="JSPC.infoFlyout.copyToEmailProgram('en')">
+                    ${message(code: 'mail.openExternalMailer')}
                 </button>
             </div>
 
@@ -80,10 +80,4 @@
             content.blur();
         }
     }
-
-    $('a.infoFlyout-language').on ('click', function(e) {
-        let lang = $(this).attr('data-lang');
-        $('.content_lang_de, .content_lang_en').addClass('hidden');
-        $('.content_lang_' + lang).removeClass('hidden');
-    });
 </laser:script>

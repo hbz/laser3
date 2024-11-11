@@ -1,4 +1,4 @@
-<%@ page import="de.laser.addressbook.Person; de.laser.addressbook.Contact; de.laser.CustomerTypeService; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.storage.BeanStore; de.laser.Task; de.laser.remote.ApiSource; grails.plugin.springsecurity.SpringSecurityUtils;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.addressbook.Person; de.laser.addressbook.Contact; de.laser.CustomerTypeService; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.storage.BeanStore; de.laser.Task; de.laser.remote.ApiSource; grails.plugin.springsecurity.SpringSecurityUtils;" %>
 <laser:serviceInjection />
 
 <g:if test="${contextService.isInstEditor()}">
@@ -15,13 +15,6 @@
                 ${message(code:'tipp.reportTitleToProvider.proHint')}
             </ui:msg>
 
-%{--            <ui:msg class="info" showIcon="true">--}%
-%{--                ${message(code:'tipp.reportTitleToProvider.info1')}--}%
-%{--                <a href="${'mailto:' + ttm_mailStruct['mailto'] + '?subject=' + ttm_mailStruct['subject'] + '&cc=' + ttm_mailStruct['mailcc'] + '&body=' +  ttm_mailStruct['body']}" class="js-no-wait-wheel">${message(code:'tipp.reportTitleToProvider.mailto')}</a>--}%
-%{--                <br />--}%
-%{--                ${message(code:'tipp.reportTitleToProvider.proHint')}--}%
-%{--            </ui:msg>--}%
-
         </g:if>%{-- BASIC --}%
         <g:elseif test="${contextService.getOrg().isCustomerType_Pro()}">
 
@@ -33,37 +26,16 @@
                 <br />
 
                 <g:if test="${currentTasks.cmbTaskInstanceList}">
-                    <g:if test="${currentTasks.cmbTaskInstanceList}">
                         <br />
                         ${message(code:'tipp.reportTitleToProvider.info2')} <br />
 
                         <g:each in="${currentTasks.myTaskInstanceList.sort{ it.dateCreated }.reverse()}" var="tt">
+                            <i class="${Icon.TASK}"></i>
                             <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tt.dateCreated}"/>
                             <a href="#" onclick="JSPC.app.editTask(${tt.id});">${tt.title}</a> <br />
                         </g:each>
-                    </g:if>
                 </g:if>
             </ui:msg>
-
-%{--            <ui:msg class="info" showIcon="true">--}%
-%{--                ${message(code:'tipp.reportTitleToProvider.info1')}--}%
-%{--                <br />--}%
-%{--                <a href="${'mailto:' + ttm_mailStruct['mailto'] + '?subject=' + ttm_mailStruct['subject'] + '&cc=' + ttm_mailStruct['mailcc'] + '&body=' +  ttm_mailStruct['body']}" class="js-no-wait-wheel">${message(code:'tipp.reportTitleToProvider.mailto')}</a>--}%
-%{--                und <a href="#modalCreateTask" data-ui="modal">erstellen Sie sich ggf. eine Aufgabe</a> zur Erinnerung.--}%
-%{--                <br />--}%
-
-%{--                <g:if test="${currentTasks.cmbTaskInstanceList}">--}%
-%{--                    <g:if test="${currentTasks.cmbTaskInstanceList}">--}%
-%{--                        <br />--}%
-%{--                        ${message(code:'tipp.reportTitleToProvider.info2')} <br />--}%
-
-%{--                        <g:each in="${currentTasks.myTaskInstanceList.sort{ it.dateCreated }.reverse()}" var="tt">--}%
-%{--                            <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tt.dateCreated}"/>--}%
-%{--                            <a href="#" onclick="JSPC.app.editTask(${tt.id});">${tt.title}</a> <br />--}%
-%{--                        </g:each>--}%
-%{--                    </g:if>--}%
-%{--                </g:if>--}%
-%{--            </ui:msg>--}%
 
         </g:elseif>%{-- PRO --}%
 

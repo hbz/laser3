@@ -849,7 +849,7 @@ class OrganisationController  {
         Map<String,Object> info = [:]
         String view = ''
 
-        if (! result) { 
+        if (! result) {
             response.sendError(401); return
         }
 
