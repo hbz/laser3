@@ -193,11 +193,11 @@
             <g:if test="${contextService.getOrg().isCustomerType_Consortium_Pro() && showConsortiaFunctions && subscription.instanceOf == null }">
                 <ui:actionsDropdownItem controller="survey" action="addSubtoSubscriptionSurvey"
                                                params="${[sub:params.id]}" text="${message(code:'createSubscriptionSurvey.label')}" />
-                <g:if test="${titleManipulationInherited}">
-                    <ui:actionsDropdownItem controller="survey" action="addSubtoIssueEntitlementsSurvey" params="${[sub:params.id]}" text="${message(code:'createIssueEntitlementsSurvey.label')}" />
+                <g:if test="${titleManipulationBlocked}">
+                    <ui:actionsDropdownItemDisabled message="createIssueEntitlementsSurvey.label" tooltip="${message(code: 'subscription.details.addEntitlements.holdingInherited')}" />
                 </g:if>
                 <g:else>
-                    <ui:actionsDropdownItemDisabled message="createIssueEntitlementsSurvey.label" tooltip="${message(code: 'subscription.details.addEntitlements.holdingInherited')}" />
+                    <ui:actionsDropdownItem controller="survey" action="addSubtoIssueEntitlementsSurvey" params="${[sub:params.id]}" text="${message(code:'createIssueEntitlementsSurvey.label')}" />
                 </g:else>
                 <div class="divider"></div>
             </g:if>
