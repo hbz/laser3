@@ -1312,7 +1312,7 @@ class SubscriptionController {
         ctx.contextService.isInstUser_denySupport()
     })
     def addEntitlements() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.addEntitlements(params)
+        Map<String,Object> ctrlResult = subscriptionService.addEntitlements(params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if(!ctrlResult.result) {
                 response.sendError(401)
@@ -1323,6 +1323,12 @@ class SubscriptionController {
                 redirect action: 'show', params: [id: params.id]
             }
         }
+        else {
+            flash.message = ctrlResult.result.message
+            flash.error = ctrlResult.result.error
+            ctrlResult.result
+        }
+        /*
         else {
             String filename = "${escapeService.escapeString(ctrlResult.result.subscription.dropdownNamingConvention())}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
             Map<String, Object> configMap = params.clone()
@@ -1377,6 +1383,7 @@ class SubscriptionController {
                 ctrlResult.result
             }
         }
+        */
     }
 
     /**
