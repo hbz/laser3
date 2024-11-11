@@ -31,7 +31,7 @@
 
                         <g:each in="${currentTasks.myTaskInstanceList.sort{ it.dateCreated }.reverse()}" var="tt">
                             <i class="${Icon.TASK}"></i>
-                            <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tt.dateCreated}"/>
+                            <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tt.dateCreated}"/> -
                             <a href="#" onclick="JSPC.app.editTask(${tt.id});">${tt.title}</a> <br />
                         </g:each>
                 </g:if>

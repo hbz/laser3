@@ -5,6 +5,7 @@ import de.laser.addressbook.Person
 import de.laser.ctrl.OrganisationControllerService
 import de.laser.remote.ApiSource
 import de.laser.storage.BeanStore
+import de.laser.storage.RDStore
 import de.laser.wekb.TitleInstancePackagePlatform
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -28,7 +29,14 @@ class InfoController {
             TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(params.id_tipp)
 
             ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-            List<Person> ppList = BeanStore.getProviderService().getContactPersonsByFunctionType(tipp.platform.provider, BeanStore.getContextService().getOrg(), true, null)
+
+            List<Person> ppList = BeanStore.getProviderService().getContactPersonsByFunctionType(
+                    tipp.platform.provider, BeanStore.getContextService().getOrg(), false, RDStore.PRS_FUNC_SERVICE_SUPPORT
+            )
+            if (!ppList) {
+                ppList = BeanStore.getProviderService().getContactPersonsByFunctionType(
+                        tipp.platform.provider, BeanStore.getContextService().getOrg(), false, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS)
+            }
             List<Contact> ccList = ppList.contacts.flatten().findAll { it.contentType?.value in ['E-Mail', 'Mail'] } as List<Contact>
 
             result = [
