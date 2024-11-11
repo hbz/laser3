@@ -1,5 +1,5 @@
 
-<div id="infoFlyout" class="ui ten wide flyout"></div>
+<div id="infoFlyout" class="ui eight wide flyout"></div>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('a.infoFlyout-trigger').on ('click', function(e) {
@@ -16,9 +16,12 @@
             data.id_subscription = cell.attr('data-sub')
             data.id_surveyConfig = cell.attr('data-surveyConfig')
         }
+        else if (data.template == 'reportTitleToProvider') {
+            data.id_tipp          = cell.attr('data-tipp')
+        }
 
         $.ajax ({
-            url: "<g:createLink controller="ajaxHtml" action="infoFlyout"/>",
+            url: "<g:createLink controller="info" action="flyout"/>",
             data: data
         }).done (function (response) {
             $('#infoFlyout').html (response)

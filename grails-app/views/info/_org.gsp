@@ -10,7 +10,6 @@
 </h1>
 
 <div class="content">
-
     <div class="ui form">
 
 %{--        <g:if test="${actionName == 'mailInfos' && controllerName == 'organisation'}">--}%
@@ -25,19 +24,8 @@
 %{--                </div>--}%
 %{--            </g:form>--}%
 %{--        </g:if>--}%
-%{--        <g:else>--}%
-            <div class="field">
-                <label>${message(code: 'profile.language')}:</label>
-                <div>
-                    <a href="#" class="ui button infoFlyout-language" data-lang="${RDStore.LANGUAGE_DE.value}">
-                        ${message(code: 'default.language.label')}
-                    </a>
-                    <a href="#" class="ui button infoFlyout-language" data-lang="${RDStore.LANGUAGE_EN.value}">
-                        ${message(code: 'default.english.label')}
-                    </a>
-                </div>
-            </div>
-%{--        </g:else>--}%
+
+        <g:render template="flyoutLanguageSelector" />
 
         <g:if test="${mailAddressOfProvider}">
             <div class="field">
@@ -61,7 +49,7 @@
             <div class="content_lang_de">
                 <div class="field">
                     <label for="mailText">${message(code: 'mail.org.mailInfos')} (${orgInstance.name})</label>
-                    <g:textArea id="mailText_de" name="mailText" rows="30" cols="1" style="width: 100%;">${mailText['de']}</g:textArea>
+                    <g:textArea id="mailText_de" name="mailText" rows="30" cols="1">${mailText['de']}</g:textArea>
                 </div>
 
                 <button class="ui icon button right floated" onclick="JSPC.infoFlyout.copyToClipboard('mailText_de')">
@@ -71,7 +59,7 @@
             <div class="content_lang_en hidden">
                 <div class="field">
                     <label for="mailText">${message(code: 'mail.org.mailInfos')} (${orgInstance.name})</label>
-                    <g:textArea id="mailText_en" name="mailText" rows="30" cols="1" style="width: 100%;">${mailText['en']}</g:textArea>
+                    <g:textArea id="mailText_en" name="mailText" rows="30" cols="1">${mailText['en']}</g:textArea>
                 </div>
 
                 <button class="ui icon button right floated" onclick="JSPC.infoFlyout.copyToClipboard('mailText_en')">
@@ -106,5 +94,4 @@
         $('.content_lang_de, .content_lang_en').addClass('hidden');
         $('.content_lang_' + lang).removeClass('hidden');
     });
-
 </laser:script>

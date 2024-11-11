@@ -920,7 +920,7 @@
     </aside>
 </div>
 
-<laser:render template="/templates/info/flyoutWrapper"/>
+<laser:render template="/info/flyoutWrapper"/>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.createContact').click(function() {

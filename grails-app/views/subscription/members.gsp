@@ -349,7 +349,7 @@
         });
     </laser:script>
 
-<laser:render template="/templates/info/flyoutWrapper"/>
+<laser:render template="/info/flyoutWrapper"/>
 
 <g:render template="/clickMe/export/js"/>
 

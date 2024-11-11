@@ -289,5 +289,5 @@
 <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}" max="${max}" total="${totalCount}" />
 
 <g:if test="${'showInfoFlyout' in tableConfig}">
-    <laser:render template="/templates/info/flyoutWrapper"/>
+    <laser:render template="/info/flyoutWrapper"/>
 </g:if>
