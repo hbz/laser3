@@ -1859,15 +1859,16 @@ class SubscriptionService {
                         subscriptions << result.subscription
                     }
                     if(subscriptions) {
-                        issueEntitlementConfigMap.tippIDs = tippIDs
-                        issueEntitlementConfigMap.hasPerpetualAccess = RDStore.YN_YES.id
-                        Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetSQLQuery(issueEntitlementConfigMap)
                         Set<Long> sourceIEs = [], sourceTIPPs = []
-                        List<GroovyRowResult> rows = batchQueryService.longArrayQuery(queryPart2.query, queryPart2.arrayParams, queryPart2.queryParams)
+                        List rows
+                        if(result.surveyConfig.pickAndChoosePerpetualAccess) {
+                            rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, tipp.id as tipp_id) from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subs) and ie.perpetualAccessBySub in (:subs) and ie.status = :current and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) group by tipp.hostPlatformURL, tipp.id, ie.id', [subs: subscriptions, current: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
+                        }
+                        else {
+                            rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, ie.tipp.id as tipp_id) from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)', [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
+                        }
                         sourceIEs.addAll(rows["ie_id"])
                         sourceTIPPs.addAll(rows["tipp_id"])
-                        List<GroovyRowResult> ptRows = batchQueryService.longArrayQuery("select pt_ie_fk from permanent_title where pt_tipp_fk = any(:tippIDs) and pt_owner_fk = any(:subscribers)", [tippIDs: tippIDs, subscribers: subscriptions.collect { Subscription s -> s.getSubscriberRespConsortia().id }])
-                        sourceIEs = sourceIEs.intersect(ptRows["pt_ie_fk"])
                         result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs.drop(result.offset).take(result.max), [sort: result.sort, order: result.order]) : []
                         result.num_rows = sourceIEs.size()
                         Map<String, Object> listPriceSums = issueEntitlementService.calculateListPriceSumsForTitles(sourceTIPPs)
@@ -2187,12 +2188,14 @@ class SubscriptionService {
                             }
                             Set<Long> sourceTIPPs = []
                             if(subscriptions) {
-                                issueEntitlementConfigMap.tippIDs = tippIDs
-                                Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetSQLQuery(issueEntitlementConfigMap)
-                                List<GroovyRowResult> rows = batchQueryService.longArrayQuery(queryPart2.query, queryPart2.arrayParams, queryPart2.queryParams)
+                                List rows
+                                if(result.surveyConfig.pickAndChoosePerpetualAccess) {
+                                    rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, tipp.id as tipp_id) from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subs) and ie.perpetualAccessBySub in (:subs) and ie.status = :current and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) group by tipp.hostPlatformURL, tipp.id, ie.id', [subs: subscriptions, current: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
+                                }
+                                else {
+                                    rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, ie.tipp.id as tipp_id) from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)', [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
+                                }
                                 sourceTIPPs.addAll(rows["tipp_id"])
-                                List<GroovyRowResult> ptRows = batchQueryService.longArrayQuery("select pt_tipp_fk from permanent_title where pt_tipp_fk = any(:tippIDs) and pt_owner_fk = any(:subscribers)", [tippIDs: tippIDs, subscribers: subscriptions.collect { Subscription s -> s.getSubscriberRespConsortia().id }])
-                                sourceTIPPs = sourceTIPPs.intersect(ptRows["pt_tipp_fk"])
                             }
                             exportData = exportService.generateTitleExport([format: params.exportConfig, tippIDs: sourceTIPPs])
                             break
