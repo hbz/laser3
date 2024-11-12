@@ -41,7 +41,7 @@
         </p>
             <%
                 String templatePath = 'LizenzImportVollnutzerBeispiel.csv'
-                if(institution.isCustomerType_Consortium()) {
+                if(contextService.getOrg().isCustomerType_Consortium()) {
                     templatePath = 'bulk_load_subscription_records_template.csv'
                 }
             %>

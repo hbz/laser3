@@ -2,7 +2,7 @@
 <laser:htmlStart message="myinst.financeImport.post.title" serviceInjection="true"/>
 
 <ui:breadcrumbs>
-    <ui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+    <ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}" />
     <ui:crumb message="menu.institutions.financeImport" class="active"/>
 </ui:breadcrumbs>
 <br />

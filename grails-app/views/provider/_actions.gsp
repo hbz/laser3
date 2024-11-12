@@ -41,7 +41,7 @@
 </g:else>
 
 <g:if test="${contextService.isInstEditor()}">
-    <laser:render template="/templates/sidebar/modals" model="${[tmplConfig: [ownobj: provider, owntp: 'provider', institution: institution]]}" />
+    <laser:render template="/templates/sidebar/modals" model="${[tmplConfig: [ownobj: provider, owntp: 'provider', institution: contextService.getOrg()]]}" />
 </g:if>
 
 

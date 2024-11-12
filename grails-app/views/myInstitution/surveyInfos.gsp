@@ -22,7 +22,7 @@
 <ui:messages data="${flash}"/>
 
 <br/>
-<g:if test="${surveyConfig.isResultsSetFinishByOrg(institution)}">
+<g:if test="${surveyConfig.isResultsSetFinishByOrg(contextService.getOrg())}">
     <ui:msg class="success" showIcon="true" hideClose="true">
                 <%-- <g:message code="surveyInfo.finishOrSurveyCompleted"/> --%>
                 <g:message

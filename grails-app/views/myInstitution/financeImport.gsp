@@ -1,9 +1,9 @@
 <%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue" %>
 
-<laser:htmlStart message="myinst.financeImport.pageTitle" />
+<laser:htmlStart message="myinst.financeImport.pageTitle" serviceInjection="true"/>
 
   <ui:breadcrumbs>
-      <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
+      <ui:crumb controller="org" action="show" id="${contextService.getOrg().id}" text="${contextService.getOrg().getDesignation()}"/>
     <ui:crumb message="menu.institutions.financeImport" class="active"/>
   </ui:breadcrumbs>
 

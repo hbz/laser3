@@ -672,7 +672,7 @@
             </g:if>
             <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support() || contextService.getOrg().isCustomerType_Inst_Pro()}">
                 <div id="new-dynamic-properties-block">
-                    <laser:render template="properties" model="${[ provider: provider, authOrg: formalOrg, contextOrg: institution ]}"/>
+                    <laser:render template="properties" model="${[ provider: provider ]}"/>
                 </div><!-- #new-dynamic-properties-block -->
             </g:if>
 
@@ -703,10 +703,10 @@
                                 </div>
                             </div>
                         </div>
-                        <g:if test="${PersonRole.executeQuery('select pr from Person p join p.roleLinks pr where pr.provider = :provider and ((p.isPublic = false and p.tenant = :ctx) or p.isPublic = true)', [provider: provider, ctx: institution]) ||
-                                Address.executeQuery('select a from Address a where a.provider = :provider and (a.tenant = :ctx or a.tenant = null)', [provider: provider, ctx: institution])}">
+                        <g:if test="${PersonRole.executeQuery('select pr from Person p join p.roleLinks pr where pr.provider = :provider and ((p.isPublic = false and p.tenant = :ctx) or p.isPublic = true)', [provider: provider, ctx: contextService.getOrg()]) ||
+                                Address.executeQuery('select a from Address a where a.provider = :provider and (a.tenant = :ctx or a.tenant = null)', [provider: provider, ctx: contextService.getOrg()])}">
                             <table class="ui compact table">
-                                <g:set var="providerContacts" value="${providerService.getContactPersonsByFunctionType(provider, institution, true, null)}"/>
+                                <g:set var="providerContacts" value="${providerService.getContactPersonsByFunctionType(provider, contextService.getOrg(), true, null)}"/>
                                     <tr>
                                         <td>
                                             <g:if test="${providerContacts}">
@@ -758,7 +758,7 @@
                                                 addresses.add(a)
                                                 publicTypeAddressMap.put(typeName, addresses)
                                             }
-                                            else if(a.tenant.id == institution.id) {
+                                            else if(a.tenant.id == contextService.getOrg().id) {
                                                 List addresses = privateTypeAddressMap.get(typeName) ?: []
                                                 addresses.add(a)
                                                 privateTypeAddressMap.put(typeName, addresses)
@@ -809,7 +809,7 @@
                     </div>
                 </div>
             </div>
-            <g:if test="${institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()}">
+            <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro()}">
                 <div id="container-contacts">
                     <div class="ui card">
                         <div class="content">
@@ -880,7 +880,7 @@
                                                                         switch(respRef[0]) {
                                                                             case 'sub': Subscription s = Subscription.get(respRef[1])
                                                                                 if(s.status == RDStore.SUBSCRIPTION_CURRENT) {
-                                                                                    if(institution.isCustomerType_Consortium()) {
+                                                                                    if(contextService.getOrg().isCustomerType_Consortium()) {
                                                                                         if(!s.instanceOf)
                                                                                             respObjects << s
                                                                                     }
@@ -889,7 +889,7 @@
                                                                                 break
                                                                             case 'lic': License l = License.get(respRef[1])
                                                                                 if(l.status == RDStore.LICENSE_CURRENT) {
-                                                                                    if(institution.isCustomerType_Consortium()) {
+                                                                                    if(contextService.getOrg().isCustomerType_Consortium()) {
                                                                                         if (!l.instanceOf)
                                                                                             respObjects << l
                                                                                     }

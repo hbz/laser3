@@ -4,7 +4,7 @@
     <g:set var="entityName" value="${message(code: 'org.label')}" />
 
     <ui:breadcrumbs>
-        <ui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+        <ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}" />
         <ui:crumb message="menu.institutions.manage_consortia" controller="myInstitution" action="manageMembers"/>
         <ui:crumb message="menu.institutions.add_consortia_members" class="active" />
     </ui:breadcrumbs>

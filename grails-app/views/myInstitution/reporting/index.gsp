@@ -4,7 +4,7 @@
 </laser:htmlStart>
 
         <ui:breadcrumbs>
-            <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
+            <ui:crumb controller="org" action="show" id="${contextService.getOrg().id}" text="${contextService.getOrg().getDesignation()}"/>
             <ui:crumb text="${message(code:'myinst.reporting')}" class="active" />
         </ui:breadcrumbs>
 

@@ -1,9 +1,9 @@
 <%@ page import="de.laser.ui.Icon; de.laser.I10nTranslation; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory; grails.plugin.springsecurity.SpringSecurityUtils" %>
 
-<laser:htmlStart message="refdata.plural" />
+<laser:htmlStart message="refdata.plural" serviceInjection="true"/>
 
     <ui:breadcrumbs>
-        <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
+        <ui:crumb controller="org" action="show" id="${contextService.getOrg().id}" text="${contextService.getOrg().getDesignation()}"/>
         <ui:crumb message="menu.institutions.manage_props" class="active" />
     </ui:breadcrumbs>
 

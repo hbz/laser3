@@ -2,7 +2,7 @@
 <laser:htmlStart message="menu.institutions.private_props" serviceInjection="true"/>
 
     <ui:breadcrumbs>
-        <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
+        <ui:crumb controller="org" action="show" id="${contextService.getOrg().id}" text="${contextService.getOrg().getDesignation()}"/>
         <ui:crumb message="menu.institutions.manage_props" class="active" />
     </ui:breadcrumbs>
 
@@ -209,7 +209,7 @@
                     <%
                         Map<String,Object> availablePrivateDescr = [:]
                         Set<String> availablePrivDescs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR
-                        if (institution.isCustomerType_Inst_Pro()) {
+                        if (contextService.getOrg().isCustomerType_Inst_Pro()) {
                             availablePrivDescs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR - PropertyDefinition.SVY_PROP
                         }
                         availablePrivDescs.each { String pd ->

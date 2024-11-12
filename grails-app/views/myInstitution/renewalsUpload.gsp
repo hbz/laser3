@@ -1,8 +1,8 @@
 <%@ page import="de.laser.ui.Btn" %>
-<laser:htmlStart message="myinst.renewalUpload.label" />
+<laser:htmlStart message="myinst.renewalUpload.label" serviceInjection="true"/>
 
   <ui:breadcrumbs>
-    <ui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+    <ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}" />
     <ui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label" />
     <ui:crumb message="menu.institutions.imp_renew" class="active" />
   </ui:breadcrumbs>
@@ -33,7 +33,7 @@
         <div>
         <hr />
             <g:if test="${entitlements}">
-                ${message(code:'myinst.renewalUpload.upload.note', args:[institution.name])}<br />
+                ${message(code:'myinst.renewalUpload.upload.note', args:[contextService.getOrg().name])}<br />
                 <table class="ui celled la-js-responsive-table la-table table">
                     <tbody>
                     <input type="hidden" name="subscription.copy_docs" value="${permissionInfo?.sub_id}"/>
