@@ -1376,7 +1376,7 @@
 </g:form>
 
 
-<laser:render template="/templates/info/flyoutWrapper"/>
+<laser:render template="/info/flyoutWrapper"/>
 
 <laser:script file="${this.getGroovyPageFileName()}">
 <g:if test="${showCheckboxForParticipantsHasAccess || showCheckboxForParticipantsHasNoAccess}">

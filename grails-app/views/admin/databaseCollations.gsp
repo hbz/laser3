@@ -59,9 +59,11 @@
                     <g:else>
                         <td>
                             <g:if test="${row.collation_name == DatabaseInfo.DE_U_CO_PHONEBK_X_ICU}">
+%{--                                <i class="flag small de"></i>--}%
                                 <img class="mini-image" src="${resource(dir:'images', file:'flags/de.svg', absolute:true)}" alt="[DE]" />
                             </g:if>
                             <g:elseif test="${row.collation_name == DatabaseInfo.EN_US_U_VA_POSIX_X_ICU}">
+%{--                                <i class="flag small us"></i>--}%
                                 <img class="mini-image" src="${resource(dir:'images', file:'flags/us.svg', absolute:true)}" alt="[EN]" />
                             </g:elseif>
                             <g:else>

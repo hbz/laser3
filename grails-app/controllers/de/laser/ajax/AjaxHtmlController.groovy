@@ -1440,15 +1440,4 @@ class AjaxHtmlController {
         render template: '/templates/documents/preview', model: result
     }
 
-    @Secured(['ROLE_USER'])
-    def infoFlyout() {
-        log.debug('ajaxHtmlController.infoFlyout ' + params)
-        Map<String, Object> result = [:]
-
-        if (params.template == 'org') {
-            result = organisationControllerService.mailInfos(null, params)
-        }
-
-        render template: '/templates/info/' + params.template, model: result
-    }
 }

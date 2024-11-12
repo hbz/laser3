@@ -1122,5 +1122,5 @@
 </g:if>
 
 <g:if test="${tmplConfigShow?.contains('mailInfos')}">
-    <laser:render template="/templates/info/flyoutWrapper"/>
+    <laser:render template="/info/flyoutWrapper"/>
 </g:if>

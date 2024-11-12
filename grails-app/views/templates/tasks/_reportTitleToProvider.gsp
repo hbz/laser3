@@ -1,48 +1,16 @@
-<%@ page import="de.laser.addressbook.Person; de.laser.addressbook.Contact; de.laser.CustomerTypeService; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.storage.BeanStore; de.laser.Task; de.laser.remote.ApiSource; grails.plugin.springsecurity.SpringSecurityUtils;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.addressbook.Person; de.laser.addressbook.Contact; de.laser.CustomerTypeService; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.storage.BeanStore; de.laser.Task; de.laser.remote.ApiSource; grails.plugin.springsecurity.SpringSecurityUtils;" %>
 <laser:serviceInjection />
 
 <g:if test="${contextService.isInstEditor()}">
 
     <g:if test="${tipp.platform?.provider}">
-        <%
-            ApiSource apiSource  = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-            List<Person> ppList  = BeanStore.getProviderService().getContactPersonsByFunctionType( tipp.platform.provider, BeanStore.getContextService().getOrg(), true, null )
-            List<Contact> ccList = ppList.contacts.flatten().findAll{ it.contentType?.value in ['E-Mail', 'Mail'] } as List<Contact>
-
-            Map<String, String> ttm_mailStruct = [
-                    mailto: ccList.collect{ it.content }.sort().join(','),
-                    mailcc: BeanStore.getContextService().getUser().email,
-                    subject: 'Fehlerhafte Titel-Daten in der We:kb',
-                    body: """
-Sehr geehrte Damen und Herren,
-%0D%0A
-%0D%0A
-bei einem We:kb-Titel sind mir unvollständige/fehlerhafte Informationen aufgefallen:
-%0D%0A
-%0D%0A
-<bitte ergänzen>
-%0D%0A
-%0D%0A
-Betroffen ist das folgende Objekt:
-%0D%0A
-%0D%0A
-${tipp.name}
-%0D%0A
-${apiSource.baseUrl + '/resource/show/' + tipp.gokbId}
-%0D%0A
-%0D%0A
-Vielen Dank
-"""
-            ]
-
-            Map<String, Object> currentTasks = taskService.getTasks(BeanStore.getContextService().getUser(), tipp)
-        %>
+        <g:set var="currentTasks" value="${taskService.getTasks(BeanStore.getContextService().getUser(), tipp)}" />
 
         <g:if test="${contextService.getOrg().isCustomerType_Basic()}">
 
             <ui:msg class="info" showIcon="true">
                 ${message(code:'tipp.reportTitleToProvider.info1')}
-                <a href="${'mailto:' + ttm_mailStruct['mailto'] + '?subject=' + ttm_mailStruct['subject'] + '&cc=' + ttm_mailStruct['mailcc'] + '&body=' +  ttm_mailStruct['body']}" class="js-no-wait-wheel">${message(code:'tipp.reportTitleToProvider.mailto')}</a>
+                <a href="#" class="infoFlyout-trigger" data-template="reportTitleToProvider" data-tipp="${tipp.id}">${message(code:'tipp.reportTitleToProvider.mailto')}</a>
                 <br />
                 ${message(code:'tipp.reportTitleToProvider.proHint')}
             </ui:msg>
@@ -53,20 +21,19 @@ Vielen Dank
             <ui:msg class="info" showIcon="true">
                 ${message(code:'tipp.reportTitleToProvider.info1')}
                 <br />
-                <a href="${'mailto:' + ttm_mailStruct['mailto'] + '?subject=' + ttm_mailStruct['subject'] + '&cc=' + ttm_mailStruct['mailcc'] + '&body=' +  ttm_mailStruct['body']}" class="js-no-wait-wheel">${message(code:'tipp.reportTitleToProvider.mailto')}</a>
+                <a href="#" class="infoFlyout-trigger" data-template="reportTitleToProvider" data-tipp="${tipp.id}">${message(code:'tipp.reportTitleToProvider.mailto')}</a>
                 und <a href="#modalCreateTask" data-ui="modal">erstellen Sie sich ggf. eine Aufgabe</a> zur Erinnerung.
                 <br />
 
                 <g:if test="${currentTasks.cmbTaskInstanceList}">
-                    <g:if test="${currentTasks.cmbTaskInstanceList}">
                         <br />
                         ${message(code:'tipp.reportTitleToProvider.info2')} <br />
 
                         <g:each in="${currentTasks.myTaskInstanceList.sort{ it.dateCreated }.reverse()}" var="tt">
-                            <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tt.dateCreated}"/>
+                            <i class="${Icon.TASK}"></i>
+                            <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tt.dateCreated}"/> -
                             <a href="#" onclick="JSPC.app.editTask(${tt.id});">${tt.title}</a> <br />
                         </g:each>
-                    </g:if>
                 </g:if>
             </ui:msg>
 
@@ -252,4 +219,6 @@ Vielen Dank
     </ui:modal>
 
     </g:if>%{-- PRO --}%
+
+    <laser:render template="/info/flyoutWrapper"/>
 </g:if>
