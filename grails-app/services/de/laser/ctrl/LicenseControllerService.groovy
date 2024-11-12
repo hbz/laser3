@@ -82,11 +82,11 @@ class LicenseControllerService {
 
         result.user            = contextService.getUser()
         result.institution     = contextService.getOrg()
-        result.contextOrg      = result.institution
-        result.contextCustomerType = result.institution.getCustomerType()
+        result.contextOrg      = contextService.getOrg()
+        result.contextCustomerType = contextService.getOrg().getCustomerType()
         result.license         = License.get(params.id)
         result.licenseInstance = result.license
-        result.inContextOrg = (result.institution.id in result.license.getAllLicensee().id || (!result.license.instanceOf && result.institution.id == result.license.getLicensingConsortium()?.id))
+        result.inContextOrg = (contextService.getOrg().id in result.license.getAllLicensee().id || (!result.license.instanceOf && contextService.getOrg().id == result.license.getLicensingConsortium()?.id))
 
         if(result.license.instanceOf)
             result.auditConfigs = auditService.getAllAuditConfigs(result.license.instanceOf)
@@ -112,7 +112,7 @@ class LicenseControllerService {
         }
 
         Map notNeededOnlySetCloneParams = setSubscriptionFilterData(clone)
-        if(result.license._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.license.getLicensingConsortium().id == result.institution.id) {
+        if(result.license._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.license.getLicensingConsortium().id == contextService.getOrg().id) {
             Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
             Map<String,Object> queryParams = [lic:result.license, subscriberRoleTypes:subscriberRoleTypes, linkType:RDStore.LINKTYPE_LICENSE]
             String whereClause = ""
@@ -134,12 +134,12 @@ class LicenseControllerService {
             if (! result.license.isVisibleBy(result.user)) {
                 log.debug( "--- NOT VISIBLE ---")
                 //perform further check because it may be linked to a subscription and the linking is missing ...
-                List<Links> subLinks = Links.executeQuery('select li from Links li where li.sourceLicense = :lic and li.destinationSubscription in (select oo.sub from OrgRole oo where oo.org = :ctx)', [ctx: result.institution, lic: result.license])
+                List<Links> subLinks = Links.executeQuery('select li from Links li where li.sourceLicense = :lic and li.destinationSubscription in (select oo.sub from OrgRole oo where oo.org = :ctx)', [ctx: contextService.getOrg(), lic: result.license])
                 if(subLinks) {
                     //substitute missing link upon call
                     log.debug("--- SUBSTITUTING ---")
-                    OrgRole substitute = new OrgRole(org: result.institution, lic: result.license)
-                    if(result.institution.isCustomerType_Consortium()) {
+                    OrgRole substitute = new OrgRole(org: contextService.getOrg(), lic: result.license)
+                    if(contextService.getOrg().isCustomerType_Consortium()) {
                         substitute.roleType = RDStore.OR_LICENSING_CONSORTIUM
                     }
                     else {

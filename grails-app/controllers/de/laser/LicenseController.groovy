@@ -84,12 +84,12 @@ class LicenseController {
 
             // create mandatory LicensePrivateProperties if not existing
 
-            List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.LIC_PROP, true, result.institution)
+            List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.LIC_PROP, true, contextService.getOrg())
 
             mandatories.each { pd ->
                 //TODO [ticket=2436]
-                if (!LicenseProperty.findWhere(owner: result.license, type: pd, tenant: result.institution, isPublic: false)) {
-                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.license, pd, result.institution)
+                if (!LicenseProperty.findWhere(owner: result.license, type: pd, tenant: contextService.getOrg(), isPublic: false)) {
+                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.license, pd, contextService.getOrg())
 
                     if (newProp.hasErrors()) {
                         log.error(newProp.errors.toString())
@@ -105,7 +105,7 @@ class LicenseController {
                 if(childLics) {
                     String localizedName = LocaleUtils.getLocalizedAttributeName('name')
                     String query = "select lp.type from LicenseProperty lp where lp.owner in (:licenseSet) and lp.instanceOf = null and lp.tenant = :context order by lp.type.${localizedName} asc"
-                    Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery( query, [licenseSet:childLics,context:result.institution] )
+                    Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery( query, [licenseSet:childLics, context:contextService.getOrg()] )
                     result.memberProperties = memberProperties
                 }
             }
@@ -117,7 +117,7 @@ class LicenseController {
             // -- private properties
 
             result.modalPrsLinkRole = RDStore.PRS_RESP_SPEC_LIC_EDITOR
-            result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(result.institution)
+            result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
 
             result.visiblePrsLinks = []
 
@@ -146,7 +146,7 @@ class LicenseController {
         result.benchMark = bm
         switch(params.export) {
             case 'onix':
-                String xmlString = licenseService.generateOnixPLDocument(result.license, result.institution)
+                String xmlString = licenseService.generateOnixPLDocument(result.license, contextService.getOrg())
                 if(xmlString) {
                     response.setContentType("application/xml")
                     response.setHeader("Content-disposition", "attachment;filename=\"${escapeService.escapeString(result.license.reference)}\"_ONIX-PL.xml")
@@ -154,15 +154,15 @@ class LicenseController {
                 }
                 break
             case 'pdf':
-                result.availablePropDefGroups = PropertyDefinitionGroup.getAvailableGroups(result.institution, License.class.name)
-                result.allPropDefGroups = result.license.getCalculatedPropDefGroups(result.institution)
+                result.availablePropDefGroups = PropertyDefinitionGroup.getAvailableGroups(contextService.getOrg(), License.class.name)
+                result.allPropDefGroups = result.license.getCalculatedPropDefGroups(contextService.getOrg())
                 result.prop_desc = PropertyDefinition.LIC_PROP
                 result.memberLicenses = License.findAllByInstanceOf(result.license)
-                result.linkedSubscriptions = Subscription.executeQuery('select sub from Links li join li.destinationSubscription sub join sub.orgRelations oo where li.sourceLicense = :lic and li.linkType = :linkType and sub.status = :current and oo.org = :context', [lic: result.license, linkType: RDStore.LINKTYPE_LICENSE, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])
+                result.linkedSubscriptions = Subscription.executeQuery('select sub from Links li join li.destinationSubscription sub join sub.orgRelations oo where li.sourceLicense = :lic and li.linkType = :linkType and sub.status = :current and oo.org = :context', [lic: result.license, linkType: RDStore.LINKTYPE_LICENSE, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()])
                 result.entry = result.license
                 result.tasks = taskService.getTasksForExport((User) result.user, (License) result.license)
-                result.documents = docstoreService.getDocumentsForExport((Org) result.institution, (License) result.license)
-                result.notes = docstoreService.getNotesForExport((Org) result.institution, (License) result.license)
+                result.documents = docstoreService.getDocumentsForExport(contextService.getOrg(), (License) result.license)
+                result.notes = docstoreService.getNotesForExport(contextService.getOrg(), (License) result.license)
 
                 byte[] pdf = PdfUtils.getPdf(
                         result,
@@ -276,13 +276,13 @@ class LicenseController {
         Set<Subscription> allSubscriptions = []
         String action
         if(result.license.instanceOf) {
-            result.putAll(subscriptionService.getMySubscriptionsForConsortia(params, result.user, result.institution, result.tableConfig))
+            result.putAll(subscriptionService.getMySubscriptionsForConsortia(params, result.user, contextService.getOrg(), result.tableConfig))
             allSubscriptions.addAll(result.entries.collect { row -> (Subscription) row[0] })
             result.allSubscriptions = allSubscriptions
             action = 'linkMemberLicensesToSubs'
         }
         else {
-            result.putAll(subscriptionService.getMySubscriptions(params, result.user, result.institution))
+            result.putAll(subscriptionService.getMySubscriptions(params, result.user, contextService.getOrg()))
             allSubscriptions.addAll(result.allSubscriptions)
             action = 'linkLicenseToSubs'
         }
@@ -292,11 +292,11 @@ class LicenseController {
             if(params.subscription == "all") {
                 allSubscriptions.each { Subscription s->
                     boolean linkPossible
-                    if(result.institution.isCustomerType_Inst()) {
+                    if(contextService.getOrg().isCustomerType_Inst()) {
                         linkPossible = s._getCalculatedType() == CalculatedType.TYPE_LOCAL
                     }
                     else {
-                        linkPossible = result.institution.isCustomerType_Consortium()
+                        linkPossible = contextService.getOrg().isCustomerType_Consortium()
                     }
                     if(linkPossible)
                         subscriptionService.setOrgLicRole(s,newLicense,unlink)
@@ -327,7 +327,7 @@ class LicenseController {
     @Check404()
     Map<String,Object> linkLicenseToSubs() {
         Map<String, Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW_AND_EDIT)
-        result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
+        result.putAll(subscriptionService.getMySubscriptions(params, result.user, contextService.getOrg()))
         result.tableConfig = ['showLinking']
         result.linkedSubscriptions = Links.executeQuery('select l.destinationSubscription from Links l where l.sourceLicense = :license and l.linkType = :linkType',[license:result.license,linkType:RDStore.LINKTYPE_LICENSE])
         result
@@ -349,7 +349,7 @@ class LicenseController {
         result.subscriptions = []
         result.putAll(licenseControllerService.setSubscriptionFilterData(params))
 
-        if(result.license._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.license.getLicensingConsortium().id == result.institution.id) {
+        if(result.license._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.license.getLicensingConsortium().id == contextService.getOrg().id) {
             result.subscriptionsForFilter = []
             Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
             Map<String,Object> queryParams = [lic:result.license, subscriberRoleTypes:subscriberRoleTypes, linkType:RDStore.LINKTYPE_LICENSE]
@@ -501,7 +501,7 @@ class LicenseController {
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW_AND_EDIT)
         result.tableConfig = ['onlyMemberSubs']
         result.linkedSubscriptions = Links.executeQuery('select li.destinationSubscription from Links li where li.sourceLicense = :license and li.linkType = :linkType',[license:result.license,linkType:RDStore.LINKTYPE_LICENSE])
-        result.putAll(subscriptionService.getMySubscriptionsForConsortia(params,result.user,result.institution,result.tableConfig))
+        result.putAll(subscriptionService.getMySubscriptionsForConsortia(params, result.user, contextService.getOrg(), result.tableConfig))
         result
     }
 
@@ -517,7 +517,7 @@ class LicenseController {
         if (contextService.getOrg().isCustomerType_Consortium())
             tmpParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
 
-        FilterService.Result fsr = filterService.getOrgComboQuery(tmpParams, result.institution as Org)
+        FilterService.Result fsr = filterService.getOrgComboQuery(tmpParams, contextService.getOrg())
         if (fsr.isFilterSet) { tmpParams.filterSet = true }
 
         if (tmpParams.filterPropDef) {
@@ -699,7 +699,7 @@ class LicenseController {
         def result             = [:]
         result.user            = contextService.getUser()
         result.institution     = contextService.getOrg()
-        result.contextOrg      = result.institution
+        result.contextOrg      = contextService.getOrg()
 
         flash.error = ""
         flash.message = ""
