@@ -112,12 +112,12 @@ class SurveyController {
         //params.filterStatus = params.filterStatus ?: ((params.size() > 4) ? "" : [RDStore.SURVEY_SURVEY_STARTED.id, RDStore.SURVEY_READY.id, RDStore.SURVEY_IN_PROCESSING.id])
         prf.setBenchmark("before properties")
 
-        result.propList = PropertyDefinition.executeQuery( "select surpro.surveyProperty from SurveyConfigProperties as surpro join surpro.surveyConfig surConfig join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg order by surpro.surveyProperty.name_de asc", [contextOrg: result.institution]).groupBy {it}.collect {it.key}
+        result.propList = PropertyDefinition.executeQuery( "select surpro.surveyProperty from SurveyConfigProperties as surpro join surpro.surveyConfig surConfig join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg order by surpro.surveyProperty.name_de asc", [contextOrg: contextService.getOrg()]).groupBy {it}.collect {it.key}
 
         prf.setBenchmark("after properties")
 
         prf.setBenchmark("before surveyYears")
-        result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate) desc", [org: result.institution]) ?: []
+        result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate) desc", [org: contextService.getOrg()]) ?: []
 
         if (params.validOnYear == null || params.validOnYear == '') {
             SimpleDateFormat sdfyear = DateUtils.getSDF_yyyy()
@@ -130,12 +130,12 @@ class SurveyController {
         }
 
         prf.setBenchmark("after surveyYears and before current org ids of providers and vendors")
-        result.providers = providerService.getCurrentProviders( (Org) result.institution )
+        result.providers = providerService.getCurrentProviders( contextService.getOrg() )
         prf.setBenchmark("after providers and vendors and before subscriptions")
         result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
-                " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIUM, 'activeInst': result.institution])
+                " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIUM, 'activeInst': contextService.getOrg()])
         prf.setBenchmark("after subscriptions and before survey config query")
-        FilterService.Result fsr = filterService.getSurveyConfigQueryConsortia(params, DateUtils.getLocalizedSDF_noTime(), (Org) result.institution)
+        FilterService.Result fsr = filterService.getSurveyConfigQueryConsortia(params, DateUtils.getLocalizedSDF_noTime(), contextService.getOrg())
         if (fsr.isFilterSet) { params.filterSet = true }
 
         prf.setBenchmark("after query, before survey config execution")
@@ -151,7 +151,7 @@ class SurveyController {
                 //if(wb instanceof XSSFWorkbook) file += "x";
                 response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems(result.surveys.collect {it[1]}, result.institution)
+                wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems(result.surveys.collect {it[1]}, contextService.getOrg())
             }else{
                 SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
                 String datetoday = sdf.format(new Date())
@@ -159,7 +159,7 @@ class SurveyController {
                 //if(wb instanceof XSSFWorkbook) file += "x";
                 response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                wb = (SXSSFWorkbook) surveyService.exportSurveys(result.surveys.collect {it[1]}, result.institution)
+                wb = (SXSSFWorkbook) surveyService.exportSurveys(result.surveys.collect {it[1]}, contextService.getOrg())
             }
             
             wb.write(response.outputStream)
@@ -200,7 +200,7 @@ class SurveyController {
 
         params.tab = params.tab ?: 'created'
 
-        result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate) desc", [org: result.institution]) ?: []
+        result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate) desc", [org: contextService.getOrg()]) ?: []
 
         if (params.validOnYear == null || params.validOnYear == '') {
             SimpleDateFormat sdfyear = DateUtils.getSDF_yyyy()
@@ -212,16 +212,16 @@ class SurveyController {
             params.validOnYear = [newYear]
         }
 
-        result.propList = PropertyDefinition.executeQuery( "select surpro.surveyProperty from SurveyConfigProperties as surpro join surpro.surveyConfig surConfig join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg order by surpro.surveyProperty.name_de asc", [contextOrg: result.institution]).groupBy {it}.collect {it.key}
+        result.propList = PropertyDefinition.executeQuery( "select surpro.surveyProperty from SurveyConfigProperties as surpro join surpro.surveyConfig surConfig join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg order by surpro.surveyProperty.name_de asc", [contextOrg: contextService.getOrg()]).groupBy {it}.collect {it.key}
 
         result.providers = providerService.getCurrentProviders( contextService.getOrg() )
 
         result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
-                " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIUM, 'activeInst': result.institution])
+                " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIUM, 'activeInst': contextService.getOrg()])
 
 
         DateFormat sdFormat = DateUtils.getLocalizedSDF_noTime()
-        FilterService.Result fsr = filterService.getSurveyConfigQueryConsortia(params, sdFormat, result.institution as Org)
+        FilterService.Result fsr = filterService.getSurveyConfigQueryConsortia(params, sdFormat, contextService.getOrg())
         if (fsr.isFilterSet) { params.filterSet = true }
 
         result.surveys = SurveyInfo.executeQuery(fsr.query, fsr.queryParams, params)
@@ -233,7 +233,7 @@ class SurveyController {
             //if(wb instanceof XSSFWorkbook) file += "x";
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportSurveys(SurveyConfig.findAllByIdInList(result.surveys.collect {it[1].id}), result.institution)
+            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportSurveys(SurveyConfig.findAllByIdInList(result.surveys.collect {it[1].id}), contextService.getOrg())
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
@@ -516,7 +516,6 @@ class SurveyController {
         }
 
         result
-
     }
 
     /**
@@ -542,7 +541,6 @@ class SurveyController {
         }
 
         result
-
     }
 
     /**

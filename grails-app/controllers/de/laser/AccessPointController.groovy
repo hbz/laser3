@@ -155,7 +155,7 @@ class AccessPointController  {
         result.user = contextService.getUser()
         Org organisation = contextService.getOrg().isCustomerType_Consortium() ? Org.get(params.id) : contextService.getOrg()
         result.institution = contextService.getOrg()
-        result.contextCustomerType = result.institution.getCustomerType()
+        result.contextCustomerType = contextService.getOrg().getCustomerType()
         result.orgInstance = organisation
         result.inContextOrg = result.orgInstance.id == contextService.getOrg().id
         result.availableOptions = accessPointService.availableOptions(organisation)

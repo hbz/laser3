@@ -237,7 +237,6 @@ class LicenseController {
         if (!result) {
             response.sendError(401); return
         }
-        result.institution = contextService.getOrg()
 
         License licenseCopy
             if (contextService.getOrg().isCustomerType_Consortium()) {
