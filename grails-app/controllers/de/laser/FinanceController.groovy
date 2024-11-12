@@ -67,7 +67,7 @@ class FinanceController  {
             result.filterPresets = result.financialData.filterPresets
             result.filterSet = result.financialData.filterSet
             result.benchMark = result.financialData.benchMark
-            result.allCIElements = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:result.institution])
+            result.allCIElements = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org: contextService.getOrg()])
             result.idSuffix = 'bulk'
             result
         }
@@ -93,7 +93,7 @@ class FinanceController  {
             Map<String,Object> result = financeControllerService.getResultGenerics(params)
             result.financialData = financeService.getCostItemsForSubscription(params,result)
             result.currentTitlesCounts = IssueEntitlement.executeQuery("select count(*) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :status  ", [sub: result.subscription, status: RDStore.TIPP_STATUS_CURRENT])[0]
-            if (result.institution.isCustomerType_Consortium() || result.institution.isCustomerType_Support()) {
+            if (contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()) {
                 if(result.subscription.instanceOf){
                     result.currentSurveysCounts = SurveyConfig.executeQuery("from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
                             [sub: result.subscription.instanceOf,
@@ -110,7 +110,7 @@ class FinanceController  {
                         [sub: result.subscription.instanceOf,
                          org: result.subscription.getSubscriberRespConsortia(),
                          invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]]).size()
-                if (result.institution.isCustomerType_Inst_Pro()) {
+                if (contextService.getOrg().isCustomerType_Inst_Pro()) {
                     if(result.subscription.instanceOf)
                         result.currentCostItemCounts = "${result.financialData.own.count}/${result.financialData.subscr.count}"
                     else
@@ -120,19 +120,19 @@ class FinanceController  {
                     result.currentCostItemCounts = result.financialData.subscr.count
                 }
             }
-            result.checklistCount = workflowService.getWorkflowCount(result.subscription, result.institution)
+            result.checklistCount = workflowService.getWorkflowCount(result.subscription, contextService.getOrg())
             int tc1 = taskService.getTasksByResponsibilityAndObject(result.user, result.subscription).size()
             int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.subscription).size()
             result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
-            result.notesCount       = docstoreService.getNotesCount(result.subscription, result.institution)
-            result.docsCount       = docstoreService.getDocsCount(result.subscription, result.institution)
+            result.notesCount       = docstoreService.getNotesCount(result.subscription, contextService.getOrg())
+            result.docsCount       = docstoreService.getDocsCount(result.subscription, contextService.getOrg())
 
             result.ciTitles = result.financialData.ciTitles
             result.budgetCodes = result.financialData.budgetCodes
             result.filterPresets = result.financialData.filterPresets
             result.filterSet = result.financialData.filterSet
-            result.allCIElements = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:result.institution])
+            result.allCIElements = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org: contextService.getOrg()])
             result.idSuffix = 'bulk'
             result
         }
@@ -169,7 +169,7 @@ class FinanceController  {
             result.cost_item_tabs["subscr"] = financialData.subscr
         }
         SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
-        String filename = result.subscription ? escapeService.escapeString(result.subscription.name)+"_financialExport" : escapeService.escapeString(result.institution.name)+"_financialExport"
+        String filename = result.subscription ? escapeService.escapeString(result.subscription.name)+"_financialExport" : escapeService.escapeString(contextService.getOrg().name)+"_financialExport"
         /*if(params.exportXLS) {
             SXSSFWorkbook workbook = exportService.processFinancialXLSX(result)
             response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date())}_${filename}.xlsx\"")
@@ -544,8 +544,8 @@ class FinanceController  {
         params.status = [result.costItem.sub.status.id.toString()]
         result.modalText = message(code: 'financials.costItem.copy.tooltip')
         result.submitButtonLabel = message(code:'default.button.copy.label')
-        result.copyCostsFromConsortia = result.costItem.owner == result.costItem.sub?.getConsortium() && result.institution.id != result.costItem.sub?.getConsortium().id
-        result.copyToOtherSub =  !result.copyCostsFromConsortia && result.costItem.owner.id == result.institution.id && result.institution.isCustomerType_Inst_Pro()
+        result.copyCostsFromConsortia = result.costItem.owner == result.costItem.sub?.getConsortium() && contextService.getOrg().id != result.costItem.sub?.getConsortium().id
+        result.copyToOtherSub =  !result.copyCostsFromConsortia && result.costItem.owner.id == contextService.getOrg().id && contextService.getOrg().isCustomerType_Inst_Pro()
         result.taxKey = result.costItem.taxKey
         result.formUrl = createLink(controller:"finance",action:"createOrUpdateCostItem",params:[showView:params.showView, mode:"copy", offset: params.offset])
         result.mode = "copy"

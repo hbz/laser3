@@ -318,9 +318,9 @@ class ProviderService {
             int tc1 = taskService.getTasksByResponsibilityAndObject(result.user, result.provider).size()
             int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.provider).size()
             result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
-            result.docsCount        = docstoreService.getDocsCount(result.provider, result.institution)
-            result.notesCount       = docstoreService.getNotesCount(result.provider, result.institution)
-            result.checklistCount   = workflowService.getWorkflowCount(result.provider, result.institution)
+            result.docsCount        = docstoreService.getDocsCount(result.provider, contextService.getOrg())
+            result.notesCount       = docstoreService.getNotesCount(result.provider, contextService.getOrg())
+            result.checklistCount   = workflowService.getWorkflowCount(result.provider, contextService.getOrg())
         }
 
         //result.links = linksGenerationService.getProviderLinks(result.orgInstance)

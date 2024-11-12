@@ -385,9 +385,9 @@ class VendorService {
             int tc1 = taskService.getTasksByResponsibilityAndObject(result.user, result.vendor).size()
             int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.vendor).size()
             result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
-            result.docsCount        = docstoreService.getDocsCount(result.vendor, result.institution)
-            result.notesCount       = docstoreService.getNotesCount(result.vendor, result.institution)
-            result.checklistCount   = workflowService.getWorkflowCount(result.vendor, result.institution)
+            result.docsCount        = docstoreService.getDocsCount(result.vendor, contextService.getOrg())
+            result.notesCount       = docstoreService.getNotesCount(result.vendor, contextService.getOrg())
+            result.checklistCount   = workflowService.getWorkflowCount(result.vendor, contextService.getOrg())
         }
 
         SwissKnife.setPaginationParams(result, params, contextUser)

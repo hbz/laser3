@@ -72,7 +72,7 @@ class ProviderController {
         Map<String, Object> result = [institution: contextService.getOrg(), user: contextService.getUser()], queryParams = [:]
         result.propList    = PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr = :def and (pd.tenant is null or pd.tenant = :tenant) order by pd.name_de asc", [
                 def: PropertyDefinition.PRV_PROP,
-                tenant: result.institution
+                tenant: contextService.getOrg()
         ])
 
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
@@ -149,7 +149,7 @@ class ProviderController {
         else
             providerQuery += " order by p.sortname "
         Set<Provider> providersTotal = Provider.executeQuery(providerQuery, queryParams)
-        result.currentProviderIdList = Provider.executeQuery('select pvr.provider.id from ProviderRole pvr, OrgRole oo join oo.sub s where s = pvr.subscription and oo.org = :context and s.status = :current', [current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])
+        result.currentProviderIdList = Provider.executeQuery('select pvr.provider.id from ProviderRole pvr, OrgRole oo join oo.sub s where s = pvr.subscription and oo.org = :context and s.status = :current', [current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()])
 
         result.filterSet = params.filterSet ? true : false
 
@@ -251,9 +251,9 @@ class ProviderController {
             result.provider = provider
             result.editable = provider.gokbId ? false : contextService.isInstEditor()
             result.subEditable = contextService.isInstEditor()
-            result.isMyProvider = providerService.isMyProvider(provider, result.institution)
+            result.isMyProvider = providerService.isMyProvider(provider, contextService.getOrg())
             String subscriptionConsortiumFilter = '', licenseConsortiumFilter = ''
-            if(result.institution.isCustomerType_Consortium()) {
+            if(contextService.getOrg().isCustomerType_Consortium()) {
                 subscriptionConsortiumFilter = 'and s.instanceOf = null'
                 licenseConsortiumFilter = 'and l.instanceOf = null'
             }
@@ -261,12 +261,12 @@ class ProviderController {
             Set<Package> allPackages = provider.packages
             result.allPackages = allPackages
             result.allPlatforms = allPackages.findAll { Package pkg -> pkg.nominalPlatform != null}.nominalPlatform.toSet()
-            result.packages = Package.executeQuery('select pkg from SubscriptionPackage sp join sp.pkg pkg, OrgRole oo join oo.sub s where pkg.provider = :provider and s = sp.subscription and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [provider: provider, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution]) as Set<Package>
-            result.platforms = Platform.executeQuery('select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg, OrgRole oo join oo.sub s where pkg.provider = :provider and oo.sub = sp.subscription and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [provider: provider, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution]) as Set<Platform>
-            result.currentSubscriptionsCount = ProviderRole.executeQuery('select count(*) from ProviderRole pvr join pvr.subscription s join s.orgRelations oo where pvr.provider = :provider and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [provider: provider, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])[0]
-            result.currentLicensesCount = ProviderRole.executeQuery('select count(*) from ProviderRole pvr join pvr.license l join l.orgRelations oo where pvr.provider = :provider and l.status = :current and oo.org = :context '+licenseConsortiumFilter, [provider: provider, current: RDStore.LICENSE_CURRENT, context: result.institution])[0]
-            result.subLinks = ProviderRole.executeQuery('select count(*) from ProviderRole pvr join pvr.subscription s join s.orgRelations oo where pvr.provider = :provider and oo.org = :context '+subscriptionConsortiumFilter, [provider: provider, context: result.institution])[0]
-            result.licLinks = ProviderRole.executeQuery('select count(*) from ProviderRole pvr join pvr.license l join l.orgRelations oo where pvr.provider = :provider and oo.org = :context '+licenseConsortiumFilter, [provider: provider, context: result.institution])[0]
+            result.packages = Package.executeQuery('select pkg from SubscriptionPackage sp join sp.pkg pkg, OrgRole oo join oo.sub s where pkg.provider = :provider and s = sp.subscription and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [provider: provider, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()]) as Set<Package>
+            result.platforms = Platform.executeQuery('select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg, OrgRole oo join oo.sub s where pkg.provider = :provider and oo.sub = sp.subscription and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [provider: provider, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()]) as Set<Platform>
+            result.currentSubscriptionsCount = ProviderRole.executeQuery('select count(*) from ProviderRole pvr join pvr.subscription s join s.orgRelations oo where pvr.provider = :provider and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [provider: provider, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()])[0]
+            result.currentLicensesCount = ProviderRole.executeQuery('select count(*) from ProviderRole pvr join pvr.license l join l.orgRelations oo where pvr.provider = :provider and l.status = :current and oo.org = :context '+licenseConsortiumFilter, [provider: provider, current: RDStore.LICENSE_CURRENT, context: contextService.getOrg()])[0]
+            result.subLinks = ProviderRole.executeQuery('select count(*) from ProviderRole pvr join pvr.subscription s join s.orgRelations oo where pvr.provider = :provider and oo.org = :context '+subscriptionConsortiumFilter, [provider: provider, context: contextService.getOrg()])[0]
+            result.licLinks = ProviderRole.executeQuery('select count(*) from ProviderRole pvr join pvr.license l join l.orgRelations oo where pvr.provider = :provider and oo.org = :context '+licenseConsortiumFilter, [provider: provider, context: contextService.getOrg()])[0]
 
             workflowService.executeCmdAndUpdateResult(result, params)
             if (result.provider.createdBy) {

@@ -65,7 +65,7 @@ class VendorController {
         prf.startSimpleBench()
         Map<String, Object> result = vendorService.getResultGenerics(params), queryParams = [:]
         result.flagContentGokb = true // vendorService.getWekbVendorRecords()
-        result.propList    = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.VEN_PROP], result.institution)
+        result.propList    = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.VEN_PROP], contextService.getOrg())
         prf.setBenchmark("get curatory groups")
         Map queryCuratoryGroups = gokbService.executeQuery(result.wekbApi.baseUrl + result.wekbApi.fixToken + '/groups', [:])
         prf.setBenchmark("get we:kb vendors")
@@ -138,7 +138,7 @@ class VendorController {
         prf.setBenchmark("get total vendors")
         Set<Vendor> vendorsTotal = Vendor.executeQuery(vendorQuery, queryParams)
         prf.setBenchmark("get subscribed vendors")
-        result.currentVendorIdList = Vendor.executeQuery('select vr.vendor.id from VendorRole vr, OrgRole oo join oo.sub s where s = vr.subscription and oo.org = :context and s.status = :current', [current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])
+        result.currentVendorIdList = Vendor.executeQuery('select vr.vendor.id from VendorRole vr, OrgRole oo join oo.sub s where s = vr.subscription and oo.org = :context and s.status = :current', [current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()])
         if (params.isMyX) {
             List<String> xFilter = params.list('isMyX')
             Set<Long> f1Result = [], f2Result = []
@@ -228,22 +228,22 @@ class VendorController {
             result.vendor = vendor
             result.editable = vendor.gokbId ? false : contextService.isInstEditor()
             result.subEditable = contextService.isInstEditor()
-            result.isMyVendor = vendorService.isMyVendor(vendor, result.institution)
+            result.isMyVendor = vendorService.isMyVendor(vendor, contextService.getOrg())
             String subscriptionConsortiumFilter = '', licenseConsortiumFilter = ''
-            if(result.institution.isCustomerType_Consortium()) {
+            if(contextService.getOrg().isCustomerType_Consortium()) {
                 subscriptionConsortiumFilter = 'and s.instanceOf = null'
                 licenseConsortiumFilter = 'and l.instanceOf = null'
             }
             Set<Package> allPackages = vendor.packages?.pkg
             result.allPackages = allPackages
             result.providers = allPackages.provider.toSet()
-            result.packages = Package.executeQuery('select pkg from PackageVendor pv join pv.pkg pkg, VendorRole vr, OrgRole oo join oo.sub s where pv.vendor = vr.vendor and vr.subscription = s and vr.vendor = :vendor and s.status = :current and oo.org = :context ', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution]) as Set<Package>
-            result.platforms = Platform.executeQuery('select pkg.nominalPlatform from PackageVendor pv join pv.pkg pkg, VendorRole vr, OrgRole oo join oo.sub s where pkg.provider = :vendor and vr.subscription = s and s.status = :current and oo.org = :context ', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution]) as Set<Platform>
+            result.packages = Package.executeQuery('select pkg from PackageVendor pv join pv.pkg pkg, VendorRole vr, OrgRole oo join oo.sub s where pv.vendor = vr.vendor and vr.subscription = s and vr.vendor = :vendor and s.status = :current and oo.org = :context ', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()]) as Set<Package>
+            result.platforms = Platform.executeQuery('select pkg.nominalPlatform from PackageVendor pv join pv.pkg pkg, VendorRole vr, OrgRole oo join oo.sub s where pkg.provider = :vendor and vr.subscription = s and s.status = :current and oo.org = :context ', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()]) as Set<Platform>
             result.tasks = taskService.getTasksByResponsibilityAndObject(result.user, vendor)
-            result.currentSubscriptionsCount = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.subscription s join s.orgRelations oo where vr.vendor = :vendor and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: result.institution])[0]
-            result.currentLicensesCount  = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.license l join l.orgRelations oo where vr.vendor = :vendor and l.status = :current and oo.org = :context '+licenseConsortiumFilter, [vendor: vendor, current: RDStore.LICENSE_CURRENT, context: result.institution])[0]
-            result.subLinks = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.subscription s join s.orgRelations oo where vr.vendor = :vendor and oo.org = :context '+subscriptionConsortiumFilter, [vendor: vendor, context: result.institution])[0]
-            result.licLinks = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.license l join l.orgRelations oo where vr.vendor = :vendor and oo.org = :context '+licenseConsortiumFilter, [vendor: vendor, context: result.institution])[0]
+            result.currentSubscriptionsCount = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.subscription s join s.orgRelations oo where vr.vendor = :vendor and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()])[0]
+            result.currentLicensesCount  = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.license l join l.orgRelations oo where vr.vendor = :vendor and l.status = :current and oo.org = :context '+licenseConsortiumFilter, [vendor: vendor, current: RDStore.LICENSE_CURRENT, context: contextService.getOrg()])[0]
+            result.subLinks = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.subscription s join s.orgRelations oo where vr.vendor = :vendor and oo.org = :context '+subscriptionConsortiumFilter, [vendor: vendor, context: contextService.getOrg()])[0]
+            result.licLinks = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.license l join l.orgRelations oo where vr.vendor = :vendor and oo.org = :context '+licenseConsortiumFilter, [vendor: vendor, context: contextService.getOrg()])[0]
 
             workflowService.executeCmdAndUpdateResult(result, params)
             if (result.vendor.createdBy) {

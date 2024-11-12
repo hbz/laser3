@@ -124,10 +124,6 @@ class CompareService {
      */
     List getMyLicenses(Map params, boolean onlyIds = false) {
 
-        Map<String, Object> result = [:]
-        result.user = contextService.getUser()
-        result.institution = contextService.getOrg()
-
         String base_qry
         Map qry_params
 
@@ -135,7 +131,7 @@ class CompareService {
             base_qry = """from License as l where (
                 exists ( select o from l.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
             )"""
-            qry_params = [roleType1: RDStore.OR_LICENSEE, roleType2: RDStore.OR_LICENSEE_CONS, lic_org: result.institution]
+            qry_params = [roleType1: RDStore.OR_LICENSEE, roleType2: RDStore.OR_LICENSEE_CONS, lic_org: contextService.getOrg()]
 
         } else if (contextService.getOrg().isCustomerType_Consortium()) {
             base_qry = """from License as l where (
@@ -148,12 +144,12 @@ class CompareService {
                     )
                 )
             )))"""
-            qry_params = [roleTypeC: RDStore.OR_LICENSING_CONSORTIUM, roleTypeL: RDStore.OR_LICENSEE_CONS, lic_org: result.institution]
+            qry_params = [roleTypeC: RDStore.OR_LICENSING_CONSORTIUM, roleTypeL: RDStore.OR_LICENSEE_CONS, lic_org: contextService.getOrg()]
         } else {
             base_qry = """from License as l where (
                 exists ( select o from l.orgRelations as o where ( o.roleType = :roleType AND o.org = :lic_org ) ) 
             )"""
-            qry_params = [roleType: RDStore.OR_LICENSEE_CONS, lic_org: result.institution]
+            qry_params = [roleType: RDStore.OR_LICENSEE_CONS, lic_org: contextService.getOrg()]
         }
 
         if (params.status) {
@@ -172,22 +168,18 @@ class CompareService {
      */
     List getMySubscriptions(Map params, boolean onlyIds = false) {
 
-        Map<String, Object> result = [:]
-        result.user = contextService.getUser()
-        result.institution = contextService.getOrg()
-
         String base_qry
         Map qry_params = [:]
 
-        if ((result.institution as Org).isCustomerType_Consortium()) {
+        if (contextService.getOrg().isCustomerType_Consortium()) {
             base_qry = " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                     " AND s.instanceOf is null "
-            qry_params << ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIUM, 'activeInst': result.institution]
+            qry_params << ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIUM, 'activeInst': contextService.getOrg()]
         }
         else {
             base_qry = "from Subscription as s where (exists ( select o from s.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType in (:roleType2) ) AND o.org = :activeInst ) ) AND (( not exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) or ( ( exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) AND ( s.instanceOf is not null) ) ) )"
 
-            qry_params << ['roleType1': RDStore.OR_SUBSCRIBER, 'roleType2': [RDStore.OR_SUBSCRIBER_CONS], 'activeInst': result.institution, 'scRoleType': [RDStore.OR_SUBSCRIPTION_CONSORTIUM]]
+            qry_params << ['roleType1': RDStore.OR_SUBSCRIBER, 'roleType2': [RDStore.OR_SUBSCRIBER_CONS], 'activeInst': contextService.getOrg(), 'scRoleType': [RDStore.OR_SUBSCRIPTION_CONSORTIUM]]
         }
 
         if (params.status) {

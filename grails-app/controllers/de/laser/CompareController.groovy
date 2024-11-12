@@ -30,9 +30,7 @@ class CompareController  {
         result.contextOrg = contextService.getOrg()
         result.institution = result.contextOrg
         params.status = params.status ?: [RDStore.LICENSE_CURRENT.id]
-
         result.objects = []
-
         params.tab = params.tab ?: "compareElements"
 
         if (params.selectedObjects) {
@@ -60,9 +58,7 @@ class CompareController  {
         SwissKnife.setPaginationParams(result, params, result.user)
         result.institution = result.contextOrg
         params.status = params.status ?: [RDStore.SUBSCRIPTION_CURRENT.id]
-
         result.objects = []
-
         params.tab = params.tab ?: "compareElements"
 
         if (params.selectedObjects) {
