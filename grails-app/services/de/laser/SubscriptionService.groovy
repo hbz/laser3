@@ -2162,11 +2162,11 @@ class SubscriptionService {
                     }
                     userCache.put('progress', 20)
                     switch(params.tab) {
-                        case 'allTipps': List<GroovyRowResult> perpetuallyPurchasedTitleRows = batchQueryService.longArrayQuery('select pt_tipp_fk from permanent_title join title_instance_package_platform on pt_tipp_fk = tipp_id where pt_owner_fk = :subscriber and tipp_host_platform_url in (select t2.tipp_host_platform_url from title_instance_package_platform as t2 where t2.tipp_id = any(:tippIDs))', [tippIDs: tippIDs], [subscriber: result.subscriber.id])
-                            Set<Long> perpetuallyPurchasedTitleIDs = []
+                        case 'allTipps': List<GroovyRowResult> perpetuallyPurchasedTitleRows = batchQueryService.longArrayQuery('select tipp_host_platform_url from permanent_title join title_instance_package_platform on pt_tipp_fk = tipp_id where pt_owner_fk = :subscriber and tipp_host_platform_url in (select t2.tipp_host_platform_url from title_instance_package_platform as t2 where t2.tipp_id = any(:tippIDs))', [tippIDs: tippIDs], [subscriber: result.subscriber.id])
+                            Set<String> perpetuallyPurchasedTitleURLs = []
                             if(perpetuallyPurchasedTitleRows)
-                                perpetuallyPurchasedTitleIDs.addAll(perpetuallyPurchasedTitleRows['pt_tipp_fk'])
-                            exportData = exportService.generateTitleExport([format: params.exportConfig, tippIDs: tippIDs, perpetuallyPurchasedTitleIDs: perpetuallyPurchasedTitleIDs, withPick: true])
+                                perpetuallyPurchasedTitleURLs.addAll(perpetuallyPurchasedTitleRows['tipp_host_platform_url'])
+                            exportData = exportService.generateTitleExport([format: params.exportConfig, tippIDs: tippIDs, perpetuallyPurchasedTitleURLs: perpetuallyPurchasedTitleURLs, withPick: true])
                             break
                         case 'selectedIEs':
                             Set<Long> sourceTIPPs = []
