@@ -38,6 +38,9 @@ class ContextService {
      * @return the institution used for the session (the context org)
      */
     Org getOrg() {
+        return GrailsHibernateUtil.unwrapIfProxy(getUser()?.formalOrg) as Org
+
+        /*
         RequestAttributes ra = RequestContextHolder.currentRequestAttributes()
 
         Org context = ra.getAttribute(RCH_LASER_CONTEXT_ORG, RequestAttributes.SCOPE_REQUEST) as Org
@@ -60,6 +63,7 @@ class ContextService {
             }
         }
         context
+        */
     }
 
     /**

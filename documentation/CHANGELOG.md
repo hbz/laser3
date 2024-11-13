@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6067    13.11.2024  dev     3.5         David   Feature     Refactoring: MyInstitution-Parameter
+
 6027    11.11.2024  dev     3.5         David   Feature     Flyout: (Mail-)content mit Sprachauswahl
 
 6059    08.11.2024  dev     3.5         David   Feature     CuratoryGroup.type als RefdataCategory anlegen

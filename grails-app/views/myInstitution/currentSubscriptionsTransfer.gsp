@@ -448,7 +448,7 @@
                             </g:if>
 
                             <%
-                                Set<DocContext> documentSet = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType and owner.owner = :owner', [subscription: s, docType: RDStore.DOC_TYPE_OFFER, owner: contextOrg])
+                                Set<DocContext> documentSet = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType and owner.owner = :owner', [subscription: s, docType: RDStore.DOC_TYPE_OFFER, owner: contextService.getOrg()])
                                 documentSet = documentSet.sort { it.owner?.title }
                             %>
                             <g:each in="${documentSet}" var="docctx">
@@ -482,7 +482,7 @@
                                                             target="_blank"><i class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
                                                 </g:if>
                                                 <g:else>
-                                                    <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
+                                                    <g:if test="${docctx.owner.owner?.id == contextService.getOrg().id}">
                                                     <%-- 1 --%>
                                                         <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}"
                                                                 class="${Btn.MODERN.SIMPLE} tiny"
@@ -501,7 +501,7 @@
                                                     </g:if>
 
                                                 <%-- 4 --%>
-                                                    <g:if test="${docctx.owner.owner?.id == contextOrg.id && !docctx.isShared}">
+                                                    <g:if test="${docctx.owner.owner?.id == contextService.getOrg().id && !docctx.isShared}">
                                                         <g:link controller="${ajaxCallController ?: controllerName}"
                                                                 action="deleteDocuments"
                                                                 class="${Btn.MODERN.NEGATIVE_CONFIRM} tiny"
@@ -661,7 +661,7 @@
                             </g:if>
 
                             <%
-                                Set<DocContext> documentSet2 = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType and owner.owner = :owner', [subscription: s, docType: RDStore.DOC_TYPE_RENEWAL, owner: contextOrg])
+                                Set<DocContext> documentSet2 = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType and owner.owner = :owner', [subscription: s, docType: RDStore.DOC_TYPE_RENEWAL, owner: contextService.getOrg()])
                                 documentSet2 = documentSet2.sort { it.owner?.title }
                             %>
                             <g:each in="${documentSet2}" var="docctx">
@@ -694,7 +694,7 @@
                                                             target="_blank"><i class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
                                                 </g:if>
                                                 <g:else>
-                                                    <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
+                                                    <g:if test="${docctx.owner.owner?.id == contextService.getOrg().id}">
                                                     <%-- 1 --%>
                                                         <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}"
                                                                 class="${Btn.MODERN.SIMPLE} tiny"
@@ -713,7 +713,7 @@
                                                     </g:if>
 
                                                 <%-- 4 --%>
-                                                    <g:if test="${docctx.owner.owner?.id == contextOrg.id && !docctx.isShared}">
+                                                    <g:if test="${docctx.owner.owner?.id == contextService.getOrg().id && !docctx.isShared}">
                                                         <g:link controller="${ajaxCallController ?: controllerName}"
                                                                 action="deleteDocuments"
                                                                 class="${Btn.MODERN.NEGATIVE_CONFIRM} tiny"

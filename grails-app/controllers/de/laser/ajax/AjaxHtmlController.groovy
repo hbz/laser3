@@ -191,8 +191,8 @@ class AjaxHtmlController {
         result.pendingOffset = params.pendingOffset ? params.int("pendingOffset") : result.offset
         def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
         Map<String, Object> pendingChangeConfigMap = [
-                contextOrg: result.institution,
-                consortialView: (result.institution as Org).isCustomerType_Consortium(),
+                contextOrg: contextService.getOrg(),
+                consortialView: contextService.getOrg().isCustomerType_Consortium(),
                 periodInDays:periodInDays,
                 max:result.max,
                 acceptedOffset:result.acceptedOffset,
@@ -214,13 +214,13 @@ class AjaxHtmlController {
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         List activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null AND surConfig.surveyInfo.status = :status) " +
                 " order by surConfig.surveyInfo.endDate",
-                [org: result.institution,
+                [org: contextService.getOrg(),
                  status: RDStore.SURVEY_SURVEY_STARTED])
 
         if (contextService.getOrg().isCustomerType_Consortium_Pro()){
             activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
                     " order by surConfig.surveyInfo.endDate",
-                    [org: result.institution,
+                    [org: contextService.getOrg(),
                      status: RDStore.SURVEY_SURVEY_STARTED])
         }
 

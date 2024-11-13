@@ -184,9 +184,7 @@ class MyInstitutionController  {
         Map<String, Object> result = [:]
 
         result.flagContentGokb = true // gokbService.doQuery
-        result.user = contextService.getUser()
-        result.contextOrg = contextService.getOrg()
-        SwissKnife.setPaginationParams(result, params, (User) result.user)
+        SwissKnife.setPaginationParams(result, params, contextService.getUser())
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.PLA_PROP], contextService.getOrg())
         Map<String, Object> subscriptionParams = [contextOrg:contextService.getOrg(), roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIUM]]
 
@@ -642,7 +640,6 @@ class MyInstitutionController  {
                 response.contentType = "text/csv"
                 ServletOutputStream out = response.outputStream
                 out.withWriter { writer ->
-                    //writer.write((String) _exportcurrentSubscription(result.allSubscriptions,"csv", contextService.getOrg()))
                     writer.write((String) exportClickMeService.exportLicenses(totalLicenses, selectedFields, ExportClickMeService.FORMAT.CSV))
                 }
                 out.close()
@@ -1338,202 +1335,14 @@ class MyInstitutionController  {
                 response.contentType = "text/csv"
                 ServletOutputStream out = response.outputStream
                 out.withWriter { writer ->
-                    //writer.write((String) _exportcurrentSubscription(result.allSubscriptions,"csv", contextService.getOrg()))
                     writer.write((String) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, ExportClickMeService.FORMAT.CSV))
                 }
                 out.close()
                 return
         }
-        /*
-        if ( params.exportXLS ) {
-
-            //if(wb instanceof XSSFWorkbook) file += "x";
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) _exportcurrentSubscription(result.allSubscriptions, "xls", contextService.getOrg())
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
-
-            return
-        }else*/
         result
     }
 
-    /**
-     * Prepares the given list of subscriptions for the given export stream
-     * @param subscriptions the filtered list of subscriptions
-     * @param format the format in which the export should be made
-     * @param contextOrg the institution whose perspective should be taken during export
-     * @return the list of subscriptions wrapped in the given export format (Excel worksheet or character-separated table)
-     * @see Subscription
-     * @see Org
-     */
-    @Deprecated
-    private def _exportcurrentSubscription(List<Subscription> subscriptions, String format, Org contextOrg) {
-        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-        boolean asCons = contextService.getOrg().isCustomerType_Consortium()
-        List titles = ['Name',
-                       g.message(code: 'globalUID.label'),
-                       g.message(code: 'license.label'),
-                       g.message(code: 'subscription.packages.label'),
-                       g.message(code: 'consortium.label'),
-                       g.message(code: 'provider.label'),
-                       g.message(code: 'vendor.label'),
-                       g.message(code: 'subscription.startDate.label'),
-                       g.message(code: 'subscription.endDate.label'),
-                       g.message(code: 'subscription.manualCancellationDate.label'),
-                       g.message(code: 'subscription.referenceYear.label'),
-                       g.message(code: 'subscription.isMultiYear.label')]
-        if(!asCons) {
-            titles.add(g.message(code: 'subscription.isAutomaticRenewAnnually.label'))
-        }
-        titles.addAll([g.message(code: 'default.identifiers.label'),
-                       g.message(code: 'default.status.label'),
-                       g.message(code: 'subscription.kind.label'),
-                       g.message(code: 'subscription.form.label'),
-                       g.message(code: 'subscription.resource.label'),
-                       g.message(code: 'subscription.isPublicForApi.label'),
-                       g.message(code: 'subscription.hasPerpetualAccess.label'),
-                       g.message(code: 'subscription.hasPublishComponent.label')])
-        if(asCons) {
-            titles.addAll([g.message(code: 'subscription.memberCount.label'),g.message(code: 'subscription.memberCostItemsCount.label')])
-        }
-        //Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP],contextOrg)
-        Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.executeQuery("select sp.type from SubscriptionProperty sp where (sp.owner in (:subscriptions) or sp.owner.instanceOf in (:subscriptions)) and (sp.tenant = :ctx or sp.isPublic = true)",[subscriptions: subscriptions, ctx:contextOrg])
-        titles.addAll(exportService.loadPropListHeaders(propertyDefinitions))
-        Map<Subscription,Set> licenseReferences = [:], subChildMap = [:]
-        Map<Long,Integer> costItemCounts = [:]
-        //List allIdentifiers = Identifier.findAllBySubIsNotNull()
-        List allLicenses = Links.executeQuery("select li from Links li where li.destinationSubscription in (:subscriptions) and li.linkType = :linkType",[subscriptions:subscriptions, linkType:RDStore.LINKTYPE_LICENSE])
-        List allCostItems = CostItem.executeQuery('select count(ci.id),s.instanceOf.id from CostItem ci join ci.sub s where s.instanceOf != null and (ci.costItemStatus != :ciDeleted or ci.costItemStatus = null) and ci.owner = :owner group by s.instanceOf.id',[ciDeleted:RDStore.COST_ITEM_DELETED,owner:contextOrg])
-        /*
-        allIdentifiers.each { Identifier identifier ->
-            Set subIdentifiers = identifiers.get(identifier.sub)
-            if(!identifiers.get(identifier.sub))
-                subIdentifiers = new TreeSet()
-            subIdentifiers.add("(${identifier.ns.ns}) ${identifier.value}")
-            identifiers.put(identifier.sub,subIdentifiers)
-        }*/
-        allCostItems.each { row ->
-            costItemCounts.put((Long) row[1],(Integer) row[0])
-        }
-        allLicenses.each { Links row ->
-            Subscription s = row.destinationSubscription
-            License l = row.sourceLicense
-            Set subLicenses = licenseReferences.get(s)
-            if(!subLicenses)
-                subLicenses = new TreeSet()
-            subLicenses.add(l.reference)
-            licenseReferences.put(s,subLicenses)
-        }
-        List membershipCounts = Subscription.executeQuery('select count(s.id),s.instanceOf.id from Subscription s where s.instanceOf in (:parentSubs) group by s.instanceOf.id',[parentSubs:subscriptions])
-        Map<Long,Integer> subscriptionMembers = [:]
-        membershipCounts.each { row ->
-            subscriptionMembers.put((Long) row[1],(Integer) row[0])
-        }
-        List<Subscription> childSubsOfSet = subscriptions.isEmpty() ? [] : Subscription.executeQuery('select s from Subscription s where s.instanceOf in (:parentSubs) and exists (select sp.id from SubscriptionProperty sp where sp.owner = s and sp.instanceOf = null and sp.tenant = :context)',[parentSubs:subscriptions,context:contextOrg])
-        childSubsOfSet.each { Subscription child ->
-            Set<Subscription> children = subChildMap.get(child.instanceOf)
-            if(!children)
-                children = []
-            children << child
-            subChildMap.put(child.instanceOf,children)
-        }
-        Map objectNames = [:]
-        if(childSubsOfSet) {
-            Set rows = OrgRole.executeQuery('select oo.sub,oo.org.sortname from OrgRole oo where oo.sub in (:subChildren) and oo.roleType in (:subscrTypes)',[subChildren:childSubsOfSet,subscrTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
-            rows.each { row ->
-                objectNames.put(row[0],row[1])
-            }
-        }
-        List subscriptionData = []
-        subscriptions.each { Subscription sub ->
-            log.debug("now processing ${sub}")
-            List row = []
-            Set subProviders = ProviderRole.executeQuery('select p.name from ProviderRole pvr join pvr.provider p where pvr.subscription = :sub order by p.name', [sub: sub])
-            Set subAgencies = OrgRole.executeQuery('select v.name from VendorRole vr join vr.vendor v where vr.subscription = :sub order by v.name', [sub: sub])
-            TreeSet subIdentifiers = sub.ids.collect { Identifier id -> "(${id.ns.ns}) ${id.value}" }
-            switch (format) {
-                case [ "xls", "xlsx" ]:
-                    row.add([field: sub.name ?: "", style: 'bold'])
-                    row.add([field: sub.globalUID, style: null])
-                    row.add([field: licenseReferences.get(sub) ? licenseReferences.get(sub).join(", ") : '', style: null])
-                    List packageNames = sub.packages?.collect {
-                        it.pkg.name
-                    }
-                    row.add([field: packageNames ? packageNames.join(", ") : '', style: null])
-                    row.add([field: sub.getConsortium()?.name ?: '', style: null])
-                    row.add([field: subProviders.join(', '), style: null])
-                    row.add([field: subAgencies.join(', '), style: null])
-                    row.add([field: sub.startDate ? sdf.format(sub.startDate) : '', style: null])
-                    row.add([field: sub.endDate ? sdf.format(sub.endDate) : '', style: null])
-                    row.add([field: sub.manualCancellationDate ? sdf.format(sub.manualCancellationDate) : '', style: null])
-                    row.add([field: sub.referenceYear ?: '', style: null])
-                    row.add([field: sub.isMultiYear ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
-                    if(!asCons) {
-                        row.add([field: sub.isAutomaticRenewAnnually ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
-                    }
-                    row.add([field: subIdentifiers.join(", "),style: null])
-                    row.add([field: sub.status?.getI10n("value"), style: null])
-                    row.add([field: sub.kind?.getI10n("value") ?: '', style: null])
-                    row.add([field: sub.form?.getI10n("value") ?: '', style: null])
-                    row.add([field: sub.resource?.getI10n("value") ?: '', style: null])
-                    row.add([field: sub.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
-                    row.add([field: sub.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
-                    row.add([field: sub.hasPublishComponent ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
-                    if(asCons) {
-                        row.add([field: subscriptionMembers.get(sub.id) ?: 0, style: null])
-                        row.add([field: costItemCounts.get(sub.id) ?: 0, style: null])
-                    }
-                    row.addAll(exportService.processPropertyListValues(propertyDefinitions,format,sub,subChildMap,objectNames,contextOrg))
-                    subscriptionData.add(row)
-                    break
-                case "csv":
-                    row.add(sub.name ? sub.name.replaceAll(',',' ') : "")
-                    row.add(sub.globalUID)
-                    row.add(licenseReferences.get(sub) ? licenseReferences.get(sub).join("; ") : '')
-                    List packageNames = sub.packages?.collect {
-                        it.pkg.name
-                    }
-                    row.add(packageNames ? packageNames.join("; ") : '')
-                    row.add(sub.getConsortium()?.name ?: '')
-                    row.add(subProviders.join("; ").replace(',',''))
-                    row.add(subAgencies.join("; ").replace(',',''))
-                    row.add(sub.startDate ? sdf.format(sub.startDate) : '')
-                    row.add(sub.endDate ? sdf.format(sub.endDate) : '')
-                    row.add(sub.manualCancellationDate ? sdf.format(sub.manualCancellationDate) : '')
-                    row.add(sub.referenceYear ?: '')
-                    row.add(sub.isMultiYear ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
-                    if(!asCons) {
-                        row.add(sub.isAutomaticRenewAnnually ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
-                    }
-                    row.add(subIdentifiers.join("; "))
-                    row.add(sub.status?.getI10n("value"))
-                    row.add(sub.kind?.getI10n("value"))
-                    row.add(sub.form?.getI10n("value"))
-                    row.add(sub.resource?.getI10n("value"))
-                    row.add(sub.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
-                    row.add(sub.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
-                    row.add(sub.hasPublishComponent ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
-                    if(asCons) {
-                        row.add(subscriptionMembers.get(sub.id) ? (int) subscriptionMembers.get(sub.id) : 0)
-                        row.add(costItemCounts.get(sub.id) ? (int) costItemCounts.get(sub.id) : 0)
-                    }
-                    row.addAll(exportService.processPropertyListValues(propertyDefinitions,format,sub,subChildMap,objectNames,contextOrg))
-                    subscriptionData.add(row)
-                    break
-            }
-        }
-        switch(format) {
-            case [ 'xls', 'xlsx' ]:
-                Map sheetData = [:]
-                sheetData[message(code: 'menu.my.subscriptions')] = [titleRow: titles, columnData: subscriptionData]
-                return exportService.generateXLSXWorkbook(sheetData)
-            case 'csv': return exportService.generateSeparatorTableString(titles, subscriptionData, ',')
-        }
-    }
 
     /**
      * Call for the consortium member management views. This method dispatches the call to the appropriate
@@ -2122,9 +1931,7 @@ class MyInstitutionController  {
     def currentPackages() {
 
         Map<String, Object> wekbQryParams = params.clone(), result = [:]
-        result.user = contextService.getUser()
-        result.contextOrg = contextService.getOrg()
-        SwissKnife.setPaginationParams(result, params, (User) result.user)
+        SwissKnife.setPaginationParams(result, params, contextService.getUser())
 
         if (! params.status) {
             if (params.isSiteReloaded != "yes") {
@@ -2507,7 +2314,7 @@ class MyInstitutionController  {
             //params.validOnYear = [newYear]
         }
 
-        result.propList = PropertyDefinition.findAll( "select sur.type from SurveyResult as sur where sur.participant = :contextOrg order by sur.type.name_de asc", [contextOrg: result.contextOrg]).groupBy {it}.collect {it.key}
+        result.propList = PropertyDefinition.findAll( "select sur.type from SurveyResult as sur where sur.participant = :contextOrg order by sur.type.name_de asc", [contextOrg: contextService.getOrg()]).groupBy {it}.collect {it.key}
 
         result.allConsortia = Org.executeQuery(
                 """select o from Org o, SurveyInfo surInfo where surInfo.owner = o
@@ -2579,7 +2386,6 @@ class MyInstitutionController  {
     })
     def surveyInfos() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-        result.contextOrg = contextService.getOrg()
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
         result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.long('surveyConfigID')) : result.surveyInfo.surveyConfigs[0]
@@ -2879,6 +2685,8 @@ class MyInstitutionController  {
         result.users = userData.data
         result.titleMessage = "${contextService.getOrg()}"
         result.inContextOrg = true
+        result.institution = contextService.getOrg()
+        result.contextOrg = contextService.getOrg()
         result.orgInstance = contextService.getOrg()
         result.multipleAffiliationsWarning = true
 
@@ -3807,7 +3615,6 @@ join sub.orgRelations or_sub where
                 response.contentType = "text/csv"
                 ServletOutputStream out = response.outputStream
                 out.withWriter { writer ->
-                    //writer.write((String) _exportcurrentSubscription(result.allSubscriptions,"csv", contextService.getOrg()))
                     writer.write((String) exportClickMeService.exportConsortiaParticipations(result.entries, selectedFields, contactSwitch, ExportClickMeService.FORMAT.CSV))
                 }
                 out.close()
@@ -4525,7 +4332,7 @@ join sub.orgRelations or_sub where
             if (params.selectedObjects) {
                 if (params.deleteProperties) {
                     List selectedObjects = params.list("selectedObjects")
-                    _processDeleteProperties(pd, selectedObjects, contextService.getOrg())
+                    _processDeleteProperties(pd, selectedObjects)
                 }
                 else {
                     params.list("selectedObjects").each { String id ->
@@ -4559,15 +4366,14 @@ join sub.orgRelations or_sub where
      * Call to remove the given property definition from the given objects
      * @param propDef the property definition to remove
      * @param selectedObjects the objects from which the property should be unassigned
-     * @param contextOrg the institution whose properties should be removed
      */
-    private def _processDeleteProperties(PropertyDefinition propDef, selectedObjects, Org contextOrg) {
+    private def _processDeleteProperties(PropertyDefinition propDef, selectedObjects) {
         PropertyDefinition.withTransaction {
             int deletedProperties = 0
             selectedObjects.each { ownerId ->
                 def owner = _resolveOwner(propDef, ownerId)
                 Set<AbstractPropertyWithCalculatedLastUpdated> existingProps = owner.propertySet.findAll {
-                    it.owner.id == owner.id && it.type.id == propDef.id && it.tenant?.id == contextOrg.id && !AuditConfig.getConfig(it)
+                    it.owner.id == owner.id && it.type.id == propDef.id && it.tenant?.id == contextService.getOrg().id && !AuditConfig.getConfig(it)
                 }
 
                 existingProps.each { AbstractPropertyWithCalculatedLastUpdated prop ->
@@ -4873,7 +4679,6 @@ join sub.orgRelations or_sub where
             response.contentType = "text/csv"
             ServletOutputStream out = response.outputStream
             out.withWriter { writer ->
-                //writer.write((String) _exportcurrentSubscription(result.allSubscriptions,"csv", contextService.getOrg()))
                 writer.write((String) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, ExportClickMeService.FORMAT.CSV,  true))
             }
             out.close()
