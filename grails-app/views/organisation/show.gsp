@@ -7,7 +7,7 @@
         <g:set var="entityName" value="${message(code: 'org.label')}"/>
     </g:else>
 
-<laser:htmlStart message="${'menu.institutions.org.show'}" serviceInjection="true" />
+<laser:htmlStart message="${'menu.institutions.org.show'}" />
 
 <ui:debugInfo>
     <div style="padding: 1em 0;">

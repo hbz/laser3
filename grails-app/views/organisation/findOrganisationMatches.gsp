@@ -1,7 +1,7 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.FormService" %>
 
 <g:set var="entityName" value="${message(code: 'default.institution')}" />
-<laser:htmlStart text="${message(code:"default.create.label", args:[entityName])}" serviceInjection="true"/>
+<laser:htmlStart text="${message(code:"default.create.label", args:[entityName])}" />
 
 	<ui:breadcrumbs>
 		<ui:crumb message="menu.public.all_insts" controller="organisation" action="listInstitution"  />

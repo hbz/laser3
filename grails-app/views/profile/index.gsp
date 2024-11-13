@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.UserSetting; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.auth.Role; de.laser.UserSetting.KEYS; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 
-<laser:htmlStart message="profile.user" serviceInjection="true" />
+<laser:htmlStart message="profile.user" />
 
 <ui:breadcrumbs>
     <ui:crumb message="profile.user" class="active"/>

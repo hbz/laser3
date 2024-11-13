@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.wekb.TitleInstancePackagePlatform; grails.converters.JSON" %>
 
-<laser:htmlStart text="Datenbereinigung: Gelöschte TIPPs" serviceInjection="true"/>
+<laser:htmlStart text="Datenbereinigung: Gelöschte TIPPs" />
 
     <ui:breadcrumbs>
         <ui:crumb message="menu.yoda" controller="yoda" action="index"/>

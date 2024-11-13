@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.Doc; de.laser.DocContext; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.storage.RDStore; de.laser.survey.SurveyOrg" %>
-<laser:htmlStart message="subscription.details.subTransfer.label" serviceInjection="true"/>
+<laser:htmlStart message="subscription.details.subTransfer.label" />
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 

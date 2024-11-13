@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Icon; de.laser.CopyElementsService;" %>
-<laser:htmlStart message="myinst.copyLicense" serviceInjection="true"/>
+<laser:htmlStart message="myinst.copyLicense" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="myInstitution" action="currentLicenses" message="license.current" />

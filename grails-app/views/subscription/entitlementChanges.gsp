@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; grails.converters.JSON; de.laser.PendingChangeConfiguration; de.laser.wekb.TitleInstancePackagePlatform; de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange; de.laser.TitleChange; de.laser.IssueEntitlementChange; de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.RefdataValue;" %>
 
-<laser:htmlStart message="myinst.menu.pendingChanges.label" serviceInjection="true"/>
+<laser:htmlStart message="myinst.menu.pendingChanges.label" />
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 

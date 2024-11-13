@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.RefdataValue; de.laser.RefdataCategory;" %>
-<laser:htmlStart message="createGeneralSurvey.label" serviceInjection="true"/>
+<laser:htmlStart message="createGeneralSurvey.label" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" message="currentSurveys.label"/>

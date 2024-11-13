@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.CustomerTypeService" %>
-<laser:htmlStart message="default.subscription.label" serviceInjection="true"/>
+<laser:htmlStart message="default.subscription.label" />
 
     <laser:render template="breadcrumb" model="${[ subscription:subscription, params:params ]}"/>
 

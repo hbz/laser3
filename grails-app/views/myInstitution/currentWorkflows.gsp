@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.License; de.laser.Subscription; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.storage.*; de.laser.RefdataCategory; de.laser.WorkflowService" %>
 
-<laser:htmlStart message="menu.my.workflows" serviceInjection="true"/>
+<laser:htmlStart message="menu.my.workflows" />
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.my.workflows" class="active"/>

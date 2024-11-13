@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.auth.UserRole;de.laser.Org;de.laser.auth.Role;de.laser.utils.DateUtils;" %>
-<laser:htmlStart message="user.edit.label" serviceInjection="true"/>
+<laser:htmlStart message="user.edit.label" />
 
         <laser:render template="/user/global/breadcrumb" model="${[ params:params ]}"/>
 

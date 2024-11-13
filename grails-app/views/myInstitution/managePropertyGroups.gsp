@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.properties.PropertyDefinition;de.laser.*"%>
-<laser:htmlStart message="menu.institutions.prop_groups" serviceInjection="true"/>
+<laser:htmlStart message="menu.institutions.prop_groups" />
 
         <ui:breadcrumbs>
             <ui:crumb controller="org" action="show" id="${contextService.getOrg().id}" text="${contextService.getOrg().getDesignation()}"/>

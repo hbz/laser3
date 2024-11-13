@@ -1,4 +1,4 @@
-<laser:htmlStart message="task.plural" serviceInjection="true"/>
+<laser:htmlStart message="task.plural" />
 
     <laser:render template="breadcrumb"
               model="${[vendor: vendor]}"/>

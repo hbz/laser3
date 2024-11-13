@@ -1,6 +1,6 @@
 <%@ page import="de.laser.addressbook.PersonRole; de.laser.addressbook.Address; de.laser.wekb.Package; de.laser.wekb.Vendor; de.laser.wekb.VendorLink; de.laser.ui.Btn; de.laser.ui.Icon; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.addressbook.Person; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.addressbook.Contact;" %>
 
-<laser:htmlStart message="${'menu.institutions.vendor.show'}" serviceInjection="true" />
+<laser:htmlStart message="${'menu.institutions.vendor.show'}" />
 
 <laser:render template="breadcrumb"/>
 

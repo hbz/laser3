@@ -1,5 +1,5 @@
 <%@ page import="de.laser.utils.LocaleUtils; de.laser.utils.AppUtils; de.laser.ui.Btn; de.laser.ui.Icon" %>
-<laser:htmlStart text="${message(code: 'faq')}" serviceInjection="true"/>
+<laser:htmlStart text="${message(code: 'faq')}" />
 
 <ui:h1HeaderWithIcon text="${message(code: 'faq')}" type="help"/>
 

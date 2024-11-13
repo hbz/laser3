@@ -1,6 +1,6 @@
 <%@page import="de.laser.ui.Btn; de.laser.FormService" %>
 
-<laser:htmlStart message="menu.institutions.add_consortia_members" serviceInjection="true" />
+<laser:htmlStart message="menu.institutions.add_consortia_members" />
     <g:set var="entityName" value="${message(code: 'org.label')}" />
 
     <ui:breadcrumbs>

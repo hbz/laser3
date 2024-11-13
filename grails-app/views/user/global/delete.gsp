@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.auth.User; de.laser.DeletionService" %>
-<laser:htmlStart message="user.delete.label" serviceInjection="true"/>
+<laser:htmlStart message="user.delete.label" />
 
     <laser:render template="/user/global/breadcrumb" model="${[ params:params ]}"/>
 

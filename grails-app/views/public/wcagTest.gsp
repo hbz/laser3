@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Icon; java.sql.Timestamp; de.laser.Org; de.laser.License; de.laser.Subscription; de.laser.Task; de.laser.storage.RDStore;de.laser.storage.RDConstants" %>
-<laser:htmlStart text="Komponenten zur Überprüfung der Barrierefreiheit" serviceInjection="true"/>
+<laser:htmlStart text="Komponenten zur Überprüfung der Barrierefreiheit" />
 
     <div id="modalCreateTask">
         <h1 class="ui dividing  header">Komponenten zur Überprüfung der Barrierefreiheit</h1>

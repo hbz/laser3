@@ -1,5 +1,5 @@
 <%@ page import="de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.utils.LocaleUtils; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.I10nTranslation" %>
-<laser:htmlStart message="menu.institutions.private_props" serviceInjection="true"/>
+<laser:htmlStart message="menu.institutions.private_props" />
 
     <ui:breadcrumbs>
         <ui:crumb controller="org" action="show" id="${contextService.getOrg().id}" text="${contextService.getOrg().getDesignation()}"/>

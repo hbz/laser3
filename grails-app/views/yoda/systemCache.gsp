@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Btn; de.laser.CacheService; groovy.json.JsonBuilder; de.laser.utils.DateUtils" %>
 
-<laser:htmlStart message="menu.yoda.systemCache" serviceInjection="true"/>
+<laser:htmlStart message="menu.yoda.systemCache" />
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.yoda" controller="yoda" action="index"/>

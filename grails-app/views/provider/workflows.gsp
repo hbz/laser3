@@ -1,5 +1,5 @@
 <%@ page import="de.laser.storage.RDStore;" %>
-<laser:htmlStart message="workflow.plural" serviceInjection="true" />
+<laser:htmlStart message="workflow.plural" />
 
     <laser:render template="breadcrumb" model="${[provider:provider, params:params]}"/>
 

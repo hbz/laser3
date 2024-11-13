@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Btn; de.laser.auth.User; de.laser.DeletionService" %>
 
-<laser:htmlStart message="profile" serviceInjection="true" />
+<laser:htmlStart message="profile" />
 
     <ui:breadcrumbs>
         <ui:crumb message="profile.bc.profile" class="active"/>

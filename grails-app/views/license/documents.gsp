@@ -1,5 +1,5 @@
 <%@ page import="de.laser.storage.RDStore;" %>
-<laser:htmlStart message="license.nav.docs" serviceInjection="true"/>
+<laser:htmlStart message="license.nav.docs" />
 
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 

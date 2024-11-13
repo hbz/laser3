@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.helper.Params; de.laser.CustomerTypeService; de.laser.License; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.RefdataCategory" %>
-<laser:htmlStart message="menu.my.comp_lic" serviceInjection="true"/>
+<laser:htmlStart message="menu.my.comp_lic" />
 
 <ui:breadcrumbs>
     <ui:crumb text="${message(code: 'menu.my.licenses')}" controller="myInstitution" action="currentLicenses"/>

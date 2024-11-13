@@ -1,5 +1,5 @@
 <%@page import="de.laser.Org" %>
-<laser:htmlStart message="menu.my.documents" serviceInjection="true"/>
+<laser:htmlStart message="menu.my.documents" />
 
     <ui:breadcrumbs>
       <ui:crumb message="menu.my.documents" class="active"/>

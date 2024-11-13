@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue" %>
 
-<laser:htmlStart message="myinst.financeImport.pageTitle" serviceInjection="true"/>
+<laser:htmlStart message="myinst.financeImport.pageTitle" />
 
   <ui:breadcrumbs>
       <ui:crumb controller="org" action="show" id="${contextService.getOrg().id}" text="${contextService.getOrg().getDesignation()}"/>

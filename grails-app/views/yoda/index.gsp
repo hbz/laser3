@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Icon; java.lang.management.ManagementFactory" %>
 
-<laser:htmlStart text="${message(code:'menu.yoda')} ${message(code:'default.dashboard')}" serviceInjection="true" />
+<laser:htmlStart text="${message(code:'menu.yoda')} ${message(code:'default.dashboard')}" />
 
     <ui:breadcrumbs>
         <ui:crumb message="menu.yoda" class="active"/>

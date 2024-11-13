@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.finance.CostItemGroup; de.laser.finance.BudgetCode"%>
 
-<laser:htmlStart message="menu.institutions.budgetCodes" serviceInjection="true"/>
+<laser:htmlStart message="menu.institutions.budgetCodes" />
 
     <ui:breadcrumbs>
         <ui:crumb controller="org" action="show" id="${contextService.getOrg().id}" text="${contextService.getOrg().getDesignation()}"/>

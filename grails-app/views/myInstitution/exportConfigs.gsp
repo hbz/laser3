@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
-<laser:htmlStart message="menu.institutions.clickMeConfig" serviceInjection="true"/>
+<laser:htmlStart message="menu.institutions.clickMeConfig" />
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.institutions.clickMeConfig" class="active"/>

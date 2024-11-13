@@ -1,5 +1,5 @@
 <%@ page import="de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
-<laser:htmlStart message="menu.institutions.subscriptionsManagement" serviceInjection="true"/>
+<laser:htmlStart message="menu.institutions.subscriptionsManagement" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="org" action="show" id="${contextService.getOrg().id}" text="${contextService.getOrg().getDesignation()}"/>

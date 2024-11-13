@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Icon; de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.storage.RDConstants; de.laser.utils.DateUtils; de.laser.Org; de.laser.wekb.Package; de.laser.wekb.Platform; de.laser.RefdataValue; java.text.SimpleDateFormat" %>
-<laser:htmlStart message="package.show.all" serviceInjection="true"/>
+<laser:htmlStart message="package.show.all" />
 
 <ui:breadcrumbs>
     <ui:crumb message="package.show.all" class="active"/>

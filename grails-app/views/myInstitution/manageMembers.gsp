@@ -4,7 +4,7 @@
     <g:set var="title" value="${message(code: 'menu.my.insts')}"/>
     <g:set var="memberPlural" value="${message(code: 'consortium.member.plural')}"/>
 
-<laser:htmlStart text="${title}" serviceInjection="true" />
+<laser:htmlStart text="${title}" />
 
 <ui:breadcrumbs>
     <ui:crumb text="${title}" class="active"/>

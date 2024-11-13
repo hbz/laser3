@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon;de.laser.Subscription;de.laser.License;de.laser.OrgRole;de.laser.DocContext;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.properties.PropertyDefinition;de.laser.interfaces.CalculatedType;de.laser.AuditConfig;de.laser.FormService" %>
-<laser:htmlStart message="license.details.label" serviceInjection="true"/>
+<laser:htmlStart message="license.details.label" />
 
         <ui:debugInfo>
             <div style="padding: 1em 0;">

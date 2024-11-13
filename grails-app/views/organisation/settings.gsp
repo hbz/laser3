@@ -1,7 +1,7 @@
 <%@ page import="de.laser.ui.Icon; de.laser.OrgSetting; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.auth.Role; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 <%@ page import="de.laser.CustomerTypeService; grails.plugin.springsecurity.SpringSecurityUtils" %>
 
-<laser:htmlStart message="org.nav.dataTransfer" serviceInjection="true" />
+<laser:htmlStart message="org.nav.dataTransfer" />
 
         <laser:render template="breadcrumb"
               model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>

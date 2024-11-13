@@ -1,6 +1,6 @@
 <%@ page import="de.laser.storage.RDStore; de.laser.IssueEntitlement; de.laser.PermanentTitle" %>
 
-<laser:htmlStart message="menu.admin.missingPermantTitlesInSubs" serviceInjection="true"/>
+<laser:htmlStart message="menu.admin.missingPermantTitlesInSubs" />
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.admin" controller="admin" action="index"/>

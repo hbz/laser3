@@ -7,7 +7,7 @@
         <g:set var="pageTitle" value="${message(code: 'copyElementsIntoObject.subscription')}" />
     </g:else>
 
-<laser:htmlStart text="${pageTitle}" serviceInjection="true" />
+<laser:htmlStart text="${pageTitle}" />
 
     <g:if test="${fromSurvey}">
         <ui:breadcrumbs>

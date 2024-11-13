@@ -1,6 +1,6 @@
 <%@ page import="de.laser.addressbook.PersonRole; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.helper.Params; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Org; de.laser.addressbook.Person; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.utils.DateUtils" %>
 
-<laser:htmlStart message="menu.institutions.addressbook" serviceInjection="true" />
+<laser:htmlStart message="menu.institutions.addressbook" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="org" action="show" id="${contextService.getOrg().id}" text="${contextService.getOrg().getDesignation()}"/>

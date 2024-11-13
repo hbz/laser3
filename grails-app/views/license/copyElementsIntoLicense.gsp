@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Icon; de.laser.addressbook.Person; de.laser.RefdataValue; de.laser.SubscriptionController; de.laser.CopyElementsService" %>
 
-<laser:htmlStart message="copyElementsIntoObject.license" serviceInjection="true"/>
+<laser:htmlStart message="copyElementsIntoObject.license" />
 
 <ui:breadcrumbs>
     <ui:crumb text="${message(code:'license.current')}" controller="myInstitution" action="currentLicenses" />

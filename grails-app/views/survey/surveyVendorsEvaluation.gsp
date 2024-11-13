@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue; de.laser.storage.RDStore" %>
-<laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyVendorsEvaluation.label')})" serviceInjection="true"/>
+<laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyVendorsEvaluation.label')})" />
 <laser:javascript src="echarts.js"/>
 
 <ui:breadcrumbs>

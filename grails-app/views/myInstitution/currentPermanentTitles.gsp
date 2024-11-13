@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.IssueEntitlement; de.laser.PermanentTitle" %>
-<laser:htmlStart message="myinst.currentPermanentTitles.label" serviceInjection="true"/>
+<laser:htmlStart message="myinst.currentPermanentTitles.label" />
 
 <ui:breadcrumbs>
     <ui:crumb message="myinst.currentPermanentTitles.label" class="active"/>

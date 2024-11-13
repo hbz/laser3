@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Icon; de.laser.I10nTranslation; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory; grails.plugin.springsecurity.SpringSecurityUtils" %>
 
-<laser:htmlStart message="menu.institutions.prop_defs" serviceInjection="true" />
+<laser:htmlStart message="menu.institutions.prop_defs" />
 
     <ui:breadcrumbs>
         <ui:crumb controller="org" action="show" id="${contextService.getOrg().id}" text="${contextService.getOrg().getDesignation()}"/>

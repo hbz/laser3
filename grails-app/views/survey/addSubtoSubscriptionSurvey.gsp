@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyConfig; de.laser.RefdataValue; de.laser.RefdataCategory" %>
 
-<laser:htmlStart message="createSubscriptionSurvey.label" serviceInjection="true" />
+<laser:htmlStart message="createSubscriptionSurvey.label" />
 
 <ui:breadcrumbs>
 

@@ -1,4 +1,4 @@
-<laser:htmlStart message="workflow.plural" serviceInjection="true" />
+<laser:htmlStart message="workflow.plural" />
 
     <laser:render template="breadcrumb"
               model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>

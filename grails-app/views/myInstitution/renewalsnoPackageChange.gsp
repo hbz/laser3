@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn" %>
-<laser:htmlStart message="myinst.renewals" serviceInjection="true"/>
+<laser:htmlStart message="myinst.renewals" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}"/>

@@ -2,7 +2,7 @@
 
 <g:set var="entityName" value="${message(code: 'provider.label')}"/>
 
-<laser:htmlStart message="${'menu.institutions.provider.show'}" serviceInjection="true" />
+<laser:htmlStart message="${'menu.institutions.provider.show'}" />
 
 %{-- help sidebar --}%
 <laser:render template="/templates/flyouts/dateCreatedLastUpdated" model="[obj: provider]"/>

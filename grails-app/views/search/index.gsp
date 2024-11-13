@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.survey.SurveyConfig; de.laser.I10nTranslation; de.laser.RefdataValue; de.laser.DocContext;de.laser.storage.RDStore; java.text.SimpleDateFormat;" %>
 
-<laser:htmlStart message="search.advancedSearch" serviceInjection="true"/>
+<laser:htmlStart message="search.advancedSearch" />
 
 <%
     SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMddTHHmmssZ()

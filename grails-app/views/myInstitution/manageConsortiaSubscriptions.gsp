@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ExportClickMeService; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 
-<laser:htmlStart message="menu.my.consortiaSubscriptions" serviceInjection="true"/>
+<laser:htmlStart message="menu.my.consortiaSubscriptions" />
 
     <g:set var="entityName" value="${message(code: 'org.label')}"/>
 

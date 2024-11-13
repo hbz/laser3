@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn" %>
-<laser:htmlStart message="financials.editCost" serviceInjection="true"/>
+<laser:htmlStart message="financials.editCost" />
 
 <ui:breadcrumbs>
     <g:if test="${costItem.sub}">

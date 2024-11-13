@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Icon; de.laser.addressbook.Person; de.laser.RefdataValue; de.laser.SubscriptionController; de.laser.CopyElementsService" %>
-<laser:htmlStart message="subscription.details.copyMyElements.label" serviceInjection="true" />
+<laser:htmlStart message="subscription.details.copyMyElements.label" />
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 

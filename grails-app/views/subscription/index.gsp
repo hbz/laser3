@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.IssueEntitlementCoverage; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.Subscription; de.laser.wekb.Package; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
 
-<laser:htmlStart message="subscription.details.current_ent" serviceInjection="true"/>
+<laser:htmlStart message="subscription.details.current_ent" />
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 <ui:controlButtons>

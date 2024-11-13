@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.CustomerTypeService; de.laser.OrgRole; grails.converters.JSON;de.laser.storage.RDStore;de.laser.finance.CostItem" %>
-<laser:htmlStart message="myinst.financeImport.post.title" serviceInjection="true"/>
+<laser:htmlStart message="myinst.financeImport.post.title" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}" />

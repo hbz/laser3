@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.CustomerTypeService; de.laser.AuditConfig;de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore;" %>
-<laser:htmlStart message="myinst.renewals" serviceInjection="true"/>
+<laser:htmlStart message="myinst.renewals" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label"/>

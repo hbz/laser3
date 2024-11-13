@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.helper.Params; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.IssueEntitlement; de.laser.wekb.Platform; de.laser.remote.ApiSource; de.laser.PermanentTitle; de.laser.Subscription" %>
-<laser:htmlStart message="myinst.currentTitles.label" serviceInjection="true"/>
+<laser:htmlStart message="myinst.currentTitles.label" />
 
 <ui:breadcrumbs>
     <ui:crumb message="myinst.currentTitles.label" class="active"/>

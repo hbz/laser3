@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.ApiSource; de.laser.Subscription; de.laser.wekb.Package; de.laser.RefdataCategory; de.laser.storage.RDStore" %>
-<laser:htmlStart message="surveyShow.label" serviceInjection="true"/>
+<laser:htmlStart message="surveyShow.label" />
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
