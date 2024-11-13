@@ -98,8 +98,7 @@ class AccessPointController  {
 
         Org org = orgAccessPoint.org
         Long orgId = org.id
-        Org contextOrg = contextService.getOrg()
-        boolean inContextOrg = (orgId == contextOrg.id)
+        boolean inContextOrg = (orgId == contextService.getOrg().id)
         ArrayList linkedPlatformSubscriptionPackages = Platform.executeQuery(qry, [currentSubIds: currentSubIds])
         render(template: "linked_subs_table", model: [linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages, inContextOrg: inContextOrg, params:params])
     }
@@ -135,8 +134,7 @@ class AccessPointController  {
         }
         Org org = orgAccessPoint.org
         Long orgId = org.id
-        Org contextOrg = contextService.getOrg()
-        boolean inContextOrg = (orgId == contextOrg.id)
+        boolean inContextOrg = (orgId == contextService.getOrg().id)
 
         render(template: "linked_platforms_table", model: [linkedPlatforms: linkedPlatforms, inContextOrg: inContextOrg,  params:params, accessPoint: orgAccessPoint])
     }

@@ -61,7 +61,7 @@
                     <td>
                         <article class="la-readmore">
                         <g:each in="${object.getLicenses()?.sort{it.reference}}" var="license">
-                            <g:if test="${contextOrg.id in license.orgRelations?.org.id}">
+                            <g:if test="${contextService.getOrg().id in license.orgRelations?.org.id}">
                             <strong>
                                 <i class="${Icon.LICENSE}"></i>&nbsp;${license.licenseCategory?.getI10n("value")}:
                             </strong>
@@ -86,7 +86,7 @@
                     <td>
                         <article class="la-readmore">
                         <g:each in="${object.getSubscriptions()?.sort{it.name}}" var="subscription">
-                            <g:if test="${contextOrg.id in subscription.orgRelations?.org.id}">
+                            <g:if test="${contextService.getOrg().id in subscription.orgRelations?.org.id}">
                             <strong><i class="${Icon.SUBSCRIPTION}"></i>&nbsp;${subscription.kind?.getI10n("value")}:
                             </strong>
                             <g:link controller="subscription" action="show" target="_blank" id="${subscription.id}">
@@ -111,7 +111,7 @@
                 <g:each in="${objects}" var="object">
                     <td>
                         <g:each in="${object.orgRelations?.sort{it.org.name}}" var="role">
-                            <g:if test="${(role.roleType in [RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM, RDStore.OR_SUBSCRIPTION_CONSORTIUM]) && role.org.id != contextOrg.id}">
+                            <g:if test="${(role.roleType in [RDStore.OR_LICENSOR, RDStore.OR_LICENSING_CONSORTIUM, RDStore.OR_SUBSCRIPTION_CONSORTIUM]) && role.org.id != contextService.getOrg().id}">
                                 <strong><i class="${Icon.ORG}"></i>&nbsp;${role.roleType.getI10n("value")}:
                                 </strong>
                                 <g:link controller="organisation" action="show" target="_blank"
@@ -196,7 +196,7 @@
                     <td>
                     <g:each in="${object.providers}" var="provider">
                             <g:if test="${Person.getPublicByOrgAndObjectResp(provider, object, 'Specific subscription editor') ||
-                                    Person.getPrivateByOrgAndObjectRespFromAddressbook(provider, object, 'Specific subscription editor', contextOrg)}">
+                                    Person.getPrivateByOrgAndObjectRespFromAddressbook(provider, object, 'Specific subscription editor', contextService.getOrg())}">
 
                             <%-- public --%>
                                 <g:each in="${Person.getPublicByOrgAndObjectResp(provider, object, 'Specific subscription editor')}"
@@ -214,7 +214,7 @@
                                 </g:each>
                             <%-- public --%>
                             <%-- private --%>
-                                <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(provider, object, 'Specific subscription editor', contextOrg)}"
+                                <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(provider, object, 'Specific subscription editor', contextService.getOrg())}"
                                         var="resp">
                                     <span class="la-popup-tooltip"
                                           data-content="${message(code: 'address.private')}"
@@ -232,7 +232,7 @@
 
                     <g:each in="${object.vendors}" var="vendor">
                         <g:if test="${Person.getPublicByOrgAndObjectResp(vendor, object, 'Specific subscription editor') ||
-                                Person.getPrivateByOrgAndObjectRespFromAddressbook(vendor, object, 'Specific subscription editor', contextOrg)}">
+                                Person.getPrivateByOrgAndObjectRespFromAddressbook(vendor, object, 'Specific subscription editor', contextService.getOrg())}">
 
                         <%-- public --%>
                             <g:each in="${Person.getPublicByOrgAndObjectResp(vendor, object, 'Specific subscription editor')}"
@@ -250,7 +250,7 @@
                             </g:each>
                         <%-- public --%>
                         <%-- private --%>
-                            <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(vendor, object, 'Specific subscription editor', contextOrg)}"
+                            <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(vendor, object, 'Specific subscription editor', contextService.getOrg())}"
                                     var="resp">
                                 <span class="la-popup-tooltip"
                                       data-content="${message(code: 'address.private')}"

@@ -160,7 +160,9 @@ class PlatformControllerService {
         result.contextOrg = result.institution //temp fixPlatform platformInstance = Platform.get(params.id)
 
         result.platformInstance = Platform.get(params.id)
-        int relationCheck = Platform.executeQuery('select count(sp) from SubscriptionPackage sp join sp.pkg pkg where pkg.nominalPlatform = :plat and sp.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true)))',[plat: result.platformInstance, context: result.institution, current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED])[0]
+        int relationCheck = Platform.executeQuery(
+                'select count(sp) from SubscriptionPackage sp join sp.pkg pkg where pkg.nominalPlatform = :plat and sp.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true)))',
+                [plat: result.platformInstance, context: contextService.getOrg(), current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED])[0]
         result.isMyPlatform = relationCheck > 0
         result
     }
