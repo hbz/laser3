@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon;de.laser.Subscription;de.laser.License;de.laser.OrgRole;de.laser.DocContext;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.properties.PropertyDefinition;de.laser.interfaces.CalculatedType;de.laser.AuditConfig;de.laser.FormService" %>
-<laser:htmlStart message="license.details.label" serviceInjection="true"/>
+<laser:htmlStart message="license.details.label" />
 
         <ui:debugInfo>
             <div style="padding: 1em 0;">
@@ -40,7 +40,7 @@
 
         <%--<ui:objectStatus object="${license}" status="${license.status}" />--%>
 
-        <g:if test="${license.instanceOf && (institution.id == license.getLicensingConsortium()?.id)}">
+        <g:if test="${license.instanceOf && (contextService.getOrg().id == license.getLicensingConsortium()?.id)}">
                 <ui:msg class="error" header="${message(code:'myinst.message.attention')}" hideClose="true">
                     <g:message code="myinst.licenseDetails.message.ChildView" />
                     <g:message code="myinst.licenseDetails.message.ConsortialView" />
@@ -338,7 +338,7 @@
                                     </g:if>
                                 </dl>
 
-                                <g:if test="${license.instanceOf && institution.id == license.getLicensingConsortium().id}">
+                                <g:if test="${license.instanceOf && contextService.getOrg().id == license.getLicensingConsortium().id}">
                                     <dl>
                                         <dt class="control-label">${message(code:'license.linktoLicense')}</dt>
                                         <g:link controller="license" action="show" id="${license.instanceOf.id}">${license.instanceOf}</g:link>

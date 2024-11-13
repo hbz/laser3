@@ -1,8 +1,8 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.addressbook.Person; de.laser.storage.RDStore; de.laser.RefdataCategory; grails.plugins.orm.auditable.Auditable; de.laser.AuditConfig" %>
-<laser:htmlStart message="menu.institutions.manage_props" serviceInjection="true"/>
+<laser:htmlStart message="menu.institutions.manage_props" />
 
 <ui:breadcrumbs>
-    <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
+    <ui:crumb controller="org" action="show" id="${contextService.getOrg().id}" text="${contextService.getOrg().getDesignation()}"/>
     <ui:crumb message="menu.institutions.manage_props" class="active" />
 </ui:breadcrumbs>
 
@@ -134,7 +134,7 @@
                                     <g:if test="${filterPropDef.tenant == null}">
                                         <div class="item">
 
-                                            <g:set var="customProperty" value="${objWithoutProp.propertySet.find { it.tenant?.id == institution.id && it.type == filterPropDef }}"/>
+                                            <g:set var="customProperty" value="${objWithoutProp.propertySet.find { it.tenant?.id == contextService.getOrg().id && it.type == filterPropDef }}"/>
                                             <g:if test="${customProperty}">
                                                 <div class="header">${message(code: 'subscriptionsManagement.CustomProperty')}: ${filterPropDef.getI10n('name')}</div>
 
@@ -199,7 +199,7 @@
 
                                             <g:set var="privateProperty" value="${objWithoutProp.propertySet.find { it.type == filterPropDef }}"/>
                                             <g:if test="${privateProperty}">
-                                                <div class="header">${message(code: 'subscriptionsManagement.PrivateProperty')} ${institution}: ${filterPropDef.getI10n('name')}</div>
+                                                <div class="header">${message(code: 'subscriptionsManagement.PrivateProperty')} ${contextService.getOrg()}: ${filterPropDef.getI10n('name')}</div>
 
                                                 <div class="content">
                                                     <p>
@@ -377,7 +377,7 @@
                                     <g:if test="${filterPropDef.tenant == null}">
                                         <div class="item">
 
-                                            <g:set var="customProperty" value="${row.propertySet.find { it.tenant?.id == institution.id && it.type.id == filterPropDef.id }}"/>
+                                            <g:set var="customProperty" value="${row.propertySet.find { it.tenant?.id == contextService.getOrg().id && it.type.id == filterPropDef.id }}"/>
                                             <g:if test="${customProperty}">
                                                 <div class="header">${message(code: 'subscriptionsManagement.CustomProperty')}: ${filterPropDef.getI10n('name')}</div>
 

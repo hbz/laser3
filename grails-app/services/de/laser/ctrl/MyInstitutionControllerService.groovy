@@ -50,7 +50,7 @@ class MyInstitutionControllerService {
         prf.setBenchmark('init')
         Map<String, Object> result = getResultGenerics(controller, params)
 
-        if (! (result.user as User).isFormal(result.institution as Org)) {
+        if (! (result.user as User).isFormal(contextService.getOrg())) {
             return [status: STATUS_ERROR, result: result]
         }
 
@@ -114,7 +114,7 @@ class MyInstitutionControllerService {
         if (workflowService.hasREAD()){
             List<WfChecklist> workflows = []
 
-            workflowService.sortByLastUpdated( WfChecklist.findAllByOwner(result.institution) ).each { clist ->
+            workflowService.sortByLastUpdated( WfChecklist.findAllByOwner(contextService.getOrg()) ).each { clist ->
                 Map info = clist.getInfo()
 
                 if (info.status == RDStore.WF_WORKFLOW_STATUS_OPEN) {

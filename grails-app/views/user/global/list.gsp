@@ -1,5 +1,5 @@
 <%@ page import="de.laser.*; de.laser.auth.*" %>
-<laser:htmlStart message="menu.institutions.users" serviceInjection="true"/>
+<laser:htmlStart message="menu.institutions.users" />
     <ui:debugInfo>
         <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
     </ui:debugInfo>

@@ -1,6 +1,6 @@
 <%@ page import="de.laser.addressbook.PersonRole; de.laser.ui.Btn; de.laser.helper.Params; de.laser.Org; de.laser.addressbook.Person; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants " %>
 
-<laser:htmlStart message="menu.institutions.myAddressbook" serviceInjection="true"/>
+<laser:htmlStart message="menu.institutions.myAddressbook" />
 
 <laser:render template="breadcrumb" model="${[vendor: vendor]}"/>
 

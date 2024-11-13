@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;" %>
-<laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyParticipants.label')})" serviceInjection="true"/>
+<laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyParticipants.label')})" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code:'menu.my.surveys')}" />

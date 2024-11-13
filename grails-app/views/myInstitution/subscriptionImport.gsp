@@ -1,5 +1,5 @@
 <%@ page import="de.laser.IdentifierNamespace; de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
-<laser:htmlStart message="myinst.subscriptionImport.pageTitle" serviceInjection="true"/>
+<laser:htmlStart message="myinst.subscriptionImport.pageTitle" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label"/>
@@ -41,7 +41,7 @@
         </p>
             <%
                 String templatePath = 'LizenzImportVollnutzerBeispiel.csv'
-                if(institution.isCustomerType_Consortium()) {
+                if(contextService.getOrg().isCustomerType_Consortium()) {
                     templatePath = 'bulk_load_subscription_records_template.csv'
                 }
             %>

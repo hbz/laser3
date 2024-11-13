@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn" %>
-<laser:htmlStart message="org.label" serviceInjection="true"/>
+<laser:htmlStart message="org.label" />
 
     <laser:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
 

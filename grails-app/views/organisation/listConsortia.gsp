@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ExportClickMeService; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService" %>
-<laser:htmlStart message="menu.public.all_cons" serviceInjection="true"/>
+<laser:htmlStart message="menu.public.all_cons" />
 
         <g:set var="entityName" value="${message(code: 'org.label')}" />
 

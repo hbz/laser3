@@ -1,5 +1,5 @@
 <%@ page import="de.laser.addressbook.PersonRole; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
-<laser:htmlStart message="mail.sendMail.label" serviceInjection="true"/>
+<laser:htmlStart message="mail.sendMail.label" />
 
 <ui:breadcrumbs>
     <g:if test="${surveyInfo}">

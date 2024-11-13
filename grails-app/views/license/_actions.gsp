@@ -2,7 +2,7 @@
 <laser:serviceInjection />
 <g:if test="${actionName == 'show'}">
     <ui:exportDropdown>
-        <g:set var="validationPrecheckErrors" value="${licenseService.precheckValidation(license, institution)}"/>
+        <g:set var="validationPrecheckErrors" value="${licenseService.precheckValidation(license, contextService.getOrg())}"/>
         <g:if test="${validationPrecheckErrors}">
             <ui:actionsDropdownItemDisabled tooltip="${validationPrecheckErrors}" message="Export ONIX-PL"/>
         </g:if>
@@ -20,7 +20,7 @@
     <ui:actionsDropdown>
         <laser:render template="/templates/sidebar/actions" />
         <g:if test="${editable}">
-            <g:if test="${license.getLicensingConsortium()?.id == institution.id}">
+            <g:if test="${license.getLicensingConsortium()?.id == contextService.getOrg().id}">
                 <g:if test="${!( license.instanceOf )}">
                     <div class="divider"></div>
                 <%-- TODO integrate confirmation in actionsDropdownItem --%>
@@ -47,7 +47,7 @@
         </g:if>
         <g:if test="${actionName == 'show'}">
             <%-- the second clause is to prevent the menu display for consortia at member subscriptions --%>
-            <g:if test="${contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC) && !(institution.id == license.getLicensingConsortium()?.id && license.instanceOf)}">
+            <g:if test="${contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC) && !(contextService.getOrg().id == license.getLicensingConsortium()?.id && license.instanceOf)}">
                 <div class="divider"></div>
                 <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
             </g:if>

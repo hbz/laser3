@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Icon; de.laser.RefdataValue; de.laser.CopyElementsService;de.laser.storage.RDStore;" %>
 
-<laser:htmlStart message="copyElementsIntoObject.survey" serviceInjection="true"/>
+<laser:htmlStart message="copyElementsIntoObject.survey" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code:'menu.my.surveys')}" />

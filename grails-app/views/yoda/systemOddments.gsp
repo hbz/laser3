@@ -1,4 +1,4 @@
-<laser:htmlStart message="menu.yoda.systemOddments" serviceInjection="true"/>
+<laser:htmlStart message="menu.yoda.systemOddments" />
 
     <ui:breadcrumbs>
         <ui:crumb message="menu.yoda" controller="yoda" action="index"/>

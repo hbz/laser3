@@ -1,11 +1,9 @@
 <%@ page import="de.laser.addressbook.PersonRole; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.helper.Params; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Org; de.laser.addressbook.Person; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.utils.DateUtils" %>
 
-<laser:serviceInjection/>
-
 <laser:htmlStart message="menu.institutions.addressbook" />
 
 <ui:breadcrumbs>
-    <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
+    <ui:crumb controller="org" action="show" id="${contextService.getOrg().id}" text="${contextService.getOrg().getDesignation()}"/>
     <ui:crumb message="menu.institutions.addressbook" class="active"/>
 </ui:breadcrumbs>
 
@@ -24,7 +22,7 @@
             <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForVendor');">
                 <i class="${Icon.ACP_PRIVATE}"></i><g:message code="person.create_new.contactPersonForVendor.label"/>
             </a>
-            <g:if test="${institution.isCustomerType_Consortium()}">
+            <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                 <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForInstitution');">
                     <i class="${Icon.ACP_PRIVATE}"></i><g:message code="person.create_new.contactPersonForInstitution.label"/>
                 </a>
@@ -39,7 +37,7 @@
             <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForVendor');">
                 <i class="${Icon.ADDRESS}"></i><g:message code="address.add.addressForVendor.label"/>
             </a>
-            <g:if test="${institution.isCustomerType_Consortium()}">
+            <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                 <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForInstitution');">
                     <i class="${Icon.ADDRESS}"></i><g:message code="address.add.addressForInstitution.label"/>
                 </a>

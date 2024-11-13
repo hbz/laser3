@@ -1497,8 +1497,8 @@ class AjaxController {
         result.institution = contextService.getOrg()
         flash.error = ''
 
-        if (! (result.user as User).isFormal(result.institution as Org)) {
-            flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
+        if (! (result.user as User).isFormal(contextService.getOrg())) {
+            flash.error = "You do not have permission to access. Please request access on the profile page"
             response.sendError(HttpStatus.SC_FORBIDDEN)
             return
         }
@@ -1558,8 +1558,8 @@ class AjaxController {
         result.institution = contextService.getOrg()
         flash.error = ''
 
-        if (! (result.user as User).isFormal(result.institution as Org)) {
-            flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
+        if (! (result.user as User).isFormal(contextService.getOrg())) {
+            flash.error = "You do not have permission to access. Please request access on the profile page"
             response.sendError(HttpStatus.SC_FORBIDDEN)
             return
         }

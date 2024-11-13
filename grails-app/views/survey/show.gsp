@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.survey.SurveyResult" %>
-<laser:htmlStart message="surveyShow.label" serviceInjection="true"/>
+<laser:htmlStart message="surveyShow.label" />
 
 <ui:debugInfo>
     <div style="padding: 1em 0;">

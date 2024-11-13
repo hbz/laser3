@@ -1,5 +1,5 @@
 <%@ page import="de.laser.FormService; de.laser.storage.PropertyStore; de.laser.properties.SubscriptionProperty; de.laser.ui.Btn; de.laser.ui.Icon; java.text.SimpleDateFormat; grails.converters.JSON; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.Subscription; de.laser.wekb.Platform; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report; de.laser.interfaces.CalculatedType; de.laser.base.AbstractReport; de.laser.finance.CostItem; de.laser.base.AbstractReport; de.laser.finance.CostItem" %>
-<laser:htmlStart message="subscription.details.stats.label" serviceInjection="true"/>
+<laser:htmlStart message="subscription.details.stats.label" />
     <laser:javascript src="echarts.js"/>
         <ui:debugInfo>
             <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />

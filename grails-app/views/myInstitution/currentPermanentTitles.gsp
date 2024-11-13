@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.IssueEntitlement; de.laser.PermanentTitle" %>
-<laser:htmlStart message="myinst.currentPermanentTitles.label"/>
+<laser:htmlStart message="myinst.currentPermanentTitles.label" />
 
 <ui:breadcrumbs>
     <ui:crumb message="myinst.currentPermanentTitles.label" class="active"/>
@@ -52,13 +52,13 @@
                                         <div class="ui raised segments la-accordion-segments">
                                             <%
                                                 String instanceFilter = ''
-                                                if (institution.isCustomerType_Consortium())
+                                                if (contextService.getOrg().isCustomerType_Consortium())
                                                     instanceFilter += ' and sub.instanceOf = null'
-                                                Set<IssueEntitlement> ie_infos = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.org = :context and ie.tipp = :tipp and ie.status != :ieStatus' + instanceFilter, [ieStatus: RDStore.TIPP_STATUS_REMOVED, context: institution, tipp: tipp])
+                                                Set<IssueEntitlement> ie_infos = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.org = :context and ie.tipp = :tipp and ie.status != :ieStatus' + instanceFilter, [ieStatus: RDStore.TIPP_STATUS_REMOVED, context: contextService.getOrg(), tipp: tipp])
                                             %>
 
                                             <g:render template="/templates/titles/title_segment_accordion"
-                                                      model="[ie: null, tipp: tipp, permanentTitle: PermanentTitle.findByOwnerAndTipp(institution, tipp)]"/>
+                                                      model="[ie: null, tipp: tipp, permanentTitle: PermanentTitle.findByOwnerAndTipp(contextService.getOrg(), tipp)]"/>
 
                                             <div class="ui fluid segment content" data-ajaxTargetWrap="true">
                                                 <div class="ui stackable grid" data-ajaxTarget="true">
@@ -167,7 +167,7 @@
                                                                             <div class="header">
                                                                                 <g:link controller="subscription"
                                                                                         action="index"
-                                                                                        id="${ie.subscription.id}">${ie.subscription.dropdownNamingConvention(institution)}</g:link>
+                                                                                        id="${ie.subscription.id}">${ie.subscription.dropdownNamingConvention(contextService.getOrg())}</g:link>
                                                                             </div>
                                                                             <div class="description">
                                                                                 <g:link controller="issueEntitlement"

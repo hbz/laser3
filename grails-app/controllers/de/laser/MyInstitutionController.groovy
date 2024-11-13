@@ -188,7 +188,7 @@ class MyInstitutionController  {
         result.contextOrg = contextService.getOrg()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.PLA_PROP], contextService.getOrg())
-        Map<String, Object> subscriptionParams = [contextOrg:result.contextOrg, roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIUM]]
+        Map<String, Object> subscriptionParams = [contextOrg:contextService.getOrg(), roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIUM]]
 
         String instanceFilter = "", subFilter = ""
         if (! params.status) {
@@ -217,7 +217,7 @@ class MyInstitutionController  {
         }
 
 
-        if(result.contextOrg.isCustomerType_Consortium())
+        if(contextService.getOrg().isCustomerType_Consortium())
             instanceFilter += " and s2.instanceOf = null "
         String subscriptionQuery = 'select s2 from OrgRole oo join oo.sub s2 where oo.org = :contextOrg and oo.roleType in (:roleTypes) and ('+subFilter+')'+instanceFilter
 

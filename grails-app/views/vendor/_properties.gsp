@@ -5,17 +5,17 @@
 <%-- private properties --%>
 <div class="ui card la-dl-no-table">
     <div class="content">
-        <h2 class="ui header">${message(code:'org.properties.private')} ${institution.name}</h2>
-        <g:set var="propertyWrapper" value="private-property-wrapper-${institution.id}" />
+        <h2 class="ui header">${message(code:'org.properties.private')} ${contextService.getOrg().name}</h2>
+        <g:set var="propertyWrapper" value="private-property-wrapper-${contextService.getOrg().id}" />
         <div id="${propertyWrapper}">
             <laser:render template="/templates/properties/private" model="${[
                 prop_desc: PropertyDefinition.VEN_PROP,
                 ownobj: vendor,
                 propertyWrapper: "${propertyWrapper}",
-                tenant: institution
+                tenant: contextService.getOrg()
             ]}"/>
             <laser:script file="${this.getGroovyPageFileName()}">
-                c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${institution.id});
+                c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${contextService.getOrg().id});
             </laser:script>
         </div>
     </div>

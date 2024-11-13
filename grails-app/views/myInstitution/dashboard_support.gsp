@@ -1,12 +1,12 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.AppUtils; de.laser.CustomerTypeService; de.laser.workflow.WfChecklist; de.laser.workflow.WfCheckpoint; de.laser.storage.RDStore; de.laser.utils.DateUtils; de.laser.workflow.WorkflowHelper; de.laser.UserSetting; de.laser.system.SystemAnnouncement; de.laser.storage.RDConstants; de.laser.AccessService; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
 
-<laser:htmlStart message="menu.institutions.dash" serviceInjection="true"/>
+<laser:htmlStart message="menu.institutions.dash" />
 
         <ui:breadcrumbs>
             <ui:crumb text="${message(code:'menu.institutions.dash')}" class="active" />
         </ui:breadcrumbs>
 
-        <ui:h1HeaderWithIcon text="${institution.name}" />
+        <ui:h1HeaderWithIcon text="${contextService.getOrg().name}" />
 
         <div class="ui equal width grid la-clear-before" style="margin:1em 0;">
             <div class="row">
@@ -59,7 +59,7 @@
                         <div class="item">
                             <i class="${Icon.ORG} la-list-icon"></i>
                             <div class="content">
-                                <g:link controller="org" action="show" id="${institution.id}">${message(code: 'menu.institutions.org.show')}</g:link>
+                                <g:link controller="org" action="show" id="${contextService.getOrg().id}">${message(code: 'menu.institutions.org.show')}</g:link>
                             </div>
                         </div>
                         <div class="item">

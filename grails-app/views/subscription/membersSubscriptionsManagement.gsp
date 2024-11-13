@@ -1,5 +1,5 @@
 <%@ page import="de.laser.License; de.laser.addressbook.Person; de.laser.storage.RDStore; de.laser.FormService" %>
-<laser:htmlStart message="subscriptionsManagement.subscriptions.members" serviceInjection="true"/>
+<laser:htmlStart message="subscriptionsManagement.subscriptions.members" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code: 'myinst.currentSubscriptions.label')}"/>

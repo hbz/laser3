@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.IssueEntitlementGroup;" %>
 
-<laser:htmlStart message="createIssueEntitlementsSurvey.label" serviceInjection="true" />
+<laser:htmlStart message="createIssueEntitlementsSurvey.label" />
 
 <ui:breadcrumbs>
 

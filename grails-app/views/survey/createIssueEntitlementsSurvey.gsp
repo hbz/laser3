@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.Subscription; de.laser.RefdataCategory; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.finance.CostItem" %>
 
-<laser:htmlStart message="myinst.currentSubscriptions.label" serviceInjection="true"/>
+<laser:htmlStart message="myinst.currentSubscriptions.label" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}"/>

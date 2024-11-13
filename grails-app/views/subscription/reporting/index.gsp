@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.reporting.report.ReportingCache; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.storage.RDStore;" %>
-<laser:htmlStart message="myinst.reporting" serviceInjection="true">
+<laser:htmlStart message="myinst.reporting">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
 

@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Org; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.storage.RDConstants;" %>
 
-<laser:htmlStart message="org.nav.accessPoints" serviceInjection="true" />
+<laser:htmlStart message="org.nav.accessPoints" />
         <g:set var="entityName" value="${message(code: 'org.label')}" />
 
     <ui:controlButtons>

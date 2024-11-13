@@ -1,6 +1,6 @@
 <%@ page import="de.laser.addressbook.Person; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.CustomerTypeService; de.laser.storage.BeanStore; de.laser.finance.CostItem; de.laser.Links; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.Subscription" %>
 
-<laser:htmlStart text="${BeanStore.getContextService().getOrg().isCustomerType_Consortium() ? message(code:'subscription.details.consortiaMembers.label') : ''}" serviceInjection="true" />
+<laser:htmlStart text="${BeanStore.getContextService().getOrg().isCustomerType_Consortium() ? message(code:'subscription.details.consortiaMembers.label') : ''}" />
 
     <laser:render template="breadcrumb" model="${[ params:params ]}"/>
 

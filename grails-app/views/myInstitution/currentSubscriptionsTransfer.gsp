@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.helper.Params; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Subscription; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.Org; de.laser.CustomerTypeService; de.laser.Doc; de.laser.survey.SurveyOrg;" %>
 
-<laser:htmlStart message="menu.my.currentSubscriptionsTransfer" serviceInjection="true"/>
+<laser:htmlStart message="menu.my.currentSubscriptionsTransfer" />
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.my.currentSubscriptionsTransfer" class="active"/>

@@ -1,7 +1,7 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.oap.OrgAccessPoint; de.laser.storage.RDConstants" %>
 
 <g:set var="entityName" value="${message(code: 'accessPoint.label')}"/>
-<laser:htmlStart text="${message(code: "default.edit.label", args: [entityName])}" serviceInjection="true"/>
+<laser:htmlStart text="${message(code: "default.edit.label", args: [entityName])}" />
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('body').attr('class', 'organisation_accessPoint_edit_${accessPoint.accessMethod}');

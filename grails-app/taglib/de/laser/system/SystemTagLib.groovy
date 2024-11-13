@@ -64,9 +64,8 @@ class SystemTagLib {
             title = title + ' : ' + message(code: attrs.message, args: attrs.args)
         }
 
-        if (attrs.serviceInjection) {
-            laser.serviceInjection()
-        }
+        laser.serviceInjection()
+
         out << '<!doctype html><html><head>'
         out << '<meta name="layout" content="laser">'
         out << '<title>' + title + '</title>'

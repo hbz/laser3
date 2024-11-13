@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Btn; de.laser.*;de.laser.auth.Role" %>
 
-<laser:htmlStart message="user.create_new.label" serviceInjection="true" />
+<laser:htmlStart message="user.create_new.label" />
 
     %{--<g:if test="${controllerName == 'myInstitution'}">
         // myInstitution has no breadcrumb yet

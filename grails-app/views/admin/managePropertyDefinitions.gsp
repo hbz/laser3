@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.I10nTranslation; grails.plugin.springsecurity.SpringSecurityUtils" %>
 
-<laser:htmlStart message="menu.admin.managePropertyDefinitions" serviceInjection="true"/>
+<laser:htmlStart message="menu.admin.managePropertyDefinitions" />
 
 		<ui:breadcrumbs>
 			<ui:crumb message="menu.admin" controller="admin" action="index" />

@@ -1,5 +1,5 @@
 <%@ page import="de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.wekb.Platform; de.laser.storage.RDStore" %>
-<laser:htmlStart message="menu.my.platforms" serviceInjection="true" />
+<laser:htmlStart message="menu.my.platforms" />
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.my.platforms" class="active" />

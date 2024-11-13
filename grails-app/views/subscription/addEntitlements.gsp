@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Subscription; de.laser.remote.ApiSource; grails.converters.JSON; de.laser.storage.RDStore; de.laser.wekb.Platform; de.laser.IssueEntitlementGroup" %>
 
-<laser:htmlStart message="subscription.details.addEntitlements.label" serviceInjection="true" />
+<laser:htmlStart message="subscription.details.addEntitlements.label" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code: 'myinst.currentSubscriptions.label')}"/>

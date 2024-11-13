@@ -5,7 +5,7 @@
     <g:set var="entityName" value="${message(code: 'org.label')}"/>
 </g:else>
 
-<laser:htmlStart message="mail.org.mailInfos" serviceInjection="true"/>
+<laser:htmlStart message="mail.org.mailInfos" />
 
 <laser:render template="breadcrumb"
               model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView, consortialView: consortialView]}"/>

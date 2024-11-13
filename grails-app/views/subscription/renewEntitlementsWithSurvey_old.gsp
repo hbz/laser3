@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.Subscription; de.laser.remote.ApiSource; de.laser.Org" %>
-<laser:htmlStart message="subscription.details.renewEntitlements.label" serviceInjection="true"/>
+<laser:htmlStart message="subscription.details.renewEntitlements.label" />
 
 <ui:breadcrumbs>
     <g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id}">

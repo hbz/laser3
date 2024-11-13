@@ -1,7 +1,7 @@
 <%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore;de.laser.storage.RDConstants;" %>
 <%@ page import="de.laser.Org; de.laser.addressbook.Person; de.laser.addressbook.PersonRole; de.laser.RefdataValue; de.laser.RefdataCategory" %>
 
-<laser:htmlStart message="menu.institutions.publicContacts" serviceInjection="true" />
+<laser:htmlStart message="menu.institutions.publicContacts" />
 
 <laser:render template="breadcrumb"
               model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>

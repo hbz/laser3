@@ -1,4 +1,4 @@
-<laser:htmlStart message="default.notes.label" serviceInjection="true" />
+<laser:htmlStart message="default.notes.label" />
 
         <laser:render template="breadcrumb"
               model="${[vendor: vendor]}"/>

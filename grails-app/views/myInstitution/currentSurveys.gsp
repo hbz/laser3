@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.survey.SurveyConfig; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.survey.SurveyResult; de.laser.survey.SurveyConfig; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem;" %>
 
-<laser:htmlStart message="currentSurveys.label" serviceInjection="true" />
+<laser:htmlStart message="currentSurveys.label" />
 
 <ui:breadcrumbs>
     <ui:crumb message="currentSurveys.label" class="active"/>
@@ -297,12 +297,12 @@
 
                 <td class="center aligned">
 
-                    <uiSurvey:finishIcon participant="${institution}" surveyConfig="${surveyConfig}" surveyOwnerView="${false}"/>
+                    <uiSurvey:finishIcon participant="${contextService.getOrg()}" surveyConfig="${surveyConfig}" surveyOwnerView="${false}"/>
 
                 </td>
                 <g:if test="${params.tab == 'finish'}">
                     <td class="center aligned">
-                        <uiSurvey:finishDate participant="${institution}" surveyConfig="${surveyConfig}"/>
+                        <uiSurvey:finishDate participant="${contextService.getOrg()}" surveyConfig="${surveyConfig}"/>
                     </td>
                 </g:if>
 

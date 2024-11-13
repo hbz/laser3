@@ -2,7 +2,7 @@
 <laser:htmlStart message="myinst.renewalSearch.label" />
 
     <ui:breadcrumbs>
-        <ui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
+        <ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}"/>
         <ui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label"/>
         <ui:crumb message="menu.institutions.gen_renewals" class="active"/>
     </ui:breadcrumbs>

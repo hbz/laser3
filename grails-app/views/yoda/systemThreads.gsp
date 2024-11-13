@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Icon; java.lang.management.ManagementFactory" %>
-<laser:htmlStart message="menu.yoda.systemThreads" serviceInjection="true"/>
+<laser:htmlStart message="menu.yoda.systemThreads" />
 
     <ui:breadcrumbs>
         <ui:crumb message="menu.yoda" controller="yoda" action="index"/>

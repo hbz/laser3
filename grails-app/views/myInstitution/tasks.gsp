@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.RefdataCategory;de.laser.storage.RDConstants"%>
-<laser:htmlStart message="menu.my.tasks" serviceInjection="true"/>
+<laser:htmlStart message="menu.my.tasks" />
 
     <ui:breadcrumbs>
         <ui:crumb message="menu.my.tasks" class="active"/>

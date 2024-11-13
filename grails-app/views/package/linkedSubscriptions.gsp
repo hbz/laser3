@@ -1,6 +1,6 @@
 <%@ page import="de.laser.CustomerTypeService" %>
 
-<laser:htmlStart message="package.show.nav.linkedSubscriptions" serviceInjection="true"/>
+<laser:htmlStart message="package.show.nav.linkedSubscriptions" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="package" action="index" message="package.show.all"/>

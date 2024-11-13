@@ -1,6 +1,6 @@
 <%@page import="de.laser.ui.Btn; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
 
-<laser:htmlStart message="license.new" serviceInjection="true"/>
+<laser:htmlStart message="license.new" />
 
     <ui:breadcrumbs>
         <ui:crumb controller="myInstitution" action="currentLicenses" message="license.current"/>

@@ -89,7 +89,7 @@ class FinanceControllerService {
         }
         if (!(result.user instanceof User))
             throw new FinancialDataException("Context user not loaded successfully!")
-        if (!(result.institution instanceof Org))
+        if (!(contextService.getOrg() instanceof Org))
             throw new FinancialDataException("Context org not loaded successfully!")
         if (params.sub || params.id) {
             String subId
@@ -106,7 +106,7 @@ class FinanceControllerService {
             result.navPrevSubscription = navigation.prevLink
 
             Set<Long> excludes = [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id]
-            if(result.institution.isCustomerType_Consortium())
+            if(contextService.getOrg().isCustomerType_Consortium())
                 excludes << RDStore.OR_SUBSCRIPTION_CONSORTIUM.id
             // restrict visible for templates/links/orgLinksAsList; done by Andreas Gálffy
             result.visibleOrgRelations = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType.id in excludes) }
@@ -117,7 +117,7 @@ class FinanceControllerService {
         List<String> dataToDisplay = []
         boolean editable = false
         //Determine own org belonging, then, in which relationship I am to the given subscription instance
-        switch(result.institution.getCustomerType()) {
+        switch(contextService.getOrg().getCustomerType()) {
         //cases one to three
             case [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO, CustomerTypeService.ORG_SUPPORT ]:
                 if (result.subscription) {
@@ -158,7 +158,7 @@ class FinanceControllerService {
                                     'join subC.orgRelations roleC ' +
                                     'join s.orgRelations roleMC ' +
                                     'join s.orgRelations oo ' +
-                                    'where roleC.org = :contextOrg and roleMC.roleType = :consortialType and oo.roleType in :subscrRoles order by sortname asc',[contextOrg:result.institution,consortialType:RDStore.OR_SUBSCRIPTION_CONSORTIUM,subscrRoles:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
+                                    'where roleC.org = :contextOrg and roleMC.roleType = :consortialType and oo.roleType in :subscrRoles order by sortname asc',[contextOrg:contextService.getOrg(),consortialType:RDStore.OR_SUBSCRIPTION_CONSORTIUM,subscrRoles:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
                     result.consMembers = consMembers
                     result.showVisibilitySettings = true
                     editable = true

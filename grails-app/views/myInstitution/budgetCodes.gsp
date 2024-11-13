@@ -3,7 +3,7 @@
 <laser:htmlStart message="menu.institutions.budgetCodes" />
 
     <ui:breadcrumbs>
-        <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
+        <ui:crumb controller="org" action="show" id="${contextService.getOrg().id}" text="${contextService.getOrg().getDesignation()}"/>
         <ui:crumb message="menu.institutions.budgetCodes" class="active"/>
     </ui:breadcrumbs>
 

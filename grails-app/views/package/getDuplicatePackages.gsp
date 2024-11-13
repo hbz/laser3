@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Btn; de.laser.Subscription; de.laser.IssueEntitlement; grails.converters.JSON" %>
 
-<laser:htmlStart text="Paket-Duplikate" serviceInjection="true" />
+<laser:htmlStart text="Paket-Duplikate" />
 
         <g:set var="toDelete" value="${[]}"/>
 

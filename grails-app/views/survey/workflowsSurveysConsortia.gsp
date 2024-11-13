@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.survey.SurveyOrg; de.laser.RefdataCategory; de.laser.survey.SurveyResult; de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
-<laser:htmlStart message="currentSurveys.label" serviceInjection="true" />
+<laser:htmlStart message="currentSurveys.label" />
 
 <ui:breadcrumbs>
     <ui:crumb message="currentSurveys.label" class="active"/>

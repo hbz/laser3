@@ -1,8 +1,8 @@
 <%@ page import="de.laser.ui.Btn; de.laser.CustomerTypeService; de.laser.storage.RDStore; grails.converters.JSON;de.laser.OrgRole" %>
-<laser:htmlStart message="myinst.subscriptionImport.post.title" serviceInjection="true"/>
+<laser:htmlStart message="myinst.subscriptionImport.post.title" />
 
         <ui:breadcrumbs>
-            <ui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+            <ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}" />
             <ui:crumb message="menu.institutions.subscriptionImport" class="active"/>
         </ui:breadcrumbs>
         <br />

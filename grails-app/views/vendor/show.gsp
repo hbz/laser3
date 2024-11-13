@@ -1,6 +1,6 @@
 <%@ page import="de.laser.addressbook.PersonRole; de.laser.addressbook.Address; de.laser.wekb.Package; de.laser.wekb.Vendor; de.laser.wekb.VendorLink; de.laser.ui.Btn; de.laser.ui.Icon; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.addressbook.Person; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.addressbook.Contact;" %>
 
-<laser:htmlStart message="${'menu.institutions.vendor.show'}" serviceInjection="true" />
+<laser:htmlStart message="${'menu.institutions.vendor.show'}" />
 
 <laser:render template="breadcrumb"/>
 
@@ -644,9 +644,9 @@
                     </div>
                 </div><!-- .card -->
             </g:if>
-            <g:if test="${institution.isCustomerType_Consortium() || institution.isCustomerType_Support() || institution.isCustomerType_Inst_Pro()}">
+            <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support() || contextService.getOrg().isCustomerType_Inst_Pro()}">
                 <div id="new-dynamic-properties-block">
-                    <laser:render template="properties" model="${[ vendor: vendor, institution: institution ]}"/>
+                    <laser:render template="properties" model="${[ vendor: vendor ]}"/>
                 </div><!-- #new-dynamic-properties-block -->
             </g:if>
         </div>
@@ -672,10 +672,10 @@
                                 </div>
                             </div>
                         </div>
-                        <g:if test="${PersonRole.executeQuery('select pr from Person p join p.roleLinks pr where pr.vendor = :vendor and ((p.isPublic = false and p.tenant = :ctx) or p.isPublic = true)', [vendor: vendor, ctx: institution]) ||
-                                Address.executeQuery('select a from Address a where a.vendor = :vendor and (a.tenant = :ctx or a.tenant = null)', [vendor: vendor, ctx: institution])}">
+                        <g:if test="${PersonRole.executeQuery('select pr from Person p join p.roleLinks pr where pr.vendor = :vendor and ((p.isPublic = false and p.tenant = :ctx) or p.isPublic = true)', [vendor: vendor, ctx: contextService.getOrg()]) ||
+                                Address.executeQuery('select a from Address a where a.vendor = :vendor and (a.tenant = :ctx or a.tenant = null)', [vendor: vendor, ctx: contextService.getOrg()])}">
                             <table class="ui compact table">
-                                <g:set var="vendorContacts" value="${vendorService.getContactPersonsByFunctionType(vendor, institution, true, null)}"/>
+                                <g:set var="vendorContacts" value="${vendorService.getContactPersonsByFunctionType(vendor, contextService.getOrg(), true, null)}"/>
                                 <tr>
                                     <td>
                                         <g:if test="${vendorContacts}">
@@ -724,7 +724,7 @@
                                                 addresses.add(a)
                                                 publicTypeAddressMap.put(typeName, addresses)
                                             }
-                                            else if(a.tenant.id == institution.id) {
+                                            else if(a.tenant.id == contextService.getOrg().id) {
                                                 List addresses = privateTypeAddressMap.get(typeName) ?: []
                                                 addresses.add(a)
                                                 privateTypeAddressMap.put(typeName, addresses)
@@ -775,7 +775,7 @@
                     </div>
                 </div>
             </div>
-            <g:if test="${institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()}">
+            <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro()}">
                 <div id="container-contacts">
                     <div class="ui card">
                         <div class="content">
@@ -846,7 +846,7 @@
                                                                         switch(respRef[0]) {
                                                                             case 'sub': Subscription s = Subscription.get(respRef[1])
                                                                                 if(s.status == RDStore.SUBSCRIPTION_CURRENT) {
-                                                                                    if(institution.isCustomerType_Consortium()) {
+                                                                                    if(contextService.getOrg().isCustomerType_Consortium()) {
                                                                                         if(!s.instanceOf)
                                                                                             respObjects << s
                                                                                     }
@@ -855,7 +855,7 @@
                                                                                 break
                                                                             case 'lic': License l = License.get(respRef[1])
                                                                                 if(l.status == RDStore.LICENSE_CURRENT) {
-                                                                                    if(institution.isCustomerType_Consortium()) {
+                                                                                    if(contextService.getOrg().isCustomerType_Consortium()) {
                                                                                         if (!l.instanceOf)
                                                                                             respObjects << l
                                                                                     }

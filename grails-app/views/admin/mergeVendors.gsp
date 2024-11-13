@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn" %>
-<laser:htmlStart message="menu.admin.mergeVendors" serviceInjection="true"/>
+<laser:htmlStart message="menu.admin.mergeVendors" />
 
     <ui:h1HeaderWithIcon message="menu.admin.mergeVendors" />
 

@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn" %>
-<laser:htmlStart message="license.label" serviceInjection="true"/>
+<laser:htmlStart message="license.label" />
 
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 

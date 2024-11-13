@@ -2,7 +2,7 @@
 <laser:serviceInjection/>
 
 <g:set var="entityName" value="${message(code: 'accessPoint.label')}"/>
-<laser:htmlStart text="${message(code: "default.edit.label", args: [entityName])}" serviceInjection="true"/>
+<laser:htmlStart text="${message(code: "default.edit.label", args: [entityName])}" />
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('body').attr('class', 'organisation_accessPoint_edit_${accessPoint.accessMethod}');

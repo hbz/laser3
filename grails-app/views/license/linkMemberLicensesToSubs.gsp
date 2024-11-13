@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem;de.laser.FormService" %>
-<laser:htmlStart message="license.member.plural" serviceInjection="true"/>
+<laser:htmlStart message="license.member.plural" />
 
     <g:set var="entityName" value="${message(code: 'org.label')}"/>
 

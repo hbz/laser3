@@ -1,10 +1,10 @@
 <%@page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.config.ConfigMapper; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.GenericHelper; de.laser.ReportingFilter; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
-<laser:htmlStart message="myinst.reporting" serviceInjection="true">
+<laser:htmlStart message="myinst.reporting">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
 
         <ui:breadcrumbs>
-            <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
+            <ui:crumb controller="org" action="show" id="${contextService.getOrg().id}" text="${contextService.getOrg().getDesignation()}"/>
             <ui:crumb text="${message(code:'myinst.reporting')}" class="active" />
         </ui:breadcrumbs>
 

@@ -28,7 +28,7 @@ class CompareController  {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
         result.contextOrg = contextService.getOrg()
-        result.institution = result.contextOrg
+        result.institution = contextService.getOrg()
         params.status = params.status ?: [RDStore.LICENSE_CURRENT.id]
         result.objects = []
         params.tab = params.tab ?: "compareElements"
@@ -56,7 +56,7 @@ class CompareController  {
         result.user = contextService.getUser()
         result.contextOrg = contextService.getOrg()
         SwissKnife.setPaginationParams(result, params, result.user)
-        result.institution = result.contextOrg
+        result.institution = contextService.getOrg()
         params.status = params.status ?: [RDStore.SUBSCRIPTION_CURRENT.id]
         result.objects = []
         params.tab = params.tab ?: "compareElements"
@@ -91,7 +91,7 @@ class CompareController  {
         result.user = contextService.getUser()
         result.contextOrg = contextService.getOrg()
         SwissKnife.setPaginationParams(result, params, result.user)
-        result.institution = result.contextOrg
+        result.institution = contextService.getOrg()
         result.objects = Subscription.findAllByIdInList(params.list('selectedObjects[]').collect { Long.valueOf(it) })
         params.status = params.status ?: [RDStore.SUBSCRIPTION_CURRENT.id]
         result = result + compareService.compareEntitlements(params, result)

@@ -1,5 +1,5 @@
 <%@ page import="de.laser.*" %>
-<laser:htmlStart message="menu.public.all_providers" serviceInjection="true" />
+<laser:htmlStart message="menu.public.all_providers" />
 
         <g:set var="entityName" value="${message(code: 'provider.label')}" />
 

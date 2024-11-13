@@ -1,5 +1,5 @@
 <%@ page import="de.laser.wekb.TitleInstancePackagePlatform; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange; de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.RefdataValue;" %>
-<laser:htmlStart message="myinst.menu.pendingChanges.label" serviceInjection="true" />
+<laser:htmlStart message="myinst.menu.pendingChanges.label" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="package" action="index" text="${message(code: 'package.show.all')}"/>

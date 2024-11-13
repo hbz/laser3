@@ -1,6 +1,6 @@
 <%@ page import="de.laser.storage.RDStore;" %>
 
-<laser:htmlStart message="default.notes.label" serviceInjection="true"/>
+<laser:htmlStart message="default.notes.label" />
 
         <laser:render template="breadcrumb" model="${[ params:params ]}"/>
         <ui:controlButtons>
