@@ -57,22 +57,22 @@ class WorkflowService {
         }
         result.checklist = []
 
-        if (result.contextOrg) {
+        if (true /*result.contextOrg*/ ) {
 
             if (result.license) {
-                result.checklists = sortByLastUpdated(WfChecklist.findAllByLicenseAndOwner(result.license as License, result.contextOrg as Org))
+                result.checklists = sortByLastUpdated(WfChecklist.findAllByLicenseAndOwner(result.license as License, contextService.getOrg()))
             }
             else if (result.orgInstance) {
-                result.checklists = sortByLastUpdated(WfChecklist.findAllByOrgAndOwner(result.orgInstance as Org, result.contextOrg as Org))
+                result.checklists = sortByLastUpdated(WfChecklist.findAllByOrgAndOwner(result.orgInstance as Org, contextService.getOrg()))
             }
             else if (result.provider) {
-                result.checklists = sortByLastUpdated( WfChecklist.findAllByProviderAndOwner(result.provider as Provider, result.contextOrg as Org))
+                result.checklists = sortByLastUpdated( WfChecklist.findAllByProviderAndOwner(result.provider as Provider, contextService.getOrg()))
             }
             else if (result.subscription) {
-                result.checklists = sortByLastUpdated(WfChecklist.findAllBySubscriptionAndOwner(result.subscription as Subscription, result.contextOrg as Org))
+                result.checklists = sortByLastUpdated(WfChecklist.findAllBySubscriptionAndOwner(result.subscription as Subscription, contextService.getOrg()))
             }
             else if (result.vendor) {
-                result.checklists = sortByLastUpdated(WfChecklist.findAllByVendorAndOwner(result.vendor as Vendor, result.contextOrg as Org))
+                result.checklists = sortByLastUpdated(WfChecklist.findAllByVendorAndOwner(result.vendor as Vendor, contextService.getOrg()))
             }
         }
 

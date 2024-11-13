@@ -1287,6 +1287,7 @@ class MyInstitutionController  {
     def currentSubscriptions() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
+        result.institution = contextService.getOrg() // _subscriptionTable.gsp
         result.tableConfig = ['showActions','showLicense']
         if (! contextService.getOrg().isCustomerType_Support()) {
             result.tableConfig << "showPackages"

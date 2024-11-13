@@ -76,7 +76,7 @@
                                     <div class="header"
                                         <g:link controller="subscription"
                                             action="index"
-                                            id="${pt.subscription.id}">${pt.subscription.dropdownNamingConvention(contextOrg)}</g:link>
+                                            id="${pt.subscription.id}">${pt.subscription.dropdownNamingConvention(contextService.getOrg())}</g:link>
                                     </div>
                                     <div class="description">
                                         <g:link controller="issueEntitlement"

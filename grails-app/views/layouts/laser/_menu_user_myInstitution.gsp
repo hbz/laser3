@@ -10,7 +10,7 @@
     <div class="menu" role="menu">
         <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="dashboard" message="menu.institutions.dash" />
 
-        <ui:link addItemAttributes="true" controller="organisation" action="show" params="[id: contextOrg?.id]">${message(code:'menu.institutions.org.show')}</ui:link>
+        <ui:link addItemAttributes="true" controller="organisation" action="show" params="[id: contextService.getOrg().id]">${message(code:'menu.institutions.org.show')}</ui:link>
 
         <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="addressbook" message="menu.institutions.addressbook" />
         <div class="divider"></div>

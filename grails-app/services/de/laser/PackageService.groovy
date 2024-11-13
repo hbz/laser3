@@ -289,19 +289,22 @@ class PackageService {
      * @return a {@link Map} containing general result data
      */
     Map<String, Object> getResultGenerics(GrailsParameterMap params) {
-        Map<String, Object> result = [user: contextService.getUser(), contextOrg: contextService.getOrg(), packageInstance: Package.get(params.id)]
-        result.contextCustomerType = result.contextOrg.getCustomerType()
-        int relationCheck = SubscriptionPackage.executeQuery('select count(*) from SubscriptionPackage sp where sp.pkg = :pkg and sp.subscription in (select oo.sub from OrgRole oo join oo.sub sub where oo.org = :context and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true)))', [pkg: result.packageInstance, context: result.contextOrg, current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED])[0]
+        Map<String, Object> result = [
+                user: contextService.getUser(),
+                contextOrg: contextService.getOrg(),
+                packageInstance: Package.get(params.id)
+        ]
+
+        result.contextCustomerType = contextService.getOrg().getCustomerType()
+        int relationCheck = SubscriptionPackage.executeQuery('select count(*) from SubscriptionPackage sp where sp.pkg = :pkg and sp.subscription in (select oo.sub from OrgRole oo join oo.sub sub where oo.org = :context and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true)))', [pkg: result.packageInstance, context: contextService.getOrg(), current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED])[0]
         result.isMyPkg = relationCheck > 0
 
         result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: result.packageInstance, status: RDStore.TIPP_STATUS_CURRENT])[0]
         result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: result.packageInstance, status: RDStore.TIPP_STATUS_EXPECTED])[0]
         result.expiredTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: result.packageInstance, status: RDStore.TIPP_STATUS_RETIRED])[0]
         result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: result.packageInstance, status: RDStore.TIPP_STATUS_DELETED])[0]
-        result.contextOrg = contextService.getOrg()
-        result.contextCustomerType = result.contextOrg.getCustomerType()
 
-        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([status: 'FETCH_ALL', linkedPkg: result.packageInstance, count: true], '', result.contextOrg)
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([status: 'FETCH_ALL', linkedPkg: result.packageInstance, count: true], '', contextService.getOrg())
         result.subscriptionCounts = result.packageInstance ? Subscription.executeQuery( "select count(*) " + tmpQ[0], tmpQ[1] )[0] : 0
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)

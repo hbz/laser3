@@ -408,7 +408,7 @@
                                 <%-- public --%>
                                 <%-- private --%>
                                 <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person', contextService.getOrg()) || Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, license, 'Specific license editor', contextService.getOrg())}">
-                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person', contextOrg)}" var="func">
+                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person', contextService.getOrg())}" var="func">
                                         <tr>
                                             <td>
                                                 <i>${message(code:'address.private')}</i>
@@ -515,7 +515,7 @@
                                 <%-- public --%>
                                 <%-- private --%>
                                 <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person', contextService.getOrg()) || Person.getPrivateByOrgAndObjectRespFromAddressbook(role.vendor, license, 'Specific license editor', contextService.getOrg())}">
-                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person', contextOrg)}" var="func">
+                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person', contextService.getOrg())}" var="func">
                                         <tr>
                                             <td>
                                                 <i>${message(code:'address.private')}</i>
