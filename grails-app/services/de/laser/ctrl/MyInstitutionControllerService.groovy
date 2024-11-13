@@ -140,7 +140,7 @@ class MyInstitutionControllerService {
 
         List notShowClickMe = []
 
-        if(result.contextOrg.isCustomerType_Consortium()){
+        if(contextService.getOrg().isCustomerType_Consortium()){
             notShowClickMe = [ExportClickMeService.CONSORTIAS]
         }else{
             notShowClickMe = [ExportClickMeService.CONSORTIA_PARTICIPATIONS, ExportClickMeService.INSTITUTIONS,
@@ -149,7 +149,7 @@ class MyInstitutionControllerService {
                               ExportClickMeService.SURVEY_COST_ITEMS]
         }
 
-        if(result.contextOrg.isCustomerType_Basic()){
+        if(contextService.getOrg().isCustomerType_Basic()){
             notShowClickMe << [ExportClickMeService.CONSORTIAS]
         }
 
@@ -157,12 +157,12 @@ class MyInstitutionControllerService {
         result.clickMeTypes = ExportClickMeService.CLICK_ME_TYPES - notShowClickMe
         result.clickMeConfigsCount= [:]
         result.clickMeTypes.each { String clickMeType ->
-            result.clickMeConfigsCount[clickMeType] = ClickMeConfig.executeQuery('select count(*) from ClickMeConfig where contextOrg = :contextOrg and clickMeType = :clickMeType', [contextOrg: result.contextOrg, clickMeType: clickMeType])[0]
+            result.clickMeConfigsCount[clickMeType] = ClickMeConfig.executeQuery('select count(*) from ClickMeConfig where contextOrg = :contextOrg and clickMeType = :clickMeType', [contextOrg: contextService.getOrg(), clickMeType: clickMeType])[0]
         }
 
 
-        result.clickMeConfigs = ClickMeConfig.executeQuery('from ClickMeConfig where contextOrg = :contextOrg and clickMeType = :clickMeType order by configOrder', [contextOrg: result.contextOrg, clickMeType: params.tab])
-        result.clickMeConfigsAllCount = ClickMeConfig.executeQuery('select count(*) from ClickMeConfig where contextOrg = :contextOrg ', [contextOrg: result.contextOrg])[0]
+        result.clickMeConfigs = ClickMeConfig.executeQuery('from ClickMeConfig where contextOrg = :contextOrg and clickMeType = :clickMeType order by configOrder', [contextOrg: contextService.getOrg(), clickMeType: params.tab])
+        result.clickMeConfigsAllCount = ClickMeConfig.executeQuery('select count(*) from ClickMeConfig where contextOrg = :contextOrg ', [contextOrg: contextService.getOrg()])[0]
 
         [status: STATUS_OK, result: result]
     }
@@ -173,15 +173,15 @@ class MyInstitutionControllerService {
         result.tab = params.tab ?: ExportClickMeService.ADDRESSBOOK
         if(result.editable) {
             if (params.cmd == 'delete' && params.id) {
-                ClickMeConfig clickMeConfig = ClickMeConfig.findByContextOrgAndId(result.contextOrg, params.id)
+                ClickMeConfig clickMeConfig = ClickMeConfig.findByContextOrgAndId(contextService.getOrg(), params.id)
 
                 if (clickMeConfig) {
                     clickMeConfig.delete()
                 }
             }
             if (params.cmd in ['moveUp', 'moveDown'] && params.id) {
-                ClickMeConfig toMoveClickMeConfig = ClickMeConfig.findByContextOrgAndId(result.contextOrg, params.id)
-                Set<ClickMeConfig> sequence = ClickMeConfig.executeQuery('select cmc from ClickMeConfig as cmc where cmc.contextOrg = :contextOrg and cmc.clickMeType = :clickMeType order by cmc.configOrder', [contextOrg: result.contextOrg, clickMeType: params.tab]) as Set<ClickMeConfig>
+                ClickMeConfig toMoveClickMeConfig = ClickMeConfig.findByContextOrgAndId(contextService.getOrg(), params.id)
+                Set<ClickMeConfig> sequence = ClickMeConfig.executeQuery('select cmc from ClickMeConfig as cmc where cmc.contextOrg = :contextOrg and cmc.clickMeType = :clickMeType order by cmc.configOrder', [contextOrg: contextService.getOrg(), clickMeType: params.tab]) as Set<ClickMeConfig>
 
                 int idx = sequence.findIndexOf { it.id == toMoveClickMeConfig.id }
                 int pos = toMoveClickMeConfig.configOrder
@@ -222,8 +222,6 @@ class MyInstitutionControllerService {
         Org org = contextService.getOrg()
 
         result.user = user
-        result.institution = org
-        result.contextOrg = org
         result.contextCustomerType = org.getCustomerType()
         result.subId = params.subId
         result.tooltip = messageSource.getMessage('license.filter.member', null, LocaleUtils.getCurrentLocale())

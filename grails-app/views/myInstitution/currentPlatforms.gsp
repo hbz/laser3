@@ -49,7 +49,7 @@
                     </g:if>
                 </td>
                 <%--<td>
-                    <g:each in="${platformInstance.getContextOrgAccessPoints(contextOrg)}" var="oap" >
+                    <g:each in="${platformInstance.getContextOrgAccessPoints(contextService.getOrg())}" var="oap" >
                         <g:link controller="accessPoint" action="edit_${oap.accessMethod.value.toLowerCase()}" id="${oap.id}">${oap.name} (${oap.accessMethod.getI10n('value')})</g:link> <br />
                     </g:each>
                 </td>--%>
@@ -66,7 +66,7 @@
                                     <g:link controller="subscription" action="show" id="${sub.id}">${sub} ${period}</g:link>
                                     <%--
                                     <g:if test="${sub.packages}">
-                                        <g:each in="${sub.deduplicatedAccessPointsForOrgAndPlatform(contextOrg, platformInstance)}" var="orgap">
+                                        <g:each in="${sub.deduplicatedAccessPointsForOrgAndPlatform(contextService.getOrg(), platformInstance)}" var="orgap">
                                             <div class="la-flexbox">
                                                 <span class="la-popup-tooltip" data-position="top right" data-content="${message(code: 'myinst.currentPlatforms.tooltip.thumbtack.content')}">
                                                     <i class="icon la-thumbtack slash scale la-list-icon"></i>
