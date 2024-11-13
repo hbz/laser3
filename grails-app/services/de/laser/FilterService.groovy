@@ -1781,9 +1781,13 @@ class FilterService {
             queryArgs << 'tipp.platform in (:platforms)'
             queryParams.platforms = params.platforms
         }
-        if(params.tippStatus) {
+        if(params.get('tippStatus') instanceof List) {
             queryArgs << 'tipp.status in (:tippStatus)'
             queryParams.tippStatus = Params.getRefdataList(params, 'tippStatus')
+        }
+        else if(params.containsKey('tippStatus')) {
+            queryArgs << 'tipp.status = :tippStatus'
+            queryParams.tippStatus = params.tippStatus
         }
         else {
             queryArgs << 'tipp.status != :tippStatus'

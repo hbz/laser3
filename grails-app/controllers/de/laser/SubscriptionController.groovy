@@ -1605,7 +1605,7 @@ class SubscriptionController {
     })
     def processAddEntitlements() {
 
-        Map<String,Object> ctrlResult = subscriptionControllerService.processAddEntitlements(this,params)
+        Map<String,Object> ctrlResult = subscriptionService.processAddEntitlements(params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if(!ctrlResult.result) {
                 response.sendError(401)

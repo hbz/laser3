@@ -83,6 +83,7 @@ class YodaController {
     FormService formService
     GokbService gokbService
     GlobalSourceSyncService globalSourceSyncService
+    PackageService packageService
     ProviderService providerService
     def quartzScheduler
     RenewSubscriptionService renewSubscriptionService
@@ -871,6 +872,25 @@ class YodaController {
                     yodaService.fillValue(dataToLoad)
                 else
                     globalSourceSyncService.updateData(dataToLoad)
+            })
+        }
+        else {
+            log.debug("process running, lock is set!")
+        }
+        redirect action: 'systemThreads'
+    }
+
+    /**
+     * Triggers the regeneration of sort titles for the given package
+     */
+    @Secured(['ROLE_YODA'])
+    def regenerateSortTitles() {
+        if(!globalSourceSyncService.running) {
+            log.debug("start reloading ...")
+            de.laser.wekb.Package pkg = de.laser.wekb.Package.get(params.pkg)
+            executorService.execute({
+                Thread.currentThread().setName("RegenerateSortTitles")
+                packageService.regenerateSortTitles(pkg)
             })
         }
         else {
