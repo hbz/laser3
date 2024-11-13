@@ -1143,6 +1143,7 @@ class ManagementService {
         if(controller instanceof MyInstitutionController) {
             result = myInstitutionControllerService.getResultGenerics(controller, params)
             result.contextOrg = contextService.getOrg()
+            result.institution = contextService.getOrg()
         }
 
         return  result
