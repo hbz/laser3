@@ -47,9 +47,9 @@ class IssueEntitlementService {
             queryPart2.queryParams.subset = subset
             ieIds.addAll(IssueEntitlement.executeQuery(queryPart2.query, queryPart2.queryParams))
         }
-        SortedSet<IssueEntitlement> result = new TreeSet<IssueEntitlement>()
+        Set<IssueEntitlement> result = [] //SortedSet restricts to comparator sort
         Set<Long> ieSubset = ieIds.drop(configMap.offset).take(configMap.max)
-        result.addAll(IssueEntitlement.findAllByIdInList(ieSubset))
+        result.addAll(IssueEntitlement.findAllByIdInList(ieSubset, [sort: configMap.sort, order: configMap.order]))
         //test B: test for export
         /*
         Set<IssueEntitlement> result = []

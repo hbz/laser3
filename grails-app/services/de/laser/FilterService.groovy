@@ -337,9 +337,9 @@ class FilterService {
             isFilterSet = true
         }
 
-        if (params.customerType?.length() > 0) {
-            query << "exists (select oss from OrgSetting as oss where oss.id = o.id and oss.key = :customerTypeKey and oss.roleValue.id = :customerType)"
-            queryParams << [customerType : params.long('customerType')]
+        if (params.customerType) {
+            query << "exists (select oss from OrgSetting as oss where oss.org.id = o.id and oss.key = :customerTypeKey and oss.roleValue.id in (:customerType))"
+            queryParams << [customerType : Params.getLongList(params,'customerType')]
             queryParams << [customerTypeKey : OrgSetting.KEYS.CUSTOMER_TYPE]
         }
 
@@ -1310,7 +1310,7 @@ class FilterService {
         Map<String, Object> result = [:], clauses = getIssueEntitlementSubsetArguments(params)
         String query = "select ie.id from IssueEntitlement ie join ie.tipp tipp where tipp.id in (:subset) "
 
-        result.query = query + "and ${clauses.arguments} order by tipp.sortname"
+        result.query = query + "and ${clauses.arguments} order by ${params.sort} ${params.order}"
         result.queryParams = clauses.queryParams
 
         result
