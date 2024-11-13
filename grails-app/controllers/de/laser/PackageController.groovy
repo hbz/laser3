@@ -189,7 +189,7 @@ class PackageController {
         Map<String, Object> result = packageService.getResultGenerics(params)
 
         result.modalPrsLinkRole = RDStore.PRS_RESP_SPEC_PKG_EDITOR
-        result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(result.contextOrg)
+        result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
 
         // restrict visible for templates/links/orgLinksAsList
         result.visibleOrgs = result.packageInstance.provider
@@ -213,8 +213,8 @@ class PackageController {
             }
         }
 
-        if (OrgSetting.get(result.contextOrg, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSetting) {
-            result.statsWibid = result.contextOrg.getIdentifierByType('wibid')?.value
+        if (OrgSetting.get(contextService.getOrg(), OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSetting) {
+            result.statsWibid = contextService.getOrg().getIdentifierByType('wibid')?.value
             result.usageMode = contextService.getOrg().isCustomerType_Consortium() ? 'package' : 'institution'
             result.packageIdentifier = result.packageInstance.getIdentifierByType('isil')?.value
         }
@@ -704,22 +704,22 @@ class PackageController {
 
         params.status = params.status ?: 'FETCH_ALL'
         params.linkedPkg = result.packageInstance
-        result.institution = result.contextOrg
+        result.institution = contextService.getOrg()
 
         String consortiaFilter = ''
-        if(result.contextOrg.isCustomerType_Consortium() || result.contextOrg.isCustomerType_Support())
+        if(contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support())
             consortiaFilter = 'and s.instanceOf = null'
 
-        Set<Year> availableReferenceYears = Subscription.executeQuery('select s.referenceYear from OrgRole oo join oo.sub s where s.referenceYear != null and oo.org = :contextOrg '+consortiaFilter+' order by s.referenceYear', [contextOrg: result.contextOrg])
+        Set<Year> availableReferenceYears = Subscription.executeQuery('select s.referenceYear from OrgRole oo join oo.sub s where s.referenceYear != null and oo.org = :contextOrg '+consortiaFilter+' order by s.referenceYear', [contextOrg: contextService.getOrg()])
         result.referenceYears = availableReferenceYears
 
-        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, '', result.contextOrg)
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, '', contextService.getOrg())
         result.filterSet = tmpQ[2]
         List<Subscription> subscriptions
         subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
 
         result.num_sub_rows = subscriptions.size()
-        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], result.contextOrg)
+        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())
 
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
 
