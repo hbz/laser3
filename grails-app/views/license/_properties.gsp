@@ -37,7 +37,7 @@
 
 <%-- grouped custom properties --%>
 
-    <g:set var="allPropDefGroups" value="${license.getCalculatedPropDefGroups(institution)}" />
+    <g:set var="allPropDefGroups" value="${license.getCalculatedPropDefGroups(contextService.getOrg())}" />
 
     <% List<String> hiddenPropertiesMessages = [] %>
 
@@ -47,7 +47,7 @@
             PropertyDefinitionGroup pdg            = entry[1]
             PropertyDefinitionGroupBinding binding = entry[2]
             List numberOfConsortiaProperties       = []
-            if(license.getLicensingConsortium() && institution.id != license.getLicensingConsortium().id)
+            if(license.getLicensingConsortium() && contextService.getOrg().id != license.getLicensingConsortium().id)
                 numberOfConsortiaProperties.addAll(pdg.getCurrentPropertiesOfTenant(license,license.getLicensingConsortium()))
 
             boolean isVisible = false
@@ -82,7 +82,7 @@
             </g:if>
         </g:if>
         <g:else>
-            <g:set var="numberOfProperties" value="${pdg.getCurrentPropertiesOfTenant(license,institution)}" />
+            <g:set var="numberOfProperties" value="${pdg.getCurrentPropertiesOfTenant(license, contextService.getOrg())}" />
 
             <g:if test="${numberOfProperties.size() > 0}">
                 <%

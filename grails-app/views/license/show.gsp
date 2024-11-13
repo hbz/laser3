@@ -40,7 +40,7 @@
 
         <%--<ui:objectStatus object="${license}" status="${license.status}" />--%>
 
-        <g:if test="${license.instanceOf && (institution.id == license.getLicensingConsortium()?.id)}">
+        <g:if test="${license.instanceOf && (contextService.getOrg().id == license.getLicensingConsortium()?.id)}">
                 <ui:msg class="error" header="${message(code:'myinst.message.attention')}" hideClose="true">
                     <g:message code="myinst.licenseDetails.message.ChildView" />
                     <g:message code="myinst.licenseDetails.message.ConsortialView" />
@@ -338,7 +338,7 @@
                                     </g:if>
                                 </dl>
 
-                                <g:if test="${license.instanceOf && institution.id == license.getLicensingConsortium().id}">
+                                <g:if test="${license.instanceOf && contextService.getOrg().id == license.getLicensingConsortium().id}">
                                     <dl>
                                         <dt class="control-label">${message(code:'license.linktoLicense')}</dt>
                                         <g:link controller="license" action="show" id="${license.instanceOf.id}">${license.instanceOf}</g:link>

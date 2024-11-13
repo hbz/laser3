@@ -14,7 +14,7 @@
         <laser:render template="/templates/sidebar/actions" />
 
         <g:if test="${editable}">
-            <g:if test="${license.getLicensingConsortium()?.id == institution.id}">
+            <g:if test="${license.getLicensingConsortium()?.id == contextService.getOrg().id}">
                 <g:if test="${!( license.instanceOf )}">
                     <div class="divider"></div>
                 <%-- TODO integrate confirmation in actionsDropdownItem --%>
@@ -40,7 +40,7 @@
         </g:if>
         <g:if test="${actionName == 'show'}">
             <%-- the second clause is to prevent the menu display for consortia at member subscriptions --%>
-            <g:if test="${!(institution.id == license.getLicensingConsortium()?.id && license.instanceOf)}">
+            <g:if test="${!(contextService.getOrg().id == license.getLicensingConsortium()?.id && license.instanceOf)}">
                 <div class="divider"></div>
                 <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
             </g:if>

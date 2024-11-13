@@ -1,6 +1,6 @@
 <%@ page import="de.laser.storage.RDStore; de.laser.IssueEntitlement; de.laser.PermanentTitle" %>
 
-<laser:htmlStart message="menu.admin.missingPermantTitlesInSubs" />
+<laser:htmlStart message="menu.admin.missingPermantTitlesInSubs" serviceInjection="true"/>
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.admin" controller="admin" action="index"/>
@@ -46,7 +46,7 @@
                         -- ${message(code: 'myinst.currentSubscriptions.name_not_set')}  --
                     </g:else>
                     <g:if test="${s.instanceOf}">
-                        <g:if test="${s.getConsortium() && s.getConsortium() == institution}">
+                        <g:if test="${s.getConsortium() && s.getConsortium() == contextService.getOrg()}">
                             ( ${s.getSubscriberRespConsortia()?.name} )
                         </g:if>
                     </g:if>

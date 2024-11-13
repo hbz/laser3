@@ -53,7 +53,7 @@
 								<tr>
 									<td>
 										${organisationInstance.name}
-										<g:if test="${(contextService.getOrg().isCustomerType_Consortium() && members.get(organisationInstance.id)?.contains(institution.id) && members.get(organisationInstance.id)?.size() == 1) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
+										<g:if test="${(contextService.getOrg().isCustomerType_Consortium() && members.get(organisationInstance.id)?.contains(contextService.getOrg().id) && members.get(organisationInstance.id)?.size() == 1) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
 											<g:link controller="organisation" action="show" id="${organisationInstance.id}">(${message(code:'default.button.edit.label')})</g:link>
 										</g:if>
 									</td>
@@ -85,7 +85,7 @@
 									<td>${organisationInstance.country}</td>
 									<td>
 									<%-- here: switch if in consortia or not --%>
-										<g:if test="${members.get(organisationInstance.id)?.contains(institution.id)}">
+										<g:if test="${members.get(organisationInstance.id)?.contains(contextService.getOrg().id)}">
 											<g:link class="${Btn.MODERN.NEGATIVE_CONFIRM_TOOLTIP}"
 													data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.consortiaToggle", args: [organisationInstance.name])}"
 													data-confirm-term-how="unlink"

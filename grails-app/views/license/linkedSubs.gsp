@@ -18,7 +18,7 @@
 
 <laser:render template="${customerTypeService.getNavTemplatePath()}" />
 
-<g:if test="${license.instanceOf && (institution.id == license.getLicensingConsortium()?.id)}">
+<g:if test="${license.instanceOf && (contextService.getOrg().id == license.getLicensingConsortium()?.id)}">
     <ui:msg class="error" header="${message(code:'myinst.message.attention')}" hideClose="true">
         <g:message code="myinst.licenseDetails.message.ChildView" />
         <g:message code="myinst.licenseDetails.message.ConsortialView" />
@@ -131,7 +131,7 @@
                 </span>
             </th>
             <th>${message(code:'default.status.label')}</th>
-            <g:if test="${institution.isCustomerType_Consortium() && !license.instanceOf}">
+            <g:if test="${contextService.getOrg().isCustomerType_Consortium() && !license.instanceOf}">
                 <th>${message(code:'org.institution.label')}</th>
             </g:if>
             <th class="la-no-uppercase">
@@ -174,7 +174,7 @@
                                     (${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')})
                                 </div>
                             </g:each>
-                            <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(subscr, 'General contact person', institution)}" var="gcp">
+                            <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(subscr, 'General contact person', contextService.getOrg())}" var="gcp">
                                 <div class="item">
                                     ${gcp}
                                     (${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')} <i class="${Icon.ACP_PRIVATE}" style="display:inline-block"></i>)
@@ -186,7 +186,7 @@
                                     (${RDStore.PRS_RESP_SPEC_SUB_EDITOR.getI10n('value')})
                                 </div>
                             </g:each>
-                            <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(subscr, sub, 'Specific subscription editor', institution)}" var="sse">
+                            <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(subscr, sub, 'Specific subscription editor', contextService.getOrg())}" var="sse">
                                 <div class="item">
                                     ${sse}
                                     (${RDStore.PRS_RESP_SPEC_SUB_EDITOR.getI10n('value')} <i class="${Icon.ACP_PRIVATE}" style="display:inline-block"></i>)
@@ -213,7 +213,7 @@
                 <td>
                     ${sub.status.getI10n("value")}
                 </td>
-                <g:if test="${institution.isCustomerType_Consortium() && !license.instanceOf}">
+                <g:if test="${contextService.getOrg().isCustomerType_Consortium() && !license.instanceOf}">
                     <g:set var="childSubCount" value="${Subscription.executeQuery('select count(*) from Subscription s where s.instanceOf = :parent',[parent:sub])[0]}"/>
                     <td>
                         <g:if test="${childSubCount > 0}">
