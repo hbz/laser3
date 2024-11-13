@@ -9,6 +9,8 @@
 
 6067    13.11.2024  dev     3.5         David   Feature     Refactoring: MyInstitution-Parameter
 
+6066    13.11.2024  dev     3.5         Andreas Feature     Yoda-getriggertes Menü zur paketweisen Neuerzeugung von Sortiertitel eingefügt
+
 6027    11.11.2024  dev     3.5         David   Feature     Flyout: (Mail-)content mit Sprachauswahl
 
 6059    08.11.2024  dev     3.5         David   Feature     CuratoryGroup.type als RefdataCategory anlegen

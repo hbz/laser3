@@ -2692,6 +2692,7 @@ class SubscriptionControllerService {
      * @param params the request parameter map
      * @return OK if the persisting was successful, ERROR otherwise
      */
+    @Deprecated
     Map<String,Object> processAddEntitlements(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
         if (!result) {
@@ -2793,11 +2794,11 @@ class SubscriptionControllerService {
                 try {
                     Object[] args = [TitleInstancePackagePlatform.findByGokbId(params.singleTitle)?.name]
                     if(issueEntitlementCandidates?.get(params.singleTitle) || Boolean.valueOf(params.uploadPriceInfo))  {
-                        if(subscriptionService.addEntitlement(result.subscription, params.singleTitle, issueEntitlementCandidates?.get(params.singleTitle), Boolean.valueOf(params.uploadPriceInfo)))
+                        if(subscriptionService.addSingleEntitlement(result.subscription, params.singleTitle, issueEntitlementCandidates?.get(params.singleTitle), Boolean.valueOf(params.uploadPriceInfo)))
                             log.debug("Added tipp ${params.singleTitle} to sub ${result.subscription.id} with issue entitlement overwrites")
                         result.message = messageSource.getMessage('subscription.details.addEntitlements.titleAddToSub', args,locale)
                     }
-                    else if(subscriptionService.addEntitlement(result.subscription, params.singleTitle, null, true))
+                    else if(subscriptionService.addSingleEntitlement(result.subscription, params.singleTitle, null, true))
                         log.debug("Added tipp ${params.singleTitle} to sub ${result.subscription.id}")
                     result.message = messageSource.getMessage('subscription.details.addEntitlements.titleAddToSub', args,locale)
                 }
