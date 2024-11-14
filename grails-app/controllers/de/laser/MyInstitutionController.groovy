@@ -1501,6 +1501,7 @@ class MyInstitutionController  {
     @Secured(closure = {
         ctx.contextService.isInstUser_denySupport()
     })
+    @Deprecated
     def currentTitles() {
 
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1799,7 +1800,7 @@ class MyInstitutionController  {
                         else
                             configMap.subscriptions = SubscriptionPackage.executeQuery('select s.id from Subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes) and s.status = :current'+instanceFilter, [current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg(), subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER_CONS]]).toSet()
                         */
-                        Map<String,Collection> tableData = exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name)
+                        Map<String,Collection> tableData = exportService.generateTitleExport(configMap) //TODO migrate if method will be reactivated
                         if(tableData.columnData.size() > 0) {
                             FileOutputStream out = new FileOutputStream(f)
                             out.withWriter { writer ->
@@ -2941,19 +2942,6 @@ class MyInstitutionController  {
         }
         result.emailAddresses = emailAddresses
 
-        /*
-        if(params.exportXLS) {
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportService.exportAddressbook('xlsx', visiblePersons)
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
-
-            return
-        }
-        else */
         if(params.fileformat) {
             switch(params.fileformat) {
                 case 'xlsx': SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportAddresses(visiblePersons, visibleAddresses, selectedFields, params.exportOnlyContactPersonForInstitution == 'true', params.exportOnlyContactPersonForProvider == 'true', params.exportOnlyContactPersonForVendor == 'true', null, ExportClickMeService.FORMAT.XLS)

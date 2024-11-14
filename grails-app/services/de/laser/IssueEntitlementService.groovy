@@ -47,21 +47,15 @@ class IssueEntitlementService {
             queryPart2.queryParams.subset = subset
             ieIds.addAll(IssueEntitlement.executeQuery(queryPart2.query, queryPart2.queryParams))
         }
-        SortedSet<IssueEntitlement> result = new TreeSet<IssueEntitlement>()
-        Set<Long> ieSubset = ieIds.drop(configMap.offset).take(configMap.max)
-        result.addAll(IssueEntitlement.findAllByIdInList(ieSubset))
-        //test B: test for export
-        /*
-        Set<IssueEntitlement> result = []
-        ieIds.eachWithIndex { Long ieId, int i ->
-            println "processing entry ${i}"
-            result << IssueEntitlement.get(ieId)
-        }
-        */
+        Set<IssueEntitlement> result = [] //SortedSet restricts to comparator sort
         if(configMap.containsKey('fileformat') || configMap.containsKey('exportKBart')) {
-            [entIDs: ieSubset]
+            [entIDs: ieIds]
         }
-        else [entitlements: result, num_ies_rows: ieIds.size()]
+        else {
+            Set<Long> ieSubset = ieIds.drop(configMap.offset).take(configMap.max)
+            result.addAll(IssueEntitlement.findAllByIdInList(ieSubset, [sort: configMap.sort, order: configMap.order]))
+            [entitlements: result, num_ies_rows: ieIds.size()]
+        }
     }
 
     Set<Long> getTippsByIdentifier(Map identifierConfigMap, String identifier) {

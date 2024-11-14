@@ -292,16 +292,6 @@ class PackageController {
         log.debug("current ${params}");
         Map<String, Object> result = packageService.getResultGenerics(params)
 
-        if (executorWrapperService.hasRunningProcess(result.packageInstance)) {
-            result.processingpc = true
-        }
-        /*result.pendingChanges = PendingChange.executeQuery(
-                "select pc from PendingChange as pc where pc.pkg = :pkg and ( pc.status is null or pc.status = :status ) order by ts, payload",
-                [pkg: result.packageInstance, status: RDStore.PENDING_CHANGE_PENDING]
-        )*/
-
-
-
         Map<String, Object> query = filterService.getTippQuery(params, [result.packageInstance])
         result.filterSet = query.filterSet
 
@@ -309,7 +299,6 @@ class PackageController {
         String filename = "${escapeService.escapeString(result.packageInstance.name.replaceAll('["\']', '') + '_' + message(code: 'package.show.nav.current'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
 
         result.filename = filename
-        ArrayList<TitleInstancePackagePlatform> tipps = []
         Map<String, Object> selectedFields = [:]
 
         if(params.fileformat) {
@@ -328,9 +317,9 @@ class PackageController {
             if(!f.exists()) {
                 List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
                 Map<String, Object> configMap = [:]
-                configMap.putAll(params)
-                configMap.pkgIds = [params.id]
-                Map<String, Collection> tableData = titlesList ? exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name) : []
+                configMap.format = ExportService.KBART
+                configMap.tippIDs = titlesList
+                Map<String, Object> tableData = titlesList ? exportService.generateTitleExport(configMap) : [:]
                 String tableOutput = exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t')
                 FileOutputStream fos = new FileOutputStream(f)
                 fos.withWriter { Writer w ->
@@ -517,9 +506,10 @@ class PackageController {
             if(!f.exists()) {
                 FileOutputStream fos = new FileOutputStream(f)
                 Map<String, Object> configMap = [:]
-                configMap.putAll(params)
-                configMap.pkgIds = [params.id]
-                Map<String, Collection> tableData = exportService.generateTitleExportKBART(configMap,TitleInstancePackagePlatform.class.name)
+                //configMap.putAll(params)
+                configMap.tippIDs = titlesList
+                configMap.format = ExportService.KBART
+                Map<String, Object> tableData = exportService.generateTitleExport(configMap)
                 fos.withWriter { writer ->
                     writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
                 }

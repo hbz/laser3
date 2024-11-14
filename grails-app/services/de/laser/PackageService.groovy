@@ -12,6 +12,7 @@ import de.laser.wekb.TitleInstancePackagePlatform
 import grails.gorm.transactions.Transactional
 import grails.web.mapping.LinkGenerator
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.hibernate.Session
 import org.springframework.context.MessageSource
 
 /**
@@ -23,6 +24,7 @@ class PackageService {
     BatchQueryService batchQueryService
     ContextService contextService
     DeletionService deletionService
+    EscapeService escapeService
     GokbService gokbService
     LinkGenerator grailsLinkGenerator
     MessageSource messageSource
@@ -310,6 +312,19 @@ class PackageService {
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         result
+    }
+
+    void regenerateSortTitles(Package pkg) {
+        TitleInstancePackagePlatform.withSession { Session sess ->
+            TitleInstancePackagePlatform.findAllByPkg(pkg).eachWithIndex { TitleInstancePackagePlatform tipp, int i ->
+                tipp.sortname = escapeService.generateSortTitle(tipp.name)
+                tipp.save()
+                if(i > 0 && i % 5000 == 0) {
+                    log.debug("${i} entries processed")
+                    sess.flush()
+                }
+            }
+        }
     }
 
     Package createPackageWithWEKB(String pkgUUID){

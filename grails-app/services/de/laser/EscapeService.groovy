@@ -86,10 +86,10 @@ class EscapeService {
      * @see de.laser.wekb.Package#generateSortName(java.lang.String)
      */
     String generateSortTitle(String name) {
-        Pattern alphanum = Pattern.compile("\\p{Punct}|\\p{Cntrl}|( ?« ?)+|( ?» ?)+")
+        Pattern alphanum = Pattern.compile("\\p{Punct}|\\p{Cntrl}|( ?« ?)+|( ?» ?)+|[¿¡‘’“”]")
         //group all sortname generators here
         String sortname = Normalizer.normalize(name, Normalizer.Form.NFKD).trim().toLowerCase()
-        sortname = name.replaceAll('&',' and ')
+        sortname = sortname.replaceAll('&',' and ')
         sortname = sortname.trim()
         sortname = sortname.toLowerCase()
         sortname = alphanum.matcher(sortname).replaceAll("")

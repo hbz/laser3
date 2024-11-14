@@ -521,181 +521,6 @@ class ExportService {
 	}
 
 	/**
-	 * Exports the given list of contacts in the given format
-	 * @param format the format to use for the export (Excel or CSV)
-	 * @param visiblePersons the list of {@link de.laser.addressbook.Person}s to export
-	 * @return either an Excel workbook or a character-separated list containing the export
-	 * @deprecated all exports should be made configurable by modal; move this export to {@link ExportClickMeService#exportAddresses(java.util.List, java.util.List, java.util.Map, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.String, de.laser.ExportClickMeService.FORMAT)}
-	 */
-	@Deprecated
-	def exportAddressbook(String format, List visiblePersons) {
-		Locale locale = LocaleUtils.getCurrentLocale()
-		Map<String, String> columnHeaders = [
-		        'organisation': messageSource.getMessage('address.org.label', null, locale),
-		        'receiver': messageSource.getMessage('address.receiver.label', null, locale),
-		        'additionFirst': messageSource.getMessage('address.additionFirst.label', null, locale),
-		        'additionSecond': messageSource.getMessage('address.additionSecond.label', null, locale),
-		        'street_1': messageSource.getMessage('address.street_1.label', null, locale),
-		        'street_2': messageSource.getMessage('address.street_2.label', null, locale),
-		        'zipcode': messageSource.getMessage('address.zipcode.label', null, locale),
-		        'city': messageSource.getMessage('address.city.label', null, locale),
-		        'pob': messageSource.getMessage('address.pob.label', null, locale),
-		        'pobZipcode': messageSource.getMessage('address.pobZipcode.label', null, locale),
-		        'pobCity': messageSource.getMessage('address.pobCity.label', null, locale),
-		        'country': messageSource.getMessage('address.country.label', null, locale),
-		        'region': messageSource.getMessage('address.region.label', null, locale),
-				'language': messageSource.getMessage('contact.language.label', null, locale),
-				'email': messageSource.getMessage('contact.icon.label.email', null, locale),
-				'fax': messageSource.getMessage('contact.icon.label.fax', null, locale),
-				'url': messageSource.getMessage('contact.icon.label.url', null, locale),
-				'phone': messageSource.getMessage('contact.icon.label.phone', null, locale)
-		]
-		Map<Person, Map<String, Map<String, String>>> addressesContacts = [:]
-		visiblePersons.each { Person p ->
-			//lang: contactData
-			Map<String, Map<String, String>> contactData = addressesContacts.get(p)
-			int langCtr = 0
-			if(!contactData)
-				contactData = [:]
-			p.contacts.sort{ Contact cc -> cc.content }.each { Contact c ->
-				String langKey
-				if(c.language) {
-					langKey = c.language.getI10n('value')
-					int langCount = p.contacts.findAll { Contact cc -> cc.language == c.language }.size()
-					if(langCount > 1) {
-						langKey += langCtr
-						langCtr++
-					}
-				}
-				else langKey = Contact.PRIMARY
-				Map<String, String> contact = contactData.get(langKey)
-				if(!contact)
-					contact = [:]
-				switch(c.contentType) {
-					case RDStore.CCT_EMAIL: contact.email = c.content
-						break
-					case RDStore.CCT_FAX: contact.fax = c.content
-						break
-					case RDStore.CCT_PHONE: contact.phone = c.content
-						break
-					case RDStore.CCT_URL: contact.url = c.content
-						break
-				}
-				contactData.put(langKey, contact)
-			}
-			addressesContacts.put(p, contactData)
-		}
-        if(format == 'xlsx') {
-			XSSFWorkbook workbook = new XSSFWorkbook()
-			POIXMLProperties xmlProps = workbook.getProperties()
-			POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
-			coreProps.setCreator(messageSource.getMessage('laser',null,locale))
-			SXSSFWorkbook wb = new SXSSFWorkbook(workbook,50,true)
-			Sheet sheet = wb.createSheet(messageSource.getMessage('menu.institutions.addressbook', null, locale))
-			//the following three statements are required only for HSSF
-			sheet.setAutobreaks(true)
-			sheet.trackAllColumnsForAutoSizing()
-			//the header row: centered text in 48pt font
-			Row headerRow = sheet.createRow(0)
-			headerRow.setHeightInPoints(16.75f)
-			columnHeaders.eachWithIndex { String key, String header, int index ->
-				Cell cell = headerRow.createCell(index)
-				cell.setCellValue(header)
-			}
-			//freeze the first row
-			sheet.createFreezePane(0, 1)
-			Row row
-			Cell cell
-			int rownum = 1
-			addressesContacts.each { Person p, Map<String, Map<String, String>> contactData ->
-				for(int addressRow = 0; addressRow < contactData.size();addressRow++) {
-					row = sheet.createRow(rownum)
-					Map.Entry<String, Map<String, String>> contact = contactData.entrySet()[addressRow]
-                    //Address a = p.addresses[addressRow]
-					columnHeaders.keySet().eachWithIndex { String fieldKey, int cellnum ->
-						cell = row.createCell(cellnum)
-						if (fieldKey == 'organisation') {
-							p.roleLinks.each { PersonRole pr ->
-								if (pr.org) {
-									cell.setCellValue(pr.org.name)
-								}
-							}
-						}
-						else if (fieldKey == 'receiver') {
-							cell.setCellValue(p.toString())
-						}
-						else if (fieldKey == 'language')
-							contact?.key == Contact.PRIMARY ? cell.setCellValue(' ') : cell.setCellValue(contact.key)
-						else if (fieldKey in ['email', 'fax', 'phone', 'url'])
-							cell.setCellValue(contact?.value?.get(fieldKey))
-						/*
-						else {
-							if (a && a.hasProperty(fieldKey)) {
-								if (a[fieldKey] instanceof RefdataValue)
-									cell.setCellValue(a[fieldKey].getI10n("value"))
-								else cell.setCellValue(a[fieldKey])
-							}
-						}
-						*/
-					}
-					rownum++
-				}
-			}
-			wb
-        }
-        else if(format == 'csv') {
-			List rows = []
-			List<String> row = []
-			addressesContacts.each { Person p, Map<String, Map<String, String>> contactData ->
-				for(int addressRow = 0; addressRow < contactData.size(); addressRow++) {
-					row = []
-					Map.Entry<String, Map<String, String>> contact = contactData.entrySet()[addressRow]
-					//Address a = p.addresses[addressRow]
-					columnHeaders.keySet().each { String fieldKey ->
-						if(fieldKey == 'organisation') {
-							row << p.roleLinks.find { PersonRole pr -> pr.org != null }.org.name
-						}
-						else if(fieldKey == 'receiver') {
-							row << p.toString()
-						}
-						//first CSV column of address, used as gap-filler
-						else if(fieldKey == 'additionFirst')
-							row.addAll([' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '])
-						else if(fieldKey == 'language') {
-							if(contact?.key == Contact.PRIMARY)
-								row << ' '
-							else row << contact.key
-						}
-						else if(fieldKey in ['email', 'fax', 'phone', 'url']) {
-							if(contact?.value && contact.value.get(fieldKey))
-								row << contact.value.get(fieldKey)
-							else row << ' '
-						}
-						/*
-						else {
-							if(a.hasProperty(fieldKey)) {
-								if(a[fieldKey]) {
-									row << a[fieldKey] instanceof RefdataValue ? a[fieldKey].getI10n("value") : a[fieldKey]
-								}
-								else {
-									row << ' '
-								}
-							}
-						}
-						*/
-					}
-					rows << row
-				}
-			}
-			generateSeparatorTableString(columnHeaders.values(), rows, ';')
-        }
-        else {
-            log.error("invalid format submitted: ${format}")
-            null
-        }
-    }
-
-	/**
 	 * Retrieves for the given property definition type and organisation of list of headers, containing property definition names. Includes custom and private properties
 	 * @param propDefConst a {@link PropertyDefinition} constant which property definition type should be loaded
 	 * @param contextOrg the context {@link Org}
@@ -3103,6 +2928,7 @@ class ExportService {
 	 * @param entitlementInstance switch between {@link TitleInstancePackagePlatform} and {@link IssueEntitlement}
 	 * @return a {@link Map} containing lists for the title row and the column data
 	 */
+	@Deprecated
 	Map<String,Collection> generateTitleExportKBART(Map configMap, String entitlementInstance) {
 		log.debug("Begin generateTitleExportKBART")
 		Sql sql = GlobalService.obtainSqlConnection()
@@ -3142,26 +2968,7 @@ class ExportService {
 	 * @param separator the character to use for separation
 	 * @return the concatenated string of identifiers
 	 */
-	String joinIdentifiers(Set<Identifier>ids, String namespace, String separator) {
-		String joined = ' '
-		List values = []
-		ids.each { id ->
-			if(id.ns.ns.equalsIgnoreCase(namespace)) {
-				values.add(id.value)
-			}
-		}
-		if(values)
-			joined = values.join(separator)
-		joined
-	}
-
-	/**
-	 * Concatenates the set of identifiers belonging to the given namespace to a character-separated list
-	 * @param ids the set of identifiers to output
-	 * @param namespace the namespace whose identifiers should be concatenated
-	 * @param separator the character to use for separation
-	 * @return the concatenated string of identifiers
-	 */
+	@Deprecated
 	String joinIdentifiersSQL(List<String> ids, String separator) {
 		String joined = ' '
 		if(ids)
@@ -3171,7 +2978,7 @@ class ExportService {
 
 	Map<String, Object> generateTitleExport(Map configMap) {
 		log.debug("Begin generateTitleExport")
-		Set<Long> tippIDs = configMap.tippIDs
+		Set<Long> tippIDs = configMap.tippIDs, ieIDs = configMap.ieIDs
 		boolean withPick = configMap.withPick
 		Map<String, Object> export = [:]
 		Locale locale = LocaleUtils.getCurrentLocale()
@@ -3227,6 +3034,9 @@ class ExportService {
 							'listprice_eur',
 							'listprice_gbp',
 							'listprice_usd']
+			if(ieIDs) {
+				titleHeaders.addAll(['localprice_eur','localprice_gbp','localprice_usd'])
+			}
 		}
 		else {
 			titleHeaders = [messageSource.getMessage('tipp.name',null,locale),
@@ -3278,8 +3088,13 @@ class ExportService {
 							messageSource.getMessage('tipp.listprice_eur',null,locale),
 							messageSource.getMessage('tipp.listprice_gbp',null,locale),
 							messageSource.getMessage('tipp.listprice_usd',null,locale)]
+			if(ieIDs) {
+				titleHeaders.addAll([messageSource.getMessage('tipp.localprice_eur',null,locale),
+									 messageSource.getMessage('tipp.localprice_gbp',null,locale),
+									 messageSource.getMessage('tipp.localprice_usd',null,locale)])
+			}
 		}
-		if(tippIDs) {
+		if(tippIDs || ieIDs) {
 			//List<GroovyRowResult> coreTitleIdentifierNamespaces = batchQueryService.longArrayQuery("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id where id_tipp_fk = any(:tippIDs) and idns_ns in ('${coreTitleNSrestricted.join("','")}')", [tippIDs: titleIDs])
 			List<GroovyRowResult> otherTitleIdentifierNamespaceList = batchQueryService.longArrayQuery("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id where id_tipp_fk = any(:tippIDs) and not idns_id = any(:namespaces)", [tippIDs: tippIDs, namespaces: IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_TITLE_NS+IdentifierNamespace.TITLE_ID).id])
 			//titleHeaders.addAll(coreTitleIdentifierNamespaces['idns_ns'])
@@ -3299,7 +3114,7 @@ class ExportService {
 		}
 		else export.columnData = []
 		export.titleRow = titleHeaders
-		log.debug("End generateTitleExportCustom")
+		log.debug("End generateTitleExport")
 		export
 	}
 
@@ -3693,12 +3508,10 @@ class ExportService {
 	}
 
 	List buildRows(Map configMap) {
-		Locale locale = LocaleUtils.getCurrentLocale()
-		String format = configMap.format
-		Set<Long> tippIDs = configMap.tippIDs
-		List<String> otherTitleIdentifierNamespaces = configMap.otherTitleIdentifierNamespaces
+		List result = []
+		String format = configMap.format, exportCellConfig = '', valueCol
 		String style = configMap.style
-		String valueCol
+		Set<Long> tippIDs = [], ieIDs = []
 		Map<String, Object> arrayParams = [:]
 		if(style)
 			style = "'${style}'"
@@ -3709,58 +3522,19 @@ class ExportService {
 		if(format == ExportService.KBART)
 			valueCol = 'rdv_value'
 		else valueCol = I10nTranslation.getRefdataValueColumn(LocaleUtils.getCurrentLocale())
+		if(configMap.containsKey('tippIDs')) {
+			tippIDs = configMap.tippIDs
+			exportCellConfig = getTippExportCellConfig(format, style, valueCol)
+		}
+		else if(configMap.containsKey('ieIDs')) {
+			ieIDs = configMap.ieIDs
+			exportCellConfig = getIssueEntitlementExportCellConfig(format, style, valueCol)
+		}
+		List<String> otherTitleIdentifierNamespaces = configMap.otherTitleIdentifierNamespaces
 		String specialRenewColumns = ''
 		if(configMap.containsKey('usageData'))
 			specialRenewColumns = "tipp_id, ${style} as style,"
-		String rowQuery = "select ${specialRenewColumns} create_cell('${format}', tipp_name, ${style}) as publication_title," +
-						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('monograph') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, IdentifierNamespace.NS_TITLE).id}) or (lower(tipp_title_type) in ('serial') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, IdentifierNamespace.NS_TITLE).id}))), ${style}) as print_identifier," +
-						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('monograph') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISBN, IdentifierNamespace.NS_TITLE).id}) or (lower(tipp_title_type) in ('serial') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, IdentifierNamespace.NS_TITLE).id}))), ${style}) as online_identifier," +
-						"create_cell('${format}', to_char(tc_start_date, 'yyyy-MM-dd'), ${style}) as date_first_issue_online," +
-						"create_cell('${format}', tc_start_volume, ${style}) as num_first_vol_online," +
-						"create_cell('${format}', tc_start_issue, ${style}) as num_first_issue_online," +
-						"create_cell('${format}', to_char(tc_end_date, 'yyyy-MM-dd'), ${style}) as date_last_issue_online," +
-						"create_cell('${format}', tc_end_volume, ${style}) as num_last_vol_online," +
-						"create_cell('${format}', tc_end_issue, ${style}) as num_last_issue_online," +
-						"create_cell('${format}', tipp_host_platform_url, ${style}) as title_url," +
-						"create_cell('${format}', tipp_first_author, ${style}) as first_author," +
-						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType('title_id', IdentifierNamespace.NS_TITLE).id}), ${style}) as title_id," +
-						"create_cell('${format}', tc_embargo, ${style}) as embargo_info," +
-						"create_cell('${format}', tc_coverage_depth, ${style}) as coverage_depth," +
-						"create_cell('${format}', tc_coverage_note, ${style}) as notes," +
-						"create_cell('${format}', tipp_title_type, ${style}) as publication_type," +
-						"create_cell('${format}', tipp_publisher_name, ${style}) as publisher_name," +
-						"create_cell('${format}', to_char(tipp_date_first_in_print, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), ${style}) as date_monograph_published_print," +
-						"create_cell('${format}', to_char(tipp_date_first_online, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), ${style}) as date_monograph_published_online," +
-						"create_cell('${format}', tipp_volume, ${style}) as monograph_volume," +
-						"create_cell('${format}', tipp_edition_statement, ${style}) as monograph_edition," +
-						"create_cell('${format}', tipp_first_editor, ${style}) as first_editor," +
-						"create_cell('${format}', null, ${style}) as parent_publication_title_id," +
-						"create_cell('${format}', null, ${style}) as preceding_publication_title_id," +
-						"create_cell('${format}', (select pkg_name from package where pkg_id = tipp_pkg_fk), ${style}) as package_name," +
-						"create_cell('${format}', (select plat_name from platform where plat_id = tipp_plat_fk), ${style}) as platform_name," +
-						"create_cell('${format}', to_char(tipp_last_updated, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), ${style}) as last_changed," +
-						"create_cell('${format}', to_char(tipp_access_start_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), ${style}) as access_start_date," +
-						"create_cell('${format}', to_char(tipp_access_end_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), ${style}) as access_end_date," +
-						"create_cell('${format}', (select ${valueCol} from refdata_value where rdv_id = tipp_medium_rv_fk), ${style}) as medium," +
-						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ZDB, IdentifierNamespace.NS_TITLE).id}), ${style}) as zdb_id," +
-						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, IdentifierNamespace.NS_TITLE).id}), ${style}) as doi_identifier," +
-						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EZB, IdentifierNamespace.NS_TITLE).id}), ${style}) as ezb_id," +
-						"create_cell('${format}', tipp_gokb_id, ${style}) as title_wekb_uuid," +
-						"create_cell('${format}', (select pkg_gokb_id from package where pkg_id = tipp_pkg_fk), ${style}) as package_wekb_uuid," +
-						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_pkg_fk = tipp_pkg_fk and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ISCI).id}), ${style}) as package_isci," +
-						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_pkg_fk = tipp_pkg_fk and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType('isil', IdentifierNamespace.NS_PACKAGE).id}), ${style}) as package_isil," +
-						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_pkg_fk = tipp_pkg_fk and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EZB, IdentifierNamespace.NS_PACKAGE).id}), ${style}) as package_ezb_anchor," +
-						"create_cell('${format}', null, ${style}) as ill_indicator," +
-						"create_cell('${format}', null, ${style}) as superceding_publication_title_id," +
-						"create_cell('${format}', null, ${style}) as monograph_parent_collection_title," +
-						"create_cell('${format}', tipp_subject_reference, ${style}) as subject_area," +
-						"create_cell('${format}', (select ${valueCol} from refdata_value where rdv_id = tipp_status_rv_fk), ${style}) as status," +
-						"create_cell('${format}', (case when tipp_access_type_rv_fk = ${RDStore.TIPP_PAYMENT_PAID.id} then 'P' when tipp_access_type_rv_fk = ${RDStore.TIPP_PAYMENT_FREE.id} then 'F' else '' end), ${style}) as access_type," +
-						"create_cell('${format}', (select ${valueCol} from refdata_value where rdv_id = tipp_open_access_rv_fk), ${style}) as oa_type," +
-						"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ZDB_PPN).id}), ${style}) as zdb_ppn," +
-						"create_cell('${format}', (select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_EUR.id} order by pi_last_updated desc limit 1), ${style}) as listprice_eur," +
-						"create_cell('${format}', (select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_GBP.id} order by pi_last_updated desc limit 1), ${style}) as listprice_gbp," +
-						"create_cell('${format}', (select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_USD.id} order by pi_last_updated desc limit 1), ${style}) as listprice_usd"
+		String rowQuery = "select ${specialRenewColumns} create_cell('${format}', tipp_name, ${style}) as publication_title," + exportCellConfig
 		if(otherTitleIdentifierNamespaces) {
 			otherTitleIdentifierNamespaces.each { String other ->
 				rowQuery += ","
@@ -3772,36 +3546,158 @@ class ExportService {
 			rowQuery += "create_cell('${format}', (select ${valueCol} from refdata_value where rdv_id = (select case when tipp_host_platform_url = any(:perpetuallyPurchasedTitleURLs) then ${RDStore.YN_NO.id} else ${RDStore.YN_YES.id} end case)), ${style}) as selectable,"
 			rowQuery += "create_cell('${format}', null, ${style}) as pick"
 		}
-		rowQuery += " from title_instance_package_platform left join tippcoverage on tc_tipp_fk = tipp_id where tipp_id = any(:tippIDs) order by tipp_sort_name"
-		arrayParams.tippIDs = tippIDs
-		List exportRows = batchQueryService.longArrayQuery(rowQuery, arrayParams)
-		exportRows.collect { GroovyRowResult row ->
-			if(configMap.containsKey('usageData')) {
-				Long tippID = row.remove('tipp_id')
-				String cellStyle = row.remove('style')
-				Map titleReport = configMap.usageData.containsKey(tippID) ? configMap.usageData.get(tippID) : null
-				configMap.monthHeaders.each { Date month ->
-					def value
-					String monthKey = DateUtils.getSDF_yyyyMM().format(month)
-					if(titleReport) {
-						value = titleReport.containsKey(monthKey) ? titleReport.get(monthKey) : ' '
+		if(tippIDs) {
+			rowQuery += " from title_instance_package_platform where tipp_id = any(:tippIDs) order by tipp_sort_name"
+			tippIDs.collate(65000).each { List<Long> subset ->
+				arrayParams.tippIDs = subset
+				List exportRows = batchQueryService.longArrayQuery(rowQuery, arrayParams)
+				exportRows.collect { GroovyRowResult row ->
+					if (configMap.containsKey('usageData')) {
+						Long tippID = row.remove('tipp_id')
+						String cellStyle = row.remove('style')
+						Map titleReport = configMap.usageData.containsKey(tippID) ? configMap.usageData.get(tippID) : null
+						configMap.monthHeaders.each { Date month ->
+							def value
+							String monthKey = DateUtils.getSDF_yyyyMM().format(month)
+							if (titleReport) {
+								value = titleReport.containsKey(monthKey) ? titleReport.get(monthKey) : ' '
+							} else {
+								value = ' '
+							}
+							row.put(monthKey, createCell(format, value, cellStyle))
+						}
+						if (configMap.containsKey('withPick')) {
+							//implicit check
+							if (cellStyle == 'negative') {
+								row.put('selectable', createCell(format, RDStore.YN_NO.getI10n('value'), cellStyle))
+							} else row.put('selectable', createCell(format, RDStore.YN_YES.getI10n('value'), cellStyle))
+							row.put('pick', createCell(format, '', cellStyle))
+						}
 					}
-					else {
-						value = ' '
-					}
-					row.put(monthKey, createCell(format, value, cellStyle))
-				}
-				if(configMap.containsKey('withPick')) {
-					//implicit check
-					if(cellStyle == 'negative') {
-						row.put('selectable', createCell(format, RDStore.YN_NO.getI10n('value'), cellStyle))
-					}
-					else row.put('selectable', createCell(format, RDStore.YN_YES.getI10n('value'), cellStyle))
-					row.put('pick', createCell(format, '', cellStyle))
+					result << row.values()
 				}
 			}
-			row.values()
 		}
+		else if(ieIDs) {
+			rowQuery += " from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id left join issue_entitlement_coverage on ic_ie_fk = ie_id left join tippcoverage on tc_tipp_fk = tc_id where ie_id = any(:ieIDs) order by tipp_sort_name"
+			ieIDs.collate(65000).each { List<Long> subset ->
+				arrayParams.ieIDs = subset
+				List exportRows = batchQueryService.longArrayQuery(rowQuery, arrayParams)
+				exportRows.collect { GroovyRowResult row ->
+					result << row.values()
+				}
+			}
+		}
+		result
+	}
+
+	String getTippExportCellConfig(String format, String style, String valueCol) {
+		Locale locale = LocaleUtils.getCurrentLocale()
+		String config = "create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('monograph') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, IdentifierNamespace.NS_TITLE).id}) or (lower(tipp_title_type) in ('serial') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, IdentifierNamespace.NS_TITLE).id}))), ${style}) as print_identifier," +
+				"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('monograph') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISBN, IdentifierNamespace.NS_TITLE).id}) or (lower(tipp_title_type) in ('serial') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, IdentifierNamespace.NS_TITLE).id}))), ${style}) as online_identifier," +
+				"create_cell('${format}', to_char(tc_start_date, 'yyyy-MM-dd'), ${style}) as date_first_issue_online," +
+				"create_cell('${format}', tc_start_volume, ${style}) as num_first_vol_online," +
+				"create_cell('${format}', tc_start_issue, ${style}) as num_first_issue_online," +
+				"create_cell('${format}', to_char(tc_end_date, 'yyyy-MM-dd'), ${style}) as date_last_issue_online," +
+				"create_cell('${format}', tc_end_volume, ${style}) as num_last_vol_online," +
+				"create_cell('${format}', tc_end_issue, ${style}) as num_last_issue_online," +
+				"create_cell('${format}', tipp_host_platform_url, ${style}) as title_url," +
+				"create_cell('${format}', tipp_first_author, ${style}) as first_author," +
+				"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType('title_id', IdentifierNamespace.NS_TITLE).id}), ${style}) as title_id," +
+				"create_cell('${format}', tc_embargo, ${style}) as embargo_info," +
+				"create_cell('${format}', tc_coverage_depth, ${style}) as coverage_depth," +
+				"create_cell('${format}', tc_coverage_note, ${style}) as notes," +
+				"create_cell('${format}', tipp_title_type, ${style}) as publication_type," +
+				"create_cell('${format}', tipp_publisher_name, ${style}) as publisher_name," +
+				"create_cell('${format}', to_char(tipp_date_first_in_print, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), ${style}) as date_monograph_published_print," +
+				"create_cell('${format}', to_char(tipp_date_first_online, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), ${style}) as date_monograph_published_online," +
+				"create_cell('${format}', tipp_volume, ${style}) as monograph_volume," +
+				"create_cell('${format}', tipp_edition_statement, ${style}) as monograph_edition," +
+				"create_cell('${format}', tipp_first_editor, ${style}) as first_editor," +
+				"create_cell('${format}', null, ${style}) as parent_publication_title_id," +
+				"create_cell('${format}', null, ${style}) as preceding_publication_title_id," +
+				"create_cell('${format}', (select pkg_name from package where pkg_id = tipp_pkg_fk), ${style}) as package_name," +
+				"create_cell('${format}', (select plat_name from platform where plat_id = tipp_plat_fk), ${style}) as platform_name," +
+				"create_cell('${format}', to_char(tipp_last_updated, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), ${style}) as last_changed," +
+				"create_cell('${format}', to_char(tipp_access_start_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), ${style}) as access_start_date," +
+				"create_cell('${format}', to_char(tipp_access_end_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), ${style}) as access_end_date," +
+				"create_cell('${format}', (select ${valueCol} from refdata_value where rdv_id = tipp_medium_rv_fk), ${style}) as medium," +
+				"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ZDB, IdentifierNamespace.NS_TITLE).id}), ${style}) as zdb_id," +
+				"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, IdentifierNamespace.NS_TITLE).id}), ${style}) as doi_identifier," +
+				"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EZB, IdentifierNamespace.NS_TITLE).id}), ${style}) as ezb_id," +
+				"create_cell('${format}', tipp_gokb_id, ${style}) as title_wekb_uuid," +
+				"create_cell('${format}', (select pkg_gokb_id from package where pkg_id = tipp_pkg_fk), ${style}) as package_wekb_uuid," +
+				"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_pkg_fk = tipp_pkg_fk and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ISCI).id}), ${style}) as package_isci," +
+				"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_pkg_fk = tipp_pkg_fk and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType('isil', IdentifierNamespace.NS_PACKAGE).id}), ${style}) as package_isil," +
+				"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_pkg_fk = tipp_pkg_fk and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EZB, IdentifierNamespace.NS_PACKAGE).id}), ${style}) as package_ezb_anchor," +
+				"create_cell('${format}', null, ${style}) as ill_indicator," +
+				"create_cell('${format}', null, ${style}) as superceding_publication_title_id," +
+				"create_cell('${format}', null, ${style}) as monograph_parent_collection_title," +
+				"create_cell('${format}', tipp_subject_reference, ${style}) as subject_area," +
+				"create_cell('${format}', (select ${valueCol} from refdata_value where rdv_id = tipp_status_rv_fk), ${style}) as status," +
+				"create_cell('${format}', (case when tipp_access_type_rv_fk = ${RDStore.TIPP_PAYMENT_PAID.id} then 'P' when tipp_access_type_rv_fk = ${RDStore.TIPP_PAYMENT_FREE.id} then 'F' else '' end), ${style}) as access_type," +
+				"create_cell('${format}', (select ${valueCol} from refdata_value where rdv_id = tipp_open_access_rv_fk), ${style}) as oa_type," +
+				"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ZDB_PPN).id}), ${style}) as zdb_ppn," +
+				"create_cell('${format}', (select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_EUR.id} order by pi_last_updated desc limit 1), ${style}) as listprice_eur," +
+				"create_cell('${format}', (select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_GBP.id} order by pi_last_updated desc limit 1), ${style}) as listprice_gbp," +
+				"create_cell('${format}', (select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_USD.id} order by pi_last_updated desc limit 1), ${style}) as listprice_usd"
+		config
+	}
+
+	String getIssueEntitlementExportCellConfig(String format, String style, String valueCol) {
+		Locale locale = LocaleUtils.getCurrentLocale()
+		String config = "create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('monograph') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, IdentifierNamespace.NS_TITLE).id}) or (lower(tipp_title_type) in ('serial') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, IdentifierNamespace.NS_TITLE).id}))), ${style}) as print_identifier," +
+				"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('monograph') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISBN, IdentifierNamespace.NS_TITLE).id}) or (lower(tipp_title_type) in ('serial') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, IdentifierNamespace.NS_TITLE).id}))), ${style}) as online_identifier," +
+				"create_cell('${format}', to_char(coalesce(ic_start_date, tc_start_date), 'yyyy-MM-dd'), ${style}) as date_first_issue_online," +
+				"create_cell('${format}', coalesce(ic_start_volume, tc_start_volume), ${style}) as num_first_vol_online," +
+				"create_cell('${format}', coalesce(ic_start_issue, tc_start_issue), ${style}) as num_first_issue_online," +
+				"create_cell('${format}', to_char(coalesce(ic_end_date, tc_end_date), 'yyyy-MM-dd'), ${style}) as date_last_issue_online," +
+				"create_cell('${format}', coalesce(ic_end_volume, tc_end_volume), ${style}) as num_last_vol_online," +
+				"create_cell('${format}', coalesce(ic_end_issue, tc_end_issue), ${style}) as num_last_issue_online," +
+				"create_cell('${format}', tipp_host_platform_url, ${style}) as title_url," +
+				"create_cell('${format}', tipp_first_author, ${style}) as first_author," +
+				"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType('title_id', IdentifierNamespace.NS_TITLE).id}), ${style}) as title_id," +
+				"create_cell('${format}', tc_embargo, ${style}) as embargo_info," +
+				"create_cell('${format}', tc_coverage_depth, ${style}) as coverage_depth," +
+				"create_cell('${format}', tc_coverage_note, ${style}) as notes," +
+				"create_cell('${format}', tipp_title_type, ${style}) as publication_type," +
+				"create_cell('${format}', tipp_publisher_name, ${style}) as publisher_name," +
+				"create_cell('${format}', to_char(tipp_date_first_in_print, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), ${style}) as date_monograph_published_print," +
+				"create_cell('${format}', to_char(tipp_date_first_online, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), ${style}) as date_monograph_published_online," +
+				"create_cell('${format}', tipp_volume, ${style}) as monograph_volume," +
+				"create_cell('${format}', tipp_edition_statement, ${style}) as monograph_edition," +
+				"create_cell('${format}', tipp_first_editor, ${style}) as first_editor," +
+				"create_cell('${format}', null, ${style}) as parent_publication_title_id," +
+				"create_cell('${format}', null, ${style}) as preceding_publication_title_id," +
+				"create_cell('${format}', (select pkg_name from package where pkg_id = tipp_pkg_fk), ${style}) as package_name," +
+				"create_cell('${format}', (select plat_name from platform where plat_id = tipp_plat_fk), ${style}) as platform_name," +
+				"create_cell('${format}', to_char(tipp_last_updated, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), ${style}) as last_changed," +
+				"create_cell('${format}', to_char(coalesce(ie_access_start_date, tipp_access_start_date), '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), ${style}) as access_start_date," +
+				"create_cell('${format}', to_char(coalesce(ie_access_end_date, tipp_access_end_date), '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), ${style}) as access_end_date," +
+				"create_cell('${format}', (select ${valueCol} from refdata_value where rdv_id = tipp_medium_rv_fk), ${style}) as medium," +
+				"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ZDB, IdentifierNamespace.NS_TITLE).id}), ${style}) as zdb_id," +
+				"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, IdentifierNamespace.NS_TITLE).id}), ${style}) as doi_identifier," +
+				"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EZB, IdentifierNamespace.NS_TITLE).id}), ${style}) as ezb_id," +
+				"create_cell('${format}', tipp_gokb_id, ${style}) as title_wekb_uuid," +
+				"create_cell('${format}', (select pkg_gokb_id from package where pkg_id = tipp_pkg_fk), ${style}) as package_wekb_uuid," +
+				"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_pkg_fk = tipp_pkg_fk and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ISCI).id}), ${style}) as package_isci," +
+				"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_pkg_fk = tipp_pkg_fk and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType('isil', IdentifierNamespace.NS_PACKAGE).id}), ${style}) as package_isil," +
+				"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_pkg_fk = tipp_pkg_fk and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EZB, IdentifierNamespace.NS_PACKAGE).id}), ${style}) as package_ezb_anchor," +
+				"create_cell('${format}', null, ${style}) as ill_indicator," +
+				"create_cell('${format}', null, ${style}) as superceding_publication_title_id," +
+				"create_cell('${format}', null, ${style}) as monograph_parent_collection_title," +
+				"create_cell('${format}', tipp_subject_reference, ${style}) as subject_area," +
+				"create_cell('${format}', (select ${valueCol} from refdata_value where rdv_id = tipp_status_rv_fk), ${style}) as status," +
+				"create_cell('${format}', (case when tipp_access_type_rv_fk = ${RDStore.TIPP_PAYMENT_PAID.id} then 'P' when tipp_access_type_rv_fk = ${RDStore.TIPP_PAYMENT_FREE.id} then 'F' else '' end), ${style}) as access_type," +
+				"create_cell('${format}', (select ${valueCol} from refdata_value where rdv_id = tipp_open_access_rv_fk), ${style}) as oa_type," +
+				"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ZDB_PPN).id}), ${style}) as zdb_ppn," +
+				"create_cell('${format}', (select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_EUR.id} order by pi_last_updated desc limit 1), ${style}) as listprice_eur," +
+				"create_cell('${format}', (select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_GBP.id} order by pi_last_updated desc limit 1), ${style}) as listprice_gbp," +
+				"create_cell('${format}', (select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_USD.id} order by pi_last_updated desc limit 1), ${style}) as listprice_usd," +
+				"create_cell('${format}', (select trim(to_char(pi_local_price, '999999999D99')) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_EUR.id} order by pi_last_updated desc limit 1), ${style}) as localprice_eur," +
+				"create_cell('${format}', (select trim(to_char(pi_local_price, '999999999D99')) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_GBP.id} order by pi_last_updated desc limit 1), ${style}) as localprice_gbp," +
+				"create_cell('${format}', (select trim(to_char(pi_local_price, '999999999D99')) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_USD.id} order by pi_last_updated desc limit 1), ${style}) as localprice_usd"
+		config
 	}
 
 	/**
@@ -3818,6 +3714,7 @@ class ExportService {
 	 * @param subscriber the institution ({@link Org}) whose holding should be exported
 	 * @return a {@link List} containing the columns for the next output row
 	 */
+	@Deprecated
 	List buildRow(String format, GroovyRowResult titleRecord, Map identifierMap, Map priceItemMap, Map reports, List<GroovyRowResult> coreTitleIdentifierNamespaces, List<GroovyRowResult> otherTitleIdentifierNamespaces, boolean checkPerpetuallyPurchasedTitles = false, List showStatsInMonthRings = [], Org subscriber = null) {
 		titleRecord.identifiers = identifierMap.containsKey(titleRecord['tipp_id']) ? identifierMap.get(titleRecord['tipp_id']) : [:]
 		if(titleRecord.containsKey('ie_id')) {
@@ -4258,51 +4155,6 @@ class ExportService {
 			return (TIPPCoverage) rowData
 		}
 		null
-	}
-
-	/**
-	 * Gets all namespaces in which the given entitlements have identifiers and which are not among the core namespaces
-	 * @param entitlements the title IDs whose identifiers should be queried
-	 * @param entitlementInstance the type of instance whose IDs have been submitted
-	 * @return a {@link Set} of {@link IdentifierNamespace}s whose identifiers should be exported
-	 */
-	Set<IdentifierNamespace> getOtherIdentifierNamespaces(Collection<Long> entitlements,String entitlementInstance) {
-		Set<IdentifierNamespace> result = []
-		//32768 is the maximum number of placeholders Postgres supports. Some placeholders must be reserved for coreTitleNS.
-		List entitlementChunks = entitlements.collate(32767-IdentifierNamespace.CORE_TITLE_NS.size())
-		entitlementChunks.each { Collection<Long> entitlementChunk ->
-			//println('('+entitlementChunk.join(',')+')')
-			String whereTo
-			if(entitlementInstance == TitleInstancePackagePlatform.class.name)
-				whereTo = 'id.tipp.id in (:titleInstances)'
-			else if(entitlementInstance == IssueEntitlement.class.name)
-				whereTo = 'id.tipp.id in (select ie.tipp from IssueEntitlement ie where ie.tipp.id in (:titleInstances))'
-			if(whereTo) {
-				List subResult = IdentifierNamespace.executeQuery('select distinct(ns) from Identifier id join id.ns ns where ' + whereTo + ' and ns.ns not in (:coreTitleNS)', [titleInstances: entitlementChunk, coreTitleNS: IdentifierNamespace.CORE_TITLE_NS])
-				result.addAll(subResult)
-			}
-		}
-		result
-	}
-
-	/**
-	 * Gets all core title namespaces in which the given entitlements have identifiers
-	 * @param entitlements the title IDs whose identifiers should be queried
-	 * @param entitlementInstance the type of instance whose IDs have been submitted
-	 * @return a {@link Set} of {@link IdentifierNamespace}s whose identifiers should be exported
-	 */
-	Set<IdentifierNamespace> getCoreIdentifierNamespaces(Collection<Long> entitlements,String entitlementInstance) {
-		Set<IdentifierNamespace> result = []
-		entitlements.collate(32767-IdentifierNamespace.CORE_TITLE_NS.size()).each { Collection<Long> entitlementChunk ->
-			String whereTo
-			if(entitlementInstance == TitleInstancePackagePlatform.class.name)
-				whereTo = 'id.tipp.id in (:titleInstances)'
-			else if(entitlementInstance == IssueEntitlement.class.name)
-				whereTo = 'id.tipp.id in (select ie.tipp from IssueEntitlement ie where ie.tipp.id in (:titleInstances))'
-			if(whereTo)
-				result.addAll(IdentifierNamespace.executeQuery('select distinct(ns) from Identifier id join id.ns ns where '+whereTo+' and ns.ns in (:coreTitleNS)',[titleInstances:entitlementChunk,coreTitleNS:IdentifierNamespace.CORE_TITLE_NS]))
-		}
-		result
 	}
 
 	/**
