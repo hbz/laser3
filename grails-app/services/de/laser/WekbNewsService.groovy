@@ -188,25 +188,24 @@ class WekbNewsService {
 //                        it.globalUID = o?.globalUID
 //                    }
 //                    else
+                    List match = []
+
                     if (key == 'package') {
-                        Package p = Package.findByGokbId(it.uuid)
-                        it.id = p?.id
-                        it.globalUID = p?.globalUID
+                        match = Package.executeQuery('select id, globalUID from Package where gokbId = :gokbId', [gokbId: it.uuid])
                     }
                     else if (key == 'platform') {
-                        Platform p = Platform.findByGokbId(it.uuid)
-                        it.id = p?.id
-                        it.globalUID = p?.globalUID
+                        match = Platform.executeQuery('select id, globalUID from Platform where gokbId = :gokbId', [gokbId: it.uuid])
                     }
                     else if (key == 'provider') {
-                        Provider p = Provider.findByGokbId(it.uuid)
-                        it.id = p?.id
-                        it.globalUID = p?.globalUID
+                        match = Provider.executeQuery('select id, globalUID from Provider where gokbId = :gokbId', [gokbId: it.uuid])
                     }
                     else if (key == 'vendor') {
-                        Vendor v = Vendor.findByGokbId(it.uuid)
-                        it.id = v?.id
-                        it.globalUID = v?.globalUID
+                        match = Vendor.executeQuery('select id, globalUID from Vendor where gokbId = :gokbId', [gokbId: it.uuid])
+                    }
+
+                    if (match) {
+                        it.id = match[0][0]
+                        it.globalUID = match[0][1]
                     }
 
                     if (it.globalUID) { result[key].countInLaser++ }
