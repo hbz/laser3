@@ -3751,12 +3751,12 @@ class SubscriptionControllerService {
             result.subscription = Subscription.get(params.subscription)
         }
         result.contextOrg = contextService.getOrg()
-        result.contextCustomerType = result.contextOrg.getCustomerType()
+        result.contextCustomerType = contextService.getOrg().getCustomerType()
         result.institution = result.subscription ? result.subscription?.getSubscriberRespConsortia() : result.contextOrg //TODO temp, remove the duplicate
 
         if (result.subscription) {
             result.subscriptionConsortia = result.subscription.getConsortium()
-            result.inContextOrg = result.contextOrg.id == result.subscription.getSubscriberRespConsortia().id
+            result.inContextOrg = contextService.getOrg().id == result.subscription.getSubscriberRespConsortia().id
             result.licenses = Links.findAllByDestinationSubscriptionAndLinkType(result.subscription, RDStore.LINKTYPE_LICENSE).collect { Links li -> li.sourceLicense }
             LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(result.subscription)
             result.hasNext = links.nextLink.size() > 0
@@ -3770,9 +3770,9 @@ class SubscriptionControllerService {
 
             result.currentTitlesCounts = IssueEntitlement.executeQuery("select count(*) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :status ", [sub: result.subscription, status: RDStore.TIPP_STATUS_CURRENT])[0]
 
-            if ((result.contextOrg as Org).isCustomerType_Consortium() || (result.contextOrg as Org).isCustomerType_Support()) {
+            if (contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()) {
                 if(result.subscription.instanceOf){
-                    List subscrCostCounts = CostItem.executeQuery('select count(*) from CostItem ci where ci.sub = :sub and ci.owner = :ctx and ci.surveyOrg = null and ci.costItemStatus != :deleted', [sub: result.subscription, ctx: result.contextOrg, deleted: RDStore.COST_ITEM_DELETED])
+                    List subscrCostCounts = CostItem.executeQuery('select count(*) from CostItem ci where ci.sub = :sub and ci.owner = :ctx and ci.surveyOrg = null and ci.costItemStatus != :deleted', [sub: result.subscription, ctx: contextService.getOrg(), deleted: RDStore.COST_ITEM_DELETED])
                     result.currentCostItemCounts = subscrCostCounts ? subscrCostCounts[0] : 0
                     result.currentSurveysCounts = SurveyConfig.executeQuery("select count(*) from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
                             [sub: result.subscription.instanceOf,
@@ -3806,15 +3806,15 @@ class SubscriptionControllerService {
                     result.currentCostItemCounts = "${subscrCount}"
                 }
             }
-            result.showConsortiaFunctions = subscriptionService.showConsortiaFunctions(result.contextOrg, result.subscription)
+            result.showConsortiaFunctions = subscriptionService.showConsortiaFunctions(contextService.getOrg(), result.subscription)
 
             int tc1 = taskService.getTasksByResponsibilityAndObject(result.user, result.subscription).size()
             int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.subscription).size()
             result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
-            result.notesCount       = docstoreService.getNotesCount(result.subscription, result.contextOrg)
-            result.docsCount       = docstoreService.getDocsCount(result.subscription, result.contextOrg)
-            result.checklistCount   = workflowService.getWorkflowCount(result.subscription, result.contextOrg)
+            result.notesCount       = docstoreService.getNotesCount(result.subscription, contextService.getOrg())
+            result.docsCount       = docstoreService.getDocsCount(result.subscription, contextService.getOrg())
+            result.checklistCount   = workflowService.getWorkflowCount(result.subscription, contextService.getOrg())
 
             if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
                 if (!result.subscription.isVisibleBy(result.user)) {
@@ -3839,7 +3839,7 @@ class SubscriptionControllerService {
                 result.editable = contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
             }
         }
-        result.consortialView = result.showConsortiaFunctions ?: result.contextOrg.isCustomerType_Consortium()
+        result.consortialView = result.showConsortiaFunctions ?: contextService.getOrg().isCustomerType_Consortium()
 
         Map args = [:]
         if (result.consortialView) {

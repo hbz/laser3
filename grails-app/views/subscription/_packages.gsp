@@ -33,16 +33,6 @@
                                         <ui:linkWithIcon href="${sp.pkg.nominalPlatform.primaryUrl?.startsWith('http') ? sp.pkg.nominalPlatform.primaryUrl : 'http://' + sp.pkg.nominalPlatform.primaryUrl}"/>
                                         <ui:wekbIconLink type="platform" gokbId="${sp.pkg.nominalPlatform.gokbId}"/>
                                     </g:if>
-                                <%--
-                                <g:if test="${packageService.getCountOfNonDeletedTitles(sp.pkg) > 0}">
-                                    <g:each in="${Platform.executeQuery('select distinct tipp.platform from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg',[pkg:sp.pkg])}" var="platform">
-                                        <g:if test="${platform}">
-                                            <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
-                                            <ui:linkWithIcon href="${platform.primaryUrl?.startsWith('http') ? platform.primaryUrl : 'http://' + platform.primaryUrl}"/>
-                                        </g:if>
-                                    </g:each>
-                                </g:if>
-                                --%>
                                 </div>
                             </div>
                             <div class="row">
@@ -73,7 +63,7 @@
                                         </div>
                                         <%
                                             String unlinkDisabled = '', unlinkDisabledTooltip = null
-                                            Set<Subscription> blockingCostItems = CostItem.executeQuery('select ci.sub from CostItem ci where (ci.sub = :sub or ci.sub.instanceOf = :sub) and ci.pkg = :pkg and ci.owner = :context and ci.costItemStatus != :deleted', [pkg: sp.pkg, deleted: RDStore.COST_ITEM_DELETED, sub: sp.subscription, context: institution])
+                                            Set<Subscription> blockingCostItems = CostItem.executeQuery('select ci.sub from CostItem ci where (ci.sub = :sub or ci.sub.instanceOf = :sub) and ci.pkg = :pkg and ci.owner = :context and ci.costItemStatus != :deleted', [pkg: sp.pkg, deleted: RDStore.COST_ITEM_DELETED, sub: sp.subscription, context: contextService.getOrg()])
                                             if(showConsortiaFunctions) {
                                                 if(auditService.getAuditConfig(subscription.instanceOf, 'holdingSelection')) {
                                                     unlinkDisabled = 'disabled'
@@ -259,47 +249,6 @@
                                 <dt>${message(code: 'package.file')}</dt>
                                 <dd>${sp.pkg.file?.getI10n("value")}</dd>
                             </dl>
-                            <%--
-                            <g:if test="${packageInstanceRecord.source}">
-                                <dl>
-                                    <dt>${message(code: 'package.source.label')}</dt>
-                                    <dd>
-                                        ${packageInstanceRecord.source.name}<ui:linkWithIcon href="${editUrl}resource/show/${packageInstanceRecord.source.uuid}"/>
-                                    </dd>
-                                </dl>
-                                <dl>
-                                    <dt><g:message code="package.source.url.label"/></dt>
-                                    <dd>
-                                        <g:if test="${packageInstanceRecord.source.url}">
-                                            <g:message code="package.source.url"/><ui:linkWithIcon target="_blank" href="${packageInstanceRecord.source.url}"/>
-                                        </g:if>
-                                    </dd>
-                                </dl>
-                                <dl>
-                                    <dt><g:message code="package.source.frequency"/></dt>
-                                    <dd>${packageInstanceRecord.source.frequency ? RefdataValue.getByValueAndCategory(packageInstanceRecord.source.frequency, RDConstants.PLATFORM_STATISTICS_FREQUENCY)?.getI10n('value') : packageInstanceRecord.source.frequency}</dd>
-                                </dl>
-                                <dl>
-                                    <dt><g:message code="package.source.automaticUpdates"/></dt>
-                                    <dd>${Boolean.valueOf(packageInstanceRecord.source.automaticUpdates) ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</dd>
-                                </dl>
-                                <dl>
-                                    <dt><g:message code="package.source.lastRun"/></dt>
-                                    <dd>
-                                        <g:if test="${packageInstanceRecord.source.lastRun}">
-                                            <g:set var="sourceLastRun" value="${DateUtils.parseDateGeneric(packageInstanceRecord.source.lastRun)}"/>
-                                            <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${sourceLastRun}"/>
-                                        </g:if>
-                                    </dd>
-                                </dl>
-                            </g:if>
-                            <g:else>
-                                <dl>
-                                    <dt><g:message code="package.source.automaticUpdates"/></dt>
-                                    <dd><g:message code="package.index.result.noAutomaticUpdates"/></dd>
-                                </dl>
-                            </g:else>
-                            --%>
                         </div>
                         <g:if test="${packageInstanceRecord}">
                             <div class="eight wide column">
@@ -392,178 +341,6 @@
                                 </dl>
                             </div>
                         </g:if>
-                        <%--
-                        <div class="nine wide column">
-                            <g:form controller="subscription" action="setupPendingChangeConfiguration" params="[id:sp.subscription.id,pkg:sp.pkg.id]">
-                                <h5 class="ui header">
-                                    <g:message code="subscription.packages.config.label" args="${[sp.pkg.name]}"/>
-                                </h5>
-                                <table class="ui table stackable la-noSticky">
-                                    <thead>
-                                    <g:if test="${customerTypeService.isConsortium( contextCustomerType ) && !subscription.instanceOf}">
-                                        <tr>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th class="control-label la-border-left" colspan="2">
-                                                <g:message code="subscription.details.linkPackage.children.label"/>
-                                            </th>
-                                        </tr>
-                                    </g:if>
-                                    <tr>
-                                        <th class="control-label"><g:message code="subscription.packages.changeType.label"/></th>
-                                        <th class="control-label">
-                                            <g:message code="subscription.packages.setting.label"/>
-                                        </th>
-                                        <g:if test="${customerTypeService.isConsortium( contextCustomerType ) && !subscription.instanceOf}">
-                                            <th class="control-label">
-                                                <span class="la-popup-tooltip" data-content="${message(code:"subscription.packages.notification.label")}">
-                                                    <i class="large icon bullhorn"></i>
-                                                </span>
-                                            </th>
-                                            <th class="control-label la-border-left" >
-                                                <span class="la-popup-tooltip" data-content="${message(code:'subscription.packages.auditable')}">
-                                                    <i class="${Icon.SIG.INHERITANCE} large"></i>
-                                                </span>
-                                            </th>
-                                            <th class="control-label">
-                                                <span class="la-popup-tooltip" data-content="${message(code:'subscription.packages.notification.auditable')}">
-                                                    <i class="large icon bullhorn"></i>
-                                                </span>
-                                            </th>
-                                        </g:if>
-                                    </tr>
-                                    </thead>
-                                    <g:set var="excludes" value="${PendingChangeConfiguration.NOTIFICATION_ONLY}"/>
-                                    <g:each in="${PendingChangeConfiguration.SETTING_KEYS}" var="settingKey">
-                                        <%
-                                            PendingChangeConfiguration pcc = sp.getPendingChangeConfig(settingKey)
-                                        %>
-                                        <tr>
-                                            <th class="control-label">
-                                                <g:message code="subscription.packages.${settingKey}"/>
-                                            </th>
-                                            <td>
-                                                <g:if test="${subscription.instanceOf}">
-                                                    ${(pcc && pcc.settingValue) ? pcc.settingValue.getI10n("value") : "Einstellung wird nicht geerbt"}
-                                                </g:if>
-                                                <g:else>
-                                                    <g:if test="${!(settingKey in excludes)}">
-                                                        <g:if test="${editmode}">
-                                                            <ui:select class="ui fluid dropdown"
-                                                                       name="${settingKey}!§!setting" from="${RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)}"
-                                                                       optionKey="id" optionValue="value"
-                                                                       value="${(pcc && pcc.settingValue) ? pcc.settingValue.id : RDStore.PENDING_CHANGE_CONFIG_PROMPT.id}"
-                                                            />
-                                                        </g:if>
-                                                        <g:else>
-                                                            ${(pcc && pcc.settingValue) ? pcc.settingValue.getI10n("value") : RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n("value")}
-                                                        </g:else>
-                                                    </g:if>
-                                                </g:else>
-                                            </td>
-                                            <g:if test="${customerTypeService.isConsortium( contextCustomerType ) && !subscription.instanceOf}">
-                                                <td>
-                                                    <g:if test="${editmode}">
-                                                        <g:checkBox class="ui checkbox" name="${settingKey}!§!notification" checked="${pcc?.withNotification}"/>
-                                                    </g:if>
-                                                    <g:else>
-                                                        ${(pcc && pcc.withNotification) ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
-                                                    </g:else>
-                                                </td>
-                                                <td class="la-border-left">
-                                                    <g:if test="${!(settingKey in excludes)}">
-                                                        <g:if test="${editmode}">
-                                                            <g:checkBox class="ui checkbox" name="${settingKey}!§!auditable" checked="${pcc ? auditService.getAuditConfig(subscription, settingKey) : false}"/>
-                                                        </g:if>
-                                                        <g:else>
-                                                            ${pcc && auditService.getAuditConfig(subscription, settingKey) ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
-                                                        </g:else>
-                                                    </g:if>
-                                                </td>
-                                                <td>
-                                                    <g:if test="${!(settingKey in excludes)}">
-                                                        <g:if test="${editmode}">
-                                                            <g:checkBox class="ui checkbox" name="${settingKey}!§!notificationAudit" checked="${pcc ? auditService.getAuditConfig(subscription, settingKey+PendingChangeConfiguration.NOTIFICATION_SUFFIX) : false}"/>
-                                                        </g:if>
-                                                        <g:else>
-                                                            ${pcc && auditService.getAuditConfig(subscription, settingKey+PendingChangeConfiguration.NOTIFICATION_SUFFIX) ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
-                                                        </g:else>
-                                                    </g:if>
-                                                </td>
-                                            </g:if>
-                                        </tr>
-                                    </g:each>
-                                    <tr>
-                                        <th class="control-label">
-                                            <g:message code="subscription.packages.freezeHolding"/> <span class="la-popup-tooltip" data-content="${message(code: 'subscription.packages.freezeHolding.expl')}"><i class="${Icon.TOOLTIP.HELP}"></i></span>
-                                        </th>
-                                        <td>
-                                            <g:if test="${!subscription.instanceOf}">
-                                                <g:if test="${editmode}">
-                                                    <g:checkBox class="ui checkbox" name="freezeHolding" checked="${sp.freezeHolding}"/>
-                                                </g:if>
-                                                <g:else>
-                                                    ${sp.freezeHolding ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
-                                                </g:else>
-                                            </g:if>
-                                            <g:else>
-                                                <g:set var="parentSp" value="${SubscriptionPackage.findBySubscriptionAndPkg(subscription.instanceOf, sp.pkg)}"/>
-                                                ${parentSp.freezeHolding ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
-                                            </g:else>
-                                        </td>
-
-                                            <g:if test="${customerTypeService.isConsortium( contextCustomerType ) && !subscription.instanceOf}">
-                                                <td class="la-border-left">
-                                                    <g:if test="${editmode}">
-                                                        <g:checkBox class="ui checkbox" name="freezeHoldingAudit" checked="${auditService.getAuditConfig(subscription, SubscriptionPackage.FREEZE_HOLDING)}"/>
-                                                    </g:if>
-                                                    <g:else>
-                                                        ${auditService.getAuditConfig(subscription, SubscriptionPackage.FREEZE_HOLDING) ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
-                                                    </g:else>
-                                                </td>
-                                                <td></td>
-                                            </g:if>
-
-                                    </tr>
-                                    <g:if test="${editmode && !subscription.instanceOf}">
-                                        <tr>
-                                            <td colspan="2" class="control-label"><g:submitButton class="${Btn.PRIMARY}" name="${message(code:'subscription.packages.submit.label')}"/></td>
-                                            <g:set var="now" value="${new Date()}"/>
-                                            <td colspan="2" class="control-label">
-                                                <g:if test="${subscription.endDate < now}">
-                                                    <%
-                                                        boolean disabled = false
-                                                        Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
-                                                        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
-                                                        threadArray.each { Thread thread ->
-                                                            if (thread.name == 'PackageTransfer_' + subscription.id) {
-                                                                disabled = true
-                                                            }
-                                                        }
-                                                    %>
-                                                    <g:if test="${!disabled}">
-                                                        <g:link controller="subscription" action="resetHoldingToSubEnd" class="ui button negative js-open-confirm-modal la-popup-tooltip"
-                                                                params="[id: subscription.id, subPkg: sp.id]"
-                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.resetSubToEndDate")}"
-                                                                data-confirm-term-how="ok">
-                                                            <g:message code="subscription.packages.resetToSubEnd.label"/>
-                                                        </g:link>
-                                                    </g:if>
-                                                    <g:else>
-                                                        <g:link class="${Btn.NEGATIVE_TOOLTIP} disabled"
-                                                                data-content="${message(code: 'subscription.packages.resetToSubEnd.threadRunning')}">
-                                                            <g:message code="subscription.packages.resetToSubEnd.label"/>
-                                                        </g:link>
-                                                    </g:else>
-                                                </g:if>
-                                            </td>
-                                        </tr>
-                                    </g:if>
-                                </table>
-                            </g:form>
-                        </div>
-                    --%>
                         </div>
                     </div>
                 </div>
