@@ -257,16 +257,17 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def getLinks() {
         Map<String, Object> result = [user:contextService.getUser(), contextOrg:contextService.getOrg(), subscriptionLicenseLink:params.subscriptionLicenseLink]
+
         def entry = genericOIDService.resolveOID(params.entry)
         result.entry = entry
         result.editable = entry.isEditableBy(result.user)
         if(entry instanceof Subscription) {
             result.subscription = (Subscription) entry
-            result.atConsortialParent = result.contextOrg.id == result.subscription.getConsortium()?.id && !result.subscription.instanceOf ? "true" : "false"
+            result.atConsortialParent = contextService.getOrg().id == result.subscription.getConsortium()?.id && !result.subscription.instanceOf ? "true" : "false"
         }
         else if(entry instanceof License) {
             result.license = (License) entry
-            result.atConsortialParent = result.contextOrg == result.license.getLicensingConsortium() && !result.license.instanceOf ? "true" : "false"
+            result.atConsortialParent = contextService.getOrg() == result.license.getLicensingConsortium() && !result.license.instanceOf ? "true" : "false"
         }
         List<RefdataValue> linkTypes = RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE)
         if(result.subscriptionLicenseLink) {
@@ -602,7 +603,7 @@ class AjaxHtmlController {
     def createPerson() {
         Map<String, Object> result = [:]
         result.contextOrg = contextService.getOrg()
-        result.tenant = result.contextOrg
+        result.tenant = contextService.getOrg()
         result.modalId = 'personModal'
         result.presetFunctionType = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
         result.showContacts = params.showContacts == "true" ? true : ''
@@ -611,7 +612,7 @@ class AjaxHtmlController {
         result.provider = params.provider ? Provider.get(params.long('provider')) : null
         result.vendor = params.vendor ? Vendor.get(params.long('vendor')) : null
         result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_INVOICING_CONTACT, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
-        if (result.contextOrg.isCustomerType_Consortium() || result.contextOrg.isCustomerType_Support()) {
+        if (contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()) {
             result.functions << RDStore.PRS_FUNC_GASCO_CONTACT
         }
         result.positions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]

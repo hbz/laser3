@@ -69,11 +69,11 @@
             </tr>
             <g:if test="${showPersons && (Person.getPublicByOrgAndFunc(role.org, 'General contact person') || (Person.getPublicByOrgAndFunc(role.org, 'Technical Support')) || (Person.getPublicByOrgAndFunc(role.org, 'Service Support')) || (Person.getPublicByOrgAndFunc(role.org, 'Metadata Contact')) ||
                             Person.getPublicByOrgAndObjectResp(role.org, roleObject, roleRespValue) ||
-                            Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextOrg) ||
-                            Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Technical Support', contextOrg) ||
-                            Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Service Support', contextOrg) ||
-                            Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Metadata Contact', contextOrg) ||
-                            Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextOrg))}">
+                            Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person') ||
+                            Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Technical Support') ||
+                            Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Service Support') ||
+                            Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Metadata Contact') ||
+                            Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue))}">
                 <tr>
                     <td colspan="3" style="padding-bottom:0;">
                         <%-- public --%>
@@ -234,15 +234,15 @@
                         <%-- public --%>
 
                         <%-- private --%>
-                        <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextOrg) ||
-                                Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Technical Support', contextOrg) ||
-                                Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Service Support', contextOrg) ||
-                                Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Metadata Contact', contextOrg) ||
-                                Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextOrg)}">
+                        <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person') ||
+                                Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Technical Support') ||
+                                Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Service Support') ||
+                                Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Metadata Contact') ||
+                                Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue)}">
                             <div class="ui segment la-timeLineSegment-contact">
                                 <div class="la-timeLineGrid">
                                     <div class="ui grid">
-                                        <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextOrg)}" var="func">
+                                        <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person')}" var="func">
                                             <div class="row">
                                                 <div class="two wide column">
                                                     <i class="${Icon.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}"></i>
@@ -268,7 +268,7 @@
                                             </div>
                                         </g:each>
                                         <%--<g:if test="${roleObject instanceof de.laser.wekb.Package}">--%>
-                                            <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Technical Support', contextOrg)}" var="func">
+                                            <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Technical Support')}" var="func">
                                                 <div class="row">
                                                     <div class="two wide column">
                                                         <i class="${Icon.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}"></i>
@@ -293,7 +293,7 @@
                                                     </div>
                                                 </div>
                                             </g:each>
-                                            <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Service Support', contextOrg)}" var="func">
+                                            <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Service Support')}" var="func">
                                                 <div class="row">
                                                     <div class="two wide column">
                                                         <i class="${Icon.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}"></i>
@@ -318,7 +318,7 @@
                                                     </div>
                                                 </div>
                                             </g:each>
-                                            <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Metadata Contact', contextOrg)}" var="func">
+                                            <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Metadata Contact')}" var="func">
                                                 <div class="row">
                                                     <div class="two wide column">
                                                         <i class="${Icon.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}"></i>
@@ -344,7 +344,7 @@
                                                 </div>
                                             </g:each>
                                         <%--</g:if>--%>
-                                        <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextOrg)}" var="resp">
+                                        <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue)}" var="resp">
                                             <div class="row">
                                                <div class="two wide column">
                                                     <i class="${Icon.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}" ></i>

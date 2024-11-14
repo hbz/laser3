@@ -1,3 +1,4 @@
+<laser:serviceInjection/>
 
 <ui:greySegment>
 
@@ -47,10 +48,10 @@
     <g:if test="${privateProperties?.size() > 0}">
 
         <div class="content">
-            <h5 class="ui header">${message(code: 'subscription.properties.private')} ${contextOrg.name}</h5>
+            <h5 class="ui header">${message(code: 'subscription.properties.private')} ${contextService.getOrg().name}</h5>
             <table class="ui selectable celled table la-js-responsive-table la-table">
                 <laser:render template="/compare/comparisonPropertiesTable"
-                          model="[group: privateProperties, key: message(code: 'subscription.properties.private') + ' ' + contextOrg.name]"/>
+                          model="[group: privateProperties, key: message(code: 'subscription.properties.private') + ' ' + contextService.getOrg().name]"/>
             </table>
         </div>
 

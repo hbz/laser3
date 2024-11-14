@@ -360,8 +360,8 @@
                             </tr>
                             <g:if test="${(Person.getPublicByOrgAndFunc(role.provider, 'General contact person') ||
                                     Person.getPublicByOrgAndObjectResp(role.provider, license, 'Specific license editor') ||
-                                    Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person', contextService.getOrg()) ||
-                                    Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, license, 'Specific license editor', contextService.getOrg()))}">
+                                    Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person') ||
+                                    Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, license, 'Specific license editor'))}">
                                 <%-- public --%>
                                 <g:if test="${ Person.getPublicByOrgAndFunc(role.provider, 'General contact person') || Person.getPublicByOrgAndObjectResp(role.provider, license, 'Specific license editor')  }">
                                     <g:each in="${Person.getPublicByOrgAndFunc(role.provider, 'General contact person')}" var="func">
@@ -407,8 +407,8 @@
                                 </g:if>
                                 <%-- public --%>
                                 <%-- private --%>
-                                <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person', contextService.getOrg()) || Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, license, 'Specific license editor', contextService.getOrg())}">
-                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person', contextService.getOrg())}" var="func">
+                                <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person') || Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, license, 'Specific license editor')}">
+                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person')}" var="func">
                                         <tr>
                                             <td>
                                                 <i>${message(code:'address.private')}</i>
@@ -428,7 +428,7 @@
                                             </td>
                                         </tr>
                                     </g:each>
-                                    <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, license, 'Specific license editor', contextService.getOrg())}" var="resp">
+                                    <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, license, 'Specific license editor')}" var="resp">
                                         <tr>
                                             <td>
                                                 <i>${message(code:'address.private')}</i>
@@ -467,8 +467,8 @@
                             </tr>
                             <g:if test="${(Person.getPublicByOrgAndFunc(role.vendor, 'General contact person') ||
                                     Person.getPublicByOrgAndObjectResp(role.vendor, license, 'Specific license editor') ||
-                                    Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person', contextService.getOrg()) ||
-                                    Person.getPrivateByOrgAndObjectRespFromAddressbook(role.vendor, license, 'Specific license editor', contextService.getOrg()))}">
+                                    Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person') ||
+                                    Person.getPrivateByOrgAndObjectRespFromAddressbook(role.vendor, license, 'Specific license editor'))}">
                                 <%-- public --%>
                                 <g:if test="${ Person.getPublicByOrgAndFunc(role.vendor, 'General contact person') || Person.getPublicByOrgAndObjectResp(role.vendor, license, 'Specific license editor')  }">
                                     <g:each in="${Person.getPublicByOrgAndFunc(role.vendor, 'General contact person')}" var="func">
@@ -514,8 +514,8 @@
                                 </g:if>
                                 <%-- public --%>
                                 <%-- private --%>
-                                <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person', contextService.getOrg()) || Person.getPrivateByOrgAndObjectRespFromAddressbook(role.vendor, license, 'Specific license editor', contextService.getOrg())}">
-                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person', contextService.getOrg())}" var="func">
+                                <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person') || Person.getPrivateByOrgAndObjectRespFromAddressbook(role.vendor, license, 'Specific license editor')}">
+                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person')}" var="func">
                                         <tr>
                                             <td>
                                                 <i>${message(code:'address.private')}</i>
@@ -535,7 +535,7 @@
                                             </td>
                                         </tr>
                                     </g:each>
-                                    <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.vendor, license, 'Specific license editor', contextService.getOrg())}" var="resp">
+                                    <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.vendor, license, 'Specific license editor')}" var="resp">
                                         <tr>
                                             <td>
                                                 <i>${message(code:'address.private')}</i>

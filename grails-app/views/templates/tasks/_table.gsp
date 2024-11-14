@@ -92,7 +92,7 @@
                                 <i aria-hidden="true" class="${Icon.CMD.READ}"></i>
                             </a>
                         </g:elseif>
-                        <g:if test="${overwriteEditable}"> %{-- TODO: responsibleOrg == contextOrg + INST_ADM ? --}%
+                        <g:if test="${overwriteEditable}"> %{-- TODO: responsibleOrg == contextService.getOrg() + INST_ADM ? --}%
                             <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
                                     data-confirm-term-how="delete"

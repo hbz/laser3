@@ -46,7 +46,6 @@ class TaskController  {
 		String referer = request.getHeader('referer')
 
 		Task.withTransaction {
-			Org contextOrg = contextService.getOrg()
 			SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
 			if (params.endDate) {
@@ -59,7 +58,7 @@ class TaskController  {
 
 				//Bearbeiter festlegen
 				if (params.responsible == "Org") {
-					taskInstance.responsibleOrg = contextOrg
+					taskInstance.responsibleOrg = contextService.getOrg()
 				}
 				else if (params.responsible == "User") {
 					taskInstance.responsibleUser = (params.responsibleUser.id != 'null') ? User.get(params.responsibleUser.id): contextService.getUser()

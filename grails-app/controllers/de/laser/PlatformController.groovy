@@ -282,15 +282,15 @@ class PlatformController  {
         String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap " +
                     "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id} " +
                     "and oapl.subPkg is null order by LOWER(ap.name)"
-        result.orgAccessPointList = OrgAccessPointLink.executeQuery(hql,[institution : result.contextOrg])
+        result.orgAccessPointList = OrgAccessPointLink.executeQuery(hql,[institution : contextService.getOrg()])
 
         String notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution " +
             "and not exists (" +
             "select 1 from oap.oapp as oapl where oapl.oap=oap and oapl.active=true " +
             "and oapl.platform.id = ${platformInstance.id} and oapl.subPkg is null) order by lower(oap.name)"
-        result.accessPointList = OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : result.contextOrg])
+        result.accessPointList = OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : contextService.getOrg()])
 
-        result.selectedInstitution = result.contextOrg.id
+        result.selectedInstitution = contextService.getOrg().id
 
         // ? --- copied from myInstitutionController.currentPlatforms()
         String instanceFilter = ""

@@ -26,9 +26,7 @@ class CompareController  {
     })
     def compareLicenses() {
         Map<String, Object> result = [:]
-        result.user = contextService.getUser()
-        result.contextOrg = contextService.getOrg()
-        result.institution = contextService.getOrg()
+
         params.status = params.status ?: [RDStore.LICENSE_CURRENT.id]
         result.objects = []
         params.tab = params.tab ?: "compareElements"
@@ -53,10 +51,8 @@ class CompareController  {
     })
     def compareSubscriptions() {
         Map<String, Object> result = [:]
-        result.user = contextService.getUser()
-        result.contextOrg = contextService.getOrg()
-        SwissKnife.setPaginationParams(result, params, result.user)
-        result.institution = contextService.getOrg()
+        SwissKnife.setPaginationParams(result, params, contextService.getUser())
+
         params.status = params.status ?: [RDStore.SUBSCRIPTION_CURRENT.id]
         result.objects = []
         params.tab = params.tab ?: "compareElements"
@@ -88,10 +84,8 @@ class CompareController  {
     })
     def loadNextBatch() {
         Map<String, Object> result = [:]
-        result.user = contextService.getUser()
-        result.contextOrg = contextService.getOrg()
-        SwissKnife.setPaginationParams(result, params, result.user)
-        result.institution = contextService.getOrg()
+        SwissKnife.setPaginationParams(result, params, contextService.getUser())
+
         result.objects = Subscription.findAllByIdInList(params.list('selectedObjects[]').collect { Long.valueOf(it) })
         params.status = params.status ?: [RDStore.SUBSCRIPTION_CURRENT.id]
         result = result + compareService.compareEntitlements(params, result)

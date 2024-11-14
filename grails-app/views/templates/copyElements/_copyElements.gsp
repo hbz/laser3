@@ -488,7 +488,7 @@
                             <g:each in="${source_visibleProviders}" var="source_role">
                                 <g:if test="${source_role.provider}">
                                     <g:if test="${Person.getPublicByOrgAndObjectResp(source_role.provider, sourceObject, 'Specific subscription editor') ||
-                                            Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.provider, sourceObject, 'Specific subscription editor', contextService.getOrg())}">
+                                            Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.provider, sourceObject, 'Specific subscription editor')}">
 
                                     <%-- public --%>
                                         <g:each in="${Person.getPublicByOrgAndObjectResp(source_role.provider, sourceObject, 'Specific subscription editor')}"
@@ -511,7 +511,7 @@
                                         </g:each>
                                     <%-- public --%>
                                     <%-- private --%>
-                                        <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.provider, sourceObject, 'Specific subscription editor', contextService.getOrg())}"
+                                        <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.provider, sourceObject, 'Specific subscription editor')}"
                                                 var="resp">
                                             <div data-oid="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, source_role.provider, 'Specific subscription editor'))}"
                                                  class="la-multi-sources">
@@ -556,8 +556,8 @@
                                     </g:each>
                                 </g:if><%-- public --%>
                             <%-- private --%>
-                                <g:if test="${Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.provider, sourceObject, 'Specific subscription editor', contextService.getOrg())}">
-                                    <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.provider, sourceObject, 'Specific subscription editor', contextService.getOrg())}"
+                                <g:if test="${Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.provider, sourceObject, 'Specific subscription editor')}">
+                                    <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(source_role.provider, sourceObject, 'Specific subscription editor')}"
                                             var="resp">
                                         <div class="ui checkbox la-toggle-radio la-replace">
                                             <g:checkBox name="subscription.takeSpecificSubscriptionEditors"
@@ -579,7 +579,7 @@
                                 </strong>
                                 <g:each in="${target_visibleProviders}" var="target_role">
                                     <g:if test="${target_role.provider}">
-                                        <g:if test="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.provider, targetObject, 'Specific subscription editor', contextService.getOrg()) ||
+                                        <g:if test="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.provider, targetObject, 'Specific subscription editor') ||
                                                 Person.getPublicByOrgAndObjectResp(target_role.provider, targetObject, 'Specific subscription editor')}">
                                         <%-- public --%>
                                             <g:each in="${Person.getPublicByOrgAndObjectResp(target_role.provider, targetObject, 'Specific subscription editor')}"
@@ -603,7 +603,7 @@
                                         <%-- public --%>
                                         <%-- private --%>
 
-                                            <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.provider, targetObject, 'Specific subscription editor', contextService.getOrg())}"
+                                            <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.provider, targetObject, 'Specific subscription editor')}"
                                                     var="resp">
                                                 <div data-oid="${genericOIDService.getOID(PersonRole.getByPersonAndOrgAndRespValue(resp, target_role.provider, 'Specific subscription editor'))}"
                                                      class="la-multi-sources">
@@ -644,8 +644,8 @@
                                         </g:each>
                                     </g:if><%-- public --%>
                                 <%-- private --%>
-                                    <g:if test="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.provider, sourceObject, 'Specific subscription editor', contextService.getOrg())}">
-                                        <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.provider, sourceObject, 'Specific subscription editor', contextService.getOrg())}"
+                                    <g:if test="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.provider, sourceObject, 'Specific subscription editor')}">
+                                        <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(target_role.provider, sourceObject, 'Specific subscription editor')}"
                                                 var="resp">
                                             <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
                                                 <g:checkBox name="subscription.deleteSpecificSubscriptionEditors"
