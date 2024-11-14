@@ -2,6 +2,7 @@
 <laser:serviceInjection/>
 <g:set var="apiSource" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<g:set var="linkCtrlAction" value="${(contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" />
 <html>
     <head>
         <title>${subscription.name}</title>
@@ -60,7 +61,7 @@
         </header>
         <article>
             <h2><g:message code="default.identifiers.label"/></h2>
-            <g:set var="objectIds" value="${identifierService.prepareIDsForTable(subscription, contextOrg).objectIds}" />
+            <g:set var="objectIds" value="${identifierService.prepareIDsForTable(subscription, contextService.getOrg()).objectIds}" />
             <table>
                 <g:each in="${objectIds}" var="row">
                     <g:set var="namespace" value="${row.getKey()}"/>
@@ -147,7 +148,7 @@
                     <li>
                         <strong><g:message code="subscription.resource.label"/>: </strong>${subscription.resource?.getI10n("value")}
                     </li>
-                    <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortium().id}">
+                    <g:if test="${subscription.instanceOf && contextService.getOrg().id == subscription.getConsortium().id}">
                         <li>
                             <strong><g:message code="subscription.isInstanceOfSub.label"/>: </strong><g:link controller="subscription" action="show" id="${subscription.instanceOf.id}" absolute="true">${subscription.instanceOf.name}</g:link>
                         </li>
@@ -404,7 +405,7 @@
                                             ${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}
                                         </td>
                                         <td>
-                                            <g:link controller="provider" action="${(contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
+                                            <g:link controller="provider" action="${linkCtrlAction}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
                                         </td>
                                         <td>
                                             <ul>
@@ -431,7 +432,7 @@
                                             ${RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value')}
                                         </td>
                                         <td>
-                                            <g:link controller="provider" action="${(contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
+                                            <g:link controller="provider" action="${linkCtrlAction}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
                                         </td>
                                         <td>
                                             <ul>
@@ -458,7 +459,7 @@
                                             ${RDStore.PRS_FUNC_METADATA.getI10n('value')}
                                         </td>
                                         <td>
-                                            <g:link controller="provider" action="${(contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
+                                            <g:link controller="provider" action="${linkCtrlAction}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
                                         </td>
                                         <td>
                                             <ul>
@@ -481,7 +482,7 @@
                                                 ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                             </td>
                                             <td>
-                                                <g:link controller="provider" action="${(contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
+                                                <g:link controller="provider" action="${linkCtrlAction}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
                                             </td>
                                             <td>
                                                 <ul>
@@ -501,7 +502,7 @@
                                                 ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                             </td>
                                             <td>
-                                                <g:link controller="provider" action="${(contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.provider.id]" absolute="true">${resp}</g:link>
+                                                <g:link controller="provider" action="${linkCtrlAction}" params="[id: role.provider.id]" absolute="true">${resp}</g:link>
                                             </td>
                                             <td>
                                                 <ul>
@@ -532,7 +533,7 @@
                                                 ${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}
                                             </td>
                                             <td>
-                                                <g:link controller="provider" action="${(contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
+                                                <g:link controller="provider" action="${linkCtrlAction}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
                                             </td>
                                             <td>
                                                 <ul>
@@ -554,7 +555,7 @@
                                                 ${RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value')}
                                             </td>
                                             <td>
-                                                <g:link controller="provider" action="${(contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
+                                                <g:link controller="provider" action="${linkCtrlAction}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
                                             </td>
                                             <td>
                                                 <ul>
@@ -576,7 +577,7 @@
                                                 ${RDStore.PRS_FUNC_METADATA.getI10n('value')}
                                             </td>
                                             <td>
-                                                <g:link controller="provider" action="${(contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
+                                                <g:link controller="provider" action="${linkCtrlAction}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
                                             </td>
                                             <td>
                                                 <ul>
@@ -597,7 +598,7 @@
                                                     ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                                 </td>
                                                 <td>
-                                                    <g:link controller="provider" action="${(contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
+                                                    <g:link controller="provider" action="${linkCtrlAction}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
                                                 </td>
                                                 <td>
                                                     <ul>
@@ -617,7 +618,7 @@
                                                     ${RDStore.PRS_RESP_SPEC_LIC_EDITOR.getI10n('value')}
                                                 </td>
                                                 <td>
-                                                    <g:link controller="provider" action="${(contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.provider.id]" absolute="true">${resp}</g:link>
+                                                    <g:link controller="provider" action="${linkCtrlAction}" params="[id: role.provider.id]" absolute="true">${resp}</g:link>
                                                 </td>
                                                 <td>
                                                     <ul>
@@ -678,7 +679,7 @@
                                             ${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}
                                         </td>
                                         <td>
-                                            <g:link controller="vendor" action="${(contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
+                                            <g:link controller="vendor" action="${linkCtrlAction}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
                                         </td>
                                         <td>
                                             <ul>
@@ -705,7 +706,7 @@
                                             ${RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value')}
                                         </td>
                                         <td>
-                                            <g:link controller="vendor" action="${(contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
+                                            <g:link controller="vendor" action="${linkCtrlAction}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
                                         </td>
                                         <td>
                                             <ul>
@@ -732,7 +733,7 @@
                                             ${RDStore.PRS_FUNC_METADATA.getI10n('value')}
                                         </td>
                                         <td>
-                                            <g:link controller="vendor" action="${(contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
+                                            <g:link controller="vendor" action="${linkCtrlAction}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
                                         </td>
                                         <td>
                                             <ul>
@@ -755,7 +756,7 @@
                                                 ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                             </td>
                                             <td>
-                                                <g:link controller="vendor" action="${(contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
+                                                <g:link controller="vendor" action="${linkCtrlAction}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
                                             </td>
                                             <td>
                                                 <ul>
@@ -775,7 +776,7 @@
                                                 ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                             </td>
                                             <td>
-                                                <g:link controller="vendor" action="${(contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.vendor.id]" absolute="true">${resp}</g:link>
+                                                <g:link controller="vendor" action="${linkCtrlAction}" params="[id: role.vendor.id]" absolute="true">${resp}</g:link>
                                             </td>
                                             <td>
                                                 <ul>
@@ -806,7 +807,7 @@
                                                 ${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}
                                             </td>
                                             <td>
-                                                <g:link controller="vendor" action="${(contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
+                                                <g:link controller="vendor" action="${linkCtrlAction}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
                                             </td>
                                             <td>
                                                 <ul>
@@ -828,7 +829,7 @@
                                                 ${RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value')}
                                             </td>
                                             <td>
-                                                <g:link controller="vendor" action="${(contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
+                                                <g:link controller="vendor" action="${linkCtrlAction}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
                                             </td>
                                             <td>
                                                 <ul>
@@ -850,7 +851,7 @@
                                                 ${RDStore.PRS_FUNC_METADATA.getI10n('value')}
                                             </td>
                                             <td>
-                                                <g:link controller="vendor" action="${(contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
+                                                <g:link controller="vendor" action="${linkCtrlAction}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
                                             </td>
                                             <td>
                                                 <ul>
@@ -871,7 +872,7 @@
                                                     ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                                 </td>
                                                 <td>
-                                                    <g:link controller="vendor" action="${(contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
+                                                    <g:link controller="vendor" action="${linkCtrlAction}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
                                                 </td>
                                                 <td>
                                                     <ul>
@@ -891,7 +892,7 @@
                                                     ${RDStore.PRS_RESP_SPEC_LIC_EDITOR.getI10n('value')}
                                                 </td>
                                                 <td>
-                                                    <g:link controller="vendor" action="${(contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.vendor.id]" absolute="true">${resp}</g:link>
+                                                    <g:link controller="vendor" action="${linkCtrlAction}" params="[id: role.vendor.id]" absolute="true">${resp}</g:link>
                                                 </td>
                                                 <td>
                                                     <ul>
@@ -913,7 +914,7 @@
         <g:if test="${costItemSums.ownCosts || costItemSums.consCosts || costItemSums.subscrCosts}">
             <article>
                 <g:if test="${costItemSums.ownCosts}">
-                    <g:if test="${(contextOrg.id != subscription.getConsortium()?.id && subscription.instanceOf) || !subscription.instanceOf}">
+                    <g:if test="${(contextService.getOrg().id != subscription.getConsortium()?.id && subscription.instanceOf) || !subscription.instanceOf}">
                         <h2>${message(code: 'financials.label')}: ${message(code: 'financials.tab.ownCosts')}</h2>
                         <g:render template="financialsPdf" model="[data: costItemSums.ownCosts]"/>
                     </g:if>

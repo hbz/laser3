@@ -17,7 +17,7 @@
 
 <laser:render template="nav"/>
 
-<g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortium()?.id}">
+<g:if test="${subscription.instanceOf && contextService.getOrg().id == subscription.getConsortium()?.id}">
     <laser:render template="message"/>
 </g:if>
 

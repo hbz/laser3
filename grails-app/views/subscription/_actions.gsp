@@ -1,5 +1,4 @@
 <%@ page import="de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.Subscription; de.laser.Links; de.laser.interfaces.CalculatedType; de.laser.OrgRole; de.laser.Org; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.SubscriptionPackage" %>
-
 <laser:serviceInjection />
 <g:set var="actionStart" value="${System.currentTimeMillis()}"/>
 <%
@@ -222,7 +221,7 @@
             <g:elseif test="${actionName == 'show'}">
                 <%-- the editable setting needs to be the same as for the properties themselves -> override! --%>
                 <%-- the second clause is to prevent the menu display for consortia at member subscriptions --%>
-                <g:if test="${!(contextOrg.id == subscriptionConsortia?.id && subscription.instanceOf)}">
+                <g:if test="${!(contextService.getOrg().id == subscriptionConsortia?.id && subscription.instanceOf)}">
                     <div class="divider"></div>
                     <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
                 </g:if>

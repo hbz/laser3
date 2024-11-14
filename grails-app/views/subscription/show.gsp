@@ -388,7 +388,7 @@
                                     auditable="[subscription, 'resource']" auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
-                        <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortium().id}">
+                        <g:if test="${subscription.instanceOf && contextService.getOrg().id == subscription.getConsortium().id}">
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.isInstanceOfSub.label')}</dt>
                                 <dd>
@@ -671,7 +671,7 @@
                         <div class="content">
                             <g:if test="${costItemSums.ownCosts}">
                                 <g:if
-                                    test="${(contextOrg.id != subscription.getConsortium()?.id && subscription.instanceOf) || !subscription.instanceOf}">
+                                    test="${(contextService.getOrg().id != subscription.getConsortium()?.id && subscription.instanceOf) || !subscription.instanceOf}">
                                     <h2 class="ui header">${message(code: 'financials.label')}: ${message(code: 'financials.tab.ownCosts')}</h2>
                                     <laser:render template="financials" model="[data: costItemSums.ownCosts]"/>
                                 </g:if>

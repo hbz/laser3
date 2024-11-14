@@ -29,7 +29,7 @@
     <ui:msg class="warning" showIcon="true" hideClose="true" header="Info" message="subscription.details.permanentTitlesProcessRunning.info" />
 </g:if>
 
-<g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortium()?.id}">
+<g:if test="${subscription.instanceOf && contextService.getOrg().id == subscription.getConsortium()?.id}">
     <laser:render template="message"/>
 </g:if>
 
@@ -420,7 +420,7 @@
                                                     </g:if>
                                                     <g:else>
                                                         <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip"
-                                                              data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitle.collect{it.getPermanentTitleInfo(contextOrg)}.join(',')}"
+                                                              data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitle.collect{it.getPermanentTitleInfo(contextService.getOrg())}.join(',')}"
                                                               data-position="left center" data-variation="tiny">
                                                             <i class="star icon"></i>
                                                         </span>
