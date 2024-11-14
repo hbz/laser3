@@ -936,7 +936,7 @@ select distinct oap from OrgAccessPoint oap
   String dropdownNamingConvention() {
       dropdownNamingConvention(BeanStore.getContextService().getOrg())
   }
-
+    
     /**
      * Displays this subscription's name according to the dropdown naming convention as specified <a href="https://github.com/hbz/laser2/wiki/UI:-Naming-Conventions">here</a>
      * @param contextOrg the institution whose perspective should be taken

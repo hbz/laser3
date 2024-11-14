@@ -1588,7 +1588,7 @@ class SurveyController {
         }
 
         result.institution = result.participant
-        result.ownerView = (result.contextOrg.id == result.surveyInfo.owner.id)
+        result.ownerView = (contextService.getOrg().id == result.surveyInfo.owner.id)
 
         SimpleDateFormat sdf = DateUtils.getSDF_forFilename()
         String filename
@@ -2400,7 +2400,7 @@ class SurveyController {
         def result             = [:]
         result.user            = contextService.getUser()
         result.institution     = contextService.getOrg()
-        result.contextOrg      = result.institution
+        result.contextOrg      = contextService.getOrg()
 
         flash.error = ""
         flash.message = ""
@@ -2420,9 +2420,9 @@ class SurveyController {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
-        result.allObjects_readRights = SurveyConfig.executeQuery("select surConfig from SurveyConfig as surConfig join surConfig.surveyInfo as surInfo where surInfo.owner = :contextOrg order by surInfo.name", [contextOrg: result.contextOrg])
+        result.allObjects_readRights = SurveyConfig.executeQuery("select surConfig from SurveyConfig as surConfig join surConfig.surveyInfo as surInfo where surInfo.owner = :contextOrg order by surInfo.name", [contextOrg: contextService.getOrg()])
         //Nur Umfragen, die noch in Bearbeitung sind da sonst Umfragen-Prozesse zerstört werden.
-        result.allObjects_writeRights = SurveyConfig.executeQuery("select surConfig from SurveyConfig as surConfig join surConfig.surveyInfo as surInfo where surInfo.owner = :contextOrg and surInfo.status = :status order by surInfo.name", [contextOrg: result.contextOrg, status: RDStore.SURVEY_IN_PROCESSING])
+        result.allObjects_writeRights = SurveyConfig.executeQuery("select surConfig from SurveyConfig as surConfig join surConfig.surveyInfo as surInfo where surInfo.owner = :contextOrg and surInfo.status = :status order by surInfo.name", [contextOrg: contextService.getOrg(), status: RDStore.SURVEY_IN_PROCESSING])
 
         switch (params.workFlowPart) {
             case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
@@ -2777,7 +2777,7 @@ class SurveyController {
         if(params.exportXLSX) {
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportPropertiesChanged(result.surveyConfig, result.participants, result.contextOrg)
+            SXSSFWorkbook wb = (SXSSFWorkbook) surveyService.exportPropertiesChanged(result.surveyConfig, result.participants, contextService.getOrg())
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
@@ -2794,8 +2794,8 @@ class SurveyController {
                             [parentSub  : result.surveyConfig.subscription,
                              participant: surveyOrg.org
                             ])[0]
-                    SurveyResult surveyResult = SurveyResult.findByParticipantAndTypeAndSurveyConfigAndOwner(surveyOrg.org, result.propertyDefinition, result.surveyConfig, result.contextOrg)
-                    SubscriptionProperty subscriptionProperty = SubscriptionProperty.findByTypeAndOwnerAndTenant(subPropDef, subscription, result.contextOrg)
+                    SurveyResult surveyResult = SurveyResult.findByParticipantAndTypeAndSurveyConfigAndOwner(surveyOrg.org, result.propertyDefinition, result.surveyConfig, contextService.getOrg())
+                    SubscriptionProperty subscriptionProperty = SubscriptionProperty.findByTypeAndOwnerAndTenant(subPropDef, subscription, contextService.getOrg())
 
                     if (surveyResult && subscriptionProperty) {
                         String surveyValue = surveyResult.getValue()

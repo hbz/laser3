@@ -215,16 +215,16 @@ class ControlledListService {
                 case CalculatedType.TYPE_PARTICIPATION:
                     if (s._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION]){
                         if(org.id == s.getConsortium().id)
-                            result.results.add([name:s.dropdownNamingConvention(org), value:genericOIDService.getOID(s)])
+                            result.results.add([name:s.dropdownNamingConvention(), value:genericOIDService.getOID(s)])
                     }
                     break
                 case CalculatedType.TYPE_CONSORTIAL:
                     if (s._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
-                        result.results.add([name:s.dropdownNamingConvention(org), value:genericOIDService.getOID(s)])
+                        result.results.add([name:s.dropdownNamingConvention(), value:genericOIDService.getOID(s)])
                     break
                 default:
                     if(!params.nameOnly)
-                        result.results.add([name:s.dropdownNamingConvention(org), value:genericOIDService.getOID(s)])
+                        result.results.add([name:s.dropdownNamingConvention(), value:genericOIDService.getOID(s)])
                     else result.results.add([name:s.name,value:genericOIDService.getOID(s)])
                     break
             }
@@ -270,7 +270,7 @@ class ControlledListService {
             result.each { res ->
                 Subscription s = (Subscription) res.subscription
 
-                issueEntitlements.results.add([name:"${res.tipp.name} (${res.tipp.titleType}) (${s.dropdownNamingConvention(org)})",value:res.id])
+                issueEntitlements.results.add([name:"${res.tipp.name} (${res.tipp.titleType}) (${s.dropdownNamingConvention()})",value:res.id])
             }
         }
         issueEntitlements
@@ -301,7 +301,7 @@ class ControlledListService {
         if(result.size() > 0) {
             result.each { res ->
                 Subscription s = (Subscription) res.sub
-                issueEntitlementGroup.results.add([name:"${res.name} (${s.dropdownNamingConvention(org)})",value:res.id])
+                issueEntitlementGroup.results.add([name:"${res.name} (${s.dropdownNamingConvention()})",value:res.id])
             }
         }
         issueEntitlementGroup
@@ -405,7 +405,7 @@ class ControlledListService {
         subscriptions.each { row ->
             Subscription s = (Subscription) row[0]
             s.packages.each { sp ->
-                result.results.add([name:"${sp.pkg.name}/${s.dropdownNamingConvention(org)}",value:sp.pkg.id])
+                result.results.add([name:"${sp.pkg.name}/${s.dropdownNamingConvention()}",value:sp.pkg.id])
             }
         }
         result
@@ -418,9 +418,8 @@ class ControlledListService {
      */
     Map getBudgetCodes(GrailsParameterMap params) {
         Map result = [results:[]]
-        Org org = contextService.getOrg()
         String queryString = 'select bc from BudgetCode bc where bc.owner = :owner'
-        LinkedHashMap filter = [owner:org]
+        LinkedHashMap filter = [owner: contextService.getOrg()]
         if(params.query && params.query.length() > 0) {
             filter.put('query', params.query)
             queryString += " and genfunc_filter_matcher(bc.value,:query) = true"
@@ -440,9 +439,8 @@ class ControlledListService {
      */
     Map getInvoiceNumbers(GrailsParameterMap params) {
         Map result = [results:[]]
-        Org org = contextService.getOrg()
         String queryString = 'select distinct(i.invoiceNumber) from Invoice i where i.owner = :owner'
-        LinkedHashMap filter = [owner:org]
+        LinkedHashMap filter = [owner: contextService.getOrg()]
         if(params.query && params.query.length() > 0) {
             filter.put('query', params.query)
             queryString += " and genfunc_filter_matcher(i.invoiceNumber,:query) = true"
@@ -462,9 +460,8 @@ class ControlledListService {
      */
     Map getOrderNumbers(GrailsParameterMap params) {
         Map result = [results:[]]
-        Org org = contextService.getOrg()
         String queryString = 'select distinct(ord.orderNumber) from Order ord where ord.owner = :owner'
-        LinkedHashMap filter = [owner:org]
+        LinkedHashMap filter = [owner: contextService.getOrg()]
         if(params.query && params.query.length() > 0) {
             filter.put('query', params.query)
             //queryString += " and ord.orderNumber like :query"
@@ -485,9 +482,8 @@ class ControlledListService {
      */
     Map getReferences(GrailsParameterMap params) {
         Map result = [results:[]]
-        Org org = contextService.getOrg()
         String queryString = 'select distinct(ci.reference) from CostItem ci where ci.owner = :owner and ci.reference != null'
-        LinkedHashMap filter = [owner:org]
+        LinkedHashMap filter = [owner: contextService.getOrg()]
         if(params.query && params.query.length() > 0) {
             filter.put('query', params.query)
             queryString += " and genfunc_filter_matcher(ci.reference,:query) = true"
@@ -551,28 +547,6 @@ class ControlledListService {
             List allSubscriptions = DocContext.executeQuery('select distinct dc.subscription,dc.subscription.name from DocContext dc where dc.owner.owner = :ctxOrg and dc.subscription != null and genfunc_filter_matcher(dc.subscription.name,:query) = true order by dc.subscription.name asc',[ctxOrg:org,query:params.query])
             allSubscriptions.each { DocContext it ->
                 Subscription subscription = (Subscription) it[0]
-                /*
-                String tenant
-                if(subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && subscription.getConsortium().id == org.id) {
-                    try {
-                        tenant = " - ${subscription.getAllSubscribers().get(0).sortname}"
-                    }
-                    catch (IndexOutOfBoundsException e) {
-                        log.debug("Please check subscription #${subscription.id}")
-                    }
-                }
-                else {
-                    tenant = ''
-                }
-                String dateString = "("
-                if (subscription.startDate)
-                    dateString += sdf.format(subscription.startDate) + " - "
-                else dateString += "???"
-                if (subscription.endDate)
-                    dateString += sdf.format(subscription.endDate)
-                else dateString += ""
-                dateString += ")"
-                */
                 result.results.add([name:"(${messageSource.getMessage('default.subscription.label',null, locale)}) ${subscription.dropdownNamingConvention()}",value:genericOIDService.getOID(it[0])])
             }
         }

@@ -139,10 +139,10 @@ class SubscriptionControllerService {
             //def task_properties = task {
             // -- private properties
             // create mandatory OrgPrivateProperties if not existing
-            List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.SUB_PROP, true, result.contextOrg)
+            List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.SUB_PROP, true, contextService.getOrg())
             mandatories.each { PropertyDefinition pd ->
-                if (!SubscriptionProperty.findAllByOwnerAndTypeAndTenantAndIsPublic(result.subscription, pd, result.contextOrg, false)) {
-                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.subscription, pd, result.contextOrg)
+                if (!SubscriptionProperty.findAllByOwnerAndTypeAndTenantAndIsPublic(result.subscription, pd, contextService.getOrg(), false)) {
+                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.subscription, pd, contextService.getOrg())
                     if (newProp.hasErrors()) {
                         log.error(newProp.errors.toString())
                     } else {
@@ -152,7 +152,7 @@ class SubscriptionControllerService {
             }
             // -- private properties
             result.modalPrsLinkRole = RDStore.PRS_RESP_SPEC_SUB_EDITOR
-            result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(result.contextOrg)
+            result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
             result.visiblePrsLinks = []
             result.subscription.prsLinks.each { pl ->
                 if (!result.visiblePrsLinks.contains(pl.prs)) {
@@ -160,7 +160,7 @@ class SubscriptionControllerService {
                         result.visiblePrsLinks << pl
                     } else {
                         // nasty lazy loading fix
-                        if (result.contextOrg.id == pl.prs.tenant.id) {
+                        if (contextService.getOrg().id == pl.prs.tenant.id) {
                             result.visiblePrsLinks << pl
                         }
                     }
@@ -1603,10 +1603,10 @@ class SubscriptionControllerService {
                                         Subscription nextMemberSub = (links.nextLink && links.nextLink.size() > 0) ? links.nextLink[0].getDerivedSubscriptionForNonHiddenSubscriber(cm) : null
                                         try {
                                             if (prevMemberSub) {
-                                                Links.construct([source: memberSub, destination: prevMemberSub, linkType: RDStore.LINKTYPE_FOLLOWS, owner: result.contextOrg])
+                                                Links.construct([source: memberSub, destination: prevMemberSub, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.getOrg()])
                                             }
                                             if (nextMemberSub) {
-                                                Links.construct([source: nextMemberSub, destination: memberSub, linkType: RDStore.LINKTYPE_FOLLOWS, owner: result.contextOrg])
+                                                Links.construct([source: nextMemberSub, destination: memberSub, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.getOrg()])
                                             }
                                         }
                                         catch (CreationException e) {
@@ -1682,10 +1682,10 @@ class SubscriptionControllerService {
             try {
                 Links link
                 if(params.prev && prevMemberSub) {
-                    link = Links.construct([source: memberSub, destination: prevMemberSub, linkType: RDStore.LINKTYPE_FOLLOWS, owner: result.contextOrg])
+                    link = Links.construct([source: memberSub, destination: prevMemberSub, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.getOrg()])
                 }
                 if(params.next && nextMemberSub) {
-                    link = Links.construct([source: nextMemberSub, destination: memberSub, linkType: RDStore.LINKTYPE_FOLLOWS, owner: result.contextOrg])
+                    link = Links.construct([source: nextMemberSub, destination: memberSub, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.getOrg()])
                 }
                 if(link) {
                     [result:result,status:STATUS_OK]
@@ -1780,7 +1780,7 @@ class SubscriptionControllerService {
             SwissKnife.setPaginationParams(result, params, (User) result.user)
 
             Subscription subscriberSub = result.subscription
-            result.institution = result.contextOrg
+            result.institution = contextService.getOrg()
             result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
             result.surveyInfo = result.surveyConfig.surveyInfo
 
@@ -2040,7 +2040,7 @@ class SubscriptionControllerService {
             result.previousSubscription = previousSubscription
 
 
-            if(result.surveyInfo.owner.id ==  result.contextOrg.id) {
+            if(result.surveyInfo.owner.id ==  contextService.getOrg().id) {
                 result.participant = result.subscriber
             }
 
@@ -3518,7 +3518,7 @@ class SubscriptionControllerService {
                     //Copy References
                     //OrgRole
                     result.subscription.orgRelations?.each { or ->
-                        if ((or.org.id == result.contextOrg.id) || (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS,  RDStore.OR_SUBSCRIBER_CONS_HIDDEN])) {
+                        if ((or.org.id == contextService.getOrg().id) || (or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS,  RDStore.OR_SUBSCRIBER_CONS_HIDDEN])) {
                             OrgRole newOrgRole = new OrgRole()
                             InvokerHelper.setProperties(newOrgRole, or.properties)
                             newOrgRole.sub = newSub
@@ -3526,7 +3526,7 @@ class SubscriptionControllerService {
                         }
                     }
                     //link to previous subscription
-                    Links prevLink = Links.construct([source: newSub, destination: result.subscription, linkType: RDStore.LINKTYPE_FOLLOWS, owner: result.contextOrg])
+                    Links prevLink = Links.construct([source: newSub, destination: result.subscription, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.getOrg()])
                     if (!prevLink.save()) {
                         log.error("Problem linking to previous subscription: ${prevLink.errors}")
                     }
@@ -3577,7 +3577,7 @@ class SubscriptionControllerService {
                     params.targetObjectId = genericOIDService.getOID(targetObject)
                     //Copy References
                     result.sourceObject.orgRelations.each { OrgRole or ->
-                        if ((or.org.id == result.contextOrg.id) || (or.roleType.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id])) {
+                        if ((or.org.id == contextService.getOrg().id) || (or.roleType.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id])) {
                             OrgRole newOrgRole = new OrgRole()
                             InvokerHelper.setProperties(newOrgRole, or.properties)
                             newOrgRole.sub = result.targetObject
@@ -3718,7 +3718,7 @@ class SubscriptionControllerService {
             result.targetObjectId = params.targetObjectId
             result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
         }
-        result.showConsortiaFunctions = subscriptionService.showConsortiaFunctions(result.contextOrg, result.sourceObject)
+        result.showConsortiaFunctions = subscriptionService.showConsortiaFunctions(contextService.getOrg(), result.sourceObject)
         result.consortialView = result.showConsortiaFunctions
         result.editable = result.sourceObject?.isEditableBy(result.user)
         if (!result.editable) {

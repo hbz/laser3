@@ -499,7 +499,7 @@ class PendingChangeService extends AbstractLockableService {
      * @param entry the subscription data
      * @param status the possible subscription status
      * @param locale the locale to use for message constants
-     * @return the subscription name conform to {@link Subscription#dropdownNamingConvention(de.laser.Org)}
+     * @return the subscription name conform to {@link Subscription#dropdownNamingConvention()}
      * @deprecated not needed any more; functionality is in the new principal method {@link #getSubscriptionChanges(java.util.Map)}
      */
     @Deprecated

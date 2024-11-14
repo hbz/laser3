@@ -109,7 +109,7 @@
                                 List<Subscription> concernedSubs = Subscription.executeQuery('select distinct(ie.subscription) from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg',[pkg:duplicate])
                             %>
                             <g:each in="${concernedSubs}" var="sub">
-                                ${sub.dropdownNamingConvention(contextService.getOrg())}<br />
+                                ${sub.dropdownNamingConvention()}<br />
                             </g:each>
                             <g:if test="${!concernedSubs}">
                                 Keine Lizenz anhängig, freigegeben zum Löschen!

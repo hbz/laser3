@@ -1308,7 +1308,7 @@ class FinanceService {
                     if(!subMatches)
                         mappingErrorBag.noValidSubscription = subIdentifier
                     else if(subMatches.size() > 1)
-                        mappingErrorBag.multipleSubError = subMatches.collect { sub -> sub.dropdownNamingConvention(contextOrg) }
+                        mappingErrorBag.multipleSubError = subMatches.collect { sub -> sub.dropdownNamingConvention() }
                     else if(subMatches.size() == 1) {
                         subscription = subMatches[0]
                         costItem.sub = subscription
@@ -1372,7 +1372,7 @@ class FinanceService {
                         if(!ieMatches)
                             mappingErrorBag.noValidEntitlement = ieIdentifier
                         else if(ieMatches.size() > 1)
-                            mappingErrorBag.multipleEntitlementError = ieMatches.collect { entMatch -> "${entMatch.subscription.dropdownNamingConvention(contextOrg)} - ${entMatch.name}" }
+                            mappingErrorBag.multipleEntitlementError = ieMatches.collect { entMatch -> "${entMatch.subscription.dropdownNamingConvention()} - ${entMatch.name}" }
                         else if(ieMatches.size() == 1) {
                             ie = ieMatches[0]
                             costItem.issueEntitlement = ie
