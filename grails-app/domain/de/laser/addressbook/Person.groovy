@@ -273,7 +273,7 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
      * @param tenant the tenant institution ({@link Org}) whose contacts should be retrieved
      * @return a {@link List} of persons of the given function type, attached to the given organisation and maintained by the given tenant
      */
-    static List<Person> getPrivateByOrgAndFuncFromAddressbook(target, String func) {
+    static List<Person> getPrivateByOrgAndFuncFromAddressbook(def target, String func) {
         String targetClause
         Map<String, Object> queryParams = [functionType: func, tenant: BeanStore.getContextService().getOrg()]
         List<Person> result
@@ -307,7 +307,7 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
      * @param tenant the tenant institution ({@link Org}) whose private contacts (= private addressbook) should be consulted
      * @return a {@link List} of persons matching to the given responsibility, attached to the given organisation and object and maintained by the given tenant institution
      */
-    static List<Person> getPrivateByOrgAndObjectRespFromAddressbook(target, def obj, String resp) {
+    static List<Person> getPrivateByOrgAndObjectRespFromAddressbook(def target, def obj, String resp) {
         String q = '', targetClause
         Map<String, Object> p = ['resp': resp, 'tnt': BeanStore.getContextService().getOrg()]
 
