@@ -287,7 +287,6 @@ class AjaxHtmlController {
         Map<String,Object> result = [subscription:Subscription.get(params.subscription), curatoryGroups: []], packageMetadata = [:]
         Org contextOrg = contextService.getOrg()
         result.contextCustomerType = contextOrg.getCustomerType()
-        result.institution = contextOrg
         result.showConsortiaFunctions = contextOrg.isCustomerType_Consortium()
         result.roleLinks = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIUM]) }
         result.roleObject = result.subscription
@@ -343,31 +342,6 @@ class AjaxHtmlController {
         Map<String,Object> result = [subscription:Subscription.get(params.subscription)]
 
         render template: '/survey/ieInfos', model: result
-    }
-
-    /**
-     * Gets the properties to the given subscription or license
-     * @return the properties view for the respective details view
-     */
-    @Secured(['ROLE_USER'])
-    def getProperties() {
-        Org contextOrg = contextService.getOrg()
-        User user = contextService.getUser()
-        if(params.subscription) {
-            Subscription subscription = Subscription.get(params.subscription)
-            render template: "/subscription/properties", model: [subscription: subscription,
-                                                                 showConsortiaFunctions: subscriptionService.showConsortiaFunctions(contextOrg, subscription),
-                                                                 contextOrg: contextOrg,
-                                                                 editable: subscription.isEditableBy(user)]
-        }
-        else if(params.license) {
-            License license = License.get(params.license)
-            render template: "/license/properties", model: [license: license,
-                                                            showConsortiaFunctions: licenseControllerService.showConsortiaFunctions(license),
-                                                            contextOrg: contextOrg,
-                                                            institution: contextOrg,
-                                                            editable: license.isEditableBy(user)]
-        }
     }
 
     /**

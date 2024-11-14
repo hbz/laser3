@@ -1,5 +1,14 @@
 <%@ page import="de.laser.CustomerTypeService" %>
 <laser:serviceInjection/>
+
+%{--<pre>--}%
+%{--    _nav.gsp--}%
+%{--    contextOrg: ${contextOrg}--}%
+%{--    institution: ${institution}--}%
+%{--    orgInstance: ${orgInstance}--}%
+%{--    inContextOrg: ${inContextOrg}--}%
+%{--</pre>--}%
+
 <ui:subNav actionName="${actionName}">
     <%
         Map<String, Object> breadcrumbParams = [id: orgInstance.id]

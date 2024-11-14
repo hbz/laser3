@@ -69,7 +69,7 @@
         <laser:render template="/templates/tasks/modal_create" model="${[ownobj: orgInstance, owntp: 'org']}"/>
     </g:if>
     <g:if test="${contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
-        <laser:render template="/templates/documents/modal" model="${[ownobj: orgInstance, institution: institution, owntp: 'org']}"/>
+        <laser:render template="/templates/documents/modal" model="${[ownobj: orgInstance, owntp: 'org']}"/>
     </g:if>
     <g:if test="${workflowService.hasWRITE()}">
         <laser:render template="/templates/workflow/instantiate" model="${[target: orgInstance]}"/>

@@ -188,16 +188,6 @@
 
                         <div class="five wide right aligned column">
                             <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
-
-                            %{--
-                            <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
-                                <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
-                                <button type="button" class="${Btn.MODERN.SIMPLE}" data-ui="modal"
-                                        data-href="#modalEditDocument_${docctx.id}"
-                                        aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                <i class="${Icon.CMD.EDIT}"></i></button>
-                            </g:if>
-                            --}%
                         </div>
 
                     </div>

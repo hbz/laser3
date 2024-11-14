@@ -71,7 +71,7 @@
 %{----!>--}%
 
 <g:if test="${contextService.isInstEditor(CustomerTypeService.ORG_SUPPORT)}">
-    <laser:render template="/templates/sidebar/modals" model="${[tmplConfig: [ownobj: orgInstance, owntp: 'org', institution: institution]]}" />
+    <laser:render template="/templates/sidebar/modals" model="${[tmplConfig: [ownobj: orgInstance, owntp: 'org']]}" />
 </g:if>
 
 
