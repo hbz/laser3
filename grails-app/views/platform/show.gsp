@@ -260,7 +260,7 @@
                                             tmplButtonText:message(code:'platform.link.accessPoint.button.label'),
                                             tmplModalID:'platf_link_ap',
                                             editmode: editable,
-                                            accessPointList: accessPointList
+                                            accessPointList: accessPointList 
                                   ]}" />
                     </div>
                 </div>

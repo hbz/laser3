@@ -1,5 +1,4 @@
 <%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.wekb.TitleInstancePackagePlatform; grails.converters.JSON" %>
-<g:set var="contextOrg" value="${contextService.getOrg()}"/>
 
 <laser:htmlStart text="Datenbereinigung: TIPPs ohne we:kb ID" />
 
@@ -36,7 +35,7 @@
                         <td>
                             <ul>
                                 <g:each in="${issueEntitlements.get(entry.tipp)}" var="ie">
-                                    <li>${ie.id} -> ${ie.subscription.dropdownNamingConvention(contextOrg)}</li>
+                                    <li>${ie.id} -> ${ie.subscription.dropdownNamingConvention()}</li>
                                 </g:each>
                             </ul>
                         </td>

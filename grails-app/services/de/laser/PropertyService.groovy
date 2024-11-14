@@ -291,12 +291,12 @@ class PropertyService {
      * @param propDef the property definition for filter preset
      * @return
      */
-    Map<String,Object> processObjects(obj,Org contextOrg,PropertyDefinition propDef) {
+    Map<String,Object> processObjects(obj, PropertyDefinition propDef) {
         Map<String,Object> objMap = [id:obj.id,propertySet:obj.propertySet,displayAction:"show"]
         if(obj instanceof Subscription) {
             Subscription s = (Subscription) obj
-            objMap.name = s.dropdownNamingConvention(contextOrg)
-            if(contextOrg.isCustomerType_Consortium()) {
+            objMap.name = s.dropdownNamingConvention()
+            if (contextService.getOrg().isCustomerType_Consortium()) {
                 objMap.manageChildren = "membersSubscriptionsManagement"
                 objMap.manageChildrenParams = [id:s.id,propertiesFilterPropDef:genericOIDService.getOID(propDef), tab: 'properties']
             }

@@ -39,12 +39,12 @@
                         <div class="item">
                             <div class="sixteen wide column">
                                 <i class="icon clipboard outline la-list-icon"></i>
-                                <g:if test="${pt.subscription.getConsortium() != contextOrg}">
-                                    ${pt.getPermanentTitleInfo(contextOrg)}
+                                <g:if test="${pt.subscription.getConsortium() != contextService.getOrg()}">
+                                    ${pt.getPermanentTitleInfo(contextService.getOrg())}
                                 </g:if><g:else>
                                     <g:link controller="subscription"
                                             action="index"
-                                            id="${pt.subscription.id}">${pt.subscription.dropdownNamingConvention(contextOrg)}</g:link>
+                                            id="${pt.subscription.id}">${pt.subscription.dropdownNamingConvention()}</g:link>
                                     &nbsp;
                                     <br/>
                                     <br/>

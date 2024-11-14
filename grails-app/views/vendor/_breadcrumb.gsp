@@ -8,5 +8,5 @@
     <g:else>
         <ui:crumb message="menu.public.all_vendors" controller="vendor" action="list"/>
     </g:else>
-    <ui:crumb text="${vendor.dropdownNamingConvention(contextService.getOrg())}" class="active"/>
+    <ui:crumb text="${vendor.dropdownNamingConvention()}" class="active"/>
 </ui:breadcrumbs>

@@ -397,21 +397,12 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
-     * Substitution caller for {@link #dropdownNamingConvention(de.laser.Org)}; substitutes with the context institution
-     * @return this organisation's name according to the dropdown naming convention (<a href="https://github.com/hbz/laser2/wiki/UI:-Naming-Conventions">see here</a>)
-     */
-    String dropdownNamingConvention() {
-        return dropdownNamingConvention(BeanStore.getContextService().getOrg())
-    }
-
-    /**
      * Displays this vendor's name according to the dropdown naming convention as specified <a href="https://github.com/hbz/laser2/wiki/UI:-Naming-Conventions">here</a>
-     * @param contextOrg the institution whose perspective should be taken
      * @return this vendor's name according to the dropdown naming convention
      */
-    String dropdownNamingConvention(Org contextOrg){
+    String dropdownNamingConvention(){
         String result = ''
-        if (contextOrg.isCustomerType_Inst()){
+        if (BeanStore.getContextService().getOrg().isCustomerType_Inst()){
             if (name) {
                 result += name
             }

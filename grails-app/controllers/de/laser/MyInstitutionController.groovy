@@ -4275,11 +4275,11 @@ join sub.orgRelations or_sub where
             result.countObjWithProp = result.withProp.size()
             result.withoutProp.eachWithIndex { obj, int i ->
                 if(i >= result.withoutPropOffset && i < result.withoutPropOffset+result.max)
-                    result.objectsWithoutProp << propertyService.processObjects(obj, contextService.getOrg(), propDef)
+                    result.objectsWithoutProp << propertyService.processObjects(obj, propDef)
             }
             result.withProp.eachWithIndex { obj, int i ->
                 if(i >= result.withPropOffset && i < result.withPropOffset+result.max)
-                    result.filteredObjs << propertyService.processObjects(obj, contextService.getOrg(), propDef)
+                    result.filteredObjs << propertyService.processObjects(obj, propDef)
             }
             result.filterPropDef = propDef
         }

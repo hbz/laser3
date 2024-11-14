@@ -193,7 +193,7 @@
                 <table>
                     <g:each in="${linkedSubscriptions}" var="subscription">
                         <tr>
-                            <td><g:link controller="subscription" action="show" id="${subscription.id}" absolute="true">${subscription.dropdownNamingConvention(contextService.getOrg())}</g:link></td>
+                            <td><g:link controller="subscription" action="show" id="${subscription.id}" absolute="true">${subscription.dropdownNamingConvention()}</g:link></td>
                         </tr>
                     </g:each>
                 </table>

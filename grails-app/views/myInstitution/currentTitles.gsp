@@ -103,8 +103,8 @@
                             value="">${message(code: 'default.select.all.label')}</option>
                     <g:each in="${subscriptions}" var="s">
                         <option <%=(filterSub.contains(s.id.toString())) ? 'selected="selected"' : ''%> value="${s.id}"
-                                                                                                        title="${s.dropdownNamingConvention(contextService.getOrg())}">
-                            ${s.dropdownNamingConvention(contextService.getOrg())}
+                                                                                                        title="${s.dropdownNamingConvention()}">
+                            ${s.dropdownNamingConvention()}
                         </option>
                     </g:each>
                 </select>
@@ -388,7 +388,7 @@
                                                                         <div class="header">
                                                                             <g:link controller="subscription"
                                                                                     action="index"
-                                                                                    id="${ie.subscription.id}">${ie.subscription.dropdownNamingConvention(contextService.getOrg())}</g:link>
+                                                                                    id="${ie.subscription.id}">${ie.subscription.dropdownNamingConvention()}</g:link>
                                                                         </div>
                                                                         <div class="description">
                                                                             <g:link controller="issueEntitlement"

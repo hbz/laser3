@@ -507,11 +507,11 @@
         <% if(costItem?.issueEntitlement) {
             String ieTitleName = costItem.issueEntitlement.tipp.name
             String ieTitleTypeString = costItem.issueEntitlement.tipp.titleType %>
-        JSPC.app.finance${idSuffix}.newIE.dropdown('set text',"${ieTitleName} (${ieTitleTypeString}) (${costItem.sub.dropdownNamingConvention(contextService.getOrg())})");
+        JSPC.app.finance${idSuffix}.newIE.dropdown('set text',"${ieTitleName} (${ieTitleTypeString}) (${costItem.sub.dropdownNamingConvention()})");
         <%  }
         if(costItem?.issueEntitlementGroup) {
             String issueEntitlementGroupName = costItem.issueEntitlementGroup.name %>
-        JSPC.app.finance${idSuffix}.newTitleGroup.dropdown('set text',"${issueEntitlementGroupName} (${costItem.sub.dropdownNamingConvention(contextService.getOrg())})");
+        JSPC.app.finance${idSuffix}.newTitleGroup.dropdown('set text',"${issueEntitlementGroupName} (${costItem.sub.dropdownNamingConvention()})");
         <%  }  %>
         },
         collect: function (fields) {
