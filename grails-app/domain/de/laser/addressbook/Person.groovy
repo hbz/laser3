@@ -8,6 +8,7 @@ import de.laser.Subscription
 import de.laser.annotations.RefdataInfo
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.properties.PersonProperty
+import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.wekb.Package
@@ -272,9 +273,9 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
      * @param tenant the tenant institution ({@link Org}) whose contacts should be retrieved
      * @return a {@link List} of persons of the given function type, attached to the given organisation and maintained by the given tenant
      */
-    static List<Person> getPrivateByOrgAndFuncFromAddressbook(target, String func, Org tenant) {
+    static List<Person> getPrivateByOrgAndFuncFromAddressbook(target, String func) {
         String targetClause
-        Map<String, Object> queryParams = [functionType: func, tenant: tenant]
+        Map<String, Object> queryParams = [functionType: func, tenant: BeanStore.getContextService().getOrg()]
         List<Person> result
         if(target instanceof Org) {
             targetClause = 'pr.org = :org'

@@ -88,10 +88,10 @@
         </g:if>
 
             <g:if test="${showPersons && (Person.getPublicByOrgAndFunc(role.vendor, 'General contact person') || (Person.getPublicByOrgAndFunc(role.vendor, 'Technical Support')) || (Person.getPublicByOrgAndFunc(role.vendor, 'Service Support')) || (Person.getPublicByOrgAndFunc(role.vendor, 'Metadata Contact')) ||
-                            Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person', contextOrg) ||
-                            Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Technical Support', contextOrg) ||
-                            Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Service Support', contextOrg) ||
-                            Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Metadata Contact', contextOrg) ||
+                            Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person') ||
+                            Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Technical Support') ||
+                            Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Service Support') ||
+                            Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Metadata Contact') ||
                             Person.getPrivateByOrgAndObjectRespFromAddressbook(role.vendor, roleObject, roleRespValue, contextOrg))}">
                 <tr>
                     <td colspan="3" style="padding-bottom:0;">
@@ -274,15 +274,15 @@
                         <%-- public --%>
 
                         <%-- private --%>
-                        <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person', contextOrg) ||
-                                Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Technical Support', contextOrg) ||
-                                Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Service Support', contextOrg) ||
-                                Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Metadata Contact', contextOrg) ||
+                        <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person') ||
+                                Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Technical Support') ||
+                                Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Service Support') ||
+                                Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Metadata Contact') ||
                                 Person.getPrivateByOrgAndObjectRespFromAddressbook(role.vendor, roleObject, roleRespValue, contextOrg)}">
                             <div class="ui segment la-timeLineSegment-contact">
                                 <div class="la-timeLineGrid">
                                     <div class="ui grid">
-                                        <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person', contextOrg)}" var="func">
+                                        <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person')}" var="func">
                                             <div class="row">
                                                 <div class="two wide column">
                                                     <i class="${Icon.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}"></i>
@@ -308,7 +308,7 @@
                                             </div>
                                         </g:each>
                                         <%--<g:if test="${roleObject instanceof de.laser.wekb.Package}">--%>
-                                            <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Technical Support', contextOrg)}" var="func">
+                                            <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Technical Support')}" var="func">
                                                 <div class="row">
                                                     <div class="two wide column">
                                                         <i class="${Icon.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}"></i>
@@ -333,7 +333,7 @@
                                                     </div>
                                                 </div>
                                             </g:each>
-                                            <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Service Support', contextOrg)}" var="func">
+                                            <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Service Support')}" var="func">
                                                 <div class="row">
                                                     <div class="two wide column">
                                                         <i class="${Icon.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}"></i>
@@ -358,7 +358,7 @@
                                                     </div>
                                                 </div>
                                             </g:each>
-                                            <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Metadata Contact', contextOrg)}" var="func">
+                                            <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Metadata Contact')}" var="func">
                                                 <div class="row">
                                                     <div class="two wide column">
                                                         <i class="${Icon.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}"></i>

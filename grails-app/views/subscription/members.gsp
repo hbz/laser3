@@ -182,7 +182,7 @@
                                         (${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')})
                                     </div>
                                 </g:each>
-                                <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(subscr, 'General contact person', contextService.getOrg())}" var="gcp">
+                                <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(subscr, 'General contact person')}" var="gcp">
                                     <div class="item">
                                         ${gcp}
                                         (${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')} <i class="${Icon.ACP_PRIVATE}" style="display:inline-block"></i>)

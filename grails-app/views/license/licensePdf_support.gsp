@@ -305,7 +305,7 @@
                     </tr>
                     <g:if test="${(Person.getPublicByOrgAndFunc(role.provider, 'General contact person') ||
                             Person.getPublicByOrgAndObjectResp(role.provider, license, 'Specific license editor') ||
-                            Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person', contextService.getOrg()) ||
+                            Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person') ||
                             Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, license, 'Specific license editor', contextService.getOrg()))}">
                         <%-- public --%>
                         <g:if test="${ Person.getPublicByOrgAndFunc(role.provider, 'General contact person') || Person.getPublicByOrgAndObjectResp(role.provider, license, 'Specific license editor')  }">
@@ -352,8 +352,8 @@
                         </g:if>
                         <%-- public --%>
                         <%-- private --%>
-                        <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person', contextService.getOrg()) || Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, license, 'Specific license editor', contextService.getOrg())}">
-                            <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person', contextService.getOrg())}" var="func">
+                        <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person') || Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, license, 'Specific license editor', contextService.getOrg())}">
+                            <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person')}" var="func">
                                 <tr>
                                     <td>
                                         <i>${message(code:'address.private')}</i>

@@ -334,9 +334,9 @@
                             serviceSupports.addAll(Person.getPublicByOrgAndFunc(role.provider, 'Service Support'))
                             metadataContacts.addAll(Person.getPublicByOrgAndFunc(role.provider, 'Metadata Contact'))
                         }
-                        privateTechSupports.addAll(Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'Technical Support', institution))
-                        privateServiceSupports.addAll(Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'Service Support', institution))
-                        privateMetadataContacts.addAll(Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'Metadata Contact', institution))
+                        privateTechSupports.addAll(Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'Technical Support'))
+                        privateServiceSupports.addAll(Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'Service Support'))
+                        privateMetadataContacts.addAll(Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'Metadata Contact'))
                     %>
                     <tr>
                         <td>
@@ -345,7 +345,7 @@
                     </tr>
                     <g:if test="${(Person.getPublicByOrgAndFunc(role.provider, 'General contact person') || techSupports || serviceSupports || metadataContacts ||
                             Person.getPublicByOrgAndObjectResp(role.provider, subscription, 'Specific subscription editor') ||
-                            Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person', institution) ||
+                            Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person') ||
                             privateTechSupports || privateServiceSupports || privateMetadataContacts ||
                             Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, subscription, 'Specific subscription editor', institution))}">
                         <%-- public --%>
@@ -541,8 +541,8 @@
                                 </td>
                             </tr>
                         </g:each>
-                        <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person', institution) || Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, subscription, 'Specific subscription editor', institution)}">
-                            <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person', contextOrg)}" var="func">
+                        <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person') || Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, subscription, 'Specific subscription editor', institution)}">
+                            <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person')}" var="func">
                                 <tr>
                                     <td>
                                         <i>${message(code:'address.private')}</i>

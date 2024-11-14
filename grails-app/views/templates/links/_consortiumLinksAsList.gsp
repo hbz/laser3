@@ -14,10 +14,10 @@
         </tr>
         <g:if test="${(Person.getPublicByOrgAndFunc(consortium, 'General contact person') || (Person.getPublicByOrgAndFunc(consortium, 'Technical Support')) || (Person.getPublicByOrgAndFunc(consortium, 'Service Support')) || (Person.getPublicByOrgAndFunc(consortium, 'Metadata Contact')) ||
                 Person.getPublicByOrgAndObjectResp(consortium, roleObject, roleRespValue) ||
-                Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'General contact person', contextOrg) ||
-                Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Technical Support', contextOrg) ||
-                Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Service Support', contextOrg) ||
-                Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Metadata Contact', contextOrg) ||
+                Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'General contact person') ||
+                Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Technical Support') ||
+                Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Service Support') ||
+                Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Metadata Contact') ||
                 Person.getPrivateByOrgAndObjectRespFromAddressbook(consortium, roleObject, roleRespValue, contextOrg))}">
             <tr>
                 <td colspan="3" style="padding-bottom:0;">
@@ -182,15 +182,15 @@
                 <%-- public --%>
 
                 <%-- private --%>
-                    <g:if test="${Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'General contact person', contextOrg) ||
-                            Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Technical Support', contextOrg) ||
-                            Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Service Support', contextOrg) ||
-                            Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Metadata Contact', contextOrg) ||
+                    <g:if test="${Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'General contact person') ||
+                            Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Technical Support') ||
+                            Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Service Support') ||
+                            Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Metadata Contact') ||
                             Person.getPrivateByOrgAndObjectRespFromAddressbook(consortium, roleObject, roleRespValue, contextOrg)}">
                         <div class="ui segment la-timeLineSegment-contact">
                             <div class="la-timeLineGrid">
                                 <div class="ui grid">
-                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'General contact person', contextOrg)}" var="func">
+                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'General contact person')}" var="func">
                                         <div class="row">
                                             <div class="two wide column">
                                                 <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
@@ -219,7 +219,7 @@
                                         </div>
                                     </g:each>
                                 <%--<g:if test="${roleObject instanceof de.laser.Package}">--%>
-                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Technical Support', contextOrg)}" var="func">
+                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Technical Support')}" var="func">
                                         <div class="row">
                                             <div class="two wide column">
                                                 <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
@@ -247,7 +247,7 @@
                                             </div>
                                         </div>
                                     </g:each>
-                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Service Support', contextOrg)}" var="func">
+                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Service Support')}" var="func">
                                         <div class="row">
                                             <div class="two wide column">
                                                 <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
@@ -275,7 +275,7 @@
                                             </div>
                                         </div>
                                     </g:each>
-                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Metadata Contact', contextOrg)}" var="func">
+                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Metadata Contact')}" var="func">
                                         <div class="row">
                                             <div class="two wide column">
                                                 <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
