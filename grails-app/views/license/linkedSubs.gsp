@@ -186,7 +186,7 @@
                                     (${RDStore.PRS_RESP_SPEC_SUB_EDITOR.getI10n('value')})
                                 </div>
                             </g:each>
-                            <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(subscr, sub, 'Specific subscription editor', contextService.getOrg())}" var="sse">
+                            <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(subscr, sub, 'Specific subscription editor')}" var="sse">
                                 <div class="item">
                                     ${sse}
                                     (${RDStore.PRS_RESP_SPEC_SUB_EDITOR.getI10n('value')} <i class="${Icon.ACP_PRIVATE}" style="display:inline-block"></i>)

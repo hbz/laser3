@@ -347,7 +347,7 @@
                             Person.getPublicByOrgAndObjectResp(role.provider, subscription, 'Specific subscription editor') ||
                             Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person') ||
                             privateTechSupports || privateServiceSupports || privateMetadataContacts ||
-                            Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, subscription, 'Specific subscription editor', institution))}">
+                            Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, subscription, 'Specific subscription editor'))}">
                         <%-- public --%>
                         <g:each in="${techSupports}" var="func">
                             <tr>
@@ -541,7 +541,7 @@
                                 </td>
                             </tr>
                         </g:each>
-                        <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person') || Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, subscription, 'Specific subscription editor', institution)}">
+                        <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person') || Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, subscription, 'Specific subscription editor')}">
                             <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person')}" var="func">
                                 <tr>
                                     <td>
@@ -562,7 +562,7 @@
                                     </td>
                                 </tr>
                             </g:each>
-                            <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, subscription, 'Specific subscription editor', institution)}" var="resp">
+                            <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, subscription, 'Specific subscription editor')}" var="resp">
                                 <tr>
                                     <td>
                                         <i>${message(code:'address.private')}</i>

@@ -73,7 +73,7 @@
                             Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Technical Support') ||
                             Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Service Support') ||
                             Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Metadata Contact') ||
-                            Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextOrg))}">
+                            Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue))}">
                 <tr>
                     <td colspan="3" style="padding-bottom:0;">
                         <%-- public --%>
@@ -238,7 +238,7 @@
                                 Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Technical Support') ||
                                 Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Service Support') ||
                                 Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Metadata Contact') ||
-                                Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextOrg)}">
+                                Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue)}">
                             <div class="ui segment la-timeLineSegment-contact">
                                 <div class="la-timeLineGrid">
                                     <div class="ui grid">
@@ -344,7 +344,7 @@
                                                 </div>
                                             </g:each>
                                         <%--</g:if>--%>
-                                        <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextOrg)}" var="resp">
+                                        <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue)}" var="resp">
                                             <div class="row">
                                                <div class="two wide column">
                                                     <i class="${Icon.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}" ></i>

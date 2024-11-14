@@ -3551,7 +3551,7 @@ class SubscriptionService {
                 }
             }
 
-            Person.getPrivateByOrgAndObjectRespFromAddressbook(provider, sourceSub, 'Specific subscription editor', contextService.getOrg()).each { prs ->
+            Person.getPrivateByOrgAndObjectRespFromAddressbook(provider, sourceSub, 'Specific subscription editor').each { prs ->
                 if(!(provider in targetSub.orgRelations?.org)){
                     OrgRole or = OrgRole.findByOrgAndSub(provider, sourceSub)
                     OrgRole newOrgRole = new OrgRole()
@@ -3583,7 +3583,7 @@ class SubscriptionService {
                 }
             }
 
-            Person.getPrivateByOrgAndObjectRespFromAddressbook(agency, sourceSub, 'Specific subscription editor', contextService.getOrg()).each { prs ->
+            Person.getPrivateByOrgAndObjectRespFromAddressbook(agency, sourceSub, 'Specific subscription editor').each { prs ->
                 if(!(agency in targetSub.vendors)){
                     VendorRole vr = VendorRole.findByVendorAndSub(agency, sourceSub)
                     VendorRole newVendorRole = new VendorRole()

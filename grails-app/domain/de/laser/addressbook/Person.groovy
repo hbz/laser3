@@ -307,9 +307,9 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
      * @param tenant the tenant institution ({@link Org}) whose private contacts (= private addressbook) should be consulted
      * @return a {@link List} of persons matching to the given responsibility, attached to the given organisation and object and maintained by the given tenant institution
      */
-    static List<Person> getPrivateByOrgAndObjectRespFromAddressbook(target, def obj, String resp, Org tenant) {
+    static List<Person> getPrivateByOrgAndObjectRespFromAddressbook(target, def obj, String resp) {
         String q = '', targetClause
-        Map<String, Object> p = ['resp': resp, 'tnt': tenant]
+        Map<String, Object> p = ['resp': resp, 'tnt': BeanStore.getContextService().getOrg()]
 
         if (target instanceof Org) {
             p << ['org': target]

@@ -196,7 +196,7 @@
                     <td>
                     <g:each in="${object.providers}" var="provider">
                             <g:if test="${Person.getPublicByOrgAndObjectResp(provider, object, 'Specific subscription editor') ||
-                                    Person.getPrivateByOrgAndObjectRespFromAddressbook(provider, object, 'Specific subscription editor', contextService.getOrg())}">
+                                    Person.getPrivateByOrgAndObjectRespFromAddressbook(provider, object, 'Specific subscription editor')}">
 
                             <%-- public --%>
                                 <g:each in="${Person.getPublicByOrgAndObjectResp(provider, object, 'Specific subscription editor')}"
@@ -214,7 +214,7 @@
                                 </g:each>
                             <%-- public --%>
                             <%-- private --%>
-                                <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(provider, object, 'Specific subscription editor', contextService.getOrg())}"
+                                <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(provider, object, 'Specific subscription editor')}"
                                         var="resp">
                                     <span class="la-popup-tooltip"
                                           data-content="${message(code: 'address.private')}"
@@ -232,7 +232,7 @@
 
                     <g:each in="${object.vendors}" var="vendor">
                         <g:if test="${Person.getPublicByOrgAndObjectResp(vendor, object, 'Specific subscription editor') ||
-                                Person.getPrivateByOrgAndObjectRespFromAddressbook(vendor, object, 'Specific subscription editor', contextService.getOrg())}">
+                                Person.getPrivateByOrgAndObjectRespFromAddressbook(vendor, object, 'Specific subscription editor')}">
 
                         <%-- public --%>
                             <g:each in="${Person.getPublicByOrgAndObjectResp(vendor, object, 'Specific subscription editor')}"
@@ -250,7 +250,7 @@
                             </g:each>
                         <%-- public --%>
                         <%-- private --%>
-                            <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(vendor, object, 'Specific subscription editor', contextService.getOrg())}"
+                            <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(vendor, object, 'Specific subscription editor')}"
                                     var="resp">
                                 <span class="la-popup-tooltip"
                                       data-content="${message(code: 'address.private')}"

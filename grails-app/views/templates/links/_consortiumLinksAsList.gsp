@@ -18,7 +18,7 @@
                 Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Technical Support') ||
                 Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Service Support') ||
                 Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Metadata Contact') ||
-                Person.getPrivateByOrgAndObjectRespFromAddressbook(consortium, roleObject, roleRespValue, contextOrg))}">
+                Person.getPrivateByOrgAndObjectRespFromAddressbook(consortium, roleObject, roleRespValue))}">
             <tr>
                 <td colspan="3" style="padding-bottom:0;">
                 <%-- public --%>
@@ -186,7 +186,7 @@
                             Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Technical Support') ||
                             Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Service Support') ||
                             Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Metadata Contact') ||
-                            Person.getPrivateByOrgAndObjectRespFromAddressbook(consortium, roleObject, roleRespValue, contextOrg)}">
+                            Person.getPrivateByOrgAndObjectRespFromAddressbook(consortium, roleObject, roleRespValue)}">
                         <div class="ui segment la-timeLineSegment-contact">
                             <div class="la-timeLineGrid">
                                 <div class="ui grid">
@@ -304,7 +304,7 @@
                                         </div>
                                     </g:each>
                                 <%--</g:if>--%>
-                                    <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(consortium, roleObject, roleRespValue, contextOrg)}"
+                                    <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(consortium, roleObject, roleRespValue)}"
                                             var="resp">
                                         <div class="row">
                                             <div class="two wide column">
