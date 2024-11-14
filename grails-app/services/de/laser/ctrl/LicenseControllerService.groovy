@@ -102,9 +102,9 @@ class LicenseControllerService {
         int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.license).size()
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
-        result.notesCount = docstoreService.getNotesCount(result.license, result.contextOrg)
-        result.docsCount       = docstoreService.getDocsCount(result.license, result.contextOrg)
-        result.checklistCount   = workflowService.getWorkflowCount(result.license, result.contextOrg)
+        result.notesCount       = docstoreService.getNotesCount(result.license, contextService.getOrg())
+        result.docsCount        = docstoreService.getDocsCount(result.license, contextService.getOrg())
+        result.checklistCount   = workflowService.getWorkflowCount(result.license, contextService.getOrg())
 
         GrailsParameterMap clone = params.clone() as GrailsParameterMap
         if(!clone.license){

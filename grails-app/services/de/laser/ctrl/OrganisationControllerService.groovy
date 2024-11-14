@@ -306,7 +306,7 @@ class OrganisationControllerService {
                 // createdBy will set by Org.beforeInsert()
                 orgInstance = new Org(name: params.institution, status: RDStore.O_STATUS_CURRENT)
                 orgInstance.save()
-                Combo newMember = new Combo(fromOrg:orgInstance,toOrg:result.institution,type: RDStore.COMBO_TYPE_CONSORTIUM)
+                Combo newMember = new Combo(fromOrg: orgInstance, toOrg: contextService.getOrg(), type: RDStore.COMBO_TYPE_CONSORTIUM)
                 newMember.save()
                 orgInstance.setDefaultCustomerType()
                 result.orgInstance = orgInstance
@@ -343,25 +343,23 @@ class OrganisationControllerService {
         }
         switch(params.direction) {
             case 'add':
-                Map map = [toOrg: result.institution, fromOrg: Org.get(params.fromOrg), type: RDStore.COMBO_TYPE_CONSORTIUM]
-                if (! Combo.findByToOrgAndFromOrgAndType(result.institution, Org.get(params.fromOrg), RDStore.COMBO_TYPE_CONSORTIUM)) {
+                Map map = [toOrg: contextService.getOrg(), fromOrg: Org.get(params.fromOrg), type: RDStore.COMBO_TYPE_CONSORTIUM]
+                if (! Combo.findByToOrgAndFromOrgAndType(contextService.getOrg(), Org.get(params.fromOrg), RDStore.COMBO_TYPE_CONSORTIUM)) {
                     Combo cmb = new Combo(map)
                     cmb.save()
                 }
                 break
             case 'remove':
-                if(Subscription.executeQuery("from Subscription as s where exists ( select o from s.orgRelations as o where o.org in (:orgs) )", [orgs: [result.institution, Org.get(params.fromOrg)]])){
+                if (Subscription.executeQuery("from Subscription as s where exists ( select o from s.orgRelations as o where o.org in (:orgs) )", [orgs: [contextService.getOrg(), Org.get(params.fromOrg)]])){
                     result.error = messageSource.getMessage('org.consortiaToggle.remove.notPossible.sub',null,locale)
                     return [result:result, status:STATUS_ERROR]
                 }
-                else if(License.executeQuery("from License as l where exists ( select o from l.orgRelations as o where o.org in (:orgs) )", [orgs: [result.institution, Org.get(params.fromOrg)]])){
+                else if (License.executeQuery("from License as l where exists ( select o from l.orgRelations as o where o.org in (:orgs) )", [orgs: [contextService.getOrg(), Org.get(params.fromOrg)]])){
                     result.error = messageSource.getMessage('org.consortiaToggle.remove.notPossible.lic',null,locale)
                     return [result:result, status:STATUS_ERROR]
                 }
                 else {
-                    Combo cmb = Combo.findByFromOrgAndToOrgAndType(result.institution,
-                            Org.get(params.fromOrg),
-                            RDStore.COMBO_TYPE_CONSORTIUM)
+                    Combo cmb = Combo.findByFromOrgAndToOrgAndType(contextService.getOrg(), Org.get(params.fromOrg), RDStore.COMBO_TYPE_CONSORTIUM)
                     cmb.delete()
                 }
                 break
@@ -435,8 +433,6 @@ class OrganisationControllerService {
                                       isGrantedOrgRoleAdminOrOrgEditor: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'),
                                       isGrantedOrgRoleAdmin: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'),
                                       contextCustomerType:org.getCustomerType()]
-
-        //if(result.contextCustomerType == 'ORG_CONSORTIUM_BASIC')
 
         if (params.id) {
             result.orgInstance = Org.get(params.id)

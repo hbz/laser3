@@ -114,9 +114,8 @@ class OrganisationController  {
         }
 
         // TODO: erms-5467
-        Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, result.institution)
+        Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, contextService.getOrg())
         result.isComboRelated = isComboRelated
-        result.contextOrg = result.institution //for the properties template
 
         Boolean hasAccess = (
                 (result.inContextOrg && userService.hasFormalAffiliation(result.orgInstance, 'INST_ADM')) ||
@@ -178,29 +177,6 @@ class OrganisationController  {
             case 'oamonitor': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in oaMonitorSet })
                 break
         }
-        /* kept for case of reference, permission check should be handed over to tab display
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-            result.settings.addAll(allSettings.findAll { it.key in ownerSet })
-            result.settings.addAll(allSettings.findAll { it.key in accessSet })
-            result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
-        }
-        else if (result.inContextOrg) {
-            log.debug( 'settings for own org')
-            result.settings.addAll(allSettings.findAll { it.key in ownerSet })
-
-            if (result.institution.hasPerm(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC)) {
-                result.settings.addAll(allSettings.findAll { it.key in accessSet })
-                result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
-            }
-            else if (['ORG_INST_BASIC'].contains(result.institution.getCustomerType())) {
-                result.settings.addAll(allSettings.findAll { it.key == OrgSetting.KEYS.NATSTAT_SERVER_ACCESS })
-            }
-            else if (['FAKE'].contains(result.institution.getCustomerType())) {
-                result.settings.addAll(allSettings.findAll { it.key == OrgSetting.KEYS.NATSTAT_SERVER_ACCESS })
-            }
-        }
-        */
-
         result
     }
 
@@ -290,7 +266,7 @@ class OrganisationController  {
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         List<Org> availableOrgs = Org.executeQuery(fsr.query, fsr.queryParams, [sort:params.sort])
-        result.consortiaMemberIds = Combo.executeQuery('select cmb.fromOrg.id from Combo cmb where cmb.toOrg = :toOrg and cmb.type = :type',[toOrg: result.institution, type: RDStore.COMBO_TYPE_CONSORTIUM])
+        result.consortiaMemberIds = Combo.executeQuery('select cmb.fromOrg.id from Combo cmb where cmb.toOrg = :toOrg and cmb.type = :type',[toOrg: contextService.getOrg(), type: RDStore.COMBO_TYPE_CONSORTIUM])
 
         if (params.isMyX) {
             List<String> xFilter = params.list('isMyX')
@@ -900,11 +876,12 @@ class OrganisationController  {
         }
         result.missing = [:]
 
-        if(result.inContextOrg && result.institution.eInvoice) {
-            Identifier leitID = result.institution.getLeitID()
+        if (result.inContextOrg && contextService.getOrg().eInvoice) {
+            Identifier leitID = contextService.getOrg().getLeitID()
 
-            if(!result.institution.eInvoicePortal)
+            if (!contextService.getOrg().eInvoicePortal) {
                 result.missing.eInvoicePortal = message(code: 'org.eInvoice.info.missing.eInvoicePortal')
+            }
             if(!leitID || (leitID && (leitID.value == '' || leitID.value == null)))
                 result.missing.leitID = message(code: 'org.eInvoice.info.missing.leitID')
         }
@@ -915,11 +892,11 @@ class OrganisationController  {
 
         // create mandatory OrgPrivateProperties if not existing
 
-        List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.ORG_PROP, true, result.institution)
+        List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.ORG_PROP, true, contextService.getOrg())
 
         mandatories.each { PropertyDefinition pd ->
             if (!OrgProperty.findWhere(owner: result.orgInstance, type: pd)) {
-                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.orgInstance, pd, result.institution)
+                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.orgInstance, pd, contextService.getOrg())
 
 
                 if (newProp.hasErrors()) {
@@ -980,7 +957,8 @@ class OrganisationController  {
             params.tab = 'identifier'
 
         if (contextService.getOrg().isCustomerType_Consortium()) {
-            List<Long> consortia = Combo.executeQuery('select c.id from Combo c where c.type = :type and c.fromOrg = :target and c.toOrg = :context',[type:RDStore.COMBO_TYPE_CONSORTIUM,target:result.orgInstance,context:result.institution])
+            List<Long> consortia = Combo.executeQuery('select c.id from Combo c where c.type = :type and c.fromOrg = :target and c.toOrg = :context',
+                    [type:RDStore.COMBO_TYPE_CONSORTIUM, target:result.orgInstance, context:contextService.getOrg()])
             if (consortia.size() == 1 && contextService.isInstEditor())
                 result.editable_identifier = true
         }
@@ -990,7 +968,7 @@ class OrganisationController  {
         result.orgInstance.createCoreIdentifiersIfNotExist()
 
         Boolean inContextOrg = result.inContextOrg
-        Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, result.institution)
+        Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, contextService.getOrg())
         result.isComboRelated = isComboRelated
 
         result.hasAccessToCustomeridentifier = (userIsAdmin || (inContextOrg && contextService.isInstUser()) || (isComboRelated && contextService.isInstUser()))
@@ -1005,8 +983,8 @@ class OrganisationController  {
             // adding default settings
             organisationService.initMandatorySettings(result.orgInstance)
             if(params.tab == 'customerIdentifiers') {
-                result.allPlatforms = organisationService.getAllPlatformsForContextOrg(result.institution)
-                Map<String, Object> queryParams = [customer: result.orgInstance, context: result.institution]
+                result.allPlatforms = organisationService.getAllPlatformsForContextOrg(contextService.getOrg())
+                Map<String, Object> queryParams = [customer: result.orgInstance, context: contextService.getOrg()]
                 String query = "select ci from CustomerIdentifier ci join ci.platform platform where ci.customer = :customer and platform in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription in (select oo.sub from OrgRole oo where oo.org = :context))"
                 if(params.customerIdentifier) {
                     query += " and ci.value like (:customerIdentifier)"
@@ -1032,9 +1010,9 @@ class OrganisationController  {
                     result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
                 } else if (inContextOrg) {
 
-                    if (result.institution.isCustomerType_Consortium()) {
+                    if (contextService.getOrg().isCustomerType_Consortium()) {
                         result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
-                    } else if (result.institution.isCustomerType_Inst()) {
+                    } else if (contextService.getOrg().isCustomerType_Inst()) {
                         result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
                     }
                 } else if (isComboRelated) {
@@ -1042,7 +1020,6 @@ class OrganisationController  {
                     result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
                 }
             }
-
         }
         result
     }
@@ -1810,11 +1787,11 @@ class OrganisationController  {
         result.rdvAllPersonFunctions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_INVOICING_CONTACT, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN]
         result.rdvAllPersonPositions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
 
-        if ((result.institution.isCustomerType_Consortium() || result.institution.isCustomerType_Support()) && result.orgInstance) {
+        if ((contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()) && result.orgInstance) {
             params.org = result.orgInstance
             result.rdvAllPersonFunctions << RDStore.PRS_FUNC_GASCO_CONTACT
-        }else{
-            params.org = result.institution
+        } else {
+            params.org = contextService.getOrg()
         }
 
         params.sort = params.sort ?: 'p.last_name, p.first_name'

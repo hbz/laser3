@@ -1055,12 +1055,10 @@ class SurveyControllerService {
                                 }
 
                                 if (createCostItem) {
-                                    CostItem costItem = new CostItem(owner: result.contextOrg,
-                                                                    surveyOrg: surveyOrg,
-                                                                    costItemElement: cost_item_element)
+                                    CostItem costItem = new CostItem(owner: contextService.getOrg(), surveyOrg: surveyOrg, costItemElement: cost_item_element)
 
                                     if (cost_item_element && (cols[colMap.costItemSign] == null || cols[colMap.costItemSign] == "")) {
-                                        costItem.costItemElementConfiguration = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(cost_item_element, result.contextOrg).elementSign
+                                        costItem.costItemElementConfiguration = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(cost_item_element, contextService.getOrg()).elementSign
                                     }
 
                                     if (colMap.currency != null) {
@@ -1826,8 +1824,8 @@ class SurveyControllerService {
                                 [parentSub  : result.surveyConfig.subscription,
                                  participant: surveyOrg.org
                                 ])[0]
-                        SurveyResult surveyResult = SurveyResult.findByParticipantAndTypeAndSurveyConfigAndOwner(surveyOrg.org, propertyDefinition, result.surveyConfig, result.contextOrg)
-                        SubscriptionProperty subscriptionProperty = SubscriptionProperty.findByTypeAndOwnerAndTenant(subPropDef, subscription, result.contextOrg)
+                        SurveyResult surveyResult = SurveyResult.findByParticipantAndTypeAndSurveyConfigAndOwner(surveyOrg.org, propertyDefinition, result.surveyConfig, contextService.getOrg())
+                        SubscriptionProperty subscriptionProperty = SubscriptionProperty.findByTypeAndOwnerAndTenant(subPropDef, subscription, contextService.getOrg())
 
                         if (surveyResult && subscriptionProperty) {
                             String surveyValue = surveyResult.getValue()
@@ -1903,8 +1901,8 @@ class SurveyControllerService {
                                     [parentSub  : result.surveyConfig.subscription,
                                      participant: surveyOrg.org
                                     ])[0]
-                            SurveyResult surveyResult = SurveyResult.findByParticipantAndTypeAndSurveyConfigAndOwner(surveyOrg.org, propertyDefinition, result.surveyConfig, result.contextOrg)
-                            SubscriptionProperty subscriptionProperty = SubscriptionProperty.findByTypeAndOwnerAndTenant(subPropDef, subscription, result.contextOrg)
+                            SurveyResult surveyResult = SurveyResult.findByParticipantAndTypeAndSurveyConfigAndOwner(surveyOrg.org, propertyDefinition, result.surveyConfig, contextService.getOrg())
+                            SubscriptionProperty subscriptionProperty = SubscriptionProperty.findByTypeAndOwnerAndTenant(subPropDef, subscription, contextService.getOrg())
 
                             if (surveyResult && subscriptionProperty) {
                                 String surveyValue = surveyResult.getValue()
@@ -2045,8 +2043,8 @@ class SurveyControllerService {
                                     [parentSub  : result.surveyConfig.subscription,
                                      participant: surveyOrg.org
                                     ])[0]
-                            SurveyResult surveyResult = SurveyResult.findByParticipantAndTypeAndSurveyConfigAndOwner(surveyOrg.org, propertyDefinition, result.surveyConfig, result.contextOrg)
-                            SubscriptionProperty subscriptionProperty = SubscriptionProperty.findByTypeAndOwnerAndTenant(subPropDef, subscription, result.contextOrg)
+                            SurveyResult surveyResult = SurveyResult.findByParticipantAndTypeAndSurveyConfigAndOwner(surveyOrg.org, propertyDefinition, result.surveyConfig, contextService.getOrg())
+                            SubscriptionProperty subscriptionProperty = SubscriptionProperty.findByTypeAndOwnerAndTenant(subPropDef, subscription, contextService.getOrg())
 
                             if (surveyResult && subscriptionProperty) {
                                 String surveyValue = surveyResult.getValue()
@@ -4216,11 +4214,11 @@ class SurveyControllerService {
             }
 
             if (params.tab == 'customProperties') {
-                result.properties = result.parentSubscription.propertySet.findAll { it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic)) }.type
+                result.properties = result.parentSubscription.propertySet.findAll { it.type.tenant == null && (it.tenant?.id == contextService.getOrg().id || (it.tenant?.id != contextService.getOrg().id && it.isPublic)) }.type
             }
 
             if (params.tab == 'privateProperties') {
-                result.properties = result.parentSubscription.propertySet.findAll { it.type.tenant?.id == result.contextOrg.id }.type
+                result.properties = result.parentSubscription.propertySet.findAll { it.type.tenant?.id == contextService.getOrg().id }.type
             }
 
             if (result.properties) {
@@ -4248,27 +4246,27 @@ class SurveyControllerService {
 
 
                         newMap.newCustomProperty = (sub && propDef) ? sub.propertySet.find {
-                            it.type.id == propDef.id && it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
+                            it.type.id == propDef.id && it.type.tenant == null && (it.tenant?.id == contextService.getOrg().id || (it.tenant?.id != contextService.getOrg().id && it.isPublic))
                         } : null
                         newMap.oldCustomProperty = (newMap.oldSub && propDef) ? newMap.oldSub.propertySet.find {
-                            it.type.id == propDef.id && it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
+                            it.type.id == propDef.id && it.type.tenant == null && (it.tenant?.id == contextService.getOrg().id || (it.tenant?.id != contextService.getOrg().id && it.isPublic))
                         } : null
                     }
                     if (params.tab == 'customProperties') {
                         newMap.newCustomProperty = (sub) ? sub.propertySet.find {
-                            it.type.id == Long.valueOf(result.selectedProperty) && it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
+                            it.type.id == Long.valueOf(result.selectedProperty) && it.type.tenant == null && (it.tenant?.id == contextService.getOrg().id || (it.tenant?.id != contextService.getOrg().id && it.isPublic))
                         } : null
                         newMap.oldCustomProperty = (newMap.oldSub) ? newMap.oldSub.propertySet.find {
-                            it.type.id == Long.valueOf(result.selectedProperty) && it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
+                            it.type.id == Long.valueOf(result.selectedProperty) && it.type.tenant == null && (it.tenant?.id == contextService.getOrg().id || (it.tenant?.id != contextService.getOrg().id && it.isPublic))
                         } : null
                     }
 
                     if (params.tab == 'privateProperties') {
                         newMap.newPrivateProperty = (sub) ? sub.propertySet.find {
-                            it.type.id == Long.valueOf(result.selectedProperty) && it.type.tenant?.id == result.contextOrg.id
+                            it.type.id == Long.valueOf(result.selectedProperty) && it.type.tenant?.id == contextService.getOrg().id
                         } : null
                         newMap.oldPrivateProperty = (newMap.oldSub) ? newMap.oldSub.propertySet.find {
-                            it.type.id == Long.valueOf(result.selectedProperty) && it.type.tenant?.id == result.contextOrg.id
+                            it.type.id == Long.valueOf(result.selectedProperty) && it.type.tenant?.id == contextService.getOrg().id
                         } : null
                     }
 
@@ -4363,11 +4361,11 @@ class SurveyControllerService {
                             } else {
                                 if (params.tab == 'privateProperties') {
                                     copyProperty = oldSub ? oldSub.propertySet.find {
-                                        it.type.id == propDef.id && it.type.tenant.id == result.contextOrg.id
+                                        it.type.id == propDef.id && it.type.tenant.id == contextService.getOrg().id
                                     } : []
                                 } else {
                                     copyProperty = oldSub ? oldSub.propertySet.find {
-                                        it.type.id == propDef.id && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
+                                        it.type.id == propDef.id && (it.tenant?.id == contextService.getOrg().id || (it.tenant?.id != contextService.getOrg().id && it.isPublic))
                                     } : []
                                 }
                             }
@@ -4376,12 +4374,12 @@ class SurveyControllerService {
                                 if (propDef.tenant != null) {
                                     //private Property
                                     def existingProps = sub.propertySet.findAll {
-                                        it.owner.id == sub.id && it.type.id == propDef.id && it.type.tenant.id == result.contextOrg.id
+                                        it.owner.id == sub.id && it.type.id == propDef.id && it.type.tenant.id == contextService.getOrg().id
                                     }
                                     existingProps.removeAll { it.type.name != propDef.name } // dubious fix
 
                                     if (existingProps.size() == 0 || propDef.multipleOccurrence) {
-                                        def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, sub, propDef, result.contextOrg)
+                                        def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, sub, propDef, contextService.getOrg())
                                         if (newProp.hasErrors()) {
                                             log.error(newProp.errors.toString())
                                         } else {
@@ -4397,11 +4395,11 @@ class SurveyControllerService {
                                 } else {
                                     //custom Property
                                     def existingProp = sub.propertySet.find {
-                                        it.type.id == propDef.id && it.owner.id == sub.id && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))
+                                        it.type.id == propDef.id && it.owner.id == sub.id && (it.tenant?.id == contextService.getOrg().id || (it.tenant?.id != contextService.getOrg().id && it.isPublic))
                                     }
 
                                     if (existingProp == null || propDef.multipleOccurrence) {
-                                        def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, sub, propDef, result.contextOrg)
+                                        def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, sub, propDef, contextService.getOrg())
                                         if (newProp.hasErrors()) {
                                             log.error(newProp.errors.toString())
                                         } else {
@@ -4849,7 +4847,7 @@ class SurveyControllerService {
 
         result.editable = result.surveyInfo.isEditable() ?: false
 
-        if (!(result.user.isAdmin() || result.user.isYoda() || result.surveyInfo.owner.id == result.contextOrg.id)) {
+        if (!(result.user.isAdmin() || result.user.isYoda() || result.surveyInfo.owner.id == contextService.getOrg().id)) {
             return [result: null, status: STATUS_ERROR]
         }
 
@@ -4861,8 +4859,8 @@ class SurveyControllerService {
         int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.surveyConfig).size()
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
-        result.notesCount = docstoreService.getNotesCount(result.surveyConfig, result.contextOrg)
-        result.docsCount = docstoreService.getDocsCount(result.surveyConfig, result.contextOrg)
+        result.notesCount = docstoreService.getNotesCount(result.surveyConfig, contextService.getOrg())
+        result.docsCount = docstoreService.getDocsCount(result.surveyConfig, contextService.getOrg())
         result.participantsCount = SurveyOrg.executeQuery("select count (*) from SurveyOrg where surveyConfig = :surveyConfig", [surveyConfig: result.surveyConfig])[0]
         result.surveyCostItemsCount = CostItem.executeQuery("select count(*) from CostItem where pkg is null and owner = :owner and costItemStatus != :status and surveyOrg in (select surOrg from SurveyOrg as surOrg where surveyConfig = :surveyConfig)", [surveyConfig: result.surveyConfig, owner: result.surveyInfo.owner, status: RDStore.COST_ITEM_DELETED])[0]
         result.surveyCostItemsPackagesCount = CostItem.executeQuery("select count(*) from CostItem where pkg is not null and sub is null and owner = :owner and costItemStatus != :status and surveyOrg in (select surOrg from SurveyOrg as surOrg where surveyConfig = :surveyConfig)", [surveyConfig: result.surveyConfig, owner: result.surveyInfo.owner, status: RDStore.COST_ITEM_DELETED])[0]

@@ -147,7 +147,7 @@ class TaskController  {
 
 			//Bearbeiter festlegen/ändern
 			if (params.responsible == "Org") {
-				taskInstance.responsibleOrg = result.contextOrg
+				taskInstance.responsibleOrg = contextService.getOrg()
 				taskInstance.responsibleUser = null
 			} else if (params.responsible == "User") {
 				taskInstance.responsibleUser = (params.responsibleUser.id != 'null') ? User.get(params.responsibleUser.id) : contextService.getUser()
