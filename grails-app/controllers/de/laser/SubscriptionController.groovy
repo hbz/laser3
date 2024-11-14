@@ -1091,6 +1091,7 @@ class SubscriptionController {
      * or be exported as KBART or Excel worksheet
      * @return a list of the current subscription stock; either as HTML output or as KBART / Excel table
      */
+    /*
     @DebugInfo(isInstUser = [], ctrlService = 1)
     @Secured(closure = {
         ctx.contextService.isInstUser()
@@ -1165,6 +1166,7 @@ class SubscriptionController {
             }
         }
     }
+    */
 
     @DebugInfo(isInstUser = [], ctrlService = 1)
     @Secured(closure = {
@@ -1218,66 +1220,80 @@ class SubscriptionController {
             }
             result
         }
-
-        /*
-        String filename = "${escapeString(ctrlResult.result.subscription.dropdownNamingConvention())}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
-        //ArrayList<IssueEntitlement> issueEntitlements = []
-        Map<String, Object> selectedFields = [:]
-        if(params.fileformat) {
-            if (params.filename) {
-                filename = params.filename
-            }
-            //issueEntitlements.addAll(IssueEntitlement.findAllByIdInList(ctrlResult.result.entitlementIDs.id,[sort:'tipp.sortname']))
-            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
-            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-        }
-        if (params.exportKBart) {
-            String dir = GlobalService.obtainFileStorageLocation()
-            File f = new File(dir+'/'+filename)
-            if(!f.exists()) {
-                FileOutputStream fos = new FileOutputStream(f)
-                Map<String, Object> configMap = [:]
-                configMap.putAll(params)
-                configMap.sub = ctrlResult.result.subscription
-                configMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id //GORM sometimes does not initialise the sorted set
-                Map<String, Collection> tableData = exportService.generateTitleExportKBART(configMap, IssueEntitlement.class.name)
-                fos.withWriter { writer ->
-                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
-                }
-                fos.flush()
-                fos.close()
-            }
-            Map fileResult = [token: filename, filenameDisplay: filename, fileformat: 'kbart']
-            render template: '/templates/bulkItemDownload', model: fileResult
-            return
-        }
-        else if(params.fileformat == 'xlsx') {
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportIssueEntitlements(ctrlResult.result.entitlementIDs.id, selectedFields, ExportClickMeService.FORMAT.XLS)
-            response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
-            return
-        }
-        else if(params.fileformat == 'csv') {
-            response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
-            response.contentType = "text/csv"
-            ServletOutputStream out = response.outputStream
-            out.withWriter { writer ->
-                writer.write((String) exportClickMeService.exportIssueEntitlements(ctrlResult.result.entitlementIDs.id, selectedFields, ExportClickMeService.FORMAT.CSV))
-            }
-            out.close()
-        }
-        else {
-            flash.message = ctrlResult.result.message
-            ctrlResult.result
-        }
-        */
     }
 
-
+    @DebugInfo(isInstUser = [], ctrlService = 1)
+    @Secured(closure = {
+        ctx.contextService.isInstUser()
+    })
+    @Check404()
+    def exportHolding() {
+        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+        if (result.status == SubscriptionControllerService.STATUS_ERROR) {
+            if(!result) {
+                response.sendError(401)
+                return
+            }
+            else {
+                flash.error = result.error
+                result
+            }
+        }
+        else {
+            String filename = "${escapeService.escapeString(result.subscription.dropdownNamingConvention())}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
+            Subscription targetSub = issueEntitlementService.getTargetSubscription(result.subscription)
+            Set<Package> targetPkg = targetSub.packages.pkg
+            if(params.pkgFilter)
+                targetPkg = [Package.get(params.pkgFilter)]
+            Map<String, Object> configMap = [subscription: targetSub, packages: targetPkg]
+            configMap.putAll(params)
+            result.putAll(issueEntitlementService.getIssueEntitlements(configMap))
+            Map<String, Object> selectedFields = [:]
+            if(params.fileformat) {
+                if (params.filename) {
+                    filename = params.filename
+                }
+                //issueEntitlements.addAll(IssueEntitlement.findAllByIdInList(ctrlResult.result.entitlementIDs.id,[sort:'tipp.sortname']))
+                Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+                selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+            }
+            if (params.exportKBart) {
+                String dir = GlobalService.obtainFileStorageLocation()
+                File f = new File(dir+'/'+filename)
+                if(!f.exists()) {
+                    FileOutputStream fos = new FileOutputStream(f)
+                    Map<String, Object> tableData = exportService.generateTitleExport([format: ExportService.KBART, ieIDs: result.entIDs])
+                    fos.withWriter { writer ->
+                        writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+                    }
+                    fos.flush()
+                    fos.close()
+                }
+                Map fileResult = [token: filename, filenameDisplay: filename, fileformat: ExportService.KBART]
+                render template: '/templates/bulkItemDownload', model: fileResult
+                return
+            }
+            else if(params.fileformat == 'xlsx') {
+                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportIssueEntitlements(result.entIDs, selectedFields, ExportClickMeService.FORMAT.XLS)
+                response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb.write(response.outputStream)
+                response.outputStream.flush()
+                response.outputStream.close()
+                wb.dispose()
+                return
+            }
+            else if(params.fileformat == 'csv') {
+                response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
+                response.contentType = "text/csv"
+                ServletOutputStream out = response.outputStream
+                out.withWriter { writer ->
+                    writer.write((String) exportClickMeService.exportIssueEntitlements(result.entIDs, selectedFields, ExportClickMeService.FORMAT.CSV))
+                }
+                out.close()
+            }
+        }
+    }
 
     /**
      * Call to load the applied or pending changes to the given subscription
