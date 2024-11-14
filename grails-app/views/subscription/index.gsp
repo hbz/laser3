@@ -751,7 +751,7 @@
         e.preventDefault();
         $('#globalLoadingIndicator').show();
         $.ajax({
-            url: "<g:createLink action="index" params="${params + [exportKBart: true]}"/>",
+            url: "<g:createLink action="exportHolding" params="${params + [exportKBart: true]}"/>",
             type: 'POST',
             contentType: false
         }).done(function(response){

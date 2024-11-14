@@ -5,9 +5,6 @@
     <ui:crumb controller="package" action="index" text="${message(code: 'package.show.all')}"/>
     <ui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
 </ui:breadcrumbs>
-
-<ui:modeSwitch controller="package" action="show" params="${params}"/>
-
 <ui:controlButtons>
     <ui:exportDropdown>
         <%--
