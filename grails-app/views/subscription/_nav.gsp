@@ -1,6 +1,14 @@
 <%@ page import="de.laser.CustomerTypeService; de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.wekb.Platform; de.laser.Subscription; de.laser.SubscriptionPackage;" %>
 <laser:serviceInjection />
 
+%{--<pre>--}%
+%{--    _nav.gsp--}%
+%{--    contextOrg: ${contextOrg}--}%
+%{--    institution: ${institution}--}%
+%{--    orgInstance: ${orgInstance}--}%
+%{--    inContextOrg: ${inContextOrg}--}%
+%{--</pre>--}%
+
 <ui:subNav actionName="${actionName}">
 
     <ui:subNavItem controller="subscription" action="show" params="${[id:params.id]}" message="subscription.details.details.label" />

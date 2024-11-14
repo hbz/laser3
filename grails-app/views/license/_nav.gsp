@@ -1,6 +1,14 @@
 <%@ page import="de.laser.CustomerTypeService" %>
 <laser:serviceInjection />
 
+%{--<pre>--}%
+%{--    _nav.gsp--}%
+%{--    contextOrg: ${contextOrg}--}%
+%{--    institution: ${institution}--}%
+%{--    orgInstance: ${orgInstance}--}%
+%{--    inContextOrg: ${inContextOrg}--}%
+%{--</pre>--}%
+
 <g:set var="license" value="${de.laser.License.get(params.id)}"/>
 
 <ui:subNav actionName="${actionName}">
