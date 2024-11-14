@@ -29,13 +29,11 @@ class MailController {
     def createOwnMail() {
         log.debug("createOwnMail: " + params)
         Map<String, Object> result = [:]
-        User user = contextService.getUser()
-        Org contextOrg = contextService.getOrg()
 
-        result.user = user
-        result.institution = contextOrg
-        result.contextOrg = contextOrg
-        result.contextCustomerType = contextOrg.getCustomerType()
+        result.user = contextService.getUser()
+        result.institution = contextService.getOrg()
+        result.contextOrg = contextService.getOrg()
+        result.contextCustomerType = contextService.getOrg().getCustomerType()
 
         result.objectId = params.objectId ?: params.id
         result.objectType = params.objectType
@@ -178,13 +176,11 @@ class MailController {
     def processSendMail() {
         log.debug("processSendMail: " + params)
         Map<String, Object> result = [:]
-        User user = contextService.getUser()
-        Org contextOrg = contextService.getOrg()
 
-        result.user = user
-        result.institution = contextOrg
-        result.contextOrg = contextOrg
-        result.contextCustomerType = contextOrg.getCustomerType()
+        result.user = contextService.getUser()
+        result.institution = contextService.getOrg()
+        result.contextOrg = contextService.getOrg()
+        result.contextCustomerType = contextService.getOrg().getCustomerType()
 
         result.orgList = []
 

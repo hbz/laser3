@@ -3753,7 +3753,7 @@ class SubscriptionControllerService {
         }
         result.contextOrg = contextService.getOrg()
         result.contextCustomerType = contextService.getOrg().getCustomerType()
-        result.institution = result.subscription ? result.subscription?.getSubscriberRespConsortia() : result.contextOrg //TODO temp, remove the duplicate
+        result.institution = result.subscription ? result.subscription?.getSubscriberRespConsortia() : contextService.getOrg() //TODO temp, remove the duplicate
 
         if (result.subscription) {
             result.subscriptionConsortia = result.subscription.getConsortium()
