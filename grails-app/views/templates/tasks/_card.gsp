@@ -20,7 +20,7 @@
         <g:set var="overwriteEditable" value="${accessService.hasAccessToTask(tsk, AccessService.WRITE)}" />
 
             <div class="item">
-                <g:if test="${overwriteEditable}"> %{-- TODO: responsibleOrg == contextOrg + INST_ADM ? --}%
+                <g:if test="${overwriteEditable}"> %{-- TODO: responsibleOrg == contextService.getOrg() + INST_ADM ? --}%
                     <div class="right floated content">
                         <g:link action="deleteTask" controller="task"
                                 class="${Btn.MODERN.NEGATIVE_CONFIRM}"

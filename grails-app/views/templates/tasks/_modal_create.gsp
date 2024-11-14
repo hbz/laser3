@@ -178,7 +178,7 @@
                         <div class="field">
                             <div class="ui radio checkbox">
                                 <input id="radioresponsibleOrg" type="radio" value="Org" name="responsible" tabindex="0" class="hidden">
-                                <label for="radioresponsibleOrg">${message(code: 'task.responsibleOrg.label')} <strong>${contextOrg.getDesignation()}</strong> </label>
+                                <label for="radioresponsibleOrg">${message(code: 'task.responsibleOrg.label')} <strong>${contextService.getOrg().getDesignation()}</strong> </label>
                             </div>
                         </div>
 
@@ -198,7 +198,7 @@
                     </label>
                     <g:select id="responsibleUserInput"
                               name="responsibleUser.id"
-                              from="${taskService.getUserDropdown(contextOrg)}"
+                              from="${taskService.getUserDropdown(contextService.getOrg())}"
                               optionKey="id"
                               optionValue="display"
                               value="${taskInstance?.responsibleUser?.id}"
