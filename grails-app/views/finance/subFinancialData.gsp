@@ -103,7 +103,7 @@
         <laser:render template="/subscription/${customerTypeService.getNavTemplatePath()}" model="${[subscription:subscription, params:(params << [id:subscription.id, showConsortiaFunctions:showConsortiaFunctions])]}"/>
 
         <g:if test="${showConsortiaFunctions}">
-            <laser:render template="/subscription/message" model="${[contextOrg: institution, subscription: subscription]}"/>%{-- ERMS-6070 --}%
+            <laser:render template="/subscription/message" model="${[subscription: subscription]}"/>%{-- ERMS-6070 --}%
         </g:if>
 
         <laser:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets,fixedSubscription:subscription,ciTitles:ciTitles]" />

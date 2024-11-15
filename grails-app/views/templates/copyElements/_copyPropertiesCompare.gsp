@@ -24,7 +24,7 @@
             <g:if test="${privateProperties?.size() > 0}">
 
                 <div class="content">
-                    <h2 class="ui header">${message(code: 'surveyconfig.properties.private')}: ${contextOrg.name}</h2>
+                    <h2 class="ui header">${message(code: 'surveyconfig.properties.private')}: ${contextService.getOrg().name}</h2>
                     <table class="ui celled table la-js-responsive-table la-table">
                         <laser:render template="/templates/copyElements/propertyComparisonTableRow"
                                   model="[group: privateProperties, key: message(code: 'surveyconfig.properties') + ': ' + contextService.getOrg().name]"/>
@@ -89,7 +89,7 @@
             <g:if test="${privateProperties?.size() > 0}">
 
                 <div class="content">
-                    <h2 class="ui header">${message(code: 'subscription.properties.private')} ${contextOrg.name}</h2>
+                    <h2 class="ui header">${message(code: 'subscription.properties.private')} ${contextService.getOrg().name}</h2>
                     <table class="ui celled table la-js-responsive-table la-table">
                         <laser:render template="/templates/copyElements/propertyComparisonTableRow"
                                   model="[group: privateProperties, key: message(code: 'subscription.properties.private') + ' ' + contextService.getOrg().name]"/>
