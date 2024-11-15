@@ -19,7 +19,7 @@
 
 <h2 class="ui left aligned icon header la-clear-before">${message(code: 'subscription.details.addEntitlements.label')}</h2>
 <%-- <laser:render template="nav"/> --%>
-<g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortium()?.id}">
+<g:if test="${subscription.instanceOf && contextService.getOrg().id == subscription.getConsortium()?.id}">
     <laser:render template="message"/>
 </g:if>
 
@@ -141,7 +141,7 @@
                              data-tippId="${tipp.id}" data-index="${counter}">
                             <g:if test="${participantPerpetualAccessToTitle.size() > 0}">
                                 <span class="ui mini left corner label la-perpetualAccess la-popup-tooltip"
-                                      data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitle.collect{it.getPermanentTitleInfo(contextOrg)}.join(',')}"
+                                      data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitle.collect{it.getPermanentTitleInfo(contextService.getOrg())}.join(',')}"
                                       data-position="left center" data-variation="tiny">
                                     <i class="star icon"></i>
                                 </span>

@@ -2,7 +2,7 @@
 <laser:htmlStart message="subscription.details.renewEntitlements.label" />
 
 <ui:breadcrumbs>
-    <g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id}">
+    <g:if test="${contextService.getOrg().id == surveyConfig.surveyInfo.owner.id}">
         <ui:crumb controller="survey" action="currentSurveysConsortia" message="currentSurveys.label"/>
         <ui:crumb controller="survey" action="show"
                      params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]" message="issueEntitlementsSurvey.label"/>
@@ -111,7 +111,7 @@
     <div class="two fields">
 
         <div class="eight wide field" style="text-align: right;">
-            <g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id}">
+            <g:if test="${contextService.getOrg().id == surveyConfig.surveyInfo.owner.id}">
                 <g:link controller="survey" action="evaluationParticipant"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: subscriber.id]"
                         class="${Btn.SIMPLE}">
@@ -351,7 +351,7 @@
 </div>
 
     <div class="ui clearing segment la-segmentNotVisable ">
-        <g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id}">
+        <g:if test="${contextService.getOrg().id == surveyConfig.surveyInfo.owner.id}">
             <g:link controller="survey" action="evaluationParticipant"
                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: subscriber.id]"
                     class="${Btn.SIMPLE} right floated">

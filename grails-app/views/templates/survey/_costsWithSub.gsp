@@ -333,7 +333,7 @@
             <div class="ui card la-dl-no-table">
                 <div class="content">
                 %{-- <g:if test="${costItemSums.ownCosts}">
-                     <g:if test="${(contextOrg.id != subscription.getConsortium()?.id && subscription.instanceOf) || !subscription.instanceOf}">
+                     <g:if test="${(contextService.getOrg().id != subscription.getConsortium()?.id && subscription.instanceOf) || !subscription.instanceOf}">
                          <h2 class="ui header">${message(code: 'financials.label')} : ${message(code: 'financials.tab.ownCosts')} </h2>
                          <laser:render template="/subscription/financials" model="[data: costItemSums.ownCosts]"/>
                      </g:if>

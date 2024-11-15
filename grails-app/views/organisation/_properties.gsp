@@ -101,7 +101,7 @@
 <%-- private properties --%>
 <g:if test="${authOrg && (contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support() || contextService.getOrg().isCustomerType_Inst_Pro())}">
 
-    <g:if test="${authOrg.name == contextOrg?.name}">
+    <g:if test="${authOrg.name == contextOrg?.name}">%{-- ERMS-6070 org/show --}%
         <div class="ui card la-dl-no-table">
             <div class="content">
                 <h2 class="ui header">${message(code:'org.properties.private')} ${authOrg.name}</h2>

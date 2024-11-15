@@ -500,7 +500,7 @@
 
             <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support() || contextService.getOrg().isCustomerType_Inst_Pro()}">
                 <div id="new-dynamic-properties-block">
-                    <laser:render template="properties" model="${[ orgInstance: orgInstance, authOrg: formalOrg, contextOrg: institution ]}"/>
+                    <laser:render template="properties" model="${[ orgInstance: orgInstance, authOrg: formalOrg, contextOrg: institution ]}"/>%{-- ERMS-6070 --}%
                 </div><!-- #new-dynamic-properties-block -->
             </g:if>
 

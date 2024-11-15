@@ -9,7 +9,7 @@
         </g:if>
         <div class="fields">
 
-            <g:if test="${orgId && orgId != contextOrg}">
+            <g:if test="${orgId && orgId != contextService.getOrg()}">
                 <div class="five wide field">
                     <input id="org" name="org" type="hidden" value="${orgId}"/>
                     <label for="org">
@@ -250,7 +250,7 @@
           on: 'submit',
           inline: true,
           fields: {
-        <g:if test="${orgId && orgId != contextOrg || orgList}">
+        <g:if test="${orgId && orgId != contextService.getOrg() || orgList}">
             org: {
               identifier: 'org',
               rules: [
