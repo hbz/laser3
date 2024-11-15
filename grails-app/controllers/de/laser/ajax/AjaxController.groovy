@@ -847,12 +847,11 @@ class AjaxController {
       def newProp
       def owner = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
         PropertyDefinition type = PropertyDefinition.get(params.long('propIdent'))
-        Org contextOrg = contextService.getOrg()
-      def existingProp = owner.propertySet.find { it.type.name == type.name && it.tenant?.id == contextOrg.id }
+      def existingProp = owner.propertySet.find { it.type.name == type.name && it.tenant?.id == contextService.getOrg().id }
 
       if (existingProp == null || type.multipleOccurrence) {
         String propDefConst = type.tenant ? PropertyDefinition.PRIVATE_PROPERTY : PropertyDefinition.CUSTOM_PROPERTY
-        newProp = PropertyDefinition.createGenericProperty(propDefConst, owner, type, contextOrg )
+        newProp = PropertyDefinition.createGenericProperty(propDefConst, owner, type, contextService.getOrg() )
         if (newProp.hasErrors()) {
           log.error(newProp.errors.toString())
         } else {
@@ -878,7 +877,7 @@ class AjaxController {
               if (params.propDefGroup) {
                 render(template: "/templates/properties/group", model: [
                         ownobj          : owner,
-                        contextOrg      : contextOrg,
+                        contextOrg      : contextService.getOrg(),
                         newProp         : newProp,
                         error           : error,
                         showConsortiaFunctions: showConsortiaFunctions,
@@ -893,7 +892,7 @@ class AjaxController {
 
                   Map<String, Object> modelMap =  [
                           ownobj                : owner,
-                          contextOrg            : contextOrg,
+                          contextOrg            : contextService.getOrg(),
                           newProp               : newProp,
                           showConsortiaFunctions: showConsortiaFunctions,
                           error                 : error,
@@ -1243,13 +1242,12 @@ class AjaxController {
             AbstractPropertyWithCalculatedLastUpdated property = genericOIDService.resolveOID(params.oid)
             property.isPublic = !property.isPublic
             property.save()
-            Org contextOrg = contextService.getOrg()
             request.setAttribute("editable", params.editable == "true")
             if(params.propDefGroup) {
                 render(template: "/templates/properties/group", model: [
                         ownobj          : property.owner,
                         newProp         : property,
-                        contextOrg      : contextOrg,
+                        contextOrg      : contextService.getOrg(),
                         showConsortiaFunctions: params.showConsortiaFunctions == "true",
                         propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
                         custom_props_div: "${params.custom_props_div}", // JS markup id
@@ -1257,12 +1255,12 @@ class AjaxController {
                 ])
             }
             else {
-                Map<String, Object>  allPropDefGroups = property.owner.getCalculatedPropDefGroups(contextOrg)
+                Map<String, Object>  allPropDefGroups = property.owner.getCalculatedPropDefGroups(contextService.getOrg())
 
                 Map<String, Object> modelMap =  [
                         ownobj                : property.owner,
                         newProp               : property,
-                        contextOrg            : contextOrg,
+                        contextOrg            : contextService.getOrg(),
                         showConsortiaFunctions: params.showConsortiaFunctions == "true",
                         custom_props_div      : "${params.custom_props_div}", // JS markup id
                         prop_desc             : property.type.descr, // form data
@@ -1294,7 +1292,6 @@ class AjaxController {
         def owner     = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
         def property  = propClass.get(params.id)
         def prop_desc = property.getType().getDescr()
-        Org contextOrg = contextService.getOrg()
 
         if (AuditConfig.getConfig(property, AuditConfig.COMPLETE_OBJECT)) {
             AuditConfig.removeAllConfigs(property)
@@ -1311,14 +1308,14 @@ class AjaxController {
 
                     // multi occurrence props; add one additional with backref
                     if (property.type.multipleOccurrence) {
-                        AbstractPropertyWithCalculatedLastUpdated additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type, contextOrg)
+                        AbstractPropertyWithCalculatedLastUpdated additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type, contextService.getOrg())
                         additionalProp = property.copyInto(additionalProp)
                         additionalProp.instanceOf = property
                         additionalProp.isPublic = true
                         additionalProp.save()
                     }
                     else {
-                        List<AbstractPropertyWithCalculatedLastUpdated> matchingProps = property.getClass().findAllByOwnerAndTypeAndTenant(member, property.type, contextOrg)
+                        List<AbstractPropertyWithCalculatedLastUpdated> matchingProps = property.getClass().findAllByOwnerAndTypeAndTenant(member, property.type, contextService.getOrg())
                         // unbound prop found with matching type, set backref
                         if (matchingProps) {
                             matchingProps.each { AbstractPropertyWithCalculatedLastUpdated memberProp ->
@@ -1329,7 +1326,7 @@ class AjaxController {
                         }
                         else {
                             // no match found, creating new prop with backref
-                            AbstractPropertyWithCalculatedLastUpdated newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type, contextOrg)
+                            AbstractPropertyWithCalculatedLastUpdated newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type, contextService.getOrg())
                             newProp = property.copyInto(newProp)
                             newProp.instanceOf = property
                             newProp.isPublic = true
@@ -1349,7 +1346,7 @@ class AjaxController {
                   newProp         : property,
                   showConsortiaFunctions: params.showConsortiaFunctions,
                   propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
-                  contextOrg      : contextOrg,
+                  contextOrg      : contextService.getOrg(),
                   custom_props_div: "${params.custom_props_div}", // JS markup id
                   prop_desc       : prop_desc // form data
           ])
@@ -1363,7 +1360,7 @@ class AjaxController {
                     showConsortiaFunctions: params.showConsortiaFunctions,
                     custom_props_div      : "${params.custom_props_div}", // JS markup id
                     prop_desc             : prop_desc, // form data
-                    contextOrg            : contextOrg,
+                    contextOrg            : contextService.getOrg(),
                     orphanedProperties    : allPropDefGroups.orphanedProperties
             ]
             render(template: "/templates/properties/custom", model: modelMap)
@@ -1381,7 +1378,6 @@ class AjaxController {
             def owner     = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
             def property  = propClass.get(params.id)
             def prop_desc = property.getType().getDescr()
-            Org contextOrg = contextService.getOrg()
 
             AuditConfig.removeAllConfigs(property)
 
@@ -1410,7 +1406,7 @@ class AjaxController {
                         ownobj          : owner,
                         newProp         : property,
                         showConsortiaFunctions: showConsortiaFunctions,
-                        contextOrg      : contextOrg,
+                        contextOrg      : contextService.getOrg(),
                         propDefGroup    : propDefGroup,
                         propDefGroupBinding : propDefGroupBinding,
                         custom_props_div: "${params.custom_props_div}", // JS markup id
@@ -1419,12 +1415,12 @@ class AjaxController {
                 render(template: "/templates/properties/group", model: modelMap)
             }
             else {
-                Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextOrg)
+                Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
                 Map<String, Object> modelMap =  [
                         ownobj                : owner,
                         newProp               : property,
                         showConsortiaFunctions: showConsortiaFunctions,
-                        contextOrg            : contextOrg,
+                        contextOrg            : contextService.getOrg(),
                         custom_props_div      : "${params.custom_props_div}", // JS markup id
                         prop_desc             : prop_desc, // form data
                         orphanedProperties    : allPropDefGroups.orphanedProperties

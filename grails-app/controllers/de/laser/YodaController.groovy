@@ -1215,12 +1215,10 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     @Transactional
     def migrateNatStatSettings() {
-        Org contextOrg = contextService.getOrg()
-
         List<OrgProperty> opList = OrgProperty.executeQuery(
                 'select op from OrgProperty op join op.type pd where pd.descr = :orgConf and op.tenant = :context and op.isPublic = false', [
                 orgConf: PropertyDefinition.ORG_CONF,
-                context: contextOrg
+                context: contextService.getOrg()
         ])
 
         opList.each { OrgProperty op ->
@@ -1249,7 +1247,7 @@ class YodaController {
         OrgProperty.executeQuery(
                 'select op from OrgProperty op join op.type pd where pd.descr = :orgConf '+
                 'and ( pd.name = \'API Key\' or pd.name = \'RequestorID\' ) and op.tenant = :context and op.isPublic = false',
-                [orgConf: PropertyDefinition.ORG_CONF, context: contextOrg]).each{
+                [orgConf: PropertyDefinition.ORG_CONF, context: contextService.getOrg()]).each{
             it.delete()
         }
 

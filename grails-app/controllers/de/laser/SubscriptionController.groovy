@@ -1541,7 +1541,7 @@ class SubscriptionController {
     def selectEntitlementsWithKBARTForSurvey() {
         Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         Subscription subscriberSub = result.subscription
-        result.institution = result.contextOrg
+        result.institution = contextService.getOrg()
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
         result.surveyInfo = result.surveyConfig.surveyInfo
 

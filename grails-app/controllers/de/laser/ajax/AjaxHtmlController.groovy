@@ -285,14 +285,14 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def getPackageData() {
         Map<String,Object> result = [subscription:Subscription.get(params.subscription), curatoryGroups: []], packageMetadata = [:]
-        Org contextOrg = contextService.getOrg()
-        result.contextCustomerType = contextOrg.getCustomerType()
-        result.showConsortiaFunctions = contextOrg.isCustomerType_Consortium()
+
+        result.contextCustomerType = contextService.getOrg().getCustomerType()
+        result.showConsortiaFunctions = contextService.getOrg().isCustomerType_Consortium()
         result.roleLinks = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIUM]) }
         result.roleObject = result.subscription
         result.roleRespValue = RDStore.PRS_RESP_SPEC_SUB_EDITOR.value
         result.editmode = result.subscription.isEditableBy(contextService.getUser())
-        result.accessConfigEditable = contextService.isInstEditor(CustomerTypeService.ORG_INST_BASIC) || (contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_BASIC) && result.subscription.getSubscriberRespConsortia().id == contextOrg.id)
+        result.accessConfigEditable = contextService.isInstEditor(CustomerTypeService.ORG_INST_BASIC) || (contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_BASIC) && result.subscription.getSubscriberRespConsortia().id == contextService.getOrg().id)
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         result.subscription.packages.pkg.gokbId.each { String uuid ->
             Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: uuid])
@@ -653,14 +653,13 @@ class AjaxHtmlController {
         Map<String, Object> result = [
             personInstance : Person.get(params.id)
         ]
-        Org contextOrg = contextService.getOrg()
 
         if (accessService.hasAccessToPerson(result.personInstance as Person, AccessService.WRITE)) {
             result.org = result.personInstance.getBelongsToOrg()
             result.vendor = PersonRole.executeQuery("select distinct(pr.vendor) from PersonRole as pr where pr.prs = :person ", [person: result.personInstance])[0]
             result.provider = PersonRole.executeQuery("select distinct(pr.provider) from PersonRole as pr where pr.prs = :person ", [person: result.personInstance])[0]
             result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_INVOICING_CONTACT, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
-            if (contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Support()) {
+            if (contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()) {
                 result.functions << RDStore.PRS_FUNC_GASCO_CONTACT
             }
             result.positions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
@@ -736,8 +735,7 @@ class AjaxHtmlController {
     def kbartSelectionUpload() {
         log.debug('ajaxHtmlController.kbartSelectionUpload ' + params)
         Map<String,Object> result = [subscription:Subscription.get(params.id)]
-        Org contextOrg = contextService.getOrg()
-        result.institution = contextOrg
+        result.institution = contextService.getOrg()
         result.tab = params.tab
 
         if(params.surveyConfigID){
@@ -755,15 +753,14 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def getSurveyFinishMessage() {
-        Org contextOrg = contextService.getOrg()
         SurveyInfo surveyInfo = SurveyInfo.get(params.id)
         SurveyConfig surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID) : surveyInfo.surveyConfigs[0]
-        SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(contextOrg, surveyConfig)
-        List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(contextOrg, surveyConfig)
+        SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(contextService.getOrg(), surveyConfig)
+        List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(contextService.getOrg(), surveyConfig)
         boolean allResultHaveValue = true
         List<String> notProcessedMandatoryProperties = []
         //see ERMS-5815
-        boolean noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(contextOrg, surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == RDStore.YN_NO)
+        boolean noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == RDStore.YN_NO)
         if(!noParticipation) {
             surveyResults.each { SurveyResult surre ->
                 SurveyConfigProperties surveyConfigProperties = SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surre.type)
@@ -776,7 +773,7 @@ class AjaxHtmlController {
         /*
         if(surveyInfo.isMandatory) {
             if(surveyConfig && surveyConfig.subSurveyUseForTransfer){
-                noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(contextOrg, surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
+                noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
             }
         }
         */

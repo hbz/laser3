@@ -1957,14 +1957,13 @@ class FilterService {
                 }
                 else if(configMap.defaultSubscriptionFilter) {
                     String consFilter = ""
-                    Org contextOrg = contextService.getOrg()
-                    if(contextOrg.isCustomerType_Consortium())
+                    if(contextService.getOrg().isCustomerType_Consortium())
                         consFilter = "and sub_parent_sub_fk is null"
                     subFilter = "exists (select ie_id from issue_entitlement join subscription on ie_subscription_fk = sub_id join subscription_package on sub_id = sp_sub_fk join org_role on or_sub_fk = sub_id where ie_tipp_fk = tipp_id and (sub_status_rv_fk = any(:subStatus) or sub_has_perpetual_access = true) and or_org_fk = :contextOrg ${consFilter})"
                     //temp; should be enlarged later to configMap.subStatus
                     List<Object> subStatus = [RDStore.SUBSCRIPTION_CURRENT.id]
                     params.subStatus = connection.createArrayOf('bigint', subStatus.toArray())
-                    params.contextOrg = contextOrg.id
+                    params.contextOrg = contextService.getOrg().id
                 }
                 if(configMap.pkgfilter != null && !configMap.pkgfilter.isEmpty()) {
                     params.pkgId = Long.parseLong(configMap.pkgfilter)

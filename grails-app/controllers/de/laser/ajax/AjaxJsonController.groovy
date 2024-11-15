@@ -110,7 +110,6 @@ class AjaxJsonController {
         queryParams.showSubscriber = params.showSubscriber == 'true'
         queryParams.showConnectedObjs = params.showConnectedObjs == 'true'
         queryParams.forDropdown = true
-        Org contextOrg = contextService.getOrg()
 
         data = subscriptionService.getMySubscriptions_readRights(queryParams)
         Map<Long, Map> subscriptionRows = [:]
@@ -136,7 +135,7 @@ class AjaxJsonController {
                 if(entry.endDate)
                     endDate = sdf.format(entry.endDate)
                 if(entry.instanceOf) {
-                    if(entry.orgRelations.get(RDStore.OR_SUBSCRIPTION_CONSORTIUM.id).id == contextOrg.id) {
+                    if(entry.orgRelations.get(RDStore.OR_SUBSCRIPTION_CONSORTIUM.id).id == contextService.getOrg().id) {
                         Org subscriber = entry.orgRelations.get(RDStore.OR_SUBSCRIBER_CONS.id)
                         if(!subscriber)
                             subscriber = entry.orgRelations.get(RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id)
@@ -1064,7 +1063,6 @@ class AjaxJsonController {
     def searchPropertyAlternativesByOID() {
         List<Map<String, Object>> result = []
         PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.oid)
-        Org contextOrg = contextService.getOrg()
         List<PropertyDefinition> queryResult
         if(pd.refdataCategory) {
             queryResult = PropertyDefinition.executeQuery('select pd from PropertyDefinition pd where pd.descr = :descr and pd.refdataCategory = :refdataCategory and pd.type = :type and pd.multipleOccurrence = :multiple and (pd.tenant = :tenant or pd.tenant is null)',
@@ -1072,14 +1070,14 @@ class AjaxJsonController {
                      refdataCategory: pd.refdataCategory,
                      type    : pd.type,
                      multiple: pd.multipleOccurrence,
-                     tenant  : contextOrg])
+                     tenant  : contextService.getOrg()])
         }
         else {
             queryResult = PropertyDefinition.executeQuery('select pd from PropertyDefinition pd where pd.descr = :descr and pd.type = :type and pd.multipleOccurrence = :multiple and (pd.tenant = :tenant or pd.tenant is null)',
                     [descr   : pd.descr,
                      type    : pd.type,
                      multiple: pd.multipleOccurrence,
-                     tenant  : contextOrg])
+                     tenant  : contextService.getOrg()])
         }
 
         queryResult.each { PropertyDefinition it ->

@@ -645,7 +645,7 @@ class LicenseController {
 
                     //Copy References
                     result.sourceObject.orgRelations.each { OrgRole or ->
-                        if ((or.org.id == result.contextOrg.id) || (or.roleType.id in [RDStore.OR_LICENSEE.id, RDStore.OR_LICENSEE_CONS.id])) {
+                        if ((or.org.id == contextService.getOrg().id) || (or.roleType.id in [RDStore.OR_LICENSEE.id, RDStore.OR_LICENSEE_CONS.id])) {
                             OrgRole newOrgRole = new OrgRole()
                             InvokerHelper.setProperties(newOrgRole, or.properties)
                             newOrgRole.lic = result.targetObject
