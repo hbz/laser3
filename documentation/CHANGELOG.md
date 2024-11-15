@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6070    15.11.2024  dev     3.5         David   Feature     Refactoring: contextOrg durch contextService.getOrg() ersetzen
+
 6067    13.11.2024  dev     3.5         David   Feature     Refactoring: MyInstitution-Parameter
 
 6066    13.11.2024  dev     3.5         Andreas Feature     Yoda-getriggertes Menü zur paketweisen Neuerzeugung von Sortiertitel eingefügt
