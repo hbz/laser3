@@ -11,7 +11,7 @@
                 ${surveyInfo.license.reference} (${surveyInfo.license.status.getI10n("value")})
             </g:link>
 
-            <g:if test="${editable && contextOrg.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
+            <g:if test="${editable && contextService.getOrg().id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
                 <span class="la-popup-tooltip" data-content="${message(code: 'default.button.unlink.label')}">
                     <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
                             data-confirm-tokenMsg="${message(code: "surveyInfo.unlink.license.confirm.dialog")}"
@@ -38,7 +38,7 @@
                 ${surveyInfo.provider.name}
             </g:link>
 
-            <g:if test="${editable && contextOrg.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
+            <g:if test="${editable && contextService.getOrg().id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
                 <span class="la-popup-tooltip" data-content="${message(code: 'default.button.unlink.label')}">
                     <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
                             data-confirm-tokenMsg="${message(code: "surveyInfo.unlink.provider.confirm.dialog")}"
@@ -54,7 +54,7 @@
         </g:if>
     </g:elseif>
 
-    <g:if test="${editable && contextOrg.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
+    <g:if test="${editable && contextService.getOrg().id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
         <div class="ui la-vertical buttons">
             <g:if test="${linkType == 'License' && !surveyInfo.license}">
                 <laser:render template="linksProviderOrLicenseModal"

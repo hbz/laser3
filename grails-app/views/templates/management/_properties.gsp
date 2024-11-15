@@ -2,7 +2,7 @@
 <laser:serviceInjection/>
     <%
         SortedSet<PropertyDefinition> allProperties = new TreeSet<PropertyDefinition>()
-        allProperties.addAll(PropertyDefinition.findAllByTenantIsNullAndDescr(PropertyDefinition.SUB_PROP) + PropertyDefinition.findAllByTenantAndDescr(contextOrg, PropertyDefinition.SUB_PROP))
+        allProperties.addAll(PropertyDefinition.findAllByTenantIsNullAndDescr(PropertyDefinition.SUB_PROP) + PropertyDefinition.findAllByTenantAndDescr(contextService.getOrg(), PropertyDefinition.SUB_PROP))
     %>
 
 
@@ -125,12 +125,12 @@
                                               data-content="Anzahl der allg. Merkmale in der Lizenz"
                                               data-position="top right">
                                             <ui:totalNumber
-                                                    total="${subscriptionService.countCustomSubscriptionPropertiesOfSub(contextOrg, subscription)}"/>
+                                                    total="${subscriptionService.countCustomSubscriptionPropertiesOfSub(contextService.getOrg(), subscription)}"/>
                                         </span>
                                     </div>
 
                                     <g:set var="customProperties"
-                                           value="${SubscriptionProperty.executeQuery('from SubscriptionProperty where owner = :sub AND ((tenant = :contextOrg OR tenant is null) OR (tenant != :contextOrg AND isPublic = true)) AND type = :propertiesFilterPropDef AND type.tenant is null', [contextOrg: contextOrg, sub: subscription, propertiesFilterPropDef: propertiesFilterPropDef])}"/>
+                                           value="${SubscriptionProperty.executeQuery('from SubscriptionProperty where owner = :sub AND ((tenant = :contextOrg OR tenant is null) OR (tenant != :contextOrg AND isPublic = true)) AND type = :propertiesFilterPropDef AND type.tenant is null', [contextOrg: contextService.getOrg(), sub: subscription, propertiesFilterPropDef: propertiesFilterPropDef])}"/>
                                     <g:if test="${customProperties}">
                                         <g:each in="${customProperties}" var="customProperty">
                                             <div class="header">${message(code: 'subscriptionsManagement.CustomProperty')}: ${propertiesFilterPropDef.getI10n('name')}</div>
@@ -211,12 +211,12 @@
                                               data-content="Anzahl der priv. Merkmale in der Lizenz"
                                               data-position="top right">
                                             <ui:totalNumber
-                                                    total="${subscriptionService.countPrivateSubscriptionPropertiesOfSub(contextOrg, subscription)}"/>
+                                                    total="${subscriptionService.countPrivateSubscriptionPropertiesOfSub(contextService.getOrg(), subscription)}"/>
                                         </span>
                                     </div>
 
                                     <g:set var="privateProperties"
-                                           value="${SubscriptionProperty.executeQuery('from SubscriptionProperty where owner = :sub AND (type.tenant = :contextOrg AND tenant = :contextOrg) AND type = :propertiesFilterPropDef', [contextOrg: contextOrg, sub: subscription, propertiesFilterPropDef: propertiesFilterPropDef])}"/>
+                                           value="${SubscriptionProperty.executeQuery('from SubscriptionProperty where owner = :sub AND (type.tenant = :contextOrg AND tenant = :contextOrg) AND type = :propertiesFilterPropDef', [contextOrg: contextService.getOrg(), sub: subscription, propertiesFilterPropDef: propertiesFilterPropDef])}"/>
                                     <g:if test="${privateProperties}">
                                         <g:each in="${privateProperties}" var="privateProperty">
                                             <div class="header">${message(code: 'subscriptionsManagement.PrivateProperty')} ${contextService.getOrg()}: ${propertiesFilterPropDef.getI10n('name')}</div>
@@ -477,12 +477,12 @@
                                                   data-content="Anzahl der allg. Merkmale in der Lizenz"
                                                   data-position="top right">
                                                 <ui:totalNumber
-                                                        total="${subscriptionService.countCustomSubscriptionPropertiesOfSub(contextOrg, sub)}"/>
+                                                        total="${subscriptionService.countCustomSubscriptionPropertiesOfSub(contextService.getOrg(), sub)}"/>
                                             </span>
                                         </div>
 
                                         <g:set var="customProperties"
-                                               value="${SubscriptionProperty.executeQuery('from SubscriptionProperty where owner = :sub AND (tenant = :contextOrg OR tenant is null OR (tenant != :contextOrg AND isPublic = true)) AND type = :propertiesFilterPropDef AND type.tenant is null', [contextOrg: contextOrg, sub: sub, propertiesFilterPropDef: propertiesFilterPropDef])}"/>
+                                               value="${SubscriptionProperty.executeQuery('from SubscriptionProperty where owner = :sub AND (tenant = :contextOrg OR tenant is null OR (tenant != :contextOrg AND isPublic = true)) AND type = :propertiesFilterPropDef AND type.tenant is null', [contextOrg: contextService.getOrg(), sub: sub, propertiesFilterPropDef: propertiesFilterPropDef])}"/>
                                         <g:if test="${customProperties}">
                                             <g:each in="${customProperties}" var="customProperty">
                                                 <div class="header">${message(code: 'subscriptionsManagement.CustomProperty')}: ${propertiesFilterPropDef.getI10n('name')}</div>
@@ -549,12 +549,12 @@
                                                   data-content="Anzahl der priv. Merkmale in der Lizenz"
                                                   data-position="top right">
                                                 <ui:totalNumber
-                                                        total="${subscriptionService.countPrivateSubscriptionPropertiesOfSub(contextOrg, sub)}"/>
+                                                        total="${subscriptionService.countPrivateSubscriptionPropertiesOfSub(contextService.getOrg(), sub)}"/>
                                             </span>
                                         </div>
 
                                         <g:set var="privateProperties"
-                                               value="${SubscriptionProperty.executeQuery('from SubscriptionProperty where owner = :sub AND (type.tenant = :contextOrg AND tenant = :contextOrg) AND type = :propertiesFilterPropDef ', [contextOrg: contextOrg, sub: sub, propertiesFilterPropDef: propertiesFilterPropDef])}"/>
+                                               value="${SubscriptionProperty.executeQuery('from SubscriptionProperty where owner = :sub AND (type.tenant = :contextOrg AND tenant = :contextOrg) AND type = :propertiesFilterPropDef ', [contextOrg: contextService.getOrg(), sub: sub, propertiesFilterPropDef: propertiesFilterPropDef])}"/>
 
                                         <g:if test="${privateProperties}">
                                             <g:each in="${privateProperties}" var="privateProperty">

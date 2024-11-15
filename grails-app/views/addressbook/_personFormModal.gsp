@@ -346,18 +346,18 @@
             <div class="la-inline-lists">
                 <div class="ui card">
                     <div class="content">
-                        <g:set var="propertyWrapper" value="private-property-wrapper-${contextOrg.id}" />
-                        <h2 class="ui header">${message(code: 'org.properties.private')} ${contextOrg.name}</h2>
+                        <g:set var="propertyWrapper" value="private-property-wrapper-${contextService.getOrg().id}" />
+                        <h2 class="ui header">${message(code: 'org.properties.private')} ${contextService.getOrg().name}</h2>
                         <div id="${propertyWrapper}">
                             <laser:render template="/templates/properties/private" model="${[
                                     prop_desc       : PropertyDefinition.PRS_PROP,
                                     ownobj          : personInstance,
                                     propertyWrapper: "${propertyWrapper}",
-                                    tenant          : contextOrg]}"/>
+                                    tenant          : contextService.getOrg()]}"/>
 
                             <laser:script file="${this.getGroovyPageFileName()}">
                                 r2d2.initDynamicUiStuff('#${propertyWrapper}');
-                                c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${contextOrg.id});
+                                c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${contextService.getOrg().id});
                             </laser:script>
                         </div>
                     </div>

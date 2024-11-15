@@ -45,7 +45,7 @@
                 </g:if>
                 <g:else>
                     <%
-                        if(contextOrg || surveyService.hasParticipantPerpetualAccessToTitle3(contextOrg, tipp)){
+                        if (contextService.getOrg() || surveyService.hasParticipantPerpetualAccessToTitle3(contextService.getOrg(), tipp)){
                             if (ie.perpetualAccessBySub) {
                                 println g.link([action: 'index', controller: 'subscription', id: ie.perpetualAccessBySub.id], "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}")
                             }else {

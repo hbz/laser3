@@ -167,7 +167,7 @@
 
         %{-- EXPORT PROBLEM @ laser:render in call stack - ERMS-5437 --}%
         <g:render template="/subscription/export/propertiesPDF" model="${[
-                subscription: subscription, calledFromSurvey: true, contextOrg: contextOrg
+                subscription: subscription, calledFromSurvey: true
         ]}"/>
 
     </div>

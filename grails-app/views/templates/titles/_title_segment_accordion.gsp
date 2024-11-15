@@ -1,4 +1,6 @@
 <%@ page import="de.laser.convenience.Marker; de.laser.ui.Btn; de.laser.ui.Icon" %>
+<laser:serviceInjection/>
+
 <div class="ui fluid segment title" data-ajaxTippId="${tipp.id}" data-ajaxIeId="${ie ? ie.id : null}">
     <div class="ui stackable equal width grid">
 
@@ -14,7 +16,7 @@
             </g:if>
             <g:elseif test="${permanentTitle}">
                 <span class="ui mini left corner label la-perpetualAccess la-popup-tooltip"
-                      data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${permanentTitle.getPermanentTitleInfo(contextOrg)}"
+                      data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${permanentTitle.getPermanentTitleInfo(contextService.getOrg())}"
                       data-position="left center" data-variation="tiny">
                     <i class="star icon"></i>
                 </span>

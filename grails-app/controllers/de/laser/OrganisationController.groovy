@@ -1869,9 +1869,8 @@ class OrganisationController  {
      */
     private boolean _checkIsEditable(Org org) {
         boolean isEditable = false
-        Org contextOrg = contextService.getOrg()
 
-        boolean inContextOrg = org.id == contextOrg.id
+        boolean inContextOrg          = org.id == contextService.getOrg().id
         boolean userIsYoda            = contextService.getUser().isYoda()
         boolean userIsAdmin           = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         boolean userHasEditableRights = userIsAdmin || contextService.isInstEditor()
@@ -1896,7 +1895,7 @@ class OrganisationController  {
                     isEditable = userHasEditableRights
                 }
                 else {
-                    switch (contextOrg.getCustomerType()){
+                    switch (contextService.getOrg().getCustomerType()){
                         case [ CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO ] :
                             switch (org.getCustomerType()){
                                 case CustomerTypeService.ORG_INST_BASIC:        isEditable = userIsYoda; break

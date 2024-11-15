@@ -1,12 +1,12 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.IssueEntitlementGroup; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
+<laser:serviceInjection/>
+
 <div class="sixteen wide column">
     <g:set var="counter" value="${offset + 1}"/>
     <g:set var="sumlistPriceEuro" value="${0}"/>
     <g:set var="sumlistPriceUSD" value="${0}"/>
     <g:set var="sumlistPriceGBP" value="${0}"/>
    %{-- <g:set var="sumlocalPrice" value="${0}"/>--}%
-
-
 
     <div class="ui accordion la-accordion-showMore" id="surveyEntitlements">
         <g:if test="${editable && params.tab == 'selectedIEs'}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>
@@ -38,7 +38,7 @@
                             <g:set var="participantPerpetualAccessToTitleList"
                                    value="${surveyService.listParticipantPerpetualAccessToTitle(subscriber, tipp)}"/>
                             <span class="ui mini left corner label la-perpetualAccess la-popup-tooltip"
-                                  data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitleList.collect{it.getPermanentTitleInfo(contextOrg)}.join(',')}"
+                                  data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitleList.collect{it.getPermanentTitleInfo(contextService.getOrg())}.join(',')}"
                                   data-position="left center" data-variation="tiny">
                                 <i class="star icon"></i>
                             </span>
