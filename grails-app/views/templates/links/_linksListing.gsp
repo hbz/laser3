@@ -1,7 +1,6 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Subscription; de.laser.License; de.laser.Links" %>
 <laser:serviceInjection/>
 
-
 <div class="content">
     <h2 class="ui header">
         <g:if test="${subscriptionLicenseLink}">
@@ -186,7 +185,7 @@
                                 <g:if test="${pair.propertySet && pair instanceof License}">
                                     <div class="ui fluid segment content">
                                         <laser:render template="/subscription/licProp"
-                                                      model="[license: pair, derivedPropDefGroups: pair.getCalculatedPropDefGroups(contextOrg), linkId: link.id]"/>
+                                                      model="[license: pair, derivedPropDefGroups: pair.getCalculatedPropDefGroups(contextService.getOrg()), linkId: link.id]"/>
                                     </div>
                                 </g:if>
                             </g:else>
@@ -221,7 +220,7 @@
                              tmplModalID            : 'sub_add_license_link',
                              editmode               : editable,
                              subscriptionLicenseLink: true,
-                             atConsortialParent     : contextOrg == subscription.getConsortium(),
+                             atConsortialParent     : contextService.getOrg() == subscription.getConsortium(),
                              context                : subscription,
                              linkInstanceType       : Links.class.name
                     ]
