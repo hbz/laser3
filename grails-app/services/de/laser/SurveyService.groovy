@@ -57,7 +57,6 @@ import java.text.SimpleDateFormat
 @Transactional
 class SurveyService {
 
-    AccessService accessService
     AddressbookService addressbookService
     CompareService compareService
     ComparisonService comparisonService
@@ -2433,7 +2432,7 @@ class SurveyService {
                 result.visibleOrgRelations = []
                 if (result.subscription) {
                     result.subscription.orgRelations.each { OrgRole or ->
-                        if (!(or.org.id == result.contextOrg.id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
+                        if (!(or.org.id == contextService.getOrg().id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
                             result.visibleOrgRelations << or
                         }
                     }

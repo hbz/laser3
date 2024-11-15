@@ -32,7 +32,6 @@ class MailController {
 
         result.user = contextService.getUser()
         result.institution = contextService.getOrg()
-        result.contextOrg = contextService.getOrg()
         result.contextCustomerType = contextService.getOrg().getCustomerType()
 
         result.objectId = params.objectId ?: params.id
@@ -179,7 +178,6 @@ class MailController {
 
         result.user = contextService.getUser()
         result.institution = contextService.getOrg()
-        result.contextOrg = contextService.getOrg()
         result.contextCustomerType = contextService.getOrg().getCustomerType()
 
         result.orgList = []

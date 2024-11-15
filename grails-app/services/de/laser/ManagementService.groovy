@@ -760,7 +760,7 @@ class ManagementService {
                     params.containsKey(auditSetting) && params.get(auditSetting) != ""
                 }
                 if(params.processOption == 'changeProperties') {
-                    if(result.contextOrg.isCustomerType_Consortium() && controller instanceof MyInstitutionController) {
+                    if (contextService.getOrg().isCustomerType_Consortium() && controller instanceof MyInstitutionController) {
                         Set<String> updateParts = [], auditTrigger = []
                         Map<String, Object> updateParams = [subscriptions: subscriptions]
                         if (startDate) {
@@ -1142,7 +1142,6 @@ class ManagementService {
 
         if(controller instanceof MyInstitutionController) {
             result = myInstitutionControllerService.getResultGenerics(controller, params)
-            result.contextOrg = contextService.getOrg()
             result.institution = contextService.getOrg()
         }
 

@@ -597,7 +597,7 @@ class LicenseController {
     def copyLicense() {
         Map<String,Object> result = [:]
         result.user = contextService.getUser()
-        result.contextOrg = contextService.getOrg()
+
         flash.error = ""
         flash.message = ""
         if (params.sourceObjectId == "null") params.remove("sourceObjectId")
@@ -699,7 +699,6 @@ class LicenseController {
         def result             = [:]
         result.user            = contextService.getUser()
         result.institution     = contextService.getOrg()
-        result.contextOrg      = contextService.getOrg()
 
         flash.error = ""
         flash.message = ""

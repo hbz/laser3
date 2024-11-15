@@ -2688,7 +2688,6 @@ class MyInstitutionController  {
         result.titleMessage = "${contextService.getOrg()}"
         result.inContextOrg = true
         result.institution = contextService.getOrg()
-        result.contextOrg = contextService.getOrg()
         result.orgInstance = contextService.getOrg()
         result.multipleAffiliationsWarning = true
 

@@ -2400,7 +2400,6 @@ class SurveyController {
         def result             = [:]
         result.user            = contextService.getUser()
         result.institution     = contextService.getOrg()
-        result.contextOrg      = contextService.getOrg()
 
         flash.error = ""
         flash.message = ""

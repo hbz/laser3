@@ -58,8 +58,6 @@ class TippController  {
 
     result.titleHistory = TitleHistoryEvent.executeQuery("select distinct thep.event from TitleHistoryEventParticipant as thep where thep.participant = :participant", [participant: result.tipp] )
 
-
-    result.contextOrg = contextService.getOrg()
     result.participantPerpetualAccessToTitle = []
 
     result.subscription = params.sub ? Subscription.get(params.sub) : null

@@ -157,7 +157,6 @@ class PlatformControllerService {
 
         result.user = contextService.getUser()
         result.institution = contextService.getOrg()
-        result.contextOrg = contextService.getOrg() //temp fixPlatform platformInstance = Platform.get(params.id)
 
         result.platformInstance = Platform.get(params.id)
         int relationCheck = Platform.executeQuery(
