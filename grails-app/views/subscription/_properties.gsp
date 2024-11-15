@@ -131,17 +131,17 @@
 <!-- TODO div class="ui card la-dl-no-table" -->
 <div class="ui card la-dl-no-table">
     <div class="content">
-        <h2 class="ui header">${message(code:'subscription.properties.private')} ${contextOrg.name}</h2>
-        <g:set var="propertyWrapper" value="private-property-wrapper-${contextOrg.id}" />
+        <h2 class="ui header">${message(code:'subscription.properties.private')} ${contextService.getOrg().name}</h2>
+        <g:set var="propertyWrapper" value="private-property-wrapper-${contextService.getOrg().id}" />
         <div id="${propertyWrapper}">
             <laser:render template="/templates/properties/private" model="${[
                     prop_desc: PropertyDefinition.SUB_PROP,
                     ownobj: subscription,
                     propertyWrapper: "${propertyWrapper}",
-                    tenant: contextOrg]}"/>
+                    tenant: contextService.getOrg()]}"/>
 
             <laser:script file="${this.getGroovyPageFileName()}">
-               c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${contextOrg.id});
+               c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${contextService.getOrg().id});
             </laser:script>
         </div>
     </div>

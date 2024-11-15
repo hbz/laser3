@@ -216,36 +216,35 @@
         <i class="icon user lock"></i> user roles
     </p>
     <p>
-        <g:set var="contextUser" value="${contextService.getUser()}" />
-        <g:set var="contextOrg" value="${contextService.getOrg()}" />
+        <g:set var="ctxUser" value="${contextService.getUser()}" />
 <pre>
-    contextUser: ${contextUser}
-    contextOrg: ${contextOrg}
+    ctxUser: ${contextService.getUser()}
+    ctxOrg:  ${contextService.getOrg()}
 
-    md5: ${contextUser.id.encodeAsMD5()}
+    md5: ${ctxUser.id.encodeAsMD5()}
 
     SpringSecurityUtils.ifAnyGranted([])      : ${SpringSecurityUtils.ifAnyGranted([])}
 
     Roles                 : ${Role.executeQuery("select r from Role r where r.roleType not in ('org', 'fake') order by r.id").collect{ it.id + ':' + it.authority }}
 
-    UserRoles             : ${UserRole.findAllByUser(contextUser)}
+    UserRoles             : ${UserRole.findAllByUser(ctxUser)}
 
-    contextUser.isYoda()  : ${contextUser.isYoda()}
+    ctxUser.isYoda()      : ${ctxUser.isYoda()}
 
-    contextUser.isFormal(contextOrg)  : ${contextUser.isFormal(contextOrg)}
-    contextUser.isComboInstAdminOf(contextOrg)  : ${contextUser.isComboInstAdminOf(contextOrg)}
+    ctxUser.isFormal(ctxOrg)            : ${ctxUser.isFormal(contextService.getOrg())}
+    ctxUser.isComboInstAdminOf(ctxOrg)  : ${ctxUser.isComboInstAdminOf(contextService.getOrg())}
 
-    contextUser.isLastInstAdminOf(contextUser.formalOrg) : ${contextUser.isLastInstAdminOf(contextUser.formalOrg)}
+    ctxUser.isLastInstAdminOf(ctxUser.formalOrg) : ${ctxUser.isLastInstAdminOf(ctxUser.formalOrg)}
 
     SpringSecurityUtils.ifAnyGranted('ROLE_YODA')  : ${SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}
     SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') : ${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}
     SpringSecurityUtils.ifAnyGranted('ROLE_USER')  : ${SpringSecurityUtils.ifAnyGranted('ROLE_USER')}
 
-    contextUser.getAuthorities().authority.contains('ROLE_ADMIN') : ${contextUser.getAuthorities().authority.contains('ROLE_ADMIN')}
-    contextUser.isAdmin() : ${contextUser.isAdmin()}
+    ctxUser.getAuthorities().authority.contains('ROLE_ADMIN') : ${ctxUser.getAuthorities().authority.contains('ROLE_ADMIN')}
+    ctxUser.isAdmin() : ${ctxUser.isAdmin()}
 
-    contextUser.getAuthorities().authority.contains('ROLE_YODA') : ${contextUser.getAuthorities().authority.contains('ROLE_YODA')}
-    contextUser.isYoda() : ${contextUser.isYoda()}
+    ctxUser.getAuthorities().authority.contains('ROLE_YODA') : ${ctxUser.getAuthorities().authority.contains('ROLE_YODA')}
+    ctxUser.isYoda() : ${ctxUser.isYoda()}
 </pre>
 
 </div>

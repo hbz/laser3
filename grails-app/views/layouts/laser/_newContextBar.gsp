@@ -7,12 +7,12 @@
         <button class="ui button big la-menue-button la-modern-button" style="display:none"><i class="bars icon"></i></button>
 
         <div class="ui sub header item la-context-org" style="display: none">
-            <ui:cbItemCustomerType org="${contextOrg}" />
-            <ui:cbItemUserAffiliation user="${contextUser}" />
-            <ui:cbItemUserSysRole user="${contextUser}" />
+            <ui:cbItemCustomerType org="${contextService.getOrg()}" />
+            <ui:cbItemUserAffiliation user="${contextService.getUser()}" />
+            <ui:cbItemUserSysRole user="${contextService.getUser()}" />
 
-            <div id="la-js-cb-context-display" data-display="${contextOrg?.name}">
-                ${contextOrg?.name}
+            <div id="la-js-cb-context-display" data-display="${contextService.getOrg()?.name}">
+                ${contextService.getOrg()?.name}
             </div>
         </div>
 

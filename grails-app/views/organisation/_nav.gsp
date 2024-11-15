@@ -7,6 +7,8 @@
 %{--    institution: ${institution}--}%
 %{--    orgInstance: ${orgInstance}--}%
 %{--    inContextOrg: ${inContextOrg}--}%
+%{--    institutionalView: ${institutionalView}--}%
+%{--    consortialView: ${consortialView}--}%
 %{--</pre>--}%
 
 <ui:subNav actionName="${actionName}">

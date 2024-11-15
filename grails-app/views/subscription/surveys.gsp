@@ -87,7 +87,7 @@
                 </td>
                 <td class="x">
 
-                    <g:if test="${(contextOrg.isCustomerType_Consortium())}">
+                    <g:if test="${(contextService.getOrg().isCustomerType_Consortium())}">
                             <span class="la-popup-tooltip"
                                   data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                                 <g:link controller="survey" action="evaluationParticipant"

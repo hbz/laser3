@@ -140,7 +140,7 @@
                 <li>
                     <strong><g:message code="subscription.resource.label"/>: </strong>${subscription.resource?.getI10n("value")}
                 </li>
-                <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortium().id}">
+                <g:if test="${subscription.instanceOf && contextService.getOrg().id == subscription.getConsortium().id}">
                     <li>
                         <strong><g:message code="subscription.isInstanceOfSub.label"/>: </strong><g:link controller="subscription" action="show" id="${subscription.instanceOf.id}" absolute="true">${subscription.instanceOf.name}</g:link>
                     </li>

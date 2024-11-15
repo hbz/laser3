@@ -2037,7 +2037,7 @@ class SubscriptionService {
             result.previousSubscription = previousSubscription
 
 
-            if(result.surveyInfo.owner.id ==  result.contextOrg.id) {
+            if(result.surveyInfo.owner.id == contextService.getOrg().id) {
                 result.participant = result.subscriber
             }
 

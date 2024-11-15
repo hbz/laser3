@@ -57,8 +57,7 @@ class WorkflowService {
         }
         result.checklist = []
 
-        if (true /*result.contextOrg*/ ) {
-
+//        if (true) {
             if (result.license) {
                 result.checklists = sortByLastUpdated(WfChecklist.findAllByLicenseAndOwner(result.license as License, contextService.getOrg()))
             }
@@ -74,7 +73,7 @@ class WorkflowService {
             else if (result.vendor) {
                 result.checklists = sortByLastUpdated(WfChecklist.findAllByVendorAndOwner(result.vendor as Vendor, contextService.getOrg()))
             }
-        }
+//        }
 
         result.checklistCount = result.checklists.size()
     }

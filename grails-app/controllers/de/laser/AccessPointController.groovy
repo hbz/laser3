@@ -306,8 +306,7 @@ class AccessPointController  {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
         Org org = orgAccessPoint.org
         Long orgId = org.id
-        Org contextOrg = contextService.getOrg()
-        boolean inContextOrg = (orgId == contextOrg.id)
+        boolean inContextOrg = (orgId == contextService.getOrg().id)
         if (params.exportXLSX) {
             SXSSFWorkbook wb
             SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
@@ -378,9 +377,9 @@ class AccessPointController  {
                     autofocus                         : autofocus,
                     orgInstance                       : orgAccessPoint.org,
                     inContextOrg                      : inContextOrg,
-                    contextCustomerType               : contextOrg.getCustomerType(),
+                    contextCustomerType               : contextService.getOrg().getCustomerType(),
                     activeSubsOnly                    : activeChecksOnly,
-                    institution                       : contextOrg,
+                    institution                       : contextService.getOrg(),
                     tab                               : (params.tab ?: "IPv4")
             ]
         }

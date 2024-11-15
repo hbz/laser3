@@ -45,7 +45,7 @@
                 <td><ui:xEditable owner="${titleGroup}" field="name"/>
                     <g:if test="${titleGroup.surveyConfig}">
                         <br>
-                        <g:if test="${(contextOrg.isCustomerType_Consortium())}">
+                        <g:if test="${(contextService.getOrg().isCustomerType_Consortium())}">
                                 <g:link controller="survey" action="evaluationParticipant"
                                         params="[id: titleGroup.surveyConfig.surveyInfo.id, surveyConfigID: titleGroup.surveyConfig.id, participant: institution.id]">
                                     (<g:message code="survey.label"/>: ${titleGroup.surveyConfig.surveyInfo.name})

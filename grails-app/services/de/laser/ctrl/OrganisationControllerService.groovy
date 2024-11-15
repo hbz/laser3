@@ -39,13 +39,15 @@ class OrganisationControllerService {
     PageRenderer groovyPageRenderer
 
     Map<String,Object> mailInfos(OrganisationController controller, GrailsParameterMap params) {
-        User user = contextService.getUser()
-        Org org = contextService.getOrg()
-        Map<String, Object> result = [user:user, institution:org, contextOrg: org]
+        Map<String, Object> result = [
+                user: contextService.getUser(),
+                institution: contextService.getOrg(),
+                contextOrg: contextService.getOrg()
+        ]
 
         if (params.id_org) {
             result.orgInstance = Org.get(params.id_org)
-            if(result.orgInstance.id == org.id){
+            if(result.orgInstance.id == contextService.getOrg().id){
                 return null
             }
             if (!contextService.getOrg().isCustomerType_Consortium() && !result.orgInstance.isCustomerType_Inst()) {
@@ -68,7 +70,7 @@ class OrganisationControllerService {
                         [providers         : result.sub.providerRelations.provider,
                          responsibilityType: RDStore.PRS_RESP_SPEC_SUB_EDITOR,
                          type              : RDStore.CCT_EMAIL,
-                         ctx               : result.contextOrg,
+                         ctx               : contextService.getOrg(),
                          obj               : result.sub]) : null
 
                 List contactListProviderAddressBook = result.sub.providerRelations ? Contact.executeQuery("select c.content from PersonRole pr " +
@@ -77,7 +79,7 @@ class OrganisationControllerService {
                         [providers         : result.sub.providerRelations.provider,
                          functionTypes: [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_CUSTOMER_SERVICE, RDStore.PRS_FUNC_INVOICING_CONTACT],
                          type              : RDStore.CCT_EMAIL,
-                         ctx               : result.contextOrg]) : null
+                         ctx               : contextService.getOrg()]) : null
 
                 List contactListProviderWekb = result.sub.providerRelations ? Contact.executeQuery("select c.content from PersonRole pr " +
                         "join pr.prs p join p.contacts c where pr.provider in :providers and " +
@@ -169,7 +171,7 @@ class OrganisationControllerService {
 
             if (params.id_surveyConfig){
                 SurveyConfig surveyConfig = SurveyConfig.get(params.id_surveyConfig)
-                if(surveyConfig && surveyConfig.invoicingInformation && surveyConfig.surveyInfo.owner == result.contextOrg){
+                if(surveyConfig && surveyConfig.invoicingInformation && surveyConfig.surveyInfo.owner == contextService.getOrg()){
                     SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, result.orgInstance)
                     if(surveyOrg.address) {
                         String adressSurveyFilter = ' and a.pob = null and a.pobZipcode = null and a.pobCity = null'
@@ -474,9 +476,9 @@ class OrganisationControllerService {
         int tc1 = taskService.getTasksByResponsibilityAndObject(result.user, result.orgInstance).size()
         int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.orgInstance).size()
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
-        result.docsCount        = docstoreService.getDocsCount(result.orgInstance, result.contextOrg)
-        result.notesCount       = docstoreService.getNotesCount(result.orgInstance, result.contextOrg)
-        result.checklistCount   = workflowService.getWorkflowCount(result.orgInstance, result.contextOrg)
+        result.docsCount        = docstoreService.getDocsCount(result.orgInstance, contextService.getOrg())
+        result.notesCount       = docstoreService.getNotesCount(result.orgInstance, contextService.getOrg())
+        result.checklistCount   = workflowService.getWorkflowCount(result.orgInstance, contextService.getOrg())
 
         result.links = linksGenerationService.getOrgLinks(result.orgInstance)
         Map<String, List> nav = (linksGenerationService.generateNavigation(result.orgInstance, true))
