@@ -1,4 +1,5 @@
 <%@page import="de.laser.ui.Icon; de.laser.properties.SubscriptionProperty; de.laser.Subscription; de.laser.License; de.laser.AuditConfig; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinitionGroupBinding" %>
+<laser:serviceInjection/>
 <g:if test="${memberProperties}">
     <section>
         <g:if test="${subscription}">
@@ -103,7 +104,7 @@
                         </g:elseif>
                     </g:elseif>
                     <g:each in="${propDefGroupItems.sort{a, b -> a.type.getI10n('name').toLowerCase() <=> b.type.getI10n('name').toLowerCase() ?: a.getValue() <=> b.getValue() ?: a.id <=> b.id }}" var="prop">
-                        <g:if test="${(prop.tenant?.id == contextOrg.id || !prop.tenant) || prop.isPublic || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}">
+                        <g:if test="${(prop.tenant?.id == contextService.getOrg().id || !prop.tenant) || prop.isPublic || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}">
                             <tr>
                                 <td>
                                     <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">

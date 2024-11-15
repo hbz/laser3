@@ -76,9 +76,9 @@
                     if(docctx.targetOrg)
                         inTargetOrg = contextService.getOrg().id == docctx.targetOrg.id
                     else if(docctx.subscription)
-                        inTargetOrg = contextOrg.id == docctx.subscription.getSubscriberRespConsortia().id
+                        inTargetOrg = contextService.getOrg().id == docctx.subscription.getSubscriberRespConsortia().id
                     else if(docctx.license)
-                        inTargetOrg = contextOrg.id in docctx.license.getDerivedLicensees().id
+                        inTargetOrg = contextService.getOrg().id in docctx.license.getDerivedLicensees().id
                     switch(docctx.shareConf) {
                         case RDStore.SHARE_CONF_UPLOADER_ORG: if(inOwnerOrg) visible = true //visible only for thes users of org which uploaded the document
                             break

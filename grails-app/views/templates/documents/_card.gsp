@@ -3,11 +3,11 @@
 <%
     List<DocContext> baseItems = []
     List<DocContext> sharedItems = []
-    Org contextOrg = contextOrg ?: contextService.getOrg()
+
     String documentMessage
     switch(ownobj.class.name) {
         case Org.class.name: documentMessage = "default.documents.label"
-            editable = userService.hasFormalAffiliation(contextOrg, 'INST_EDITOR')
+            editable = userService.hasFormalAffiliation(contextService.getOrg(), 'INST_EDITOR')
             break
         default: documentMessage = "license.documents"
             break
@@ -17,24 +17,24 @@
     Set<DocContext> documentSet = ownobj.documents
 
     //Those are the rights settings the DMS needs to cope with. See the following documentation which is currently a requirement specification, too, and serves as base for ERMS-2393
-    if(ownobj instanceof Org && ownobj.id == contextOrg.id) {
+    if(ownobj instanceof Org && ownobj.id == contextService.getOrg().id) {
         //get all documents which has been attached to this org
         documentSet.addAll(docstoreService.getTargettedDocuments(ownobj))
     }
 
     documentSet.sort{it.owner?.title}.each{ it ->
         boolean visible = false //is the document visible?
-        boolean inOwnerOrg = it.owner.owner?.id == contextOrg.id //are we owners of the document?
+        boolean inOwnerOrg = it.owner.owner?.id == contextService.getOrg().id //are we owners of the document?
         boolean inTargetOrg = false //are we in the org to which a document is attached?
 
         if(it.targetOrg) {
-            inTargetOrg = contextOrg.id == it.targetOrg.id
+            inTargetOrg = contextService.getOrg().id == it.targetOrg.id
         }
         else if(it.subscription) {
-            inTargetOrg = contextOrg.id == it.subscription.getSubscriberRespConsortia().id
+            inTargetOrg = contextService.getOrg().id == it.subscription.getSubscriberRespConsortia().id
         }
         else if(it.license) {
-            inTargetOrg = contextOrg.id in it.license.getAllLicensee().id
+            inTargetOrg = contextService.getOrg().id in it.license.getAllLicensee().id
         }
 
         switch(it.shareConf) {
@@ -91,7 +91,7 @@
                             <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                         </g:if>
                         <g:else>
-                            <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
+                            <g:if test="${docctx.owner.owner?.id == contextService.getOrg().id}">
                                 <%-- 1 --%>
                                 <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
 
@@ -142,7 +142,7 @@
                             </g:if>
 
                             <%-- 4 --%>
-                            <g:if test="${docctx.owner.owner?.id == contextOrg.id && !docctx.isShared}">
+                            <g:if test="${docctx.owner.owner?.id == contextService.getOrg().id && !docctx.isShared}">
                                 <g:link controller="document" action="deleteDocument" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                         data-confirm-term-how="delete"
