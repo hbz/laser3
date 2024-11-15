@@ -5,7 +5,6 @@
 <g:set var="currentServer" scope="page" />
 <g:set var="currentLang" scope="page" />
 <g:set var="currentTheme" scope="page" />
-<g:set var="contextOrg" scope="page" />
 <g:set var="contextUser" scope="page" />
 
 <%
@@ -14,7 +13,6 @@
     currentTheme    = 'laser'
 
     contextUser     = contextService.getUser()
-    contextOrg      = contextService.getOrg()
 
     if (contextUser) {
         RefdataValue rdvLocale = contextUser.getSetting(UserSetting.KEYS.LANGUAGE, RDStore.LANGUAGE_DE)?.getValue()
@@ -76,8 +74,8 @@
 
                     %{-- menu: public, my objects, my institution --}%
 
-                    <g:if test="${contextOrg}">
-                        <g:if test="${contextOrg.isCustomerType_Support()}">
+                    <g:if test="${contextService.getOrg()}">
+                        <g:if test="${contextService.getOrg().isCustomerType_Support()}">
                             <laser:render template="/layouts/laser/menu_support" />
                         </g:if>
                         <g:else>

@@ -311,6 +311,8 @@ class SubscriptionControllerService {
      */
     Map<String, Object> getStatsDataForCostPerUse(GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+        result.contextOrg = contextService.getOrg() // TODO: subscriptionControllerService.calculateCostPerUse()
+
         Profiler prf = new Profiler('statsLoading')
         prf.setBenchmark('start loading data')
         SwissKnife.setPaginationParams(result, params, result.user)
@@ -3707,7 +3709,7 @@ class SubscriptionControllerService {
     Map<String,Object> setCopyResultGenerics(GrailsParameterMap params) {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
-        result.contextOrg = contextService.getOrg()
+
         if (params.sourceObjectId == "null")
             params.remove("sourceObjectId")
         result.sourceObjectId = params.sourceObjectId
@@ -3751,7 +3753,6 @@ class SubscriptionControllerService {
         if (!params.id && params.subscription) {
             result.subscription = Subscription.get(params.subscription)
         }
-        result.contextOrg = contextService.getOrg()
         result.contextCustomerType = contextService.getOrg().getCustomerType()
         result.institution = result.subscription ? result.subscription?.getSubscriberRespConsortia() : contextService.getOrg() //TODO temp, remove the duplicate
 

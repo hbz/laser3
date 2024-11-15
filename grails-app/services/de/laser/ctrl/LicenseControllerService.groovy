@@ -82,7 +82,6 @@ class LicenseControllerService {
 
         result.user            = contextService.getUser()
         result.institution     = contextService.getOrg()
-        result.contextOrg      = contextService.getOrg()
         result.contextCustomerType = contextService.getOrg().getCustomerType()
         result.license         = License.get(params.id)
         result.licenseInstance = result.license

@@ -4838,7 +4838,6 @@ class SurveyControllerService {
         result.locale = LocaleUtils.getCurrentLocale()
 
         result.institution = contextService.getOrg()
-        result.contextOrg = contextService.getOrg()
         result.user = contextService.getUser()
 
         result.surveyInfo = SurveyInfo.get(params.id)

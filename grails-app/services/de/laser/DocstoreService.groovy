@@ -1,6 +1,5 @@
 package de.laser
 
-import de.laser.auth.Role
 import de.laser.helper.Params
 import de.laser.interfaces.CalculatedType
 import de.laser.storage.RDConstants
@@ -13,13 +12,12 @@ import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 
-/**
- * This service is one step behind {@link de.laser.ctrl.DocumentControllerService} and contains helper methods for document retrieval
- */
+
 @Transactional
 class DocstoreService {
 
     AccessService accessService
+    ContextService contextService
     MessageSource messageSource
 
     /**
@@ -248,7 +246,7 @@ class DocstoreService {
                     List<Long> idList = Params.getLongList_forCommaSeparatedString(params, 'bulk_docIdList')
                     idList.each { id ->
                         Doc doc = Doc.get(id)
-                        if (doc.owner.id == result.contextOrg.id) {
+                        if (doc.owner.id == contextService.getOrg().id) {
                             doc.confidentiality = dc
                             doc.save()
                         }

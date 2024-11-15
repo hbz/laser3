@@ -430,7 +430,6 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def createTask() {
         Map<String, Object> result = taskService.getPreconditions(contextService.getOrg())
-        result.contextOrg = contextService.getOrg()
 
         render template: "/templates/tasks/modal_create", model: result
     }
@@ -445,7 +444,6 @@ class AjaxHtmlController {
 
         if (accessService.hasAccessToTask(task, AccessService.WRITE, true)) {
             result.taskInstance = task
-            result.contextOrg = contextService.getOrg()
             render template: "/templates/tasks/modal_edit", model: result
         }
         else {
@@ -463,7 +461,6 @@ class AjaxHtmlController {
 
         if (accessService.hasAccessToTask(task, AccessService.READ, true)) { // TODO ??? WRITE
             result.taskInstance = task
-            result.contextOrg = contextService.getOrg()
             render template: "/templates/tasks/modal_read", model: result
         }
         else {
@@ -575,7 +572,6 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def createPerson() {
         Map<String, Object> result = [:]
-        result.contextOrg = contextService.getOrg()
         result.tenant = contextService.getOrg()
         result.modalId = 'personModal'
         result.presetFunctionType = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
@@ -699,7 +695,6 @@ class AjaxHtmlController {
             result.editable = true // ??
             result.tmplShowDeleteButton = result.editable
             result.url = [controller: 'addressbook', action: 'editPerson', id: result.personInstance.id]
-            result.contextOrg = contextService.getOrg()
 
             render template: "/addressbook/personFormModal", model: result
         }
