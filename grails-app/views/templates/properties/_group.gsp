@@ -1,11 +1,10 @@
 <!-- A: templates/properties/_group -->
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Subscription; de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.AuditConfig; de.laser.FormService" %>
 <laser:serviceInjection/>
+
 <g:if test="${newProp}">
     <ui:errors bean="${newProp}" />
 </g:if>
-
-
 
 <table class="ui compact la-js-responsive-table la-table-inCard table">
     <g:if test="${propDefGroup}">
@@ -49,8 +48,8 @@
             <g:set var="propDefGroupItems" value="${propDefGroup.getCurrentPropertiesOfTenant(ownobj,consortium)}" />
         </g:elseif>
         <g:each in="${propDefGroupItems}" var="prop">
-            <g:set var="overwriteEditable" value="${(prop.tenant?.id == contextOrg.id && editable) || (!prop.tenant && editable)}"/>
-            <g:if test="${(prop.tenant?.id == contextOrg.id || !prop.tenant) || prop.isPublic || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}">
+            <g:set var="overwriteEditable" value="${(prop.tenant?.id == contextService.getOrg().id && editable) || (!prop.tenant && editable)}"/>
+            <g:if test="${(prop.tenant?.id == contextService.getOrg().id || !prop.tenant) || prop.isPublic || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}">
                 <tr>
                     <td>
                         <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">

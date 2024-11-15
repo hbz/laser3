@@ -129,8 +129,7 @@
                                                                                 visibleProviders: providerRoles,
                                                                                 surveyResults      : surveyResults,
                                                                                 institution: institution,
-                                                                                ownerView: ownerView,
-                                                                                contextOrg: contextOrg]"/>
+                                                                                ownerView: ownerView]"/>
 </g:if>
 
 <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
@@ -151,8 +150,7 @@
                                                                                 visibleProviders: providerRoles,
                                                                                 surveyResults      : surveyResults,
                                                                                 institution: institution,
-                                                                                ownerView: ownerView,
-                                                                                contextOrg: contextOrg]"/>
+                                                                                ownerView: ownerView]"/>
 
     <g:render template="/templates/survey/export/entitlementSurveyPDF" model="[countSelectedIEs: countSelectedIEs,
                                                                                sumListPriceSelectedIEsEUR: sumListPriceSelectedIEsEUR,

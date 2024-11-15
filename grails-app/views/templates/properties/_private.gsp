@@ -15,7 +15,7 @@
 </g:if>
 
 <table class="ui compact la-js-responsive-table la-table-inCard table">
-    <g:set var="privateProperties" value="${ownobj.propertySet.findAll { cp -> cp.type.tenant?.id == contextOrg.id && cp.tenant?.id == contextOrg.id }.sort{ cp -> cp.type[de.laser.utils.LocaleUtils.getLocalizedAttributeName('name')].toLowerCase() }}"/>
+    <g:set var="privateProperties" value="${ownobj.propertySet.findAll { cp -> cp.type.tenant?.id == contextService.getOrg().id && cp.tenant?.id == contextService.getOrg().id }.sort{ cp -> cp.type[de.laser.utils.LocaleUtils.getLocalizedAttributeName('name')].toLowerCase() }}"/>
     <g:if test="${privateProperties}">
         <colgroup>
             <col class="la-prop-col-1">

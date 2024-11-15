@@ -156,11 +156,11 @@
                         <td>${i + 1}</td>
                         <td><g:link controller="survey" action=" $actionName"
                                     params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, selectedProperty: property.id]}">${property.getI10n('name')}</g:link></td>
-                        <td>${subscriptionService.countCustomSubscriptionPropertyOfMembersByParentSub(contextOrg, parentSubscription, property)}</td>
+                        <td>${subscriptionService.countCustomSubscriptionPropertyOfMembersByParentSub(contextService.getOrg(), parentSubscription, property)}</td>
                         <g:if test="${params.tab == 'surveyProperties'}">
                             <td>${participantsList ? surveyService.countSurveyPropertyWithValueByMembers(surveyConfig, property, participantsList.org) : 0}</td>
                         </g:if>
-                        <td>${subscriptionService.countCustomSubscriptionPropertyOfMembersByParentSub(contextOrg, parentSuccessorSubscription, property)}</td>
+                        <td>${subscriptionService.countCustomSubscriptionPropertyOfMembersByParentSub(contextService.getOrg(), parentSuccessorSubscription, property)}</td>
                     </tr>
                 </g:each>
                 </tbody>
