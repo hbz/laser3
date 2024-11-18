@@ -190,7 +190,6 @@ class AjaxHtmlController {
         result.pendingOffset = params.pendingOffset ? params.int("pendingOffset") : result.offset
         def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
         Map<String, Object> pendingChangeConfigMap = [
-                contextOrg: contextService.getOrg(),
                 consortialView: contextService.getOrg().isCustomerType_Consortium(),
                 periodInDays:periodInDays,
                 max:result.max,
