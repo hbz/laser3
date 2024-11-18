@@ -228,7 +228,7 @@ class VendorController {
             result.vendor = vendor
             result.editable = vendor.gokbId ? false : contextService.isInstEditor()
             result.subEditable = contextService.isInstEditor()
-            result.isMyVendor = vendorService.isMyVendor(vendor, contextService.getOrg())
+            result.isMyVendor = vendorService.isMyVendor(vendor)
             String subscriptionConsortiumFilter = '', licenseConsortiumFilter = ''
             if(contextService.getOrg().isCustomerType_Consortium()) {
                 subscriptionConsortiumFilter = 'and s.instanceOf = null'

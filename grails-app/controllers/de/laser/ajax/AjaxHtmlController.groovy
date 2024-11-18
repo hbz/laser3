@@ -428,7 +428,7 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def createTask() {
-        Map<String, Object> result = taskService.getPreconditions(contextService.getOrg())
+        Map<String, Object> result = taskService.getPreconditions()
 
         render template: "/templates/tasks/modal_create", model: result
     }
