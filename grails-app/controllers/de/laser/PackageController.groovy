@@ -315,7 +315,7 @@ class PackageController {
             String dir = GlobalService.obtainFileStorageLocation()
             File f = new File(dir+'/'+filename)
             if(!f.exists()) {
-                List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+                List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams) //TODO migrate to tippSubsetQuery
                 Map<String, Object> configMap = [:]
                 configMap.format = ExportService.KBART
                 configMap.tippIDs = titlesList

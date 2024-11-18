@@ -19,7 +19,7 @@ class IssueEntitlementService {
         else s
     }
 
-    Map<String, Object> getIssueEntitlements(Map configMap) {
+    Map<String, Object> getKeys(Map configMap) {
         Map<String, Object> parameterGenerics = getParameterGenerics(configMap)
         Map<String, Object> titleConfigMap = parameterGenerics.titleConfigMap,
                             identifierConfigMap = parameterGenerics.identifierConfigMap,
@@ -36,26 +36,18 @@ class IssueEntitlementService {
         }
         //process here the title-related parameters
         Map<String, Object> queryPart1 = filterService.getTippSubsetQuery(titleConfigMap)
-        Set<Long> tippIds = TitleInstancePackagePlatform.executeQuery(queryPart1.query, queryPart1.queryParams), ieIds = []
+        Set<Long> tippIDs = TitleInstancePackagePlatform.executeQuery(queryPart1.query, queryPart1.queryParams), ieIDs = []
         if(configMap.identifier) {
-            tippIds = tippIds.intersect(getTippsByIdentifier(identifierConfigMap, configMap.identifier))
+            tippIDs = tippIDs.intersect(getTippsByIdentifier(identifierConfigMap, configMap.identifier))
         }
         //process here the issue entitlement-related parameters
         Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetQuery(issueEntitlementConfigMap)
 
-        tippIds.collate(65000).each { List<Long> subset ->
+        tippIDs.collate(65000).each { List<Long> subset ->
             queryPart2.queryParams.subset = subset
-            ieIds.addAll(IssueEntitlement.executeQuery(queryPart2.query, queryPart2.queryParams))
+            ieIDs.addAll(IssueEntitlement.executeQuery(queryPart2.query, queryPart2.queryParams))
         }
-        Set<IssueEntitlement> result = [] //SortedSet restricts to comparator sort
-        if(configMap.containsKey('fileformat') || configMap.containsKey('exportKBart')) {
-            [entIDs: ieIds]
-        }
-        else {
-            Set<Long> ieSubset = ieIds.drop(configMap.offset).take(configMap.max)
-            result.addAll(IssueEntitlement.findAllByIdInList(ieSubset, [sort: configMap.sort, order: configMap.order]))
-            [entitlements: result, num_ies_rows: ieIds.size()]
-        }
+        [tippIDs: tippIDs, ieIDs: ieIDs]
     }
 
     Set<Long> getTippsByIdentifier(Map identifierConfigMap, String identifier) {
