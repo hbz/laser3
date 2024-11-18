@@ -305,12 +305,19 @@
 %{-- help flyout --}%
 
 <g:if test="${helpFlag == HelpService.GSP}">
-    <g:render template="${'/help/' + helpService.getMapping(controllerName, actionName)}" />
+    <div class="ui wide flyout" id="help-content">
+        <g:render template="${'/help/' + helpService.getMapping(controllerName, actionName)}" />
+    </div>
 </g:if>
-<g:elseif test="${helpFlag == HelpService.MD}">
+<g:elseif test="${helpFlag in [HelpService.MD, HelpService.BOTH]}">
     <div class="ui wide la-markdown flyout" id="help-content">
         <div class="scrolling content">
             <ui:renderMarkdown help="${helpService.getMapping(controllerName, actionName)}" />
+
+            <g:if test="${helpFlag == HelpService.BOTH}">
+                <br/>
+                <g:render template="${'/help/' + helpService.getMapping(controllerName, actionName)}" />
+            </g:if>
         </div>
         <div class="basic center aligned actions">
             <a href="mailto:laser@hbz-nrw.de?subject=Supportanfrage">Bei weiteren Fragen erreichen Sie uns per Email</a>

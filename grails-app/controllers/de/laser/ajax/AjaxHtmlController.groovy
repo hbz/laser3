@@ -15,7 +15,6 @@ import de.laser.AddressbookService
 import de.laser.AccessService
 import de.laser.WekbNewsService
 import de.laser.WorkflowService
-import de.laser.auth.Role
 import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper

@@ -19,8 +19,9 @@ import org.grails.io.support.GrailsResourceUtils
 @Transactional
 class HelpService {
 
-    public static final String GSP = 'GSP'
-    public static final String MD  = 'MD'
+    public static final String GSP  = 'GSP'
+    public static final String MD   = 'MD'
+    public static final String BOTH = 'BOTH'
 
     ContextService contextService
 
@@ -39,21 +40,14 @@ class HelpService {
     String getFlag(String controllerName, String actionName) {
         String flag
 
-        String mapping  = getMapping(controllerName, actionName)
-        String file     = 'help/_' + mapping + '.gsp'
-        URL resource    = getResource( file )
+        String mapping = getMapping(controllerName, actionName)
+        boolean isGSP  = getResource( 'help/_' + mapping + '.gsp' )
+        boolean isMD   = getResource( 'help/' + mapping + '.md' )
 
-        if (resource) {
-            flag = GSP
-        }
-        else {
-            file = 'help/' + mapping + '.md'
-            resource = getResource( file )
+        if (isGSP && isMD)  { flag = BOTH }
+        else if (isGSP)     { flag = GSP }
+        else if (isMD)      { flag = MD }
 
-            if (resource) {
-                flag = MD
-            }
-        }
         flag
     }
 
