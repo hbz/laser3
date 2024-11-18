@@ -3547,7 +3547,7 @@ class ExportService {
 			rowQuery += "create_cell('${format}', null, ${style}) as pick"
 		}
 		if(tippIDs) {
-			rowQuery += " from title_instance_package_platform where tipp_id = any(:tippIDs) order by tipp_sort_name"
+			rowQuery += " from title_instance_package_platform left join tippcoverage on tc_tipp_fk = tipp_id where tipp_id = any(:tippIDs) order by tipp_sort_name"
 			tippIDs.collate(65000).each { List<Long> subset ->
 				arrayParams.tippIDs = subset
 				List exportRows = batchQueryService.longArrayQuery(rowQuery, arrayParams)
@@ -3579,7 +3579,7 @@ class ExportService {
 			}
 		}
 		else if(ieIDs) {
-			rowQuery += " from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id left join issue_entitlement_coverage on ic_ie_fk = ie_id left join tippcoverage on tc_tipp_fk = tc_id where ie_id = any(:ieIDs) order by tipp_sort_name"
+			rowQuery += " from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id left join tippcoverage on tipp_id = tc_tipp_fk where ie_id = any(:ieIDs) order by tipp_sort_name"
 			ieIDs.collate(65000).each { List<Long> subset ->
 				arrayParams.ieIDs = subset
 				List exportRows = batchQueryService.longArrayQuery(rowQuery, arrayParams)
@@ -3648,12 +3648,12 @@ class ExportService {
 		Locale locale = LocaleUtils.getCurrentLocale()
 		String config = "create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('monograph') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, IdentifierNamespace.NS_TITLE).id}) or (lower(tipp_title_type) in ('serial') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, IdentifierNamespace.NS_TITLE).id}))), ${style}) as print_identifier," +
 				"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('monograph') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISBN, IdentifierNamespace.NS_TITLE).id}) or (lower(tipp_title_type) in ('serial') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, IdentifierNamespace.NS_TITLE).id}))), ${style}) as online_identifier," +
-				"create_cell('${format}', to_char(coalesce(ic_start_date, tc_start_date), 'yyyy-MM-dd'), ${style}) as date_first_issue_online," +
-				"create_cell('${format}', coalesce(ic_start_volume, tc_start_volume), ${style}) as num_first_vol_online," +
-				"create_cell('${format}', coalesce(ic_start_issue, tc_start_issue), ${style}) as num_first_issue_online," +
-				"create_cell('${format}', to_char(coalesce(ic_end_date, tc_end_date), 'yyyy-MM-dd'), ${style}) as date_last_issue_online," +
-				"create_cell('${format}', coalesce(ic_end_volume, tc_end_volume), ${style}) as num_last_vol_online," +
-				"create_cell('${format}', coalesce(ic_end_issue, tc_end_issue), ${style}) as num_last_issue_online," +
+				"create_cell('${format}', to_char(tc_start_date, 'yyyy-MM-dd'), ${style}) as date_first_issue_online," +
+				"create_cell('${format}', tc_start_volume, ${style}) as num_first_vol_online," +
+				"create_cell('${format}', tc_start_issue, ${style}) as num_first_issue_online," +
+				"create_cell('${format}', to_char(tc_end_date, 'yyyy-MM-dd'), ${style}) as date_last_issue_online," +
+				"create_cell('${format}', tc_end_volume, ${style}) as num_last_vol_online," +
+				"create_cell('${format}', tc_end_issue, ${style}) as num_last_issue_online," +
 				"create_cell('${format}', tipp_host_platform_url, ${style}) as title_url," +
 				"create_cell('${format}', tipp_first_author, ${style}) as first_author," +
 				"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType('title_id', IdentifierNamespace.NS_TITLE).id}), ${style}) as title_id," +
