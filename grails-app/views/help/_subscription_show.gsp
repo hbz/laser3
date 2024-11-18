@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Icon" %>
-<div class="ui wide flyout" id="help-content">
+%{--<div class="ui wide flyout" id="help-content">--}%
 
     <h1 class="ui header">Erklärung der Icons</h1>
 
@@ -112,4 +112,4 @@
 
     </div>
 
-</div>
+%{--</div>--}%

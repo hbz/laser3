@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue" %>
 
-<div class="ui wide flyout" id="help-content">
+%{--<div class="ui wide flyout" id="help-content">--}%
     <h1 class="ui header">
         <g:message code="myinst.financeImport.headline"/>
     </h1>
@@ -57,4 +57,4 @@
             </tbody>
         </table>
     </div>
-</div>
+%{--</div>--}%
