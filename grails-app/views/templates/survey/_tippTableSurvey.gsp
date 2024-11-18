@@ -32,7 +32,7 @@
                             <g:set var="participantPerpetualAccessToTitleList"
                                    value="${surveyService.listParticipantPerpetualAccessToTitle(subscriber, tipp)}"/>
                             <span class="ui mini left corner label la-perpetualAccess la-popup-tooltip"
-                                  data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitleList.collect{it.getPermanentTitleInfo(contextService.getOrg())}.join(',')}"
+                                  data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitleList.collect{it.getPermanentTitleInfo()}.join(',')}"
                                   data-position="left center" data-variation="tiny">
                                 <i class="star icon"></i>
                             </span>

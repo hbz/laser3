@@ -420,7 +420,7 @@
                                                     </g:if>
                                                     <g:else>
                                                         <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip"
-                                                              data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitle.collect{it.getPermanentTitleInfo(contextService.getOrg())}.join(',')}"
+                                                              data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitle.collect{it.getPermanentTitleInfo()}.join(',')}"
                                                               data-position="left center" data-variation="tiny">
                                                             <i class="star icon"></i>
                                                         </span>

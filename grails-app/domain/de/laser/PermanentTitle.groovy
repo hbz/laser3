@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
 import de.laser.wekb.TitleInstancePackagePlatform
@@ -50,11 +50,10 @@ class PermanentTitle {
     }
 
     /**
-     * Retrieves the subscription information about the permanent title record for the given context institution
-     * @param contextOrg the current user's institution
+     * Retrieves the subscription information about the permanent title record for the current context institution
      * @return a concatenated string containing the subscription within which permanent access has been purchased
      */
-    String getPermanentTitleInfo(Org contextOrg){
+    String getPermanentTitleInfo(){
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         String period = subscription.startDate ? sdf.format(subscription.startDate)  : ''
 
@@ -67,11 +66,10 @@ class PermanentTitle {
 
         Org cons = subscription.getConsortium()
 
-        if(cons && cons != contextOrg){
+        if(cons && cons.id != BeanStore.getContextService().getOrg().id){
             return subscription.name + ' - ' + statusString + ' ' +period + ' - ' + " (${subscription.getConsortium()?.name})${debugInfo}"
 
         } else {
-
             return subscription.name + ' - ' + statusString + ' ' +period + debugInfo
         }
     }

@@ -244,12 +244,15 @@ class OrganisationService {
      * Gets all platforms where a provider {@link Org} is assigned to, ordered by name, sortname and platform name, to which the context org is subscribed
      * @return the ordered {@link List} of {@link Platform}s
      */
-    List<Platform> getAllPlatformsForContextOrg(Org contextOrg) {
+    List<Platform> getAllPlatformsForContextOrg() {
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         Set<String> uuids = []
         Map<String, Object> result = gokbService.doQuery([user: contextService.getUser(), editUrl: apiSource.editUrl], [max: '10000', offset: '0'], [componentType: 'Platform', status: 'Current'])
         uuids.addAll(result.records.collect { Map platRecord -> platRecord.uuid })
-        Platform.executeQuery('select plat from Platform plat join plat.provider p where plat.gokbId in (:uuids) and p is not null and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription in (select oo.sub from OrgRole oo where oo.org = :context)) order by p.name, p.sortname, plat.name', [uuids: uuids, context: contextOrg])
+        Platform.executeQuery(
+                'select plat from Platform plat join plat.provider p where plat.gokbId in (:uuids) and p is not null and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription in (select oo.sub from OrgRole oo where oo.org = :context)) order by p.name, p.sortname, plat.name',
+                [uuids: uuids, context: contextService.getOrg()]
+        )
     }
 
     /**

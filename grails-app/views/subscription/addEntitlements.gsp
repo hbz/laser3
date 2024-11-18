@@ -141,7 +141,7 @@
                              data-tippId="${tipp.id}" data-index="${counter}">
                             <g:if test="${participantPerpetualAccessToTitle.size() > 0}">
                                 <span class="ui mini left corner label la-perpetualAccess la-popup-tooltip"
-                                      data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitle.collect{it.getPermanentTitleInfo(contextService.getOrg())}.join(',')}"
+                                      data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitle.collect{it.getPermanentTitleInfo()}.join(',')}"
                                       data-position="left center" data-variation="tiny">
                                     <i class="star icon"></i>
                                 </span>
