@@ -5,7 +5,6 @@ import de.laser.annotations.DebugInfo
 import de.laser.auth.User
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
-import de.laser.exceptions.EntitlementCreationException
 import de.laser.helper.FilterLogic
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
@@ -1207,9 +1206,15 @@ class SubscriptionController {
                 Set<Package> targetPkg = targetSub.packages.pkg
                 if(params.pkgFilter)
                     targetPkg = [Package.get(params.pkgFilter)]
-                Map<String, Object> configMap = [subscription: targetSub, packages: targetPkg, offset: result.offset, max: result.max]
+                Map<String, Object> configMap = [subscription: targetSub, packages: targetPkg]
                 configMap.putAll(params)
-                result.putAll(issueEntitlementService.getIssueEntitlements(configMap))
+                //overwrite with parsed ints
+                configMap.offset = result.offset
+                configMap.max = result.max
+                Map<String, Object> keys = issueEntitlementService.getKeys(configMap)
+                Set<Long> ieSubset = keys.ieIDs.drop(configMap.offset).take(configMap.max)
+                result.entitlements = IssueEntitlement.findAllByIdInList(ieSubset, [sort: configMap.sort, order: configMap.order])
+                result.num_ies_rows = keys.ieIDs.size()
                 Set<SubscriptionPackage> deletedSPs = result.subscription.packages.findAll { SubscriptionPackage sp -> sp.pkg.packageStatus in [RDStore.PACKAGE_STATUS_DELETED, RDStore.PACKAGE_STATUS_REMOVED] }
                 if(deletedSPs) {
                     result.deletedSPs = []
@@ -1247,7 +1252,7 @@ class SubscriptionController {
                 targetPkg = [Package.get(params.pkgFilter)]
             Map<String, Object> configMap = [subscription: targetSub, packages: targetPkg]
             configMap.putAll(params)
-            result.putAll(issueEntitlementService.getIssueEntitlements(configMap))
+            Map<String, Object> keys = issueEntitlementService.getKeys(configMap)
             Map<String, Object> selectedFields = [:]
             if(params.fileformat) {
                 if (params.filename) {
@@ -1262,7 +1267,7 @@ class SubscriptionController {
                 File f = new File(dir+'/'+filename)
                 if(!f.exists()) {
                     FileOutputStream fos = new FileOutputStream(f)
-                    Map<String, Object> tableData = exportService.generateTitleExport([format: ExportService.KBART, ieIDs: result.entIDs])
+                    Map<String, Object> tableData = exportService.generateTitleExport([format: ExportService.KBART, ieIDs: keys.ieIDs])
                     fos.withWriter { writer ->
                         writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
                     }
@@ -1274,7 +1279,7 @@ class SubscriptionController {
                 return
             }
             else if(params.fileformat == 'xlsx') {
-                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportIssueEntitlements(result.entIDs, selectedFields, ExportClickMeService.FORMAT.XLS)
+                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportIssueEntitlements(keys.ieIDs, selectedFields, ExportClickMeService.FORMAT.XLS)
                 response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 wb.write(response.outputStream)
@@ -1288,7 +1293,7 @@ class SubscriptionController {
                 response.contentType = "text/csv"
                 ServletOutputStream out = response.outputStream
                 out.withWriter { writer ->
-                    writer.write((String) exportClickMeService.exportIssueEntitlements(result.entIDs, selectedFields, ExportClickMeService.FORMAT.CSV))
+                    writer.write((String) exportClickMeService.exportIssueEntitlements(keys.ieIDs, selectedFields, ExportClickMeService.FORMAT.CSV))
                 }
                 out.close()
             }
