@@ -53,7 +53,7 @@ class VendorService {
      * @param exWekb should only contacts being retrieved which come from the provider itself (i.e. from we:kb)?
      * @return a {@link List} of {@link de.laser.addressbook.Person}s matching to the function type
      */
-    List<Person> getContactPersonsByFunctionType(Vendor vendor, Org contextOrg, boolean onlyPublic, RefdataValue functionType = null) {
+    List<Person> getContactPersonsByFunctionType(Vendor vendor, boolean onlyPublic, RefdataValue functionType = null) {
         Map<String, Object> queryParams = [vendor: vendor]
         String functionTypeFilter = ''
         if(functionType) {
@@ -67,7 +67,7 @@ class VendorService {
             )
         }
         else {
-            queryParams.ctx = contextOrg
+            queryParams.ctx = contextService.getOrg()
             Person.executeQuery(
                     'select distinct p from Person as p inner join p.roleLinks pr where pr.vendor = :vendor ' + functionTypeFilter +
                             ' and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) )',
@@ -355,8 +355,11 @@ class VendorService {
         result
     }
 
-    boolean isMyVendor(Vendor vendor, Org contextOrg) {
-        int count = VendorRole.executeQuery('select count(*) from OrgRole oo, VendorRole vr where (vr.subscription = oo.sub or vr.license = oo.lic) and oo.org = :context and vr.vendor = :vendor', [vendor: vendor, context: contextOrg])[0]
+    boolean isMyVendor(Vendor vendor) {
+        int count = VendorRole.executeQuery(
+                'select count(*) from OrgRole oo, VendorRole vr where (vr.subscription = oo.sub or vr.license = oo.lic) and oo.org = :context and vr.vendor = :vendor',
+                [vendor: vendor, context: contextService.getOrg()]
+        )[0]
         count > 0
     }
 

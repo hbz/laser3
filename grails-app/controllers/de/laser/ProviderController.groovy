@@ -251,7 +251,7 @@ class ProviderController {
             result.provider = provider
             result.editable = provider.gokbId ? false : contextService.isInstEditor()
             result.subEditable = contextService.isInstEditor()
-            result.isMyProvider = providerService.isMyProvider(provider, contextService.getOrg())
+            result.isMyProvider = providerService.isMyProvider(provider)
             String subscriptionConsortiumFilter = '', licenseConsortiumFilter = ''
             if(contextService.getOrg().isCustomerType_Consortium()) {
                 subscriptionConsortiumFilter = 'and s.instanceOf = null'
