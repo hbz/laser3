@@ -246,43 +246,41 @@ class TaskService {
     }
 
     /**
-     * Gets the possible selection values for the given institution to create a new task
-     * @param contextOrg the institution whose perspective is going to be taken
+     * Gets the possible selection values for the current institution to create a new task
      * @return a map containing prefilled lists for dropdowns
      */
-    Map<String, Object> getPreconditions(Org contextOrg) {
+    Map<String, Object> getPreconditions() {
         Map<String, Object> result = [:]
+        Org contextOrg = contextService.getOrg()
 
         result.validResponsibleOrgs         = contextOrg ? [contextOrg] : []
-        result.validResponsibleUsers        = getUserDropdown(contextOrg)
-        result.validOrgsDropdown            = _getOrgsDropdown(contextOrg)
-        result.validProvidersDropdown       = _getProvidersDropdown(contextOrg)
-        result.validVendorsDropdown         = _getVendorsDropdown(contextOrg)
-        result.validSubscriptionsDropdown   = _getSubscriptionsDropdown(contextOrg, false)
-        result.validLicensesDropdown        = _getLicensesDropdown(contextOrg, false)
+        result.validResponsibleUsers        = getUserDropdown()
+        result.validOrgsDropdown            = _getOrgsDropdown()
+        result.validProvidersDropdown       = _getProvidersDropdown()
+        result.validVendorsDropdown         = _getVendorsDropdown()
+        result.validSubscriptionsDropdown   = _getSubscriptionsDropdown(false)
+        result.validLicensesDropdown        = _getLicensesDropdown(false)
 
         result
     }
 
     /**
      * Gets a list of all users for dropdown output
-     * @param contextOrg the institution whose affiliated users should be retrieved
      * @return a list of users
      */
-    List<User> getUserDropdown(Org org) { // modal_create
-        org ? User.executeQuery( 'select u from User as u where u.formalOrg = :org order by lower(u.display)', [org: org]) : []
+    List<User> getUserDropdown() { // modal_create
+        User.executeQuery( 'select u from User as u where u.formalOrg = :org order by lower(u.display)', [org: contextService.getOrg()])
     }
 
     /**
      * Gets a list of all institutions for dropdown output
-     * @param contextOrg the institution whose accessible organisations should be retrieved
      * @return a list of organisation
      */
-    private Set<Map> _getOrgsDropdown(Org contextOrg) {
+    private Set<Map> _getOrgsDropdown() {
         Set<Map> validOrgs = [], validOrgsDropdown = []
-        if (contextOrg) {
-            boolean isInstitution = (contextOrg.isCustomerType_Inst())
-            boolean isConsortium  = (contextOrg.isCustomerType_Consortium())
+
+        boolean isInstitution = contextService.getOrg().isCustomerType_Inst()
+        boolean isConsortium  = contextService.getOrg().isCustomerType_Consortium()
 
             GrailsParameterMap params = new GrailsParameterMap(WebUtils.retrieveGrailsWebRequest().getCurrentRequest())
             params.sort      = " LOWER(o.sortname), LOWER(o.name)"
@@ -292,7 +290,7 @@ class TaskService {
             if (isConsortium) {
                 String comboQuery = 'select new map(o.id as id, o.name as name, o.sortname as sortname) from Org o join o.outgoingCombos c where c.toOrg = :toOrg and c.type = :type order by '+params.sort
                 validOrgs = Combo.executeQuery(comboQuery,
-                        [toOrg: contextOrg,
+                        [toOrg: contextService.getOrg(),
                         type:  RDStore.COMBO_TYPE_CONSORTIUM])
             }
             else if (isInstitution) {
@@ -308,31 +306,30 @@ class TaskService {
                 else optionValue = "${row.name}"
                 validOrgsDropdown << [optionKey: optionKey, optionValue: optionValue]
             }
-        }
+
         validOrgsDropdown
     }
 
     /**
      * Gets a list of all providers for dropdown output
-     * @param contextOrg the institution whose accessible organisations should be retrieved
      * @return a list of organisation
      */
-    private Set<Map> _getProvidersDropdown(Org contextOrg) {
+    private Set<Map> _getProvidersDropdown() {
         Set<Map> validProviders = [], validProvidersDropdown = []
-        if (contextOrg) {
-            boolean isInstitution = (contextOrg.isCustomerType_Inst())
-            boolean isConsortium  = (contextOrg.isCustomerType_Consortium())
+
+        boolean isInstitution = contextService.getOrg().isCustomerType_Inst()
+        boolean isConsortium  = contextService.getOrg().isCustomerType_Consortium()
 
             GrailsParameterMap params = new GrailsParameterMap(WebUtils.retrieveGrailsWebRequest().getCurrentRequest())
             params.sort      = " LOWER(p.sortname), LOWER(p.name)"
 
             if (isConsortium) {
                 String query = 'select new map(p.id as id, p.name as name, p.sortname as sortname) from ProviderRole pvr join pvr.provider p, OrgRole oo join oo.sub s where pvr.subscription = s and oo.org = :context and s.instanceOf = null order by '+params.sort
-                validProviders = Provider.executeQuery(query, [context: contextOrg])
+                validProviders = Provider.executeQuery(query, [context: contextService.getOrg()])
             }
             else if (isInstitution) {
                 String query = 'select new map(p.id as id, p.name as name, p.sortname as sortname) from ProviderRole pvr join pvr.provider p, OrgRole oo where oo.sub = pvr.subscription and oo.org = :context order by '+params.sort
-                validProviders.addAll(Provider.executeQuery(query, [context: contextOrg]))
+                validProviders.addAll(Provider.executeQuery(query, [context: contextService.getOrg()]))
             }
             validProviders.each { row ->
                 Long optionKey = row.id
@@ -342,31 +339,30 @@ class TaskService {
                 else optionValue = "${row.name}"
                 validProvidersDropdown << [optionKey: optionKey, optionValue: optionValue]
             }
-        }
+
         validProvidersDropdown
     }
 
     /**
      * Gets a list of all organisations for dropdown output
-     * @param contextOrg the institution whose accessible organisations should be retrieved
      * @return a list of organisation
      */
-    private Set<Map> _getVendorsDropdown(Org contextOrg) {
+    private Set<Map> _getVendorsDropdown() {
         Set<Map> validVendors = [], validVendorsDropdown = []
-        if (contextOrg) {
-            boolean isInstitution = (contextOrg.isCustomerType_Inst())
-            boolean isConsortium  = (contextOrg.isCustomerType_Consortium())
+
+        boolean isInstitution = contextService.getOrg().isCustomerType_Inst()
+        boolean isConsortium  = contextService.getOrg().isCustomerType_Consortium()
 
             GrailsParameterMap params = new GrailsParameterMap(WebUtils.retrieveGrailsWebRequest().getCurrentRequest())
             params.sort      = " LOWER(v.sortname), LOWER(v.name)"
 
             if (isConsortium) {
                 String query = 'select new map(v.id as id, v.name as name, v.sortname as sortname) from VendorRole vr join vr.vendor v, OrgRole oo join oo.sub s where vr.subscription = s and oo.org = :context and s.instanceOf = null order by '+params.sort
-                validVendors = Combo.executeQuery(query, [context: contextOrg])
+                validVendors = Combo.executeQuery(query, [context: contextService.getOrg()])
             }
             else if (isInstitution) {
                 String query = 'select new map(v.id as id, v.name as name, v.sortname as sortname) from VendorRole vr join vr.vendor v, OrgRole oo where vr.subscription = oo.sub and oo.org = :context order by '+params.sort
-                validVendors.addAll(Org.executeQuery(query, [context: contextOrg]))
+                validVendors.addAll(Org.executeQuery(query, [context: contextService.getOrg()]))
             }
             validVendors.each { row ->
                 Long optionKey = row.id
@@ -376,23 +372,22 @@ class TaskService {
                 else optionValue = "${row.name}"
                 validVendorsDropdown << [optionKey: optionKey, optionValue: optionValue]
             }
-        }
+
         validVendorsDropdown
     }
 
     /**
      * Gets a list of all subscriptions for dropdown output
-     * @param contextOrg the institution whose subscriptions should be retrieved
      * @param isWithInstanceOf should member subscriptions being retrieved as well?
      * @return a list of subscriptions
      */
-    private List<Map> _getSubscriptionsDropdown(Org contextOrg, boolean isWithInstanceOf) {
+    private List<Map> _getSubscriptionsDropdown(boolean isWithInstanceOf) {
         List validSubscriptionsWithInstanceOf = []
         List validSubscriptionsWithoutInstanceOf = []
         List<Map> validSubscriptionsDropdown = []
-        boolean isConsortium = contextOrg.isCustomerType_Consortium()
 
-        if (contextOrg) {
+        boolean isConsortium = contextService.getOrg().isCustomerType_Consortium()
+
             if (isConsortium) {
 
                 Map<String, Object> qry_params_for_sub = [
@@ -400,7 +395,7 @@ class TaskService {
                                 RDStore.OR_SUBSCRIBER_CONS,
                                 RDStore.OR_SUBSCRIPTION_CONSORTIUM
                         ],
-                        'activeInst': contextOrg
+                        'activeInst': contextService.getOrg()
                 ]
 
                 validSubscriptionsWithoutInstanceOf = Subscription.executeQuery("select s.id, s.name, s.startDate, s.endDate, s.status from OrgRole oo join oo.sub s where oo.roleType IN (:roleTypes) AND oo.org = :activeInst and s.instanceOf is null order by lower(s.name), s.endDate", qry_params_for_sub)
@@ -416,11 +411,10 @@ class TaskService {
                                 RDStore.OR_SUBSCRIBER,
                                 RDStore.OR_SUBSCRIBER_CONS
                         ],
-                        'activeInst': contextOrg
+                        'activeInst': contextService.getOrg()
                 ]
                 validSubscriptionsWithoutInstanceOf = Subscription.executeQuery("select s.id, s.name, s.startDate, s.endDate, s.status from OrgRole oo join oo.sub s where oo.roleType IN (:roleTypes) AND oo.org = :activeInst order by lower(s.name), s.endDate", qry_params_for_sub)
             }
-        }
 
         String NO_STATUS = RDStore.SUBSCRIPTION_NO_STATUS.getI10n('value')
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeShort()
@@ -469,18 +463,16 @@ class TaskService {
 
     /**
      * Gets a list of all licenses for dropdown output
-     * @param contextOrg the institution whose licenses should be retrieved
      * @param isWithInstanceOf should member licenses being retrieved as well?
      * @return a list of subscriptions
      */
-    private List<Map> _getLicensesDropdown(Org contextOrg, boolean isWithInstanceOf) {
+    private List<Map> _getLicensesDropdown(boolean isWithInstanceOf) {
         List<License> validLicensesOhneInstanceOf = []
         List<License> validLicensesMitInstanceOf = []
         List<Map> validLicensesDropdown = []
 
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeShort()
 
-        if (contextOrg) {
             String licensesQueryMitInstanceOf =
                     'SELECT lic.id, lic.reference, o.roleType, lic.startDate, lic.endDate, licinstanceof.type from License lic left join lic.orgRelations o left join lic.instanceOf licinstanceof WHERE  o.org = :lic_org AND o.roleType.id IN (:org_roles) and lic.instanceOf is not null order by lic.sortableReference asc'
 
@@ -489,7 +481,7 @@ class TaskService {
 
             if (contextService.getOrg().isCustomerType_Consortium()){
                 Map<String, Object> qry_params_for_lic = [
-                    lic_org:    contextOrg,
+                    lic_org:    contextService.getOrg(),
                     org_roles:  [
                             RDStore.OR_LICENSEE.id,
                             RDStore.OR_LICENSING_CONSORTIUM.id
@@ -503,7 +495,7 @@ class TaskService {
             }
             else if (contextService.getOrg().isCustomerType_Inst_Pro()) {
                 Map<String, Object> qry_params_for_lic = [
-                    lic_org:    contextOrg,
+                    lic_org:    contextService.getOrg(),
                     org_roles:  [
                             RDStore.OR_LICENSEE.id,
                             RDStore.OR_LICENSEE_CONS.id
@@ -519,7 +511,6 @@ class TaskService {
                 validLicensesOhneInstanceOf = []
                 validLicensesMitInstanceOf = []
             }
-        }
 
         String member = ' - ' +messageSource.getMessage('license.member', null, LocaleUtils.getCurrentLocale())
         validLicensesDropdown = validLicensesMitInstanceOf?.collect{
