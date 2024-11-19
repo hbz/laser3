@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; org.springframework.web.servlet.support.RequestContextUtils; de.laser.config.ConfigMapper; de.laser.CustomerTypeService; de.laser.helper.Profiler; de.laser.utils.AppUtils; grails.util.Environment; de.laser.system.SystemActivityProfiler; de.laser.FormService; de.laser.system.SystemSetting; de.laser.UserSetting; de.laser.RefdataValue; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Org;de.laser.auth.User;de.laser.system.SystemMessage; org.grails.orm.hibernate.cfg.GrailsHibernateUtil" %>
+<%@ page import="de.laser.api.v0.ApiManager; de.laser.ui.Icon; org.springframework.web.servlet.support.RequestContextUtils; de.laser.config.ConfigMapper; de.laser.CustomerTypeService; de.laser.helper.Profiler; de.laser.utils.AppUtils; grails.util.Environment; de.laser.system.SystemActivityProfiler; de.laser.FormService; de.laser.system.SystemSetting; de.laser.UserSetting; de.laser.RefdataValue; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Org;de.laser.auth.User;de.laser.system.SystemMessage; org.grails.orm.hibernate.cfg.GrailsHibernateUtil" %>
 <!doctype html>
 
 <laser:serviceInjection />
@@ -128,11 +128,16 @@
 
                                 <div class="menu" role="menu">
                                     <ui:link addItemAttributes="true" controller="profile" action="index">${message(code:'profile.user')}</ui:link>
-%{--                                    <ui:link addItemAttributes="true" controller="profile" action="help">${message(code:'menu.user.help')}</ui:link>--}%
+                                    <div class="divider"></div>
+
+                                    <ui:link addItemAttributes="true" controller="public" action="manual">${message(code:'menu.user.manual')}</ui:link>
                                     <ui:link addItemAttributes="true" controller="public" action="faq">${message(code:'menu.user.faq')}</ui:link>
 
                                     <ui:link addItemAttributes="true" controller="public" action="releaseNotes">
                                         ${message(code:'releaseNotes')} (${AppUtils.getMeta('info.app.version')})
+                                    </ui:link>
+                                    <ui:link addItemAttributes="true" controller="public" action="api">
+                                        ${message(code:'apiRelease')} (${ApiManager.VERSION})
                                     </ui:link>
                                     <ui:link addItemAttributes="true" controller="profile" action="dsgvo">${message(code:'privacyNotice')}</ui:link>
 

@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.api.v0.ApiManager
 import de.laser.properties.SubscriptionProperty
 import de.laser.config.ConfigMapper
 import de.laser.storage.PropertyStore
@@ -318,6 +318,32 @@ class PublicController {
         Map<String, Object> result = [:]
         result.mappingColsBasic = ["asService", "accessRights", "community", "wekb"]
         result.mappingColsPro = ["management", "organisation", "reporting", "api"]
+        result
+    }
+
+    @Secured(['permitAll'])
+    def api() {
+        Map<String, Object> result = [
+                history : [ 'legacy', '3.4' ], // todo
+                version   : ApiManager.VERSION
+        ]
+        if (params.id) {
+            result.version = params.id.toString()
+        }
+        result
+    }
+
+    @Secured(['permitAll'])
+    def manual() {
+        Map<String, Object> result = [
+                content : [
+                        'various'   : ['Allgemein', 'General']
+                ], // todo
+                topic   : 'various'
+        ]
+        if (params.id) {
+            result.topic = params.id.toString()
+        }
         result
     }
 

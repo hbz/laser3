@@ -7,9 +7,13 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6083    19.11.2024  rc-3.4  3.4.15      Andreas Bug         Kommentare zu vorhandenen Verknüpfungen konnten nicht abgespeichert werden
+
 5977    19.11.2024  dev     3.5         David   Feature     Rechteprüfung: Aufgaben
 
 6070    15.11.2024  dev     3.5         David   Feature     Refactoring: contextOrg durch contextService.getOrg() ersetzen
+
+6065    14.11.2024  rc-3.4  3.4.15      Moe     Bug         Export Zuordnung
 
 6067    13.11.2024  dev     3.5         David   Feature     Refactoring: MyInstitution-Parameter
 

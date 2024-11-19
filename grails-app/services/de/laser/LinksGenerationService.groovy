@@ -267,7 +267,7 @@ class LinksGenerationService {
                 List childInstances = currentObject.getClass().findAllByInstanceOf(currentObject)
                 if(childInstances) {
                     configMap.contextInstances = childInstances
-                    def pairObject = genericOIDService.resolveOID(params.pair_new)
+                    def pairObject = genericOIDService.resolveOID(params["pair_${configMap.link.id}"])
                     configMap.pairInstances = pairObject.getClass().findAllByInstanceOf(pairObject)
                 }
             }
