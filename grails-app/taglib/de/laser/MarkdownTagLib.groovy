@@ -8,7 +8,10 @@ class MarkdownTagLib {
 
     def renderMarkdown = { attrs, body ->
 
-        if (attrs.file) {
+        if (attrs.api) {
+            out <<  helpService.parseMarkdown( 'api/' + attrs.api + '.md' )
+        }
+        else if (attrs.file) {
             out <<  helpService.parseMarkdown( attrs.file )
         }
         else if (attrs.faq) {

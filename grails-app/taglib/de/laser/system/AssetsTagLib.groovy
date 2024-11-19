@@ -15,7 +15,7 @@ class AssetsTagLib {
     static final String NL = "\n"
 
     private def _getCurrentTimestamp() {
-        return new SimpleDateFormat('hhmm.ss.S').format(new Date(System.currentTimeMillis()))
+        return new SimpleDateFormat('hh:mm:ss.S').format(new Date(System.currentTimeMillis()))
     }
 
     def javascript = {final attrs ->
