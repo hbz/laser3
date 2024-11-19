@@ -877,7 +877,6 @@ class AjaxController {
               if (params.propDefGroup) {
                 render(template: "/templates/properties/group", model: [
                         ownobj          : owner,
-                        contextOrg      : contextService.getOrg(),
                         newProp         : newProp,
                         error           : error,
                         showConsortiaFunctions: showConsortiaFunctions,
@@ -892,7 +891,6 @@ class AjaxController {
 
                   Map<String, Object> modelMap =  [
                           ownobj                : owner,
-                          contextOrg            : contextService.getOrg(),
                           newProp               : newProp,
                           showConsortiaFunctions: showConsortiaFunctions,
                           error                 : error,
@@ -1032,7 +1030,6 @@ class AjaxController {
                       tenant          : tenant,
                       newProp         : newProp,
                       error           : error,
-                      contextOrg      : contextService.getOrg(),
                       propertyWrapper: "private-property-wrapper-${tenant.id}", // JS markup id
                       prop_desc       : type.descr // form data
               ])
@@ -1247,7 +1244,6 @@ class AjaxController {
                 render(template: "/templates/properties/group", model: [
                         ownobj          : property.owner,
                         newProp         : property,
-                        contextOrg      : contextService.getOrg(),
                         showConsortiaFunctions: params.showConsortiaFunctions == "true",
                         propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
                         custom_props_div: "${params.custom_props_div}", // JS markup id
@@ -1260,7 +1256,6 @@ class AjaxController {
                 Map<String, Object> modelMap =  [
                         ownobj                : property.owner,
                         newProp               : property,
-                        contextOrg            : contextService.getOrg(),
                         showConsortiaFunctions: params.showConsortiaFunctions == "true",
                         custom_props_div      : "${params.custom_props_div}", // JS markup id
                         prop_desc             : property.type.descr, // form data
@@ -1346,7 +1341,6 @@ class AjaxController {
                   newProp         : property,
                   showConsortiaFunctions: params.showConsortiaFunctions,
                   propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
-                  contextOrg      : contextService.getOrg(),
                   custom_props_div: "${params.custom_props_div}", // JS markup id
                   prop_desc       : prop_desc // form data
           ])
@@ -1360,7 +1354,6 @@ class AjaxController {
                     showConsortiaFunctions: params.showConsortiaFunctions,
                     custom_props_div      : "${params.custom_props_div}", // JS markup id
                     prop_desc             : prop_desc, // form data
-                    contextOrg            : contextService.getOrg(),
                     orphanedProperties    : allPropDefGroups.orphanedProperties
             ]
             render(template: "/templates/properties/custom", model: modelMap)
@@ -1406,7 +1399,6 @@ class AjaxController {
                         ownobj          : owner,
                         newProp         : property,
                         showConsortiaFunctions: showConsortiaFunctions,
-                        contextOrg      : contextService.getOrg(),
                         propDefGroup    : propDefGroup,
                         propDefGroupBinding : propDefGroupBinding,
                         custom_props_div: "${params.custom_props_div}", // JS markup id
@@ -1420,7 +1412,6 @@ class AjaxController {
                         ownobj                : owner,
                         newProp               : property,
                         showConsortiaFunctions: showConsortiaFunctions,
-                        contextOrg            : contextService.getOrg(),
                         custom_props_div      : "${params.custom_props_div}", // JS markup id
                         prop_desc             : prop_desc, // form data
                         orphanedProperties    : allPropDefGroups.orphanedProperties
@@ -1457,7 +1448,6 @@ class AjaxController {
             ownobj: owner,
             tenant: tenant,
             newProp: property,
-            contextOrg: contextService.getOrg(),
             propertyWrapper: "private-property-wrapper-${tenant.id}",  // JS markup id
             prop_desc: prop_desc // form data
     ])
