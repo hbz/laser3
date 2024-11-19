@@ -1,9 +1,13 @@
 <%@ page import="de.laser.utils.LocaleUtils; de.laser.utils.AppUtils; de.laser.ui.Btn; de.laser.ui.Icon" %>
 <laser:htmlStart text="${message(code: 'faq')}" />
 
-<ui:h1HeaderWithIcon text="${message(code: 'faq')}" type="help"/>
+<sec:ifLoggedIn>
+    <ui:breadcrumbs>
+        <ui:crumb text="${message(code:'menu.user.help')}" class="active" />
+    </ui:breadcrumbs>
+</sec:ifLoggedIn>
 
-<br />
+<ui:h1HeaderWithIcon text="${message(code: 'faq')}" type="help"/>
 
 <div class="ui top attached menu">
     <g:each in="${content}" var="cc">
@@ -11,6 +15,8 @@
             ${LocaleUtils.getCurrentLang() == 'de' ? cc.value[0] : cc.value[1]}
         </g:link>
     </g:each>
+
+    <g:link controller="public" action="manual" class="item right floated"><icon:arrow /> ${message(code:'menu.user.manual')}</g:link>
 </div>
 
 <div class="ui bottom attached segment la-markdown">

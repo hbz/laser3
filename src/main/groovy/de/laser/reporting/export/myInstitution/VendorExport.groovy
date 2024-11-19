@@ -109,7 +109,7 @@ class VendorExport extends BaseDetailsExport {
                         List personList = []
 
                         functionTypes.each{ ft ->
-                            List<Person> persons = vendorService.getContactPersonsByFunctionType(ven, contextService.getOrg(), true, ft as RefdataValue)
+                            List<Person> persons = vendorService.getContactPersonsByFunctionType(ven, true, ft as RefdataValue)
                             persons.each {p ->
                                 String p1 = [
                                         ft.getI10n('value') + ':',

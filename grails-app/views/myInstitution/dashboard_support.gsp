@@ -93,7 +93,7 @@
                         <div class="item">
                             <i class="${Icon.TOOLTIP.HELP} la-list-icon"></i>
                             <div class="content">
-                                <g:link controller="profile" action="help">${message(code:'menu.user.help')}</g:link>
+                                <g:link controller="public" action="faq">${message(code:'menu.user.help')}</g:link>
                             </div>
                         </div>
                     </div>

@@ -113,7 +113,7 @@
                         </label>
                         <g:select id="responsibleUserInput"
                                   name="responsibleUser.id"
-                                  from="${taskService.getUserDropdown(contextService.getOrg())}"
+                                  from="${taskService.getUserDropdown()}"
                                   optionKey="id"
                                   optionValue="display"
                                   value="${contextService.getUser().id}"

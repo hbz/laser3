@@ -44,16 +44,6 @@ class ProfileController {
         result
     }
 
-    /**
-     * Call to the help page with a collection of basic guidelines to the app
-     */
-    @Secured(['ROLE_USER'])
-    def help() {
-        Map<String, Object> result = [:]
-        result.user = contextService.getUser()
-        result
-    }
-
     @Secured(['ROLE_USER'])
     def importManuel() {
         Map<String, Object> result = [:]

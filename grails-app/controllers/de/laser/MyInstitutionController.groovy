@@ -2107,7 +2107,7 @@ class MyInstitutionController  {
             return;
         }
 
-        Map<String, Object> preCon = taskService.getPreconditions(contextService.getOrg())
+        Map<String, Object> preCon = taskService.getPreconditions()
         result << preCon
 
         render template: '/templates/tasks/modal_create', model: result
@@ -3064,7 +3064,7 @@ class MyInstitutionController  {
 
         result.cmbTaskInstanceList = (taskInstanceList + myTaskInstanceList).unique()
 
-        Map<String, Object> preCon = taskService.getPreconditions(contextService.getOrg())
+        Map<String, Object> preCon = taskService.getPreconditions()
         result << preCon
 
         result

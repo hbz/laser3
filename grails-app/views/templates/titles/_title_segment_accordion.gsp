@@ -16,7 +16,7 @@
             </g:if>
             <g:elseif test="${permanentTitle}">
                 <span class="ui mini left corner label la-perpetualAccess la-popup-tooltip"
-                      data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${permanentTitle.getPermanentTitleInfo(contextService.getOrg())}"
+                      data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${permanentTitle.getPermanentTitleInfo()}"
                       data-position="left center" data-variation="tiny">
                     <i class="star icon"></i>
                 </span>
