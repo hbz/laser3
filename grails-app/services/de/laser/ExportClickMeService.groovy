@@ -1765,15 +1765,15 @@ class ExportClickMeService {
                         label  : 'IssueEntitlement',
                         message: 'issueEntitlement.label',
                         fields : [
-                                'issueEntitlement.tipp.name'                : [field: 'tipp.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true'],
-                                'issueEntitlement.status'                   : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: 'true'],
-                                'issueEntitlement.tipp.medium'              : [field: 'tipp.medium', label: 'Status', message: 'tipp.medium', defaultChecked: 'true'],
-                                'issueEntitlement.accessStartDate'          : [field: 'accessStartDate', label: 'Access Start Date', message: 'subscription.details.access_start', defaultChecked: 'true'],
-                                'issueEntitlement.accessEndDate'            : [field: 'accessEndDate', label: 'Access End Date', message: 'subscription.details.access_end', defaultChecked: 'true'],
-                                'issueEntitlement.tipp.titleType'           : [field: 'tipp.titleType', label: 'Title Type', message: 'tipp.titleType', defaultChecked: 'true'],
-                                'issueEntitlement.tipp.pkg'                 : [field: 'tipp.pkg.name', label: 'Package', message: 'package.label', defaultChecked: 'true'],
-                                'issueEntitlement.tipp.platform.name'       : [field: 'tipp.platform.name', label: 'Platform', message: 'tipp.platform', defaultChecked: 'true'],
-                                'issueEntitlement.tipp.ieGroup.name'        : [field: 'ieGroups.ieGroup.name', label: 'Group', message: 'issueEntitlementGroup.label', defaultChecked: 'true'],
+                                'issueEntitlement.tipp.name'                : [field: 'tipp.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true', sqlCol: 'tipp_name'],
+                                'issueEntitlement.status'                   : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: 'true', sqlCol: 'ie_status_rv_fk'],
+                                'issueEntitlement.tipp.medium'              : [field: 'tipp.medium', label: 'Status', message: 'tipp.medium', defaultChecked: 'true', sqlCol: 'tipp_medium_rv_fk'],
+                                'issueEntitlement.accessStartDate'          : [field: 'accessStartDate', label: 'Access Start Date', message: 'subscription.details.access_start', defaultChecked: 'true', sqlCol: 'ie_access_start_date'],
+                                'issueEntitlement.accessEndDate'            : [field: 'accessEndDate', label: 'Access End Date', message: 'subscription.details.access_end', defaultChecked: 'true', sqlCol: 'ie_access_end_date'],
+                                'issueEntitlement.tipp.titleType'           : [field: 'tipp.titleType', label: 'Title Type', message: 'tipp.titleType', defaultChecked: 'true', sqlCol: 'tipp_title_type'],
+                                'issueEntitlement.tipp.pkg'                 : [field: 'tipp.pkg.name', label: 'Package', message: 'package.label', defaultChecked: 'true', sqlCol: 'pkg_name'],
+                                'issueEntitlement.tipp.platform.name'       : [field: 'tipp.platform.name', label: 'Platform', message: 'tipp.platform', defaultChecked: 'true', sqlCol: 'plat_name'],
+                                'issueEntitlement.tipp.ieGroup.name'        : [field: 'ieGroups.ieGroup.name', label: 'Group', message: 'issueEntitlementGroup.label', defaultChecked: 'true', sqlCol: 'ig_name'],
                                 'issueEntitlement.tipp.perpetualAccessBySub': [field: 'perpetualAccessBySub', label: 'Perpetual Access', message: 'issueEntitlement.perpetualAccessBySub.label', defaultChecked: 'true'],
                         ]
                 ],
@@ -1781,22 +1781,22 @@ class ExportClickMeService {
                         label  : 'Title Details',
                         message: 'title.details',
                         fields : [
-                                'issueEntitlement.tipp.hostPlatformURL' : [field: 'tipp.hostPlatformURL', label: 'Url', message: null],
-                                'issueEntitlement.tipp.dateFirstOnline' : [field: 'tipp.dateFirstOnline', label: 'Date first online', message: 'tipp.dateFirstOnline'],
-                                'issueEntitlement.tipp.dateFirstInPrint': [field: 'tipp.dateFirstInPrint', label: 'Date first in print', message: 'tipp.dateFirstInPrint'],
-                                'issueEntitlement.tipp.firstAuthor'     : [field: 'tipp.firstAuthor', label: 'First Author', message: 'tipp.firstAuthor'],
-                                'issueEntitlement.tipp.firstEditor'     : [field: 'tipp.firstEditor', label: 'First Editor', message: 'tipp.firstEditor'],
-                                'issueEntitlement.tipp.volume'          : [field: 'tipp.volume', label: 'Volume', message: 'tipp.volume'],
-                                'issueEntitlement.tipp.editionStatement': [field: 'tipp.editionStatement', label: 'Edition Statement', message: 'title.editionStatement.label'],
-                                'issueEntitlement.tipp.editionNumber'   : [field: 'tipp.editionNumber', label: 'Edition Number', message: 'tipp.editionNumber'],
-                                'issueEntitlement.tipp.summaryOfContent': [field: 'tipp.summaryOfContent', label: 'Summary of Content', message: 'title.summaryOfContent.label'],
-                                'issueEntitlement.tipp.seriesName'      : [field: 'tipp.seriesName', label: 'Series Name', message: 'tipp.seriesName'],
-                                'issueEntitlement.tipp.subjectReference': [field: 'tipp.subjectReference', label: 'Subject Reference', message: 'tipp.subjectReference'],
-                                'issueEntitlement.tipp.delayedOA'       : [field: 'tipp.delayedOA', label: 'Delayed OA', message: 'tipp.delayedOA'],
-                                'issueEntitlement.tipp.hybridOA'        : [field: 'tipp.hybridOA', label: 'Hybrid OA', message: 'tipp.hybridOA'],
-                                'issueEntitlement.tipp.publisherName'   : [field: 'tipp.publisherName', label: 'Publisher', message: 'tipp.publisher'],
-                                'issueEntitlement.tipp.accessType'      : [field: 'tipp.accessType', label: 'Access Type', message: 'tipp.accessType'],
-                                'issueEntitlement.tipp.openAccess'      : [field: 'tipp.openAccess', label: 'Open Access', message: 'tipp.openAccess'],
+                                'issueEntitlement.tipp.hostPlatformURL' : [field: 'tipp.hostPlatformURL', label: 'Url', message: null, sqlCol: 'tipp_host_platform_url'],
+                                'issueEntitlement.tipp.dateFirstOnline' : [field: 'tipp.dateFirstOnline', label: 'Date first online', message: 'tipp.dateFirstOnline', sqlCol: 'tipp_date_first_online'],
+                                'issueEntitlement.tipp.dateFirstInPrint': [field: 'tipp.dateFirstInPrint', label: 'Date first in print', message: 'tipp.dateFirstInPrint', sqlCol: 'tipp_date_first_in_print'],
+                                'issueEntitlement.tipp.firstAuthor'     : [field: 'tipp.firstAuthor', label: 'First Author', message: 'tipp.firstAuthor', sqlCol: 'tipp_first_author'],
+                                'issueEntitlement.tipp.firstEditor'     : [field: 'tipp.firstEditor', label: 'First Editor', message: 'tipp.firstEditor', sqlCol: 'tipp_first_editor'],
+                                'issueEntitlement.tipp.volume'          : [field: 'tipp.volume', label: 'Volume', message: 'tipp.volume', sqlCol: 'tipp_volume'],
+                                'issueEntitlement.tipp.editionStatement': [field: 'tipp.editionStatement', label: 'Edition Statement', message: 'title.editionStatement.label', sqlCol: 'tipp_edition_statement'],
+                                'issueEntitlement.tipp.editionNumber'   : [field: 'tipp.editionNumber', label: 'Edition Number', message: 'tipp.editionNumber', sqlCol: 'tipp_edition_number'],
+                                'issueEntitlement.tipp.summaryOfContent': [field: 'tipp.summaryOfContent', label: 'Summary of Content', message: 'title.summaryOfContent.label', sqlCol: 'tipp_summary_of_content'],
+                                'issueEntitlement.tipp.seriesName'      : [field: 'tipp.seriesName', label: 'Series Name', message: 'tipp.seriesName', sqlCol: 'tipp_series_name'],
+                                'issueEntitlement.tipp.subjectReference': [field: 'tipp.subjectReference', label: 'Subject Reference', message: 'tipp.subjectReference', sqlCol: 'tipp_subject_reference'],
+                                'issueEntitlement.tipp.delayedOA'       : [field: 'tipp.delayedOA', label: 'Delayed OA', message: 'tipp.delayedOA', sqlCol: 'tipp_delayedoa_rv_fk'],
+                                'issueEntitlement.tipp.hybridOA'        : [field: 'tipp.hybridOA', label: 'Hybrid OA', message: 'tipp.hybridOA', sqlCol: 'tipp_hybridoa_rv_fk'],
+                                'issueEntitlement.tipp.publisherName'   : [field: 'tipp.publisherName', label: 'Publisher', message: 'tipp.publisher', sqlCol: 'tipp_publisher_name'],
+                                'issueEntitlement.tipp.accessType'      : [field: 'tipp.accessType', label: 'Access Type', message: 'tipp.accessType', sqlCol: 'tipp_access_type_rv_fk'],
+                                'issueEntitlement.tipp.openAccess'      : [field: 'tipp.openAccess', label: 'Open Access', message: 'tipp.openAccess', sqlCol: 'tipp_open_access_rv_fk'],
                                 'issueEntitlement.tipp.ddcs'            : [field: 'tipp.ddcs', label: 'DDCs', message: 'tipp.ddc'],
                                 'issueEntitlement.tipp.languages'       : [field: 'tipp.languages', label: 'Languages', message: 'tipp.language'],
                                 'issueEntitlement.tipp.publishers'      : [field: 'tipp.publishers', label: 'Publishers', message: 'tipp.provider']
@@ -1806,15 +1806,15 @@ class ExportClickMeService {
                         label  : 'Coverage',
                         message: 'tipp.coverage',
                         fields : [
-                                'coverage.startDate'    : [field: 'startDate', label: 'Start Date', message: 'tipp.startDate'],
-                                'coverage.startVolume'  : [field: 'startVolume', label: 'Start Volume', message: 'tipp.startVolume'],
-                                'coverage.startIssue'   : [field: 'startIssue', label: 'Start Issue', message: 'tipp.startIssue'],
-                                'coverage.endDate'      : [field: 'endDate', label: 'End Date', message: 'tipp.endDate'],
-                                'coverage.endVolume'    : [field: 'endVolume', label: 'End Volume', message: 'tipp.endVolume'],
-                                'coverage.endIssue'     : [field: 'endIssue', label: 'End Issue', message: 'tipp.endIssue'],
-                                'coverage.coverageNote' : [field: 'coverageNote', label: 'Coverage Note', message: 'default.note.label'],
-                                'coverage.coverageDepth': [field: 'coverageDepth', label: 'Coverage Depth', message: 'tipp.coverageDepth'],
-                                'coverage.embargo'      : [field: 'embargo', label: 'Embargo', message: 'tipp.embargo']
+                                'coverage.startDate'    : [field: 'startDate', label: 'Start Date', message: 'tipp.startDate', sqlCol: 'tc_start_date'],
+                                'coverage.startVolume'  : [field: 'startVolume', label: 'Start Volume', message: 'tipp.startVolume', sqlCol: 'tc_start_volume'],
+                                'coverage.startIssue'   : [field: 'startIssue', label: 'Start Issue', message: 'tipp.startIssue', sqlCol: 'tc_start_issue'],
+                                'coverage.endDate'      : [field: 'endDate', label: 'End Date', message: 'tipp.endDate', sqlCol: 'tc_end_date'],
+                                'coverage.endVolume'    : [field: 'endVolume', label: 'End Volume', message: 'tipp.endVolume', sqlCol: 'tc_end_volume'],
+                                'coverage.endIssue'     : [field: 'endIssue', label: 'End Issue', message: 'tipp.endIssue', sqlCol: 'tc_end_issue'],
+                                'coverage.coverageNote' : [field: 'coverageNote', label: 'Coverage Note', message: 'default.note.label', sqlCol: 'tc_coverage_note'],
+                                'coverage.coverageDepth': [field: 'coverageDepth', label: 'Coverage Depth', message: 'tipp.coverageDepth', sqlCol: 'tc_coverage_depth'],
+                                'coverage.embargo'      : [field: 'embargo', label: 'Embargo', message: 'tipp.embargo', sqlCol: 'tc_embargo']
                         ]
                 ],
                 priceItem                  : [
@@ -1845,7 +1845,6 @@ class ExportClickMeService {
                                 'subscription.manualCancellationDate': [field: 'subscription.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
                                 'subscription.isMultiYear'           : [field: 'subscription.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label'],
                                 'subscription.referenceYear'         : [field: 'subscription.referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label'],
-                                //'subscription.isAutomaticRenewAnnually'     : [field: 'subscription.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'],
                                 'subscription.status'                : [field: 'subscription.status', label: 'Status', message: 'subscription.status.label'],
                                 'subscription.kind'                  : [field: 'subscription.kind', label: 'Kind', message: 'subscription.kind.label'],
                                 'subscription.form'                  : [field: 'subscription.form', label: 'Form', message: 'subscription.form.label'],
@@ -4987,6 +4986,7 @@ class ExportClickMeService {
 
         List exportData = []
 
+        /*
         int max = 32500
         TitleInstancePackagePlatform.withSession { Session sess ->
             for(int offset = 0; offset < result.size(); offset+=max) {
@@ -5016,6 +5016,7 @@ class ExportClickMeService {
                 sess.flush()
             }
         }
+        */
 
         Map sheetData = [:]
         sheetData[messageSource.getMessage('title.plural', null, locale)] = [titleRow: titles, columnData: exportData]
@@ -5055,6 +5056,7 @@ class ExportClickMeService {
 
         List exportData = []
 
+        /*
         if(result.size() < 10000) {
             int max = result[0] instanceof Long ? 5000 : 500
             TitleInstancePackagePlatform.withSession { Session sess ->
@@ -5149,6 +5151,7 @@ class ExportClickMeService {
                 }
             }
         }
+        */
 
         Map sheetData = [:]
         sheetData[messageSource.getMessage('title.plural', null, locale)] = [titleRow: titles, columnData: exportData]
@@ -6502,6 +6505,7 @@ class ExportClickMeService {
      * @param exportData the list containing the export rows
      * @param format the {@link FORMAT} to be exported
      */
+    @Deprecated
     private void _setIeRow(def result, Map<String, Object> selectedFields, List exportData, FORMAT format){
         List row = []
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -6621,6 +6625,7 @@ class ExportClickMeService {
      * @param exportData the list containing the export rows
      * @param format the {@link FORMAT} to be exported
      */
+    @Deprecated
     private void _setTippRow(def result, Map<String, Object> selectedFields, List exportData, FORMAT format){
         List row = []
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
