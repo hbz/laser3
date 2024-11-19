@@ -321,6 +321,34 @@ class PublicController {
         result
     }
 
+//    @Secured(['permitAll'])
+//    def api() {
+//        Map<String, Object> result = [
+//                content : [
+//                        'changelog'               : ['Allgemein', 'General']
+//                ], // todo
+//                topic   : 'changelog'
+//        ]
+//        if (params.id) {
+//            result.topic = params.id.toString()
+//        }
+//        result
+//    }
+
+    @Secured(['permitAll'])
+    def manual() {
+        Map<String, Object> result = [
+                content : [
+                        'various'               : ['Allgemein', 'General']
+                ], // todo
+                topic   : 'various'
+        ]
+        if (params.id) {
+            result.topic = params.id.toString()
+        }
+        result
+    }
+
     @Secured(['permitAll'])
     def faq() {
         Map<String, Object> result = [

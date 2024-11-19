@@ -1,8 +1,7 @@
 <%@ page import="de.laser.utils.AppUtils; de.laser.ui.Btn; de.laser.ui.Icon" %>
 <laser:htmlStart text="${message(code: 'releaseNotes')}" />
 
-<ui:h1HeaderWithIcon text="Aktuelle Version: ${AppUtils.getMeta('info.app.version')}" type="help"/>
-%{--<ui:h1HeaderWithIcon text="Version: ${AppUtils.getMeta('info.app.version')} – ${AppUtils.getMeta('info.app.build.date')}" type="help"/>--}%
+<ui:h1HeaderWithIcon text="${message(code: 'releaseNotes')} (${AppUtils.getMeta('info.app.version')} / ${AppUtils.getMeta('info.app.build.date')})" type="help"/>
 
 <br />
 

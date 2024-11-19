@@ -17,6 +17,9 @@ class MarkdownTagLib {
         else if (attrs.help) {
             out <<  helpService.parseMarkdown( 'help/' + attrs.help + '.md' )
         }
+        else if (attrs.manual) {
+            out <<  helpService.parseMarkdown( 'manual/' + attrs.manual + '.md' )
+        }
         else if (attrs.releaseNotes) {
             out <<  helpService.parseMarkdown( 'release/' + attrs.releaseNotes + '.md' )
         }

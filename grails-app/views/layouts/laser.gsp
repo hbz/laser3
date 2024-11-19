@@ -129,11 +129,15 @@
                                 <div class="menu" role="menu">
                                     <ui:link addItemAttributes="true" controller="profile" action="index">${message(code:'profile.user')}</ui:link>
 %{--                                    <ui:link addItemAttributes="true" controller="profile" action="help">${message(code:'menu.user.help')}</ui:link>--}%
+                                    <ui:link addItemAttributes="true" controller="public" action="manual">${message(code:'menu.user.manual')}</ui:link>
                                     <ui:link addItemAttributes="true" controller="public" action="faq">${message(code:'menu.user.faq')}</ui:link>
 
                                     <ui:link addItemAttributes="true" controller="public" action="releaseNotes">
                                         ${message(code:'releaseNotes')} (${AppUtils.getMeta('info.app.version')})
                                     </ui:link>
+%{--                                    <ui:link addItemAttributes="true" controller="public" action="api">--}%
+%{--                                        ${message(code:'releaseNotes')} (API)--}%
+%{--                                    </ui:link>--}%
                                     <ui:link addItemAttributes="true" controller="profile" action="dsgvo">${message(code:'privacyNotice')}</ui:link>
 
                                     <div class="divider"></div>
