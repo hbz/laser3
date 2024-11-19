@@ -35,26 +35,42 @@ class InfoController {
     }
 
 
+    private static Map<String, String> _getEmailSignature(TitleInstancePackagePlatform tipp) {
+
+        ContextService cs = BeanStore.getContextService()
+        User user = cs.getUser()
+        Org org   = cs.getOrg()
+        CustomerIdentifier custId = CustomerIdentifier.findByCustomerAndPlatform(org, tipp.platform)
+
+        return [
+                'de' : """
+${user.getDisplayName()}
+${org.getSortname()} - ${org.getName()}
+${custId ? ('Kundennummer: ' + custId.value) : ''}
+""",
+                'en' : """
+${user.getDisplayName()}
+${org.getSortname()} - ${org.getName()}
+${custId ? ('Customer Identifier: ' + custId.value) : ''}
+"""
+        ]
+    }
+
     private static Map<String, Object> _reportTitleToProvider(GrailsParameterMap params) {
 
         Map<String, Object> result = [:]
 
-        ContextService cs  = BeanStore.getContextService()
-        ProviderService ps = BeanStore.getProviderService()
-
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(params.id_tipp)
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
 
-        List<Person> ppList = ps.getContactPersonsByFunctionType(tipp.platform.provider, false, RDStore.PRS_FUNC_SERVICE_SUPPORT)
+        List<Person> ppList = BeanStore.getProviderService().getContactPersonsByFunctionType(tipp.platform.provider, false, RDStore.PRS_FUNC_SERVICE_SUPPORT)
 
         if (!ppList) {
-            ppList = ps.getContactPersonsByFunctionType(tipp.platform.provider, false, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS)
+            ppList = BeanStore.getProviderService().getContactPersonsByFunctionType(tipp.platform.provider, false, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS)
         }
         List<Contact> ccList = ppList.contacts.flatten().findAll { it.contentType?.value in ['E-Mail', 'Mail'] } as List<Contact>
 
-        User user = cs.getUser()
-        Org org   = cs.getOrg()
-        CustomerIdentifier custId = CustomerIdentifier.findByCustomerAndPlatform(org, tipp.platform)
+        User user = BeanStore.getContextService().getUser()
 
         result = [
                 mailto : ccList.collect { it.content }.sort().join(','),
@@ -64,6 +80,9 @@ class InfoController {
                 de: 'Fehlerhafte Titel-Daten in der We:kb',
                 en: 'Incorrect title information in the We:kb'
         ]
+
+        Map sig = _getEmailSignature(tipp)
+
         result.mailText = [
                 de : """
 Sehr geehrte Damen und Herren,
@@ -78,11 +97,7 @@ ${tipp.name}
 ${apiSource.baseUrl + '/resource/show/' + tipp.gokbId}
 
 Vielen Dank,
-
-${user.getDisplayName()}
-${org.getSortname()} - ${org.getName()}
-${custId ? ('Kundennummer: ' + custId.value) : ''}
-""",
+""" + sig['de'],
                 en : """
 Dear Sir or Madam,
 
@@ -96,11 +111,7 @@ ${tipp.name}
 ${apiSource.baseUrl + '/resource/show/' + tipp.gokbId}
 
 Thank you,
-
-${user.getDisplayName()}
-${org.getSortname()} - ${org.getName()}
-${custId ? ('Customer Identifier: ' + custId.value) : ''}
-"""
+""" + sig['en']
         ]
 
         result
