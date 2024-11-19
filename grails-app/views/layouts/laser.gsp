@@ -137,7 +137,7 @@
                                         ${message(code:'releaseNotes')} (${AppUtils.getMeta('info.app.version')})
                                     </ui:link>
                                     <ui:link addItemAttributes="true" controller="public" action="api">
-                                        API-${message(code:'releaseNotes')} (${ApiManager.VERSION})
+                                        ${message(code:'apiRelease')} (${ApiManager.VERSION})
                                     </ui:link>
                                     <ui:link addItemAttributes="true" controller="profile" action="dsgvo">${message(code:'privacyNotice')}</ui:link>
 
