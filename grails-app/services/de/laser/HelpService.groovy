@@ -14,6 +14,7 @@ import de.laser.config.ConfigMapper
 import de.laser.flexmark.BaseExtension
 import de.laser.remote.ApiSource
 import grails.gorm.transactions.Transactional
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.io.support.GrailsResourceUtils
 
 @Transactional
@@ -23,10 +24,17 @@ class HelpService {
     public static final String MD   = 'MD'
     public static final String BOTH = 'BOTH'
 
+    public static final String CONTROLLER_WITH_ID_SUPPORT = 'public'
+
     ContextService contextService
 
-    String getMapping(String controllerName, String actionName) {
-        controllerName + '_' + actionName
+    String getMapping(GrailsParameterMap params) {
+        if (params.controller == CONTROLLER_WITH_ID_SUPPORT && params.id) {
+            params.controller + '_' + params.action + '_' + params.id
+        }
+        else {
+            params.controller + '_' + params.action
+        }
     }
 
     URL getResource(String file) {
@@ -37,10 +45,10 @@ class HelpService {
         url
     }
 
-    String getFlag(String controllerName, String actionName) {
+    String getFlag(GrailsParameterMap params) {
         String flag
+        String mapping = getMapping(params)
 
-        String mapping = getMapping(controllerName, actionName)
         boolean isGSP  = getResource( 'help/_' + mapping + '.gsp' )
         boolean isMD   = getResource( 'help/' + mapping + '.md' )
 
