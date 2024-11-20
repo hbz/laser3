@@ -63,7 +63,7 @@
 
             %{-- help panel --}%
 
-            <g:set var="helpFlag" value="${helpService.getFlag(controllerName, actionName)}" />
+            <g:set var="helpFlag" value="${helpService.getFlag(params)}" />
 
             <g:if test="${helpFlag}">
                 <div class="item la-cb-action">
@@ -306,17 +306,17 @@
 
 <g:if test="${helpFlag == HelpService.GSP}">
     <div class="ui wide flyout" id="help-content">
-        <g:render template="${'/help/' + helpService.getMapping(controllerName, actionName)}" />
+        <g:render template="${'/help/' + helpService.getMapping(params)}" />
     </div>
 </g:if>
 <g:elseif test="${helpFlag in [HelpService.MD, HelpService.BOTH]}">
     <div class="ui wide la-markdown flyout" id="help-content">
         <div class="scrolling content">
-            <ui:renderMarkdown help="${helpService.getMapping(controllerName, actionName)}" />
+            <ui:renderMarkdown help="${helpService.getMapping(params)}" />
 
             <g:if test="${helpFlag == HelpService.BOTH}">
                 <br/>
-                <g:render template="${'/help/' + helpService.getMapping(controllerName, actionName)}" />
+                <g:render template="${'/help/' + helpService.getMapping(params)}" />
             </g:if>
         </div>
         <div class="basic center aligned actions">

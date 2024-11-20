@@ -1,6 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.IdentifierNamespace" %>
 
-%{--<div class="ui wide flyout" id="help-content">--}%
     <h1 class="ui header">
         <g:message code="myinst.subscriptionImport.template.description"/>
     </h1>
@@ -56,4 +55,3 @@
             </tbody>
         </table>
     </div>
-%{--</div>--}%

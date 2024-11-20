@@ -1,9 +1,8 @@
 <%@ page import="de.laser.ui.Icon" %>
-%{--<div class="ui wide flyout" id="help-content">--}%
 
-    <h1 class="ui header">Erklärung der Icons</h1>
+<h1 class="ui header">Erklärung der Icons</h1>
 
-    <div class="content">
+<div class="content">
 
     <table class="ui la-ignore-fixed compact table">
         <thead>
@@ -69,7 +68,6 @@
                 Wert wird automatisch geerbt
             </td>
         </tr>
-
         <tr>
             <td>
                 <i class="${Icon.CMD.UNLINK}"></i>
@@ -94,7 +92,6 @@
                 Objekt wird nicht geteilt
             </td>
         </tr>
-
         <tr>
             <td>
                 <i class="${Icon.CMD.SHOW_MORE}" aria-hidden="true"></i>
@@ -103,13 +100,7 @@
                 Anzeige der Vertragsmerkmale
             </td>
         </tr>
-
-
-
-
         </tbody>
     </table>
 
-    </div>
-
-%{--</div>--}%
+</div>
