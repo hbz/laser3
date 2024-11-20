@@ -322,6 +322,10 @@ class PublicController {
     }
 
     @Secured(['permitAll'])
+    def help() {
+    }
+
+    @Secured(['permitAll'])
     def api() {
         Map<String, Object> result = [
                 history : [ 'legacy', '3.4' ], // todo

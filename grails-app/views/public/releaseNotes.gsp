@@ -33,5 +33,7 @@
     <ui:renderMarkdown releaseNotes="${version}" />
 </div>
 
+<g:render template="markdownScript" />
+
 <laser:htmlEnd />
 

@@ -21,5 +21,7 @@
     <ui:renderMarkdown api="${version}" />
 </div>
 
+<g:render template="markdownScript" />
+
 <laser:htmlEnd />
 

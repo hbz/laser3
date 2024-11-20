@@ -23,5 +23,7 @@
     <ui:renderMarkdown faq="${topic}" />
 </div>
 
+<g:render template="markdownScript" />
+
 <laser:htmlEnd />
 
