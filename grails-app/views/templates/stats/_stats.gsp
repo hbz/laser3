@@ -264,7 +264,7 @@
         step: step,
         showLabelTicks: 'always',
         interpretLabel: function(value) {
-            return JSPC.app.stats_slider_date_format( months[value], 'short' )
+            return JSPC.app.stats_slider_date_format( months[value], 'numeric' )
         },
         showThumbTooltip: true,
         tooltipConfig: {

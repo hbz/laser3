@@ -216,6 +216,21 @@ class SubscriptionController {
                 }
                 result.keyPairs.put(platformInstance.gokbId, keyPair)
             }
+            else {
+                result.subscription.getDerivedNonHiddenSubscribers().each { Org member ->
+                    CustomerIdentifier keyPair = CustomerIdentifier.findByPlatformAndCustomer(platformInstance, member)
+                    if(!keyPair) {
+                        keyPair = new CustomerIdentifier(platform: platformInstance,
+                                customer: member,
+                                type: RDStore.CUSTOMER_IDENTIFIER_TYPE_DEFAULT,
+                                owner: contextService.getOrg(),
+                                isPublic: true)
+                        if(!keyPair.save()) {
+                            log.warn(keyPair.errors.getAllErrors().toListString())
+                        }
+                    }
+                }
+            }
             Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
             if (queryResult.error && queryResult.error == 404) {
                 result.wekbServerUnavailable = message(code: 'wekb.error.404')
