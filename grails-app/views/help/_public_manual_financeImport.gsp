@@ -1,5 +1,13 @@
 <%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue" %>
 
+<%
+    List mappingCols = [
+            "subscription", "package", "issueEntitlement", "budgetCode", "referenceCodes", "orderNumber", "invoiceNumber", "status",
+            "element", "elementSign", "currency", "invoiceTotal", "exchangeRate", "value", "taxType", "taxRate", "invoiceDate", "financialYear",
+            "title", "description", "datePaid", "dateFrom", "dateTo" /*,"institution"*/
+    ]
+%>
+
     <h1 class="ui header">
         <g:message code="myinst.financeImport.headline"/>
     </h1>
@@ -56,3 +64,4 @@
             </tbody>
         </table>
     </div>
+

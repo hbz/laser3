@@ -7,7 +7,8 @@
     </ui:breadcrumbs>
 </sec:ifLoggedIn>
 
-<ui:h1HeaderWithIcon text="${message(code: 'releaseNotes')} (${AppUtils.getMeta('info.app.version')} / ${AppUtils.getMeta('info.app.build.date')})" type="help"/>
+<ui:h1HeaderWithIcon text="${message(code: 'releaseNotes')} (${AppUtils.getMeta('info.app.version')})" type="help"/>
+%{--<ui:h1HeaderWithIcon text="${message(code: 'releaseNotes')} (${AppUtils.getMeta('info.app.version')} / ${AppUtils.getMeta('info.app.build.date')})" type="help"/>--}%
 
 %{--<div class="ui dropdown item">--}%
 %{--    Schnellnavigation--}%
