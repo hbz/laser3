@@ -151,22 +151,6 @@ class OrgAccessPoint extends AbstractBase {
     }
 
     /**
-     * Used in _apLinkContent.gsp
-     * Checks if the access point has an active link
-     * @return true if there is at least one active access point
-     */
-    boolean hasActiveLink() {
-        boolean active = false
-        def oapps = this.oapp
-        oapps.each {
-            if (it.active){
-                active = true
-            }
-        }
-        active
-    }
-
-    /**
      * Collects all the IP ranges for the given access point and returns sets of the IPv4 and IPv6 ranges
      * @return a {@link Map} of structure {ipv4Ranges: [], ipv6Ranges: []} containing the defined ranges of the access point
      */

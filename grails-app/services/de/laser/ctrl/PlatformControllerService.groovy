@@ -132,18 +132,6 @@ class PlatformControllerService {
         [result:result,status:STATUS_OK]
     }
 
-    /**
-     * Deactivates the given access point link
-     * @param params the access point link to deactivate
-     * @return OK if the updating was successful, ERROR otherwise
-     */
-    Map<String,Object> removeAccessPoint(GrailsParameterMap params) {
-        Map<String,Object> result = [:]
-        OrgAccessPointLink aoplInstance = OrgAccessPointLink.get(params.oapl_id)
-        aoplInstance.delete()
-        [result:result,status:STATUS_OK]
-    }
-
     //--------------------------------------------- helper section -------------------------------------------------
 
     /**
