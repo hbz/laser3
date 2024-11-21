@@ -16,7 +16,7 @@
 %{--    <div class="menu">--}%
 %{--        <g:link controller="public" action="manual" class="item">${message(code: 'menu.user.manual')}</g:link>--}%
 %{--        <g:link controller="public" action="faq" class="item">${message(code: 'menu.user.faq')}</g:link>--}%
-%{--        <g:link controller="public" action="releaseNotes" class="item">${message(code: 'releaseNotes')}</g:link>--}%
+%{--        <g:link controller="public" action="release" class="item">${message(code: 'releaseNotes')}</g:link>--}%
 %{--        <g:link controller="public" action="api" class="item">${message(code: 'apiRelease')}</g:link>--}%
 %{--    </div>--}%
 %{--</div>--}%
@@ -30,7 +30,7 @@
 </div>
 
 <div class="ui segment la-markdown">
-    <ui:renderMarkdown releaseNotes="${version}" />
+    <ui:renderMarkdown release="${version}" />
 </div>
 
 <g:render template="markdownScript" />

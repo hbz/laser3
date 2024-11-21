@@ -65,7 +65,7 @@
                                 </span>
                             </th>
                         </g:if>
-                        <g:if test="${!(institution.isCustomerType_Consortium())}">
+                        <g:if test="${!(contextService.getOrg().isCustomerType_Consortium())}">
                             <th scope="col" rowspan="2" class="la-no-uppercase center aligned">
                                 <ui:multiYearIcon />
                             </th>
@@ -109,7 +109,7 @@
                                     -- ${message(code: 'myinst.currentSubscriptions.name_not_set')}  --
                                 </g:else>
                                 <g:if test="${s.instanceOf}">
-                                    <g:if test="${s.getConsortium() && s.getConsortium() == institution}">
+                                    <g:if test="${s.getConsortium() && s.getConsortium() == contextService.getOrg()}">
                                         ( ${s.getSubscriberRespConsortia()?.name} )
                                     </g:if>
                                 </g:if>
@@ -224,13 +224,13 @@
                             </td>
                             <td>
                                 <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:s.id]}">
-                                    <g:if test="${institution.isCustomerType_Consortium()}">
-                                        <ui:bubble count="${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(*) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:institution, deleted:RDStore.COST_ITEM_DELETED])[0]}" />
+                                    <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
+                                        <ui:bubble count="${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(*) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:contextService.getOrg(), deleted:RDStore.COST_ITEM_DELETED])[0]}" />
                                     </g:if>
                                 </g:link>
                             </td>
                         </g:if>
-                        <g:if test="${!(institution.isCustomerType_Consortium())}">
+                        <g:if test="${!(contextService.getOrg().isCustomerType_Consortium())}">
                             <td>
                                 <g:if test="${s.isMultiYear}">
                                     <g:if test="${(s.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL &&
@@ -245,9 +245,9 @@
                         </g:if>
                         <td class="x">
                             <g:if test="${'showActions' in tableConfig}">
-                                <g:if test="${institution.isCustomerType_Inst() && s.instanceOf}">
+                                <g:if test="${contextService.getOrg().isCustomerType_Inst() && s.instanceOf}">
                                     <g:set var="surveysSub" value="${SurveyConfig.executeQuery("select surConfig.id from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and surConfig.surveyInfo.type = :type and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
-                                            [sub: s.instanceOf, org: institution, invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY], type: [RDStore.SURVEY_TYPE_RENEWAL]])}" />
+                                            [sub: s.instanceOf, org: contextService.getOrg(), invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY], type: [RDStore.SURVEY_TYPE_RENEWAL]])}" />
                                     <g:if test="${surveysSub}">
                                         <g:link controller="subscription" action="surveys" id="${s.id}"
                                                 class="${Btn.MODERN.POSITIVE}">
@@ -257,7 +257,7 @@
                                         </g:link>
                                     </g:if>
                                 </g:if>
-                                <g:if test="${institution.isCustomerType_Consortium()}">
+                                <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                                     <g:set var="surveysConsortiaSub" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(s ,true)}" />
                                     <g:if test="${surveysConsortiaSub}">
 
@@ -301,11 +301,11 @@
                             <g:if test="${'showLinking' in tableConfig}">
                                 <%
                                     boolean linkPossible
-                                    if(institution.isCustomerType_Inst()) {
+                                    if (contextService.getOrg().isCustomerType_Inst()) {
                                         linkPossible = s._getCalculatedType() == CalculatedType.TYPE_LOCAL
                                     }
                                     else {
-                                        linkPossible = institution.isCustomerType_Consortium()
+                                        linkPossible = contextService.getOrg().isCustomerType_Consortium()
                                     }
                                 %>
                                 <g:if test="${linkPossible}">
