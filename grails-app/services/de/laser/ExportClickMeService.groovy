@@ -4967,7 +4967,7 @@ class ExportClickMeService {
      * @param format the {@link FORMAT} to be exported
      * @return the output in the desired format
      */
-    def exportIssueEntitlements(ArrayList<Long> result, Map<String, Object> selectedFields, FORMAT format) {
+    def exportIssueEntitlements(Set<Long> result, Map<String, Object> selectedFields, FORMAT format) {
         Locale locale = LocaleUtils.getCurrentLocale()
 
         Map<String, Object> selectedExportFields = [:]
@@ -4984,7 +4984,7 @@ class ExportClickMeService {
 
         List titles = _exportTitles(selectedExportFields, locale, null, null, null, null, format)
 
-        List exportData = []
+        List exportData = buildIssueEntitlementRows(result, selectedFields, format)
 
         /*
         int max = 32500
@@ -6497,6 +6497,134 @@ class ExportClickMeService {
         }
         exportData.add(row)
 
+    }
+
+    /**
+     * Fills a row for the issue entitlement export
+     * @param ieIDs the issue entitlement set to export
+     * @param selectedFields the fields which should appear
+     * @param exportData the list containing the export rows
+     * @param format the {@link FORMAT} to be exported
+     */
+    private void buildIssueEntitlementRows(Set<Long> ieIDs, Map<String, Object> selectedFields, FORMAT format){
+        List result = []
+        Set<String> queryArgs = []
+        selectedFields.each { String fieldKey, def fieldMapObj ->
+            Map mapSelectedFields = fieldMapObj as Map
+            String field = mapSelectedFields.field
+            //continue here
+            if(fieldKey.startsWith('issueEntitlementIdentifiers.')) {
+                
+            }
+        }
+        /*
+        result = exportService.getIssueEntitlement(result)
+
+        DecimalFormat df = new DecimalFormat("###,##0.00")
+        df.decimalFormatSymbols = new DecimalFormatSymbols(LocaleUtils.getCurrentLocale())
+        selectedFields.keySet().each { String fieldKey ->
+            //long start = System.currentTimeMillis()
+            Map mapSelecetedFields = selectedFields.get(fieldKey)
+            String field = mapSelecetedFields.field
+            if(!mapSelecetedFields.separateSheet) {
+                if (fieldKey.startsWith('issueEntitlementIdentifiers.')) {
+                        if (result) {
+                            Long id = Long.parseLong(fieldKey.split("\\.")[1])
+                            List<Identifier> identifierList = Identifier.executeQuery("select ident from Identifier ident where ident.tipp = :tipp and ident.ns.id in (:namespaces)", [tipp: result.tipp, namespaces: [id]])
+                            if (identifierList) {
+                                row.add(createTableCell(format, identifierList.value.join(";")))
+                            } else {
+                                row.add(createTableCell(format, ' '))
+                            }
+                        } else {
+                            row.add(createTableCell(format, ' '))
+                        }
+                }
+                else if (fieldKey.contains('subscription.consortium')) {
+                    row.add(createTableCell(format, result.subscription.getConsortium()?.name))
+                }
+                else if (fieldKey.contains('tipp.ddcs')) {
+                    row.add(createTableCell(format, result.tipp.ddcs.collect {"${it.ddc.value} - ${it.ddc.getI10n("value")}"}.join(";")))
+                }
+                else if (fieldKey.contains('tipp.languages')) {
+                    row.add(createTableCell(format, result.tipp.languages.collect {"${it.language.getI10n("value")}"}.join(";")))
+                }else if (fieldKey.contains('perpetualAccessBySub')) {
+                    String perpetualAccessBySub = result.perpetualAccessBySub ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')
+                    row.add(createTableCell(format, perpetualAccessBySub))
+                }
+                else if (fieldKey.startsWith('coverage.')) {
+                    AbstractCoverage covStmt = exportService.getCoverageStatement(result)
+                    String coverageField = fieldKey.split("\\.")[1]
+
+                    def fieldValue = covStmt ? _getFieldValue(covStmt, coverageField, sdf) : null
+                    String fieldValStr = fieldValue != null ? fieldValue : ' '
+                    row.add(createTableCell(format, fieldValStr))
+                }
+                else if (fieldKey.contains('listPriceEUR')) {
+                    LinkedHashSet<PriceItem> priceItemsList = result.tipp.priceItems.findAll { it.listCurrency == RDStore.CURRENCY_EUR }
+
+                    if (priceItemsList) {
+                        row.add(createTableCell(format, priceItemsList.collect {df.format(it.listPrice)}.join(";")))
+                    } else {
+                        row.add(createTableCell(format, ' '))
+                    }
+                }
+                else if (fieldKey.contains('listPriceGBP')) {
+                    PriceItem priceItem = result.tipp.priceItems.find { it.listCurrency == RDStore.CURRENCY_GBP }
+
+                    if (priceItem) {
+                        row.add(createTableCell(format, df.format(priceItem.listPrice)))
+                    } else {
+                        row.add(createTableCell(format, ' '))
+                    }
+                }
+                else if (fieldKey.contains('listPriceUSD')) {
+                    PriceItem priceItem = result.tipp.priceItems.find { it.listCurrency == RDStore.CURRENCY_USD }
+
+                    if (priceItem) {
+                        row.add(createTableCell(format, df.format(priceItem.listPrice)))
+                    } else {
+                        row.add(createTableCell(format, ' '))
+                    }
+                }
+                else if (fieldKey.contains('localPriceEUR')) {
+                    PriceItem priceItem = result.priceItems.find { it.localCurrency == RDStore.CURRENCY_EUR }
+
+                    if (priceItem) {
+                        row.add(createTableCell(format, df.format(priceItem.localPrice)))
+                    } else {
+                        row.add(createTableCell(format, ' '))
+                    }
+                }
+                else if (fieldKey.contains('localPriceGBP')) {
+                    PriceItem priceItem = result.priceItems.find { it.localCurrency == RDStore.CURRENCY_GBP }
+
+                    if (priceItem) {
+                        row.add(createTableCell(format, df.format(priceItem.localPrice)))
+                    } else {
+                        row.add(createTableCell(format, ' '))
+                    }
+                }
+                else if (fieldKey.contains('localPriceUSD')) {
+                    PriceItem priceItem = result.priceItems.find { it.localCurrency == RDStore.CURRENCY_USD }
+
+                    if (priceItem) {
+                        row.add(createTableCell(format, df.format(priceItem.localPrice)))
+                    } else {
+                        row.add(createTableCell(format, ' '))
+                    }
+                }
+                else {
+                    def fieldValue = _getFieldValue(result, field, sdf)
+                    String fieldValStr = fieldValue != null ? fieldValue : ' '
+                    row.add(createTableCell(format, fieldValStr))
+                }
+            }
+            //log.debug("time needed for ${fieldKey}: ${System.currentTimeMillis()-start} msecs")
+        }
+        exportData.add(row)
+        */
+        result
     }
 
     /**
