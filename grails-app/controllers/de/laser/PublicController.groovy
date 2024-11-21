@@ -370,7 +370,7 @@ class PublicController {
     }
 
     @Secured(['permitAll'])
-    def releaseNotes() {
+    def releases() {
         Map<String, Object> result = [
                 history : ['3.2', '3.3', '3.4'] // todo
         ]

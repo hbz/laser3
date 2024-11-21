@@ -28,7 +28,7 @@
                 <div class="item">
                     <i class="${Icon.TOOLTIP.HELP} la-list-icon"></i>
                     <div class="content">
-                        <g:link controller="public" action="releaseNotes">${message(code:'releaseNotes')}</g:link>
+                        <g:link controller="public" action="releases">${message(code:'releaseNotes')}</g:link>
                     </div>
                 </div>
                 <div class="item">

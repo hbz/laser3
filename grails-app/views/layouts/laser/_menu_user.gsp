@@ -15,7 +15,7 @@
         <ui:link addItemAttributes="true" controller="public" action="manual">${message(code:'menu.user.manual')}</ui:link>
         <ui:link addItemAttributes="true" controller="public" action="faq">${message(code:'menu.user.faq')}</ui:link>
 
-        <ui:link addItemAttributes="true" controller="public" action="releaseNotes">
+        <ui:link addItemAttributes="true" controller="public" action="releases">
             ${message(code:'releaseNotes')} (${AppUtils.getMeta('info.app.version')})
         </ui:link>
         <ui:link addItemAttributes="true" controller="public" action="api">
