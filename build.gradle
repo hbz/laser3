@@ -89,8 +89,8 @@ dependencies {
 
     // --------------------------------------------------
 
-    implementation 'org.elasticsearch:elasticsearch:7.17.24'                                // 2024
-    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.24'  // 2024
+    implementation 'org.elasticsearch:elasticsearch:7.17.25'                                // 2024
+    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.25'  // 2024
 
     implementation 'org.grails:grails-shell:6.1.2'                          // 2024 : + org.grails.plugins:database-migration
 

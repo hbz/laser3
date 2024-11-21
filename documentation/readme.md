@@ -7,7 +7,7 @@
 - Spring Boot 2.7.18
 - Micronaut 3.10.4 / for Spring 4.5.1
 - Hibernate 5.6.15.Final / GORM 8.1.0
-- Elasticsearch 7.17.24
+- Elasticsearch 7.17.25
 - Logback 1.2.12
 - Gradle 7.6.4
 - Groovy 3.0.21
@@ -18,7 +18,7 @@ See [details.md](./details.md) for detailed information.
 
 ### Setup with SDKMAN
 
-    sdk i grails 6.2.0
+    sdk i grails 6.2.1
     sdk i groovy 3.0.21
     sdk i java 11.0.12-open
 
