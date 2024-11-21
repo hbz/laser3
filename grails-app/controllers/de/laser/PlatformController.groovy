@@ -332,82 +332,6 @@ class PlatformController  {
     }
 
     /**
-     * Call for linking the platform to an access point.
-     * Is a non-modal duplicate of {@link #dynamicApLink()} -
-     * @deprecated use {@link #dynamicApLink()} instead
-     */
-    @Deprecated
-    @DebugInfo(isInstEditor_denySupport = [])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport()
-    })
-    @Check404()
-    def link() {
-        Map<String, Object> result = [:]
-        Platform platformInstance = Platform.get(params.id)
-
-        Org selectedInstitution = contextService.getOrg()
-
-        String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap "
-            hql += "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id}"
-        List<OrgAccessPointLink> results = OrgAccessPointLink.executeQuery(hql,[institution : selectedInstitution])
-
-        String notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution "
-            notActiveAPLinkQuery += "and not exists ("
-            notActiveAPLinkQuery += "select 1 from oap.oapp as oapl where oapl.oap=oap and oapl.active=true "
-            notActiveAPLinkQuery += "and oapl.platform.id = ${platformInstance.id})"
-
-        List<OrgAccessPoint> accessPointList = OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : selectedInstitution])
-
-        result.accessPointLinks = results
-        result.platformInstance = platformInstance
-        result.institution = contextService.getUser().formalOrg ? [contextService.getUser().formalOrg] : []
-        result.accessPointList = accessPointList
-        result.selectedInstitution = selectedInstitution.id
-        result
-    }
-
-    /**
-     * Call to link a platform to another access point
-     * @return renders the available options in a modal
-     */
-    @DebugInfo(isInstEditor_denySupport = [])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport()
-    })
-    def dynamicApLink(){
-        Map<String, Object> result = [:]
-        Platform platformInstance = Platform.get(params.platform_id)
-        if (!platformInstance) {
-            flash.message = message(code: 'default.not.found.message',
-                args: [message(code: 'platform.label'), params.platform_id]) as String
-            redirect action: 'list'
-            return
-        }
-        Org selectedInstitution =  contextService.getOrg()
-        if (params.institution_id){
-            selectedInstitution = Org.get(params.institution_id)
-        }
-        String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap "
-        hql += "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id}"
-        List<OrgAccessPointLink> results = OrgAccessPointLink.executeQuery(hql,[institution : selectedInstitution])
-
-        String notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution "
-        notActiveAPLinkQuery += "and not exists ("
-        notActiveAPLinkQuery += "select 1 from oap.oapp as oapl where oapl.oap=oap and oapl.active=true "
-        notActiveAPLinkQuery += "and oapl.platform.id = ${platformInstance.id})"
-
-        List<OrgAccessPoint> accessPointList = OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : selectedInstitution])
-
-        result.accessPointLinks = results
-        result.platformInstance = platformInstance
-        result.institution = contextService.getUser().formalOrg ? [contextService.getUser().formalOrg] : []
-        result.accessPointList = accessPointList
-        result.selectedInstitution = selectedInstitution.id
-        render(view: "_apLinkContent", model: result)
-    }
-
-    /**
      * Call to add a new derivation to the given platform
      * @return redirect to the referer
      */
@@ -446,11 +370,12 @@ class PlatformController  {
     })
     def linkAccessPoint() {
         OrgAccessPoint apInstance
-        if (params.AccessPoints){
+        if (params.AccessPoints) {
             apInstance = OrgAccessPoint.get(params.AccessPoints)
+        }
             if (!apInstance) {
                 flash.error = 'No valid Accesspoint id given'
-                redirect action: 'link', params: [id:params.id]
+                redirect action: 'show', params: [id: params.platform_id]
                 return
             }
             else {
@@ -461,7 +386,6 @@ class PlatformController  {
                 redirect(url: request.getHeader('referer'))
                 return
             }
-        }
     }
 
     @Deprecated
