@@ -9,7 +9,7 @@
 
 <ui:h1HeaderWithIcon text="${message(code: 'faq')}" type="help"/>
 
-<div class="ui top attached menu">
+<div class="ui secondary pointing menu">
     <g:each in="${content}" var="cc">
         <g:link controller="public" action="faq" id="${cc.key}" class="item ${cc.key == topic ? 'active' : ''}">
             ${LocaleUtils.getCurrentLang() == 'de' ? cc.value[0] : cc.value[1]}
@@ -19,9 +19,11 @@
     <g:link controller="public" action="manual" class="item right floated"><icon:arrow /> ${message(code:'menu.user.manual')}</g:link>
 </div>
 
-<div class="ui bottom attached segment la-markdown">
+<div class="ui segment la-markdown">
     <ui:renderMarkdown faq="${topic}" />
 </div>
+
+<g:render template="markdownScript" />
 
 <laser:htmlEnd />
 
