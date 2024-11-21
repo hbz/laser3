@@ -1905,7 +1905,7 @@ class SubscriptionController {
                     queryMap.refSub = ctrlResult.result.parentSubscription
                     Map<String, Object> export = exportService.generateRenewalExport(queryMap, monthsInRing, ctrlResult.result.subscriber)
                     //Map<String, List> export = exportService.generateTitleExportCustom(queryMap, TitleInstancePackagePlatform.class.name, monthsInRing.sort { Date monthA, Date monthB -> monthA <=> monthB }, ctrlResult.result.subscriber, true)
-                    if(!export.status202) {
+                    if(!export.status202 && !export.error) {
                         /*
                         String refYes = RDStore.YN_YES.getI10n('value')
                         String refNo = RDStore.YN_NO.getI10n('value')
@@ -1932,7 +1932,9 @@ class SubscriptionController {
                     else {
                         userCache.put('progress', 100)
                         fileResult.remove('token')
-                        fileResult.error = 202
+                        if(export.status202)
+                            fileResult.error = 202
+                        else fileResult.error = export.error
                     }
                     render template: '/templates/stats/usageReport', model: fileResult
                     return

@@ -1204,7 +1204,7 @@ class StatsSyncService {
                         SushiCallError sce = new SushiCallError(platform: ci.platform, org: ci.customer, customerId: ci.value, requestorId: ci.requestorKey, errMess: xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Message'?.text())
                         if(!sce.save())
                             log.error(sce.getErrors().getAllErrors().toListString())
-                        result = [error: xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Message'?.text(), code: 401]
+                        result = [error: xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text(), code: 401]
                     }
                     else if (['3000', '3020'].any { String errorCode -> errorCode == xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text() }) {
                         log.warn(xml.'SOAP-ENV:Body'.'ReportResponse'.'Exception'.'Message'.text())
