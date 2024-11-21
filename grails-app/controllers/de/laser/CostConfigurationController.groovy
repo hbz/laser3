@@ -1,7 +1,6 @@
 package de.laser
 
 
-import de.laser.auth.User
 import de.laser.finance.CostItem
 import de.laser.finance.CostItemElementConfiguration
 import de.laser.annotations.DebugInfo
@@ -31,21 +30,18 @@ class CostConfigurationController {
     Map<String, Object> index() {
         Map<String, Object> result = [:]
 
-        Org org = contextService.getOrg()
         List costItemElementConfigurations = []
         List<RefdataValue> costItemElements = RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_ELEMENT)
 
         costItemElements.each { cie ->
-            CostItemElementConfiguration currentSetting = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(RefdataValue.getByValueAndCategory(cie.value, RDConstants.COST_ITEM_ELEMENT),org)
+            CostItemElementConfiguration currentSetting = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(RefdataValue.getByValueAndCategory(cie.value, RDConstants.COST_ITEM_ELEMENT), contextService.getOrg())
             if(currentSetting) {
                 costItemElementConfigurations.add(currentSetting)
             }
         }
-
         result.editable = contextService.isInstEditor()
         result.costItemElementConfigurations = costItemElementConfigurations
         result.costItemElements = costItemElements
-        result.institution = org
 
         result
     }
@@ -61,10 +57,9 @@ class CostConfigurationController {
         Map<String, Object> result = [editable:true] //the user clicking here is already authenticated
         Set<RefdataValue> costItemElements = RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_ELEMENT)
         Set<RefdataValue> elementsAlreadyTaken = []
-        Org org = contextService.getOrg()
 
         costItemElements.each { cie ->
-            CostItemElementConfiguration currentSetting = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(RefdataValue.getByValueAndCategory(cie.value, RDConstants.COST_ITEM_ELEMENT),org)
+            CostItemElementConfiguration currentSetting = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(RefdataValue.getByValueAndCategory(cie.value, RDConstants.COST_ITEM_ELEMENT), contextService.getOrg())
             if(currentSetting) {
                 elementsAlreadyTaken.add(cie)
             }
@@ -74,7 +69,6 @@ class CostConfigurationController {
         result.formUrl = g.createLink([controller:'costConfiguration',action:'processConfigurationCreation'])
         result.costItemElements = costItemElements
         result.elementSigns = RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION)
-        result.institution = org
 
         render template: '/templates/newCostItemElementConfiguration', model: result
     }
