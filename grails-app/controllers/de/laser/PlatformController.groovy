@@ -363,7 +363,6 @@ class PlatformController  {
         redirect(url: request.getHeader('referer'))
     }
 
-    @Deprecated
     @DebugInfo(isInstEditor_denySupport = [], ctrlService = 1)
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport()
@@ -386,18 +385,5 @@ class PlatformController  {
                 redirect(url: request.getHeader('referer'))
                 return
             }
-    }
-
-    @Deprecated
-    @DebugInfo(isInstEditor_denySupport = [], ctrlService = 1)
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_denySupport()
-    })
-    def removeAccessPoint() {
-        Map<String,Object> ctrlResult = platformControllerService.removeAccessPoint(params)
-        if(ctrlResult.status == PlatformControllerService.STATUS_ERROR) {
-            flash.error = ctrlResult.result.error
-        }
-        redirect action: 'link', params: [id:params.id]
     }
 }
