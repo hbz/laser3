@@ -1,0 +1,1 @@
+Hier finden Sie all Ihre aktiven Kosten, die Sie mit Hilfe der Filter entsprechend ordnen können. Pro-Nutzende haben zudem einen Reiter **Eigene Kosten** in dem die von Ihnen angelegten Kosten aufgelistet sind. 
