@@ -29,7 +29,7 @@ databaseChangeLog = {
     changeSet(author: "galffy (hand-coded)", id: "1732194826494-3") {
         grailsChange {
             change {
-                String query = "update org set org_url = null where org_url ilike '%,%'"
+                String query = "update org set org_url = null where org_url = ','"
                 sql.execute(query)
                 String info = "${query}: ${sql.getUpdateCount()}"
                 confirm(info)
@@ -41,7 +41,7 @@ databaseChangeLog = {
     changeSet(author: "galffy (hand-coded)", id: "1732194826494-4") {
         grailsChange {
             change {
-                String query = "update org set org_url_gov = null where org_url_gov ilike '%,%'"
+                String query = "update org set org_url_gov = null where org_url_gov = ','"
                 sql.execute(query)
                 String info = "${query}: ${sql.getUpdateCount()}"
                 confirm(info)
