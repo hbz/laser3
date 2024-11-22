@@ -63,6 +63,7 @@ import java.time.Year
 class ExportClickMeService {
 
     AccessPointService accessPointService
+    BatchQueryService batchQueryService
     ContextService contextService
     DocstoreService docstoreService
     ExportService exportService
@@ -1799,7 +1800,7 @@ class ExportClickMeService {
                                 'issueEntitlement.tipp.openAccess'      : [field: 'tipp.openAccess', label: 'Open Access', message: 'tipp.openAccess', sqlCol: 'tipp_open_access_rv_fk'],
                                 'issueEntitlement.tipp.ddcs'            : [field: 'tipp.ddcs', label: 'DDCs', message: 'tipp.ddc'],
                                 'issueEntitlement.tipp.languages'       : [field: 'tipp.languages', label: 'Languages', message: 'tipp.language'],
-                                'issueEntitlement.tipp.publishers'      : [field: 'tipp.publishers', label: 'Publishers', message: 'tipp.provider']
+                                'issueEntitlement.tipp.providers'       : [field: 'tipp.providers', label: 'Providers', message: 'tipp.provider']
                         ]
                 ],
                 coverage                   : [
@@ -4984,7 +4985,7 @@ class ExportClickMeService {
 
         List titles = _exportTitles(selectedExportFields, locale, null, null, null, null, format)
 
-        List exportData = buildIssueEntitlementRows(result, selectedFields, format)
+        List exportData = buildIssueEntitlementRows(result, selectedExportFields, format)
 
         /*
         int max = 32500
@@ -6506,22 +6507,106 @@ class ExportClickMeService {
      * @param exportData the list containing the export rows
      * @param formatEnum the {@link FORMAT} to be exported
      */
-    private void buildIssueEntitlementRows(Set<Long> ieIDs, Map<String, Object> selectedFields, FORMAT formatEnum){
+    private List buildIssueEntitlementRows(Set<Long> ieIDs, Map<String, Object> selectedFields, FORMAT formatEnum){
         List result = []
         Set<String> queryCols = []
         Map<String, Object> queryArgs = [:]
-        String format = null
+        Locale locale = LocaleUtils.getCurrentLocale()
+        String format = null, rdCol = I10nTranslation.getRefdataValueColumn(locale)
         if(formatEnum == FORMAT.XLS)
             format = ExportService.EXCEL
         selectedFields.eachWithIndex { String fieldKey, def fieldMapObj, int i ->
             Map mapSelectedFields = fieldMapObj as Map
-            String field = mapSelectedFields.field
+            String field = mapSelectedFields.field.replaceAll("\\.", '_'), sqlCol = mapSelectedFields.sqlCol
             if(fieldKey.startsWith('issueEntitlementIdentifiers.')) {
                 String argKey = "ns${i}"
-                queryCols << "create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = :${argKey}), null) as ${argKey}"
+                queryCols << "create_cell('${format}', (select string_agg(id_value,';') from identifier where id_tipp_fk = tipp_id and id_ns_fk = :${argKey}), null) as ${argKey}"
                 queryArgs.put(argKey, Long.parseLong(fieldKey.split("\\.")[1]))
             }
+            else if (fieldKey.contains('subscription.consortium')) {
+                queryCols << "create_cell('${format}', (select org_name from org join org_role on org_id = or_org_fk where or_sub_fk = ie_subscription_fk and or_roletype_rv_fk = :consortium), null) as consName"
+                queryArgs.consortium = RDStore.OR_SUBSCRIPTION_CONSORTIUM.id
+            }
+            else if (fieldKey.contains('tipp.ddcs')) {
+                queryCols << "create_cell('${format}', (select string_agg(rdv_id || ' - ' || ${rdCol}, ';') from dewey_decimal_classification join refdata_value on ddc_rv_fk = rdv_id where ddc_tipp_fk = tipp_id), null) as ddcs"
+            }
+            else if (fieldKey.contains('tipp.languages')) {
+                queryCols << "create_cell('${format}', (select string_agg(rdv_id || ' - ' || ${rdCol}, ';') from language join refdata_value on lang_rv_fk = rdv_id where lang_tipp_fk = tipp_id), null) as languages"
+            }
+            else if (fieldKey.contains('tipp.providers')) {
+                queryCols << "create_cell('${format}', (select string_agg(prov_name, ';') from package join provider on pkg_provider_fk = prov_id where pkg_id = tipp_pkg_fk), null) as providers"
+            }
+            else if (fieldKey.contains('pkg')) {
+                queryCols << "create_cell('${format}', (select ${sqlCol} from package where pkg_id = tipp_pkg_fk), null) as ${field}"
+            }
+            else if (fieldKey.contains('platform')) {
+                queryCols << "create_cell('${format}', (select ${sqlCol} from platform where plat_id = tipp_plat_fk), null) as ${field}"
+            }
+            else if (fieldKey.contains('ieGroup')) {
+                queryCols << "create_cell('${format}', (select ${sqlCol} from issue_entitlement_group join issue_entitlement_group_item on igi_ie_group_fk = ig_id where igi_ie_fk = ie_id), null) as ${field}"
+            }
+            else if (fieldKey.contains('perpetualAccessBySub')) {
+                queryCols << "create_cell('${format}', (select case when ie_perpetual_access_by_sub_fk is not null then '${RDStore.YN_YES.getI10n('value')}' else '${RDStore.YN_NO.getI10n('value')}' end case), null) as perpetualAccessbySub"
+            }
+            else if (fieldKey.startsWith('coverage.')) {
+                if(fieldKey.contains('startDate')) {
+                    queryCols << "create_cell('${format}', to_char(tc_start_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), null) as coverageStartDate"
+                }
+                else if(fieldKey.contains('startVolume')) {
+                    queryCols << "create_cell('${format}', tc_start_volume, null) as coverageStartVolume"
+                }
+                else if(fieldKey.contains('startIssue')) {
+                    queryCols << "create_cell('${format}', tc_start_issue, null) as coverageStartIssue"
+                }
+                else if(fieldKey.contains('endDate')) {
+                    queryCols << "create_cell('${format}', to_char(tc_end_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), null) as coverageEndDate"
+                }
+                else if(fieldKey.contains('endVolume')) {
+                    queryCols << "create_cell('${format}', tc_end_volume, null) as coverageEndVolume"
+                }
+                else if(fieldKey.contains('endIssue')) {
+                    queryCols << "create_cell('${format}', tc_end_issue, null) as coverageEndIssue"
+                }
+            }
+            else if (fieldKey.contains('listPriceEUR')) {
+                queryCols << "create_cell('${format}', string_agg((select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :euro),';'), null) as listPriceEUR"
+                queryArgs.euro = RDStore.CURRENCY_EUR.id
+            }
+            else if (fieldKey.contains('listPriceGBP')) {
+                queryCols << "create_cell('${format}', string_agg((select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :gbp),';'), null) as listPriceGBP"
+                queryArgs.gbp = RDStore.CURRENCY_GBP.id
+            }
+            else if (fieldKey.contains('listPriceUSD')) {
+                queryCols << "create_cell('${format}', string_agg((select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :usd),';'), null) as listPriceUSD"
+                queryArgs.usd = RDStore.CURRENCY_USD.id
+            }
+            else if (fieldKey.contains('localPriceEUR')) {
+                queryCols << "create_cell('${format}', string_agg((select trim(to_char(pi_local_price, '999999999D99')) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :leuro),';'), null) as localPriceEUR"
+                queryArgs.leuro = RDStore.CURRENCY_EUR.id
+            }
+            else if (fieldKey.contains('localPriceGBP')) {
+                queryCols << "create_cell('${format}', string_agg((select trim(to_char(pi_local_price, '999999999D99')) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :lgbp),';'), null) as localPriceGBP"
+                queryArgs.lgbp = RDStore.CURRENCY_GBP.id
+            }
+            else if (fieldKey.contains('localPriceUSD')) {
+                queryCols << "create_cell('${format}', string_agg((select trim(to_char(pi_local_price, '999999999D99')) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :lusd),';'), null) as localPriceUSD"
+                queryArgs.lusd = RDStore.CURRENCY_USD.id
+            }
+            else {
+                if(sqlCol.contains('rv_fk')) {
+                    queryCols << "create_cell('${format}', (select ${rdCol} from refdata_value where rdv_id = ${sqlCol}), null) as ${field}"
+                }
+                else if(sqlCol.containsIgnoreCase('date')) {
+                    queryCols << "create_cell('${format}', to_char(${sqlCol}, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), null) as ${field}"
+                }
+                else {
+                    queryCols << "create_cell('${format}', ${sqlCol}, null) as ${field}"
+                }
+            }
         }
+        String query = "select ${queryCols.join(',')} from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id left join tippcoverage on tc_tipp_fk = tipp_id where ie_id = any(:ieIDs)"
+        result.addAll(batchQueryService.longArrayQuery(query, [ieIDs: ieIDs], queryArgs).collect { GroovyRowResult row -> row.values() })
+        result
         /*
         result = exportService.getIssueEntitlement(result)
 
@@ -6629,7 +6714,6 @@ class ExportClickMeService {
         }
         exportData.add(row)
         */
-        result
     }
 
     /**
