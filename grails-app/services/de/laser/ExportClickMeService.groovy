@@ -6504,17 +6504,22 @@ class ExportClickMeService {
      * @param ieIDs the issue entitlement set to export
      * @param selectedFields the fields which should appear
      * @param exportData the list containing the export rows
-     * @param format the {@link FORMAT} to be exported
+     * @param formatEnum the {@link FORMAT} to be exported
      */
-    private void buildIssueEntitlementRows(Set<Long> ieIDs, Map<String, Object> selectedFields, FORMAT format){
+    private void buildIssueEntitlementRows(Set<Long> ieIDs, Map<String, Object> selectedFields, FORMAT formatEnum){
         List result = []
-        Set<String> queryArgs = []
-        selectedFields.each { String fieldKey, def fieldMapObj ->
+        Set<String> queryCols = []
+        Map<String, Object> queryArgs = [:]
+        String format = null
+        if(formatEnum == FORMAT.XLS)
+            format = ExportService.EXCEL
+        selectedFields.eachWithIndex { String fieldKey, def fieldMapObj, int i ->
             Map mapSelectedFields = fieldMapObj as Map
             String field = mapSelectedFields.field
-            //continue here
             if(fieldKey.startsWith('issueEntitlementIdentifiers.')) {
-                
+                String argKey = "ns${i}"
+                queryCols << "create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = :${argKey}), null) as ${argKey}"
+                queryArgs.put(argKey, Long.parseLong(fieldKey.split("\\.")[1]))
             }
         }
         /*
