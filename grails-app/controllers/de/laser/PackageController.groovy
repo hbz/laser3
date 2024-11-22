@@ -694,7 +694,6 @@ class PackageController {
 
         params.status = params.status ?: 'FETCH_ALL'
         params.linkedPkg = result.packageInstance
-        result.institution = contextService.getOrg()
 
         String consortiaFilter = ''
         if(contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support())

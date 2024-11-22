@@ -16,22 +16,24 @@
 %{--    <div class="menu">--}%
 %{--        <g:link controller="public" action="manual" class="item">${message(code: 'menu.user.manual')}</g:link>--}%
 %{--        <g:link controller="public" action="faq" class="item">${message(code: 'menu.user.faq')}</g:link>--}%
-%{--        <g:link controller="public" action="releaseNotes" class="item">${message(code: 'releaseNotes')}</g:link>--}%
+%{--        <g:link controller="public" action="release" class="item">${message(code: 'releaseNotes')}</g:link>--}%
 %{--        <g:link controller="public" action="api" class="item">${message(code: 'apiRelease')}</g:link>--}%
 %{--    </div>--}%
 %{--</div>--}%
 
-<div class="ui top attached menu">
+<div class="ui secondary pointing menu">
     <g:each in="${history.reverse()}" var="h">
-        <g:link controller="public" action="releaseNotes" id="${h}" class="item ${h == version ? 'active' : ''}">Version: ${h}</g:link>
+        <g:link controller="public" action="releases" id="${h}" class="item ${h == version ? 'active' : ''}">Version: ${h}</g:link>
     </g:each>
 
     <g:link controller="public" action="api" class="item right floated"><icon:arrow /> ${message(code:'apiRelease')}</g:link>
 </div>
 
-<div class="ui bottom attached segment la-markdown">
-    <ui:renderMarkdown releaseNotes="${version}" />
+<div class="ui segment la-markdown">
+    <ui:renderMarkdown release="${version}" />
 </div>
+
+<g:render template="markdownScript" />
 
 <laser:htmlEnd />
 

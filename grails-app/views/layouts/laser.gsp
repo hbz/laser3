@@ -147,6 +147,35 @@
 
         <div class="pusher">
             <main id="mainContent" class="ui main container hidden">
+                <sec:ifAnyGranted roles="ROLE_ADMIN">%{-- TMP ONLY --}%
+                    <g:if test="${institution || contextOrg || orgInstance}">
+                        <div id="dev-tmp-help">
+                            institution               : ${institution?.getName()} <br />
+                            contextOrg                : ${contextOrg?.getName()} <br />
+                            orgInstance               : ${orgInstance?.getName()} <br />
+                            inContextOrg              : <strong>${inContextOrg}</strong> <br />
+                            institutionalView         : <strong>${institutionalView}</strong> <br />
+                            consortialView            : <strong>${consortialView}</strong>
+                        </div>
+                        <style>
+                        #dev-tmp-help {
+                            position: absolute;
+                            top: 10px;
+                            right: 0;
+                            height: 5em;
+                            padding: 0.25em 1em;
+                            border: 1px solid red;
+                            overflow: hidden;
+                            z-index: 0;
+                        }
+                        #dev-tmp-help:hover {
+                            height: auto;
+                            background-color: #f4f8f9;
+                            z-index: 1111;
+                        }
+                        </style>
+                    </g:if>
+                </sec:ifAnyGranted>
 
                 %{-- system messages --}%
 

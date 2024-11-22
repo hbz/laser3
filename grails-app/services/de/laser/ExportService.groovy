@@ -3133,14 +3133,10 @@ class ExportService {
         Map<String, Object> queryClauseParts = filterService.prepareTitleSQLQuery(configMap, TitleInstancePackagePlatform.class.name, sql)
         String baseQuery = "select tipp_id, ${titleHeaders.values().join(', ')} from title_instance_package_platform left join tippcoverage on tc_tipp_fk = tipp_id join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id ${queryClauseParts.join} where ${queryClauseParts.where}${queryClauseParts.order}"
 		queryClauseParts.params.subscriber = subscriber.id
-		userCache.put('label', 'Hole Titel ...')
-        List<GroovyRowResult> rows = sql.rows(baseQuery, queryClauseParts.params)
+		userCache.put('label', 'Hole Daten vom Anbieter ...')
 		Map<String, Object> export = [titles: titleHeaders.keySet().toList()]
 		export.titles.addAll(showStatsInMonthRings.collect { Date month -> DateUtils.getSDF_yyyyMM().format(month) })
 		export.titles << "Pick"
-		Map<String, Object> identifierInverseMap = subscriptionControllerService.fetchTitles(configMap.refSub, true)
-		List excelRows = []
-		userCache.put('progress', 20)
 		List<GroovyRowResult> platformData = sql.rows("select plat_title_namespace, plat_guid from platform join package on plat_id = pkg_nominal_platform_fk where pkg_id = any(:pkgIds) group by plat_guid, plat_title_namespace", [pkgIds: sql.getDataSource().getConnection().createArrayOf('bigint', configMap.pkgIds as Object[])])
 		List<Object> platforms = []
 		Set<String> propIdNamespaces = []
@@ -3158,11 +3154,23 @@ class ExportService {
 		configMap.customer = subscriber
 		configMap.startDate = startDate
 		configMap.endDate = endDate
-		userCache.put('label', 'Hole Daten vom Anbieter ...')
 		Map<String, Object> requestResponse = getReports(configMap)
-		if(requestResponse.containsKey("error") && requestResponse.error.code == 202) {
-			export.status202 = true
+		if(requestResponse.containsKey("error")) {
+			if(requestResponse.error.hasProperty('code')) {
+				if(requestResponse.error.code == 202)
+					export.status202 = true
+				else export.error = requestResponse.error
+			}
+			else {
+				export.error = requestResponse.error
+			}
+			return export
 		}
+		userCache.put('progress', 20)
+		userCache.put('label', 'Hole Titel ...')
+		List<GroovyRowResult> rows = sql.rows(baseQuery, queryClauseParts.params)
+		Map<String, Object> identifierInverseMap = subscriptionControllerService.fetchTitles(configMap.refSub, true)
+		List excelRows = []
 		userCache.put('progress', 40)
 		userCache.put('label', 'Erzeuge Tabelle ...')
 		int processed = 0

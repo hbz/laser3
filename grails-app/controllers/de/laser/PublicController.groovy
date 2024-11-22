@@ -322,6 +322,10 @@ class PublicController {
     }
 
     @Secured(['permitAll'])
+    def help() {
+    }
+
+    @Secured(['permitAll'])
     def api() {
         Map<String, Object> result = [
                 history : [ 'legacy', '3.4' ], // todo
@@ -337,8 +341,9 @@ class PublicController {
     def manual() {
         Map<String, Object> result = [
                 content : [
-                        'various'           : ['Allgemein', 'General'],
-                        'financeImport'     : ['Kosten hochladen', 'Upload Cost Items']
+                        'various'                   : ['Allgemein', 'General'],
+                        'licenceInformationSheet'   : ['Lizenzinformationsblatt', 'Licence Information Sheet'],
+                        'financeImport'             : ['Kosten hochladen', 'Upload Cost Items']
                 ], // todo
                 topic   : 'various'
         ]
@@ -366,7 +371,7 @@ class PublicController {
     }
 
     @Secured(['permitAll'])
-    def releaseNotes() {
+    def releases() {
         Map<String, Object> result = [
                 history : ['3.2', '3.3', '3.4'] // todo
         ]

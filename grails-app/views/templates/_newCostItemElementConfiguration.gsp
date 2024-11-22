@@ -6,7 +6,7 @@
 
         <div class="ui grid">
             <%
-                def signPreset = institution.costConfigurationPreset ? institution.costConfigurationPreset : null
+                def signPreset = contextService.getOrg().costConfigurationPreset ? contextService.getOrg().costConfigurationPreset : null
             %>
             <div class="six wide column field">
                 <label for="cie">${message(code:'financials.costItemElement')}</label>
