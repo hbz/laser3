@@ -129,6 +129,7 @@ class DashboardDueDatesService {
                              oid: oid
                             ])[0]
                     // TODO ERMS-5862
+//                    DashboardDueDate das = DashboardDueDate.getByObjectAndAttributeNameAndResponsibleUser(obj, attributeName, user)
 
                     if (das) {
                         das.update(obj)
