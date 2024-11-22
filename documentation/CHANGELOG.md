@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6088    21.11.2024  rc-3.4  3.4.15      Andreas Bug         Skript zur Korrektur fehlerhafter URL
+
+6087    21.11.2024  rc-3.4  3.4.15      Andreas Bug         inkorrekte Verarbeitung massenausgeschütteter Kosten
+
 6084    20.11.2024  rc-3.4  3.4.15      Andreas Feature     kleinere Behebungen in der Statistiksicht
 
 6083    19.11.2024  rc-3.4  3.4.15      Andreas Bug         Kommentare zu vorhandenen Verknüpfungen konnten nicht abgespeichert werden

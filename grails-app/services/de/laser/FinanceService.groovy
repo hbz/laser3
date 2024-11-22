@@ -1113,8 +1113,22 @@ class FinanceService {
                     int index = getCurrencyIndexInList(billingSumsNegative,posEntry.currency)
                     if(index > -1) {
                         Map negEntry = billingSumsNegative[index]
-                        billingSum = posEntry.billingSum - negEntry.billingSum
-                        billingSumAfterTax = posEntry.billingSumAfterTax - negEntry.billingSumAfterTax
+                        if(posEntry.billingSum && negEntry.billingSum) {
+                            billingSum = posEntry.billingSum - negEntry.billingSum
+                            billingSumAfterTax = posEntry.billingSumAfterTax - negEntry.billingSumAfterTax
+                        }
+                        else if(posEntry.billingSum) {
+                            billingSum = posEntry.billingSum
+                            billingSumAfterTax = posEntry.billingSumAfterTax
+                        }
+                        else if(negEntry.billingSum) {
+                            billingSum = negEntry.billingSum
+                            billingSumAfterTax = negEntry.billingSumAfterTax
+                        }
+                        else {
+                            billingSum = 0.0
+                            billingSumAfterTax = 0.0
+                        }
                         if(posEntry.localSum && negEntry.localSum) {
                             localSum = posEntry.localSum - negEntry.localSum
                             localSumAfterTax = posEntry.localSumAfterTax - negEntry.localSumAfterTax

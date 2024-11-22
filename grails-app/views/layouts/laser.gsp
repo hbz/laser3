@@ -150,7 +150,6 @@
                 <sec:ifAnyGranted roles="ROLE_ADMIN">%{-- TMP ONLY --}%
                     <g:if test="${institution || contextOrg || orgInstance}">
                         <div id="dev-tmp-help">
-                            contextService.getOrg()   : ${contextService.getOrg()?.getName()} <br />
                             institution               : ${institution?.getName()} <br />
                             contextOrg                : ${contextOrg?.getName()} <br />
                             orgInstance               : ${orgInstance?.getName()} <br />
@@ -163,11 +162,14 @@
                             position: absolute;
                             top: 10px;
                             right: 0;
-                            font-size: 10px;
-                            padding: 5px 10px;
+                            height: 5em;
+                            padding: 0.25em 1em;
                             border: 1px solid red;
+                            overflow: hidden;
+                            z-index: 0;
                         }
                         #dev-tmp-help:hover {
+                            height: auto;
                             background-color: #f4f8f9;
                             z-index: 1111;
                         }
