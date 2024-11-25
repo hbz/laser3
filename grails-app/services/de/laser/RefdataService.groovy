@@ -60,7 +60,7 @@ class RefdataService {
 
                         long diff = System.currentTimeMillis() - ts
                         if (diff > 1000) {
-                            println 'getUsageDetails() : ' + dcName + '.' + df.name + ' -> ' + (System.currentTimeMillis() - ts) + 'ms'
+                            log.debug 'getUsageDetails() : ' + dcName + '.' + df.name + ' -> ' + (System.currentTimeMillis() - ts) + 'ms'
                         }
                     }
                 }
