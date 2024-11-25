@@ -1,10 +1,11 @@
 package de.laser
 
-
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.storage.BeanStore
 import de.laser.survey.SurveyInfo
 import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
+import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 /**
@@ -15,6 +16,7 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
  * @see Task
  * @see de.laser.survey.SurveyInfo
  */
+@Slf4j
 class DueDateObject {
 
     String attribute_name
@@ -63,32 +65,17 @@ class DueDateObject {
         this.lastUpdated = now
 
         // TODO: ERMS-5862
-//        if(object instanceof License) {
-//            this.license = object
-//        }
-//        else if(object instanceof Org) {
-//            this.org = object
-//        }
-//        else if(object instanceof Provider) {
-//            this.provider = object
-//        }
-//        else if(object instanceof Subscription) {
-//            this.subscription = object
-//        }
-//        else if(object instanceof SurveyInfo) {
-//            this.surveyInfo = object
-//        }
-//        else if(object instanceof Task) {
-//            this.task = object
-//        }
-//        else if(object instanceof Vendor) {
-//            this.vendor = object
-//        }
-//        else if (object instanceof AbstractPropertyWithCalculatedLastUpdated) {
-//            this.oid = "${object.class.name}:${object.id}"
+//        String propName = object.getClass().simpleName.uncapitalize()
+//        if (this.hasProperty(propName) && this.hasProperty(propName).getType().getCanonicalName() == object.getClass().getCanonicalName()) {
+//            this.setProperty(propName, object)
 //        }
 //        else {
-//            log.warn 'DueDateObject.create( ' + object + ' ) FAILED'
+//            if (object instanceof AbstractPropertyWithCalculatedLastUpdated) {
+//                this.propertyOID = "${object.class.name}:${object.id}"
+//            }
+//            else {
+//                log.warn 'DueDateObject.create( ' + object + ' ) FAILED'
+//            }
 //        }
     }
 
@@ -144,7 +131,7 @@ class DueDateObject {
         else if (this.task)         { this.task }
         else if (this.vendor)       { this.vendor }
         else if (this.propertyOID)  { BeanStore.getGenericOIDService().resolveOID(propertyOID) }
-        else if (this.oid)          { BeanStore.getGenericOIDService().resolveOID(oid) }
+        else if (this.oid)          { BeanStore.getGenericOIDService().resolveOID(oid) }            // FALLBACK
         else {
             log.warn 'DueDateObject.getObject( ' + this.id + ' ) FAILED'
         }
@@ -154,34 +141,20 @@ class DueDateObject {
         return DueDateObject.findWhere(oid: "${object.class.name}:${object.id}", attribute_name: attribute_name)
 
         // TODO: ERMS-5862
-//        object = GrailsHibernateUtil.unwrapIfProxy(object)
+//        DueDateObject ddo
 //
-//        if (object instanceof License) {
-//            DueDateObject.findWhere(license: object, attribute_name: attribute_name)
-//        }
-//        else if(object instanceof Org) {
-//            DueDateObject.findWhere(org: object, attribute_name: attribute_name)
-//        }
-//        else if(object instanceof Provider) {
-//            DueDateObject.findWhere(provider: object, attribute_name: attribute_name)
-//        }
-//        else if(object instanceof Subscription) {
-//            DueDateObject.findWhere(subscription: object, attribute_name: attribute_name)
-//        }
-//        else if(object instanceof SurveyInfo) {
-//            DueDateObject.findWhere(surveyInfo: object, attribute_name: attribute_name)
-//        }
-//        else if(object instanceof Task) {
-//            DueDateObject.findWhere(task: object, attribute_name: attribute_name)
-//        }
-//        else if(object instanceof Vendor) {
-//            DueDateObject.findWhere(vendor: object, attribute_name: attribute_name)
-//        }
-//        else if (object instanceof AbstractPropertyWithCalculatedLastUpdated) {
-//            DueDateObject.findWhere(oid: "${object.class.name}:${object.id}", attribute_name: attribute_name)
+//        String propName = object.getClass().simpleName.uncapitalize()
+//        if (this.hasProperty(propName) && this.hasProperty(propName).getType().getCanonicalName() == object.getClass().getCanonicalName()) {
+//            ddo = DueDateObject.findWhere("${propName}": object, attribute_name: attribute_name)
 //        }
 //        else {
-//            log.warn 'DueDateObject.getDueDateObject( ' + object + ', ' + attribute_name + ' ) FAILED'
+//            if (object instanceof AbstractPropertyWithCalculatedLastUpdated) {
+//                ddo = DueDateObject.findWhere(propertyOID: "${object.class.name}:${object.id}", attribute_name: attribute_name)
+//            }
+//            else {
+//                ddo = DueDateObject.findWhere(oid: "${object.class.name}:${object.id}", attribute_name: attribute_name)   // FALLBACK
+//            }
 //        }
+//        return ddo
     }
 }

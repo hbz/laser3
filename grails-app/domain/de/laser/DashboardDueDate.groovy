@@ -7,6 +7,7 @@ import de.laser.survey.SurveyInfo
 import de.laser.utils.SqlDateUtils
 import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
+import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.MessageSource
 
@@ -16,6 +17,7 @@ import org.springframework.context.MessageSource
  * @see DashboardDueDatesService
  * @see de.laser.jobs.DashboardDueDatesJob
  */
+@Slf4j
 class DashboardDueDate {
 
     User responsibleUser
@@ -117,13 +119,12 @@ class DashboardDueDate {
     static DashboardDueDate getByObjectAndAttributeNameAndResponsibleUser(def object, String attributeName, User user) {
 
         // TODO: ERMS-5862
-        // TODO: ERMS-5862
 
         DashboardDueDate ddd
-        String query = ''
+        String query
 
         object = GrailsHibernateUtil.unwrapIfProxy(object)
-
+        
              if (object instanceof License)     { query = 'license' }
         else if (object instanceof Org)         { query = 'org' }
         else if (object instanceof Provider)    { query = 'provider' }
@@ -131,6 +132,14 @@ class DashboardDueDate {
         else if (object instanceof SurveyInfo)  { query = 'surveyInfo' }
         else if (object instanceof Task)        { query = 'task' }
         else if (object instanceof Vendor)      { query = 'vendor' }
+        else if (object instanceof AbstractPropertyWithCalculatedLastUpdated) {
+                 query  = 'propertyOID'
+                 object = "${object.class.name}:${object.id}"   // TODO
+        }
+        else {
+                 query  = 'oid'
+                 object = "${object.class.name}:${object.id}"   // FALLBACK
+        }
 
         if (query && attributeName && user) {
             ddd = DashboardDueDate.executeQuery(
@@ -140,9 +149,9 @@ class DashboardDueDate {
                     [
                         user: user,
                         obj: object,
-                        attribute_name: attributeName,
+                        attributeName: attributeName,
                     ]
-            )
+            )[0]
         }
         else {
             log.warn 'DashboardDueDate.getByObjectAndAttributeNameAndResponsibleUser( ' + object + ', ' + attributeName + ', ' + user + ' ) FAILED'

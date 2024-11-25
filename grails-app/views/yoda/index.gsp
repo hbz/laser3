@@ -171,8 +171,6 @@
 </div>
 
 
-    <ui:messages data="${flash}" />
-
     <%--
     <p>TODO: New Errors</p>
 
