@@ -357,10 +357,10 @@ class PackageController {
             return
         }
         else {
-            Set<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+            Set<Long> titlesSet = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
             //we can be sure that no one will request more than 32768 entries ...
-            result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: params.sort?: 'sortname', order: params.order]) : []
-            result.num_tipp_rows = titlesList.size()
+            result.titlesList = titlesSet ? TitleInstancePackagePlatform.findAllByIdInList(titlesSet.drop(result.offset).take(result.max), [sort: params.sort?: 'sortname', order: params.order]) : []
+            result.num_tipp_rows = titlesSet.size()
             result
         }
     }
