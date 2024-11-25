@@ -1553,8 +1553,8 @@ class AjaxController {
         if (params.owner) {
             DueDateObject dueDateObject = (DueDateObject) genericOIDService.resolveOID(params.owner)
             if (dueDateObject){
-//                Object obj = genericOIDService.resolveOID(dueDateObject.oid)
-                Object obj = dueDateObject.getObject() // TODO - ERMS-5862
+                Object obj = genericOIDService.resolveOID(dueDateObject.oid)
+//                Object obj = dueDateObject.getObject() // TODO - ERMS-5862
                 if (obj instanceof Task && isDone){
                     Task dueTask = (Task)obj
                     dueTask.setStatus(RDStore.TASK_STATUS_DONE)

@@ -246,8 +246,8 @@ class DashboardDueDatesService {
             List<Map<String, Object>> dueDateRows = []
             dashboardEntries.each { DashboardDueDate dashDueDate ->
                 Map<String, Object> dashDueDateRow = [:]
-//                def obj = genericOIDService.resolveOID(dashDueDate.dueDateObject.oid)
-                def obj = dashDueDate.dueDateObject.getObject() // TODO ERMS-5862
+                def obj = genericOIDService.resolveOID(dashDueDate.dueDateObject.oid)
+//                def obj = dashDueDate.dueDateObject.getObject() // TODO ERMS-5862
 
                 if (obj) {
                     if(userLang == RDStore.LANGUAGE_DE)
