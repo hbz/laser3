@@ -538,7 +538,7 @@
                                                                 class="${Btn.MODERN.NEGATIVE_CONFIRM} tiny"
                                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                                                 data-confirm-term-how="delete"
-                                                                params='[instanceId: "${subParticipant.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
+                                                                params='[surveyConfigID: "${surveyConfig.id}", id: "${surveyInfo.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                                 role="button"
                                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                                             <i class="${Icon.CMD.DELETE} small"></i>
@@ -1141,7 +1141,7 @@
                                                                 class="${Btn.MODERN.NEGATIVE_CONFIRM} tiny"
                                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                                                 data-confirm-term-how="delete"
-                                                                params='[instanceId: "${subParticipant.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
+                                                                params='[surveyConfigID: "${surveyConfig.id}", id: "${surveyInfo.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                                 role="button"
                                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                                             <i class="${Icon.CMD.DELETE} small"></i>
