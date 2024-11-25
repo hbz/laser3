@@ -794,8 +794,7 @@
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
-                %{-- // TODO Moe - date.minusDays() --}%
-                <td class="center aligned" style="${(existSubforOrg && orgSub && orgSub.endDate && ChronoUnit.DAYS.between(DateUtils.dateToLocalDate(orgSub.startDate), DateUtils.dateToLocalDate(orgSub.endDate)) < 364) ? 'background: #FFBF00 !important;' : ''}">
+                <td class="center aligned">
 
                     <g:if test="${surveyConfig.subSurveyUseForTransfer && orgSub && orgSub.isCurrentMultiYearSubscriptionNew()}">
                         <g:message code="surveyOrg.perennialTerm.available"/>
@@ -842,7 +841,7 @@
 
                                             </g:if>
                                         </td>
-                                        <td>
+                                        <td style="${(costItem.startDate && costItem.endDate && ChronoUnit.DAYS.between(DateUtils.dateToLocalDate(costItem.startDate), DateUtils.dateToLocalDate(costItem.endDate)) < 364) ? 'background: #FFBF00 !important;' : ''}">
                                             <g:if test="${costItem.startDate || costItem.endDate}">
                                                 ${costItem.startDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.startDate) : ''} - ${costItem.endDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.endDate) : ''}
                                             </g:if>
@@ -896,7 +895,7 @@
 
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemPackage') && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
             %{-- // TODO Moe - date.minusDays() --}%
-                <td class="center aligned" style="${(existSubforOrg && orgSub && orgSub.endDate && ChronoUnit.DAYS.between(DateUtils.dateToLocalDate(orgSub.startDate), DateUtils.dateToLocalDate(orgSub.endDate)) < 364) ? 'background: #FFBF00 !important;' : ''}">
+                <td class="center aligned">
 
                     <g:if test="${selectedPackageID && selectedCostItemElementID}">
                         <g:set var="costItems" scope="request"
@@ -939,7 +938,7 @@
 
                                             </g:if>
                                         </td>
-                                        <td>
+                                        <td style="${(costItem.startDate && costItem.endDate && ChronoUnit.DAYS.between(DateUtils.dateToLocalDate(costItem.startDate), DateUtils.dateToLocalDate(costItem.endDate)) < 364) ? 'background: #FFBF00 !important;' : ''}">
                                             <g:if test="${costItem.startDate || costItem.endDate}">
                                                 ${costItem.startDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.startDate) : ''} - ${costItem.endDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.endDate) : ''}
                                             </g:if>

@@ -1297,7 +1297,7 @@ class SubscriptionController {
             pkgIds.addAll(Package.executeQuery('select tipp.pkg.id from TitleInstancePackagePlatform tipp where tipp.gokbId in (:wekbIds)', [wekbIds: result.selectedTitles]))
             executorService.execute({
                 Thread.currentThread().setName("EntitlementEnrichment_${result.subscription.id}")
-                subscriptionService.bulkAddEntitlements(result.subscription, result.selectedTitles, false)
+                subscriptionService.bulkAddEntitlements(result.subscription, result.selectedTitles, result.subscription.hasPerpetualAccess)
                 if(configMap.withChildrenKBART == 'on') {
                     Sql sql = GlobalService.obtainSqlConnection()
                     childSubIds.each { Long childSubId ->
