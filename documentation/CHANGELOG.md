@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6099    25.11.2024  rc-3.4  3.4.15      Moe     Bug         Umfrage Kosten markieren wo unterjährige Einstiege bestehen
+
 6090:   25.11.2024  rc-3.4  3.4.15      Moe     Bug         500er Löschversuch Titelauswahl-Datei
 
 6093    25.11.2024  rc-3.4  3.4.15      David   Feature     Ungültige Einträge entfernen @ DashboardDueDate/DueDateObject
