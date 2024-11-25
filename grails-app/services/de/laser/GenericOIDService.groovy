@@ -62,34 +62,34 @@ class GenericOIDService {
     GrailsHibernateUtil.unwrapIfProxy(result)
   }
 
-  boolean existsOID(def oid) { // TODO - tmp - faster than resolveOID()
-    boolean result = false
+    boolean existsOID(def oid) { // TODO - tmp - faster than resolveOID()
+        boolean result = false
 
-    if (oid) {
-      String[] parts = oid.toString().split(':')
-      String domainClass = parts[0].trim()
+        if (oid) {
+            String[] parts = oid.toString().split(':')
+            String domainClass = parts[0].trim()
 
-      // proxy fallback
-      if (domainClass.contains('$HibernateProxy$')) {
-        String realDC = domainClass.split('\\$')[0]
-        // log.debug 'got HibernateProxy; trying to resolve ' + domainClass + ' -> ' + realDC
-        domainClass = realDC
-      }
+            // proxy fallback
+            if (domainClass.contains('$HibernateProxy$')) {
+                String realDC = domainClass.split('\\$')[0]
+                log.debug 'got HibernateProxy; trying to resolve ' + domainClass + ' -> ' + realDC
+                domainClass = realDC
+            }
 
-      Class cls = CodeUtils.getDomainClass(domainClass) ?: CodeUtils.getDomainClassBySimpleName(domainClass)
-      if (cls)  {
-        String query = 'select o.id from ' + domainClass + ' o where o.id = ' + parts[1].trim()
-        if (cls.executeQuery(query)) {
-          result = true
+            Class cls = CodeUtils.getDomainClass(domainClass) ?: CodeUtils.getDomainClassBySimpleName(domainClass)
+            if (cls)  {
+                String query = 'select o.id from ' + domainClass + ' o where o.id = ' + parts[1].trim()
+                if (cls.executeQuery(query)) {
+                    result = true
+                }
+            }
+            else {
+                log.error("failed to resolveOID() for: ${oid}")
+            }
         }
-      }
-      else {
-        log.error("failed to resolveOID() for: ${oid}")
-      }
+        result
     }
-    result
-  }
-  
+
   /**
    * Gets a list of oid-text maps for dropdown display
    * @param objList the objects which should figure in the dropdown
