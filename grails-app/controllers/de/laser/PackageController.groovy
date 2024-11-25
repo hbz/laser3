@@ -315,11 +315,11 @@ class PackageController {
             String dir = GlobalService.obtainFileStorageLocation()
             File f = new File(dir+'/'+filename)
             if(!f.exists()) {
-                Set<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+                Set<Long> titlesSet = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
                 Map<String, Object> configMap = [:]
                 configMap.format = ExportService.KBART
-                configMap.tippIDs = titlesList
-                Map<String, Object> tableData = titlesList ? exportService.generateTitleExport(configMap) : [:]
+                configMap.tippIDs = titlesSet
+                Map<String, Object> tableData = titlesSet ? exportService.generateTitleExport(configMap) : [:]
                 String tableOutput = exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t')
                 FileOutputStream fos = new FileOutputStream(f)
                 fos.withWriter { Writer w ->
@@ -333,8 +333,8 @@ class PackageController {
             return
         }
         if(params.fileformat == 'xlsx') {
-            Set<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(titlesList, selectedFields, ExportClickMeService.FORMAT.XLS)
+            Set<Long> titlesSet = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(titlesSet, selectedFields, ExportClickMeService.FORMAT.XLS)
             response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             wb.write(response.outputStream)
@@ -344,13 +344,13 @@ class PackageController {
             return
         }
         else if(params.fileformat == 'csv') {
-            Set<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+            Set<Long> titlesSet = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
             response.setHeader( "Content-Disposition", "attachment; filename=${filename}.csv")
             response.contentType = "text/csv"
 
             ServletOutputStream out = response.outputStream
             out.withWriter { writer ->
-                writer.write((String) exportClickMeService.exportTipps(titlesList, selectedFields, ExportClickMeService.FORMAT.CSV))
+                writer.write((String) exportClickMeService.exportTipps(titlesSet, selectedFields, ExportClickMeService.FORMAT.CSV))
             }
             out.flush()
             out.close()
@@ -483,7 +483,7 @@ class PackageController {
         Map<String, Object> query = filterService.getTippQuery(params, [result.packageInstance])
         result.filterSet = query.filterSet
 
-        Set<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+        Set<Long> titlesSet = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
         result.filename = filename
 
         Map<String, Object> selectedFields = [:]
@@ -504,7 +504,7 @@ class PackageController {
                 FileOutputStream fos = new FileOutputStream(f)
                 Map<String, Object> configMap = [:]
                 //configMap.putAll(params)
-                configMap.tippIDs = titlesList
+                configMap.tippIDs = titlesSet
                 configMap.format = ExportService.KBART
                 Map<String, Object> tableData = exportService.generateTitleExport(configMap)
                 fos.withWriter { writer ->
@@ -518,7 +518,7 @@ class PackageController {
             return
         }
         else if(params.fileformat == 'xlsx') {
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(titlesList, selectedFields, ExportClickMeService.FORMAT.XLS)
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(titlesSet, selectedFields, ExportClickMeService.FORMAT.XLS)
             response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             wb.write(response.outputStream)
@@ -533,14 +533,14 @@ class PackageController {
 
             ServletOutputStream out = response.outputStream
             out.withWriter { writer ->
-                writer.write((String) exportClickMeService.exportTipps(titlesList, selectedFields, ExportClickMeService.FORMAT.CSV))
+                writer.write((String) exportClickMeService.exportTipps(titlesSet, selectedFields, ExportClickMeService.FORMAT.CSV))
             }
             out.flush()
             out.close()
         }
         else {
-            result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: params.sort?: 'sortname', order: params.order]) : []
-            result.num_tipp_rows = titlesList.size()
+            result.titlesList = titlesSet ? TitleInstancePackagePlatform.findAllByIdInList(titlesSet.drop(result.offset).take(result.max), [sort: params.sort?: 'sortname', order: params.order]) : []
+            result.num_tipp_rows = titlesSet.size()
             result
         }
     }
