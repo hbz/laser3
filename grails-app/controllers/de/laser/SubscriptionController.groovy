@@ -211,6 +211,21 @@ class SubscriptionController {
                 }
                 result.keyPairs.put(platformInstance.gokbId, keyPair)
             }
+            else {
+                result.subscription.getDerivedNonHiddenSubscribers().each { Org member ->
+                    CustomerIdentifier keyPair = CustomerIdentifier.findByPlatformAndCustomer(platformInstance, member)
+                    if(!keyPair) {
+                        keyPair = new CustomerIdentifier(platform: platformInstance,
+                                customer: member,
+                                type: RDStore.CUSTOMER_IDENTIFIER_TYPE_DEFAULT,
+                                owner: contextService.getOrg(),
+                                isPublic: true)
+                        if(!keyPair.save()) {
+                            log.warn(keyPair.errors.getAllErrors().toListString())
+                        }
+                    }
+                }
+            }
             Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
             if (queryResult.error && queryResult.error == 404) {
                 result.wekbServerUnavailable = message(code: 'wekb.error.404')
@@ -1890,7 +1905,7 @@ class SubscriptionController {
                     queryMap.refSub = ctrlResult.result.parentSubscription
                     Map<String, Object> export = exportService.generateRenewalExport(queryMap, monthsInRing, ctrlResult.result.subscriber)
                     //Map<String, List> export = exportService.generateTitleExportCustom(queryMap, TitleInstancePackagePlatform.class.name, monthsInRing.sort { Date monthA, Date monthB -> monthA <=> monthB }, ctrlResult.result.subscriber, true)
-                    if(!export.status202) {
+                    if(!export.status202 && !export.error) {
                         /*
                         String refYes = RDStore.YN_YES.getI10n('value')
                         String refNo = RDStore.YN_NO.getI10n('value')
@@ -1917,7 +1932,9 @@ class SubscriptionController {
                     else {
                         userCache.put('progress', 100)
                         fileResult.remove('token')
-                        fileResult.error = 202
+                        if(export.status202)
+                            fileResult.error = 202
+                        else fileResult.error = export.error
                     }
                     render template: '/templates/stats/usageReport', model: fileResult
                     return

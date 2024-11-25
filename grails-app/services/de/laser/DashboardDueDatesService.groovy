@@ -78,6 +78,8 @@ class DashboardDueDatesService {
                 log.debug("Start DashboardDueDatesService takeCareOfDueDates")
 //                SystemEvent.createEvent('DBDD_SERVICE_START_1')
 
+                _removeInvalidDueDates()
+
                 if (isUpdateDashboardTableInDatabase) {
                     flash = _updateDashboardTableInDatabase(flash)
                 }
@@ -98,6 +100,23 @@ class DashboardDueDatesService {
                 update_running = false
             }
             return true
+        }
+    }
+
+    private _removeInvalidDueDates() {
+        log.debug '_removeInvalidDueDates' // missing fk constraint
+
+        DueDateObject.executeQuery('select ddo.id, ddo.oid from DueDateObject ddo order by ddo.id').each {
+
+            if (!genericOIDService.existsOID(it[1])) {
+                List<Long> ddd = DashboardDueDate.executeQuery('select ddd.id from DashboardDueDate ddd where ddd.dueDateObject.id = :id', [ id: it[0]])
+                log.debug 'remove outdated DueDateObject/DashboardDueDate: ' + it + ' <- ' + ddd
+
+                ddd.each { did ->
+                    DashboardDueDate.get(did).delete()
+                }
+                DueDateObject.get(it[0]).delete()
+            }
         }
     }
 
@@ -130,7 +149,7 @@ class DashboardDueDatesService {
                              oid: oid
                             ])[0]
 
-                    if (das){//update
+                    if (das) {//update
                         das.update(messageSource, obj)
                         log.debug("DashboardDueDatesService UPDATE: " + das);
                     } else {//insert

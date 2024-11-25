@@ -7,6 +7,20 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6090:   25.11.2024  rc-3.4  3.4.15      Moe     Bug         500er Löschversuch Titelauswahl-Datei
+
+6093    25.11.2024  rc-3.4  3.4.15      David   Feature     Ungültige Einträge entfernen @ DashboardDueDate/DueDateObject
+
+6088    21.11.2024  rc-3.4  3.4.15      Andreas Bug         Skript zur Korrektur fehlerhafter URL
+
+6087    21.11.2024  rc-3.4  3.4.15      Andreas Bug         inkorrekte Verarbeitung massenausgeschütteter Kosten
+
+6084    20.11.2024  rc-3.4  3.4.15      Andreas Feature     kleinere Behebungen in der Statistiksicht
+
+6083    19.11.2024  rc-3.4  3.4.15      Andreas Bug         Kommentare zu vorhandenen Verknüpfungen konnten nicht abgespeichert werden
+
+6065    14.11.2024  rc-3.4  3.4.15      Moe     Bug         Export Zuordnung
+
 6058    08.11.2024  rc-3.4  3.4.14      Andreas Bug         Gesamttitelliste + Statistik: keine Markierung der Titel
 
 6057    08.11.2024  rc-3.4  3.4.14      Moe     Bug         Umfrage: Reminder Mail Betreff editieren
