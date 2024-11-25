@@ -78,7 +78,7 @@ class DashboardDueDatesService {
                 log.debug("Start DashboardDueDatesService takeCareOfDueDates")
 //                SystemEvent.createEvent('DBDD_SERVICE_START_1')
 
-                _cleanupDashboardTable()
+                _removeInvalidDueDates()
 
                 if (isUpdateDashboardTableInDatabase) {
                     flash = _updateDashboardTableInDatabase(flash)
@@ -103,8 +103,8 @@ class DashboardDueDatesService {
         }
     }
 
-    private _cleanupDashboardTable() {
-        log.debug '_cleanupDashboardTable'
+    private _removeInvalidDueDates() {
+        log.debug '_removeInvalidDueDates' // missing fk constraint
 
         DueDateObject.executeQuery('select ddo.id, ddo.oid from DueDateObject ddo order by ddo.id').each {
 
@@ -150,7 +150,7 @@ class DashboardDueDatesService {
                     // TODO ERMS-5862
 //                    das = DashboardDueDate.getByObjectAndAttributeNameAndResponsibleUser(obj, attributeName, user)
 
-                    if (das) {
+                    if (das) { //update
                         das.update(obj)
                         log.debug("DashboardDueDatesService UPDATE: " + das);
                     }

@@ -7,7 +7,7 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-6093    25.11.2024  dev     3.5         David   Feature     Ungültige Einträge entfernen @ DashboardDueDate/DueDateObject
+6093    25.11.2024  rc-3.4  3.4.15      David   Feature     Ungültige Einträge entfernen @ DashboardDueDate/DueDateObject
 
 6088    21.11.2024  rc-3.4  3.4.15      Andreas Bug         Skript zur Korrektur fehlerhafter URL
 
