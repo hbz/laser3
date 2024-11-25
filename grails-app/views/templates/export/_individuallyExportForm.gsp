@@ -443,7 +443,7 @@
 
     $('#${modalID} input[type="checkbox"]').on( 'change', function() {
         <g:each in="${totalFields}" var="${fields}" status="i">
-            $("#numberOfChecked-tab-${i}").html($'+"('[data-tab=tab-${i}]" + ' input[type="checkbox"]' + "').filter(':checked').length);
+            $("#numberOfChecked-tab-${i}").html($('[data-tab=tab-${i}] input[type="checkbox"]').filter(':checked').length);
         </g:each>
     }).trigger('change');
 

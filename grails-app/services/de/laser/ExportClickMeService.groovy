@@ -63,6 +63,7 @@ import java.time.Year
 class ExportClickMeService {
 
     AccessPointService accessPointService
+    BatchQueryService batchQueryService
     ContextService contextService
     DocstoreService docstoreService
     ExportService exportService
@@ -1765,15 +1766,15 @@ class ExportClickMeService {
                         label  : 'IssueEntitlement',
                         message: 'issueEntitlement.label',
                         fields : [
-                                'issueEntitlement.tipp.name'                : [field: 'tipp.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true'],
-                                'issueEntitlement.status'                   : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: 'true'],
-                                'issueEntitlement.tipp.medium'              : [field: 'tipp.medium', label: 'Status', message: 'tipp.medium', defaultChecked: 'true'],
-                                'issueEntitlement.accessStartDate'          : [field: 'accessStartDate', label: 'Access Start Date', message: 'subscription.details.access_start', defaultChecked: 'true'],
-                                'issueEntitlement.accessEndDate'            : [field: 'accessEndDate', label: 'Access End Date', message: 'subscription.details.access_end', defaultChecked: 'true'],
-                                'issueEntitlement.tipp.titleType'           : [field: 'tipp.titleType', label: 'Title Type', message: 'tipp.titleType', defaultChecked: 'true'],
-                                'issueEntitlement.tipp.pkg'                 : [field: 'tipp.pkg.name', label: 'Package', message: 'package.label', defaultChecked: 'true'],
-                                'issueEntitlement.tipp.platform.name'       : [field: 'tipp.platform.name', label: 'Platform', message: 'tipp.platform', defaultChecked: 'true'],
-                                'issueEntitlement.tipp.ieGroup.name'        : [field: 'ieGroups.ieGroup.name', label: 'Group', message: 'issueEntitlementGroup.label', defaultChecked: 'true'],
+                                'issueEntitlement.tipp.name'                : [field: 'tipp.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true', sqlCol: 'tipp_name'],
+                                'issueEntitlement.status'                   : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: 'true', sqlCol: 'ie_status_rv_fk'],
+                                'issueEntitlement.tipp.medium'              : [field: 'tipp.medium', label: 'Status', message: 'tipp.medium', defaultChecked: 'true', sqlCol: 'tipp_medium_rv_fk'],
+                                'issueEntitlement.accessStartDate'          : [field: 'accessStartDate', label: 'Access Start Date', message: 'subscription.details.access_start', defaultChecked: 'true', sqlCol: 'ie_access_start_date'],
+                                'issueEntitlement.accessEndDate'            : [field: 'accessEndDate', label: 'Access End Date', message: 'subscription.details.access_end', defaultChecked: 'true', sqlCol: 'ie_access_end_date'],
+                                'issueEntitlement.tipp.titleType'           : [field: 'tipp.titleType', label: 'Title Type', message: 'tipp.titleType', defaultChecked: 'true', sqlCol: 'tipp_title_type'],
+                                'issueEntitlement.tipp.pkg'                 : [field: 'tipp.pkg.name', label: 'Package', message: 'package.label', defaultChecked: 'true', sqlCol: 'pkg_name'],
+                                'issueEntitlement.tipp.platform.name'       : [field: 'tipp.platform.name', label: 'Platform', message: 'tipp.platform', defaultChecked: 'true', sqlCol: 'plat_name'],
+                                'issueEntitlement.tipp.ieGroup.name'        : [field: 'ieGroups.ieGroup.name', label: 'Group', message: 'issueEntitlementGroup.label', defaultChecked: 'true', sqlCol: 'ig_name'],
                                 'issueEntitlement.tipp.perpetualAccessBySub': [field: 'perpetualAccessBySub', label: 'Perpetual Access', message: 'issueEntitlement.perpetualAccessBySub.label', defaultChecked: 'true'],
                         ]
                 ],
@@ -1781,40 +1782,40 @@ class ExportClickMeService {
                         label  : 'Title Details',
                         message: 'title.details',
                         fields : [
-                                'issueEntitlement.tipp.hostPlatformURL' : [field: 'tipp.hostPlatformURL', label: 'Url', message: null],
-                                'issueEntitlement.tipp.dateFirstOnline' : [field: 'tipp.dateFirstOnline', label: 'Date first online', message: 'tipp.dateFirstOnline'],
-                                'issueEntitlement.tipp.dateFirstInPrint': [field: 'tipp.dateFirstInPrint', label: 'Date first in print', message: 'tipp.dateFirstInPrint'],
-                                'issueEntitlement.tipp.firstAuthor'     : [field: 'tipp.firstAuthor', label: 'First Author', message: 'tipp.firstAuthor'],
-                                'issueEntitlement.tipp.firstEditor'     : [field: 'tipp.firstEditor', label: 'First Editor', message: 'tipp.firstEditor'],
-                                'issueEntitlement.tipp.volume'          : [field: 'tipp.volume', label: 'Volume', message: 'tipp.volume'],
-                                'issueEntitlement.tipp.editionStatement': [field: 'tipp.editionStatement', label: 'Edition Statement', message: 'title.editionStatement.label'],
-                                'issueEntitlement.tipp.editionNumber'   : [field: 'tipp.editionNumber', label: 'Edition Number', message: 'tipp.editionNumber'],
-                                'issueEntitlement.tipp.summaryOfContent': [field: 'tipp.summaryOfContent', label: 'Summary of Content', message: 'title.summaryOfContent.label'],
-                                'issueEntitlement.tipp.seriesName'      : [field: 'tipp.seriesName', label: 'Series Name', message: 'tipp.seriesName'],
-                                'issueEntitlement.tipp.subjectReference': [field: 'tipp.subjectReference', label: 'Subject Reference', message: 'tipp.subjectReference'],
-                                'issueEntitlement.tipp.delayedOA'       : [field: 'tipp.delayedOA', label: 'Delayed OA', message: 'tipp.delayedOA'],
-                                'issueEntitlement.tipp.hybridOA'        : [field: 'tipp.hybridOA', label: 'Hybrid OA', message: 'tipp.hybridOA'],
-                                'issueEntitlement.tipp.publisherName'   : [field: 'tipp.publisherName', label: 'Publisher', message: 'tipp.publisher'],
-                                'issueEntitlement.tipp.accessType'      : [field: 'tipp.accessType', label: 'Access Type', message: 'tipp.accessType'],
-                                'issueEntitlement.tipp.openAccess'      : [field: 'tipp.openAccess', label: 'Open Access', message: 'tipp.openAccess'],
+                                'issueEntitlement.tipp.hostPlatformURL' : [field: 'tipp.hostPlatformURL', label: 'Url', message: null, sqlCol: 'tipp_host_platform_url'],
+                                'issueEntitlement.tipp.dateFirstOnline' : [field: 'tipp.dateFirstOnline', label: 'Date first online', message: 'tipp.dateFirstOnline', sqlCol: 'tipp_date_first_online'],
+                                'issueEntitlement.tipp.dateFirstInPrint': [field: 'tipp.dateFirstInPrint', label: 'Date first in print', message: 'tipp.dateFirstInPrint', sqlCol: 'tipp_date_first_in_print'],
+                                'issueEntitlement.tipp.firstAuthor'     : [field: 'tipp.firstAuthor', label: 'First Author', message: 'tipp.firstAuthor', sqlCol: 'tipp_first_author'],
+                                'issueEntitlement.tipp.firstEditor'     : [field: 'tipp.firstEditor', label: 'First Editor', message: 'tipp.firstEditor', sqlCol: 'tipp_first_editor'],
+                                'issueEntitlement.tipp.volume'          : [field: 'tipp.volume', label: 'Volume', message: 'tipp.volume', sqlCol: 'tipp_volume'],
+                                'issueEntitlement.tipp.editionStatement': [field: 'tipp.editionStatement', label: 'Edition Statement', message: 'title.editionStatement.label', sqlCol: 'tipp_edition_statement'],
+                                'issueEntitlement.tipp.editionNumber'   : [field: 'tipp.editionNumber', label: 'Edition Number', message: 'tipp.editionNumber', sqlCol: 'tipp_edition_number'],
+                                'issueEntitlement.tipp.summaryOfContent': [field: 'tipp.summaryOfContent', label: 'Summary of Content', message: 'title.summaryOfContent.label', sqlCol: 'tipp_summary_of_content'],
+                                'issueEntitlement.tipp.seriesName'      : [field: 'tipp.seriesName', label: 'Series Name', message: 'tipp.seriesName', sqlCol: 'tipp_series_name'],
+                                'issueEntitlement.tipp.subjectReference': [field: 'tipp.subjectReference', label: 'Subject Reference', message: 'tipp.subjectReference', sqlCol: 'tipp_subject_reference'],
+                                'issueEntitlement.tipp.delayedOA'       : [field: 'tipp.delayedOA', label: 'Delayed OA', message: 'tipp.delayedOA', sqlCol: 'tipp_delayedoa_rv_fk'],
+                                'issueEntitlement.tipp.hybridOA'        : [field: 'tipp.hybridOA', label: 'Hybrid OA', message: 'tipp.hybridOA', sqlCol: 'tipp_hybridoa_rv_fk'],
+                                'issueEntitlement.tipp.publisherName'   : [field: 'tipp.publisherName', label: 'Publisher', message: 'tipp.publisher', sqlCol: 'tipp_publisher_name'],
+                                'issueEntitlement.tipp.accessType'      : [field: 'tipp.accessType', label: 'Access Type', message: 'tipp.accessType', sqlCol: 'tipp_access_type_rv_fk'],
+                                'issueEntitlement.tipp.openAccess'      : [field: 'tipp.openAccess', label: 'Open Access', message: 'tipp.openAccess', sqlCol: 'tipp_open_access_rv_fk'],
                                 'issueEntitlement.tipp.ddcs'            : [field: 'tipp.ddcs', label: 'DDCs', message: 'tipp.ddc'],
                                 'issueEntitlement.tipp.languages'       : [field: 'tipp.languages', label: 'Languages', message: 'tipp.language'],
-                                'issueEntitlement.tipp.publishers'      : [field: 'tipp.publishers', label: 'Publishers', message: 'tipp.provider']
+                                'issueEntitlement.tipp.providers'       : [field: 'tipp.providers', label: 'Providers', message: 'tipp.provider']
                         ]
                 ],
                 coverage                   : [
                         label  : 'Coverage',
                         message: 'tipp.coverage',
                         fields : [
-                                'coverage.startDate'    : [field: 'startDate', label: 'Start Date', message: 'tipp.startDate'],
-                                'coverage.startVolume'  : [field: 'startVolume', label: 'Start Volume', message: 'tipp.startVolume'],
-                                'coverage.startIssue'   : [field: 'startIssue', label: 'Start Issue', message: 'tipp.startIssue'],
-                                'coverage.endDate'      : [field: 'endDate', label: 'End Date', message: 'tipp.endDate'],
-                                'coverage.endVolume'    : [field: 'endVolume', label: 'End Volume', message: 'tipp.endVolume'],
-                                'coverage.endIssue'     : [field: 'endIssue', label: 'End Issue', message: 'tipp.endIssue'],
-                                'coverage.coverageNote' : [field: 'coverageNote', label: 'Coverage Note', message: 'default.note.label'],
-                                'coverage.coverageDepth': [field: 'coverageDepth', label: 'Coverage Depth', message: 'tipp.coverageDepth'],
-                                'coverage.embargo'      : [field: 'embargo', label: 'Embargo', message: 'tipp.embargo']
+                                'coverage.startDate'    : [field: 'startDate', label: 'Start Date', message: 'tipp.startDate', sqlCol: 'tc_start_date'],
+                                'coverage.startVolume'  : [field: 'startVolume', label: 'Start Volume', message: 'tipp.startVolume', sqlCol: 'tc_start_volume'],
+                                'coverage.startIssue'   : [field: 'startIssue', label: 'Start Issue', message: 'tipp.startIssue', sqlCol: 'tc_start_issue'],
+                                'coverage.endDate'      : [field: 'endDate', label: 'End Date', message: 'tipp.endDate', sqlCol: 'tc_end_date'],
+                                'coverage.endVolume'    : [field: 'endVolume', label: 'End Volume', message: 'tipp.endVolume', sqlCol: 'tc_end_volume'],
+                                'coverage.endIssue'     : [field: 'endIssue', label: 'End Issue', message: 'tipp.endIssue', sqlCol: 'tc_end_issue'],
+                                'coverage.coverageNote' : [field: 'coverageNote', label: 'Coverage Note', message: 'default.note.label', sqlCol: 'tc_coverage_note'],
+                                'coverage.coverageDepth': [field: 'coverageDepth', label: 'Coverage Depth', message: 'tipp.coverageDepth', sqlCol: 'tc_coverage_depth'],
+                                'coverage.embargo'      : [field: 'embargo', label: 'Embargo', message: 'tipp.embargo', sqlCol: 'tc_embargo']
                         ]
                 ],
                 priceItem                  : [
@@ -1845,7 +1846,6 @@ class ExportClickMeService {
                                 'subscription.manualCancellationDate': [field: 'subscription.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
                                 'subscription.isMultiYear'           : [field: 'subscription.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label'],
                                 'subscription.referenceYear'         : [field: 'subscription.referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label'],
-                                //'subscription.isAutomaticRenewAnnually'     : [field: 'subscription.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'],
                                 'subscription.status'                : [field: 'subscription.status', label: 'Status', message: 'subscription.status.label'],
                                 'subscription.kind'                  : [field: 'subscription.kind', label: 'Kind', message: 'subscription.kind.label'],
                                 'subscription.form'                  : [field: 'subscription.form', label: 'Form', message: 'subscription.form.label'],
@@ -4968,7 +4968,7 @@ class ExportClickMeService {
      * @param format the {@link FORMAT} to be exported
      * @return the output in the desired format
      */
-    def exportIssueEntitlements(ArrayList<Long> result, Map<String, Object> selectedFields, FORMAT format) {
+    def exportIssueEntitlements(Set<Long> result, Map<String, Object> selectedFields, FORMAT format) {
         Locale locale = LocaleUtils.getCurrentLocale()
 
         Map<String, Object> selectedExportFields = [:]
@@ -4985,8 +4985,9 @@ class ExportClickMeService {
 
         List titles = _exportTitles(selectedExportFields, locale, null, null, null, null, format)
 
-        List exportData = []
+        List exportData = buildIssueEntitlementRows(result, selectedExportFields, format)
 
+        /*
         int max = 32500
         TitleInstancePackagePlatform.withSession { Session sess ->
             for(int offset = 0; offset < result.size(); offset+=max) {
@@ -5016,6 +5017,7 @@ class ExportClickMeService {
                 sess.flush()
             }
         }
+        */
 
         Map sheetData = [:]
         sheetData[messageSource.getMessage('title.plural', null, locale)] = [titleRow: titles, columnData: exportData]
@@ -5055,6 +5057,7 @@ class ExportClickMeService {
 
         List exportData = []
 
+        /*
         if(result.size() < 10000) {
             int max = result[0] instanceof Long ? 5000 : 500
             TitleInstancePackagePlatform.withSession { Session sess ->
@@ -5149,6 +5152,7 @@ class ExportClickMeService {
                 }
             }
         }
+        */
 
         Map sheetData = [:]
         sheetData[messageSource.getMessage('title.plural', null, locale)] = [titleRow: titles, columnData: exportData]
@@ -6498,11 +6502,228 @@ class ExportClickMeService {
 
     /**
      * Fills a row for the issue entitlement export
+     * @param ieIDs the issue entitlement set to export
+     * @param selectedFields the fields which should appear
+     * @param exportData the list containing the export rows
+     * @param formatEnum the {@link FORMAT} to be exported
+     */
+    private List buildIssueEntitlementRows(Set<Long> ieIDs, Map<String, Object> selectedFields, FORMAT formatEnum){
+        List result = []
+        Set<String> queryCols = []
+        Map<String, Object> queryArgs = [:]
+        Locale locale = LocaleUtils.getCurrentLocale()
+        String format = null, rdCol = I10nTranslation.getRefdataValueColumn(locale)
+        if(formatEnum == FORMAT.XLS)
+            format = ExportService.EXCEL
+        selectedFields.eachWithIndex { String fieldKey, def fieldMapObj, int i ->
+            Map mapSelectedFields = fieldMapObj as Map
+            String field = mapSelectedFields.field.replaceAll("\\.", '_'), sqlCol = mapSelectedFields.sqlCol
+            if(fieldKey.startsWith('issueEntitlementIdentifiers.')) {
+                String argKey = "ns${i}"
+                queryCols << "create_cell('${format}', (select string_agg(id_value,';') from identifier where id_tipp_fk = tipp_id and id_ns_fk = :${argKey}), null) as ${argKey}"
+                queryArgs.put(argKey, Long.parseLong(fieldKey.split("\\.")[1]))
+            }
+            else if (fieldKey.contains('subscription.consortium')) {
+                queryCols << "create_cell('${format}', (select org_name from org join org_role on org_id = or_org_fk where or_sub_fk = ie_subscription_fk and or_roletype_rv_fk = :consortium), null) as consName"
+                queryArgs.consortium = RDStore.OR_SUBSCRIPTION_CONSORTIUM.id
+            }
+            else if (fieldKey.contains('tipp.ddcs')) {
+                queryCols << "create_cell('${format}', (select string_agg(rdv_id || ' - ' || ${rdCol}, ';') from dewey_decimal_classification join refdata_value on ddc_rv_fk = rdv_id where ddc_tipp_fk = tipp_id), null) as ddcs"
+            }
+            else if (fieldKey.contains('tipp.languages')) {
+                queryCols << "create_cell('${format}', (select string_agg(rdv_id || ' - ' || ${rdCol}, ';') from language join refdata_value on lang_rv_fk = rdv_id where lang_tipp_fk = tipp_id), null) as languages"
+            }
+            else if (fieldKey.contains('tipp.providers')) {
+                queryCols << "create_cell('${format}', (select string_agg(prov_name, ';') from package join provider on pkg_provider_fk = prov_id where pkg_id = tipp_pkg_fk), null) as providers"
+            }
+            else if (fieldKey.contains('pkg')) {
+                queryCols << "create_cell('${format}', (select ${sqlCol} from package where pkg_id = tipp_pkg_fk), null) as ${field}"
+            }
+            else if (fieldKey.contains('platform')) {
+                queryCols << "create_cell('${format}', (select ${sqlCol} from platform where plat_id = tipp_plat_fk), null) as ${field}"
+            }
+            else if (fieldKey.contains('ieGroup')) {
+                queryCols << "create_cell('${format}', (select ${sqlCol} from issue_entitlement_group join issue_entitlement_group_item on igi_ie_group_fk = ig_id where igi_ie_fk = ie_id), null) as ${field}"
+            }
+            else if (fieldKey.contains('perpetualAccessBySub')) {
+                queryCols << "create_cell('${format}', (select case when ie_perpetual_access_by_sub_fk is not null then '${RDStore.YN_YES.getI10n('value')}' else '${RDStore.YN_NO.getI10n('value')}' end case), null) as perpetualAccessbySub"
+            }
+            else if (fieldKey.startsWith('coverage.')) {
+                if(fieldKey.contains('startDate')) {
+                    queryCols << "create_cell('${format}', to_char(tc_start_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), null) as coverageStartDate"
+                }
+                else if(fieldKey.contains('startVolume')) {
+                    queryCols << "create_cell('${format}', tc_start_volume, null) as coverageStartVolume"
+                }
+                else if(fieldKey.contains('startIssue')) {
+                    queryCols << "create_cell('${format}', tc_start_issue, null) as coverageStartIssue"
+                }
+                else if(fieldKey.contains('endDate')) {
+                    queryCols << "create_cell('${format}', to_char(tc_end_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), null) as coverageEndDate"
+                }
+                else if(fieldKey.contains('endVolume')) {
+                    queryCols << "create_cell('${format}', tc_end_volume, null) as coverageEndVolume"
+                }
+                else if(fieldKey.contains('endIssue')) {
+                    queryCols << "create_cell('${format}', tc_end_issue, null) as coverageEndIssue"
+                }
+            }
+            else if (fieldKey.contains('listPriceEUR')) {
+                queryCols << "create_cell('${format}', string_agg((select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :euro),';'), null) as listPriceEUR"
+                queryArgs.euro = RDStore.CURRENCY_EUR.id
+            }
+            else if (fieldKey.contains('listPriceGBP')) {
+                queryCols << "create_cell('${format}', string_agg((select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :gbp),';'), null) as listPriceGBP"
+                queryArgs.gbp = RDStore.CURRENCY_GBP.id
+            }
+            else if (fieldKey.contains('listPriceUSD')) {
+                queryCols << "create_cell('${format}', string_agg((select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :usd),';'), null) as listPriceUSD"
+                queryArgs.usd = RDStore.CURRENCY_USD.id
+            }
+            else if (fieldKey.contains('localPriceEUR')) {
+                queryCols << "create_cell('${format}', string_agg((select trim(to_char(pi_local_price, '999999999D99')) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :leuro),';'), null) as localPriceEUR"
+                queryArgs.leuro = RDStore.CURRENCY_EUR.id
+            }
+            else if (fieldKey.contains('localPriceGBP')) {
+                queryCols << "create_cell('${format}', string_agg((select trim(to_char(pi_local_price, '999999999D99')) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :lgbp),';'), null) as localPriceGBP"
+                queryArgs.lgbp = RDStore.CURRENCY_GBP.id
+            }
+            else if (fieldKey.contains('localPriceUSD')) {
+                queryCols << "create_cell('${format}', string_agg((select trim(to_char(pi_local_price, '999999999D99')) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = :lusd),';'), null) as localPriceUSD"
+                queryArgs.lusd = RDStore.CURRENCY_USD.id
+            }
+            else {
+                if(sqlCol.contains('rv_fk')) {
+                    queryCols << "create_cell('${format}', (select ${rdCol} from refdata_value where rdv_id = ${sqlCol}), null) as ${field}"
+                }
+                else if(sqlCol.containsIgnoreCase('date')) {
+                    queryCols << "create_cell('${format}', to_char(${sqlCol}, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), null) as ${field}"
+                }
+                else {
+                    queryCols << "create_cell('${format}', ${sqlCol}, null) as ${field}"
+                }
+            }
+        }
+        String query = "select ${queryCols.join(',')} from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id left join tippcoverage on tc_tipp_fk = tipp_id where ie_id = any(:ieIDs)"
+        result.addAll(batchQueryService.longArrayQuery(query, [ieIDs: ieIDs], queryArgs).collect { GroovyRowResult row -> row.values() })
+        result
+        /*
+        result = exportService.getIssueEntitlement(result)
+
+        DecimalFormat df = new DecimalFormat("###,##0.00")
+        df.decimalFormatSymbols = new DecimalFormatSymbols(LocaleUtils.getCurrentLocale())
+        selectedFields.keySet().each { String fieldKey ->
+            //long start = System.currentTimeMillis()
+            Map mapSelecetedFields = selectedFields.get(fieldKey)
+            String field = mapSelecetedFields.field
+            if(!mapSelecetedFields.separateSheet) {
+                if (fieldKey.startsWith('issueEntitlementIdentifiers.')) {
+                        if (result) {
+                            Long id = Long.parseLong(fieldKey.split("\\.")[1])
+                            List<Identifier> identifierList = Identifier.executeQuery("select ident from Identifier ident where ident.tipp = :tipp and ident.ns.id in (:namespaces)", [tipp: result.tipp, namespaces: [id]])
+                            if (identifierList) {
+                                row.add(createTableCell(format, identifierList.value.join(";")))
+                            } else {
+                                row.add(createTableCell(format, ' '))
+                            }
+                        } else {
+                            row.add(createTableCell(format, ' '))
+                        }
+                }
+                else if (fieldKey.contains('subscription.consortium')) {
+                    row.add(createTableCell(format, result.subscription.getConsortium()?.name))
+                }
+                else if (fieldKey.contains('tipp.ddcs')) {
+                    row.add(createTableCell(format, result.tipp.ddcs.collect {"${it.ddc.value} - ${it.ddc.getI10n("value")}"}.join(";")))
+                }
+                else if (fieldKey.contains('tipp.languages')) {
+                    row.add(createTableCell(format, result.tipp.languages.collect {"${it.language.getI10n("value")}"}.join(";")))
+                }else if (fieldKey.contains('perpetualAccessBySub')) {
+                    String perpetualAccessBySub = result.perpetualAccessBySub ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')
+                    row.add(createTableCell(format, perpetualAccessBySub))
+                }
+                else if (fieldKey.startsWith('coverage.')) {
+                    AbstractCoverage covStmt = exportService.getCoverageStatement(result)
+                    String coverageField = fieldKey.split("\\.")[1]
+
+                    def fieldValue = covStmt ? _getFieldValue(covStmt, coverageField, sdf) : null
+                    String fieldValStr = fieldValue != null ? fieldValue : ' '
+                    row.add(createTableCell(format, fieldValStr))
+                }
+                else if (fieldKey.contains('listPriceEUR')) {
+                    LinkedHashSet<PriceItem> priceItemsList = result.tipp.priceItems.findAll { it.listCurrency == RDStore.CURRENCY_EUR }
+
+                    if (priceItemsList) {
+                        row.add(createTableCell(format, priceItemsList.collect {df.format(it.listPrice)}.join(";")))
+                    } else {
+                        row.add(createTableCell(format, ' '))
+                    }
+                }
+                else if (fieldKey.contains('listPriceGBP')) {
+                    PriceItem priceItem = result.tipp.priceItems.find { it.listCurrency == RDStore.CURRENCY_GBP }
+
+                    if (priceItem) {
+                        row.add(createTableCell(format, df.format(priceItem.listPrice)))
+                    } else {
+                        row.add(createTableCell(format, ' '))
+                    }
+                }
+                else if (fieldKey.contains('listPriceUSD')) {
+                    PriceItem priceItem = result.tipp.priceItems.find { it.listCurrency == RDStore.CURRENCY_USD }
+
+                    if (priceItem) {
+                        row.add(createTableCell(format, df.format(priceItem.listPrice)))
+                    } else {
+                        row.add(createTableCell(format, ' '))
+                    }
+                }
+                else if (fieldKey.contains('localPriceEUR')) {
+                    PriceItem priceItem = result.priceItems.find { it.localCurrency == RDStore.CURRENCY_EUR }
+
+                    if (priceItem) {
+                        row.add(createTableCell(format, df.format(priceItem.localPrice)))
+                    } else {
+                        row.add(createTableCell(format, ' '))
+                    }
+                }
+                else if (fieldKey.contains('localPriceGBP')) {
+                    PriceItem priceItem = result.priceItems.find { it.localCurrency == RDStore.CURRENCY_GBP }
+
+                    if (priceItem) {
+                        row.add(createTableCell(format, df.format(priceItem.localPrice)))
+                    } else {
+                        row.add(createTableCell(format, ' '))
+                    }
+                }
+                else if (fieldKey.contains('localPriceUSD')) {
+                    PriceItem priceItem = result.priceItems.find { it.localCurrency == RDStore.CURRENCY_USD }
+
+                    if (priceItem) {
+                        row.add(createTableCell(format, df.format(priceItem.localPrice)))
+                    } else {
+                        row.add(createTableCell(format, ' '))
+                    }
+                }
+                else {
+                    def fieldValue = _getFieldValue(result, field, sdf)
+                    String fieldValStr = fieldValue != null ? fieldValue : ' '
+                    row.add(createTableCell(format, fieldValStr))
+                }
+            }
+            //log.debug("time needed for ${fieldKey}: ${System.currentTimeMillis()-start} msecs")
+        }
+        exportData.add(row)
+        */
+    }
+
+    /**
+     * Fills a row for the issue entitlement export
      * @param result the issue entitlement to export
      * @param selectedFields the fields which should appear
      * @param exportData the list containing the export rows
      * @param format the {@link FORMAT} to be exported
      */
+    @Deprecated
     private void _setIeRow(def result, Map<String, Object> selectedFields, List exportData, FORMAT format){
         List row = []
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -6622,6 +6843,7 @@ class ExportClickMeService {
      * @param exportData the list containing the export rows
      * @param format the {@link FORMAT} to be exported
      */
+    @Deprecated
     private void _setTippRow(def result, Map<String, Object> selectedFields, List exportData, FORMAT format){
         List row = []
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()

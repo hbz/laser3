@@ -105,7 +105,7 @@ class ClickMeController {
                 result.subscription = Subscription.get(params.id)
                 result.formFields = exportClickMeService.getExportIssueEntitlementFieldsForUI()
                 result.exportController = 'subscription'
-                result.exportAction = 'index'
+                result.exportAction = 'exportHolding'
                 result.exportFileName = result.exportFileName ?: escapeService.escapeString(result.subscription.name) + "_" + message(code:'default.ie')
                 break
             case ExportClickMeService.LICENSES:

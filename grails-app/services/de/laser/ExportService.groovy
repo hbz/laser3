@@ -1,5 +1,6 @@
 package de.laser
 
+import com.sun.source.doctree.DeprecatedTree
 import de.laser.addressbook.Contact
 import de.laser.addressbook.Person
 import de.laser.addressbook.PersonRole
@@ -4126,6 +4127,7 @@ class ExportService {
 	 * @param rowData the object containing the title
 	 * @return the {@link TitleInstancePackagePlatform} title instance
 	 */
+	@Deprecated
 	TitleInstancePackagePlatform getTipp(rowData) {
 		if(rowData instanceof IssueEntitlement) {
 			return rowData.tipp
@@ -4149,6 +4151,7 @@ class ExportService {
 	 * If there are more than one coverage statements for a title, the set of coverages is processed in
 	 * a loop elsewhere
 	 */
+	@Deprecated
 	AbstractCoverage getCoverageStatement(rowData) {
 		if(rowData instanceof IssueEntitlement) {
 			return rowData.coverages.size() == 1 ? (IssueEntitlementCoverage) rowData.coverages[0] : null
