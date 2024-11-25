@@ -5,6 +5,10 @@ import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.storage.BeanStore
 import de.laser.survey.SurveyInfo
 import de.laser.utils.SqlDateUtils
+import de.laser.wekb.Provider
+import de.laser.wekb.Vendor
+import groovy.util.logging.Slf4j
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.MessageSource
 
 /**
@@ -13,6 +17,7 @@ import org.springframework.context.MessageSource
  * @see DashboardDueDatesService
  * @see de.laser.jobs.DashboardDueDatesJob
  */
+@Slf4j
 class DashboardDueDate {
 
     User responsibleUser
@@ -109,6 +114,50 @@ class DashboardDueDate {
     static isManualCancellationDate(def obj, User user){
         int reminderPeriodForManualCancellationDate = user.getSetting(UserSetting.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, UserSetting.DEFAULT_REMINDER_PERIOD).value ?: 1
         return (obj.manualCancellationDate && SqlDateUtils.isDateBetweenTodayAndReminderPeriod(obj.manualCancellationDate, reminderPeriodForManualCancellationDate))
+    }
+
+    static DashboardDueDate getByObjectAndAttributeNameAndResponsibleUser(def object, String attributeName, User user) {
+
+        // TODO: ERMS-5862
+
+        DashboardDueDate ddd
+        String query
+
+        object = GrailsHibernateUtil.unwrapIfProxy(object)
+        
+             if (object instanceof License)     { query = 'license' }
+        else if (object instanceof Org)         { query = 'org' }
+        else if (object instanceof Provider)    { query = 'provider' }
+        else if (object instanceof Subscription){ query = 'subscription' }
+        else if (object instanceof SurveyInfo)  { query = 'surveyInfo' }
+        else if (object instanceof Task)        { query = 'task' }
+        else if (object instanceof Vendor)      { query = 'vendor' }
+        else if (object instanceof AbstractPropertyWithCalculatedLastUpdated) {
+                 query  = 'propertyOID'
+                 object = "${object.class.name}:${object.id}"   // TODO
+        }
+        else {
+                 query  = 'oid'
+                 object = "${object.class.name}:${object.id}"   // FALLBACK
+        }
+
+        if (query && attributeName && user) {
+            ddd = DashboardDueDate.executeQuery(
+                    'select das from DashboardDueDate das join das.dueDateObject ddo ' +
+                    'where das.responsibleUser = :user and ddo.' + query + ' = :obj and ddo.attribute_name = :attributeName ' +
+                    'order by ddo.date',
+                    [
+                        user: user,
+                        obj: object,
+                        attributeName: attributeName,
+                    ]
+            )[0]
+        }
+        else {
+            log.warn 'DashboardDueDate.getByObjectAndAttributeNameAndResponsibleUser( ' + object + ', ' + attributeName + ', ' + user + ' ) FAILED'
+        }
+
+        return ddd
     }
 
     /**

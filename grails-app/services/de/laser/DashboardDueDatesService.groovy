@@ -78,6 +78,8 @@ class DashboardDueDatesService {
                 log.debug("Start DashboardDueDatesService takeCareOfDueDates")
 //                SystemEvent.createEvent('DBDD_SERVICE_START_1')
 
+                _removeInvalidDueDates()
+
                 if (isUpdateDashboardTableInDatabase) {
                     flash = _updateDashboardTableInDatabase(flash)
                 }
@@ -98,6 +100,23 @@ class DashboardDueDatesService {
                 update_running = false
             }
             return true
+        }
+    }
+
+    private _removeInvalidDueDates() {
+        log.debug '_removeInvalidDueDates' // missing fk constraint
+
+        DueDateObject.executeQuery('select ddo.id, ddo.oid from DueDateObject ddo order by ddo.id').each {
+
+            if (!genericOIDService.existsOID(it[1])) {
+                List<Long> ddd = DashboardDueDate.executeQuery('select ddd.id from DashboardDueDate ddd where ddd.dueDateObject.id = :id', [ id: it[0]])
+                log.debug 'remove outdated DueDateObject/DashboardDueDate: ' + it + ' <- ' + ddd
+
+                ddd.each { did ->
+                    DashboardDueDate.get(did).delete()
+                }
+                DueDateObject.get(it[0]).delete()
+            }
         }
     }
 
@@ -129,8 +148,9 @@ class DashboardDueDatesService {
                              oid: oid
                             ])[0]
                     // TODO ERMS-5862
+//                    das = DashboardDueDate.getByObjectAndAttributeNameAndResponsibleUser(obj, attributeName, user)
 
-                    if (das) {
+                    if (das) { //update
                         das.update(obj)
                         log.debug("DashboardDueDatesService UPDATE: " + das);
                     }
@@ -226,8 +246,8 @@ class DashboardDueDatesService {
             List<Map<String, Object>> dueDateRows = []
             dashboardEntries.each { DashboardDueDate dashDueDate ->
                 Map<String, Object> dashDueDateRow = [:]
-//                def obj = genericOIDService.resolveOID(dashDueDate.dueDateObject.oid)
-                def obj = dashDueDate.dueDateObject.getObject() // TODO ERMS-5862
+                def obj = genericOIDService.resolveOID(dashDueDate.dueDateObject.oid)
+//                def obj = dashDueDate.dueDateObject.getObject() // TODO ERMS-5862
 
                 if (obj) {
                     if(userLang == RDStore.LANGUAGE_DE)
