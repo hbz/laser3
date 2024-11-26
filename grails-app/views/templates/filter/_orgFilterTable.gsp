@@ -777,7 +777,7 @@
                                         <td>
                                             ${costItem.billingCurrency?.getI10n('value')}
                                         </td>
-                                        <td>
+                                        <td style="${(costItem.startDate && costItem.endDate && ChronoUnit.DAYS.between(DateUtils.dateToLocalDate(costItem.startDate), DateUtils.dateToLocalDate(costItem.endDate)) < 364) ? 'background: #FFBF00 !important;' : ''}">
                                             <g:if test="${costItem.startDate || costItem.endDate}">
                                                 ${costItem.startDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.startDate) : ''} - ${costItem.endDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.endDate) : ''}
                                             </g:if>
