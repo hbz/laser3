@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6100    26.11.2024  rc-3.4  3.4.16      Andreas Bug         Ausgabe der Nutzerzahlen korrigiert
+
 6088    21.11.2024  rc-3.4  3.4.15      Andreas Bug         Skript zur Korrektur fehlerhafter URL
 
 6087    21.11.2024  rc-3.4  3.4.15      Andreas Bug         inkorrekte Verarbeitung massenausgeschütteter Kosten

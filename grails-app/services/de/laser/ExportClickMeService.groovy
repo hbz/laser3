@@ -7216,9 +7216,11 @@ class ExportClickMeService {
 
                 if(readerNumberStaffWithDueDate){
                     sum = sum + (readerNumberStaffWithDueDate.value != null ? readerNumberStaffWithDueDate.value : 0)
+                    sumStudHeads += (readerNumberStaffWithDueDate.value != null ? readerNumberStaffWithDueDate.value : 0)
                 }
                 if(readerNumberFTEWithDueDate){
                     sum = sum + (readerNumberFTEWithDueDate.value != null ? readerNumberFTEWithDueDate.value : 0)
+                    sumStudFTE += (readerNumberFTEWithDueDate.value != null ? readerNumberFTEWithDueDate.value : 0)
                 }
 
                 row.add(createTableCell(format, sumStudFTE))
