@@ -55,6 +55,7 @@ import org.springframework.web.multipart.MultipartFile
 
 import javax.sql.DataSource
 import java.math.RoundingMode
+import java.sql.Array
 import java.sql.Timestamp
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -346,7 +347,9 @@ class SubscriptionControllerService {
                 Map<String, Object> titles = [:] //structure: namespace -> value -> tipp
                 //Set<TitleInstancePackagePlatform> titlesSorted = [] //fallback structure to preserve sorting
                 if(params.reportType in Counter4Report.COUNTER_4_TITLE_REPORTS || params.reportType in Counter5Report.COUNTER_5_TITLE_REPORTS) {
-                    titles = fetchTitles(refSub)
+                    Map<String, Object> idSubsetQueryParams = [refSub: refSub, current: RDStore.TIPP_STATUS_CURRENT]
+                    Object[] titleArray = TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp, SubscriptionPackage sp where tipp.pkg = sp.pkg and sp.subscription = :refSub and tipp.status = :current', idSubsetQueryParams).toArray()
+                    titles = fetchTitles(titleArray)
                 }
                 Map<String, Object> dateRanges = getDateRange(params, refCostItems)
                 if(dateRanges.containsKey('alternatePeriodStart') && dateRanges.containsKey('alternatePeriodEnd')){
@@ -885,7 +888,7 @@ class SubscriptionControllerService {
      * @param refSub the {@link Subscription} whose entitlements should be queried; if none existent, the underlying package's are being queried
      * @return
      */
-    Map<String, Object> fetchTitles(Subscription refSub, boolean allTitles = false) {
+    Map<String, Object> fetchTitles(Object[] titleSet) {
         Map<String, Object> result = [:]
         /*
         desired:
@@ -908,39 +911,36 @@ class SubscriptionControllerService {
             }
         }
          */
-        String query
-        if(allTitles) {
-            query = "select * from " +
-                    "(select json_agg(json_build_object(id_value, id_tipp_fk)) as print_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_sub_fk = :refSub and tipp_status_rv_fk = :current and idns_ns = any(:printIdentifiers)) as print," +
-                    "(select json_agg(json_build_object(id_value, id_tipp_fk)) as online_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_sub_fk = :refSub and tipp_status_rv_fk = :current and idns_ns = any(:onlineIdentifiers)) as online," +
-                    "(select json_agg(json_build_object(id_value, id_tipp_fk)) as doi from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_sub_fk = :refSub and tipp_status_rv_fk = :current and idns_ns = :doi) as doi," +
-                    "(select json_agg(json_build_object(tipp_host_platform_url, tipp_id)) as url from title_instance_package_platform join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_sub_fk = :refSub and tipp_status_rv_fk = :current) as url," +
-                    "(select json_agg(json_build_object(id_value, id_tipp_fk)) as proprietary_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_sub_fk = :refSub and tipp_status_rv_fk = :current and idns_ns = :proprietary) as proprietary"
-        }
-        else {
-            query = "select * from " +
-                    "(select json_agg(json_build_object(id_value, id_tipp_fk)) as print_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on id_tipp_fk = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current and idns_ns = any(:printIdentifiers)) as print," +
-                    "(select json_agg(json_build_object(id_value, id_tipp_fk)) as online_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on id_tipp_fk = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current and idns_ns = any(:onlineIdentifiers)) as online," +
-                    "(select json_agg(json_build_object(id_value, id_tipp_fk)) as doi from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on id_tipp_fk = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current and idns_ns = :doi) as doi," +
-                    "(select json_agg(json_build_object(tipp_host_platform_url, tipp_id)) as url from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current) as url," +
-                    "(select json_agg(json_build_object(id_value, id_tipp_fk)) as proprietary_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on id_tipp_fk = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current and idns_ns = :proprietary) as proprietary"
-        }
         Sql sql = GlobalService.obtainSqlConnection()
         Object[] printIdentifierNamespaces = [IdentifierNamespace.ISBN, IdentifierNamespace.ISSN], onlineIdentifierNamespaces = [IdentifierNamespace.EISBN, IdentifierNamespace.EISSN]
-        Map<String, Object> queryParams = [refSub: refSub.id, current: RDStore.TIPP_STATUS_CURRENT.id, printIdentifiers: sql.getDataSource().getConnection().createArrayOf('varchar', printIdentifierNamespaces), onlineIdentifiers: sql.getDataSource().getConnection().createArrayOf('varchar', onlineIdentifierNamespaces), doi: IdentifierNamespace.DOI, proprietary: IdentifierNamespace.TITLE_ID] //current for now
+        Array titleIDs = sql.getDataSource().getConnection().createArrayOf('bigint', titleSet)
         JsonSlurper slurper = new JsonSlurper()
-        List<GroovyRowResult> rows = sql.rows(query, queryParams)
         Map<String, String> printIdentifiers = [:], onlineIdentifiers = [:], doi = [:], url = [:], proprietaryIdentifiers = [:]
-        List printIds = rows[0]['print_identifier'] ? slurper.parseText(rows[0]['print_identifier'].toString()) : [],
-        onlineIds = rows[0]['online_identifier'] ? slurper.parseText(rows[0]['online_identifier'].toString()) : [],
-        dois = rows[0]['doi'] ? slurper.parseText(rows[0]['doi'].toString()) : [],
-        urls = rows[0]['url'] ? slurper.parseText(rows[0]['url'].toString()) : [],
-        propIds = rows[0]['proprietary_identifier'] ? slurper.parseText(rows[0]['proprietary_identifier'].toString()) : []
-        printIdentifiers.putAll(printIds.collectEntries { row -> [row.entrySet()[0].getKey(), row.entrySet()[0].getValue()] })
-        onlineIdentifiers.putAll(onlineIds.collectEntries { row -> [row.entrySet()[0].getKey(), row.entrySet()[0].getValue()] })
-        doi.putAll(dois.collectEntries { row -> [row.entrySet()[0].getKey(), row.entrySet()[0].getValue()] })
-        url.putAll(urls.collectEntries { row -> [row.entrySet()[0].getKey(), row.entrySet()[0].getValue()] })
-        proprietaryIdentifiers.putAll(propIds.collectEntries { row -> [row.entrySet()[0].getKey(), row.entrySet()[0].getValue()] })
+        List<GroovyRowResult> printIds = sql.rows("select json_agg(json_build_object(id_value, id_tipp_fk)) as print_identifier from identifier join identifier_namespace on id_ns_fk = idns_id where id_tipp_fk = any(:tippIDs) and idns_ns = any(:printIdentifiers)", [printIdentifiers: sql.getDataSource().getConnection().createArrayOf('varchar', printIdentifierNamespaces), tippIDs: titleIDs])
+        List<GroovyRowResult> onlineIds = sql.rows("select json_agg(json_build_object(id_value, id_tipp_fk)) as online_identifier from identifier join identifier_namespace on id_ns_fk = idns_id where id_tipp_fk = any(:tippIDs) and idns_ns = any(:onlineIdentifiers)", [onlineIdentifiers: sql.getDataSource().getConnection().createArrayOf('varchar', onlineIdentifierNamespaces), tippIDs: titleIDs])
+        List<GroovyRowResult> dois = sql.rows("select json_agg(json_build_object(id_value, id_tipp_fk)) as doi from identifier join identifier_namespace on id_ns_fk = idns_id where id_tipp_fk = any(:tippIDs) and idns_ns = :doi", [doi: IdentifierNamespace.DOI, tippIDs: titleIDs])
+        List<GroovyRowResult> urls = sql.rows("select json_agg(json_build_object(tipp_host_platform_url, tipp_id)) as url from title_instance_package_platform where tipp_id = any(:tippIDs)", [tippIDs: titleIDs])
+        List<GroovyRowResult> propIds = sql.rows("select json_agg(json_build_object(id_value, id_tipp_fk)) as proprietary_identifier from identifier join identifier_namespace on id_ns_fk = idns_id where id_tipp_fk = any(:tippIDs) and idns_ns = :proprietary", [tippIDs: titleIDs, proprietary: IdentifierNamespace.TITLE_ID])
+        if(printIds[0]['print_identifier']) {
+            List records = slurper.parseText(printIds[0]['print_identifier'].toString())
+            printIdentifiers.putAll(records.collectEntries { row -> [row.entrySet()[0].getKey(), row.entrySet()[0].getValue()] })
+        }
+        if(onlineIds[0]['online_identifier']) {
+            List records = slurper.parseText(onlineIds[0]['online_identifier'].toString())
+            onlineIdentifiers.putAll(records.collectEntries { row -> [row.entrySet()[0].getKey(), row.entrySet()[0].getValue()] })
+        }
+        if(dois[0]['doi']) {
+            List records = slurper.parseText(dois[0]['doi'].toString())
+            doi.putAll(records.collectEntries { row -> [row.entrySet()[0].getKey(), row.entrySet()[0].getValue()] })
+        }
+        if(urls[0]['url']) {
+            List records = slurper.parseText(urls[0]['url'].toString())
+            url.putAll(records.collectEntries { row -> [row.entrySet()[0].getKey(), row.entrySet()[0].getValue()] })
+        }
+        if(propIds[0]['proprietary_identifier']) {
+            List records = slurper.parseText(propIds[0]['proprietary_identifier'].toString())
+            proprietaryIdentifiers.putAll(records.collectEntries { row -> [row.entrySet()[0].getKey(), row.entrySet()[0].getValue()] })
+        }
         result.put('printIdentifiers', printIdentifiers)
         result.put('onlineIdentifiers', onlineIdentifiers)
         result.put('doi', doi)

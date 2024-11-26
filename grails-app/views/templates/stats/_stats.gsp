@@ -314,32 +314,34 @@
                         platforms: platforms,
                         customer: '${subscription.getSubscriberRespConsortia().globalUID}',
                         subscription: ${subscription.id}
-    }
-}).done(function(response) {
-    $('.dynFilter').remove();
-    $('#filterDropdownWrapper').append(response);
-    $('#generateReport, #generateCostPerUse').removeAttr('disabled');
-    r2d2.initDynamicUiStuff('#filterDropdownWrapper');
-});
-});
-$("#generateCostPerUse").on('click', function() {
-$('#globalLoadingIndicator').show();
-let fd = new FormData($('#stats')[0]);
-fd.append('startDate',startDate);
-fd.append('endDate',endDate);
-$.ajax({
-    url: "<g:createLink controller="ajax" action="generateCostPerUse"/>",
-                    data: fd,
-                    type: 'POST',
-                    processData: false,
-                    contentType: false
-                }).done(function(response){
-                    $("#reportWrapper").html(response);
-                    $('#globalLoadingIndicator').hide();
+                    }
+                }).done(function(response) {
+                    $('.dynFilter').remove();
+                    $('#filterDropdownWrapper').append(response);
+                    $('#generateReport, #generateCostPerUse').removeAttr('disabled');
+                    r2d2.initDynamicUiStuff('#filterDropdownWrapper');
                 });
-            });
+                });
+                $("#generateCostPerUse").on('click', function() {
+                    $('#globalLoadingIndicator').show();
+                    $('#reportWrapper').hide();
+                    let fd = new FormData($('#stats')[0]);
+                    fd.append('startDate',startDate);
+                    fd.append('endDate',endDate);
+                    $.ajax({
+                        url: "<g:createLink controller="ajax" action="generateCostPerUse"/>",
+                        data: fd,
+                        type: 'POST',
+                        processData: false,
+                        contentType: false
+                    }).done(function(response){
+                        $("#reportWrapper").html(response).show();
+                        $('#globalLoadingIndicator').hide();
+                    });
+                });
             $("#generateReport").on('click', function() {
                 $('#progressIndicator').show();
+                $('#reportWrapper').hide();
                 let fd = new FormData($('#stats')[0]);
                 fd.append('startDate',startDate);
                 fd.append('endDate',endDate);
@@ -350,7 +352,7 @@ $.ajax({
                     processData: false,
                     contentType: false
                 }).done(function(response){
-                    $("#reportWrapper").html(response);
+                    $("#reportWrapper").html(response).show();
                     $('#progressIndicator').hide();
                 });
                 checkProgress();
