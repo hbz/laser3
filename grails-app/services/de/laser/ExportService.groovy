@@ -1,24 +1,16 @@
 package de.laser
 
-import com.sun.source.doctree.DeprecatedTree
-import de.laser.addressbook.Contact
-import de.laser.addressbook.Person
-import de.laser.addressbook.PersonRole
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.base.AbstractReport
 import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
-import de.laser.finance.BudgetCode
-import de.laser.finance.CostItem
-import de.laser.finance.CostItemGroup
 import de.laser.finance.PriceItem
 import de.laser.helper.Profiler
 import de.laser.http.BasicHttpClient
 import de.laser.remote.ApiSource
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
-import de.laser.base.AbstractCoverage
 import de.laser.storage.RDConstants
 import de.laser.system.SystemEvent
 import de.laser.utils.DateUtils
@@ -27,15 +19,11 @@ import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
 import de.laser.utils.LocaleUtils
 import de.laser.wekb.Platform
-import de.laser.wekb.Provider
-import de.laser.wekb.TIPPCoverage
 import de.laser.wekb.TitleInstancePackagePlatform
-import de.laser.wekb.Vendor
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.GroovyRowResult
-import groovy.sql.Sql
 import groovy.xml.StreamingMarkupBuilder
 import groovy.xml.slurpersupport.GPathResult
 import org.apache.poi.POIXMLProperties
@@ -54,7 +42,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.springframework.context.MessageSource
 
 import java.awt.*
-import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
@@ -254,274 +241,6 @@ class ExportService {
     }
 
 	/**
-	 * Prepares the given collection of institutions or organisations for the export in the given format
-	 * @param orgs the collection of organisations (or institutions) to export
-	 * @param message the title of the Excel worksheet
-	 * @param addHigherEducationTitles should be columns included which count only for institutions?
-	 * @param format the file format for the export
-	 * @return depending on the format, an Excel worksheet or a CSV file
-	 */
-	def exportOrg(Collection orgs, String message, boolean addHigherEducationTitles, String format) {
-		Locale locale = LocaleUtils.getCurrentLocale()
-		List titles = [messageSource.getMessage('org.sortname.label',null,locale), 'Name', messageSource.getMessage('globalUID.label',null,locale)]
-
-
-		if (addHigherEducationTitles) {
-			titles.add(messageSource.getMessage('org.libraryType.label',null,locale))
-			titles.add(messageSource.getMessage('org.libraryNetwork.label',null,locale))
-			titles.add(messageSource.getMessage('org.funderType.label',null,locale))
-			titles.add(messageSource.getMessage('org.region.label',null,locale))
-			titles.add(messageSource.getMessage('org.country.label',null,locale))
-		}
-
-		titles.add(messageSource.getMessage('subscription.details.startDate',null,locale))
-		titles.add(messageSource.getMessage('subscription.details.endDate',null,locale))
-		titles.add(messageSource.getMessage('subscription.isPublicForApi.label',null,locale))
-		titles.add(messageSource.getMessage('subscription.hasPerpetualAccess.label',null,locale))
-		titles.add(messageSource.getMessage('default.status.label',null,locale))
-		titles.add(RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value'))
-		//titles.add(RefdataValue.getByValueAndCategory('Functional contact', RDConstants.PERSON_CONTACT_TYPE).getI10n('value'))
-
-		def propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
-
-		propList.sort { a, b -> a.name.compareToIgnoreCase b.name }
-
-		propList.each {
-			titles.add(it.name)
-		}
-
-		orgs.sort { it.sortname } //see ERMS-1196. If someone finds out how to put order clauses into GORM domain class mappings which include a join, then OK. Otherwise, we must do sorting here.
-		try {
-			if(format == "xlsx") {
-
-				XSSFWorkbook workbook = new XSSFWorkbook()
-				POIXMLProperties xmlProps = workbook.getProperties()
-				POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
-				coreProps.setCreator(messageSource.getMessage('laser',null,locale))
-				SXSSFWorkbook wb = new SXSSFWorkbook(workbook,50,true)
-
-				Sheet sheet = wb.createSheet(message)
-
-				//the following three statements are required only for HSSF
-				sheet.setAutobreaks(true)
-				sheet.trackAllColumnsForAutoSizing()
-
-				//the header row: centered text in 48pt font
-				Row headerRow = sheet.createRow(0)
-				headerRow.setHeightInPoints(16.75f)
-				titles.eachWithIndex { titlesName, index ->
-					Cell cell = headerRow.createCell(index)
-					cell.setCellValue(titlesName)
-				}
-
-				//freeze the first row
-				sheet.createFreezePane(0, 1)
-
-				Row row
-				Cell cell
-				int rownum = 1
-
-				orgs.each { org ->
-					int cellnum = 0
-					row = sheet.createRow(rownum)
-
-					//Sortname
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(org.sortname ?: '')
-
-					//Name
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(org.name ?: '')
-
-					//subscription globalUID
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(org.globalUID)
-
-					if (addHigherEducationTitles) {
-
-						//libraryType
-						cell = row.createCell(cellnum++)
-						cell.setCellValue(org.libraryType?.getI10n('value') ?: ' ')
-
-						//libraryNetwork
-						cell = row.createCell(cellnum++)
-						cell.setCellValue(org.libraryNetwork?.getI10n('value') ?: ' ')
-
-						//funderType
-						cell = row.createCell(cellnum++)
-						cell.setCellValue(org.funderType?.getI10n('value') ?: ' ')
-
-						//region
-						cell = row.createCell(cellnum++)
-						cell.setCellValue(org.region?.getI10n('value') ?: ' ')
-
-						//country
-						cell = row.createCell(cellnum++)
-						cell.setCellValue(org.country?.getI10n('value') ?: ' ')
-					}
-
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(org.startDate) //null check done already in calling method
-
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(org.endDate) //null check done already in calling method
-
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(org.isPublicForApi)
-
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(org.hasPerpetualAccess)
-
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(org.status?.getI10n('value') ?: ' ')
-
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(org.generalContacts ?: '')
-
-					/*cell = row.createCell(cellnum++)
-                    cell.setCellValue('')*/
-
-					propList.each { pd ->
-						def value = ''
-						org.customProperties.each { prop ->
-							if (prop.type.descr == pd.descr && prop.type == pd) {
-								if (prop.type.isIntegerType()) {
-									value = prop.intValue.toString()
-								} else if (prop.type.isStringType()) {
-									value = prop.stringValue ?: ''
-								} else if (prop.type.isBigDecimalType()) {
-									value = prop.decValue.toString()
-								} else if (prop.type.isDateType()) {
-									value = prop.dateValue.toString()
-								} else if (prop.type.isRefdataValueType()) {
-									value = prop.refValue?.getI10n('value') ?: ''
-								}
-							}
-						}
-
-						org.privateProperties.each { prop ->
-							if (prop.type.descr == pd.descr && prop.type == pd) {
-								if (prop.type.isIntegerType()) {
-									value = prop.intValue.toString()
-								} else if (prop.type.isStringType()) {
-									value = prop.stringValue ?: ''
-								} else if (prop.type.isBigDecimalType()) {
-									value = prop.decValue.toString()
-								} else if (prop.type.isDateType()) {
-									value = prop.dateValue.toString()
-								} else if (prop.type.isRefdataValueType()) {
-									value = prop.refValue?.getI10n('value') ?: ''
-								}
-
-							}
-						}
-						cell = row.createCell(cellnum++)
-						cell.setCellValue(value)
-					}
-
-					rownum++
-				}
-
-				for (int i = 0; i < titles.size(); i++) {
-					sheet.autoSizeColumn(i)
-				}
-				// Write the output to a file
-				/* String file = message + ".xlsx"
-                response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
-                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                wb.write(response.outputStream)
-                response.outputStream.flush()
-                response.outputStream.close()
-                wb.dispose() */
-				wb
-			}
-			else if(format == 'csv') {
-				List orgData = []
-				orgs.each{  org ->
-					List row = []
-					//Sortname
-					row.add(org.sortname ? org.sortname.replaceAll(',','') : '')
-					//Name
-					row.add(org.name ? org.name.replaceAll(',','') : '')
-					//subscription globalUID
-					row.add(org.globalUID)
-					if(addHigherEducationTitles) {
-						//libraryType
-						row.add(org.libraryType?.getI10n('value') ?: ' ')
-						//libraryNetwork
-						row.add(org.libraryNetwork?.getI10n('value') ?: ' ')
-						//funderType
-						row.add(org.funderType?.getI10n('value') ?: ' ')
-						//region
-						row.add(org.region?.getI10n('value') ?: ' ')
-						//country
-						row.add(org.country?.getI10n('value') ?: ' ')
-					}
-					//startDate
-					row.add(org.startDate) //null check already done in calling method
-					//endDate
-					row.add(org.endDate) //null check already done in calling method
-					//isPublicForApi
-					row.add(org.isPublicForApi) //null check already done in calling method
-					//hasPerpetualAccess
-					row.add(org.hasPerpetualAccess) //null check already done in calling method
-					//status
-					row.add(org.status?.getI10n('value') ?: ' ')
-					//generalContacts
-					row.add(org.generalContacts ?: '')
-					propList.each { pd ->
-						def value = ''
-						org.customProperties.each{ prop ->
-							if(prop.type.descr == pd.descr && prop.type == pd) {
-								if(prop.type.isIntegerType()){
-									value = prop.intValue.toString()
-								}
-								else if (prop.type.isStringType()){
-									value = prop.stringValue ?: ''
-								}
-								else if (prop.type.isBigDecimalType()){
-									value = prop.decValue.toString()
-								}
-								else if (prop.type.isDateType()){
-									value = prop.dateValue.toString()
-								}
-								else if (prop.type.isRefdataValueType()) {
-									value = prop.refValue?.getI10n('value') ?: ''
-								}
-							}
-						}
-						org.privateProperties.each{ prop ->
-							if(prop.type.descr == pd.descr && prop.type == pd) {
-								if(prop.type.isIntegerType()){
-									value = prop.intValue.toString()
-								}
-								else if (prop.type.isStringType()){
-									value = prop.stringValue ?: ''
-								}
-								else if (prop.type.isBigDecimalType()){
-									value = prop.decValue.toString()
-								}
-								else if (prop.type.isDateType()){
-									value = prop.dateValue.toString()
-								}
-								else if (prop.type.isRefdataValueType()) {
-									value = prop.refValue?.getI10n('value') ?: ''
-								}
-							}
-						}
-						row.add(value.replaceAll(',',';'))
-					}
-					orgData.add(row)
-				}
-				generateSeparatorTableString(titles,orgData,',')
-			}
-		}
-		catch (Exception e) {
-			log.error("Problem", e)
-		}
-	}
-
-	/**
 	 * Retrieves for the given property definition type and organisation of list of headers, containing property definition names. Includes custom and private properties
 	 * @param propDefConst a {@link PropertyDefinition} constant which property definition type should be loaded
 	 * @param contextOrg the context {@link Org}
@@ -604,12 +323,9 @@ class ExportService {
 	 * the title selection survey; then, additional data is needed which is not covered by the COUNTER compliance
 	 * @param params the filter parameter map
 	 * @param data the retrieved and filtered COUNTER data
-	 * @param showPriceDate should price columns be displayed?
-	 * @param showMetricType should the metric type be included (what seems not to be the case per definition in COUNTER 4)?
-	 * @param showOtherData should other data be displayed?
 	 * @return an Excel worksheet of the usage report, either according to the COUNTER 4 or COUNTER 5 format
 	 */
-	Map<String, Object> generateReport(GrailsParameterMap params, Boolean showPriceDate = false, Boolean showMetricType = false, Boolean showOtherData = false) {
+	Map<String, Object> generateReport(GrailsParameterMap params) {
 		EhcacheWrapper userCache = contextService.getUserCache("/subscription/stats")
 		userCache.put('progress', 0)
 		userCache.put('label', 'Bereite Laden vor ...')
@@ -644,18 +360,18 @@ class ExportService {
         Set<String> metricTypes = params.list('metricType')
 		String reportType = params.reportType
 		Map<String, Object> titles = [:] //structure: namespace -> value -> tipp
-		Set<TitleInstancePackagePlatform> titlesSorted = [] //fallback structure to preserve sorting
+		Set titlesSorted = [] //fallback structure to preserve sorting
 		prf.setBenchmark('prepare title identifier map')
         if(reportType in Counter4Report.COUNTER_4_TITLE_REPORTS || reportType in Counter5Report.COUNTER_5_TITLE_REPORTS) {
 			userCache.put('label', 'Hole Titel ...')
-			titles = subscriptionControllerService.fetchTitles(refSub, allTitles)
-			userCache.put('progress', 10)
-			Map<String, Object> sortedTitlesQueryParams = [refSub: refSub, current: RDStore.TIPP_STATUS_CURRENT]
-			if(!allTitles) {
-				titlesSorted = TitleInstancePackagePlatform.executeQuery('select ie.tipp from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :refSub and ie.status = :current order by tipp.sortname, tipp.name', sortedTitlesQueryParams)
+			Map<String, Object> idSubsetQueryParams = [refSub: refSub, current: RDStore.TIPP_STATUS_CURRENT]
+			if(allTitles) {
+				titlesSorted = IssueEntitlement.executeQuery('select new map(tipp.id as tippID, tipp.name as tippName) from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :refSub and ie.status = :current order by tipp.sortname', idSubsetQueryParams)
 			}
-			else
-				titlesSorted = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription = :refSub) and tipp.status = :current order by tipp.sortname, tipp.name', sortedTitlesQueryParams)
+			else {
+				titlesSorted = TitleInstancePackagePlatform.executeQuery('select new map(tipp.id as tippID, tipp.name as tippName) from TitleInstancePackagePlatform tipp, SubscriptionPackage sp where tipp.pkg = sp.pkg and sp.subscription = :refSub and tipp.status = :current order by tipp.sortname', idSubsetQueryParams)
+			}
+			titles = subscriptionControllerService.fetchTitles(titlesSorted['tippID'].toArray())
 			userCache.put('progress', 20)
         }
 		//reportTypes.each { String reportType ->
@@ -745,7 +461,7 @@ class ExportService {
 						cell.setCellValue(DateUtils.getSDF_yyyyMMdd().format(new Date()))
 						columnHeaders.addAll(Counter4Report.COLUMN_HEADERS.valueOf(reportType).headers)
 						if(reportType == Counter4Report.JOURNAL_REPORT_5) {
-							Map<String, Object> data = prepareDataWithTitles(titles, propIdNamespace, reportType, requestResponse, showPriceDate, showOtherData)
+							Map<String, Object> data = prepareDataWithTitles(titles, reportType, requestResponse)
 							titleRows = data.titleRows
 							sumsPerYOP = data.sumsPerYOP
 							for(String yop: sumsPerYOP.keySet()) {
@@ -795,7 +511,7 @@ class ExportService {
 								}
 								Cell totalCell = row.createCell(7)
 								int totalCount = 0
-								Map<String, Object> data = prepareDataWithTitles(titles, propIdNamespace, reportType, requestResponse, showPriceDate, showOtherData)
+								Map<String, Object> data = prepareDataWithTitles(titles, reportType, requestResponse)
 								titleRows = data.titleRows
 								int j = 0
 								for(Date month: dateRangeParams.monthsInRing) {
@@ -819,7 +535,7 @@ class ExportService {
 								int totalCount = 0
 								prf.setBenchmark('prepare title rows')
 								//dateRangeParams.dateRange, queryParams,
-								Map<String, Object> data = prepareDataWithTitles(titles, propIdNamespace, reportType, requestResponse, showPriceDate, showOtherData)
+								Map<String, Object> data = prepareDataWithTitles(titles, reportType, requestResponse)
 								titleRows = data.titleRows
 								int j = 0
 								prf.setBenchmark('prepare sum row')
@@ -855,7 +571,7 @@ class ExportService {
 								cell.setCellValue(totalCount)
 								rowno++
 								row = sheet.createRow(rowno)
-								Map<String, Object> data = prepareDataWithTitles(titles, propIdNamespace, reportType, requestResponse, showPriceDate, showOtherData)
+								Map<String, Object> data = prepareDataWithTitles(titles, reportType, requestResponse)
 								titleRows = data.titleRows
 								rowno = 9
 								break
@@ -875,7 +591,7 @@ class ExportService {
 								rowno = 9
 								break
 							case Counter4Report.BOOK_REPORT_5:
-								Map<String, Object> data = prepareDataWithTitles(titles, propIdNamespace, reportType, requestResponse, showPriceDate, showOtherData)
+								Map<String, Object> data = prepareDataWithTitles(titles, reportType, requestResponse)
 								titleRows = data.titleRows
 								if(titleRows) {
 									rowno = 8
@@ -1049,15 +765,15 @@ class ExportService {
 							int i = 0
 							prf.setBenchmark('loop through assembled rows')
 							double pointsPerIteration = 20/titlesSorted.size()
-							for(TitleInstancePackagePlatform title: titlesSorted) {
+							for(Map title: titlesSorted) {
 								Instant start = Instant.now().truncatedTo(ChronoUnit.MICROS)
-								Map metricRow = titleRows.get(title.id)
+								Map metricRow = titleRows.get(title.tippID)
 								if(metricRow) {
 									Map titleRow = metricRow.get(metricType)
 									if(titleRow) {
 										row = sheet.createRow(i+rowno)
 										cell = row.createCell(0)
-										cell.setCellValue(title.name)
+										cell.setCellValue(title.tippName)
 										for(int c = 1; c < columnHeaders.size(); c++) {
 											cell = row.createCell(c)
 											def empty = ""
@@ -1243,13 +959,6 @@ class ExportService {
 						month.add(Calendar.MONTH, 1)
 					}
 				}*/
-				if(showPriceDate) {
-					columnHeaders.addAll(["List Price EUR", "List Price GBP", "List Price USD"])
-				}
-
-				if(showOtherData) {
-					columnHeaders.addAll(["Year First Online", "Date First Online"])
-				}
 
 				row = sheet.createRow(13)
 				columnHeaders.eachWithIndex { String colHeader, int i ->
@@ -1411,7 +1120,7 @@ class ExportService {
 							}
 						}*/
 						break
-					default: data = prepareDataWithTitles(titles, propIdNamespace, reportType, requestResponse, showPriceDate, showOtherData)
+					default: data = prepareDataWithTitles(titles, reportType, requestResponse)
 						titleRows = data.titleRows
 						break
 				}
@@ -1419,9 +1128,9 @@ class ExportService {
 					if(titleRows.size() > 0) {
 						pointsPerIteration = titlesSorted.size()
 						prf.setBenchmark('loop through assembled rows')
-						for(TitleInstancePackagePlatform title: titlesSorted) {
+						for(Map title: titlesSorted) {
 							Instant start = Instant.now().truncatedTo(ChronoUnit.MICROS)
-							Map titleMetrics = titleRows.get(title.id)
+							Map titleMetrics = titleRows.get(title.tippID)
 							for(Map.Entry titleMetric: titleMetrics) {
 								Map titleAccessTypes = titleMetric.getValue()
 								for(Map.Entry titleAccessType: titleAccessTypes) {
@@ -1431,7 +1140,7 @@ class ExportService {
 										Map titleRow = entry.getValue()
 										row = sheet.createRow(i+rowno)
 										cell = row.createCell(0)
-										cell.setCellValue(title.name)
+										cell.setCellValue(title.tippName)
 										for(int c = 1; c < columnHeaders.size(); c++) {
 											cell = row.createCell(c)
 											cell.setCellValue(titleRow.get(columnHeaders[c]) ?: "")
@@ -1494,15 +1203,11 @@ class ExportService {
 	 * The reports exports are COUNTER-compliant unless if used for other purposes which make the
 	 * display of other data necessary as well, i.e. list prices, for pick-and-choose purposes
 	 * @param usages the data to prepare
-	 * @param propIdNamespace the proprietary namespace of the provider
 	 * @param reportType the report type which is about to be exported
-	 * @param showPriceDate should the list price shown?
-	 * @param showMetricType should the metric types be included in the report?
-	 * @param showOtherData should other data being shown as well?
 	 * @param metricType (for COUNTER 4 exports only) the metric typ which should be exported
 	 * @return a map of titles with the row containing the columns as specified for the given report
 	 */
-	Map<String, Object> prepareDataWithTitles(Map<String, Object> titles, IdentifierNamespace propIdNamespace, String reportType, requestResponse, Boolean showPriceDate = false, Boolean showOtherData = false) {
+	Map<String, Object> prepareDataWithTitles(Map<String, Object> titles, String reportType, requestResponse) {
 		EhcacheWrapper userCache = contextService.getUserCache("/subscription/stats")
 		double pointsPerIteration
 		int processed = 0
@@ -1518,15 +1223,11 @@ class ExportService {
 				Long tippID = issueEntitlementService.matchReport(titles, identifierMap)
 				if(tippID) {
 					TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(tippID)
-					Set<Identifier> titleIDs = tipp.ids
-					Set<PriceItem> priceItems = []
-					if(showPriceDate)
-						priceItems.addAll(tipp.priceItems)
 					String isbn = identifierMap.isbn ?: identifierMap.printIdentifier
-					String eisbn = identifierMap.onlineIdentifier
 					String issn = identifierMap.printIdentifier
 					String eissn = identifierMap.onlineIdentifier
 					String doi = identifierMap.doi
+					String proprietary = identifierMap.proprietaryIdentifier
 					//counter 5.0 structure
 					if(reportItem.containsKey('Performance')) {
 						for(Map performance : reportItem.Performance) {
@@ -1534,7 +1235,7 @@ class ExportService {
 							for(Map instance : performance.Instance) {
 								int periodTotal = 0
 								String yopKey = reportItem.containsKey('YOP') && reportItem.get('YOP') != 'null' && reportItem.get('YOP') != null ? reportItem.get('YOP') : 'empty'
-								Map<String, Map<String, Object>> titleMetrics = titleRows.get(tipp.id)
+								Map<String, Map<String, Object>> titleMetrics = titleRows.get(tippID)
 								if(!titleMetrics)
 									titleMetrics = [:]
 								Map<String, Map<String, Object>> titlesByAccessType = titleMetrics.get(instance.Metric_Type)
@@ -1561,7 +1262,7 @@ class ExportService {
 								titleRow.put("Publisher", reportItem.Publisher)
 								//publisher ID is usually not available
 								titleRow.put("Platform", tipp.platform.name)
-								titleRow.put("Proprietary_ID", titleIDs.find { Identifier id -> id.ns == propIdNamespace }?.value)
+								titleRow.put("Proprietary_ID", proprietary)
 								titleRow.put("Metric_Type", instance.Metric_Type)
 								switch(reportType.toLowerCase()) {
 									case Counter5Report.TITLE_MASTER_REPORT:
@@ -1612,18 +1313,6 @@ class ExportService {
 										titleRow.put("URI", tipp.hostPlatformURL)
 										break
 								}
-								if (showPriceDate && priceItems) {
-									//listprice_eur
-									titleRow.put("List Price EUR", priceItems.find { it.listCurrency == RDStore.CURRENCY_EUR }?.listPrice ?: ' ')
-									//listprice_gbp
-									titleRow.put("List Price GBP", priceItems.find { it.listCurrency == RDStore.CURRENCY_GBP }?.listPrice ?: ' ')
-									//listprice_usd
-									titleRow.put("List Price USD", priceItems.find { it.listCurrency == RDStore.CURRENCY_USD }?.listPrice ?: ' ')
-								}
-								if (showOtherData) {
-									titleRow.put("Year First Online", tipp.dateFirstOnline ? DateUtils.getSDF_yyyy().format( tipp.dateFirstOnline ): ' ')
-									titleRow.put("Date First Online", tipp.dateFirstOnline ? DateUtils.getSDF_yyyyMMdd().format( tipp.dateFirstOnline ): ' ')
-								}
 								periodTotal += reportCount
 								titleRow.put("Reporting_Period_Total", periodTotal)
 								//temp solution for journal reports, especially for DUZ, where issues of a journal are currently counted as individual title instances
@@ -1633,7 +1322,7 @@ class ExportService {
 								titlesByYop.put(yopKey, titleRow)
 								titlesByAccessType.put(reportItem.Access_Type, titlesByYop)
 								titleMetrics.put(instance.Metric_Type, titlesByAccessType)
-								titleRows.put(tipp.id, titleMetrics)
+								titleRows.put(tippID, titleMetrics)
 							}
 						}
 					}
@@ -1649,7 +1338,7 @@ class ExportService {
 									for (Map.Entry reportRow : instance.getValue()) {
 										int reportCount = reportRow.getValue() as int
 										Date reportMonth = DateUtils.getSDF_yyyyMM().parse(reportRow.getKey())
-										Map<String, Map<String, Object>> titleMetrics = titleRows.get(tipp.id)
+										Map<String, Map<String, Object>> titleMetrics = titleRows.get(tippID)
 										if (!titleMetrics)
 											titleMetrics = [:]
 										Map<String, Map<String, Object>> titlesByAccessType = titleMetrics.get(metricType)
@@ -1674,7 +1363,7 @@ class ExportService {
 										titleRow.put("Publisher", reportItem.Publisher)
 										//publisher ID is usually not available
 										titleRow.put("Platform", tipp.platform.name)
-										titleRow.put("Proprietary_ID", titleIDs.find { Identifier id -> id.ns == propIdNamespace }?.value)
+										titleRow.put("Proprietary_ID", proprietary)
 										titleRow.put("Metric_Type", metricType)
 										switch (reportType.toLowerCase()) {
 											case Counter5Report.TITLE_MASTER_REPORT:
@@ -1725,18 +1414,6 @@ class ExportService {
 												titleRow.put("URI", tipp.hostPlatformURL)
 												break
 										}
-										if (showPriceDate && priceItems) {
-											//listprice_eur
-											titleRow.put("List Price EUR", priceItems.find { it.listCurrency == RDStore.CURRENCY_EUR }?.listPrice ?: ' ')
-											//listprice_gbp
-											titleRow.put("List Price GBP", priceItems.find { it.listCurrency == RDStore.CURRENCY_GBP }?.listPrice ?: ' ')
-											//listprice_usd
-											titleRow.put("List Price USD", priceItems.find { it.listCurrency == RDStore.CURRENCY_USD }?.listPrice ?: ' ')
-										}
-										if (showOtherData) {
-											titleRow.put("Year First Online", tipp.dateFirstOnline ? DateUtils.getSDF_yyyy().format(tipp.dateFirstOnline) : ' ')
-											titleRow.put("Date First Online", tipp.dateFirstOnline ? DateUtils.getSDF_yyyyMMdd().format(tipp.dateFirstOnline) : ' ')
-										}
 										periodTotal += reportCount
 										titleRow.put("Reporting_Period_Total", periodTotal)
 										//temp solution for journal reports, especially for DUZ, where issues of a journal are currently counted as individual title instances
@@ -1746,7 +1423,7 @@ class ExportService {
 										titlesByYop.put(yopKey, titleRow)
 										titlesByAccessType.put(accessType, titlesByYop)
 										titleMetrics.put(metricType, titlesByAccessType)
-										titleRows.put(tipp.id, titleMetrics)
+										titleRows.put(tippID, titleMetrics)
 									}
 								}
 							}
@@ -1767,9 +1444,6 @@ class ExportService {
 				Long tippID = issueEntitlementService.matchReport(titles, identifierMap)
 				if(tippID) {
 					TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(tippID)
-					Set<PriceItem> priceItems = []
-					if(showPriceDate)
-						priceItems.addAll(tipp.priceItems)
 					String isbn = identifierMap.printIdentifier
 					String eisbn = identifierMap.onlineIdentifier
 					String issn = identifierMap.printIdentifier
@@ -1793,7 +1467,7 @@ class ExportService {
 							countPerMonth += count
 							metricSums.put(reportFrom, countPerMonth)
 							countsPerMonth.put(metricType, metricSums)
-							Map<String, Map<String, Object>> titleMetrics = titleRows.get(tipp.id)
+							Map<String, Map<String, Object>> titleMetrics = titleRows.get(tippID)
 							if(!titleMetrics)
 								titleMetrics = [:]
 							Map<String, Object> titleRow = titleMetrics.get(metricType)
@@ -1878,7 +1552,7 @@ class ExportService {
 									break
 							}
 							titleMetrics.put(metricType, titleRow)
-							titleRows.put(tipp.id, titleMetrics)
+							titleRows.put(tippID, titleMetrics)
 						}
 					}
 				}
@@ -2523,333 +2197,6 @@ class ExportService {
 	}
 
 	/**
-	 * Make a XLSX export of cost item results
-	 * @param result the loaded financial data
-	 * @return a Excel worksheet of the given cost data
-	 */
-	SXSSFWorkbook processFinancialXLSX(Map<String,Object> result) {
-		Locale locale = LocaleUtils.getCurrentLocale()
-		SimpleDateFormat dateFormat = DateUtils.getLocalizedSDF_noTime()
-		XSSFWorkbook workbook = new XSSFWorkbook()
-		POIXMLProperties xmlProps = workbook.getProperties()
-		POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
-		coreProps.setCreator(messageSource.getMessage('laser',null,locale))
-		//LinkedHashMap<Subscription,List<Org>> subscribers = [:]
-		//LinkedHashMap<Subscription,Set<Org>> providers = [:]
-		LinkedHashMap<Subscription, BudgetCode> costItemGroups = [:]
-		XSSFCellStyle csPositive = workbook.createCellStyle()
-		csPositive.setFillForegroundColor(new XSSFColor(new Color(198,239,206)))
-		csPositive.setFillPattern(FillPatternType.SOLID_FOREGROUND)
-		XSSFCellStyle csNegative = workbook.createCellStyle()
-		csNegative.setFillForegroundColor(new XSSFColor(new Color(255,199,206)))
-		csNegative.setFillPattern(FillPatternType.SOLID_FOREGROUND)
-		XSSFCellStyle csNeutral = workbook.createCellStyle()
-		csNeutral.setFillForegroundColor(new XSSFColor(new Color(255,235,156)))
-		csNeutral.setFillPattern(FillPatternType.SOLID_FOREGROUND)
-		SXSSFWorkbook wb = new SXSSFWorkbook(workbook,50)
-		wb.setCompressTempFiles(true)
-		CostItemGroup.findAll().each{ cig -> costItemGroups.put(cig.costItem,cig.budgetCode) }
-		result.cost_item_tabs.entrySet().each { cit ->
-			String sheettitle
-			String viewMode = cit.getKey()
-			switch(viewMode) {
-				case "own": sheettitle = messageSource.getMessage('financials.header.ownCosts',null,locale)
-					break
-				case "cons": sheettitle = messageSource.getMessage('financials.header.consortialCosts',null,locale)
-					break
-				case "subscr": sheettitle = messageSource.getMessage('financials.header.subscriptionCosts',null,locale)
-					break
-			}
-			SXSSFSheet sheet = wb.createSheet(sheettitle)
-			sheet.flushRows(10)
-			sheet.setAutobreaks(true)
-			sheet.trackAllColumnsForAutoSizing()
-			Row headerRow = sheet.createRow(0)
-			headerRow.setHeightInPoints(16.75f)
-			ArrayList titles = [messageSource.getMessage( 'sidewide.number',null,locale)]
-			if(viewMode == "cons")
-				titles.addAll([messageSource.getMessage('org.sortName.label',null,locale),messageSource.getMessage('financials.newCosts.costParticipants',null,locale),messageSource.getMessage('financials.isVisibleForSubscriber',null,locale)])
-			titles.add(messageSource.getMessage( 'financials.newCosts.costTitle',null,locale))
-			if(viewMode == "cons") {
-				titles.add(messageSource.getMessage('provider.label', null, locale))
-				titles.add(messageSource.getMessage('vendor.label', null, locale))
-			}
-			titles.addAll([messageSource.getMessage('default.subscription.label',null,locale), messageSource.getMessage('subscription.startDate.label',null,locale), messageSource.getMessage('subscription.endDate.label',null,locale),
-						   messageSource.getMessage('financials.costItemConfiguration',null,locale), messageSource.getMessage('package.label',null,locale), messageSource.getMessage('issueEntitlement.label',null,locale),
-						   messageSource.getMessage('financials.datePaid',null,locale), messageSource.getMessage('financials.dateFrom',null,locale), messageSource.getMessage('financials.dateTo',null,locale), messageSource.getMessage('financials.financialYear',null,locale),
-						   messageSource.getMessage('default.status.label',null,locale), messageSource.getMessage('default.currency.label',null,locale), messageSource.getMessage('financials.costInBillingCurrency',null,locale),"EUR",
-						   messageSource.getMessage('financials.costInLocalCurrency',null,locale)])
-			if(["own","cons"].indexOf(viewMode) > -1)
-				titles.addAll([messageSource.getMessage('financials.taxRate',null,locale), messageSource.getMessage('default.currency.label',null,locale),messageSource.getMessage('financials.costInBillingCurrencyAfterTax',null,locale),"EUR",messageSource.getMessage('financials.costInLocalCurrencyAfterTax',null,locale)])
-			titles.addAll([messageSource.getMessage('financials.costItemElement',null,locale), messageSource.getMessage('default.description.label',null,locale),
-                           messageSource.getMessage('financials.newCosts.costsReferenceOn',null,locale), messageSource.getMessage('financials.budgetCode',null,locale),
-                           messageSource.getMessage('financials.invoice_number',null,locale), messageSource.getMessage('financials.order_number',null,locale), messageSource.getMessage('globalUID.label',null,locale)])
-			titles.eachWithIndex { titleName, int i ->
-				Cell cell = headerRow.createCell(i)
-				cell.setCellValue(titleName)
-			}
-			sheet.createFreezePane(0, 1)
-			Row row
-			Cell cell
-			int rownum = 1
-			int sumcell = -1
-			int sumcellAfterTax = -1
-			int sumTitleCell = -1
-			int sumCurrencyCell = -1
-			int sumCurrencyAfterTaxCell = -1
-			HashSet<String> currencies = new HashSet<String>()
-			if(cit.getValue()?.count > 0) {
-				cit.getValue().costItems.eachWithIndex { ci, int i ->
-					//log.debug("now processing entry #${i}")
-					BudgetCode codes = costItemGroups.get(ci)
-					String start_date   = ci.startDate ? dateFormat.format(ci?.startDate) : ''
-					String end_date     = ci.endDate ? dateFormat.format(ci?.endDate) : ''
-					String paid_date    = ci.datePaid ? dateFormat.format(ci?.datePaid) : ''
-					int cellnum = 0
-					row = sheet.createRow(rownum)
-					//sidewide number
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(rownum)
-					if(viewMode == "cons") {
-						if(ci.sub) {
-							List<Org> orgRoles = ci.sub.orgRelations.findAll { OrgRole oo -> oo.roleType in [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN] }.collect { it.org }
-							//participants (visible?)
-							Cell cellA = row.createCell(cellnum++)
-							Cell cellB = row.createCell(cellnum++)
-							String cellValueA = ""
-							String cellValueB = ""
-							orgRoles.each { Org or ->
-								cellValueA += or.sortname
-								cellValueB += or.name
-							}
-							cellA.setCellValue(cellValueA)
-							cellB.setCellValue(cellValueB)
-							cell = row.createCell(cellnum++)
-							cell.setCellValue(ci.isVisibleForSubscriber ? messageSource.getMessage('financials.isVisibleForSubscriber',null,locale) : "")
-						}
-					}
-					//cost title
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(ci.costTitle ?: '')
-					if(viewMode == "cons") {
-						//provider
-						cell = row.createCell(cellnum++)
-						if(ci.sub) {
-							Set<Provider> providerRoles = Provider.executeQuery('select pvr.provider from ProviderRole pvr where pvr.subscription = :sub', [sub: ci.sub])
-							String cellValue = ""
-							providerRoles.each { Provider pvr ->
-								cellValue += pvr.name
-							}
-							cell.setCellValue(cellValue)
-						}
-						else cell.setCellValue("")
-						//vendor
-						cell = row.createCell(cellnum++)
-						if(ci.sub) {
-							Set<Vendor> vendorRoles = Vendor.executeQuery('select vr.vendor from VendorRole vr where vr.subscription = :sub', [sub: ci.sub])
-							String cellValue = ""
-							vendorRoles.each { Vendor vr ->
-								cellValue += vr.name
-							}
-							cell.setCellValue(cellValue)
-						}
-						else cell.setCellValue("")
-					}
-					//cell.setCellValue(ci.sub ? ci.sub"")
-					//subscription
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(ci.sub ? ci.sub.name : "")
-					//dates from-to
-					Cell fromCell = row.createCell(cellnum++)
-					Cell toCell = row.createCell(cellnum++)
-					if(ci.sub) {
-						if(ci.sub.startDate)
-							fromCell.setCellValue(dateFormat.format(ci.sub.startDate))
-						else
-							fromCell.setCellValue("")
-						if(ci.sub.endDate)
-							toCell.setCellValue(dateFormat.format(ci.sub.endDate))
-						else
-							toCell.setCellValue("")
-					}
-					//cost sign
-					cell = row.createCell(cellnum++)
-					if(ci.costItemElementConfiguration) {
-						cell.setCellValue(ci.costItemElementConfiguration.getI10n("value"))
-					}
-					else
-						cell.setCellValue(messageSource.getMessage('financials.costItemConfiguration.notSet',null,locale))
-					//subscription package
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(ci?.pkg ? ci.pkg.name:'')
-					//issue entitlement
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(ci?.issueEntitlement ? ci.issueEntitlement.tipp.name:'')
-					//date paid
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(paid_date ?: '')
-					//date from
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(start_date ?: '')
-					//date to
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(end_date ?: '')
-					//financial year
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(ci?.financialYear ? ci.financialYear.toString():'')
-					//for the sum title
-					sumTitleCell = cellnum
-					//cost item status
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(ci?.costItemStatus ? ci.costItemStatus.getI10n("value"):'')
-					if(["own","cons"].indexOf(viewMode) > -1) {
-						//billing currency and value
-						cell = row.createCell(cellnum++)
-						cell.setCellValue(ci?.billingCurrency ? ci.billingCurrency.value : '')
-						sumCurrencyCell = cellnum
-						cell = row.createCell(cellnum++)
-						cell.setCellValue(ci?.costInBillingCurrency ? ci.costInBillingCurrency : 0.0)
-						if(ci.costItemElementConfiguration) {
-							switch(ci.costItemElementConfiguration) {
-								case RDStore.CIEC_POSITIVE: cell.setCellStyle(csPositive)
-									break
-								case RDStore.CIEC_NEGATIVE: cell.setCellStyle(csNegative)
-									break
-								case RDStore.CIEC_NEUTRAL: cell.setCellStyle(csNeutral)
-									break
-							}
-						}
-						//local currency and value
-						cell = row.createCell(cellnum++)
-						cell.setCellValue("EUR")
-						sumcell = cellnum
-						cell = row.createCell(cellnum++)
-						cell.setCellValue(ci?.costInLocalCurrency ? ci.costInLocalCurrency : 0.0)
-						if(ci.costItemElementConfiguration) {
-							switch(ci.costItemElementConfiguration) {
-								case RDStore.CIEC_POSITIVE: cell.setCellStyle(csPositive)
-									break
-								case RDStore.CIEC_NEGATIVE: cell.setCellStyle(csNegative)
-									break
-								case RDStore.CIEC_NEUTRAL: cell.setCellStyle(csNeutral)
-									break
-							}
-						}
-						//tax rate
-						cell = row.createCell(cellnum++)
-						String taxString
-						if(ci.taxKey && ci.taxKey.display) {
-							taxString = "${ci.taxKey.taxType.getI10n('value')} (${ci.taxKey.taxRate} %)"
-						}
-						else if(ci.taxKey in [CostItem.TAX_TYPES.TAX_CONTAINED_7, CostItem.TAX_TYPES.TAX_CONTAINED_19, CostItem.TAX_TYPES.TAX_REVERSE_CHARGE]) {
-							taxString = "${ci.taxKey.taxType.getI10n('value')}"
-						}
-						else taxString = messageSource.getMessage('financials.taxRate.notSet',null,locale)
-						cell.setCellValue(taxString)
-					}
-					//billing currency and value
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(ci?.billingCurrency ? ci.billingCurrency.value : '')
-					sumCurrencyAfterTaxCell = cellnum
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(ci?.costInBillingCurrencyAfterTax ? ci.costInBillingCurrencyAfterTax : 0.0)
-					if(ci.costItemElementConfiguration) {
-						switch(ci.costItemElementConfiguration) {
-							case RDStore.CIEC_POSITIVE: cell.setCellStyle(csPositive)
-								break
-							case RDStore.CIEC_NEGATIVE: cell.setCellStyle(csNegative)
-								break
-							case RDStore.CIEC_NEUTRAL: cell.setCellStyle(csNeutral)
-								break
-						}
-					}
-					//local currency and value
-					cell = row.createCell(cellnum++)
-					cell.setCellValue("EUR")
-					sumcellAfterTax = cellnum
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(ci?.costInLocalCurrencyAfterTax ? ci.costInLocalCurrencyAfterTax : 0.0)
-					if(ci.costItemElementConfiguration) {
-						switch(ci.costItemElementConfiguration) {
-							case RDStore.CIEC_POSITIVE: cell.setCellStyle(csPositive)
-								break
-							case RDStore.CIEC_NEGATIVE: cell.setCellStyle(csNegative)
-								break
-							case RDStore.CIEC_NEUTRAL: cell.setCellStyle(csNeutral)
-								break
-						}
-					}
-					//cost item element
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(ci?.costItemElement?ci.costItemElement.getI10n("value") : '')
-					//cost item description
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(ci?.costDescription?: '')
-					//reference
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(ci?.reference?:'')
-					//budget codes
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(codes ? codes.value : '')
-					//invoice number
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(ci?.invoice ? ci.invoice.invoiceNumber : "")
-					//order number
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(ci?.order ? ci.order.orderNumber : "")
-					//globalUUID
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(ci?.globalUID ?: '')
-					rownum++
-				}
-				rownum++
-				sheet.createRow(rownum)
-				Row sumRow = sheet.createRow(rownum)
-				cell = sumRow.createCell(sumTitleCell)
-				cell.setCellValue(messageSource.getMessage('financials.export.sums',null,locale))
-				if(sumcell > 0) {
-					cell = sumRow.createCell(sumcell)
-					BigDecimal localSum = BigDecimal.valueOf(cit.getValue().sums.localSums.localSum)
-					cell.setCellValue(localSum.setScale(2, RoundingMode.HALF_UP))
-				}
-				cell = sumRow.createCell(sumcellAfterTax)
-				BigDecimal localSumAfterTax = BigDecimal.valueOf(cit.getValue().sums.localSums.localSumAfterTax)
-				cell.setCellValue(localSumAfterTax.setScale(2, RoundingMode.HALF_UP))
-				rownum++
-				cit.getValue().sums.billingSums.each { entry ->
-					sumRow = sheet.createRow(rownum)
-					cell = sumRow.createCell(sumTitleCell)
-					cell.setCellValue(entry.currency)
-					if(sumCurrencyCell > 0) {
-						cell = sumRow.createCell(sumCurrencyCell)
-						BigDecimal billingSum = BigDecimal.valueOf(entry.billingSum)
-						cell.setCellValue(billingSum.setScale(2, RoundingMode.HALF_UP))
-					}
-					cell = sumRow.createCell(sumCurrencyAfterTaxCell)
-					BigDecimal billingSumAfterTax = BigDecimal.valueOf(entry.billingSumAfterTax)
-					cell.setCellValue(billingSumAfterTax.setScale(2, RoundingMode.HALF_UP))
-					rownum++
-				}
-			}
-			else {
-				row = sheet.createRow(rownum)
-				cell = row.createCell(0)
-				cell.setCellValue(messageSource.getMessage("finance.export.empty",null,locale))
-			}
-
-			for(int i = 0; i < titles.size(); i++) {
-				try {
-					sheet.autoSizeColumn(i)
-				}
-				catch(NullPointerException e) {
-					log.error("Null value in column ${i}")
-				}
-			}
-		}
-		wb
-	}
-
-	/**
 	 * Generates an Excel workbook of the property usage for the given {@link Map} of {@link PropertyDefinition}s.
 	 * The structure of the workbook is the same as of the view _manage(Private)PropertyDefintions.gsp
 	 * @param propDefs - the {@link Map} of {@link PropertyDefinition}s whose usages should be printed
@@ -2920,61 +2267,6 @@ class ExportService {
 			sheetData.put(messageSource.getMessage("propertyDefinition.${typeEntry.key}.label",null,locale),[titleRow:titleRow,columnData:rows])
 		}
 		sheetData
-	}
-
-	/**
-	 * Generates a title export list according to the KBART II-standard but enriched with proprietary fields such as ZDB-ID
-	 * The standard is defined here: <a href="https://www.niso.org/standards-committees/kbart">KBART definition</a>
-	 * @param configMap a {@link Map} containing filter settings
-	 * @param entitlementInstance switch between {@link TitleInstancePackagePlatform} and {@link IssueEntitlement}
-	 * @return a {@link Map} containing lists for the title row and the column data
-	 */
-	@Deprecated
-	Map<String,Collection> generateTitleExportKBART(Map configMap, String entitlementInstance) {
-		log.debug("Begin generateTitleExportKBART")
-		Sql sql = GlobalService.obtainSqlConnection()
-		Map<String, String> titleHeaders = getBaseTitleHeaders(entitlementInstance)
-		Map<String, Collection> export = [titleRow:titleHeaders.keySet()]
-		Map<String, Object> queryClauseParts = filterService.prepareTitleSQLQuery(configMap, entitlementInstance, sql)
-		String queryBase, countQuery
-		if(entitlementInstance == IssueEntitlement.class.name) {
-			queryBase = "select ${titleHeaders.values().join(', ')} from issue_entitlement left join issue_entitlement_coverage on ic_ie_fk = ie_id join subscription on ie_subscription_fk = sub_id join title_instance_package_platform on ie_tipp_fk = tipp_id join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id where ${queryClauseParts.where}${queryClauseParts.order}"
-			//countQuery = "select count(*) as countTotal from issue_entitlement left join issue_entitlement_coverage on ic_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id where ${queryClauseParts.where}"
-		}
-		else {
-			queryBase = "select ${titleHeaders.values().join(', ')} from title_instance_package_platform left join tippcoverage on tc_tipp_fk = tipp_id join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id ${queryClauseParts.join} where ${queryClauseParts.where}${queryClauseParts.order}"
-			//countQuery = "select count(*) as countTotal from title_instance_package_platform join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id where ${queryClauseParts.where}"
-		}
-		//int count = sql.rows(countQuery, queryClauseParts.params)[0]['countTotal'] as int, max = 100000
-		//log.debug(queryBase)
-		List rows = []
-		/* kept in case of further experiments
-		if(count > 300000) {
-			for(int i = 0; i < count; i+=max) {
-				log.debug("fetching records ${i}-${i+max}")
-				rows.addAll(sql.rows(queryBase+' limit '+max+' offset '+i, queryClauseParts.params))
-			}
-		}
-		else*/
-		rows.addAll(sql.rows(queryBase, queryClauseParts.params))
-		export.columnData = rows
-		log.debug("End generateTitleExportKBART")
-		export
-	}
-
-	/**
-	 * Concatenates the set of identifiers belonging to the given namespace to a character-separated list
-	 * @param ids the set of identifiers to output
-	 * @param namespace the namespace whose identifiers should be concatenated
-	 * @param separator the character to use for separation
-	 * @return the concatenated string of identifiers
-	 */
-	@Deprecated
-	String joinIdentifiersSQL(List<String> ids, String separator) {
-		String joined = ' '
-		if(ids)
-			joined = ids.join(separator)
-		joined
 	}
 
 	Map<String, Object> generateTitleExport(Map configMap) {
@@ -3117,403 +2409,6 @@ class ExportService {
 		export.titleRow = titleHeaders
 		log.debug("End generateTitleExport")
 		export
-	}
-
-	@Deprecated
-	Map<String, Object> generateRenewalExport(Map configMap, Set showStatsInMonthRings, Org subscriber) {
-		log.debug("Begin generateRenewalExport")
-		Sql sql = GlobalService.obtainSqlConnection()
-		Locale locale = LocaleUtils.getCurrentLocale()
-		//Map<String, Object> data = getTitleData(configMap, TitleInstancePackagePlatform.class.name, sql, showStatsInMonthRings, subscriber)
-		EhcacheWrapper userCache = contextService.getUserCache("/subscription/renewEntitlementsWithSurvey/generateRenewalExport")
-		long start = System.currentTimeMillis()
-		//the query is being assembled here
-		Map<String, String> titleHeaders = getBaseTitleHeaders(TitleInstancePackagePlatform.class.name, true)
-		//the where clauses here
-        Map<String, Object> queryClauseParts = filterService.prepareTitleSQLQuery(configMap, TitleInstancePackagePlatform.class.name, sql)
-        String baseQuery = "select tipp_id, ${titleHeaders.values().join(', ')} from title_instance_package_platform left join tippcoverage on tc_tipp_fk = tipp_id join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id ${queryClauseParts.join} where ${queryClauseParts.where}${queryClauseParts.order}"
-		queryClauseParts.params.subscriber = subscriber.id
-		userCache.put('label', 'Hole Daten vom Anbieter ...')
-		Map<String, Object> export = [titles: titleHeaders.keySet().toList()]
-		export.titles.addAll(showStatsInMonthRings.collect { Date month -> DateUtils.getSDF_yyyyMM().format(month) })
-		export.titles << "Pick"
-		List<GroovyRowResult> platformData = sql.rows("select plat_title_namespace, plat_guid from platform join package on plat_id = pkg_nominal_platform_fk where pkg_id = any(:pkgIds) group by plat_guid, plat_title_namespace", [pkgIds: sql.getDataSource().getConnection().createArrayOf('bigint', configMap.pkgIds as Object[])])
-		List<Object> platforms = []
-		Set<String> propIdNamespaces = []
-		platformData.each { GroovyRowResult row ->
-			platforms << row.plat_guid
-			propIdNamespaces << row.plat_title_namespace
-		}
-		Calendar filterTime = GregorianCalendar.getInstance()
-		filterTime.setTime(showStatsInMonthRings.first())
-		filterTime.set(Calendar.DATE, filterTime.getActualMinimum(Calendar.DAY_OF_MONTH))
-		Date startDate = filterTime.getTime()
-		filterTime.setTime(showStatsInMonthRings.last())
-		filterTime.set(Calendar.DATE, filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
-		Date endDate = filterTime.getTime()
-		configMap.customer = subscriber
-		configMap.startDate = startDate
-		configMap.endDate = endDate
-		Map<String, Object> requestResponse = getReports(configMap)
-		if(requestResponse.containsKey("error")) {
-			if(requestResponse.error.hasProperty('code')) {
-				if(requestResponse.error.code == 202)
-					export.status202 = true
-				else export.error = requestResponse.error
-			}
-			else {
-				export.error = requestResponse.error
-			}
-			return export
-		}
-		userCache.put('progress', 20)
-		userCache.put('label', 'Hole Titel ...')
-		List<GroovyRowResult> rows = sql.rows(baseQuery, queryClauseParts.params)
-		Map<String, Object> identifierInverseMap = subscriptionControllerService.fetchTitles(configMap.refSub, true)
-		List excelRows = []
-		userCache.put('progress', 40)
-		userCache.put('label', 'Erzeuge Tabelle ...')
-		int processed = 0
-		if(rows && !export.status202) {
-			double pointsPerIteration = 20/rows.size()
-			Map<Long, Map> allReports = [:]
-			//implicit COUNTER 4 check
-			Long titleMatch
-			int matched = 0
-			if(requestResponse.containsKey('reports')) {
-				double pointsPerMatch = 20/requestResponse.reports.size()
-				//COUNTER 4 result
-				for (GPathResult reportItem: requestResponse.reports) {
-					titleMatch = null
-					reportItem.'ns2:ItemIdentifier'.each { identifier ->
-						if(!titleMatch) {
-							switch (identifier.'ns2:Type'.text().toLowerCase()) {
-								case 'isbn': titleMatch = identifierInverseMap.onlineIdentifiers.get(identifier.'ns2:Value'.text())
-									if(!titleMatch)
-										titleMatch = identifierInverseMap.onlineIdentifiers.get(identifier.'ns2:Value'.text().replaceAll('-',''))
-									if(!titleMatch)
-										titleMatch = identifierInverseMap.printIdentifiers.get(identifier.'ns2:Value'.text().replaceAll('-',''))
-									if(!titleMatch)
-										titleMatch = identifierInverseMap.printIdentifiers.get(identifier.'ns2:Value'.text())
-									break
-								case 'online_isbn':
-								case 'online_issn': titleMatch = identifierInverseMap.onlineIdentifiers.get(identifier.'ns2:Value'.text())
-									if(!titleMatch)
-										titleMatch = identifierInverseMap.onlineIdentifiers.get(identifier.'ns2:Value'.text().replaceAll('-',''))
-									break
-								case 'print_issn':
-								case 'print_isbn': titleMatch = identifierInverseMap.printIdentifiers.get(identifier.'ns2:Value'.text())
-									if(!titleMatch)
-										titleMatch = identifierInverseMap.printIdentifiers.get(identifier.'ns2:Value'.text().replaceAll('-',''))
-									break
-								case 'url': titleMatch = identifierInverseMap.url.get(identifier.'ns2:Value'.text())
-									break
-								case 'doi': titleMatch = identifierInverseMap.doi.get(identifier.'ns2:Value'.text())
-									break
-								case 'proprietary_id': propIdNamespaces.each { String propIdNamespace ->
-									if(!titleMatch)
-										titleMatch = identifierInverseMap.proprietaryIdentifiers.get(identifier.'ns2:Value'.text())
-								}
-									break
-							}
-						}
-					}
-					if(titleMatch) {
-						Map<String, Integer> reports = allReports.containsKey(titleMatch) ? allReports.get(titleMatch) : [:]
-						for(GPathResult performance: reportItem.'ns2:ItemPerformance') {
-							Date reportFrom = DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:Begin'.text())
-							for(GPathResult instance: performance.'ns2:Instance'.findAll { instCand -> instCand.'ns2:MetricType'.text() == configMap.metricTypes }) {
-								reports.put(DateUtils.getSDF_yyyyMM().format(reportFrom), Integer.parseInt(instance.'ns2:Count'.text()))
-							}
-						}
-						allReports.put(titleMatch, reports)
-					}
-					matched++
-					double increment = matched*pointsPerMatch
-					userCache.put('progress', 40+increment)
-				}
-			}
-			else if(requestResponse.containsKey('items')) {
-				double pointsPerMatch = 20/requestResponse.items.size()
-				//COUNTER 5 result
-				for(def reportItem: requestResponse.items) {
-					titleMatch = null
-					reportItem["Item_ID"].each { idData ->
-						if(!titleMatch) {
-							switch(idData.Type.toLowerCase()) {
-								case 'isbn': titleMatch = identifierInverseMap.onlineIdentifiers.get(idData.Value)
-									if(!titleMatch)
-										titleMatch = identifierInverseMap.onlineIdentifiers.get(idData.Value.replaceAll('-',''))
-									if(!titleMatch)
-										titleMatch = identifierInverseMap.printIdentifiers.get(idData.Value.replaceAll('-',''))
-									if(!titleMatch)
-										titleMatch = identifierInverseMap.printIdentifiers.get(idData.Value)
-									break
-								case 'online_issn':
-								case 'online_isbn': titleMatch = identifierInverseMap.onlineIdentifiers.get(idData.Value)
-									if(!titleMatch)
-										titleMatch = identifierInverseMap.onlineIdentifiers.get(idData.Value.replaceAll('-',''))
-									break
-								case 'print_isbn':
-								case 'print_issn': titleMatch = identifierInverseMap.printIdentifiers.get(idData.Value)
-									if(!titleMatch)
-										titleMatch = identifierInverseMap.printIdentifiers.get(idData.Value.replaceAll('-',''))
-									break
-								case 'doi': titleMatch = identifierInverseMap.doi.get(idData.Value)
-									break
-								case 'url': titleMatch = identifierInverseMap.url.get(idData.Value)
-									break
-								case 'proprietary_id': titleMatch = identifierInverseMap.proprietaryIdentifiers.get(idData.Value)
-									break
-							}
-						}
-					}
-					if(titleMatch) {
-						Map<String, Integer> reports = allReports.containsKey(titleMatch) ? allReports.get(titleMatch) : [:]
-						//counter 5.0
-						if(reportItem.containsKey('Performance')) {
-							for(Map performance: reportItem.Performance) {
-								Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
-								//for(Map instance: performance.Instance) {
-								Map instance = performance.Instance[0]
-								reports.put(DateUtils.getSDF_yyyyMM().format(reportFrom), instance.Count)
-								//}
-							}
-						}
-						//counter 5.1
-						else if(reportItem.containsKey('Attribute_Performance')) {
-							for (Map struct : reportItem.Attribute_Performance) {
-								for (Map.Entry performance : struct.Performance) {
-									for (Map.Entry instance : performance) {
-										//for (Map.Entry reportRow : instance.getValue()) {
-										Map.Entry reportRow = instance.getValue()[0]
-										reports.put(reportRow.getKey(), reportRow.getValue())
-										//}
-									}
-								}
-							}
-						}
-						allReports.put(titleMatch, reports)
-					}
-					matched++
-					double increment = matched*pointsPerMatch
-					userCache.put('progress', 40+increment)
-				}
-			}
-			userCache.put('progress', 60)
-			for(GroovyRowResult sqlRow : rows) {
-				List<Map<String, Object>> excelRow = []
-				if(allReports.containsKey(sqlRow.tipp_id))
-					sqlRow.putAll(allReports.get(sqlRow.tipp_id))
-				String style = ''
-				if(sqlRow.get(messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale)) == true)
-					style = 'negative'
-				export.titles.each { String col ->
-					def value = ''
-					if(sqlRow.containsKey(col)) {
-						value = sqlRow.get(col)
-						if(!value)
-							value = ''
-					}
-					if(col == messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale)) {
-						if(value == true)
-							excelRow << createCell('excel', RDStore.YN_NO.getI10n('value'), style)
-						else excelRow << createCell('excel', RDStore.YN_YES.getI10n('value'), style)
-					}
-					else {
-						excelRow << createCell('excel', value, style)
-					}
-				}
-				excelRows << excelRow
-				processed++
-				double increment = processed*pointsPerIteration
-				userCache.put('progress', 60+increment)
-			}
-		}
-		userCache.put('progress', 80)
-		export.rows = excelRows
-		log.debug("End generateRenewalExport")
-		export
-        /*
-		List<String> titleHeaders = [
-				messageSource.getMessage('tipp.name',null,locale),
-				'Print Identifier',
-				'Online Identifier',
-				messageSource.getMessage('tipp.startDate',null,locale),
-				messageSource.getMessage('tipp.startVolume',null,locale),
-				messageSource.getMessage('tipp.startIssue',null,locale),
-				messageSource.getMessage('tipp.endDate',null,locale),
-				messageSource.getMessage('tipp.endVolume',null,locale),
-				messageSource.getMessage('tipp.endIssue',null,locale),
-				messageSource.getMessage('tipp.hostPlatformURL',null,locale),
-				messageSource.getMessage('tipp.firstAuthor',null,locale),
-				messageSource.getMessage('tipp.titleId',null,locale),
-				messageSource.getMessage('tipp.embargo',null,locale),
-				messageSource.getMessage('tipp.coverageDepth',null,locale),
-				messageSource.getMessage('tipp.coverageNote',null,locale),
-				messageSource.getMessage('tipp.titleType',null,locale),
-				messageSource.getMessage('tipp.publisher',null,locale),
-				messageSource.getMessage('tipp.dateFirstInPrint',null,locale),
-				messageSource.getMessage('tipp.dateFirstOnline',null,locale),
-				messageSource.getMessage('tipp.volume',null,locale),
-				messageSource.getMessage('tipp.editionNumber',null,locale),
-				messageSource.getMessage('tipp.firstEditor',null,locale),
-				messageSource.getMessage('tipp.parentTitleId',null,locale),
-				messageSource.getMessage('tipp.precedingTitleId',null,locale),
-				messageSource.getMessage('package.label',null,locale),
-				messageSource.getMessage('platform.label',null,locale),
-				messageSource.getMessage('tipp.lastUpdated',null,locale),
-				messageSource.getMessage('tipp.accessStartDate',null,locale),
-				messageSource.getMessage('tipp.accessEndDate',null,locale),
-				messageSource.getMessage('tipp.medium',null,locale),
-				IdentifierNamespace.ZDB,
-				IdentifierNamespace.DOI,
-				IdentifierNamespace.EZB,
-				messageSource.getMessage('tipp.tippWekbId',null,locale),
-				messageSource.getMessage('tipp.pkgWekbId',null,locale),
-				IdentifierNamespace.ISCI,
-				IdentifierNamespace.ISIL_PAKETSIGEL,
-				IdentifierNamespace.EZB_ANCHOR,
-				messageSource.getMessage('tipp.illIndicator',null,locale),
-				messageSource.getMessage('tipp.supersedingPublicationTitleId',null,locale),
-				messageSource.getMessage('tipp.seriesName',null,locale),
-				messageSource.getMessage('tipp.subjectReference',null,locale),
-				messageSource.getMessage('tipp.status',null,locale),
-				messageSource.getMessage('tipp.accessType',null,locale),
-				messageSource.getMessage('tipp.openAccess',null,locale),
-				IdentifierNamespace.ZDB_PPN,
-				messageSource.getMessage('tipp.listprice_eur',null,locale),
-				messageSource.getMessage('tipp.listprice_gbp',null,locale),
-				messageSource.getMessage('tipp.listprice_usd',null,locale),
-				messageSource.getMessage('tipp.localprice_eur',null,locale),
-				messageSource.getMessage('tipp.localprice_gbp',null,locale),
-				messageSource.getMessage('tipp.localprice_usd',null,locale)]
-		//todo reactivate
-		//titleHeaders.addAll(data.coreTitleIdentifierNamespaces.collect { GroovyRowResult row -> row['idns_ns']})
-		//titleHeaders.addAll(data.otherTitleIdentifierNamespaces.collect { GroovyRowResult row -> row['idns_ns']})
-		if(showStatsInMonthRings){
-			titleHeaders.addAll(showStatsInMonthRings.collect { Date month -> DateUtils.getSDF_yyyyMM().format(month) })
-		}
-		titleHeaders << messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale)
-		titleHeaders << "Pick"
-		List rows = []
-		Map<String,List> export = [titles:titleHeaders]
-		data.titles.eachWithIndex { GroovyRowResult title, int outer ->
-			if(entitlementInstance == IssueEntitlement.class.name && data.coverageMap.get(title['ie_id'])) {
-				data.coverageMap.get(title['ie_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
-					log.debug "now processing coverage statement ${inner} for record ${outer}"
-					covStmt.putAll(title)
-					rows.add(buildRow('excel', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, checkPerpetuallyPurchasedTitles, showStatsInMonthRings, subscriber))
-				}
-			}
-			else if(entitlementInstance == TitleInstancePackagePlatform.class.name && data.coverageMap.get(title['tipp_id'])) {
-				data.coverageMap.get(title['tipp_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
-					log.debug "now processing coverage statement ${inner} for record ${outer}"
-					covStmt.putAll(title)
-					rows.add(buildRow('excel', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, checkPerpetuallyPurchasedTitles, showStatsInMonthRings, subscriber))
-				}
-			}
-			else {
-				log.debug "now processing record ${outer}"
-				rows.add(buildRow('excel', title, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, checkPerpetuallyPurchasedTitles, showStatsInMonthRings, subscriber))
-			}
-		}
-		*/
-	}
-
-	/**
-	 * Gets the map of column headers for KBART export with their database query mappings
-	 * @return a map of column headers and SQL query parts
-	 */
-	@Deprecated
-	Map<String, String> getBaseTitleHeaders(String entitlementInstance, boolean checkPerpetuallyAccessToTitle = false) {
-		Locale locale = LocaleUtils.getCurrentLocale()
-		Map <String, String> mapping = [publication_title: 'tipp_name as publication_title',
-		 print_identifier: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('monograph') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, IdentifierNamespace.NS_TITLE).id}) or (lower(tipp_title_type) in ('serial') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, IdentifierNamespace.NS_TITLE).id}))) as print_identifier",
-		 online_identifier: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('monograph') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISBN, IdentifierNamespace.NS_TITLE).id}) or (lower(tipp_title_type) in ('serial') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, IdentifierNamespace.NS_TITLE).id}))) as online_identifier",
-		 date_first_issue_online: '',
-		 num_first_vol_online: '',
-		 num_first_issue_online: '',
-		 date_last_issue_online: '',
-		 num_last_vol_online: '',
-		 num_last_issue_online: '',
-		 title_url: 'tipp_host_platform_url as title_url',
-		 first_author: 'tipp_first_author as first_author',
-		 title_id: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType('title_id', IdentifierNamespace.NS_TITLE).id}) as title_id",
-		 embargo_info: '',
-		 coverage_depth: '',
-		 notes: '',
-		 publication_type: 'tipp_title_type as publication_type',
-		 publisher_name: 'tipp_publisher_name as publisher_name',
-		 date_monograph_published_print: "to_char(tipp_date_first_in_print, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') as date_monograph_published_print",
-		 date_monograph_published_online: "to_char(tipp_date_first_online, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') as date_monograph_published_online",
-		 monograph_volume: 'tipp_volume as monograph_volume',
-		 monograph_edition: 'tipp_edition_statement as monograph_edition',
-		 first_editor: 'tipp_first_editor as first_editor',
-		 parent_publication_title_id: "null as parent_publication_title_id",
-		 preceding_publication_title_id: "null as preceding_publication_title_id",
-		 package_name: 'pkg_name as package_name',
-		 platform_name: 'plat_name as platform_name',
-		 last_changed: "to_char(tipp_last_updated, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') as last_changed",
-		 access_start_date: "to_char(tipp_access_start_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') as access_start_date",
-		 access_end_date: "to_char(tipp_access_end_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') as access_end_date",
-		 medium: '(select rdv_value from refdata_value where rdv_id = tipp_medium_rv_fk) as medium',
-		 zdb_id: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ZDB, IdentifierNamespace.NS_TITLE).id}) as zdb_id",
-		 doi_identifier: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = '${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, IdentifierNamespace.NS_TITLE).id}') as doi_identifier",
-		 ezb_id: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = '${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EZB, IdentifierNamespace.NS_TITLE).id}') as ezb_id",
-		 title_wekb_uuid: 'tipp_gokb_id as title_wekb_uuid',
-		 package_wekb_uuid: 'pkg_gokb_id as package_wekb_uuid',
-		 package_isci: "(select string_agg(id_value,',') from identifier where id_pkg_fk = pkg_id and id_ns_fk = '${IdentifierNamespace.findByNs(IdentifierNamespace.ISCI).id}') as package_isci",
-		 package_isil: "(select string_agg(id_value,',') from identifier where id_pkg_fk = pkg_id and id_ns_fk = '${IdentifierNamespace.findByNsAndNsType("isil", IdentifierNamespace.NS_PACKAGE).id}') as package_isil",
-		 package_ezb_anchor: "(select string_agg(id_value,',') from identifier where id_pkg_fk = pkg_id and id_ns_fk = '${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EZB, IdentifierNamespace.NS_PACKAGE).id}') as package_ezb_anchor",
-		 ill_indicator: "null as ill_indicator",
-		 superceding_publication_title_id: "null as superceding_publication_title_id",
-		 monograph_parent_collection_title: "null as monograph_parent_collection_title",
-		 subject_area: 'tipp_subject_reference as subject_area',
-		 status: '(select rdv_value from refdata_value where rdv_id = tipp_status_rv_fk) as status',
-		 access_type: "(case when tipp_access_type_rv_fk = ${RDStore.TIPP_PAYMENT_PAID.id} then 'P' when tipp_access_type_rv_fk = ${RDStore.TIPP_PAYMENT_FREE.id} then 'F' else '' end) as access_type",
-		 oa_type: '(select rdv_value from refdata_value where rdv_id = tipp_open_access_rv_fk) as oa_type',
-		 zdb_ppn: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ZDB_PPN).id}) as zdb_ppn",
-		 listprice_eur: "(select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_EUR.id} order by pi_last_updated desc limit 1) as listprice_eur",
-		 listprice_gbp: "(select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_GBP.id} order by pi_last_updated desc limit 1) as listprice_gbp",
-		 listprice_usd: "(select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_USD.id} order by pi_last_updated desc limit 1) as listprice_usd",
-		 localprice_eur: '',
-		 localprice_gbp: '',
-		 localprice_usd: '']
-		if(checkPerpetuallyAccessToTitle) {
-			mapping.put(messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale), "(select case when tipp_host_platform_url in(select pt_tipp.tipp_host_platform_url from permanent_title join title_instance_package_platform as pt_tipp on pt_tipp_fk = pt_tipp.tipp_id where pt_owner_fk = :subscriber) then true else false end) as ${messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale)}")
-		}
-		if(entitlementInstance == IssueEntitlement.class.name) {
-			mapping.date_first_issue_online = "to_char(ic_start_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') as date_first_issue_online"
-			mapping.num_first_vol_online = 'ic_start_volume as num_first_vol_online'
-			mapping.num_first_issue_online = 'ic_start_issue as num_first_issue_online'
-			mapping.date_last_issue_online = "to_char(ic_end_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') as date_last_issue_online"
-			mapping.num_last_vol_online = 'ic_end_volume as num_last_vol_online'
-			mapping.num_last_issue_online = 'ic_end_issue as num_last_issue_online'
-			mapping.embargo_info = 'ic_embargo as embargo_info'
-			mapping.coverage_depth = 'ic_coverage_depth as coverage_depth'
-			mapping.notes = 'ic_coverage_note as notes'
-			mapping.localprice_eur = "(select trim(to_char(pi_local_price, '999999999D99')) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_EUR.id} order by pi_last_updated desc limit 1) as localprice_eur"
-			mapping.localprice_gbp = "(select trim(to_char(pi_local_price, '999999999D99')) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_GBP.id} order by pi_last_updated desc limit 1) as localprice_gbp"
-			mapping.localprice_usd = "(select trim(to_char(pi_local_price, '999999999D99')) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_USD.id} order by pi_last_updated desc limit 1) as localprice_usd"
-		}
-		else {
-			//default to TitleInstancePackagePlatform.class.name
-			mapping.date_first_issue_online = "to_char(tc_start_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') as date_first_issue_online"
-			mapping.num_first_vol_online = 'tc_start_volume as num_first_vol_online'
-			mapping.num_first_issue_online = 'tc_start_issue as num_first_issue_online'
-			mapping.date_last_issue_online = "to_char(tc_end_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') as date_last_issue_online"
-			mapping.num_last_vol_online = 'tc_end_volume as num_last_vol_online'
-			mapping.num_last_issue_online = 'tc_end_issue as num_last_issue_online'
-			mapping.embargo_info = 'tc_embargo as embargo_info'
-			mapping.coverage_depth = 'tc_coverage_depth as coverage_depth'
-			mapping.notes = 'tc_coverage_note as notes'
-			//as substitutes
-			mapping.localprice_eur = "(select trim(to_char(pi_local_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_EUR.id} order by pi_last_updated desc limit 1) as localprice_eur"
-			mapping.localprice_gbp = "(select trim(to_char(pi_local_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_GBP.id} order by pi_last_updated desc limit 1) as localprice_gbp"
-			mapping.localprice_usd = "(select trim(to_char(pi_local_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_USD.id} order by pi_last_updated desc limit 1) as localprice_usd"
-		}
-		mapping
 	}
 
 	List buildRows(Map configMap) {
@@ -3737,52 +2632,6 @@ class ExportService {
 		}
 		else if(rowData instanceof IssueEntitlementCoverage) {
 			return rowData.issueEntitlement
-		}
-		null
-	}
-
-	/**
-	 * Determines the title instance of the given object
-	 * @param rowData the object containing the title
-	 * @return the {@link TitleInstancePackagePlatform} title instance
-	 */
-	@Deprecated
-	TitleInstancePackagePlatform getTipp(rowData) {
-		if(rowData instanceof IssueEntitlement) {
-			return rowData.tipp
-		}
-		else if(rowData instanceof IssueEntitlementCoverage) {
-			return rowData.issueEntitlement.tipp
-		}
-		else if(rowData instanceof TitleInstancePackagePlatform) {
-			return (TitleInstancePackagePlatform) rowData
-		}
-		else if(rowData instanceof TIPPCoverage) {
-			return rowData.tipp
-		}
-		null
-	}
-
-	/**
-	 * Determines the coverage statement, based on the instance type of the object
-	 * @param rowData the title whose coverage statement should be recovered
-	 * @return the coverage statement or null if there are more than one or none.
-	 * If there are more than one coverage statements for a title, the set of coverages is processed in
-	 * a loop elsewhere
-	 */
-	@Deprecated
-	AbstractCoverage getCoverageStatement(rowData) {
-		if(rowData instanceof IssueEntitlement) {
-			return rowData.coverages.size() == 1 ? (IssueEntitlementCoverage) rowData.coverages[0] : null
-		}
-		else if(rowData instanceof IssueEntitlementCoverage) {
-			return (IssueEntitlementCoverage) rowData
-		}
-		else if(rowData instanceof TitleInstancePackagePlatform) {
-			return rowData.coverages.size() == 1 ? (TIPPCoverage) rowData.coverages[0] : null
-		}
-		else if(rowData instanceof TIPPCoverage) {
-			return (TIPPCoverage) rowData
 		}
 		null
 	}
