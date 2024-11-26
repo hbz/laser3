@@ -9,6 +9,12 @@
 
 6100    26.11.2024  rc-3.4  3.4.16      Andreas Bug         Ausgabe der Nutzerzahlen korrigiert
 
+6099    25.11.2024  rc-3.4  3.4.15      Moe     Bug         Umfrage Kosten markieren wo unterjährige Einstiege bestehen
+
+6090:   25.11.2024  rc-3.4  3.4.15      Moe     Bug         500er Löschversuch Titelauswahl-Datei
+
+6093    25.11.2024  rc-3.4  3.4.15      David   Feature     Ungültige Einträge entfernen @ DashboardDueDate/DueDateObject
+
 6088    21.11.2024  rc-3.4  3.4.15      Andreas Bug         Skript zur Korrektur fehlerhafter URL
 
 6087    21.11.2024  rc-3.4  3.4.15      Andreas Bug         inkorrekte Verarbeitung massenausgeschütteter Kosten

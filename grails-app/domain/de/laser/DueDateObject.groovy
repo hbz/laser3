@@ -1,5 +1,7 @@
 package de.laser
 
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+
 /**
  * This is the linking table from a {@link DashboardDueDate} to the connected object; stored are the internationalised attribute value and names for the reminders to be sent out or posted
  * @see DashboardDueDate
@@ -47,6 +49,8 @@ class DueDateObject {
      * @param lastUpdated time stamp to retain the connection's last modification date
      */
     DueDateObject(String attribute_value_de, String attribute_value_en, String attribute_name, Date date, def object, boolean isDone, Date dateCreated, Date lastUpdated){
+        object = GrailsHibernateUtil.unwrapIfProxy(object)
+
         this.attribute_value_de = attribute_value_de
         this.attribute_value_en = attribute_value_en
         this.attribute_name = attribute_name

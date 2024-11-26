@@ -2896,7 +2896,7 @@ class SubscriptionControllerService {
                     }
                     executorService.execute({
                         Thread.currentThread().setName("EntitlementEnrichment_${result.subscription.id}")
-                        subscriptionService.bulkAddEntitlements(result.subscription, checked.keySet(), false)
+                        subscriptionService.bulkAddEntitlements(result.subscription, checked.keySet(), result.subscription.hasPerpetualAccess)
                         if(params.withChildren == 'on') {
                             Sql sql = GlobalService.obtainSqlConnection()
                             childSubIds.each { Long childSubId ->
