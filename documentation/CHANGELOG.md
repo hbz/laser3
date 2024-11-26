@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6100    26.11.2024  rc-3.4  3.4.16      Andreas Bug         Ausgabe der Nutzerzahlen korrigiert
+
 6099    25.11.2024  rc-3.4  3.4.15      Moe     Bug         Umfrage Kosten markieren wo unterjährige Einstiege bestehen
 
 6090:   25.11.2024  rc-3.4  3.4.15      Moe     Bug         500er Löschversuch Titelauswahl-Datei
