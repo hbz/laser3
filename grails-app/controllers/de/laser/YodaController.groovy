@@ -14,7 +14,6 @@ import de.laser.properties.PersonProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
 import de.laser.remote.ApiSource
-import de.laser.remote.ElasticsearchSource
 import de.laser.remote.FTControl
 import de.laser.remote.GlobalRecordSource
 import de.laser.reporting.report.ReportingCache
@@ -1064,20 +1063,6 @@ class YodaController {
         Map<String, Object> result = [editable: true]
         log.debug("manageGlobalSources ..")
         result.sources = GlobalRecordSource.list([sort: 'id'])
-
-        result
-    }
-
-    /**
-     * Call to list all ElasticSearch sources. Those indices are storing data of this app's database;
-     * not to confound with APISources which establish connection to we:kb indices!
-     */
-    @Secured(['ROLE_YODA'])
-    def manageESSources() {
-        Map<String, Object> result = [:]
-        log.debug("manageESSources ..")
-        result.sources = ElasticsearchSource.list()
-        result.editable = true
 
         result
     }

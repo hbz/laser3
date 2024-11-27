@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.IssueEntitlementGroup; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.IssueEntitlementGroup; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 <div class="sixteen wide column">
     <g:set var="counter" value="${offset + 1}"/>

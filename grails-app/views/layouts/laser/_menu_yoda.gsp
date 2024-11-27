@@ -86,7 +86,6 @@
             </div>
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="yoda" action="esIndexUpdate" onclick="return confirm('${message(code:'confirm.start.ESUpdateIndex')}')">${message(code:'menu.yoda.updateESIndex')}</ui:link>
-                <ui:link addItemAttributes="true" controller="yoda" action="manageESSources">Manage ES Source</ui:link>
                 <ui:link addItemAttributes="true" controller="yoda" action="manageFTControl">Manage FTControl</ui:link>
                 <div class="divider"></div>
                 <ui:link addItemAttributes="true" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">${message(code:'menu.yoda.resetESIndex')}</ui:link>
