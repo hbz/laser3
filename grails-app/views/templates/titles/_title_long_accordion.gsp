@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.ApiSource; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore" %>
 
 <div class="three wide column" data-ajaxTopic="true">
     <div class="ui list"  >
