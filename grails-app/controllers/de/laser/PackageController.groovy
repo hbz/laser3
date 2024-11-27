@@ -240,7 +240,7 @@ class PackageController {
         }
         result.gascoContacts = gascoContacts
 
-        result.baseUrl = ApiSource.getCurrent().baseUrl + '/'
+        result.baseUrl = ApiSource.getURL() + '/'
 
         Map queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSearchApiURL(), [uuid: result.packageInstance.gokbId])
         if ((queryResult.error && queryResult.error == 404) || !queryResult) {

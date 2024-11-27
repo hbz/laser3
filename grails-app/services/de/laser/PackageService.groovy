@@ -102,7 +102,7 @@ class PackageService {
                 [value: 'false', name: messageSource.getMessage('package.index.result.noAutomaticUpdates', null, locale)]
         ]
 
-        result.baseUrl = ApiSource.getCurrent().baseUrl
+        result.baseUrl = ApiSource.getURL()
 
         Map<String, Object> queryParams = [componentType: "Package"]
         if (params.q) {

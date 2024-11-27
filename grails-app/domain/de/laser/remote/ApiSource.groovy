@@ -26,6 +26,14 @@ class ApiSource {
     }
 
     /**
+     * @return ConfigMapper.getWekbServerURL()
+     */
+    static String getURL() {
+        ConfigMapper.getWekbServerURL()
+    }
+
+
+    /**
      * @return ConfigMapper.getWekbServerURL() + '/resource/show'
      */
     String getResourceShowURL() {

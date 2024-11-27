@@ -2107,7 +2107,7 @@ class SubscriptionControllerService {
                 linkToChildren = params.linkToChildren == 'on',
                 createEntitlementsForChildren = params.createEntitlementsForChildren == 'on'
                 String pkgUUID = params.addUUID
-                result.source = ApiSource.getCurrent().baseUrl
+                result.source = ApiSource.getURL()
                 RefdataValue holdingSelection = RefdataValue.get(params.holdingSelection)
                 if(params.holdingSelection) {
                     holdingSelection = RefdataValue.get(params.holdingSelection)
