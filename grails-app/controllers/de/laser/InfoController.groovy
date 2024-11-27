@@ -61,7 +61,7 @@ ${custId ? ('Customer Identifier: ' + custId.value) : ''}
         Map<String, Object> result = [:]
 
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(params.id_tipp)
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        ApiSource apiSource = ApiSource.getCurrent()
 
         List<Person> ppList = BeanStore.getProviderService().getContactPersonsByFunctionType(tipp.platform.provider, false, RDStore.PRS_FUNC_SERVICE_SUPPORT)
 

@@ -2447,7 +2447,7 @@ class SubscriptionService {
      * @return true if at least one of the platforms provides usage statistics data, false if none
      */
     boolean areStatsAvailable(Collection<Platform> subscribedPlatforms) {
-        ApiSource wekbSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        ApiSource wekbSource = ApiSource.getCurrent()
         boolean result = false
         subscribedPlatforms.each { Platform platformInstance ->
             if(!result) {
@@ -2470,7 +2470,7 @@ class SubscriptionService {
      * @return
      */
     Map<String, Object> prepareSUSHIConnectionCheck(CustomerIdentifier ci) {
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        ApiSource apiSource = ApiSource.getCurrent()
         Map<String, Object> queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/sushiSources", [:])
         Map platformRecord
         if (queryResult) {

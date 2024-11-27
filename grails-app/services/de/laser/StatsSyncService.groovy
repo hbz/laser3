@@ -222,7 +222,7 @@ class StatsSyncService {
      */
     @Deprecated
     void internalDoFetch(boolean incremental, String platformUUID = '', String source = '', String revision = '') {
-        ApiSource apiSource = ApiSource.findByActive(true)
+        ApiSource apiSource = ApiSource.getCurrent()
         List<List> c4SushiSources = [], c5SushiSources = []
         //process each platform with a SUSHI API
         BasicHttpClient http

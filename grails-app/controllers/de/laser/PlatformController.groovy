@@ -60,10 +60,10 @@ class PlatformController  {
         ctx.contextService.isInstUser_denySupport()
     })
     def list() {
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        ApiSource apiSource = ApiSource.getCurrent()
         Map<String, Object> result = [
                 user: contextService.getUser(),
-                editUrl: apiSource.editUrl,
+                baseUrl: apiSource.baseUrl,
                 myPlatformIds: [],
                 flagContentGokb : true, // gokbService.doQuery
                 propList: PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.PLA_PROP], contextService.getOrg())
@@ -263,8 +263,8 @@ class PlatformController  {
     def show() {
         Map<String, Object> result = platformControllerService.getResultGenerics(params)
         Platform platformInstance = result.platformInstance
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'
+        ApiSource apiSource = ApiSource.getCurrent()
+        result.baseUrl = apiSource.baseUrl.endsWith('/') ? apiSource.baseUrl : apiSource.baseUrl + '/'
 
         result.flagContentGokb = true // gokbService.executeQuery
         result.platformInstanceRecord = [:]

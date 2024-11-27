@@ -1,6 +1,6 @@
 <%@ page import="de.laser.addressbook.Person; de.laser.addressbook.Contact;de.laser.utils.DateUtils;de.laser.Links;de.laser.storage.RDStore;de.laser.RefdataValue;de.laser.storage.RDConstants;de.laser.Identifier;de.laser.interfaces.CalculatedType;de.laser.remote.ApiSource" %>
 <laser:serviceInjection/>
-<g:set var="apiSource" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
+<g:set var="apiSource" value="${ApiSource.getCurrent()}"/>
 <g:set var="linkCtrlAction" value="${(contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" />
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>

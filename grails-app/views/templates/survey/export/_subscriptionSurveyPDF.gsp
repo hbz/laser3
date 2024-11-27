@@ -222,7 +222,7 @@
     </h2>
         <%
             List packages = []
-            ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+            ApiSource apiSource = ApiSource.getCurrent()
             subscription.packages.each { SubscriptionPackage subscriptionPackage ->
                 Map packageInfos = [:]
 
@@ -270,7 +270,7 @@
                                             <g:each in="${pkgInfo.packageInstanceRecord.curatoryGroups}"
                                                     var="curatoryGroup">
                                                 <g:link
-                                                        url="${editUrl}resource/show/${curatoryGroup.curatoryGroup}">${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}</g:link>
+                                                        url="${baseUrl}resource/show/${curatoryGroup.curatoryGroup}">${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}</g:link>
                                             </g:each>
                                         </div>
                                     </dd>

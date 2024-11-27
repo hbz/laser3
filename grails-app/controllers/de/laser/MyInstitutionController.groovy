@@ -294,7 +294,7 @@ class MyInstitutionController  {
         Map<String, Object> wekbParams = params.clone()
         if(!wekbParams.containsKey('sort'))
             wekbParams.sort = 'name'
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        ApiSource apiSource = ApiSource.getCurrent()
         Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
         if(queryCuratoryGroups.code == 404) {
             result.error = message(code: 'wekb.error.'+queryCuratoryGroups.error) as String
@@ -930,7 +930,7 @@ class MyInstitutionController  {
             providerQuery = efq.query
             queryParams = efq.queryParams as Map<String, Object>
         }
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        ApiSource apiSource = ApiSource.getCurrent()
         result.wekbApi = apiSource
         Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
         if(queryCuratoryGroups.error == 404) {
@@ -1104,7 +1104,7 @@ class MyInstitutionController  {
 
         result.filterSet = params.filterSet ? true : false
         /*
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        ApiSource apiSource = ApiSource.getCurrent()
         Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
         if(queryCuratoryGroups.code == 404) {
             result.error = message(code: 'wekb.error.'+queryCuratoryGroups.error) as String

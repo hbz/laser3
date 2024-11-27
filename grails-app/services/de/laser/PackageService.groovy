@@ -88,7 +88,7 @@ class PackageService {
     }
 
     def getWekbPackages(GrailsParameterMap params) {
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        ApiSource apiSource = ApiSource.getCurrent()
         if (!apiSource) {
             return null
         }
@@ -106,7 +106,7 @@ class PackageService {
                 [value: 'false', name: messageSource.getMessage('package.index.result.noAutomaticUpdates', null, locale)]
         ]
 
-        result.editUrl = apiSource.editUrl
+        result.baseUrl = apiSource.baseUrl
 
         Map<String, Object> queryParams = [componentType: "Package"]
         if (params.q) {
