@@ -9,23 +9,21 @@ import de.laser.config.ConfigMapper
 @Deprecated
 class ApiSource {
 
-    enum ApiTyp
-    {
-        /**
-         * The we:kb is a fork of the GOKb
-         */
-        GOKBAPI
-    }
+    String name
+    String baseUrl
+    String editUrl
+    String fixToken
 
-    String name     = 'GOKB Phaeton'
-    String baseUrl  = ConfigMapper.getWekbServerURL()
-    String editUrl  = ConfigMapper.getWekbServerURL()
-    String fixToken = '/api2'
-    ApiTyp typ      = ApiTyp.GOKBAPI
+    ApiSource() {
+        name     = 'WE:KB'
+        baseUrl  = ConfigMapper.getWekbServerURL()
+        editUrl  = ConfigMapper.getWekbServerURL()
+        fixToken = '/api2'
+    }
 
     static mapWith = 'none'
 
-    ApiSource getCurrent() {
+    static ApiSource getCurrent() {
         new ApiSource()
     }
 }

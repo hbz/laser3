@@ -246,7 +246,7 @@ class ElasticSearchHelper {
 
     /**
      * Returns the current active we:kb ElasticSearch API source
-     * @return the (first) active {@link ApiSource} of type {@link ApiSource.ApiTyp#GOKBAPI}
+     * @return the active {@link ApiSource}
      */
     static getCurrentApiSource() {
         ApiSource.getCurrent()

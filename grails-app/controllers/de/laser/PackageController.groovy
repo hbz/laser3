@@ -583,7 +583,7 @@ class PackageController {
         result.num_change_rows = result.countPendingChanges
         result.changes = changes
 
-        result.apisources = ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        result.apisources = [ ApiSource.getCurrent() ]
 
         result
     }

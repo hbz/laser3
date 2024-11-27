@@ -1304,7 +1304,7 @@ class AjaxHtmlController {
     Map<String,Object> showAllTitleInfos() {
         Map<String, Object> result = [:]
 
-        result.apisources = ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        result.apisources = [ ApiSource.getCurrent() ]
 
         result.tipp = params.tippID ? TitleInstancePackagePlatform.get(params.tippID) : null
         result.ie = params.ieID ? IssueEntitlement.get(params.ieID) : null
@@ -1324,7 +1324,7 @@ class AjaxHtmlController {
     Map<String,Object> showAllTitleInfosAccordion() {
         Map<String, Object> result = [:]
 
-        result.apisources = ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        result.apisources = [ ApiSource.getCurrent() ]
 
         result.tipp = params.tippID ? TitleInstancePackagePlatform.get(params.tippID) : null
         result.ie = params.ieID ? IssueEntitlement.get(params.ieID) : null

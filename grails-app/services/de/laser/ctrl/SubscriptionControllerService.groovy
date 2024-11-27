@@ -2547,7 +2547,7 @@ class SubscriptionControllerService {
             }
             */
 
-            result.apisources = ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+            result.apisources = [ ApiSource.getCurrent() ]
 
             result.packages = result.subscription.packages
 

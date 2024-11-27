@@ -45,7 +45,7 @@
             </g:link>
         </g:else>
     </g:if>
-    <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}" var="gokbAPI">
+    <g:each in="${[ ApiSource.getCurrent() ]}" var="gokbAPI">
         <g:if test="${tipp.gokbId}">
             <a role="button" class="${Btn.ICON.SIMPLE_TOOLTIP} tiny"
                data-content="${message(code: 'wekb')}"

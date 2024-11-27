@@ -189,8 +189,7 @@
 
                 <br/>
                 <br/>
-                <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
-                        var="gokbAPI">
+                <g:each in="${[ ApiSource.getCurrent() ]}" var="gokbAPI">
                     <g:if test="${tipp.pkg.gokbId}">
                         <a role="button"
                            class="${Btn.ICON.SIMPLE_TOOLTIP} tiny"
@@ -245,8 +244,7 @@
                 </g:if>
             </div>
             <br/>
-            <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
-                    var="gokbAPI">
+            <g:each in="${[ ApiSource.getCurrent() ]}" var="gokbAPI">
                 <g:if test="${tipp.platform.gokbId}">
                     <a role="button"
                        class="${Btn.ICON.SIMPLE_TOOLTIP} tiny"
