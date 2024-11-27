@@ -13,4 +13,8 @@ databaseChangeLog = {
             }
         }
     }
+
+    changeSet(author: "klober (generated)", id: "1732524050419-2") {
+        dropTable(tableName: "elasticsearch_source")
+    }
 }
