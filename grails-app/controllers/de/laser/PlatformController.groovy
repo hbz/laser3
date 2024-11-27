@@ -63,7 +63,7 @@ class PlatformController  {
         ApiSource apiSource = ApiSource.getCurrent()
         Map<String, Object> result = [
                 user: contextService.getUser(),
-                editUrl: apiSource.editUrl,
+                baseUrl: apiSource.baseUrl,
                 myPlatformIds: [],
                 flagContentGokb : true, // gokbService.doQuery
                 propList: PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.PLA_PROP], contextService.getOrg())
@@ -264,7 +264,7 @@ class PlatformController  {
         Map<String, Object> result = platformControllerService.getResultGenerics(params)
         Platform platformInstance = result.platformInstance
         ApiSource apiSource = ApiSource.getCurrent()
-        result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'
+        result.baseUrl = apiSource.baseUrl.endsWith('/') ? apiSource.baseUrl : apiSource.baseUrl + '/'
 
         result.flagContentGokb = true // gokbService.executeQuery
         result.platformInstanceRecord = [:]

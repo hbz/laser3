@@ -717,7 +717,7 @@
                                                                 <div class="row">
                                                                     <div class="two wide column">
                                                                         <g:if test="${provider}">
-                                                                            <a target="_blank" href="${wekbApi.editUrl ? wekbApi.editUrl + '/public/orgContent/' + provider.gokbId : '#'}"><i class="${Icon.WEKB} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
+                                                                            <a target="_blank" href="${wekbApi.baseUrl ? wekbApi.baseUrl + '/public/orgContent/' + provider.gokbId : '#'}"><i class="${Icon.WEKB} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
                                                                         </g:if>
                                                                         <g:elseif test="${prs.isPublic}">
                                                                             <i class="${Icon.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.public')}"></i>

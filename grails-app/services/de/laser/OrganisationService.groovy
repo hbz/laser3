@@ -235,7 +235,7 @@ class OrganisationService {
     List<Platform> getAllPlatforms() {
         ApiSource apiSource = ApiSource.getCurrent()
         Set<String> uuids = []
-        Map<String, Object> result = gokbService.doQuery([user: contextService.getUser(), editUrl: apiSource.editUrl], [max: '1000', offset: '0'], [componentType: 'Platform', status: 'Current'])
+        Map<String, Object> result = gokbService.doQuery([user: contextService.getUser(), baseUrl: apiSource.baseUrl], [max: '1000', offset: '0'], [componentType: 'Platform', status: 'Current'])
         uuids.addAll(result.records.collect { Map platRecord -> platRecord.uuid })
         Platform.executeQuery('select p from Platform p join p.org o where p.gokbId in (:uuids) and p.org is not null order by o.name, o.sortname, p.name', [uuids: uuids])
     }
@@ -247,7 +247,7 @@ class OrganisationService {
     List<Platform> getAllPlatformsForContextOrg() {
         ApiSource apiSource = ApiSource.getCurrent()
         Set<String> uuids = []
-        Map<String, Object> result = gokbService.doQuery([user: contextService.getUser(), editUrl: apiSource.editUrl], [max: '10000', offset: '0'], [componentType: 'Platform', status: 'Current'])
+        Map<String, Object> result = gokbService.doQuery([user: contextService.getUser(), baseUrl: apiSource.baseUrl], [max: '10000', offset: '0'], [componentType: 'Platform', status: 'Current'])
         uuids.addAll(result.records.collect { Map platRecord -> platRecord.uuid })
         Platform.executeQuery(
                 'select plat from Platform plat join plat.provider p where plat.gokbId in (:uuids) and p is not null and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription in (select oo.sub from OrgRole oo where oo.org = :context)) order by p.name, p.sortname, plat.name',

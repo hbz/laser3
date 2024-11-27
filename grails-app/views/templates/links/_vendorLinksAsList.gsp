@@ -143,7 +143,7 @@
                                                 <div class="row">
                                                     <div class="two wide column">
                                                         <g:if test="${contactsExWekb}">
-                                                            <a target="_blank" href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/orgContent/' + role.vendor.gokbId : '#'}"><i class="${Icon.WEKB} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
+                                                            <a target="_blank" href="${wekbAPI.baseUrl ? wekbAPI.baseUrl + '/public/orgContent/' + role.vendor.gokbId : '#'}"><i class="${Icon.WEKB} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
                                                         </g:if>
                                                         <g:else>
                                                             <i class="${Icon.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.public')}"></i>
@@ -173,7 +173,7 @@
                                                 <div class="row">
                                                     <div class="two wide column">
                                                         <g:if test="${contactsExWekb}">
-                                                            <a target="_blank" href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/orgContent/' + role.vendor.gokbId : '#'}"><i class="${Icon.WEKB} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
+                                                            <a target="_blank" href="${wekbAPI.baseUrl ? wekbAPI.baseUrl + '/public/orgContent/' + role.vendor.gokbId : '#'}"><i class="${Icon.WEKB} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
                                                         </g:if>
                                                         <g:else>
                                                             <i class="${Icon.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.public')}"></i>
@@ -203,7 +203,7 @@
                                                 <div class="row">
                                                     <div class="two wide column">
                                                         <g:if test="${contactsExWekb}">
-                                                            <a target="_blank" href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/orgContent/' + role.vendor.gokbId : '#'}"><i class="${Icon.WEKB} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
+                                                            <a target="_blank" href="${wekbAPI.baseUrl ? wekbAPI.baseUrl + '/public/orgContent/' + role.vendor.gokbId : '#'}"><i class="${Icon.WEKB} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
                                                         </g:if>
                                                         <g:else>
                                                             <i class="${Icon.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.public')}"></i>

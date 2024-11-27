@@ -11,13 +11,11 @@ class ApiSource {
 
     String name
     String baseUrl
-    String editUrl
     String fixToken
 
     ApiSource() {
         name     = 'WE:KB'
         baseUrl  = ConfigMapper.getWekbServerURL()
-        editUrl  = ConfigMapper.getWekbServerURL()
         fixToken = '/api2'
     }
 
