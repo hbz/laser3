@@ -208,7 +208,7 @@
 <g:if test="${tmplView == 'details'}">
 
     <%
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        ApiSource apiSource = ApiSource.getCurrent()
 
         tmplConfig = [
                 ['provider', wekbNews.provider,   'provider.label',     "${Icon.PROVIDER}",    'menu.my.providers'],

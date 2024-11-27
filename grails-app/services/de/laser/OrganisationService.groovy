@@ -233,7 +233,7 @@ class OrganisationService {
      * @return the ordered {@link List} of {@link de.laser.wekb.Platform}s
      */
     List<Platform> getAllPlatforms() {
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        ApiSource apiSource = ApiSource.getCurrent()
         Set<String> uuids = []
         Map<String, Object> result = gokbService.doQuery([user: contextService.getUser(), editUrl: apiSource.editUrl], [max: '1000', offset: '0'], [componentType: 'Platform', status: 'Current'])
         uuids.addAll(result.records.collect { Map platRecord -> platRecord.uuid })
@@ -245,7 +245,7 @@ class OrganisationService {
      * @return the ordered {@link List} of {@link Platform}s
      */
     List<Platform> getAllPlatformsForContextOrg() {
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        ApiSource apiSource = ApiSource.getCurrent()
         Set<String> uuids = []
         Map<String, Object> result = gokbService.doQuery([user: contextService.getUser(), editUrl: apiSource.editUrl], [max: '10000', offset: '0'], [componentType: 'Platform', status: 'Current'])
         uuids.addAll(result.records.collect { Map platRecord -> platRecord.uuid })

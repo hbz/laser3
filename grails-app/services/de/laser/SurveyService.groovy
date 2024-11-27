@@ -2518,7 +2518,7 @@ class SurveyService {
                     result.error = params.error
                 if (params.reportType)
                     result.putAll(subscriptionControllerService.loadFilterList(params))
-                ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+                ApiSource apiSource = ApiSource.getCurrent()
                 result.flagContentGokb = true // gokbService.executeQuery
                 Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription in (:subscriptions)", [subscriptions: [result.subscription, result.subscription.instanceOf]])
                 result.platformInstanceRecords = [:]

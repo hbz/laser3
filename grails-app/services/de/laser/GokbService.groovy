@@ -29,7 +29,7 @@ class GokbService {
      */
     Map doQuery(Map ctrlResult, Map params, Map queryParams) {
         Map result = [:]
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        ApiSource apiSource = ApiSource.getCurrent()
         queryParams.putAll(setupPaginationParams(ctrlResult, params))
 
         Set records = []

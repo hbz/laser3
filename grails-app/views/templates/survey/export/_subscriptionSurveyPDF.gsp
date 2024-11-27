@@ -222,7 +222,7 @@
     </h2>
         <%
             List packages = []
-            ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+            ApiSource apiSource = ApiSource.getCurrent()
             subscription.packages.each { SubscriptionPackage subscriptionPackage ->
                 Map packageInfos = [:]
 

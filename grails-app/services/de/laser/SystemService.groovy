@@ -41,9 +41,6 @@ class SystemService {
             if (GlobalRecordSource.findAll().size() in [0, GlobalRecordSource.findAllByActive(false).size()]) {
                 checks.globalSync = "NOT active"
             }
-            if (ApiSource.findAll().size() in [0, ApiSource.findAllByActive(false).size()]) {
-                checks.apiSource = "NOT active"
-            }
 
             if (! ConfigMapper.getNotificationsJobActive()) {
                 checks.notificationsJobActive = "NOT active"

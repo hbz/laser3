@@ -7,7 +7,7 @@
     }
     Map<String, Map> platformInstanceRecords = [:]
     JSON platformsJSON = subscribedPlatforms.globalUID as JSON
-    ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+    ApiSource apiSource = ApiSource.getCurrent()
     String revision
     List<CustomerIdentifier> dummyCIs = []
     List<String> errors = []

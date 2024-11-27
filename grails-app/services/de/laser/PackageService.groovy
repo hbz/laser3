@@ -88,7 +88,7 @@ class PackageService {
     }
 
     def getWekbPackages(GrailsParameterMap params) {
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        ApiSource apiSource = ApiSource.getCurrent()
         if (!apiSource) {
             return null
         }

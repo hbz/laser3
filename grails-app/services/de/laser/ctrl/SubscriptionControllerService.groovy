@@ -962,7 +962,7 @@ class SubscriptionControllerService {
      */
     Set getAvailableReports(Map<String, Object> configMap, boolean withPlatformReports = true) {
         Set<String> allAvailableReports
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        ApiSource apiSource = ApiSource.getCurrent()
         Set<Package> subscribedPackages = configMap.subscription.packages.pkg
         Map<RefdataValue, String> contentTypes = RefdataCategory.getAllRefdataValues([RDConstants.PACKAGE_CONTENT_TYPE, RDConstants.TITLE_MEDIUM]).collectEntries { RefdataValue rdv -> [rdv, rdv.value] }
         subscribedPackages.each { Package pkg ->
@@ -2108,7 +2108,7 @@ class SubscriptionControllerService {
                 linkToChildren = params.linkToChildren == 'on',
                 createEntitlementsForChildren = params.createEntitlementsForChildren == 'on'
                 String pkgUUID = params.addUUID
-                ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+                ApiSource apiSource = ApiSource.getCurrent()
                 result.source = apiSource.baseUrl
                 RefdataValue holdingSelection = RefdataValue.get(params.holdingSelection)
                 if(params.holdingSelection) {

@@ -60,7 +60,7 @@ class PlatformController  {
         ctx.contextService.isInstUser_denySupport()
     })
     def list() {
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        ApiSource apiSource = ApiSource.getCurrent()
         Map<String, Object> result = [
                 user: contextService.getUser(),
                 editUrl: apiSource.editUrl,
@@ -263,7 +263,7 @@ class PlatformController  {
     def show() {
         Map<String, Object> result = platformControllerService.getResultGenerics(params)
         Platform platformInstance = result.platformInstance
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        ApiSource apiSource = ApiSource.getCurrent()
         result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'
 
         result.flagContentGokb = true // gokbService.executeQuery

@@ -30,7 +30,7 @@
         </g:if>
         <g:elseif test="${showWekbId}">
             ${orgInstance.gokbId}
-            <ui:linkWithIcon href="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)?.editUrl}/public/orgContent/${orgInstance.gokbId}" />
+            <ui:linkWithIcon href="${ApiSource.getCurrent()?.editUrl}/public/orgContent/${orgInstance.gokbId}" />
         </g:elseif>
         <g:else>
             ${id.value == IdentifierNamespace.UNKNOWN ? "" : id.value}

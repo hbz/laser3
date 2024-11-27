@@ -249,6 +249,6 @@ class ElasticSearchHelper {
      * @return the (first) active {@link ApiSource} of type {@link ApiSource.ApiTyp#GOKBAPI}
      */
     static getCurrentApiSource() {
-        ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        ApiSource.getCurrent()
     }
 }
