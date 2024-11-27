@@ -235,7 +235,7 @@ class StatsSyncService {
                 }
             }
             else {
-                http = new BasicHttpClient(ApiSource.getCurrent().getSushiSourcesUrl())
+                http = new BasicHttpClient(ApiSource.getCurrent().getSushiSourcesURL())
                 Closure success = { resp, json ->
                     if(resp.code() == 200) {
                         if(incremental) {

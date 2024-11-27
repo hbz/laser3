@@ -1,6 +1,6 @@
 <%@ page import="de.laser.addressbook.Person; de.laser.addressbook.Contact;de.laser.utils.DateUtils;de.laser.Links;de.laser.storage.RDStore;de.laser.RefdataValue;de.laser.storage.RDConstants;de.laser.Identifier;de.laser.interfaces.CalculatedType;de.laser.remote.ApiSource" %>
 <laser:serviceInjection/>
-<g:set var="apiSource" value="${ApiSource.getCurrent()}"/>
+<g:set var="wekbResourceUrl" value="${ApiSource.getCurrent().getResourceShowURL()}"/>
 <g:set var="linkCtrlAction" value="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" />
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
@@ -355,7 +355,7 @@
                                 <td>
                                     <i>
                                         <g:if test="${contactsExWekb}">
-                                            <a href="${apiSource.baseUrl}/resource/show/${role.provider.gokbId}"><g:message code="org.isWekbCurated.header.label"/> (we:kb Link)</a>
+                                            <a href="${wekbResourceUrl}/${role.provider.gokbId}"><g:message code="org.isWekbCurated.header.label"/> (we:kb Link)</a>
                                         </g:if>
                                         <g:else>
                                             <g:message code="address.public"/>
@@ -382,7 +382,7 @@
                                 <td>
                                     <i>
                                         <g:if test="${contactsExWekb}">
-                                            <a href="${apiSource.baseUrl}/resource/show/${role.provider.gokbId}"><g:message code="org.isWekbCurated.header.label"/> (we:kb Link)</a>
+                                            <a href="${wekbResourceUrl}/${role.provider.gokbId}"><g:message code="org.isWekbCurated.header.label"/> (we:kb Link)</a>
                                         </g:if>
                                         <g:else>
                                             <g:message code="address.public"/>
@@ -409,7 +409,7 @@
                                 <td>
                                     <i>
                                         <g:if test="${contactsExWekb}">
-                                            <a href="${apiSource.baseUrl}/resource/show/${role.provider.gokbId}"><g:message code="org.isWekbCurated.header.label"/> (we:kb Link)</a>
+                                            <a href="${wekbResourceUrl}/${role.provider.gokbId}"><g:message code="org.isWekbCurated.header.label"/> (we:kb Link)</a>
                                         </g:if>
                                         <g:else>
                                             <g:message code="address.public"/>

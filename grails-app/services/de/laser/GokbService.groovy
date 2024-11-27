@@ -33,7 +33,7 @@ class GokbService {
 
         Set records = []
 
-        Map queryResult = executeQuery(ApiSource.getCurrent().getSearchApiUrl(), queryParams)
+        Map queryResult = executeQuery(ApiSource.getCurrent().getSearchApiURL(), queryParams)
         if (queryResult && queryResult.result) {
             records.addAll(queryResult.result)
             result.recordsCount = queryResult.result_count_total

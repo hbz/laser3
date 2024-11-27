@@ -76,7 +76,7 @@ class ProviderController {
         ])
 
         result.wekbApi = ApiSource.getCurrent()
-        Map queryCuratoryGroups = gokbService.executeQuery(ApiSource.getCurrent().getGroupsUrl(), [:])
+        Map queryCuratoryGroups = gokbService.executeQuery(ApiSource.getCurrent().getGroupsURL(), [:])
         if(queryCuratoryGroups.error == 404) {
             result.error = message(code:'wekb.error.'+queryCuratoryGroups.error) as String
         }

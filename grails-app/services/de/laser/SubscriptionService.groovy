@@ -2450,7 +2450,7 @@ class SubscriptionService {
         boolean result = false
         subscribedPlatforms.each { Platform platformInstance ->
             if(!result) {
-                Map queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSearchApiUrl(), [uuid: platformInstance.gokbId])
+                Map queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSearchApiURL(), [uuid: platformInstance.gokbId])
                 if (queryResult) {
                     List records = queryResult.result
                     if(records) {
@@ -2469,7 +2469,7 @@ class SubscriptionService {
      * @return
      */
     Map<String, Object> prepareSUSHIConnectionCheck(CustomerIdentifier ci) {
-        Map<String, Object> queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSushiSourcesUrl(), [:])
+        Map<String, Object> queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSushiSourcesURL(), [:])
         Map platformRecord
         if (queryResult) {
             Map<String, Object> records = queryResult

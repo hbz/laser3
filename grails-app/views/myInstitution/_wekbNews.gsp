@@ -208,8 +208,6 @@
 <g:if test="${tmplView == 'details'}">
 
     <%
-        ApiSource apiSource = ApiSource.getCurrent()
-
         tmplConfig = [
                 ['provider', wekbNews.provider,   'provider.label',     "${Icon.PROVIDER}",    'menu.my.providers'],
                 ['vendor',   wekbNews.vendor,     'vendor.plural',      "${Icon.VENDOR}",      'menu.my.vendors'],
@@ -223,7 +221,7 @@
             Änderungen der letzten <strong>${wekbNews.query.days}</strong> Tage: <strong>${wekbNews.counts.all}</strong> Datensätze.<br />
             Letzter Datenabgleich: <strong>${wekbNews.query.call}</strong>
             <span style="float:right">
-                <a href="${apiSource.baseUrl}" target="_blank"><i class="${Icon.WEKB} large"></i></a>
+                <a href="${ApiSource.getCurrent().baseUrl}" target="_blank"><i class="${Icon.WEKB} large"></i></a>
             </span>
         </p>
         <div class="filter" style="margin:0 2em 0.5em; text-align:right;">

@@ -153,7 +153,7 @@ class PackageService {
         if(params.uuids)
             queryParams.uuids = params.uuids
 
-        Map queryCuratoryGroups = gokbService.executeQuery(ApiSource.getCurrent().getGroupsUrl(), [:])
+        Map queryCuratoryGroups = gokbService.executeQuery(ApiSource.getCurrent().getGroupsURL(), [:])
         if(!params.sort)
             params.sort = 'name'
         if(queryCuratoryGroups.code == 404) {

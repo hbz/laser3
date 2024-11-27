@@ -2518,7 +2518,7 @@ class SurveyService {
                     result.error = params.error
                 if (params.reportType)
                     result.putAll(subscriptionControllerService.loadFilterList(params))
-                ApiSource apiSource = ApiSource.getCurrent()
+
                 result.flagContentGokb = true // gokbService.executeQuery
                 Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription in (:subscriptions)", [subscriptions: [result.subscription, result.subscription.instanceOf]])
                 result.platformInstanceRecords = [:]
@@ -2544,7 +2544,7 @@ class SurveyService {
                         }
                         result.keyPairs.put(platformInstance.gokbId, keyPair)
                     }
-                    Map queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSearchApiUrl(), [uuid: platformInstance.gokbId])
+                    Map queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSearchApiURL(), [uuid: platformInstance.gokbId])
                     if (queryResult.error && queryResult.error == 404) {
                         result.wekbServerUnavailable = message(code: 'wekb.error.404')
                     } else if (queryResult) {
@@ -2553,10 +2553,10 @@ class SurveyService {
                             records[0].lastRun = platformInstance.counter5LastRun ?: platformInstance.counter4LastRun
                             records[0].id = platformInstance.id
                             result.platformInstanceRecords[platformInstance.gokbId] = records[0]
-                            result.platformInstanceRecords[platformInstance.gokbId].wekbUrl = apiSource.baseUrl + "/resource/show/${platformInstance.gokbId}"
+                            result.platformInstanceRecords[platformInstance.gokbId].wekbUrl = ApiSource.getCurrent().getResourceShowURL() + "/${platformInstance.gokbId}"
                             if (records[0].statisticsFormat == 'COUNTER' && records[0].counterR4SushiServerUrl == null && records[0].counterR5SushiServerUrl == null) {
                                 result.error = 'noSushiSource'
-                                ArrayList<Object> errorArgs = ["${apiSource.baseUrl}/resource/show/${platformInstance.gokbId}", platformInstance.name]
+                                ArrayList<Object> errorArgs = ["${ApiSource.getCurrent().getResourceShowURL()}/${platformInstance.gokbId}", platformInstance.name]
                                 result.errorArgs = errorArgs.toArray()
                             } else {
                                 CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriberRespConsortia(), platformInstance)
