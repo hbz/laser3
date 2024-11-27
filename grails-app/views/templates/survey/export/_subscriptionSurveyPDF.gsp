@@ -222,13 +222,12 @@
     </h2>
         <%
             List packages = []
-            ApiSource apiSource = ApiSource.getCurrent()
             subscription.packages.each { SubscriptionPackage subscriptionPackage ->
                 Map packageInfos = [:]
 
                 packageInfos.packageInstance = subscriptionPackage.pkg
 
-                Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: subscriptionPackage.pkg.gokbId])
+                Map queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSearchApiUrl(), [uuid: subscriptionPackage.pkg.gokbId])
                 if (queryResult) {
                     List records = queryResult.result
                     packageInfos.packageInstanceRecord = records ? records[0] : [:]

@@ -75,9 +75,8 @@ class ProviderController {
                 tenant: contextService.getOrg()
         ])
 
-        ApiSource apiSource = ApiSource.getCurrent()
-        result.wekbApi = apiSource
-        Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
+        result.wekbApi = ApiSource.getCurrent()
+        Map queryCuratoryGroups = gokbService.executeQuery(ApiSource.getCurrent().getGroupsUrl(), [:])
         if(queryCuratoryGroups.error == 404) {
             result.error = message(code:'wekb.error.'+queryCuratoryGroups.error) as String
         }

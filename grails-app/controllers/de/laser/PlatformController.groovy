@@ -60,16 +60,15 @@ class PlatformController  {
         ctx.contextService.isInstUser_denySupport()
     })
     def list() {
-        ApiSource apiSource = ApiSource.getCurrent()
         Map<String, Object> result = [
                 user: contextService.getUser(),
-                baseUrl: apiSource.baseUrl,
+                baseUrl: ApiSource.getCurrent().baseUrl,
                 myPlatformIds: [],
                 flagContentGokb : true, // gokbService.doQuery
                 propList: PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.PLA_PROP], contextService.getOrg())
         ]
         SwissKnife.setPaginationParams(result, params, (User) result.user)
-        Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
+        Map queryCuratoryGroups = gokbService.executeQuery(ApiSource.getCurrent().getGroupsUrl(), [:])
         if(queryCuratoryGroups.code == 404) {
             result.error = message(code: 'wekb.error.'+queryCuratoryGroups.error) as String
         }
@@ -268,7 +267,7 @@ class PlatformController  {
 
         result.flagContentGokb = true // gokbService.executeQuery
         result.platformInstanceRecord = [:]
-        Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
+        Map queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSearchApiUrl(), [uuid: platformInstance.gokbId])
         if ((queryResult.error && queryResult.error == 404) || !queryResult) {
             flash.error = message(code:'wekb.error.404') as String
         }

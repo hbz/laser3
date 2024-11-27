@@ -88,10 +88,6 @@ class PackageService {
     }
 
     def getWekbPackages(GrailsParameterMap params) {
-        ApiSource apiSource = ApiSource.getCurrent()
-        if (!apiSource) {
-            return null
-        }
         Locale locale = LocaleUtils.getCurrentLocale()
         Map<String, Object> result = [
                 flagContentGokb : true // gokbService.executeQuery
@@ -106,7 +102,7 @@ class PackageService {
                 [value: 'false', name: messageSource.getMessage('package.index.result.noAutomaticUpdates', null, locale)]
         ]
 
-        result.baseUrl = apiSource.baseUrl
+        result.baseUrl = ApiSource.getCurrent().baseUrl
 
         Map<String, Object> queryParams = [componentType: "Package"]
         if (params.q) {
@@ -157,7 +153,7 @@ class PackageService {
         if(params.uuids)
             queryParams.uuids = params.uuids
 
-        Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
+        Map queryCuratoryGroups = gokbService.executeQuery(ApiSource.getCurrent().getGroupsUrl(), [:])
         if(!params.sort)
             params.sort = 'name'
         if(queryCuratoryGroups.code == 404) {

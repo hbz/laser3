@@ -9,19 +9,29 @@ import de.laser.config.ConfigMapper
 @Deprecated
 class ApiSource {
 
+    // TODO - ERMS-5917
+
     String name
     String baseUrl
-    String fixToken
 
     ApiSource() {
         name     = 'WE:KB'
         baseUrl  = ConfigMapper.getWekbServerURL()
-        fixToken = '/api2'
     }
 
     static mapWith = 'none'
 
     static ApiSource getCurrent() {
         new ApiSource()
+    }
+
+    String getSearchApiUrl() {
+        baseUrl + '/api2/searchApi'
+    }
+    String getSushiSourcesUrl() {
+        baseUrl + '/api2/sushiSources'
+    }
+    String getGroupsUrl() {
+        baseUrl + '/api2/groups'
     }
 }

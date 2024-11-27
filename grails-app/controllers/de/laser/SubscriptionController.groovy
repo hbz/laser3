@@ -231,7 +231,7 @@ class SubscriptionController {
                     }
                 }
             }
-            Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
+            Map queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSearchApiUrl(), [uuid: platformInstance.gokbId])
             if (queryResult.error && queryResult.error == 404) {
                 result.wekbServerUnavailable = message(code: 'wekb.error.404')
             }

@@ -405,7 +405,7 @@ class VendorService {
         result.wekbApi = ApiSource.getCurrent()
 
         result.flagContentGokb = true // vendorService.getWekbVendorRecords()
-        Map queryCuratoryGroups = gokbService.executeQuery(result.wekbApi.baseUrl + result.wekbApi.fixToken + '/groups', [:])
+        Map queryCuratoryGroups = gokbService.executeQuery(result.wekbApi.getGroupsUrl(), [:])
         if (queryCuratoryGroups.code == 404) {
             result.error = message(code: 'wekb.error.' + queryCuratoryGroups.error) as String
         } else {
