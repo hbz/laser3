@@ -7,14 +7,13 @@
     }
     Map<String, Map> platformInstanceRecords = [:]
     JSON platformsJSON = subscribedPlatforms.globalUID as JSON
-    ApiSource apiSource = ApiSource.getCurrent()
     String revision
     List<CustomerIdentifier> dummyCIs = []
     List<String> errors = []
     Set reportTypes
     String dummy
     subscribedPlatforms.each { Platform platformInstance ->
-        Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
+        Map queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSearchApiURL(), [uuid: platformInstance.gokbId])
         if (queryResult) {
             List records = queryResult.result
             if(records[0]) {

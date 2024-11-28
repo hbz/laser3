@@ -962,7 +962,6 @@ class SubscriptionControllerService {
      */
     Set getAvailableReports(Map<String, Object> configMap, boolean withPlatformReports = true) {
         Set<String> allAvailableReports
-        ApiSource apiSource = ApiSource.getCurrent()
         Set<Package> subscribedPackages = configMap.subscription.packages.pkg
         Map<RefdataValue, String> contentTypes = RefdataCategory.getAllRefdataValues([RDConstants.PACKAGE_CONTENT_TYPE, RDConstants.TITLE_MEDIUM]).collectEntries { RefdataValue rdv -> [rdv, rdv.value] }
         subscribedPackages.each { Package pkg ->
@@ -973,7 +972,7 @@ class SubscriptionControllerService {
                     contentType = titleTypes[0]
             }
             Platform platform = pkg.nominalPlatform
-            Map<String, Object> queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/sushiSources", [:])
+            Map<String, Object> queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSushiSourcesURL(), [:])
             Map platformRecord
             if (queryResult) {
                 Map<String, Object> records = queryResult
@@ -2108,8 +2107,7 @@ class SubscriptionControllerService {
                 linkToChildren = params.linkToChildren == 'on',
                 createEntitlementsForChildren = params.createEntitlementsForChildren == 'on'
                 String pkgUUID = params.addUUID
-                ApiSource apiSource = ApiSource.getCurrent()
-                result.source = apiSource.baseUrl
+                result.source = ApiSource.getCurrent().baseUrl
                 RefdataValue holdingSelection = RefdataValue.get(params.holdingSelection)
                 if(params.holdingSelection) {
                     holdingSelection = RefdataValue.get(params.holdingSelection)

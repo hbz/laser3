@@ -2447,11 +2447,10 @@ class SubscriptionService {
      * @return true if at least one of the platforms provides usage statistics data, false if none
      */
     boolean areStatsAvailable(Collection<Platform> subscribedPlatforms) {
-        ApiSource wekbSource = ApiSource.getCurrent()
         boolean result = false
         subscribedPlatforms.each { Platform platformInstance ->
             if(!result) {
-                Map queryResult = gokbService.executeQuery(wekbSource.baseUrl + wekbSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
+                Map queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSearchApiURL(), [uuid: platformInstance.gokbId])
                 if (queryResult) {
                     List records = queryResult.result
                     if(records) {
@@ -2470,8 +2469,7 @@ class SubscriptionService {
      * @return
      */
     Map<String, Object> prepareSUSHIConnectionCheck(CustomerIdentifier ci) {
-        ApiSource apiSource = ApiSource.getCurrent()
-        Map<String, Object> queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/sushiSources", [:])
+        Map<String, Object> queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSushiSourcesURL(), [:])
         Map platformRecord
         if (queryResult) {
             Map<String, Object> records = queryResult

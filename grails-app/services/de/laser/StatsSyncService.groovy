@@ -222,7 +222,6 @@ class StatsSyncService {
      */
     @Deprecated
     void internalDoFetch(boolean incremental, String platformUUID = '', String source = '', String revision = '') {
-        ApiSource apiSource = ApiSource.getCurrent()
         List<List> c4SushiSources = [], c5SushiSources = []
         //process each platform with a SUSHI API
         BasicHttpClient http
@@ -236,7 +235,7 @@ class StatsSyncService {
                 }
             }
             else {
-                http = new BasicHttpClient(apiSource.baseUrl+apiSource.fixToken+'/sushiSources')
+                http = new BasicHttpClient(ApiSource.getCurrent().getSushiSourcesURL())
                 Closure success = { resp, json ->
                     if(resp.code() == 200) {
                         if(incremental) {

@@ -61,7 +61,6 @@ ${custId ? ('Customer Identifier: ' + custId.value) : ''}
         Map<String, Object> result = [:]
 
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(params.id_tipp)
-        ApiSource apiSource = ApiSource.getCurrent()
 
         List<Person> ppList = BeanStore.getProviderService().getContactPersonsByFunctionType(tipp.platform.provider, false, RDStore.PRS_FUNC_SERVICE_SUPPORT)
 
@@ -94,7 +93,7 @@ bei einem We:kb-Titel sind mir unvollständige/fehlerhafte Informationen aufgefa
 Betroffen ist das folgende Objekt:
 
 ${tipp.name}
-${apiSource.baseUrl + '/resource/show/' + tipp.gokbId}
+${ApiSource.getCurrent().getResourceShowURL() + '/' + tipp.gokbId}
 
 Vielen Dank,
 """ + sig['de'],
@@ -108,7 +107,7 @@ I noticed incomplete/incorrect information in a We:kb title:
 The following object is affected:
 
 ${tipp.name}
-${apiSource.baseUrl + '/resource/show/' + tipp.gokbId}
+${ApiSource.getCurrent().getResourceShowURL() + '/' + tipp.gokbId}
 
 Thank you,
 """ + sig['en']

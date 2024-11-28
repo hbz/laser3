@@ -240,10 +240,9 @@ class PackageController {
         }
         result.gascoContacts = gascoContacts
 
-        ApiSource apiSource = ApiSource.getCurrent()
-        result.baseUrl = apiSource.baseUrl.endsWith('/') ? apiSource.baseUrl : apiSource.baseUrl + '/'
+        result.baseUrl = ApiSource.getCurrent().baseUrl + '/'
 
-        Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: result.packageInstance.gokbId])
+        Map queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSearchApiURL(), [uuid: result.packageInstance.gokbId])
         if ((queryResult.error && queryResult.error == 404) || !queryResult) {
             flash.error = message(code:'wekb.error.404') as String
         }
@@ -254,7 +253,7 @@ class PackageController {
         if(result.packageInstance.nominalPlatform) {
             //record filled with LAS:eR and we:kb data
             Map<String, Object> platformInstanceRecord = [:]
-            queryResult = gokbService.executeQuery(apiSource.baseUrl+apiSource.fixToken+"/searchApi", [uuid: result.packageInstance.nominalPlatform.gokbId])
+            queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSearchApiURL(), [uuid: result.packageInstance.nominalPlatform.gokbId])
             if(queryResult) {
                 List records = queryResult.result
                 if(records)
