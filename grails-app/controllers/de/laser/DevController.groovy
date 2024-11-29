@@ -62,8 +62,8 @@ class DevController  {
 
     @Secured(['ROLE_YODA'])
     def queryOutputChecker() {
-        Set<Subscription> result = Subscription.executeQuery("select s from Subscription s join s.packages sp where ((s.endDate is not null and s.endDate >= :now) or s.hasPerpetualAccess = true) and s.holdingSelection = :entire and sp.pkg = :pkg and not exists(select ac from AuditConfig ac where ac.referenceClass = :subscription and ac.referenceId = s.id and ac.referenceField = 'holdingSelection')", [now: new Date(), subscription: Subscription.class.name, entire: RDStore.SUBSCRIPTION_HOLDING_ENTIRE, pkg: de.laser.wekb.Package.findByGokbId('19a58a9c-0362-4bd0-bc5a-29caed07fcda')])
-        flash.message = "subs concerned: ${result.collect { Subscription s -> "${s.id} => ${s.name} => ${s.getDerivedNonHiddenSubscribers().collect { Org oo -> "${oo.name} (${oo.sortname})" }.join(',')}" }.join('<br>')}"
+        Set<Subscription> result = Subscription.executeQuery("select s from Subscription s join s.packages sp where ((s.endDate is not null and s.endDate >= :now) or s.hasPerpetualAccess = true) and s.holdingSelection = :entire and sp.pkg = :pkg and s.instanceOf = null", [now: new Date(), entire: RDStore.SUBSCRIPTION_HOLDING_ENTIRE, pkg: de.laser.wekb.Package.findByGokbId('a3f41aef-8316-442e-99e9-29e2f011fc22')])
+        flash.message = "subs concerned: ${result.collect { Subscription s -> "${s.id} => ${s.name} => ${s.getSubscriberRespConsortia().collect { Org oo -> "${oo.name} (${oo.sortname})" }.join(',')}" }.join('<br>')}"
         redirect controller: 'yoda', action: 'index'
     }
 }

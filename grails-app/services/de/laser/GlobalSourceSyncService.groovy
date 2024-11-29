@@ -1021,7 +1021,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         Date now = new Date()
         newTitles.each { TitleInstancePackagePlatform tipp ->
-            Set<Subscription> subsConcerned = Subscription.executeQuery("select s from Subscription s join s.packages sp where ((s.endDate is not null and s.endDate >= :now) or s.hasPerpetualAccess = true) and s.holdingSelection = :entire and sp.pkg = :pkg and not exists(select ac from AuditConfig ac where ac.referenceClass = :subscription and ac.referenceId = s.id and ac.referenceField = 'holdingSelection')", [now: now, entire: RDStore.SUBSCRIPTION_HOLDING_ENTIRE, pkg: tipp.pkg])
+            Set<Subscription> subsConcerned = Subscription.executeQuery("select s from Subscription s join s.packages sp where ((s.endDate is not null and s.endDate >= :now) or s.hasPerpetualAccess = true) and s.holdingSelection = :entire and sp.pkg = :pkg and s.instanceOf = null", [now: now, entire: RDStore.SUBSCRIPTION_HOLDING_ENTIRE, pkg: tipp.pkg])
             //we may need to switch to native sql ...
             subsConcerned.each { Subscription s ->
                 IssueEntitlement ie = IssueEntitlement.construct([subscription: s, tipp: tipp])
@@ -1822,7 +1822,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             //process central differences which are without effect to issue entitlements
             tippA.titleType = tippB.titleType
             tippA.name = tippB.name
-            tippA.sortname = tippB.sortname
+            tippA.sortname = tippB.sortname ?: escapeService.generateSortTitle(tippB.name)
             if(tippA.altnames) {
                 List<String> oldAltNames = tippA.altnames.collect { AlternativeName altname -> altname.name }
                 tippB.altnames.each { String newAltName ->
@@ -1990,7 +1990,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         TitleInstancePackagePlatform newTIPP = new TitleInstancePackagePlatform(
                 titleType: tippData.titleType,
                 name: tippData.name,
-                sortname: tippData.sortname,
+                sortname: tippData.sortname ?: escapeService.generateSortTitle(tippData.name),
                 firstAuthor: tippData.firstAuthor,
                 firstEditor: tippData.firstEditor,
                 editionStatement: tippData.editionStatement,
