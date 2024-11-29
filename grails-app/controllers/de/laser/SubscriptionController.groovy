@@ -184,7 +184,6 @@ class SubscriptionController {
             result.error = params.error
         if(params.reportType)
             result.putAll(subscriptionControllerService.loadFilterList(params))
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         result.flagContentGokb = true // gokbService.executeQuery
         Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: result.subscription])
         /*
@@ -231,7 +230,7 @@ class SubscriptionController {
                     }
                 }
             }
-            Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
+            Map queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSearchApiURL(), [uuid: platformInstance.gokbId])
             if (queryResult.error && queryResult.error == 404) {
                 result.wekbServerUnavailable = message(code: 'wekb.error.404')
             }
@@ -241,10 +240,10 @@ class SubscriptionController {
                     records[0].lastRun = platformInstance.counter5LastRun ?: platformInstance.counter4LastRun
                     records[0].id = platformInstance.id
                     result.platformInstanceRecords[platformInstance.gokbId] = records[0]
-                    result.platformInstanceRecords[platformInstance.gokbId].wekbUrl = apiSource.editUrl + "/resource/show/${platformInstance.gokbId}"
+                    result.platformInstanceRecords[platformInstance.gokbId].wekbUrl = ApiSource.getCurrent().getResourceShowURL() + "/${platformInstance.gokbId}"
                     if(records[0].statisticsFormat == 'COUNTER' && records[0].counterR4SushiServerUrl == null && records[0].counterR5SushiServerUrl == null) {
                         result.error = 'noSushiSource'
-                        ArrayList<Object> errorArgs = ["${apiSource.editUrl}/resource/show/${platformInstance.gokbId}", platformInstance.name]
+                        ArrayList<Object> errorArgs = ["${ApiSource.getCurrent().getResourceShowURL()}/${platformInstance.gokbId}", platformInstance.name]
                         result.errorArgs = errorArgs.toArray()
                     }
                     else {

@@ -222,13 +222,12 @@
     </h2>
         <%
             List packages = []
-            ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
             subscription.packages.each { SubscriptionPackage subscriptionPackage ->
                 Map packageInfos = [:]
 
                 packageInfos.packageInstance = subscriptionPackage.pkg
 
-                Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: subscriptionPackage.pkg.gokbId])
+                Map queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSearchApiURL(), [uuid: subscriptionPackage.pkg.gokbId])
                 if (queryResult) {
                     List records = queryResult.result
                     packageInfos.packageInstanceRecord = records ? records[0] : [:]
@@ -270,7 +269,7 @@
                                             <g:each in="${pkgInfo.packageInstanceRecord.curatoryGroups}"
                                                     var="curatoryGroup">
                                                 <g:link
-                                                        url="${editUrl}resource/show/${curatoryGroup.curatoryGroup}">${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}</g:link>
+                                                        url="${baseUrl}resource/show/${curatoryGroup.curatoryGroup}">${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}</g:link>
                                             </g:each>
                                         </div>
                                     </dd>

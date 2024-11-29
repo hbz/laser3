@@ -67,7 +67,7 @@ class VendorController {
         result.flagContentGokb = true // vendorService.getWekbVendorRecords()
         result.propList    = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.VEN_PROP], contextService.getOrg())
         prf.setBenchmark("get curatory groups")
-        Map queryCuratoryGroups = gokbService.executeQuery(result.wekbApi.baseUrl + result.wekbApi.fixToken + '/groups', [:])
+        Map queryCuratoryGroups = gokbService.executeQuery(result.wekbApi.getGroupsURL(), [:])
         prf.setBenchmark("get we:kb vendors")
         if(queryCuratoryGroups.code == 404) {
             result.error = message(code: 'wekb.error.'+queryCuratoryGroups.error) as String

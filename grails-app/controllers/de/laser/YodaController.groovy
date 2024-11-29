@@ -721,8 +721,7 @@ class YodaController {
                 platformInstanceRecords: [:],
                 flagContentGokb : true // gokbService.executeQuery
         ]
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        Map allPlatforms = gokbService.executeQuery(apiSource.baseUrl+apiSource.fixToken+"/sushiSources", [:])
+        Map allPlatforms = gokbService.executeQuery(ApiSource.getCurrent().getSushiSourcesURL(), [:])
         if (allPlatforms.error && allPlatforms.error == 404) {
             result.wekbServerUnavailable = message(code: 'wekb.error.404')
         }

@@ -99,7 +99,7 @@ class HelpService {
     Map<String, String> getTokenMap() {
         [
             'current_server_laser'  : ConfigMapper.getGrailsServerURL(),
-            'current_server_wekb'   : ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)?.baseUrl, // ConfigMapper.getWekbServerURL(), // TODO
+            'current_server_wekb'   : ApiSource.getCurrent().baseUrl, // ConfigMapper.getWekbServerURL(), // TODO
             'current_server_assets' : ConfigMapper.getGrailsServerURL() + '/assets',
             'current_server_webapp' : ConfigMapper.getGrailsServerURL() + '/static',
         ]

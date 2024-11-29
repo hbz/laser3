@@ -381,7 +381,7 @@ class VendorService {
                                       institution: contextOrg,
                                       contextOrg: contextOrg, //for templates
                                       contextCustomerType:contextOrg.getCustomerType(),
-                                      wekbApi: ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)]
+                                      wekbApi: ApiSource.getCurrent()]
         if(params.id) {
             result.vendor = Vendor.get(params.id)
             result.editable = contextService.isInstEditor()
@@ -402,10 +402,10 @@ class VendorService {
         User contextUser = contextService.getUser()
         SwissKnife.setPaginationParams(result, params, contextUser)
         Locale locale = LocaleUtils.getCurrentLocale()
-        result.wekbApi = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        result.wekbApi = ApiSource.getCurrent()
 
         result.flagContentGokb = true // vendorService.getWekbVendorRecords()
-        Map queryCuratoryGroups = gokbService.executeQuery(result.wekbApi.baseUrl + result.wekbApi.fixToken + '/groups', [:])
+        Map queryCuratoryGroups = gokbService.executeQuery(result.wekbApi.getGroupsURL(), [:])
         if (queryCuratoryGroups.code == 404) {
             result.error = message(code: 'wekb.error.' + queryCuratoryGroups.error) as String
         } else {

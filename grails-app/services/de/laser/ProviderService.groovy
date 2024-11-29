@@ -309,8 +309,7 @@ class ProviderService {
                                       contextOrg: org, //for templates
                                       isMyOrg:false,
                                       contextCustomerType:org.getCustomerType()]
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        result.wekbApi = apiSource
+        result.wekbApi = ApiSource.getCurrent()
         if (params.id) {
             result.provider = Provider.get(params.id)
             result.editable = contextService.isInstEditor()

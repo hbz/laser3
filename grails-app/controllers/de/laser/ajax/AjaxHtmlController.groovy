@@ -292,9 +292,8 @@ class AjaxHtmlController {
         result.roleRespValue = RDStore.PRS_RESP_SPEC_SUB_EDITOR.value
         result.editmode = result.subscription.isEditableBy(contextService.getUser())
         result.accessConfigEditable = contextService.isInstEditor(CustomerTypeService.ORG_INST_BASIC) || (contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_BASIC) && result.subscription.getSubscriberRespConsortia().id == contextService.getOrg().id)
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         result.subscription.packages.pkg.gokbId.each { String uuid ->
-            Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: uuid])
+            Map queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSearchApiURL(), [uuid: uuid])
             if (queryResult) {
                 List records = queryResult.result
                 packageMetadata.put(uuid, records[0])
@@ -313,13 +312,12 @@ class AjaxHtmlController {
         Map<String,Object> result = [subscription:Subscription.get(params.subscription)]
 
         result.packages = []
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         result.subscription.packages.each { SubscriptionPackage subscriptionPackage ->
             Map packageInfos = [:]
 
             packageInfos.packageInstance = subscriptionPackage.pkg
 
-            Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: subscriptionPackage.pkg.gokbId])
+            Map queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSearchApiURL(), [uuid: subscriptionPackage.pkg.gokbId])
             if (queryResult.error && queryResult.error == 404) {
                 flash.error = message(code: 'wekb.error.404') as String
             } else if (queryResult) {
@@ -1304,7 +1302,7 @@ class AjaxHtmlController {
     Map<String,Object> showAllTitleInfos() {
         Map<String, Object> result = [:]
 
-        result.apisources = ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        result.apisources = [ ApiSource.getCurrent() ]
 
         result.tipp = params.tippID ? TitleInstancePackagePlatform.get(params.tippID) : null
         result.ie = params.ieID ? IssueEntitlement.get(params.ieID) : null
@@ -1324,7 +1322,7 @@ class AjaxHtmlController {
     Map<String,Object> showAllTitleInfosAccordion() {
         Map<String, Object> result = [:]
 
-        result.apisources = ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        result.apisources = [ ApiSource.getCurrent() ]
 
         result.tipp = params.tippID ? TitleInstancePackagePlatform.get(params.tippID) : null
         result.ie = params.ieID ? IssueEntitlement.get(params.ieID) : null

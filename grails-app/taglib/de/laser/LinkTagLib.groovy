@@ -31,40 +31,40 @@ class LinkTagLib {
 
     // <wekbIconLink href="${target}" />
     def wekbIconLink = { attrs, body ->
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        String href = ''
-        String label = 'Unbekannter Fehler'
+        String resourceUrl  = ApiSource.getCurrent().getResourceShowURL() + '/' + attrs.gokbId
+        String href         = ''
+        String label        = 'Unbekannter Fehler'
 
         if (attrs.type == 'curatoryGroup') {
-            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
+            href  = resourceUrl
             label = message(code: 'package.curatoryGroup.label') + ' in der we:kb aufrufen'
         }
         else if (attrs.type == 'org') {
-            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
+            href  = resourceUrl
             label = message(code: 'provider.label') + ' in der we:kb aufrufen'
         }
         else if (attrs.type == 'package') {
-            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
+            href  = resourceUrl
             label = message(code: 'package.label') + ' in der we:kb aufrufen'
         }
         else if (attrs.type == 'platform') {
-            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
+            href  = resourceUrl
             label = message(code: 'platform.label') + ' in der we:kb aufrufen'
         }
         else if (attrs.type == 'provider') {
-            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
+            href  = resourceUrl
             label = message(code: 'provider.label') + ' in der we:kb aufrufen'
         }
         else if (attrs.type == 'source') {
-            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
+            href  = resourceUrl
             label = message(code: 'package.source.label') + ' in der we:kb aufrufen'
         }
         else if (attrs.type == 'tipp') {
-            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
+            href  = resourceUrl
             label = message(code: 'title.label') + ' in der we:kb aufrufen'
         }
         else if (attrs.type == 'vendor') {
-            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
+            href  = resourceUrl
             label = message(code: 'vendor.label') + ' in der we:kb aufrufen'
         }
         out << '<span class="la-popup-tooltip" data-position="top right" data-content="' + label + '" >&nbsp;'
@@ -75,20 +75,20 @@ class LinkTagLib {
     }
 
     def wekbButtonLink = { attrs, body ->
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        String href = ''
-        String label = ''
+        String resourceUrl  = ApiSource.getCurrent().getResourceShowURL() + '/' + attrs.gokbId
+        String href         = ''
+        String label        = ''
 
         if (attrs.type == 'org') {
-            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
+            href  = resourceUrl
             label = message(code: 'provider.label') + ' in der we:kb aufrufen'
         }
         else if (attrs.type == 'vendor') {
-            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
+            href  = resourceUrl
             label = message(code: 'vendor.label') + ' in der we:kb aufrufen'
         }
         else if (attrs.type == 'platform') {
-            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
+            href  = resourceUrl
             label = message(code: 'platform.label') + ' in der we:kb aufrufen'
         }
 
@@ -102,7 +102,6 @@ class LinkTagLib {
     }
 
     def skipLink  = { attrs, body ->
-
 //        out << '<!-- skip to main content / for screenreader --!>'
         out << '<nav class="la-skipLink" role="navigation" aria-label="' + message(code:'accessibility.jumpLink') + '">'
         out << '<p><a href="#main" class="la-screenReaderText">"' + message(code:'accessibility.jumpToMain') + '"</a></p>'

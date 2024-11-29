@@ -15,7 +15,7 @@
 </g:if>
 
 <g:if test="${['platform', 'altname'].any { String tmplConfig -> tmplConfig in tmplConfigShow }}">
-    <g:set var="apiSource" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
+    <g:set var="apiSource" value="${ApiSource.getCurrent()}"/>
 </g:if>
 
 <table id="${tableID ?: ''}" class="ui sortable celled la-js-responsive-table la-table table ${fixedHeader ?: ''}">

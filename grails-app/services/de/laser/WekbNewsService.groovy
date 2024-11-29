@@ -153,8 +153,7 @@ class WekbNewsService {
         Date frame = Date.from(LocalDate.now().minusDays(days).atStartOfDay(ZoneId.systemDefault()).toInstant())
         String cs = DateUtils.getSDF_yyyyMMdd_HHmmss().format(frame)
 
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        String apiUrl = apiSource.baseUrl + apiSource.fixToken + '/searchApi'
+        String apiUrl = ApiSource.getCurrent().getSearchApiURL()
         //log.debug('WekbNewsService.getCurrent() > ' + cs)
 
         Map base = [changedSince: cs, sort: 'lastUpdatedDisplay', order: 'desc', stubOnly: true, max: 10000]
