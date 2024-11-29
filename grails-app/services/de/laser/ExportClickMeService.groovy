@@ -6451,22 +6451,31 @@ class ExportClickMeService {
             }
             else if (fieldKey.startsWith('coverage.')) {
                 if(fieldKey.contains('startDate')) {
-                    queryCols << "create_cell('${format}', to_char(tc_start_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), null) as coverageStartDate"
+                    queryCols << "create_cell('${format}', to_char(coalesce(ic_start_date, tc_start_date), '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), null) as coverageStartDate"
                 }
                 else if(fieldKey.contains('startVolume')) {
-                    queryCols << "create_cell('${format}', tc_start_volume, null) as coverageStartVolume"
+                    queryCols << "create_cell('${format}', coalesce(ic_start_volume, tc_start_volume), null) as coverageStartVolume"
                 }
                 else if(fieldKey.contains('startIssue')) {
-                    queryCols << "create_cell('${format}', tc_start_issue, null) as coverageStartIssue"
+                    queryCols << "create_cell('${format}', coalesce(ic_start_issue, tc_start_issue), null) as coverageStartIssue"
                 }
                 else if(fieldKey.contains('endDate')) {
-                    queryCols << "create_cell('${format}', to_char(tc_end_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), null) as coverageEndDate"
+                    queryCols << "create_cell('${format}', to_char(coalesce(ic_end_date, tc_end_date), '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), null) as coverageEndDate"
                 }
                 else if(fieldKey.contains('endVolume')) {
-                    queryCols << "create_cell('${format}', tc_end_volume, null) as coverageEndVolume"
+                    queryCols << "create_cell('${format}', coalesce(ic_end_volume, tc_end_volume), null) as coverageEndVolume"
                 }
                 else if(fieldKey.contains('endIssue')) {
-                    queryCols << "create_cell('${format}', tc_end_issue, null) as coverageEndIssue"
+                    queryCols << "create_cell('${format}', coalesce(ic_end_issue, tc_end_issue), null) as coverageEndIssue"
+                }
+                else if(fieldKey.contains('coverageNote')) {
+                    queryCols << "create_cell('${format}', coalesce(ic_coverage_note, tc_coverage_note), null) as coverageNote"
+                }
+                else if(fieldKey.contains('coverageDepth')) {
+                    queryCols << "create_cell('${format}', coalesce(ic_coverage_depth, tc_coverage_depth), null) as coverageDepth"
+                }
+                else if(fieldKey.contains('embargo')) {
+                    queryCols << "create_cell('${format}', coalesce(ic_embargo, tc_embargo), null) as embargo"
                 }
             }
             else if (fieldKey.contains('listPriceEUR')) {
@@ -6505,7 +6514,7 @@ class ExportClickMeService {
                 }
             }
         }
-        String query = "select ${queryCols.join(',')} from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id left join tippcoverage on tc_tipp_fk = tipp_id where ie_id = any(:ieIDs) order by tipp_sort_name"
+        String query = "select ${queryCols.join(',')} from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id left join issue_entitlement_coverage on ic_ie_fk = ie_id left join tippcoverage on tc_tipp_fk = tipp_id where ie_id = any(:ieIDs) order by tipp_sort_name"
         result.addAll(batchQueryService.longArrayQuery(query, [ieIDs: ieIDs], queryArgs).collect { GroovyRowResult row -> row.values() })
         result
     }

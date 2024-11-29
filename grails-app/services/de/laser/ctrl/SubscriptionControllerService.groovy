@@ -2178,9 +2178,9 @@ class SubscriptionControllerService {
                                 subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, createEntitlementsForChildren)
                         }
                     }
-                    if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
+                    /*if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
                         globalService.notifyBackgroundProcessFinish(result.user.id, "PackageTransfer_${result.subscription.id}", messageSource.getMessage('subscription.details.linkPackage.thread.completed', [result.subscription.name] as Object[], LocaleUtils.getCurrentLocale()))
-                    }
+                    }*/
                 })
             }
 
