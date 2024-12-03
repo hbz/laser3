@@ -310,19 +310,6 @@ class PackageService {
         result
     }
 
-    void regenerateSortTitles(Package pkg) {
-        TitleInstancePackagePlatform.withSession { Session sess ->
-            TitleInstancePackagePlatform.findAllByPkg(pkg).eachWithIndex { TitleInstancePackagePlatform tipp, int i ->
-                tipp.sortname = escapeService.generateSortTitle(tipp.name)
-                tipp.save()
-                if(i > 0 && i % 5000 == 0) {
-                    log.debug("${i} entries processed")
-                    sess.flush()
-                }
-            }
-        }
-    }
-
     Package createPackageWithWEKB(String pkgUUID){
         Package pkg
             try {
