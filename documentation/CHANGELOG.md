@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6103    29.11.2024  dev     3.5         Andreas Bug         diverse darstellerische Bugs behoben
+
 5917    27.11.2024  dev     3.5         David   Feature     ES/WEKB-Quellen in Konfigurationsdateien
 
 6100    26.11.2024  rc-3.4  3.4.16      Andreas Bug         Ausgabe der Nutzerzahlen korrigiert
