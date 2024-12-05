@@ -2,12 +2,13 @@
 
 Die umfangreichen Operationen sind auf mehrere Reiter verteilt:
 
-- **Allgemeine Informationen:** Änderung der Angaben im Lizenzkopf, z.B. Laufzeitende, Lizenztyp, Freigabe Datenaustausch, Dauerhafter Zugriff, Publish-Komponente etc.
+- **Allgemeine Informationen:** Änderung der Angaben im Lizenzkopf, z.B. Laufzeitende, Lizenztyp, Freigabe Datenaustausch, Dauerhafter Zugriff, Publish-Komponente etc möglich.
   Außerdem kann die automatische Verlängerung von Lizenzen um ein Laufzeitjahr gesetzt werden: Bei Ablauf des Enddatums wird dann automatisiert eine um ein Jahr hochgesetzte Nachfolgerlizenz generiert
 - **Verträge:** Entknüpfung/Verknüpfung von bestehenden Verträgen
 - **Pakete:** Entknüpfung/Verknüpfung von Paketen mit/ohne Titelbestand
+- **Dauerhafte Titel**:
 - **Merkmale:** Hinzufügen von Lizenzmerkmalen/Änderung der Werte
 - **Anbieter/Lieferant:** Entknüpfen/Verknüpfen von Anbieter/Lieferant pro Lizenz
-- **Dokument:** Dateiupload für mehrere Lizenzen
+- **Dokument:** Dateiupload für mehrere Lizenzen/ Löschen Bearbeiten von Dokumenten
 - **Anmerkungen:** Anmerkungen für mehrere Lizenzen notieren
 - **Mehrjahreslaufzeit:** Nachbearbeitung von Mehrjahreslaufzeiten
