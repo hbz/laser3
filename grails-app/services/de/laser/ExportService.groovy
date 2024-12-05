@@ -98,7 +98,7 @@ class ExportService {
 			}
 			else {
 				if(row.size() > 0)
-					output.add(row.join(separator))
+					output.add(row.join(separator).replaceAll('null',''))
 				else output.add(" ")
 			}
 		}

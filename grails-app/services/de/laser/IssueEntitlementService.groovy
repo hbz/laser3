@@ -20,6 +20,7 @@ class IssueEntitlementService {
     }
 
     Map<String, Object> getKeys(Map configMap) {
+        //continue with testing: sub/index, sub export index, sub/addEntitlements; migrate then copying of subscription holdings
         Map<String, Object> parameterGenerics = getParameterGenerics(configMap)
         Map<String, Object> titleConfigMap = parameterGenerics.titleConfigMap,
                             identifierConfigMap = parameterGenerics.identifierConfigMap,
@@ -28,11 +29,12 @@ class IssueEntitlementService {
             titleConfigMap.filter = configMap.filter
         }
         if(!configMap.containsKey('status')) {
-            //titleConfigMap.tippStatus = RDStore.TIPP_STATUS_CURRENT //activate if needed
-            issueEntitlementConfigMap.ieStatus = RDStore.TIPP_STATUS_CURRENT
+            titleConfigMap.tippStatus = RDStore.TIPP_STATUS_CURRENT.id //activate if needed
+            issueEntitlementConfigMap.ieStatus = RDStore.TIPP_STATUS_CURRENT.id
         }
         else {
-            issueEntitlementConfigMap.ieStatus = Params.getRefdataList(configMap, 'status')
+            titleConfigMap.tippStatus = configMap.status
+            issueEntitlementConfigMap.ieStatus = configMap.status
         }
         //process here the title-related parameters
         Map<String, Object> queryPart1 = filterService.getTippSubsetQuery(titleConfigMap)
@@ -158,8 +160,8 @@ class IssueEntitlementService {
     }
 
     Map<String, Object> getParameterGenerics(configMap) {
-        String sort = configMap.containsKey('sort') ? configMap.sort : 'tipp.sortname'
-        String order = configMap.containsKey('order') ? configMap.order : 'asc'
+        String sort = configMap.containsKey('sort') && configMap.sort ? configMap.sort : 'tipp.sortname'
+        String order = configMap.containsKey('order') && configMap.order ? configMap.order : 'asc'
         Map<String, Object> titleConfigMap = [packages: configMap.packages, platforms: configMap.platforms, ddcs: configMap.ddcs, languages: configMap.languages,
                                               subject_references: configMap.subject_references, series_names: configMap.series_names, summaryOfContent: configMap.summaryOfContent,
                                               ebookFirstAutorOrFirstEditor: configMap.ebookFirstAutorOrFirstEditor, dateFirstOnlineFrom: configMap.dateFirstOnlineFrom,

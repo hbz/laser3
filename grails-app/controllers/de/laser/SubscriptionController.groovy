@@ -3,6 +3,7 @@ package de.laser
 import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
 import de.laser.auth.User
+import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.helper.FilterLogic
@@ -14,6 +15,7 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.utils.DateUtils
+import de.laser.utils.LocaleUtils
 import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
 import de.laser.wekb.Package
@@ -843,17 +845,7 @@ class SubscriptionController {
                                             subscriptionService.addToMemberSubscription(currParent, [currMember], pkg, true)
                                         }
                                         */
-                                        if(currParent.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL) {
-                                            if(auditService.getAuditConfig(currParent, 'holdingSelection')) {
-                                                subscriptionService.addToSubscriptionCurrentStock(currMember, currParent, pkg, true)
-                                            }
-                                            else {
-                                                subscriptionService.addToSubscriptionCurrentStock(currMember, currParent, pkg, configMap.get('linkWithEntitlements_' + currParent.id) == 'on')
-                                            }
-                                        }
-                                        else {
-                                            subscriptionService.addToSubscriptionCurrentStock(currMember, currParent, pkg, configMap.get('linkWithEntitlements_' + currParent.id) == 'on')
-                                        }
+                                        subscriptionService.addToSubscriptionCurrentStock(currMember, currParent, pkg, configMap.get('linkWithEntitlements_' + currParent.id) == 'on')
                                     }
                                 }
                             }
@@ -1222,9 +1214,15 @@ class SubscriptionController {
                     targetPkg = [Package.get(params.pkgFilter)]
                 Map<String, Object> configMap = [subscription: targetSub, packages: targetPkg]
                 configMap.putAll(params)
+                if(params.titleGroup && params.titleGroup != 'notInGroups')
+                    configMap.titleGroup = IssueEntitlementGroup.get(params.titleGroup)
                 //overwrite with parsed ints
                 configMap.offset = result.offset
                 configMap.max = result.max
+                if(!configMap.sort)
+                    configMap.sort = "tipp.sortname"
+                if(!configMap.order)
+                    configMap.order = "asc"
                 Map<String, Object> keys = issueEntitlementService.getKeys(configMap)
                 Set<Long> ieSubset = keys.ieIDs.drop(configMap.offset).take(configMap.max)
                 result.entitlements = IssueEntitlement.findAllByIdInList(ieSubset, [sort: configMap.sort, order: configMap.order])
@@ -1347,43 +1345,105 @@ class SubscriptionController {
         ctx.contextService.isInstUser_denySupport()
     })
     def addEntitlements() {
-        Map<String,Object> ctrlResult = subscriptionService.addEntitlements(params)
-        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if(!ctrlResult.result) {
+        Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+        if (result.status == SubscriptionControllerService.STATUS_ERROR) {
+            if(!result) {
                 response.sendError(401)
                 return
             }
             else {
-                flash.error = ctrlResult.result
-                redirect action: 'show', params: [id: params.id]
+                flash.error = result.error
+                result
             }
         }
         else {
-            flash.message = ctrlResult.result.message
-            flash.error = ctrlResult.result.error
-            ctrlResult.result
-        }
-        /*
-        else {
-            String filename = "${escapeService.escapeString(ctrlResult.result.subscription.dropdownNamingConvention())}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
             Map<String, Object> configMap = params.clone()
-            configMap.remove("subscription")
-            configMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id //GORM sometimes does not initialise the sorted set
-            ArrayList<TitleInstancePackagePlatform> tipps = []
-            Map<String, Object> selectedFields = [:]
-            if(params.fileformat) {
-                tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(ctrlResult.result.tipps,[sort:'sortname']))
-                Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
-                selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+            if(subscriptionService.checkThreadRunning('PackageSync_'+result.subscription.id)) {
+                flash.message = message(code: 'subscription.details.linkPackage.thread.running')
             }
-            if(params.exportKBart) {
+            else if (subscriptionService.checkThreadRunning('EntitlementEnrichment_'+result.subscription.id)) {
+                flash.message = message(code: 'subscription.details.addEntitlements.thread.running')
+                result.blockSubmit = true
+            }
+            SwissKnife.setPaginationParams(result, configMap, (User) result.user)
+            if(params.packageLinkPreselect) {
+                configMap.packages = [Package.findByGokbId(params.packageLinkPreselect)]
+                if(configMap.packages)
+                    params.pkgfilter = configMap.packages[0].id
+            }
+            else {
+                configMap.packages = result.subscription.packages.pkg
+            }
+            configMap.subscription = result.subscription
+            EhcacheWrapper userCache = contextService.getUserCache("/subscription/addEntitlements/${params.id}")
+            Map checkedCache = userCache.get('selectedTitles')
+
+            if (!checkedCache || !params.containsKey('pagination')) {
+                checkedCache = [:]
+            }
+            result.checkedCache = checkedCache.get('checked')
+            result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
+            result.countSelectedTipps = result.checkedCount
+            if(configMap.packages) {
+                Map<String, Object> keys = issueEntitlementService.getKeys(configMap)
+                Set<Long> tippIDs = keys.tippIDs
+                tippIDs.removeAll(keys.ieIDs)
+                result.num_tipp_rows = tippIDs.size()
+                result.tipps = []
+                Map<TitleInstancePackagePlatform, Set<PermanentTitle>> permanentTitles = [:]
+                TitleInstancePackagePlatform.findAllByIdInList(tippIDs.drop(result.offset).take(result.max), [sort: 'sortname', order: 'asc']).each { TitleInstancePackagePlatform tipp ->
+                    result.tipps << tipp
+                    permanentTitles.put(tipp, PermanentTitle.executeQuery('select pt from PermanentTitle pt where pt.owner = :org and (pt.tipp = :tipp or pt.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.hostPlatformURL = :hostPlatformURL and tipp.status != :tippStatus))', [tipp: tipp, hostPlatformURL: tipp.hostPlatformURL, tippStatus: RDStore.TIPP_STATUS_DELETED, org: contextService.getOrg()]))
+                }
+                result.permanentTitles = permanentTitles
+            }
+            else {
+                result.num_tipp_rows = 0
+                result.tipps = []
+                result.permanentTitles = []
+            }
+        }
+        result
+    }
+
+    @DebugInfo(isInstUser_denySupport = [], ctrlService = 1)
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport()
+    })
+    def exportPossibleEntitlements() {
+        Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+        if(result.status == SubscriptionControllerService.STATUS_ERROR) {
+            if(!result) {
+                response.sendError(401)
+                return
+            }
+            else {
+                flash.error = result.result
+                redirect action: 'addEntitlements', params: [id: params.id]
+            }
+        }
+        else {
+            String filename = "${escapeService.escapeString(result.subscription.dropdownNamingConvention())}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
+            Map<String, Object> configMap = params.clone()
+            configMap.packages = result.subscription.packages.pkg
+            configMap.subscription = result.subscription
+            Map<String, Object> keys = issueEntitlementService.getKeys(configMap)
+            Set<Long> tippIDs = keys.tippIDs
+            tippIDs.removeAll(keys.ieIDs)
+            configMap.tippIDs = tippIDs
+            Map<String, Object> selectedFields = [:]
+            if (params.fileformat) {
+                Map<String, Object> selectedFieldsRaw = params.findAll { it -> it.toString().startsWith('iex:') }
+                selectedFieldsRaw.each { it -> selectedFields.put(it.key.replaceFirst('iex:', ''), it.value) }
+            }
+            if (params.exportKBart) {
                 String dir = GlobalService.obtainFileStorageLocation()
-                File f = new File(dir+'/'+filename)
-                if(!f.exists()) {
+                File f = new File(dir + '/' + filename)
+                if (!f.exists()) {
                     FileOutputStream out = new FileOutputStream(f)
-                    Map<String, Collection> tableData = exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name)
+                    Map<String, Collection> tableData = exportService.generateTitleExport(configMap)
                     out.withWriter { writer ->
-                        writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
+                        writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
                     }
                     out.flush()
                     out.close()
@@ -1391,9 +1451,8 @@ class SubscriptionController {
                 Map fileResult = [token: filename, filenameDisplay: filename, fileformat: 'kbart']
                 render template: '/templates/bulkItemDownload', model: fileResult
                 return
-            }
-            else if(params.fileformat == 'xlsx') {
-                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(tipps, selectedFields, ExportClickMeService.FORMAT.XLS)
+            } else if (params.fileformat == 'xlsx') {
+                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(tippIDs, selectedFields, ExportClickMeService.FORMAT.XLS)
                 response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 wb.write(response.outputStream)
@@ -1401,24 +1460,21 @@ class SubscriptionController {
                 response.outputStream.close()
                 wb.dispose()
                 return
-            }
-            else if(params.fileformat == 'csv') {
+            } else if (params.fileformat == 'csv') {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
                 response.contentType = "text/csv"
                 ServletOutputStream out = response.outputStream
                 out.withWriter { writer ->
-                    writer.write((String) exportClickMeService.exportTipps(tipps, selectedFields, ExportClickMeService.FORMAT.CSV))
+                    writer.write((String) exportClickMeService.exportTipps(tippIDs, selectedFields, ExportClickMeService.FORMAT.CSV))
                 }
                 out.flush()
                 out.close()
-            }
-            else {
-                flash.message = ctrlResult.result.message
-                flash.error = ctrlResult.result.error
-                ctrlResult.result
+            } else {
+                flash.message = result.result.message
+                flash.error = result.result.error
+                result.result
             }
         }
-        */
     }
 
     /**

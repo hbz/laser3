@@ -1638,6 +1638,24 @@ class GlobalSourceSyncService extends AbstractLockableService {
         else throw new SyncException("no vendor record loaded!")
     }
 
+    void setupPkgVendor(Vendor vendor, Package pkg) throws SyncException {
+        PackageVendor pv = PackageVendor.findByVendorAndPkg(vendor, pkg)
+        if(!pv) {
+            pv = new PackageVendor(vendor: vendor, pkg: pkg)
+            if(!pv.save())
+                throw new SyncException("Error on saving vendor-package link: ${pv.getErrors().getAllErrors().toListString()}")
+        }
+    }
+
+    void setupInvoicingVendor(Provider provider, Vendor vendor) throws SyncException {
+        InvoicingVendor iv = InvoicingVendor.findByVendorAndProvider(vendor, provider)
+        if(!iv) {
+            iv = new InvoicingVendor(vendor: vendor, provider: provider)
+            if(!iv.save())
+                throw new SyncException("Error on saving vendor-package link: ${iv.getErrors().getAllErrors().toListString()}")
+        }
+    }
+
     /**
      * Updates a technical or service support for a given {@link Provider}; overrides an eventually created one and creates if it does not exist
      * @param provider the {@link Provider} to which the given support address should be created/updated

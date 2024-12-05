@@ -980,136 +980,6 @@ class SubscriptionService {
     }
 
     /**
-     * Lists the titles in the package which have not yet been added to the subscription
-     * @param params the request parameter map
-     * @return the title list; with or without the enriched information from a KBART upload
-     */
-    Map<String,Object> addEntitlements(GrailsParameterMap params) {
-        Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
-        if (!result) {
-            [result:null,status:SubscriptionControllerService.STATUS_ERROR]
-        }
-        else {
-            Locale locale = LocaleUtils.getCurrentLocale()
-            Map<String, Object> configMap = params.clone()
-            if(checkThreadRunning('PackageSync_'+result.subscription.id)) {
-                result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null,locale)
-            }
-            else if (checkThreadRunning('EntitlementEnrichment_'+result.subscription.id)) {
-                result.message = messageSource.getMessage('subscription.details.addEntitlements.thread.running', null, locale)
-                result.blockSubmit = true
-            }
-            SwissKnife.setPaginationParams(result, configMap, (User) result.user)
-            configMap.packages = result.subscription.packages.pkg
-            configMap.subscription = result.subscription
-            Map<String, Object> parameterGenerics = issueEntitlementService.getParameterGenerics(configMap)
-            Map<String, Object> titleConfigMap = parameterGenerics.titleConfigMap,
-                                identifierConfigMap = parameterGenerics.identifierConfigMap,
-                                issueEntitlementConfigMap = parameterGenerics.issueEntitlementConfigMap
-            if(configMap.filter) {
-                titleConfigMap.filter = configMap.filter
-            }
-            if(!configMap.containsKey('status')) {
-                titleConfigMap.tippStatus = RDStore.TIPP_STATUS_CURRENT
-                issueEntitlementConfigMap.ieStatus = RDStore.TIPP_STATUS_CURRENT
-            }
-            else {
-                titleConfigMap.tippStatus = params.status
-                issueEntitlementConfigMap.ieStatus = params.status
-            }
-            //process here the title-related parameters
-            Map<String, Object> queryPart1 = filterService.getTippSubsetQuery(titleConfigMap)
-            Set<Long> tippIDs = TitleInstancePackagePlatform.executeQuery(queryPart1.query, queryPart1.queryParams), addedTippIds = []
-            if(configMap.identifier) {
-                tippIDs = tippIDs.intersect(issueEntitlementService.getTippsByIdentifier(identifierConfigMap, configMap.identifier))
-            }
-            Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetQuery(issueEntitlementConfigMap)
-            Map<Long, Set<Long>> permanentTitles = [:]
-            tippIDs.collate(65000).each { List<Long> subset ->
-                queryPart2.queryParams.subset = subset
-                addedTippIds.addAll(IssueEntitlement.executeQuery(queryPart2.query, queryPart2.queryParams))
-                List permTitlesSubset = batchQueryService.longArrayQuery('select tipp_id, pt_id from permanent_title join title_instance_package_platform on pt_tipp_fk = tipp_id where (pt_tipp_fk = any(:tippIDs) or tipp_host_platform_url in (select t2.tipp_host_platform_url from title_instance_package_platform as t2 where t2.tipp_id = any(:tippIDs))) and tipp_status_rv_fk != :tippStatus AND pt_owner_fk = :org',
-                [tippIDs: subset], [tippStatus: RDStore.TIPP_STATUS_DELETED.id, org: contextService.getOrg().id])
-                permTitlesSubset.each { GroovyRowResult row ->
-                    Set<Long> permanentTitleIDs = permanentTitles.containsKey(row['tipp_id']) ? permanentTitles.get(row['tipp_id']) : []
-                    permanentTitleIDs << row['pt_id']
-                    permanentTitles.put(row['tipp_id'], permanentTitleIDs)
-                }
-            }
-            tippIDs.removeAll(addedTippIds)
-            EhcacheWrapper userCache = contextService.getUserCache("/subscription/addEntitlements/${params.id}")
-            Map checkedCache = userCache.get('selectedTitles')
-
-            if (!checkedCache || !params.containsKey('pagination')) {
-                checkedCache = [:]
-            }
-            result.checkedCache = checkedCache.get('checked')
-            result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
-            result.countSelectedTipps = result.checkedCount
-            result.tippIDs = tippIDs
-            result.num_tipp_rows = tippIDs.size()
-            result.tipps = []
-            TitleInstancePackagePlatform.findAllByIdInList(tippIDs.drop(result.offset).take(result.max), [sort: 'sortname', order: 'asc']).each { TitleInstancePackagePlatform tipp ->
-                result.tipps << tipp
-
-            }
-            result.permanentTitles = permanentTitles
-            [result:result,status:SubscriptionControllerService.STATUS_OK]
-            /*
-            List<TitleInstancePackagePlatform> tipps = []
-
-            result.subscriber = result.subscription.getSubscriberRespConsortia()
-            params.issueEntitlementStatus = RDStore.TIPP_STATUS_CURRENT
-            params.subscription = result.subscription
-            params.addEntitlements = true
-            List packages = []
-            if(params.pkgfilter)
-                packages << Package.get(params.pkgfilter)
-            else packages = result.subscription.packages?.pkg
-
-            params.tab = params.tab ?: 'allTipps'
-
-            if(params.tab == 'selectedTipps'){
-                Map gokbIds = checkedCache ?: [:]
-                params.gokbIds =  gokbIds ? gokbIds.findAll { it.value == 'checked' }.collect {it.key} : ['']
-            }
-
-            Map<String, Object> query = filterService.getTippQuery(params, packages)
-            result.filterSet = query.filterSet
-
-            if(result.subscription.packages?.pkg) {
-                Set<Long> tippIds = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
-                Map<TitleInstancePackagePlatform, List<PermanentTitle>> permanentTitles = [:]
-                if(tippIds) {
-                    Set<Long> subset = tippIds.drop(result.offset).take(result.max)
-                    tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(subset, [sort: 'sortname']))
-                    tipps.each { TitleInstancePackagePlatform tipp ->
-                        List<PermanentTitle> pts = surveyService.listParticipantPerpetualAccessToTitle(result.institution, tipp)
-                        if(pts)
-                            permanentTitles.put(tipp, pts)
-                    }
-                }
-
-                result.num_tipp_rows = tippIds.size()
-                result.tipps = tipps
-                result.permanentTitles = permanentTitles
-                if(permanentTitles.size() == tipps.size() && tipps.size() > 0)
-                    result.allPerpetuallyBought = 'subscription.details.addEntitlements.allPerpetuallyBought'
-                result.tippIDs = tippIds
-                String filename
-                if(params.pagination) {
-                    result.checked = checkedCache
-                }
-            }
-
-            [result:result,status:STATUS_OK]
-             */
-        }
-    }
-
-
-
-    /**
      * Adds the cached title candidates to the holding and persists also eventually recorded enrichments of the titles
      * @param controller unused
      * @param params the request parameter map
@@ -1857,8 +1727,8 @@ class SubscriptionService {
                                 issueEntitlementConfigMap = parameterGenerics.issueEntitlementConfigMap
             //build up title data
             if(!result.configMap.containsKey('status')) {
-                titleConfigMap.tippStatus = [RDStore.TIPP_STATUS_CURRENT.id]
-                issueEntitlementConfigMap.ieStatus = [RDStore.TIPP_STATUS_CURRENT.id]
+                titleConfigMap.tippStatus = RDStore.TIPP_STATUS_CURRENT
+                issueEntitlementConfigMap.ieStatus = RDStore.TIPP_STATUS_CURRENT
             }
             Map<String, Object> query = filterService.getTippSubsetQuery(titleConfigMap)
             Set<Long> tippIDs = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
@@ -2211,8 +2081,8 @@ class SubscriptionService {
                                         identifierConfigMap = parameterGenerics.identifierConfigMap,
                                         issueEntitlementConfigMap = parameterGenerics.issueEntitlementConfigMap
                     if(!result.configMap.containsKey('status')) {
-                        titleConfigMap.tippStatus = [RDStore.TIPP_STATUS_CURRENT.id]
-                        issueEntitlementConfigMap.ieStatus = [RDStore.TIPP_STATUS_CURRENT.id]
+                        titleConfigMap.tippStatus = RDStore.TIPP_STATUS_CURRENT
+                        issueEntitlementConfigMap.ieStatus = RDStore.TIPP_STATUS_CURRENT
                     }
                     //build up title data
                     Map<String, Object> query = filterService.getTippSubsetQuery(titleConfigMap), exportData = [:]

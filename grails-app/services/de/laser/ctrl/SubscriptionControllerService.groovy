@@ -1521,8 +1521,6 @@ class SubscriptionControllerService {
                                             referenceYear: c == 0 ? referenceYear : currParent.referenceYear,
                                             administrative: currParent._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE,
                                             manualRenewalDate: currParent.manualRenewalDate,
-                                            /* manualCancellationDate: result.subscription.manualCancellationDate, */
-                                            holdingSelection: currParent.holdingSelection ?: null,
                                             identifier: UUID.randomUUID().toString(),
                                             instanceOf: currParent,
                                             isSlaved: true,
@@ -2149,13 +2147,7 @@ class SubscriptionControllerService {
                                 Package pkgToLink = Package.findByGokbId(pkgUUID)
                                 subscriptionService.addToSubscription(result.subscription, pkgToLink, createEntitlements)
                                 if(linkToChildren) {
-                                    if(holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL && auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
-                                        Subscription.findAllByInstanceOf(result.subscription).each { Subscription member ->
-                                            subscriptionService.addToSubscriptionCurrentStock(member, result.subscription, pkgToLink, true)
-                                        }
-                                    }
-                                    else
-                                        subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, createEntitlementsForChildren)
+                                    subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, createEntitlementsForChildren)
                                 }
                             }
                         }
@@ -2169,13 +2161,7 @@ class SubscriptionControllerService {
                         subscriptionService.cachePackageName("PackageTransfer_"+result.subscription.id, pkgToLink.name)
                         subscriptionService.addToSubscription(result.subscription, pkgToLink, createEntitlements)
                         if(linkToChildren) {
-                            if(holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL && auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
-                                Subscription.findAllByInstanceOf(result.subscription).each { Subscription member ->
-                                    subscriptionService.addToSubscriptionCurrentStock(member, result.subscription, pkgToLink, true)
-                                }
-                            }
-                            else
-                                subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, createEntitlementsForChildren)
+                            subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, createEntitlementsForChildren)
                         }
                     }
                     /*if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
