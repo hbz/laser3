@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6132    06.12.2024  dev     3.5         Andreas Feature     Caching der angehakten Elemente in Lizenzverwaltung eingebaut
+
+6060    06.12.2024  dev     3.5         Andreas Feature     Abschalten des Einrichtungskontaktfilters für Einrichtungen
+
 6103    29.11.2024  dev     3.5         Andreas Bug         diverse darstellerische Bugs behoben
 
 5917    27.11.2024  dev     3.5         David   Feature     ES/WEKB-Quellen in Konfigurationsdateien

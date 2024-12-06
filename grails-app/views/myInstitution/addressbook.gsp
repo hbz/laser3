@@ -107,14 +107,16 @@
             <label>${message(code: 'person.filter.contactArt')}</label>
 
             <div class="inline fields la-filter-inline">
-                <div class="inline field">
-                    <div class="ui checkbox">
-                        <label for="showOnlyContactPersonForInstitution">${message(code: 'person.contactPersonForInstitution.label')}</label>
-                        <input id="showOnlyContactPersonForInstitution" name="showOnlyContactPersonForInstitution" type="checkbox"
-                               <g:if test="${params.showOnlyContactPersonForInstitution}">checked=""</g:if>
-                               tabindex="0">
+                <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="showOnlyContactPersonForInstitution">${message(code: 'person.contactPersonForInstitution.label')}</label>
+                            <input id="showOnlyContactPersonForInstitution" name="showOnlyContactPersonForInstitution" type="checkbox"
+                                   <g:if test="${params.showOnlyContactPersonForInstitution}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
                     </div>
-                </div>
+                </g:if>
 
                 <div class="inline field">
                     <div class="ui checkbox">
