@@ -513,7 +513,9 @@ class AjaxController {
               query = query.replace("where ", "where not exists (select ie.id from IssueEntitlement ie join ie.tipp tipp2 where ie.subscription.id = :sub and tipp.id = tipp2.id and ie.status = tipp2.status) and ")
               Set<String> tippUUIDs = TitleInstancePackagePlatform.executeQuery(query, tippFilter.queryParams+[sub: params.long("sub")])
               tippUUIDs.each { String e ->
-                  newChecked[e] = params.checked == 'true' ? 'checked' : null
+                  if(params.checked == 'true')
+                    newChecked[e] = 'checked'
+                  else newChecked.remove(e)
               }
           }
           cache.put('checked',newChecked)
@@ -522,7 +524,9 @@ class AjaxController {
 	  }
 	  else {
           Map<String, String> newChecked = checked ?: [:]
-		  newChecked[params.index] = params.checked == 'true' ? 'checked' : null
+          if(params.checked == 'true')
+              newChecked[params.index] = 'checked'
+          else newChecked.remove(params.index)
           cache.put('checked', newChecked)
           success.success = true
           success.checkedCount = newChecked.findAll {it.value == 'checked'}.size()
@@ -1192,6 +1196,36 @@ class AjaxController {
             render([success: true] as JSON)
         else
             redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_USER'])
+    @Transactional
+    def switchPackageHoldingInheritance() {
+        if(formService.validateToken(params)) {
+            String prop = 'holdingSelection'
+            Subscription sub = Subscription.get(params.id)
+            RefdataValue value = RefdataValue.get(params.value)
+            sub.holdingSelection = value
+            sub.save()
+            if(value == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+                if(! AuditConfig.getConfig(sub, prop)) {
+                    AuditConfig.addConfig(sub, prop)
+
+                    Subscription.findAllByInstanceOf(sub).each { Subscription m ->
+                        m.setProperty(prop, sub.getProperty(prop))
+                        m.save()
+                    }
+                }
+            }
+            else if(!value) {
+                AuditConfig.removeConfig(sub, prop)
+                Subscription.findAllByInstanceOf(sub).each { Subscription m ->
+                    m.setProperty(prop, null)
+                    m.save()
+                }
+            }
+        }
+        render([success: true] as JSON)
     }
 
     /**

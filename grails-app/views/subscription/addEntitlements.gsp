@@ -409,11 +409,6 @@
 
         <br>
         <br>
-
-
-        <%
-            params.remove("kbartPreselect")
-        %>
         <ui:paginate controller="subscription"
                         action="addEntitlements"
                         params="${params + [pagination: true]}"
@@ -508,7 +503,7 @@
         e.preventDefault();
         $('#globalLoadingIndicator').show();
         $.ajax({
-            url: "<g:createLink action="addEntitlements" params="${params + [exportKBart: true]}"/>",
+            url: "<g:createLink action="exportPossibleEntitlements" params="${params + [exportKBart: true]}"/>",
             type: 'POST',
             contentType: false
         }).done(function(response){

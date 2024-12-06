@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.storage.RDStore
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -57,5 +58,12 @@ class DevController  {
         }
         else
             render result as JSON
+    }
+
+    @Secured(['ROLE_YODA'])
+    def queryOutputChecker() {
+        Set<Subscription> result = Subscription.executeQuery("select s from Subscription s join s.packages sp where ((s.endDate is not null and s.endDate >= :now) or s.hasPerpetualAccess = true) and s.holdingSelection = :entire and sp.pkg = :pkg and s.instanceOf = null", [now: new Date(), entire: RDStore.SUBSCRIPTION_HOLDING_ENTIRE, pkg: de.laser.wekb.Package.findByGokbId('a3f41aef-8316-442e-99e9-29e2f011fc22')])
+        flash.message = "subs concerned: ${result.collect { Subscription s -> "${s.id} => ${s.name} => ${s.getSubscriberRespConsortia().collect { Org oo -> "${oo.name} (${oo.sortname})" }.join(',')}" }.join('<br>')}"
+        redirect controller: 'yoda', action: 'index'
     }
 }

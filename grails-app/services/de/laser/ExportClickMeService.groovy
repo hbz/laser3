@@ -5057,103 +5057,6 @@ class ExportClickMeService {
 
         List exportData = buildTippRows(result, selectedExportFields, format)
 
-        /*
-        if(result.size() < 10000) {
-            int max = result[0] instanceof Long ? 5000 : 500
-            TitleInstancePackagePlatform.withSession { Session sess ->
-                for(int offset = 0; offset < result.size(); offset+=max) {
-                    List allRows = []
-                    Set<TitleInstancePackagePlatform> tipps = []
-                    if(result[0] instanceof TitleInstancePackagePlatform) {
-                        //this double structure is necessary because the KBART standard foresees for each coverageStatement an own row with the full data
-                        tipps = result.drop(offset).take(max)
-                    }
-                    else if(result[0] instanceof Long) {
-                        tipps = TitleInstancePackagePlatform.findAllByIdInList(result.drop(offset).take(max), [sort: 'sortname'])
-                    }
-                    tipps.each { TitleInstancePackagePlatform tipp ->
-                        if(!tipp.coverages && !tipp.priceItems) {
-                            allRows << tipp
-                        }
-                        else if(tipp.coverages.size() > 1){
-                            tipp.coverages.each { AbstractCoverage covStmt ->
-                                allRows << covStmt
-                            }
-                        }
-                        else {
-                            allRows << tipp
-                        }
-                    }
-
-                    allRows.eachWithIndex { rowData, int i ->
-                        long start = System.currentTimeMillis()
-                        _setTippRow(rowData, selectedExportFields, exportData, format)
-                        log.debug("used time for record ${i}: ${System.currentTimeMillis()-start}")
-                    }
-                    log.debug("flushing after ${offset} ...")
-                    sess.flush()
-                }
-            }
-        }
-        else {
-            Sql sql = GlobalService.obtainSqlConnection()
-            List sqlCols = []
-            Map<String, Object> sqlParams = [:]
-            selectedExportFields.eachWithIndex { String fieldKey, Map fields, int idx ->
-                if(fields.containsKey('sqlCol')) {
-                    if(fields.sqlCol.contains('rv')) {
-                        sqlCols.add("(select ${LocaleUtils.getLocalizedAttributeName('rdv_value')} from refdata_value where rdv_id = ${fields.sqlCol}) as ${fields.sqlCol}")
-                    }
-                    else if(fields.sqlCol.contains('pkg')) {
-                        sqlCols.add("(select ${fields.sqlCol} from package where pkg_id = tipp_pkg_fk) as ${fields.sqlCol}")
-                    }
-                    else if(fields.sqlCol.contains('plat')) {
-                        sqlCols.add("(select ${fields.sqlCol} from platform where plat_id = tipp_plat_fk) as ${fields.sqlCol}")
-                    }
-                    else if(fieldKey.contains('tippIdentifiers.')) {
-                        sqlCols.add("(select array_to_string(array_agg(id_value), ';') from identifier where id_tipp_fk = tipp_id and id_ns_fk = :idns${idx}) as ${fields.sqlCol}")
-                        sqlParams.put('idns'+idx, Long.parseLong(fieldKey.split("\\.")[1]))
-                    }
-                    else if (fieldKey.contains('ddcs')) {
-                        sqlCols.add("(select array_to_string(array_agg(rdv_value || ' - ' || ${LocaleUtils.getLocalizedAttributeName('rdv_value')}), ';') from refdata_value join dewey_decimal_classification on rdv_id = ddc_rv_fk where ddc_tipp_fk = tipp_id) as ${fields.sqlCol}")
-                    }
-                    else if (fieldKey.contains('languages')) {
-                        sqlCols.add("(select array_to_string(array_agg(${LocaleUtils.getLocalizedAttributeName('rdv_value')}), ';') from refdata_value join language on rdv_id = lang_rv_fk where lang_tipp_fk = tipp_id) as ${fields.sqlCol}")
-                    }
-                    else if (fieldKey.startsWith('coverage.')) {
-                        sqlCols.add("(select ${fields.sqlCol} from tippcoverage where tc_tipp_fk = tipp_id) as ${fields.sqlCol}")
-                    }
-                    else if (fieldKey.contains('listPrice')) {
-                        Long currency
-                        if(fieldKey.contains('GBP'))
-                            currency = RDStore.CURRENCY_GBP.id
-                        else if(fieldKey.contains('USD'))
-                            currency = RDStore.CURRENCY_USD.id
-                        else
-                            currency = RDStore.CURRENCY_EUR.id
-                        sqlCols.add("(select pi_list_price from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :currency${idx} order by pi_date_created desc limit 1) as ${fields.sqlCol}")
-                        sqlParams.put('currency'+idx, currency)
-                    }
-                    else {
-                        sqlCols.add(fields.sqlCol)
-                    }
-                }
-            }
-            String sqlQuery = "select ${sqlCols.join(',')} from title_instance_package_platform where tipp_id = any(:idSet) order by tipp_sort_name"
-            log.debug(sqlQuery) //for database measurement purposes, comment out if not needed!
-            result.collate(50000).each { List<Long> subSet ->
-                sqlParams.idSet = sql.getDataSource().getConnection().createArrayOf('bigint', subSet as Object[])
-                sql.rows(sqlQuery, sqlParams).each { GroovyRowResult sqlRow ->
-                    List row = []
-                    selectedExportFields.each { String fieldKey, Map fields ->
-                        row.add(createTableCell(format, sqlRow.get(fields.sqlCol)))
-                    }
-                    exportData.add(row)
-                }
-            }
-        }
-        */
-
         Map sheetData = [:]
         sheetData[messageSource.getMessage('title.plural', null, locale)] = [titleRow: titles, columnData: exportData]
 
@@ -6548,22 +6451,31 @@ class ExportClickMeService {
             }
             else if (fieldKey.startsWith('coverage.')) {
                 if(fieldKey.contains('startDate')) {
-                    queryCols << "create_cell('${format}', to_char(tc_start_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), null) as coverageStartDate"
+                    queryCols << "create_cell('${format}', to_char(coalesce(ic_start_date, tc_start_date), '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), null) as coverageStartDate"
                 }
                 else if(fieldKey.contains('startVolume')) {
-                    queryCols << "create_cell('${format}', tc_start_volume, null) as coverageStartVolume"
+                    queryCols << "create_cell('${format}', coalesce(ic_start_volume, tc_start_volume), null) as coverageStartVolume"
                 }
                 else if(fieldKey.contains('startIssue')) {
-                    queryCols << "create_cell('${format}', tc_start_issue, null) as coverageStartIssue"
+                    queryCols << "create_cell('${format}', coalesce(ic_start_issue, tc_start_issue), null) as coverageStartIssue"
                 }
                 else if(fieldKey.contains('endDate')) {
-                    queryCols << "create_cell('${format}', to_char(tc_end_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), null) as coverageEndDate"
+                    queryCols << "create_cell('${format}', to_char(coalesce(ic_end_date, tc_end_date), '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), null) as coverageEndDate"
                 }
                 else if(fieldKey.contains('endVolume')) {
-                    queryCols << "create_cell('${format}', tc_end_volume, null) as coverageEndVolume"
+                    queryCols << "create_cell('${format}', coalesce(ic_end_volume, tc_end_volume), null) as coverageEndVolume"
                 }
                 else if(fieldKey.contains('endIssue')) {
-                    queryCols << "create_cell('${format}', tc_end_issue, null) as coverageEndIssue"
+                    queryCols << "create_cell('${format}', coalesce(ic_end_issue, tc_end_issue), null) as coverageEndIssue"
+                }
+                else if(fieldKey.contains('coverageNote')) {
+                    queryCols << "create_cell('${format}', coalesce(ic_coverage_note, tc_coverage_note), null) as coverageNote"
+                }
+                else if(fieldKey.contains('coverageDepth')) {
+                    queryCols << "create_cell('${format}', coalesce(ic_coverage_depth, tc_coverage_depth), null) as coverageDepth"
+                }
+                else if(fieldKey.contains('embargo')) {
+                    queryCols << "create_cell('${format}', coalesce(ic_embargo, tc_embargo), null) as embargo"
                 }
             }
             else if (fieldKey.contains('listPriceEUR')) {
@@ -6602,7 +6514,7 @@ class ExportClickMeService {
                 }
             }
         }
-        String query = "select ${queryCols.join(',')} from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id left join tippcoverage on tc_tipp_fk = tipp_id where ie_id = any(:ieIDs) order by tipp_sort_name"
+        String query = "select ${queryCols.join(',')} from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id left join issue_entitlement_coverage on ic_ie_fk = ie_id left join tippcoverage on tc_tipp_fk = tipp_id where ie_id = any(:ieIDs) order by tipp_sort_name"
         result.addAll(batchQueryService.longArrayQuery(query, [ieIDs: ieIDs], queryArgs).collect { GroovyRowResult row -> row.values() })
         result
     }

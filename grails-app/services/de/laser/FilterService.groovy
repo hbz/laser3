@@ -1337,9 +1337,13 @@ class FilterService {
             queryParams.asAt = sdf.parse(params.asAt)
         }
 
-        if (params.ieStatus) {
+        if(params.get('ieStatus') instanceof List) {
             queryArgs << 'ie.status in (:ieStatus)'
-            queryParams.ieStatus = params.ieStatus
+            queryParams.ieStatus = Params.getRefdataList(params, 'ieStatus')
+        }
+        else if (params.containsKey('ieStatus')) {
+            queryArgs << 'ie.status = :ieStatus'
+            queryParams.ieStatus = RefdataValue.get(params.ieStatus)
         }
 
         if (params.titleGroup) {
@@ -1787,7 +1791,7 @@ class FilterService {
         }
         else if(params.containsKey('tippStatus')) {
             queryArgs << 'tipp.status = :tippStatus'
-            queryParams.tippStatus = params.tippStatus
+            queryParams.tippStatus = RefdataValue.get(params.tippStatus)
         }
         else {
             queryArgs << 'tipp.status != :tippStatus'

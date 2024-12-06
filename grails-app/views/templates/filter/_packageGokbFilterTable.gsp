@@ -496,13 +496,6 @@
                                         </g:link>
                                     </g:if>
                                 </span>
-                                <span class="la-long-tooltip la-popup-tooltip" data-position="top center" data-content="${message(code: 'menu.yoda.regenerateSortNames')}">
-                                    <g:if test="${pkg}">
-                                        <g:link controller="yoda" action="regenerateSortTitles" params="${[pkg: pkg.id]}" class="${Btn.ICON.SIMPLE}">
-                                            <i class="icon paint roller"></i>
-                                        </g:link>
-                                    </g:if>
-                                </span>
                             </g:if>
                         </td>
                     </g:if>

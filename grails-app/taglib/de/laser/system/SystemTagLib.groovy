@@ -31,6 +31,7 @@ class SystemTagLib {
         g.set( var:'gokbService',                   bean:'gokbService' )
         g.set( var:'helpService',                   bean:'helpService' )
         g.set( var:'identifierService',             bean:'identifierService' )
+        g.set( var:'issueEntitlementService',       bean:'issueEntitlementService' )
         g.set( var:'licenseService',                bean:'licenseService' )
         g.set( var:'linksGenerationService',        bean:'linksGenerationService' )
         g.set( var:'markerService',                 bean:'markerService' )

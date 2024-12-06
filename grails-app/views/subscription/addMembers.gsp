@@ -309,26 +309,26 @@
 
                                 <laser:script file="${this.getGroovyPageFileName()}">
                                     $('.addToSubWithMultiYear_${nextSub.id}').checkbox({
-     fireOnInit : true,
-     onChecked: function() {
-       var $childCheckbox  = $('.checkboxLicAndPkg_${nextSub.id}');
-       $childCheckbox.checkbox('enable');
-       var $childCheckbox2  = $('.checkboxGenerateSlavedLics1_${nextSub.id}');
-       $childCheckbox2.checkbox('enable');
-       $childCheckbox2.checkbox('check');
+                                        fireOnInit : true,
+                                        onChecked: function() {
+                                           var $childCheckbox  = $('.checkboxLicAndPkg_${nextSub.id}');
+                                           $childCheckbox.checkbox('enable');
+                                           var $childCheckbox2  = $('.checkboxGenerateSlavedLics1_${nextSub.id}');
+                                           $childCheckbox2.checkbox('enable');
+                                           $childCheckbox2.checkbox('check');
 
-     },
-     onUnchecked: function() {
-       var $childCheckbox  = $('.checkboxLicAndPkg_${nextSub.id}');
-       $childCheckbox.checkbox('uncheck');
-       $childCheckbox.checkbox('disable');
+                                        },
+                                        onUnchecked: function() {
+                                           var $childCheckbox  = $('.checkboxLicAndPkg_${nextSub.id}');
+                                           $childCheckbox.checkbox('uncheck');
+                                           $childCheckbox.checkbox('disable');
 
-        var $childCheckbox2  = $('.checkboxGenerateSlavedLics1_${nextSub.id}');
-       $childCheckbox2.checkbox('uncheck');
-       $childCheckbox2.checkbox('disable');
+                                            var $childCheckbox2  = $('.checkboxGenerateSlavedLics1_${nextSub.id}');
+                                           $childCheckbox2.checkbox('uncheck');
+                                           $childCheckbox2.checkbox('disable');
 
-     }
-});
+                                        }
+                                    });
                                 </laser:script>
                             </g:each>
                         </div>

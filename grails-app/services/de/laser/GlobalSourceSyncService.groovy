@@ -1021,7 +1021,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         Date now = new Date()
         newTitles.each { TitleInstancePackagePlatform tipp ->
-            Set<Subscription> subsConcerned = Subscription.executeQuery('select s from Subscription s join s.packages sp where ((s.endDate is not null and s.endDate >= :now) or s.hasPerpetualAccess = true) and s.holdingSelection = :entire and sp.pkg = :pkg', [now: now, entire: RDStore.SUBSCRIPTION_HOLDING_ENTIRE, pkg: tipp.pkg])
+            Set<Subscription> subsConcerned = Subscription.executeQuery("select s from Subscription s join s.packages sp where ((s.endDate is not null and s.endDate >= :now) or s.hasPerpetualAccess = true) and s.holdingSelection = :entire and sp.pkg = :pkg and s.instanceOf = null", [now: now, entire: RDStore.SUBSCRIPTION_HOLDING_ENTIRE, pkg: tipp.pkg])
             //we may need to switch to native sql ...
             subsConcerned.each { Subscription s ->
                 IssueEntitlement ie = IssueEntitlement.construct([subscription: s, tipp: tipp])
@@ -1032,90 +1032,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         perm = new PermanentTitle(owner: owner, tipp: tipp, subscription: s, issueEntitlement: ie)
                         perm.save()
                     }
-                }
-            }
-        }
-    }
-
-    /**
-     * This records the package changes so that subscription holders may decide whether they apply them or not except price changes which are auto-applied
-     * @deprecated changes are always being processed directly to the issue entitlements whenever a change occurs; notification is being taken care by {@link WekbNewsService}
-     */
-    @Deprecated
-    Map<String, Set<TitleChange>> trackPackageHistory() {
-        Map<String, Set<TitleChange>> result = [:]
-        //Package.withSession { Session sess ->
-            //loop through all packages
-            packagesToNotify.each { String packageUUID, Set<Map<String,Object>> diffsOfPackage ->
-                Set<TitleChange> packageChanges = []
-                //println("diffsOfPackage:"+diffsOfPackage)
-                diffsOfPackage.each { Map<String,Object> diff ->
-                    log.debug(diff.toMapString())
-                    //[event:update, target:de.laser.wekb.TitleInstancePackagePlatform : 196477, diffs:[[prop:price, priceDiffs:[[event:add, target:de.laser.finance.PriceItem : 10791]]]]]
-                    switch(diff.event) {
-                        case 'add': packageChanges << TitleChange.construct([event:PendingChangeConfiguration.NEW_TITLE,tipp:diff.target])
-                            break
-                        /* changed as of ERMS-4585, comment February 27th and ERMS-4986
-                        case 'update':
-                            diff.diffs.each { tippDiff ->
-                                TitleChange.construct([event:PendingChangeConfiguration.TITLE_UPDATED,target:diff.target,prop:tippDiff.prop,newValue:tippDiff.newValue,oldValue:tippDiff.oldValue])
-                            }
-                            break
-                            */
-                        case 'statusChange': TitleChange.construct([event: PendingChangeConfiguration.TITLE_STATUS_CHANGED,tipp:diff.target,oldValue:diff.oldValue,newValue:diff.newValue]) //notification only, to be applied directly
-                            break
-                        case 'delete': TitleChange.construct([event:PendingChangeConfiguration.TITLE_DELETED,tipp:diff.target,oldValue:diff.oldValue]) //dealt elsewhere!
-                            break
-                        case 'remove': TitleChange.construct([event:PendingChangeConfiguration.TITLE_REMOVED,tipp:diff.target,oldValue:diff.oldValue]) //dealt elsewhere!
-                            break
-                        case 'pkgPropDiffs':
-                            diff.diffs.each { pkgPropDiff ->
-                                packageChanges << PendingChange.construct([msgToken: PendingChangeConfiguration.PACKAGE_PROP, target: diff.target, prop: pkgPropDiff.prop, newValue: pkgPropDiff.newValue, oldValue: pkgPropDiff.oldValue, status: RDStore.PENDING_CHANGE_HISTORY])
-                            }
-                            break
-                    }
-                    //PendingChange.construct([msgToken,target,status,prop,newValue,oldValue])
-                }
-                //sess.flush()
-                result.put(packageUUID, packageChanges)
-            }
-        //}
-        log.info("end tracking package changes")
-        result
-    }
-
-    /**
-     * Applies every change done on entitlement or coverage to subscription packages where the change setting is set to accept
-     * @param contextOrg the {@link Org} for which the holding change is being applied (and on whose dashboard the changes will appear)
-     * @param subPkg the {@link SubscriptionPackage} to which the changes should be applied
-     * @param packageChanges the changes recorded for the package
-     * @see PendingChangeConfiguration
-     * @see TitleChange
-     * @deprecated unused since all the changes are being handled directly to the issue entitlements
-     */
-    @Deprecated
-    void autoAcceptPendingChanges(Org contextOrg, SubscriptionPackage subPkg, Set<TitleChange> packageChanges) {
-        //get for each subscription package the tokens which should be accepted
-        String query = 'select pcc.settingKey from PendingChangeConfiguration pcc join pcc.subscriptionPackage sp where pcc.settingValue = :accept and sp = :sp '
-        List<String> pendingChangeConfigurations = PendingChangeConfiguration.executeQuery(query,[accept:RDStore.PENDING_CHANGE_CONFIG_ACCEPT,sp:subPkg])
-        if(pendingChangeConfigurations) {
-            //Map<String,Object> changeParams = [pkg:subPkg.pkg,history:RDStore.PENDING_CHANGE_HISTORY,subscriptionJoin:subPkg.dateCreated,msgTokens:pendingChangeConfigurations,oid:genericOIDService.getOID(subPkg.subscription),accepted:RDStore.PENDING_CHANGE_ACCEPTED]
-            //Set<PendingChange> acceptedChanges = PendingChange.findAllByOidAndStatusAndMsgTokenIsNotNull(genericOIDService.getOID(subPkg.subscription),RDStore.PENDING_CHANGE_ACCEPTED)
-            /*newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens) and not exists (select pca.id from PendingChange pca where pca.tipp = pc.tipp and pca.oid = :oid and pca.targetProperty = pc.targetProperty and pca.status = :accepted)',changeParams))
-            newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens) and pc.targetProperty = null and not exists (select pca.id from PendingChange pca where pca.tipp = pc.tipp and pca.oid = :oid and pca.targetProperty = null and pca.status = :accepted)',changeParams))
-            newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.tippCoverage tc join tc.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens) and not exists (select pca.id from PendingChange pca where pca.tipp = pc.tipp and pca.oid = :oid and pca.targetProperty = pc.targetProperty and pca.status = :accepted)',changeParams))
-            newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.tippCoverage tc join tc.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens) and pc.targetProperty = null and not exists (select pca.id from PendingChange pca where pca.tipp = pc.tipp and pca.oid = :oid and pca.targetProperty = null and pca.status = :accepted)',changeParams))*/
-            //newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.priceItem pi join pi.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens)',changeParams))
-            packageChanges.each { TitleChange newChange ->
-                if(newChange.event in pendingChangeConfigurations) {
-
-                    //if(!processed) {
-                        /*
-                        get each change for each subscribed package and token, fetch issue entitlement equivalent and process the change
-                        if a change is being accepted, create an issue entitlement change record pointing to that change
-                         */
-                        pendingChangeService.applyPendingChange(newChange,subPkg,contextOrg)
-                    //}
                 }
             }
         }
@@ -1722,31 +1638,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
         else throw new SyncException("no vendor record loaded!")
     }
 
-    /**
-     * Was complicatedly included in the Org domain class, has been deployed externally for better maintainability
-     * Retrieves an {@link Org} instance as title publisher, if the given {@link Org} instance does not exist, it will be created.
-     * The TIPP given with it will be linked with the provider data retrieved
-     *
-     * @param publisherParams a {@link Map} containing the JSON record of the title publisher
-     * @param tipp the title to check against
-     * @throws SyncException
-     */
-    @Deprecated
-    void lookupOrCreateTitlePublisher(Map<String,Object> publisherParams, TitleInstancePackagePlatform tipp) throws SyncException {
-        if(publisherParams.gokbId && publisherParams.gokbId instanceof String) {
-            Map<String, Object> publisherData = fetchRecordJSON(false, [uuid: publisherParams.gokbId])
-            if(publisherData && !publisherData.error) {
-                Org publisher = createOrUpdateProvider(publisherData)
-                //setupProviderRole([org: publisher, tipp: tipp, roleTypeCheckup: [RDStore.OR_PUBLISHER, RDStore.OR_CONTENT_PROVIDER], definiteRoleType: RDStore.OR_PUBLISHER])
-            }
-            else if(publisherData && publisherData.error) throw new SyncException("we:kb server is down")
-            else throw new SyncException("Provider record loading failed for ${publisherParams.gokbId}")
-        }
-        else {
-            throw new SyncException("Org submitted without UUID! No checking possible!")
-        }
-    }
-
     void setupPkgVendor(Vendor vendor, Package pkg) throws SyncException {
         PackageVendor pv = PackageVendor.findByVendorAndPkg(vendor, pkg)
         if(!pv) {
@@ -1937,44 +1828,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
     }
 
     /**
-     * Compares two packages on domain property level against each other, retrieving the differences between both.
-     * @param pkgA the old package (as {@link Package} which is already persisted)
-     * @param pkgB the new package (as unprocessed {@link Map}
-     * @return a {@link Set} of {@link Map}s with the differences
-     * @deprecated unused because the notification of the changes done in the we:kb are being processed in {@link WekbNewsService}
-     */
-    @Deprecated
-    Set<Map<String,Object>> getPkgPropDiff(Package pkgA, Map<String,Object> pkgB) {
-        log.info("processing package prop diffs; the respective GOKb UUIDs are: ${pkgA.gokbId} (LAS:eR) vs. ${pkgB.uuid} (remote)")
-        Set<Map<String,Object>> result = []
-        Set<String> controlledProperties = ['name','breakable','file','scope','packageStatus']
-
-        controlledProperties.each { String prop ->
-            if(pkgA[prop] != pkgB[prop]) {
-                if(prop in PendingChange.REFDATA_FIELDS)
-                    result.add([prop: prop, newValue: pkgB[prop]?.id, oldValue: pkgA[prop]?.id])
-                else result.add([prop: prop, newValue: pkgB[prop], oldValue: pkgA[prop]])
-            }
-        }
-
-        if(pkgA.nominalPlatform) {
-            if (pkgA.nominalPlatform.name != pkgB.nominalPlatform.name) {
-                result.add([prop: 'nominalPlatform', newValue: pkgB.nominalPlatform?.name, oldValue: pkgA.nominalPlatform.name])
-            }
-        }
-
-        if(pkgA.provider) {
-            if (pkgA.provider.name != pkgB.provider.name) {
-                result.add([prop: 'nominalProvider', newValue: pkgB.provider?.name, oldValue: pkgA.provider?.name])
-            }
-        }
-
-        //the tipp diff count cannot be executed at this place because it depends on TIPP processing result
-
-        result
-    }
-
-    /**
      * Updates the given record with the data of the updated one. The new title data is automatically handed to the
      * issue entitlements derived from the title instances of the sales unit
      * @param tippA the existing title record (in the app)
@@ -1982,29 +1835,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
      */
     void processTippDiffs(TitleInstancePackagePlatform tippA, Map tippB) {
         //ex updatedTippClosure / tippUnchangedClosure
-        /*
-        RefdataValue status = tippStatus.get(tippB.status)
-        if(status == RDStore.TIPP_STATUS_REMOVED && tippA.status != status) {
-            //the difference to event: delete is that the title is an error and should have never been appeared in LAS:eR!
-            log.info("TIPP with UUID ${tippA.gokbId} has been marked as erroneous and removed")
-            tippA.status = RDStore.TIPP_STATUS_REMOVED
-            tippA.save()
-            //[event: "remove", target: tippA]
-        }
-        else if ((status == RDStore.TIPP_STATUS_DELETED || tippA.pkg.packageStatus == RDStore.PACKAGE_STATUS_DELETED || tippA.platform.status == RDStore.PLATFORM_STATUS_DELETED) && tippA.status != status) {
-            log.info("TIPP with UUID ${tippA.gokbId} has been deleted from package ${tippA.pkg.gokbId} or package/platform itself are marked as deleted")
-            RefdataValue oldStatus = tippA.status
-            tippA.status = RDStore.TIPP_STATUS_DELETED
-            tippA.save()
-            //[event: "delete", oldValue: oldStatus, target: tippA]
-        }
-        */
         //tippA may be deleted; it occurred that deleted titles have been reactivated - whilst deactivation (tippB deleted/removed) needs a different handler!
         //else if(tippA.status != RDStore.TIPP_STATUS_REMOVED && !(status in [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED])) {
             //process central differences which are without effect to issue entitlements
             tippA.titleType = tippB.titleType
             tippA.name = tippB.name
-            tippA.sortname = escapeService.generateSortTitle(tippB.name)
+            tippA.sortname = tippB.sortname ?: escapeService.generateSortTitle(tippB.name)
             if(tippA.altnames) {
                 List<String> oldAltNames = tippA.altnames.collect { AlternativeName altname -> altname.name }
                 tippB.altnames.each { String newAltName ->
@@ -2159,50 +1995,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                 }
             }
-            /*
-            if(statusChanged) {
-                //bootleneck?
-                IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :newStatus where ie.tipp = :tipp and ie.status != :removed', [newStatus: tippStatus.get(tippB.status), tipp: tippA, removed: RDStore.TIPP_STATUS_REMOVED])
-                [event: 'statusChange', target: tippA, oldValue: oldStatus, newValue: newStatus]
-            }
-            */
-            //get to diffs that need to be notified
-            //println("tippA:"+tippA)
-            //println("tippB:"+tippB)
-            //Set<Map<String, Object>> diffs = getTippDiff(tippA, tippB)
-            //includes also changes in coverage statement set
-            /* as of ERMS-4585, comment from February 27th, no changes should be recorded but handed on directly to issue entitlements instead
-            if (diffs) {
-                //process actual diffs
-                diffs.each { Map<String, Object> diff ->
-                    log.info("Got tipp diff: ${diff}")
-                    if (diff.prop in PendingChange.REFDATA_FIELDS) {
-                        RefdataValue newProp
-                        switch(diff.prop) {
-                            case 'status': newProp = tippStatus.values().find { RefdataValue rdv -> rdv.id == diff.newValue }
-                                break
-                            case 'accessType': newProp = accessType.values().find { RefdataValue rdv -> rdv.id == diff.newValue }
-                                break
-                            case 'openAccess': newProp = openAccess.values().find { RefdataValue rdv -> rdv.id == diff.newValue }
-                                break
-                            default: newProp = null
-                                break
-                        }
-                        if(newProp)
-                            tippA[diff.prop] = newProp
-                    }
-                    else {
-                        tippA[diff.prop] = diff.newValue
-                    }
-                }
-                if (tippA.save())
-                    [event: 'update', target: tippA, diffs: diffs]
-                else throw new SyncException("Error on updating TIPP with UUID ${tippA.gokbId}: ${tippA.errors}")
-            }
-            else [:]
-            */
-        //}
-        //[:]
     }
 
     /**
@@ -2216,6 +2008,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         TitleInstancePackagePlatform newTIPP = new TitleInstancePackagePlatform(
                 titleType: tippData.titleType,
                 name: tippData.name,
+                sortname: tippData.sortname ?: escapeService.generateSortTitle(tippData.name),
                 firstAuthor: tippData.firstAuthor,
                 firstEditor: tippData.firstEditor,
                 editionStatement: tippData.editionStatement,
@@ -2313,330 +2106,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
             newTIPP
         }
         else throw new SyncException("Error on saving TIPP data: ${newTIPP.errors}")
-    }
-
-    /**
-     * Compares two title entries against each other, retrieving the differences between both.
-     * @param tippa the old TIPP (as {@link TitleInstancePackagePlatform} or {@link IssueEntitlement})
-     * @param tippb the new TIPP (as {@link Map} or {@link TitleInstancePackagePlatform}
-     * @return a {@link Set} of {@link Map}s with the differences
-     * @deprecated as of comment for ERMS-4585, all title changes should be handed on directly to the issue entitlements, no need to record diffs
-     */
-    @Deprecated
-    Set<Map<String,Object>> getTippDiff(tippa, tippb) {
-        if(tippa instanceof TitleInstancePackagePlatform && tippb instanceof Map)
-            log.info("processing diffs; the respective GOKb UUIDs are: ${tippa.gokbId} (LAS:eR) vs. ${tippb.uuid} (remote)")
-        else if(tippa instanceof TitleInstancePackagePlatform && tippb instanceof TitleInstancePackagePlatform)
-            log.info("processing diffs; the respective objects are: ${tippa.id} (TitleInstancePackagePlatform) pointing to ${tippb.id} (TIPP)")
-        Set<Map<String, Object>> result = []
-
-        if (tippb.containsKey("name") && tippa.name != tippb.name) {
-            result.add([prop: 'name', newValue: tippb.name, oldValue: tippa.name])
-        }
-
-        if(tippa.accessType?.id != accessType.get(tippb.accessType)?.id) {
-            result.add([prop: 'accessType', newValue: accessType.get(tippb.accessType).id, oldValue: tippa.accessType ? tippa.accessType.id : null])
-        }
-
-        if(tippa.openAccess?.id != openAccess.get(tippb.openAccess)?.id) {
-            result.add([prop: 'openAccess', newValue: openAccess.get(tippb.openAccess).id, oldValue: tippa.openAccess ? tippa.openAccess.id : null])
-        }
-
-        if(tippa instanceof TitleInstancePackagePlatform && tippb instanceof Map) {
-            if(tippa.status != tippStatus.get(tippb.status)) {
-                result.add([prop: 'status', newValue: tippStatus.get(tippb.status).id, oldValue: tippa.status.id])
-            }
-        }
-        else if(tippa instanceof IssueEntitlement && tippb instanceof TitleInstancePackagePlatform) {
-            if(tippa.status != tippb.status) {
-                result.add([prop: 'status', newValue: tippb.status.id, oldValue: tippa.status.id])
-            }
-        }
-
-        //println("getTippDiff:"+result)
-        result
-    }
-
-    /**
-     * Compares two sub list entries against each other, retrieving the differences between both.
-     * @param tippA the old {@link TitleInstancePackagePlatform} object, containing the current {@link Set} of  or price items
-     * @param listB the new statements (a {@link List} of remote records, kept in {@link Map}s)
-     * @param instanceType the container class (may be coverage or price)
-     * @return a {@link Set} of {@link Map}s reflecting the differences between the statements
-     * @deprecated issue entitlements should not have sub list objects reflecting the title ones; there are very few cases in which they are needed actually. Should be deleted without replacement
-     */
-    @Deprecated
-    Set<Map<String,Object>> getSubListDiffs(TitleInstancePackagePlatform tippA, listB, String instanceType) {
-        Set subDiffs = []
-        Set listA
-        if(instanceType == "coverage")
-            listA = tippA.coverages
-        else if(instanceType == "price")
-            listA = tippA.priceItems
-        if(listA != null) {
-            if(listA.size() == listB.size()) {
-                //statements may have changed or not, no deletions or insertions
-                //sorting has been done by mapping (listA) resp. when converting data (listB)
-                listB.eachWithIndex { itemB, int i ->
-                    def itemA = locateEquivalent(itemB,listA)
-                    if(!itemA)
-                        itemA = listA[i]
-                    Set<Map<String,Object>> currDiffs = compareSubListItem(itemA,itemB)
-                    if(instanceType == 'coverage') {
-                        if (currDiffs)
-                            subDiffs << [event: 'update', target: itemA, diffs: currDiffs]
-                    }
-                    else if(instanceType == 'price') {
-                        IssueEntitlement.findAllByTipp(tippA).each { IssueEntitlement ieA ->
-                            if(ieA.priceItems) {
-                                PriceItem piA = locateEquivalent(itemB,ieA.priceItems) as PriceItem
-                                if(!piA) {
-                                    piA = ieA.priceItems[i]
-                                    piA.startDate = itemB.startDate
-                                    piA.endDate = itemB.endDate
-                                    piA.listCurrency = itemB.listCurrency
-                                }
-                                piA.listPrice = itemB.listPrice
-                                piA.save()
-                            }
-                            else {
-                                addNewPriceItem(ieA, itemB)
-                            }
-                        }
-                    }
-                }
-            }
-            else if(listA.size() > listB.size()) {
-                //statements have been deleted
-                Set toKeep = []
-                listB.each { itemB ->
-                    def itemA = locateEquivalent(itemB,listA)
-                    if(itemA) {
-                        toKeep << itemA
-                        Set<Map<String,Object>> currDiffs = compareSubListItem(itemA,itemB)
-                        if(currDiffs)
-                            subDiffs << [event: 'update', target: itemA, diffs: currDiffs]
-                    }
-                    else {
-                        //a new statement may have been added for which I cannot determine an equivalent
-                        def newItem
-                        if(instanceType == 'coverage')
-                            newItem = addNewStatement(tippA,itemB)
-                        else if(instanceType == 'price') {
-                            addNewPriceItem(tippA, itemB)
-                            IssueEntitlement.findAllByTipp(tippA).each { IssueEntitlement ie ->
-                                addNewPriceItem(ie, itemB)
-                            }
-                        }
-                        if(newItem)
-                            subDiffs << [event: 'add', target: newItem]
-                    }
-                }
-                listA.each { itemA ->
-                    if(!toKeep.contains(itemA)) {
-                        JSON oldMap = itemA.properties as JSON
-                        subDiffs << [event: 'delete', target: itemA, targetObj: oldMap.toString(), targetParent: tippA]
-                    }
-                }
-            }
-            else if(listA.size() < listB.size()) {
-                //coverage statements have been added
-                listB.each { itemB ->
-                    def itemA = locateEquivalent(itemB,listA)
-                    if(itemA) {
-                        Set<Map<String,Object>> currDiffs = compareSubListItem(itemA,itemB)
-                        if(currDiffs)
-                            subDiffs << [event: 'update', target: itemA, diffs: currDiffs]
-                    }
-                    else {
-                        def newItem
-                        if(instanceType == 'coverage') {
-                            newItem = addNewStatement(tippA, itemB)
-                            if(newItem)
-                                subDiffs << [event: 'add', target: newItem]
-                        }
-                        else if(instanceType == 'price') {
-                            addNewPriceItem(tippA, itemB)
-                            IssueEntitlement.findAllByTipp(tippA).each { IssueEntitlement ie ->
-                                addNewPriceItem(ie, itemB)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        subDiffs
-    }
-
-    /**
-     * Records the differences between coverage or price list elements
-     * @param itemA the existing list (of {@link TIPPCoverage}s or {@link PriceItem}s)
-     * @param itemB the new list (of {@link IssueEntitlementCoverage}s or {@link PriceItem}s)
-     * @return the {@link Set} of {@link Map}s reflecting the differences
-     */
-    Set<Map<String,Object>> compareSubListItem(itemA,itemB) {
-        Set<String> controlledProperties = []
-        if(itemA instanceof AbstractCoverage) {
-            controlledProperties.addAll([
-                    'startDate',
-                    'startVolume',
-                    'startIssue',
-                    'endDate',
-                    'endVolume',
-                    'endIssue',
-                    'embargo',
-                    'coverageDepth',
-                    'coverageNote',
-            ])
-        }
-        else if(itemA instanceof PriceItem) {
-            controlledProperties.addAll([
-                    'startDate',
-                    'endDate',
-                    'listPrice',
-                    'listCurrency'
-            ])
-        }
-        Set<Map<String,Object>> diffs = []
-        controlledProperties.each { String cp ->
-            if(cp in ['startDate','endDate']) {
-                Calendar calA = Calendar.getInstance(), calB = Calendar.getInstance()
-                if(itemA[cp] != null && itemB[cp] != null) {
-                    calA.setTime((Date) itemA[cp])
-                    calB.setTime((Date) itemB[cp])
-                    if(!(calA.get(Calendar.YEAR) == calB.get(Calendar.YEAR) && calA.get(Calendar.DAY_OF_YEAR) == calB.get(Calendar.DAY_OF_YEAR))) {
-                        if(itemA instanceof AbstractCoverage)
-                            diffs << [prop: cp, oldValue: itemA[cp], newValue: itemB[cp]]
-                        else if(itemA instanceof PriceItem) {
-                            itemA[cp] = itemB[cp]
-                            itemA.save()
-                        }
-                    }
-                }
-                else {
-                    /*
-                    Means that one of the coverage dates is null or became null.
-                    Cases to cover: null -> date (covA == null, covB instanceof Date)
-                    date -> null (covA instanceof Date, covB == null)
-                     */
-                    if(itemA[cp] != null && itemB[cp] == null) {
-                        calA.setTime((Date) itemA[cp])
-                        if(itemA instanceof AbstractCoverage)
-                            diffs << [prop:cp, oldValue:itemA[cp],newValue:null]
-                        else if(itemA instanceof PriceItem) {
-                            itemA[cp] = null
-                            itemA.save()
-                        }
-                    }
-                    else if(itemA[cp] == null && itemB[cp] != null) {
-                        calB.setTime((Date) itemB[cp])
-                        if(itemA instanceof AbstractCoverage)
-                            diffs << [prop:cp, oldValue:null, newValue: itemB[cp]]
-                        else if(itemA instanceof PriceItem) {
-                            itemA[cp] = itemB[cp]
-                            itemA.save()
-                        }
-                    }
-                }
-            }
-            else {
-                if(itemA[cp] != itemB[cp] && !((itemA[cp] == '' && itemB[cp] == null) || (itemA[cp] == null && itemB[cp] == ''))) {
-                    if(itemA instanceof AbstractCoverage)
-                        diffs << [prop:cp, oldValue: itemA[cp], newValue: itemB[cp]]
-                    else if(itemA instanceof PriceItem) {
-                        itemA[cp] = itemB[cp]
-                        itemA.save()
-                    }
-                }
-            }
-        }
-        diffs
-    }
-
-    /**
-     * Contrary to {@link AbstractCoverage#findEquivalent(Collection)} resp. {@link PriceItem#findEquivalent(Collection)}, this method locates a non-persisted coverage statement an equivalent from the given {@link Collection}
-     * @param itemB a {@link Map}, reflecting the non-persisited item
-     * @param listA a {@link Collection} on {@link TIPPCoverage} or {@link PriceItem} statements, the list to be updated
-     * @return the equivalent LAS:eR {@link TIPPCoverage} or {@link PriceItem} from the collection
-     */
-    def locateEquivalent(itemB, listA) {
-        def equivalent = null
-        Set<String> equivalencyProperties = []
-        if(listA[0] instanceof AbstractCoverage)
-            equivalencyProperties.addAll(AbstractCoverage.equivalencyProperties)
-        else if(listA[0] instanceof PriceItem)
-            equivalencyProperties.addAll(PriceItem.equivalencyProperties)
-        for (String k : equivalencyProperties) {
-            if(k in ['startDate','endDate']) {
-                Calendar calA = GregorianCalendar.getInstance(), calB = GregorianCalendar.getInstance()
-                listA.each { itemA ->
-                    if(itemA[k] != null && itemB[k] != null) {
-                        calA.setTime(itemA[k])
-                        calB.setTime(itemB[k])
-                        if (calA == calB)
-                            equivalent = itemA
-                    }
-                    else if(itemA[k] == null && itemB[k] == null)
-                        equivalent = itemA
-                }
-            }
-            else
-                equivalent = listA.find { it[k] == itemB[k] && it[k] != null && itemB[k] != null }
-            if (equivalent != null) {
-                log.debug "Statement ${equivalent.id} located as equivalent to ${itemB} by ${k}: ${itemB[k]}"
-                break
-            }
-        }
-        equivalent
-    }
-
-    /**
-     * Adds a new coverage statement to the given title
-     * @param tippA the {@link TitleInstancePackagePlatform} or {@link IssueEntitlement} to add the coverage to
-     * @param covB the coverage statement {@link Map}, containing the we:kb data
-     * @return the new {@link AbstractCoverage}
-     */
-    AbstractCoverage addNewStatement(tippA, covB) {
-        Map<String,Object> params = [startDate: (Date) covB.startDate,
-                                     startVolume: covB.startVolume,
-                                     startIssue: covB.startIssue,
-                                     endDate: (Date) covB.endDate,
-                                     endVolume: covB.endVolume,
-                                     endIssue: covB.endIssue,
-                                     embargo: covB.embargo,
-                                     coverageDepth: covB.coverageDepth,
-                                     coverageNote: covB.coverageNote]
-        AbstractCoverage newStatement
-        if(tippA instanceof TitleInstancePackagePlatform)
-            newStatement = new TIPPCoverage(params+[tipp: tippA])
-        if(tippA instanceof IssueEntitlement)
-            newStatement = new IssueEntitlementCoverage(params+[issueEntitlement: tippA])
-        if(newStatement)
-            newStatement
-        else null
-    }
-
-    /**
-     * Adds a new price item to the given title
-     * @param entitlementA the {@link TitleInstancePackagePlatform} or {@link IssueEntitlement} to add the price item to
-     * @param piB the price item {@link Map}, containing the we:kb data
-     * @return the new {@link PriceItem}
-     */
-    PriceItem addNewPriceItem(entitlementA, piB) {
-        Map<String,Object> params = [startDate: (Date) piB.startDate,
-                                     endDate: (Date) piB.endDate,
-                                     listPrice: piB.listPrice,
-                                     listCurrency: piB.listCurrency]
-        if(entitlementA instanceof TitleInstancePackagePlatform)
-            params.tipp = entitlementA
-        else if(entitlementA instanceof IssueEntitlement)
-            params.issueEntitlement = entitlementA
-        PriceItem pi = new PriceItem(params)
-        pi.setGlobalUID()
-        if(pi.save())
-            pi
-        else null
     }
 
     /**

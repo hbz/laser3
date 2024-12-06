@@ -15,21 +15,6 @@
     </g:if>
     <g:elseif test="${actionName in ['index','addEntitlements']}">
         <ui:exportDropdown>
-            <%--
-            <ui:exportDropdownItem>
-                <g:if test="${filterSet}">
-                    <g:link class="item js-open-confirm-modal"
-                            data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
-                            data-confirm-term-how="ok" action="${actionName}"
-                            params="${params + [format: 'csv']}">
-                        <g:message code="default.button.exports.csv"/>
-                    </g:link>
-                </g:if>
-                <g:else>
-                    <g:link class="item" action="${actionName}" params="${params + [format: 'csv']}">CSV Export</g:link>
-                </g:else>
-            </ui:exportDropdownItem>
-            --%>
             <g:if test="${actionName == 'index'}">
                 <g:if test="${currentTitlesCounts < 1000000}">
                     <ui:exportDropdownItem>
@@ -50,43 +35,9 @@
                     <ui:actionsDropdownItemDisabled message="Export" tooltip="${message(code: 'export.titles.excelLimit')}"/>
                 </g:else>
             </g:elseif>
-            <%--
             <ui:exportDropdownItem>
-                <g:if test="${filterSet}">
-                    <g:link class="item js-open-confirm-modal"
-                            data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
-                            data-confirm-term-how="ok" action="${actionName}"
-                            params="${params + [exportXLSX: true]}">
-                        <g:message code="default.button.exports.xls"/>
-                    </g:link>
-                </g:if>
-                <g:else>
-                    <g:link class="item" action="${actionName}" params="${params+[exportXLSX: true]}">
-                        <g:message code="default.button.exports.xls"/>
-                    </g:link>
-                </g:else>
+                <g:link class="item kbartExport" params="${params + [exportKBart: true]}">KBART Export</g:link>
             </ui:exportDropdownItem>
-            --%>
-            <ui:exportDropdownItem>
-                <%--<g:if test="${filterSet}">
-                    <g:link class="item js-open-confirm-modal"
-                             data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
-                             data-confirm-term-how="ok"
-                             action="${actionName}"
-                             id="${params.id}"
-                             params="${params + [exportKBart: true]}">KBART Export
-                    </g:link>
-                </g:if>
-                <g:else>--%>
-                    <g:link class="item kbartExport" params="${params + [exportKBart: true]}">KBART Export</g:link>
-                <%--</g:else>--%>
-            </ui:exportDropdownItem>
-        <%--<ui:exportDropdownItem>
-                <g:link class="item" controller="subscription" action="index" id="${subscription.id}" params="${params + [format:'json']}">JSON</g:link>
-            </ui:exportDropdownItem>
-            <ui:exportDropdownItem>
-                <g:link class="item" controller="subscription" action="index" id="${subscription.id}" params="${params + [format:'xml']}">XML</g:link>
-            </ui:exportDropdownItem>--%>
         </ui:exportDropdown>
 </g:elseif>
 

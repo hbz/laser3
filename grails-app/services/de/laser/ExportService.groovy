@@ -98,7 +98,7 @@ class ExportService {
 			}
 			else {
 				if(row.size() > 0)
-					output.add(row.join(separator))
+					output.add(row.join(separator).replaceAll('null',''))
 				else output.add(" ")
 			}
 		}
@@ -407,23 +407,7 @@ class ExportService {
 				SXSSFWorkbook wb = new SXSSFWorkbook(workbook,50)
 				wb.setCompressTempFiles(true)
 				metricTypes.each { String metricType ->
-					/*
-					Map<String, Object> queryParams = [reportType: reportType, metricType: metricType, customer: customer.globalUID, platforms: subscribedPlatforms.globalUID]
-					if(dateRangeParams.dateRange.length() > 0) {
-						queryParams.startDate = dateRangeParams.startDate
-						queryParams.endDate = dateRangeParams.endDate
-					}
-					*/
 					//the data
-					//Set<Counter4Report> counter4Reports = []
-					//prf.setBenchmark('get usage data')
-					//we do not need to distinguish right here between reports with and without title identifiers any more
-					//Counter4Report.withTransaction {
-					//counter4Sums.addAll(Counter4Report.executeQuery('select r.reportFrom, r.metricType, sum(r.reportCount) from Counter4Report r where r.reportType = :reportType and r.metricType = :metricType and r.reportInstitutionUID = :customer and r.reportFrom >= :startDate and r.reportTo <= :endDate group by r.reportFrom, r.metricType', queryParams))
-					//counter4Reports.addAll(Counter4Report.executeQuery('select r from Counter4Report r where r.reportType = :reportType and r.metricType = :metricType and r.reportInstitutionUID = :customer and r.platformUID in (:platforms) '+dateRangeParams.dateRange+'order by r.reportFrom', queryParams))
-					//reproduce counter report structure in non-transactional format!
-
-					//}
 					if(metricType in availableMetrics) {
 						sheet = wb.createSheet(metricType)
 						sheet.flushRows(10)
@@ -448,11 +432,6 @@ class ExportService {
 						cell = headerRow.createCell(0)
 						if(dateRangeParams.containsKey('startDate') && dateRangeParams.containsKey('endDate'))
 							cell.setCellValue("${DateUtils.getSDF_yyyyMMdd().format(dateRangeParams.startDate)} to ${DateUtils.getSDF_yyyyMMdd().format(dateRangeParams.endDate)}")
-						/*
-                        else if(counter4Reports) {
-                            cell.setCellValue("${DateUtils.getSDF_yyyyMMdd().format(counter4Reports.first().reportFrom)} to ${DateUtils.getSDF_yyyyMMdd().format(counter4Reports.last().reportTo)}")
-                        }
-                        */
 						headerRow = sheet.createRow(5)
 						cell = headerRow.createCell(0)
 						cell.setCellValue("Date run:")
@@ -472,27 +451,10 @@ class ExportService {
 							columnHeaders.add('YOP unknown')
 						}
 						else {
-							/*
-                            if(dateRangeParams.dateRange.length() == 0) {
-                                Calendar month = GregorianCalendar.getInstance(), finalPoint = GregorianCalendar.getInstance()
-                                month.setTime(counter4Reports.first().reportFrom)
-                                finalPoint.setTime(counter4Reports.last().reportTo)
-                                while(month.before(finalPoint)) {
-                                    dateRangeParams.monthsInRing << month.getTime()
-                                    month.add(Calendar.MONTH, 1)
-                                }
-                            }
-                            */
 							if(dateRangeParams.containsKey('startDate') && dateRangeParams.containsKey('endDate')) {
 								monthHeaders.addAll(dateRangeParams.monthsInRing.collect { Date month -> DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.localeEN).format(month) })
 								columnHeaders.addAll(monthHeaders)
 							}
-						}
-						if(showPriceDate) {
-							columnHeaders.addAll(["List Price EUR", "List Price GBP", "List Price USD"])
-						}
-						if(showOtherData) {
-							columnHeaders.addAll(["Year First Online", "Date First Online"])
 						}
 						row = sheet.createRow(7)
 						columnHeaders.eachWithIndex { String colHeader, int i ->
@@ -553,20 +515,6 @@ class ExportService {
 							case Counter4Report.BOOK_REPORT_3:
 							case Counter4Report.BOOK_REPORT_4:
 								int totalCount = 0
-								/*
-                                Counter4Report.withNewSession {
-                                    Counter4Report.executeQuery('select new map(r.reportFrom as reportMonth, r.metricType as metricType, r.platformUID as platformUID, r.publisher as publisher, r.category as category, sum(r.reportCount) as count) from Counter4Report r where r.reportType = :reportType and r.metricType = :metricType and r.reportInstitutionUID = :customer and r.platformUID in (:platforms)' + dateRangeParams.dateRange + 'group by r.platformUID, r.publisher, r.category, r.reportFrom, r.metricType', queryParams)
-                                    sumRows.eachWithIndex { sumRow, int i ->
-                                        cell = row.createCell(0)
-                                        cell.setCellValue(sumRow.category)
-                                        cell = row.createCell(2)
-                                        cell.setCellValue(Platform.findByGlobalUID(sumRow.platformUID).name)
-                                        cell = row.createCell(i+9)
-                                        cell.setCellValue(sumRow.count)
-                                        totalCount += sumRow.count
-                                    }
-                                }
-                                */
 								cell = row.createCell(8)
 								cell.setCellValue(totalCount)
 								rowno++
@@ -641,49 +589,6 @@ class ExportService {
 								Map<String, Object> data = prepareDataWithDatabases(requestResponse, reportType)
 								double pointsPerIteration = 20/data.size()
 								int totalSum = 0, i = 0
-								/*
-                                TODO migrate
-                                Counter4Report.withNewSession {
-                                    Map<String, Object> categoryRows = [:]
-                                    Counter4Report.executeQuery('select new map(r.reportFrom as reportFrom, r.metricType as accessDeniedCategory, sum(r.reportCount) as count) from Counter4Report r where r.reportType = :reportType and r.metricType = :metricType and r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRangeParams.dateRange+'group by r.metricType, r.reportFrom order by r.metricType, r.reportFrom', queryParams).each { countPerCategory ->
-                                        Map<String, Object> categoryRow = categoryRows.get(countPerCategory.accessDeniedCategory)
-                                        if(!categoryRow)
-                                            categoryRow = ['Reporting Period Total': totalSum]
-                                        else totalSum = categoryRow.get('Reporting Period Total')
-                                        totalSum += countPerCategory.count
-                                        categoryRow.put(DateUtils.getSDF_yyyyMM().format(countPerCategory.reportFrom), countPerCategory.count)
-                                        categoryRow.put('Reporting Period Total', totalSum)
-                                        categoryRows.put(countPerCategory.accessDeniedCategory, categoryRow)
-                                    }
-                                    categoryRows.eachWithIndex { String accessDeniedCategory, Map countsPerCategory, int r ->
-                                        cell = row.createCell(0)
-                                        cell.setCellValue('Total for all databases')
-                                        cell = row.createCell(3)
-                                        switch(accessDeniedCategory) {
-                                            case 'no_license': cell.setCellValue('Access denied: content item not licenced')
-                                                break
-                                            case 'turnaway': cell.setCellValue('Access denied: concurrent/simultaneous user licence limit exceeded')
-                                                break
-                                            case 'ft_html': cell.setCellValue('Record Views HTML')
-                                                break
-                                            case 'ft_total': cell.setCellValue('Record Views Total')
-                                                break
-                                            default: cell.setCellValue(accessDeniedCategory)
-                                                break
-                                        }
-                                        cell = row.createCell(4)
-                                        cell.setCellValue(countsPerCategory.get('Reporting Period Total'))
-                                        monthHeaders.eachWithIndex { String month, int i ->
-                                            cell = row.createCell(i+5)
-                                            if(countsPerCategory.containsKey(month))
-                                                cell.setCellValue(countsPerCategory.get(month))
-                                            else cell.setCellValue(0)
-                                        }
-                                        row = sheet.createRow(rowno)
-                                        rowno += r
-                                    }
-                                }
-                            */
 								row = sheet.createRow(rowno)
 								data.each { String databaseName, Map<String, Object> databasePublishers ->
 									databasePublishers.each { String publisherName, Map<String, Object> databaseMetrics ->
@@ -719,46 +624,6 @@ class ExportService {
 										userCache.put('progress', 80 + i * pointsPerIteration)
 									}
 								}
-								/*
-                                TODO migrate
-                                Counter4Report.withNewSession {
-                                    Counter4Report.executeQuery('select new map(r.reportFrom as reportFrom, r.publisher as publisher, r.metricType as metricType, r.platformUID as platformUID, sum(r.reportCount) as count) from Counter4Report r where r.reportType = :reportType and r.metricType = :metricType and r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRangeParams.dateRange+'group by r.platformUID, r.publisher, r.reportFrom, r.metricType', queryParams).each { countPerMonth ->
-                                        cell = row.createCell(0)
-                                        cell.setCellValue(Platform.findByGlobalUID(countPerMonth.platformUID).name)
-                                        cell = row.createCell(1)
-                                        cell.setCellValue(countPerMonth.publisher ?: '')
-                                        cell = row.createCell(2)
-                                        switch(countPerMonth.metricType) {
-                                            case 'search_reg': cell.setCellValue('Regular Searches')
-                                                break
-                                            case 'search_fed': cell.setCellValue('Searches-federated and automated')
-                                                break
-                                            case 'record_view': cell.setCellValue('Record Views')
-                                                break
-                                            case 'result_click': cell.setCellValue('Result Clicks')
-                                                break
-                                            default: cell.setCellValue(countPerMonth.metricType)
-                                                break
-                                        }
-                                        monthHeaders.eachWithIndex { String month, int i ->
-                                            cell = row.getCell(i+4)
-                                            if(!cell) {
-                                                cell = row.createCell(i+4)
-                                                if(DateUtils.getSDF_yyyyMM().format(countPerMonth.reportFrom) == month)
-                                                    cell.setCellValue(countPerMonth.count)
-                                                else cell.setCellValue(0)
-                                            }
-                                            else if(DateUtils.getSDF_yyyyMM().format(countPerMonth.reportFrom) == month)
-                                                cell.setCellValue(countPerMonth.count)
-                                        }
-                                        totalCount += countPerMonth.count
-                                    }
-                                }
-								cell = row.createCell(3)
-								cell.setCellValue(totalCount)
-								rowno++
-								row = sheet.createRow(rowno)
-								*/
 								break
 						}
 						if(titlesSorted) {
@@ -850,15 +715,6 @@ class ExportService {
 
 				prf.setBenchmark('data fetched from provider')
 				userCache.put('label', 'Erzeuge Tabelle ...')
-				/*
-				desideratum:
-				if(reportType in Counter5Report.COUNTER_5_TITLE_REPORTS) {
-					Counter5Report.withNewSession {
-						//report type should restrict enough; we now need to select appropriate titles in case of an existing identifier
-						counter5Reports.addAll(Counter5Report.executeQuery('select r from Counter5Report r where lower(r.reportType) = :reportType'+metricFilter+'and r.reportInstitutionUID = :customer and r.platformUID in (:platforms) '+dateRangeParams.dateRange+'order by r.reportFrom', queryParams))
-					}
-				}
-				*/
 				//the header
 				columnHeaders.addAll(Counter5Report.COLUMN_HEADERS.valueOf(reportType.toUpperCase()).headers)
 				Row headerRow = sheet.createRow(0)
@@ -950,15 +806,6 @@ class ExportService {
 				cell.setCellValue("")
 				if(dateRangeParams.containsKey('startDate') && dateRangeParams.containsKey('endDate'))
 					columnHeaders.addAll(dateRangeParams.monthsInRing.collect { Date month -> DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(month) })
-				/*else {
-					Calendar month = GregorianCalendar.getInstance(), finalPoint = GregorianCalendar.getInstance()
-					month.setTime(counter5Reports.first().reportFrom)
-					finalPoint.setTime(counter5Reports.last().reportTo)
-					while(month.before(finalPoint)) {
-						columnHeaders << DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(month.getTime())
-						month.add(Calendar.MONTH, 1)
-					}
-				}*/
 
 				row = sheet.createRow(13)
 				columnHeaders.eachWithIndex { String colHeader, int i ->
@@ -1027,33 +874,6 @@ class ExportService {
 								}
 							}
 						}
-						/*Counter5Report.withNewSession {
-							Map<String, Object> metricRows = [:]
-							Counter5Report.executeQuery('select new map(r.platformUID as platformUID, r.accessMethod as accessMethod, r.dataType as dataType, r.metricType as metricType, r.reportFrom as reportMonth, sum(r.reportCount) as count) from Counter5Report r where lower(r.reportType) = :reportType and r.metricType in (:metricTypes) and r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRangeParams.dateRange+'group by r.metricType, r.platformUID, r.reportFrom, r.accessMethod, r.dataType order by r.reportFrom',queryParams).each { reportRow ->
-								Map<String, Object> metricRow = metricRows.get(reportRow.metricType)
-								Integer periodTotal
-								if(!metricRow) {
-									metricRow = [:]
-									periodTotal = 0
-								}
-								else periodTotal = metricRow.get('Reporting_Period_Total') as Integer
-								metricRow.put('Platform', Platform.findByGlobalUID(reportRow.platformUID).name)
-								metricRow.put('Metric_Type', reportRow.metricType)
-								metricRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportRow.reportMonth), reportRow.count)
-								periodTotal += reportRow.count
-								metricRow.put('Reporting_Period_Total', periodTotal)
-								metricRow.put('Access_Method', reportRow.accessMethod)
-								metricRow.put('Data_Type', reportRow.dataType)
-								metricRows.put(reportRow.metricType, metricRow)
-							}
-							metricRows.eachWithIndex { String metricType, Map<String, Object> metricRow, int i ->
-								row = sheet.createRow(i + rowno)
-								for (int c = 0; c < columnHeaders.size(); c++) {
-									cell = row.createCell(c)
-									cell.setCellValue(metricRow.get(columnHeaders[c]) ?: "")
-								}
-							}
-						}*/
 						break
 					case Counter5Report.DATABASE_MASTER_REPORT:
 						data = prepareDataWithDatabases(requestResponse, reportType)
@@ -1093,32 +913,6 @@ class ExportService {
 								}
 							}
 						}
-						/*Counter5Report.withNewSession {
-							Map<String, Object> metricRows = [:]
-							Counter5Report.executeQuery('select new map(r.platformUID as platformUID, r.accessMethod as accessMethod, r.metricType as metricType, r.reportFrom as reportMonth, sum(r.reportCount) as count) from Counter5Report r where lower(r.reportType) = :reportType and r.metricType in (:metricTypes) and r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRangeParams.dateRange+'group by r.metricType, r.platformUID, r.reportFrom, r.accessMethod order by r.reportFrom',queryParams).each { reportRow ->
-								Map<String, Object> metricRow = metricRows.get(reportRow.metricType)
-								Integer periodTotal
-								if(!metricRow) {
-									metricRow = [:]
-									periodTotal = 0
-								}
-								else periodTotal = metricRow.get('Reporting_Period_Total') as Integer
-								metricRow.put('Platform', Platform.findByGlobalUID(reportRow.platformUID).name)
-								metricRow.put('Metric_Type', reportRow.metricType)
-								metricRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportRow.reportMonth), reportRow.count)
-								periodTotal += reportRow.count
-								metricRow.put('Reporting_Period_Total', periodTotal)
-								metricRow.put('Access_Method', reportRow.accessMethod)
-								metricRows.put(reportRow.metricType, metricRow)
-							}
-							metricRows.eachWithIndex { String metricType, Map<String, Object> metricRow, int i ->
-								row = sheet.createRow(i + rowno)
-								for (int c = 0; c < columnHeaders.size(); c++) {
-									cell = row.createCell(c)
-									cell.setCellValue(metricRow.get(columnHeaders[c]) ?: "")
-								}
-							}
-						}*/
 						break
 					default: data = prepareDataWithTitles(titles, reportType, requestResponse)
 						titleRows = data.titleRows
@@ -1176,22 +970,6 @@ class ExportService {
 				else {
 					requestResponse
 				}
-				/*
-				titleRows.each{ TitleInstancePackagePlatform title, Map<String, Map<String, Map>> titleMetric ->
-					titleMetric.each { String metricType, Map titleAccessType ->
-						titleAccessType.eachWithIndex { String accessType, Map titleRow, int i ->
-							row = sheet.createRow(i+rowno)
-							cell = row.createCell(0)
-							cell.setCellValue(title.name)
-							for(int c = 1; c < columnHeaders.size(); c++) {
-								cell = row.createCell(c)
-								cell.setCellValue(titleRow.get(columnHeaders[c]) ?: "")
-							}
-						}
-						rowno += titleAccessType.size()
-					}
-				}
-				*/
 			}
 			else requestResponse
 		}
@@ -1563,96 +1341,6 @@ class ExportService {
 			result.sumRows = countsPerMonth
 			result.sumsPerYOP = sumsPerYOP
 		}
-		/*
-            Map<String, Object> titleRow = titleRows.get(tipp)
-            if(!titleRow) {
-                String proprietaryIdentifier = report.proprietaryIdentifier
-                titleRow = [:]
-                //key naming identical to column headers
-                titleRow.put("Publisher", report.publisher)
-                titleRow.put("Platform", report.platform.name)
-                titleRow.put("Proprietary Identifier", proprietaryIdentifier)
-                titleRow.put("Journal DOI", doi)
-                titleRow.put("Book DOI", doi)
-                if(reportType == Counter4Report.JOURNAL_REPORT_5) {
-                    titleRow.put("Print ISSN", issn)
-                    titleRow.put("Online ISSN", eissn)
-                }
-                else {
-                    titleRow.put("ISBN", eisbn ?: isbn)
-                    titleRow.put("ISSN", eissn ?: issn)
-                }
-                DecimalFormat df = new DecimalFormat("###,##0.00")
-                df.decimalFormatSymbols = new DecimalFormatSymbols(LocaleUtils.getCurrentLocale())
-                if (showPriceDate && priceItems) {
-                    //listprice_eur
-                    PriceItem eur = priceItems.find { it.listCurrency == RDStore.CURRENCY_EUR }
-                    PriceItem gbp = priceItems.find { it.listCurrency == RDStore.CURRENCY_GBP }
-                    PriceItem usd = priceItems.find { it.listCurrency == RDStore.CURRENCY_USD }
-                    titleRow.put("List Price EUR", eur ? df.format(eur.listPrice) : ' ')
-                    //listprice_gbp
-                    titleRow.put("List Price GBP", gbp ? df.format(gbp.listPrice) : ' ')
-                    //listprice_usd
-                    titleRow.put("List Price USD", usd ? df.format(usd.listPrice) : ' ')
-                }
-                if (showOtherData) {
-                    titleRow.put("Year First Online", tipp.dateFirstOnline ? DateUtils.getSDF_yyyy().format(tipp.dateFirstOnline): ' ')
-                    titleRow.put("Date First Online", tipp.dateFirstOnline ? DateUtils.getSDF_yyyyMMdd().format(tipp.dateFirstOnline): ' ')
-                }
-            }
-            else {
-                if(reportType == Counter4Report.JOURNAL_REPORT_1) {
-                    periodHTML = titleRow.containsKey("Reporting Period HTML") ? titleRow.get("Reporting Period HTML") as int : 0
-                    periodPDF = titleRow.containsKey("Reporting Period PDF") ? titleRow.get("Reporting Period PDF") as int : 0
-                }
-                if(reportType != Counter4Report.JOURNAL_REPORT_5) {
-                    periodTotal = titleRow.get("Reporting Period Total") as int
-                }
-            }
-            periodTotal += report.reportCount
-            if(reportType != Counter4Report.JOURNAL_REPORT_5) {
-                titleRow.put("Reporting Period Total", periodTotal)
-                titleRow.put(DateUtils.getSDF_yyyyMM().format(report.reportFrom), report.reportCount)
-            }
-            switch(reportType) {
-                case Counter4Report.BOOK_REPORT_5: titleRow.put("User activity", report.metricType == 'search_reg' ? "Regular Searches" : "Searches: federated and automated")
-                    break
-                case Counter4Report.JOURNAL_REPORT_1:
-                    if(report.metricType == 'ft_html') {
-                        periodHTML += report.reportCount
-                        titleRow.put("Reporting Period HTML", periodHTML)
-                    }
-                    else if(report.metricType == 'ft_pdf') {
-                        periodPDF += report.reportCount
-                        titleRow.put("Reporting Period PDF", periodPDF)
-                    }
-                    break
-                case Counter4Report.JOURNAL_REPORT_5:
-                    String key
-                    if(report.yop < limit.getTime())
-                        key = "YOP Pre-2000"
-                    else if(report.yop == null)
-                        key = "YOP unknown"
-                    else
-                        key = "YOP ${DateUtils.getSDF_yyyy().format(report.yop)}"
-                    Integer currVal = titleRow.get(key)
-                    if(!currVal)
-                        currVal = 0
-                    currVal += report.reportCount
-                    titleRow.put(key, currVal)
-                    Integer countPerYOP = sumsPerYOP.get(key)
-                    if(!countPerYOP) {
-                        countPerYOP = 0
-                    }
-                    countPerYOP += report.reportCount
-                    sumsPerYOP.put(key, countPerYOP)
-                    break
-            }
-            titleRows.put(tipp, titleRow)*/
-		//Duration iterInner = Duration.between(innerStart, Instant.now().truncatedTo(ChronoUnit.MICROS))
-		//log.debug("iteration time inner loop: ${iterInner}")
-
-		//}
 		userCache.put('progress', 80)
 		result.titleRows = titleRows
 		result
@@ -2482,7 +2170,7 @@ class ExportService {
 			}
 		}
 		else if(ieIDs) {
-			rowQuery += " from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id left join tippcoverage on tipp_id = tc_tipp_fk where ie_id = any(:ieIDs) order by tipp_sort_name"
+			rowQuery += " from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id left join issue_entitlement_coverage on ie_id = ic_ie_fk left join tippcoverage on tipp_id = tc_tipp_fk where ie_id = any(:ieIDs) order by tipp_sort_name"
 			ieIDs.collate(65000).each { List<Long> subset ->
 				arrayParams.ieIDs = subset
 				List exportRows = batchQueryService.longArrayQuery(rowQuery, arrayParams)
@@ -2541,9 +2229,9 @@ class ExportService {
 				"create_cell('${format}', (case when tipp_access_type_rv_fk = ${RDStore.TIPP_PAYMENT_PAID.id} then 'P' when tipp_access_type_rv_fk = ${RDStore.TIPP_PAYMENT_FREE.id} then 'F' else '' end), ${style}) as access_type," +
 				"create_cell('${format}', (select ${valueCol} from refdata_value where rdv_id = tipp_open_access_rv_fk), ${style}) as oa_type," +
 				"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ZDB_PPN).id}), ${style}) as zdb_ppn," +
-				"create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99')), ',') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_EUR.id} order by pi_last_updated desc), ${style}) as listprice_eur," +
-				"create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99')), ',') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_GBP.id} order by pi_last_updated desc), ${style}) as listprice_gbp," +
-				"create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99')), ',') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_USD.id} order by pi_last_updated desc), ${style}) as listprice_usd"
+				"create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99')), ',') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_EUR.id}), ${style}) as listprice_eur," +
+				"create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99')), ',') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_GBP.id}), ${style}) as listprice_gbp," +
+				"create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99')), ',') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_USD.id}), ${style}) as listprice_usd"
 		config
 	}
 
@@ -2551,18 +2239,18 @@ class ExportService {
 		Locale locale = LocaleUtils.getCurrentLocale()
 		String config = "create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('monograph') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, IdentifierNamespace.NS_TITLE).id}) or (lower(tipp_title_type) in ('serial') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, IdentifierNamespace.NS_TITLE).id}))), ${style}) as print_identifier," +
 				"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('monograph') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISBN, IdentifierNamespace.NS_TITLE).id}) or (lower(tipp_title_type) in ('serial') and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, IdentifierNamespace.NS_TITLE).id}))), ${style}) as online_identifier," +
-				"create_cell('${format}', to_char(tc_start_date, 'yyyy-MM-dd'), ${style}) as date_first_issue_online," +
-				"create_cell('${format}', tc_start_volume, ${style}) as num_first_vol_online," +
-				"create_cell('${format}', tc_start_issue, ${style}) as num_first_issue_online," +
-				"create_cell('${format}', to_char(tc_end_date, 'yyyy-MM-dd'), ${style}) as date_last_issue_online," +
-				"create_cell('${format}', tc_end_volume, ${style}) as num_last_vol_online," +
-				"create_cell('${format}', tc_end_issue, ${style}) as num_last_issue_online," +
+				"create_cell('${format}', to_char(coalesce(ic_start_date, tc_start_date), 'yyyy-MM-dd'), ${style}) as date_first_issue_online," +
+				"create_cell('${format}', coalesce(ic_start_volume, tc_start_volume), ${style}) as num_first_vol_online," +
+				"create_cell('${format}', coalesce(ic_start_issue, tc_start_issue), ${style}) as num_first_issue_online," +
+				"create_cell('${format}', to_char(coalesce(ic_end_date, tc_end_date), 'yyyy-MM-dd'), ${style}) as date_last_issue_online," +
+				"create_cell('${format}', coalesce(ic_end_volume, tc_end_volume), ${style}) as num_last_vol_online," +
+				"create_cell('${format}', coalesce(ic_end_issue, tc_end_issue), ${style}) as num_last_issue_online," +
 				"create_cell('${format}', tipp_host_platform_url, ${style}) as title_url," +
 				"create_cell('${format}', tipp_first_author, ${style}) as first_author," +
 				"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNsAndNsType('title_id', IdentifierNamespace.NS_TITLE).id}), ${style}) as title_id," +
-				"create_cell('${format}', tc_embargo, ${style}) as embargo_info," +
-				"create_cell('${format}', tc_coverage_depth, ${style}) as coverage_depth," +
-				"create_cell('${format}', tc_coverage_note, ${style}) as notes," +
+				"create_cell('${format}', coalesce(ic_embargo, tc_embargo), ${style}) as embargo_info," +
+				"create_cell('${format}', coalesce(ic_coverage_depth, tc_coverage_depth), ${style}) as coverage_depth," +
+				"create_cell('${format}', coalesce(ic_coverage_note, tc_coverage_note), ${style}) as notes," +
 				"create_cell('${format}', tipp_title_type, ${style}) as publication_type," +
 				"create_cell('${format}', tipp_publisher_name, ${style}) as publisher_name," +
 				"create_cell('${format}', to_char(tipp_date_first_in_print, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}'), ${style}) as date_monograph_published_print," +
@@ -2594,12 +2282,12 @@ class ExportService {
 				"create_cell('${format}', (case when tipp_access_type_rv_fk = ${RDStore.TIPP_PAYMENT_PAID.id} then 'P' when tipp_access_type_rv_fk = ${RDStore.TIPP_PAYMENT_FREE.id} then 'F' else '' end), ${style}) as access_type," +
 				"create_cell('${format}', (select ${valueCol} from refdata_value where rdv_id = tipp_open_access_rv_fk), ${style}) as oa_type," +
 				"create_cell('${format}', (select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ZDB_PPN).id}), ${style}) as zdb_ppn," +
-				"create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99')),',') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_EUR.id} order by pi_last_updated desc), ${style}) as listprice_eur," +
-				"create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99')),',') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_GBP.id} order by pi_last_updated desc), ${style}) as listprice_gbp," +
-				"create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99')),',') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_USD.id} order by pi_last_updated desc), ${style}) as listprice_usd," +
-				"create_cell('${format}', (select string_agg(trim(to_char(pi_local_price, '999999999D99')),',') from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_EUR.id} order by pi_last_updated desc), ${style}) as localprice_eur," +
-				"create_cell('${format}', (select string_agg(trim(to_char(pi_local_price, '999999999D99')),',') from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_GBP.id} order by pi_last_updated desc), ${style}) as localprice_gbp," +
-				"create_cell('${format}', (select string_agg(trim(to_char(pi_local_price, '999999999D99')),',') from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_USD.id} order by pi_last_updated desc), ${style}) as localprice_usd"
+				"create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99')),',') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_EUR.id}), ${style}) as listprice_eur," +
+				"create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99')),',') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_GBP.id}), ${style}) as listprice_gbp," +
+				"create_cell('${format}', (select string_agg(trim(to_char(pi_list_price, '999999999D99')),',') from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_USD.id}), ${style}) as listprice_usd," +
+				"create_cell('${format}', (select string_agg(trim(to_char(pi_local_price, '999999999D99')),',') from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_EUR.id}), ${style}) as localprice_eur," +
+				"create_cell('${format}', (select string_agg(trim(to_char(pi_local_price, '999999999D99')),',') from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_GBP.id}), ${style}) as localprice_gbp," +
+				"create_cell('${format}', (select string_agg(trim(to_char(pi_local_price, '999999999D99')),',') from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_USD.id}), ${style}) as localprice_usd"
 		config
 	}
 
