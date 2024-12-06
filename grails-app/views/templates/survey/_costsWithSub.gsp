@@ -17,7 +17,7 @@
         String dataTooltip = ""
     %>
 
-    <g:if test="${surveyInfo.owner.id != institution.id && (costItemsSubsc || costItemsSurvey)}">
+    <g:if test="${surveyInfo.owner.id != contextService.getOrg().id && (costItemsSubsc || costItemsSurvey)}">
 
         <div class="ui card la-time-card">
 
@@ -97,8 +97,9 @@
                                     </g:if>
                                 </td>
 
+                                <%-- delivers an enormous set of cost items not related to the survey and blowing up the view so that it crashes; TODO ask Moe!
                                 <g:set var="surveyCostItems" scope="request"
-                                       value="${CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, costItem.costItemElement)}"/>
+                                       value="${CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, costItem.costItemElement)}"/>--%>
 
 
                                 <g:if test="${surveyCostItems && !(costItem.costItemElement in (costItemElementsNotInSurveyCostItems))}">
@@ -186,60 +187,60 @@
                         <g:set var="costItemsWithoutSubCostItems"
                                value="${surveyOrg && costItemElementsNotInSurveyCostItems ? CostItem.findAllBySurveyOrgAndCostItemElementNotInListAndPkgIsNull(surveyOrg, costItemElementsNotInSurveyCostItems) : []}"/>
                         <g:if test="${costItemsWithoutSubCostItems}">
-                            <g:each in="${costItemsWithoutSubCostItems}" var="costItemSurvey">
+                            <g:each in="${costItemsWithoutSubCostItems}" var="ciWithoutSubCost">
                                 <tr>
                                     <td></td>
                                     <td></td>
                                     <td></td>
                                     <td></td>
                                     <td>
-                                        <ui:costSign ci="${costItemSurvey}"/>
+                                        <ui:costSign ci="${ciWithoutSubCost}"/>
 
-                                        ${costItemSurvey.costItemElement?.getI10n('value')}
+                                        ${ciWithoutSubCost.costItemElement?.getI10n('value')}
 
                                     </td>
                                     <td>
                                         <strong>
                                             <g:formatNumber
-                                                    number="${costItemSurvey.costInBillingCurrency}"
+                                                    number="${ciWithoutSubCost.costInBillingCurrency}"
                                                     minFractionDigits="2" maxFractionDigits="2"
                                                     type="number"/>
                                         </strong>
 
-                                        ${costItemSurvey.billingCurrency?.getI10n('value')}
+                                        ${ciWithoutSubCost.billingCurrency?.getI10n('value')}
                                     </td>
                                     <td>
-                                        <g:if test="${costItemSurvey.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
+                                        <g:if test="${ciWithoutSubCost.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
                                             ${RDStore.TAX_TYPE_REVERSE_CHARGE.getI10n("value")}
                                         </g:if>
-                                        <g:elseif test="${costItemSurvey.taxKey}">
-                                            ${costItemSurvey.taxKey.taxType?.getI10n("value") + " (" + costItemSurvey.taxKey.taxRate + "%)"}
+                                        <g:elseif test="${ciWithoutSubCost.taxKey}">
+                                            ${ciWithoutSubCost.taxKey.taxType?.getI10n("value") + " (" + ciWithoutSubCost.taxKey.taxRate + "%)"}
                                         </g:elseif>
                                     </td>
                                     <td>
                                         <strong>
                                             <g:formatNumber
-                                                    number="${costItemSurvey.costInBillingCurrencyAfterTax}"
+                                                    number="${ciWithoutSubCost.costInBillingCurrencyAfterTax}"
                                                     minFractionDigits="2" maxFractionDigits="2"
                                                     type="number"/>
                                         </strong>
 
-                                        ${costItemSurvey.billingCurrency?.getI10n('value')}
+                                        ${ciWithoutSubCost.billingCurrency?.getI10n('value')}
 
                                         <g:set var="newCostItem"
-                                               value="${costItemSurvey.costInBillingCurrency ?: 0.0}"/>
+                                               value="${ciWithoutSubCost.costInBillingCurrency ?: 0.0}"/>
 
-                                        <g:if test="${costItemSurvey.startDate || costItemSurvey.endDate}">
-                                            <br/>(${formatDate(date: costItemSurvey.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: costItemSurvey.endDate, format: message(code: 'default.date.format.notime'))})
+                                        <g:if test="${ciWithoutSubCost.startDate || ciWithoutSubCost.endDate}">
+                                            <br/>(${formatDate(date: ciWithoutSubCost.startDate, format: message(code: 'default.date.format.notime'))} - ${formatDate(date: ciWithoutSubCost.endDate, format: message(code: 'default.date.format.notime'))})
                                         </g:if>
 
-                                        <g:if test="${costItemSurvey.costDescription}">
+                                        <g:if test="${ciWithoutSubCost.costDescription}">
                                             <br/>
 
                                             <div class="ui icon la-popup-tooltip"
                                                  data-position="right center"
                                                  data-variation="tiny"
-                                                 data-content="${costItemSurvey.costDescription}">
+                                                 data-content="${ciWithoutSubCost.costDescription}">
                                                 <i class="${Icon.TOOLTIP.HELP}"></i>
                                             </div>
                                         </g:if>
@@ -322,7 +323,7 @@
         </div>
     </g:if>
 
-    <g:if test="${surveyInfo.owner.id == institution.id}">
+    <g:if test="${surveyInfo.owner.id == contextService.getOrg().id}">
         <g:set var="consCostItems"
                value="${subscription ? CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo left join ci.costItemElement cie ' +
                        'where ci.owner = :owner and sub.instanceOf = :sub and oo.roleType in (:roleTypes)  and ci.surveyOrg = null and ci.costItemStatus != :deleted' +
