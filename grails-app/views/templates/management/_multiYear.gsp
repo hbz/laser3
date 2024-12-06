@@ -129,8 +129,8 @@
                             <%-- This whole construct is necessary for that the form validation works!!! --%>
                             <div class="field">
                                 <div class="ui checkbox">
-                                    <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}"
-                                                checked="false"/>
+                                    <g:checkBox class="selectedSubs" id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}"
+                                                checked="${selectionCache.containsKey('selectedSubs_'+sub.id)}"/>
                                 </div>
                             </div>
                         </td>

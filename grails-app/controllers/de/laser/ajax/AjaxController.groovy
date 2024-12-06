@@ -536,26 +536,6 @@ class AjaxController {
   }
 
     /**
-     * This method is used by the addEntitlements view and updates the cache for the entitlement candidates which should be added to the local subscription holding;
-     * when the entitlements are being processed, the data from the cache is being applied to the entitlements
-     * @return a {@link Map} reflecting the success status
-     */
-  @Secured(['ROLE_USER'])
-  @Deprecated
-  def updateIssueEntitlementSelect() {
-      Map success = [success:false]
-      EhcacheWrapper cache = contextService.getUserCache("/subscription/${params.referer}/${params.sub}")
-      Set issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
-      if(!issueEntitlementCandidates)
-          issueEntitlementCandidates = []
-      if(!issueEntitlementCandidates.add(params.key))
-          issueEntitlementCandidates.remove(params.key)
-      if(cache.put('issueEntitlementCandidates',issueEntitlementCandidates))
-          success.success = true
-      render success as JSON
-  }
-
-    /**
      * Adds a relation link from a given object to an {@link Org}. The org may be an institution or an other organisation like a provider
      */
     @Secured(['ROLE_USER'])

@@ -1,6 +1,7 @@
 package de.laser.ajax
 
 import de.laser.AlternativeName
+import de.laser.CacheService
 import de.laser.CustomerTypeService
 import de.laser.DiscoverySystemFrontend
 import de.laser.DiscoverySystemIndex
@@ -69,6 +70,7 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxJsonController {
 
+    CacheService cacheService
     CompareService compareService
     ContextService contextService
     ControlledListService controlledListService
@@ -553,6 +555,31 @@ class AjaxJsonController {
             userCache.remove('label')
         }
         render result as JSON
+    }
+
+    /**
+     * Updates the pagination cache
+     */
+    @Secured(['ROLE_USER'])
+    def updatePaginationCache() {
+        Map result = [:]
+        if(params.containsKey('cacheKeyReferer')) {
+            EhcacheWrapper cache = cacheService.getTTL1800Cache("${params.cacheKeyReferer}/pagination")
+            Map<String, String> checkedMap = cache.get('checkedMap') ?: [:]
+            if(!checkedMap.containsKey(params.selId)) {
+                checkedMap.put(params.selId, params.selId.split('_')[1])
+                result.state = 'checked'
+            }
+            else {
+                checkedMap.remove(params.selId)
+                result.state = 'unchecked'
+            }
+            cache.put('checkedMap', checkedMap)
+            render result as JSON
+        }
+        else {
+            response.sendError(500, 'cacheKeyReferer missing! Which pagination should I update?!')
+        }
     }
 
     /**
