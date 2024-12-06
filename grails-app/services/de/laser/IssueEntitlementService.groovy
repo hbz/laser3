@@ -159,6 +159,12 @@ class IssueEntitlementService {
         [listPriceSumEUR: listPriceSumEUR, listPriceSumGBP: listPriceSumGBP, listPriceSumUSD: listPriceSumUSD]
     }
 
+    boolean existsSerialInHolding(Subscription subscription, List statusKeys) {
+        String query = 'select distinct(tipp.titleType) from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :sub and ie.status in (:status)'
+        List titleTypes = IssueEntitlement.executeQuery(query, [sub: subscription, status: statusKeys.collect { Long key -> RefdataValue.get(key) }])
+        return titleTypes.contains('serial')
+    }
+
     Map<String, Object> getParameterGenerics(configMap) {
         String sort = configMap.containsKey('sort') && configMap.sort ? configMap.sort : 'tipp.sortname'
         String order = configMap.containsKey('order') && configMap.order ? configMap.order : 'asc'

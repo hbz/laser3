@@ -103,7 +103,7 @@
                         <ui:msg class="warning" header="${message(code: "message.attention")}"
                                     message="subscription.details.addEntitlements.warning"/>
 
-                        <g:form class="ui form" controller="subscription" action="index"
+                        <g:form class="ui form" controller="subscription" action="processIssueEntitlementEnrichment"
                                 params="${[sort: params.sort, order: params.order, filter: params.filter, pkgFilter: params.pkgfilter, startsBefore: params.startsBefore, endsAfter: params.endAfter, id: subscription.id]}"
                                 method="post" enctype="multipart/form-data">
                             <div class="three fields">
@@ -122,11 +122,13 @@
                                 </div>
 
                                 <div class="field">
-                                    <div class="ui checkbox toggle">
-                                        <g:checkBox name="uploadCoverageDates" value="${uploadCoverageDates}"/>
-                                        <label><g:message
-                                                code="subscription.details.issueEntitlementEnrichment.uploadCoverageDates.label"/></label>
-                                    </div>
+                                    <g:if test="${issueEntitlementService.existsSerialInHolding(subscription, params.list('status'))}">
+                                        <div class="ui checkbox toggle">
+                                            <g:checkBox name="uploadCoverageDates" value="${uploadCoverageDates}"/>
+                                            <label><g:message
+                                                    code="subscription.details.issueEntitlementEnrichment.uploadCoverageDates.label"/></label>
+                                        </div>
+                                    </g:if>
 
                                     <div class="ui checkbox toggle">
                                         <g:checkBox name="uploadPriceInfo" value="${uploadPriceInfo}"/>

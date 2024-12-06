@@ -7,6 +7,7 @@ import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.helper.FilterLogic
+import de.laser.helper.Params
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
@@ -1204,6 +1205,9 @@ class SubscriptionController {
                     }
                 }
                 result.issueEntitlementEnrichment = params.issueEntitlementEnrichment
+                ['token', 'fileformat', 'errorCount', 'errorKBART'].each { String enrichmentErrorKey ->
+                    result[enrichmentErrorKey] = params.remove(enrichmentErrorKey)
+                }
                 Map ttParams = FilterLogic.resolveTabAndStatusForTitleTabsMenu(params, 'IEs')
                 if (ttParams.status) { params.status = ttParams.status }
                 if (ttParams.tab)    { params.tab = ttParams.tab }
@@ -1309,6 +1313,52 @@ class SubscriptionController {
                 }
                 out.close()
             }
+        }
+    }
+
+    @DebugInfo(isInstEditor_denySupport = [], ctrlService = 1)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport()
+    })
+    def processIssueEntitlementEnrichment() {
+        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+        if (result.status == SubscriptionControllerService.STATUS_ERROR) {
+            if(!result) {
+                response.sendError(401)
+                return
+            }
+            else {
+                flash.error = result.error
+                result
+            }
+        }
+        else {
+            Map<String, Object> indexParams = params.clone()
+            MultipartFile kbartFile = params.kbartPreselect
+            String filename = kbartFile.originalFilename
+            InputStream stream = kbartFile.getInputStream()
+            result.enrichmentProcess = subscriptionService.issueEntitlementEnrichment(stream, result.subscription, (params.uploadCoverageDates == 'on'), (params.uploadPriceInfo == 'on'))
+            if (result.enrichmentProcess.wrongTitles) {
+                //background of this procedure: the editor adding titles via KBART wishes to receive a "counter-KBART" which will then be sent to the provider for verification
+                String dir = GlobalService.obtainFileStorageLocation()
+                File f = new File(dir+"/${filename}_matchingErrors")
+                String returnKBART = exportService.generateSeparatorTableString(result.enrichmentProcess.titleRow, result.enrichmentProcess.wrongTitles, '\t')
+                FileOutputStream fos = new FileOutputStream(f)
+                fos.withWriter { Writer w ->
+                    w.write(returnKBART)
+                }
+                fos.flush()
+                fos.close()
+                indexParams.token = "${filename}_matchingErrors"
+                indexParams.fileformat = "kbart"
+                indexParams.errorCount = result.enrichmentProcess.wrongTitles.size()
+                indexParams.errorKBART = true
+            }
+            result.issueEntitlementEnrichment = true
+            indexParams.remove('kbartPreselect')
+            indexParams.remove("uploadCoverageDates")
+            indexParams.remove("uploadPriceInfo")
+            redirect action: 'index', params: indexParams
         }
     }
 

@@ -2253,6 +2253,7 @@ class SubscriptionControllerService {
      * @param params the request parameters including filter data and / or an eventual enrichment file
      * @return OK if the retrieval was successful, ERROR otherwise
      */
+    @Deprecated
     Map<String,Object> index(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)

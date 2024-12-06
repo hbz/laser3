@@ -3090,7 +3090,7 @@ class SubscriptionService {
      * @param uploadPriceInfo should price dates be updated as well?
      * @return a map containing the processing results
      */
-    Map issueEntitlementEnrichment(InputStream stream, int countIes, Subscription subscription, boolean uploadCoverageDates, boolean uploadPriceInfo) {
+    Map issueEntitlementEnrichment(InputStream stream, Subscription subscription, boolean uploadCoverageDates, boolean uploadPriceInfo) {
 
         Integer count = 0
         Integer countChangesPrice = 0
@@ -3164,21 +3164,17 @@ class SubscriptionService {
                     break
                 case "notes": colMap.coverageNotesCol = c
                     break
-                case "listprice_value": colMap.listPriceCol = c
-                    break
-                case "listprice_currency": colMap.listCurrencyCol = c
-                    break
                 case "listprice_eur": colMap.listPriceEurCol = c
                     break
                 case "listprice_usd": colMap.listPriceUsdCol = c
                     break
                 case "listprice_gbp": colMap.listPriceGbpCol = c
                     break
-                case "localprice_value": colMap.localPriceCol = c
+                case "localprice_eur": colMap.localPriceEurCol = c
                     break
-                case "localprice_currency": colMap.localCurrencyCol = c
+                case "localprice_usd": colMap.localPriceUsdCol = c
                     break
-                case "price_date": colMap.priceDateCol = c
+                case "localprice_gbp": colMap.localPriceGbpCol = c
                     break
             }
         }
@@ -3258,10 +3254,6 @@ class SubscriptionService {
 
                                     try {
                                         switch (colName) {
-                                            case "listPriceCol": priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
-                                                break
-                                            case "listCurrencyCol": priceItem.listCurrency = cellEntry ? RefdataValue.getByValueAndCategory(cellEntry, RDConstants.CURRENCY) : null
-                                                break
                                             case "listPriceEurCol": priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
                                                 priceItem.listCurrency = RDStore.CURRENCY_EUR
                                                 break
@@ -3271,11 +3263,14 @@ class SubscriptionService {
                                             case "listPriceGbpCol": priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
                                                 priceItem.listCurrency = RDStore.CURRENCY_GBP
                                                 break
-                                            case "localPriceCol": priceItem.localPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
+                                            case "localPriceEurCol": priceItem.localPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
+                                                priceItem.localCurrency = RDStore.CURRENCY_EUR
                                                 break
-                                            case "localCurrencyCol": priceItem.localCurrency = RefdataValue.getByValueAndCategory(cellEntry, RDConstants.CURRENCY)
+                                            case "localPriceUsdCol": priceItem.localPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
+                                                priceItem.localCurrency = RDStore.CURRENCY_USD
                                                 break
-                                            case "priceDateCol": priceItem.startDate = cellEntry ? DateUtils.parseDateGeneric(cellEntry) : null
+                                            case "localPriceGbpCol": priceItem.localPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
+                                                priceItem.localCurrency = RDStore.CURRENCY_GBP
                                                 break
                                         }
                                     }
@@ -3309,8 +3304,6 @@ class SubscriptionService {
                 } else {
                     wrongTitles << row
                 }
-            }else{
-
             }
         }
 
@@ -3318,7 +3311,7 @@ class SubscriptionService {
         println(countChangesCoverageDates)
         println(countChangesPrice)*/
 
-        return [countIes: countIes, processCount: count, processCountChangesCoverageDates: countChangesCoverageDates, processCountChangesPrice: countChangesPrice, wrongTitles: wrongTitles, truncatedRows: truncatedRows.join(', ')]
+        return [processCount: count, titleRow: titleRow, processCountChangesCoverageDates: countChangesCoverageDates, processCountChangesPrice: countChangesPrice, wrongTitles: wrongTitles, truncatedRows: truncatedRows.join(', ')]
     }
 
 
