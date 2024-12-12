@@ -467,6 +467,13 @@ r2d2 = {
                             return "Bitte geben Sie eine gültige Mailadresse ein!"
                         }
                     }
+                    if (dVal.includes('number')) {
+                        let regex =  /^[0-9]+$/;
+                        let test = regex.test($.trim(value)) || $.trim(value) === ''
+                        if(!test) {
+                            return "Bitte geben Sie eine Nummer ein!"
+                        }
+                    }
                     if (dVal.includes('datesCheck')) {
                         var thisInput = $.trim(value), startDateInput, endDateInput, startDate, endDate;
                         if($(this).attr("data-name") === "startDate") {
