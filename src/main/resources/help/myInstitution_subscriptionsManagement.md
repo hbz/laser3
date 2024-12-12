@@ -6,7 +6,7 @@ Die umfangreichen Operationen sind auf mehrere Reiter verteilt:
   Außerdem kann die automatische Verlängerung von Lizenzen um ein Laufzeitjahr gesetzt werden: Bei Ablauf des Enddatums wird dann automatisiert eine um ein Jahr hochgesetzte Nachfolgerlizenz generiert
 - **Verträge:** Entknüpfung/Verknüpfung von bestehenden Verträgen
 - **Pakete:** Entknüpfung/Verknüpfung von Paketen mit/ohne Titelbestand
-- **Dauerhafte Titel**:
+- **Dauerhafte Titel**: Übersicht über alle Pakete mit dauerhaften Zugriff
 - **Merkmale:** Hinzufügen von Lizenzmerkmalen/Änderung der Werte
 - **Anbieter/Lieferant:** Entknüpfen/Verknüpfen von Anbieter/Lieferant pro Lizenz
 - **Dokument:** Dateiupload für mehrere Lizenzen/ Löschen Bearbeiten von Dokumenten
