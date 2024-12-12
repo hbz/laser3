@@ -34,7 +34,7 @@
         <g:hiddenField name="sort" value="${params.sort}"/>
         <g:hiddenField name="order" value="${params.order}"/>
             <div class="three fields">
-                <div class="field ten wide">
+                <div class="field ten wide required">
                     <label for="referenceGroup">
                         <g:message code="readerNumber.referenceGroup.label" />
                     </label>
@@ -98,6 +98,15 @@
                     },
                     semester: {
                         identifier: 'value',
+                        rules: [
+                            {
+                                type   : 'empty',
+                                prompt : '{name} <g:message code="validation.needsToBeFilledOut" />'
+                            }
+                        ]
+                    },
+                    referenceGroup: {
+                        identifier: 'referenceGroup',
                         rules: [
                             {
                                 type   : 'empty',
