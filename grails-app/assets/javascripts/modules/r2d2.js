@@ -436,42 +436,43 @@ r2d2 = {
                 if ($(this).attr('data-format') && value) {
                     if($(this).attr('data-format') === 'YYYY') {
                         if(! (value.match(/^\d{4}$/) ) ) {
-                            return "Ungültiges Format";
+                            return  JSPC.dict.get('xEditable.validation.dataFormat', JSPC.config.language);
                         }
                     }
                     else {
                         if(! (value.match(/^\d{1,2}\.\d{1,2}\.\d{4}$/) || value.match(/^\d{4}-\d{1,2}-\d{1,2}$/)) ) {
-                            return "Ungültiges Format";
+                            return  JSPC.dict.get('xEditable.validation.dataFormat', JSPC.config.language);
                         }
                     }
                 }
-                // custom validate functions via ui:xEditable validation="xy"
+                // custom validate functions via ui:xEditable.validation."xy"
                 var dVal = $(this).attr('data-validation')
                 if (dVal) {
                     if (dVal.includes('notEmpty')) {
                         if($.trim(value) == '') {
-                            return "Das Feld darf nicht leer sein";
+                            return  JSPC.dict.get('xEditable.validation.notEmpty', JSPC.config.language);
                         }
                     }
                     if (dVal.includes('url')) {
                         var regex = /^(https?|ftp):\/\/(.)*/;
                         var test = regex.test($.trim(value)) || $.trim(value) == ''
                         if (! test) {
-                            return "Ein URL muss mit 'http://' oder 'https://' oder 'ftp://' beginnen."
+                            //return "Ein URL muss mit 'http://' oder 'https://' oder 'ftp://' beginnen."
+                            return  JSPC.dict.get('xEditable.validation.url', JSPC.config.language);
                         }
                     }
                     if (dVal.includes('email')) {
                         let regex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$/
                         let test = regex.test($.trim(value)) || $.trim(value) === ''
                         if(!test) {
-                            return "Bitte geben Sie eine gültige Mailadresse ein!"
+                            return  JSPC.dict.get('xEditable.validation.mail', JSPC.config.language)
                         }
                     }
                     if (dVal.includes('number')) {
                         let regex =  /^[0-9]+$/;
                         let test = regex.test($.trim(value)) || $.trim(value) === ''
                         if(!test) {
-                            return "Bitte geben Sie eine Nummer ein!"
+                            return  JSPC.dict.get('xEditable.validation.number', JSPC.config.language);
                         }
                     }
                     if (dVal.includes('datesCheck')) {
@@ -489,12 +490,13 @@ r2d2 = {
                             endDate = Date.parse(JSPC.helper.formatDate(endDateInput));
                             console.log(startDate+" "+endDate);
                             if(startDate > endDate)
-                                return "Das Enddatum darf nicht vor dem Anfangsdatum liegen.";
+                                return  JSPC.dict.get('xEditable.validation.endDateNotBeforStartDate', JSPC.config.language);
                         }
                     }
                     if (dVal.includes('maxlength')) {
                         if(value.length > $(this).attr("data-maxlength")) {
-                            return "Der eingegebene Wert ist zu lang! Es dürfen maximal "+$(this).attr("data-maxlength")+" Zeichen eingegeben werden.";
+                            return   JSPC.dict.get('xEditable.validation.tooLong', JSPC.config.language)
+
                         }
                     }
                 }

@@ -100,7 +100,15 @@ JSPC = {
             'select2.placeholder',
             'select2.noMatchesFound',
             'xEditable.button.cancel',
-            'xEditable.button.ok'
+            'xEditable.button.ok',
+            'xEditable.validation.dataFormat',
+            'xEditable.validation.notEmpty',
+            'xEditable.validation.url',
+            'xEditable.validation.mail',
+            'xEditable.validation.number',
+            'xEditable.validation.endDateNotBeforStartDate',
+            'xEditable.validation.tooLong'
+
     ]
     translations.eachWithIndex { it, index ->
         String tmp = "            '${it}' : { "
