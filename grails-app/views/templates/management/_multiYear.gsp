@@ -211,6 +211,21 @@
         }
     });
 
+    $(".selectedSubs").change(function() {
+        let selId = $(this).attr("id");
+        $.ajax({
+            url: "<g:createLink controller="ajaxJson" action="updatePaginationCache" />",
+            data: {
+                selId: selId,
+                cacheKeyReferer: "/myInstitution/subscriptionManagement/${params.tab}/${user.id}"
+            }
+        }).done(function(result){
+            console.log("updated cache for "+selId+": "+result.state);
+        }).fail(function(xhr,status,message){
+            console.log("error occurred, consult logs!");
+        });
+    });
+
     $('.propertiesSubscription').form({
         on: 'blur',
         inline: true,
