@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6145    12.12.2024  rc-3.4  3.4.16      Andreas Bug         Filterstellung Dauerhafter Zugriff korrigiert
+
 6101    27.11.2024  rc-3.4  3.4.16      Moe     Bug         Umfrage Export Renewal falsche Preise bei MJL
 
 6100    26.11.2024  rc-3.4  3.4.16      Andreas Bug         Ausgabe der Nutzerzahlen korrigiert
