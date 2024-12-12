@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6106    12.12.2024  dev     3.5         Andreas Bug         Korrektur der Darstellung der Nutzerzahlen
+
 6132    06.12.2024  dev     3.5         Andreas Feature     Caching der angehakten Elemente in Lizenzverwaltung eingebaut
 
 6060    06.12.2024  dev     3.5         Andreas Feature     Abschalten des Einrichtungskontaktfilters für Einrichtungen
