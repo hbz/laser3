@@ -50,6 +50,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.transaction.TransactionStatus
 import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.web.multipart.MultipartFile
@@ -1365,7 +1366,7 @@ class MyInstitutionController  {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
         params.tab = params.tab ?: 'generalProperties'
-        EhcacheWrapper filterCache = contextService.getUserCache("/subscriptionsManagement/subscriptionFilter/"), paginationCache = cacheService.getTTL1800Cache("/myInstitution/subscriptionManagement/${params.tab}/${result.user.id}/pagination")
+        EhcacheWrapper filterCache = contextService.getUserCache("/subscriptionsManagement/subscriptionFilter/"), paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/${params.tab}/${result.user.id}/pagination")
         Set<String> filterFields = ['q', 'identifier', 'referenceYears', 'status', 'filterPropDef', 'filterProp', 'form', 'resource', 'subKinds', 'isPublicForApi', 'hasPerpetualAccess', 'hasPublishComponent', 'holdingSelection', 'subRunTime', 'subRunTimeMultiYear', 'subType', 'consortia']
         filterFields.each { String subFilterKey ->
             if(params.containsKey('processOption')) {

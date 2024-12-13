@@ -3216,15 +3216,12 @@ class SubscriptionService {
                 if (match) {
                     IssueEntitlement ieMatch = IssueEntitlement.findBySubscriptionAndTippAndStatusNotEqual(subscription, match, RDStore.TIPP_STATUS_REMOVED)
                     if (ieMatch) {
-                        IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage()
                         count++
-
-                        PriceItem priceItem = ieMatch.priceItems ? ieMatch.priceItems[0] : new PriceItem(issueEntitlement: ieMatch)
-
-                        colMap.each { String colName, int colNo ->
-                            if (colNo > -1 && cols[colNo]) {
-                                String cellEntry = cols[colNo].trim()
-                                if (uploadCoverageDates) {
+                        if (uploadCoverageDates) {
+                            IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage()
+                            colMap.each { String colName, int colNo ->
+                                if (colNo > -1 && cols[colNo]) {
+                                    String cellEntry = cols[colNo].trim()
                                     switch (colName) {
                                         case "startDateCol": ieCoverage.startDate = cellEntry ? DateUtils.parseDateGeneric(cellEntry) : null
                                             break
@@ -3250,27 +3247,42 @@ class SubscriptionService {
                                             break
                                     }
                                 }
-                                if (uploadPriceInfo) {
-
+                            }
+                            if (ieCoverage && !ieCoverage.findEquivalent(ieMatch.coverages)) {
+                                ieCoverage.issueEntitlement = ieMatch
+                                if (!ieCoverage.save()) {
+                                    throw new EntitlementCreationException(ieCoverage.errors)
+                                } else {
+                                    countChangesCoverageDates++
+                                }
+                            }
+                        }
+                        if (uploadPriceInfo) {
+                            PriceItem priceItem
+                            colMap.each { String colName, int colNo ->
+                                if (colNo > -1 && cols[colNo]) {
+                                    String cellEntry = cols[colNo].trim()
                                     try {
                                         switch (colName) {
-                                            case "listPriceEurCol": priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
-                                                priceItem.listCurrency = RDStore.CURRENCY_EUR
+                                            /*
+                                            case "listPriceEurCol": priceItem = ieMatch.priceItems ? ieMatch.priceItems.find { PriceItem pi -> pi.listCurrency == RDStore.CURRENCY_EUR } : new PriceItem(issueEntitlement: ieMatch, listCurrency: RDStore.CURRENCY_EUR)
+                                                priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
                                                 break
-                                            case "listPriceUsdCol": priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
-                                                priceItem.listCurrency = RDStore.CURRENCY_USD
+                                            case "listPriceUsdCol": priceItem = ieMatch.priceItems ? ieMatch.priceItems.find { PriceItem pi -> pi.listCurrency == RDStore.CURRENCY_USD } : new PriceItem(issueEntitlement: ieMatch, listCurrency: RDStore.CURRENCY_USD)
+                                                priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
                                                 break
-                                            case "listPriceGbpCol": priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
-                                                priceItem.listCurrency = RDStore.CURRENCY_GBP
+                                            case "listPriceGbpCol": priceItem = ieMatch.priceItems ? ieMatch.priceItems.find { PriceItem pi -> pi.listCurrency == RDStore.CURRENCY_GBP } : new PriceItem(issueEntitlement: ieMatch, listCurrency: RDStore.CURRENCY_GBP)
+                                                priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
                                                 break
-                                            case "localPriceEurCol": priceItem.localPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
-                                                priceItem.localCurrency = RDStore.CURRENCY_EUR
+                                            */
+                                            case "localPriceEurCol": priceItem = ieMatch.priceItems ? ieMatch.priceItems.find { PriceItem pi -> pi.localCurrency == RDStore.CURRENCY_EUR } : new PriceItem(issueEntitlement: ieMatch, localCurrency: RDStore.CURRENCY_EUR)
+                                                priceItem.localPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
                                                 break
-                                            case "localPriceUsdCol": priceItem.localPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
-                                                priceItem.localCurrency = RDStore.CURRENCY_USD
+                                            case "localPriceUsdCol": priceItem = ieMatch.priceItems ? ieMatch.priceItems.find { PriceItem pi -> pi.localCurrency == RDStore.CURRENCY_USD } : new PriceItem(issueEntitlement: ieMatch, localCurrency: RDStore.CURRENCY_USD)
+                                                priceItem.localPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
                                                 break
-                                            case "localPriceGbpCol": priceItem.localPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
-                                                priceItem.localCurrency = RDStore.CURRENCY_GBP
+                                            case "localPriceGbpCol": priceItem = ieMatch.priceItems ? ieMatch.priceItems.find { PriceItem pi -> pi.localCurrency == RDStore.CURRENCY_GBP } : new PriceItem(issueEntitlement: ieMatch, localCurrency: RDStore.CURRENCY_GBP)
+                                                priceItem.localPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
                                                 break
                                         }
                                     }
@@ -3278,24 +3290,14 @@ class SubscriptionService {
                                         log.error("Unparseable number ${cellEntry}")
                                     }
                                 }
-                            }
-                        }
-
-                        if (uploadCoverageDates && ieCoverage && !ieCoverage.findEquivalent(ieMatch.coverages)) {
-                            ieCoverage.issueEntitlement = ieMatch
-                            if (!ieCoverage.save()) {
-                                throw new EntitlementCreationException(ieCoverage.errors)
-                            } else {
-                                countChangesCoverageDates++
-                            }
-                        }
-
-                        if (uploadPriceInfo && priceItem) {
-                            priceItem.setGlobalUID()
-                            if (!priceItem.save()) {
-                                throw new Exception(priceItem.errors.toString())
-                            } else {
-                                countChangesPrice++
+                                if (priceItem) {
+                                    priceItem.setGlobalUID()
+                                    if (!priceItem.save()) {
+                                        throw new Exception(priceItem.errors.toString())
+                                    } else {
+                                        countChangesPrice++
+                                    }
+                                }
                             }
                         }
                     } else {
@@ -3306,10 +3308,6 @@ class SubscriptionService {
                 }
             }
         }
-
-/*        println(count)
-        println(countChangesCoverageDates)
-        println(countChangesPrice)*/
 
         return [processCount: count, titleRow: titleRow, processCountChangesCoverageDates: countChangesCoverageDates, processCountChangesPrice: countChangesPrice, wrongTitles: wrongTitles, truncatedRows: truncatedRows.join(', ')]
     }

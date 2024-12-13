@@ -250,10 +250,16 @@ class ManagementService {
                 }
             }
             else {
-                EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/myInstitution/subscriptionManagement/linkLicense/${result.user.id}/pagination")
-                List selectionCache = paginationCache.checkedMap.values() ?: params.list('selectedSubs')
-                subscriptions = Subscription.findAllByIdInList(selectionCache)
-                paginationCache.remove('checkedMap')
+                EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/linkLicense/${result.user.id}/pagination")
+                List selectionCache = []
+                if(paginationCache.checkedMap) {
+                    selectionCache.addAll(paginationCache.checkedMap.values())
+                    paginationCache.remove('checkedMap')
+                }
+                else selectionCache.addAll(params.list('selectedSubs'))
+                if(selectionCache) {
+                    subscriptions = Subscription.findAllByIdInList(selectionCache)
+                }
             }
             if(subscriptions && selectedLicenseIDs[0]) {
                 List<License> selectedLicenses = License.findAllByIdInList(selectedLicenseIDs.collect { String key -> Long.parseLong(key) })
@@ -353,10 +359,16 @@ class ManagementService {
                 }
             }
             else {
-                EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/myInstitution/subscriptionManagement/linkPackage/${result.user.id}/pagination")
-                List selectionCache = paginationCache.checkedMap.values() ?: params.list('selectedSubs')
-                subscriptions = Subscription.findAllByIdInList(selectionCache)
-                paginationCache.remove('checkedMap')
+                EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/linkPackage/${result.user.id}/pagination")
+                List selectionCache = []
+                if(paginationCache.checkedMap) {
+                    selectionCache.addAll(paginationCache.checkedMap.values())
+                    paginationCache.remove('checkedMap')
+                }
+                else selectionCache.addAll(params.list('selectedSubs'))
+                if(selectionCache) {
+                    subscriptions = Subscription.findAllByIdInList(selectionCache)
+                }
             }
             List selectedPackageKeys = params.list("selectedPackages")
             Set<Package> pkgsToProcess = []
@@ -749,10 +761,16 @@ class ManagementService {
                 }
             }
             else {
-                EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/myInstitution/subscriptionManagement/generalProperties/${result.user.id}/pagination")
-                List selectionCache = paginationCache.checkedMap.values() ?: params.list('selectedSubs')
-                subscriptions = Subscription.findAllByIdInList(selectionCache)
-                paginationCache.remove('checkedMap')
+                EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/generalProperties/${result.user.id}/pagination")
+                List selectionCache = []
+                if(paginationCache.checkedMap) {
+                    selectionCache.addAll(paginationCache.checkedMap.values())
+                    paginationCache.remove('checkedMap')
+                }
+                else selectionCache.addAll(params.list('selectedSubs'))
+                if(selectionCache) {
+                    subscriptions = Subscription.findAllByIdInList(selectionCache)
+                }
             }
             if (subscriptions) {
                 Set change = [], noChange = []
@@ -999,10 +1017,16 @@ class ManagementService {
                 }
             }
             else {
-                EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/myInstitution/subscriptionManagement/notes/${result.user.id}/pagination")
-                List selectionCache = paginationCache.checkedMap.values() ?: params.list('selectedSubs')
-                subscriptions = Subscription.findAllByIdInList(selectionCache)
-                paginationCache.remove('checkedMap')
+                EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/notes/${result.user.id}/pagination")
+                List selectionCache = []
+                if(paginationCache.checkedMap) {
+                    selectionCache.addAll(paginationCache.checkedMap.values())
+                    paginationCache.remove('checkedMap')
+                }
+                else selectionCache.addAll(params.list('selectedSubs'))
+                if(selectionCache) {
+                    subscriptions = Subscription.findAllByIdInList(selectionCache)
+                }
             }
             if (subscriptions) {
                 if(params.noteTitle || params.noteContent) {
@@ -1066,7 +1090,7 @@ class ManagementService {
                 }
             }
             else {
-                EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/myInstitution/subscriptionManagement/documents/${result.user.id}/pagination")
+                EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/documents/${result.user.id}/pagination")
                 if(paginationCache.checkedMap.values()) {
                     List selectionCache = []
                     selectionCache.addAll(paginationCache.checkedMap.values())

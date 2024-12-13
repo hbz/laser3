@@ -79,6 +79,7 @@ class SubscriptionControllerService {
     AddressbookService addressbookService
     AuditService auditService
     BatchQueryService batchQueryService
+    CacheService cacheService
     ContextService contextService
     DocstoreService docstoreService
     FactService factService
@@ -1713,6 +1714,8 @@ class SubscriptionControllerService {
         else {
             params.tab = params.tab ?: 'generalProperties'
 
+            EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/${params.tab}/${result.user.id}/pagination")
+            result.selectionCache = paginationCache.checkedMap ?: [:]
             result << managementService.subscriptionsManagement(controller, params, input_file)
 
             [result:result,status:STATUS_OK]
@@ -2190,7 +2193,6 @@ class SubscriptionControllerService {
         if(params.confirmed && !subscriptionService.checkThreadRunning('PackageUnlink_'+result.subscription.id)) {
             Set<Subscription> subList = []
             if(params.containsKey('option')) {
-                AuditConfig.removeConfig(result.subscription, 'holdingSelection')
                 subList << result.subscription
                 if(params.option in ['childWithIE', 'childOnlyIE'])
                     subList.addAll(Subscription.findAllByInstanceOf(result.subscription))
@@ -3180,11 +3182,15 @@ class SubscriptionControllerService {
      * @return OK if the creation was successful, ERROR otherwise
      */
     Map<String,Object> addCoverage(GrailsParameterMap params) {
-        IssueEntitlement base = IssueEntitlement.get(params.issueEntitlement)
+        IssueEntitlement base = IssueEntitlement.get(params.ieid)
         if(base) {
-            Map<String,Object> result = [subId:base.subscription.id]
+            Map<String,Object> result = [:]
             IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(issueEntitlement: base)
             if(ieCoverage.save()) {
+                base.refresh()
+                result.covStmt = ieCoverage
+                result.counterCoverage = base.coverages.size()
+                result.tipp = base.tipp
                 [result: result, status: STATUS_OK]
             }
             else {
@@ -3193,27 +3199,8 @@ class SubscriptionControllerService {
             }
         }
         else {
-            log.error("Issue entitlement with ID ${params.issueEntitlement} could not be found")
+            log.error("Issue entitlement with ID ${params.ieid} could not be found")
             [result: null, status: STATUS_ERROR]
-        }
-    }
-
-    /**
-     * Removes the given coverage statement from the issue entitlement
-     * @param params the request parameter map
-     * @return OK if the removal was successful, false otherwise
-     */
-    Map<String,Object> removeCoverage(GrailsParameterMap params) {
-        IssueEntitlementCoverage ieCoverage = IssueEntitlementCoverage.get(params.ieCoverage)
-        if(ieCoverage) {
-            Map<String,Object> result = [subId:ieCoverage.issueEntitlement.subscription.id]
-            PendingChange.executeUpdate('update PendingChange pc set pc.status = :rejected where pc.oid = :oid',[rejected:RDStore.PENDING_CHANGE_REJECTED,oid:"${ieCoverage.class.name}:${ieCoverage.id}"])
-            ieCoverage.delete()
-            [result:result,status:STATUS_OK]
-        }
-        else {
-            log.error("Issue entitlement coverage with ID ${params.ieCoverage} could not be found")
-            [result:null,status:STATUS_ERROR]
         }
     }
 

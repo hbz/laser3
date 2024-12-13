@@ -9,6 +9,7 @@ import de.laser.DiscoverySystemIndex
 import de.laser.DocContext
 import de.laser.GenericOIDService
 import de.laser.HelpService
+import de.laser.IssueEntitlementService
 import de.laser.OrgSetting
 import de.laser.PendingChangeService
 import de.laser.AddressbookService
@@ -100,7 +101,7 @@ class AjaxHtmlController {
     GenericOIDService genericOIDService
     GokbService gokbService
     HelpService helpService
-    LicenseControllerService licenseControllerService
+    IssueEntitlementService issueEntitlementService
     LinksGenerationService linksGenerationService
     MyInstitutionControllerService myInstitutionControllerService
     PendingChangeService pendingChangeService
@@ -165,7 +166,11 @@ class AjaxHtmlController {
                     render template: '/templates/ajax/newXEditable', model: [wrapper: params.object, ownObj: resultObj, objOID: genericOIDService.getOID(resultObj), field: "index", config: RDConstants.DISCOVERY_SYSTEM_INDEX, overwriteEditable: true]
                 }
                 break
-            case "coverage": //TODO
+            case "coverage":
+                Map<String, Object> ctrlResult = subscriptionControllerService.addCoverage(params)
+                if(ctrlResult.status == SubscriptionControllerService.STATUS_OK) {
+                    render template: '/templates/tipps/coverages_accordion', model: [covStmt: ctrlResult.result.covStmt, tipp: ctrlResult.result.tipp, showEmbargo: true, objectTypeIsIE: true, overwriteEditable: true, counterCoverage: ctrlResult.result.counterCoverage] //editable check is implicitly done by call; the AJAX loading can be triggered iff editable == true
+                }
                 break
             case "priceItem":
                 Map<String, Object> ctrlResult = subscriptionControllerService.addEmptyPriceItem(params)
@@ -283,7 +288,7 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def getPackageData() {
-        Map<String,Object> result = [subscription:Subscription.get(params.subscription), curatoryGroups: []], packageMetadata = [:]
+        Map<String,Object> result = [subscription:issueEntitlementService.getTargetSubscription(Subscription.get(params.subscription)), curatoryGroups: []], packageMetadata = [:]
 
         result.contextCustomerType = contextService.getOrg().getCustomerType()
         result.showConsortiaFunctions = contextService.getOrg().isCustomerType_Consortium()
