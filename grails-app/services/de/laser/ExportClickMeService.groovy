@@ -3900,6 +3900,7 @@ class ExportClickMeService {
         renewalData.add([createTableCell(format, ' ')])
         renewalData.add([createTableCell(format, messageSource.getMessage('renewalEvaluation.withMultiYearTermSub.label', null, locale) + " (${renewalResult.orgsWithMultiYearTermSub.size()})", 'positive')])
 
+        Subscription successorSubscriptionParent = renewalResult.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
 
         renewalResult.orgsWithMultiYearTermSub.sort{it.getSubscriberRespConsortia().sortname}.each { sub ->
             Map renewalMap = [:]
@@ -3911,9 +3912,8 @@ class ExportClickMeService {
             renewalMap.multiYearTermFourSurvey = renewalResult.multiYearTermFourSurvey
             renewalMap.multiYearTermFiveSurvey = renewalResult.multiYearTermFiveSurvey
             renewalMap.properties = renewalResult.properties
-            renewalMap.subForCostItems = sub
+            renewalMap.subForCostItems = successorSubscriptionParent ? successorSubscriptionParent.getDerivedSubscriptionForNonHiddenSubscriber(renewalMap.participant) : null
             renewalMap.surveyOwner = renewalResult.surveyConfig.surveyInfo.owner
-
 
             _setRenewalRow(renewalMap, selectedExportFields, renewalData, true, costItemsElements, selectedCostItemFields, format, contactSources)
 
@@ -5093,7 +5093,7 @@ class ExportClickMeService {
         List costItems
             if(costItemElements.size() > 0){
                 if (onlySubscription && participantResult.subForCostItems) {
-                    costItems = CostItem.findAllBySubAndCostItemElementInListAndCostItemStatusNotEqualAndOwnerAndPkgIsNull(participantResult.subForCostItems, costItemElements, RDStore.COST_ITEM_DELETED, participantResult.surveyOwner, [sort: 'costItemElement'])
+                    costItems = CostItem.findAllBySubAndCostItemElementInListAndCostItemStatusNotEqualAndOwner(participantResult.subForCostItems, costItemElements, RDStore.COST_ITEM_DELETED, participantResult.surveyOwner, [sort: 'costItemElement'])
                 }else{
                     if(surveyOrg){
                         costItems = CostItem.findAllBySurveyOrgAndCostItemElementInListAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, costItemElements, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])

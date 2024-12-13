@@ -7,9 +7,19 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6145    12.12.2024  rc-3.4  3.4.16      Andreas Bug         Filterstellung Dauerhafter Zugriff korrigiert
+
+6106    12.12.2024  dev     3.5         Andreas Bug         Korrektur der Darstellung der Nutzerzahlen
+
+6132    06.12.2024  dev     3.5         Andreas Feature     Caching der angehakten Elemente in Lizenzverwaltung eingebaut
+
+6060    06.12.2024  dev     3.5         Andreas Feature     Abschalten des Einrichtungskontaktfilters für Einrichtungen
+
 6103    29.11.2024  dev     3.5         Andreas Bug         diverse darstellerische Bugs behoben
 
 5917    27.11.2024  dev     3.5         David   Feature     ES/WEKB-Quellen in Konfigurationsdateien
+
+6101    27.11.2024  rc-3.4  3.4.16      Moe     Bug         Umfrage Export Renewal falsche Preise bei MJL
 
 6100    26.11.2024  rc-3.4  3.4.16      Andreas Bug         Ausgabe der Nutzerzahlen korrigiert
 

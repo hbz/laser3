@@ -64,7 +64,7 @@
                                 <td>
                                     <g:set var="semesterNumber" value="${numbersInstance.getValue().get(column)}"/>
                                     <g:if test="${semesterNumber}">
-                                        <ui:xEditable owner="${semesterNumber}" field="value" type="number"/>
+                                        <ui:xEditable validation="number" owner="${semesterNumber}" field="value"/>
                                         <%-- deactivated after command of November 27th, '24; moved in new column, where only most recent update date will be shown
                                         <span class="la-popup-tooltip la-delay" data-position="right center" data-content="${message(code:'default.lastUpdated.message')} ${formatDate(format:message(code:'default.date.format.notime'), date:number.lastUpdated)}">
                                             <i class="${Icon.TOOLTIP.INFO}"></i>
@@ -167,7 +167,7 @@
                                     <td>
                                         <g:set var="dueDateNumber" value="${numbersInstance.getValue().get(column)}"/>
                                         <g:if test="${dueDateNumber}">
-                                            <ui:xEditable owner="${dueDateNumber}" field="value" type="number"/>
+                                            <ui:xEditable validation="number" owner="${dueDateNumber}" field="value"/>
                                             <%-- see above; removed after command of November 27th, '24
                                             <span class="la-popup-tooltip la-delay" data-position="right center" data-content="${message(code:'default.lastUpdated.message')} ${formatDate(format:message(code:'default.date.format.notime'), date:number.lastUpdated)}">
                                                 <i class="${Icon.TOOLTIP.INFO}"></i>
