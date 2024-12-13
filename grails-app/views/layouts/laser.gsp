@@ -271,7 +271,10 @@
                         $('button#la-js-topButton').stop().fadeTo('slow',0);
                     }
                 });
-                if ( !$('#system-profiler').length || !$('#showDebugInfo').length || !$('#showSystemInfo').length ){
+                if ( $('#system-profiler').length || $('#showDebugInfo').length || $('#showSystemInfo').length ){
+
+                }
+                else{
                     $('button#la-js-topButton').css("bottom","10px");
                 }
             })
