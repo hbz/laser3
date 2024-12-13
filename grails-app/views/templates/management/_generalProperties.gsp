@@ -491,7 +491,7 @@
 <laser:script file="${this.getGroovyPageFileName()}">
 
     $('#membersListToggler').click(function () {
-        let triggered = $("tr.selectedSubs[class!=disabled]");
+        let triggered = $("tr .selectedSubs[class!=disabled]");
         if ($(this).prop('checked')) {
             triggered.prop('checked', true);
         } else {
@@ -505,7 +505,7 @@
             url: "<g:createLink controller="ajaxJson" action="updatePaginationCache" />",
             data: {
                 selId: selId,
-                cacheKeyReferer: "/myInstitution/subscriptionManagement/${params.tab}/${user.id}"
+                cacheKeyReferer: "/${controllerName}/subscriptionManagement/${params.tab}/${user.id}"
             }
         }).done(function(result){
             console.log("updated cache for "+selId+": "+result.state);

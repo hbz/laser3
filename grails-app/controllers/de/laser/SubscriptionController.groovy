@@ -45,7 +45,6 @@ import java.util.concurrent.ExecutorService
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SubscriptionController {
 
-    AuditService auditService
     BatchQueryService batchQueryService
     ContextService contextService
     CopyElementsService copyElementsService
@@ -926,7 +925,6 @@ class SubscriptionController {
             params.tab = params.tab ?: 'generalProperties'
             if(ctrlResult.result.tabPlat && !params.tabPlat)
                 params.tabPlat = ctrlResult.result.tabPlat.toString()
-
         }
         ctrlResult.result
     }

@@ -624,9 +624,15 @@
                                                             </div>
                                                             <hr>
                                                             <g:if test="${editable}">
-                                                                <button class="${Btn.SIMPLE} tiny addObject" data-objType="priceItem" data-ie="${ie.id}">
+                                                                <button class="${Btn.SIMPLE} tiny addObject" data-wrapper="priceWrapper" data-objType="priceItem" data-ie="${ie.id}">
                                                                     <i class="${Icon.FNC.COST_CONFIG}"></i>${message(code: 'subscription.details.addEmptyPriceItem.info')}
                                                                 </button>
+                                                                <g:if test="${ie.tipp.titleType == 'serial'}">
+                                                                    <button class="${Btn.SIMPLE} tiny addObject" data-wrapper="coverageWrapper" data-objType="coverage" data-ie="${ie.id}">
+                                                                        <%-- TODO David new icon for coverage statement --%>
+                                                                        <i class="file icon"></i>${message(code: 'subscription.details.addCoverage')}
+                                                                    </button>
+                                                                </g:if>
                                                             </g:if>
 
                                                             <%-- GROUPS START--%>
@@ -790,7 +796,7 @@
         e.preventDefault();
         let objType = $(this).attr('data-objType');
         let ie = $(this).attr('data-ie');
-        let wrapper = "#priceWrapper_"+ie;
+        let wrapper = "#"+$(this).attr('data-wrapper')+"_"+ie;
         $.ajax({
             url: '<g:createLink controller="ajaxHtml" action="addObject"/>',
             data: {
@@ -801,6 +807,24 @@
             $(wrapper).append(result);
             r2d2.initDynamicUiStuff(wrapper);
             r2d2.initDynamicXEditableStuff(wrapper);
+        });
+    });
+
+    $(".removeObject").on('click', function(e) {
+        e.preventDefault();
+        let objType = $(this).attr('data-objType');
+        let objId = $(this).attr('data-objId');
+        let trigger = $(this).attr('data-trigger');
+        $.ajax({
+            url: '<g:createLink controller="ajaxJson" action="removeObject"/>',
+            data: {
+                object: objType,
+                objId: objId
+            }
+        }).done(function(result) {
+            if(result.success === true) {
+                $('[data-object="'+trigger+'"]').remove();
+            }
         });
     });
 

@@ -181,7 +181,7 @@
                         icon.removeClass('la-thumbtack slash').addClass('thumbtack');
                         button.attr('data-inherited', 'true');
                         $(".checkbox.createEntitlements").checkbox('check').checkbox('set disabled');
-                        $(".checkbox.linkToChildren").checkbox('uncheck').checkbox('set disabled');
+                        $(".checkbox.linkToChildren").checkbox('check').checkbox('set disabled');
                         $(".checkbox.createEntitlementsForChildren").checkbox('uncheck').checkbox('set disabled');
                     }
                     else {
@@ -189,7 +189,7 @@
                         icon.addClass('la-thumbtack slash').removeClass('thumbtack');
                         button.attr('data-inherited', 'false');
                         $(".checkbox.createEntitlements").checkbox('uncheck').checkbox('set enabled');
-                        $(".checkbox.linkToChildren").checkbox('set enabled');
+                        $(".checkbox.linkToChildren").checkbox('uncheck').checkbox('set enabled');
                         $(".checkbox.createEntitlementsForChildren").checkbox('set enabled');
                     }
                     JSPC.app.updateHidden();
