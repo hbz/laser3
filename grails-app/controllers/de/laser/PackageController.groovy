@@ -538,8 +538,6 @@ class PackageController {
         result.num_change_rows = result.countPendingChanges
         result.changes = changes
 
-        result.apisources = [Wekb.getInstance()]
-
         result
     }
 

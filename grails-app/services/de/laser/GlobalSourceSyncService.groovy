@@ -57,7 +57,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
     GlobalService globalService
     PendingChangeService pendingChangeService
     PackageService packageService
-    Wekb apiSource
     GlobalRecordSource source
 
     static final long RECTYPE_PACKAGE = 0
@@ -118,7 +117,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
             maxTimestamp = 0
             try {
                 Thread.currentThread().setName("GlobalDataSync_Json")
-                this.apiSource = Wekb.getInstance()
                 Date oldDate = source.haveUpTo
                 //Date oldDate = DateUtils.getSDF_ymd().parse('2022-01-01') //debug only
                 log.info("getting records from job #${source.id} with uri ${source.uri} since ${oldDate}")
@@ -246,7 +244,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
             this.source = source
             try {
                 Thread.currentThread().setName("PackageReload")
-                this.apiSource = Wekb.getInstance()
                 String componentType = 'TitleInstancePackagePlatform'
                 //preliminary: build up list of all deleted components
                 Set<String> permanentlyDeletedTitles = getPermanentlyDeletedTitles()
@@ -360,7 +357,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     break
             }
             this.source = GlobalRecordSource.findByActiveAndRectype(true,rectype)
-            this.apiSource = Wekb.getInstance()
             log.info("getting all records from job #${source.id} with uri ${source.uri}")
             try {
                 Map<String,Object> result = fetchRecordJSON(false,[componentType: componentType, max: MAX_TIPP_COUNT_PER_PAGE, sort:'lastUpdated'])
@@ -385,7 +381,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
     void updateData(String dataToLoad) {
         running = true
             this.source = GlobalRecordSource.findByActiveAndRectype(true,RECTYPE_TIPP)
-            this.apiSource = Wekb.getInstance()
             List<String> triggeredTypes
             int max
             switch(dataToLoad) {

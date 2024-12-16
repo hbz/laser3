@@ -210,11 +210,11 @@
                 </td>
             </tr>
             <tr>
-                <td>ElasticSearch apiSource</td>
+                <td>ElasticSearch wekb</td>
                 <td>
-                    <g:set var="eshApiSource" value="${ElasticSearchHelper.getCurrentApiSource()}" />
-                    <g:if test="${eshApiSource}">
-                        <a href="${eshApiSource.baseUrl}" target="_blank">${eshApiSource.baseUrl}</a> (${eshApiSource.name})
+                    <g:set var="wekbSource" value="${ElasticSearchHelper.getWekbSource()}" />
+                    <g:if test="${wekbSource}">
+                        <a href="${wekbSource.baseUrl}" target="_blank">${wekbSource.baseUrl}</a> (${wekbSource.name})
                     </g:if>
                 </td>
             </tr>

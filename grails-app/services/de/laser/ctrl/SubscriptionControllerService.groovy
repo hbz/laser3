@@ -2533,9 +2533,6 @@ class SubscriptionControllerService {
                 result.num_change_rows = subscriptionHistory.size()
             }
             */
-
-            result.apisources = [Wekb.getInstance()]
-
             result.packages = result.subscription.packages
 
             [result:result,status:STATUS_OK]

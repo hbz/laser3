@@ -1306,8 +1306,6 @@ class AjaxHtmlController {
     Map<String,Object> showAllTitleInfos() {
         Map<String, Object> result = [:]
 
-        result.apisources = [Wekb.getInstance()]
-
         result.tipp = params.tippID ? TitleInstancePackagePlatform.get(params.tippID) : null
         result.ie = params.ieID ? IssueEntitlement.get(params.ieID) : null
         result.showPackage = params.showPackage
@@ -1325,8 +1323,6 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     Map<String,Object> showAllTitleInfosAccordion() {
         Map<String, Object> result = [:]
-
-        result.apisources = [Wekb.getInstance()]
 
         result.tipp = params.tippID ? TitleInstancePackagePlatform.get(params.tippID) : null
         result.ie = params.ieID ? IssueEntitlement.get(params.ieID) : null

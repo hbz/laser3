@@ -75,9 +75,9 @@
                             <div class="item">
                             <div class="content middle aligned">
                                 <div class="header">We:kb</div>
-                                <g:set var="eshApiSource" value="${ElasticSearchHelper.getCurrentApiSource()}" />
-                                <g:if test="${eshApiSource}">
-                                    <a href="${eshApiSource.baseUrl}" target="_blank">${eshApiSource.baseUrl}</a>
+                                <g:set var="wekbSource" value="${ElasticSearchHelper.getWekbSource()}" />
+                                <g:if test="${wekbSource}">
+                                    <a href="${wekbSource.baseUrl}" target="_blank">${wekbSource.baseUrl}</a>
                                 </g:if>
                                 <g:else>--</g:else>
                             </div>

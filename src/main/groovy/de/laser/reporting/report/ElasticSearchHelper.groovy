@@ -248,7 +248,7 @@ class ElasticSearchHelper {
      * Returns the current active we:kb ElasticSearch API source
      * @return the active {@link de.laser.remote.Wekb}
      */
-    static getCurrentApiSource() {
+    static getWekbSource() {
         Wekb.getInstance()
     }
 }

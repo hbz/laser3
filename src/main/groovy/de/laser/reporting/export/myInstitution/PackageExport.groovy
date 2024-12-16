@@ -132,7 +132,7 @@ class PackageExport extends BaseDetailsExport {
                         List<Long> esRecordIdList = fCache.data.packageESRecords.keySet().collect{ Long.parseLong(it) }
 
                         if (esRecordIdList.contains(pkg.id)) {
-                            Wekb wekb = ElasticSearchHelper.getCurrentApiSource()
+                            Wekb wekb = ElasticSearchHelper.getWekbSource()
                             if (wekb?.baseUrl) {
                                 prop = wekb.baseUrl + '/public/packageContent/' + pkg.getProperty(key) + '@' + pkg.getProperty(key)
                             }

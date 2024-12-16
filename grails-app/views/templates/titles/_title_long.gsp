@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.remote.Wekb; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore;" %>
 <laser:serviceInjection/>
 <div class="la-icon-list">
 <ui:listIcon type="${tipp.titleType}"/>
@@ -303,7 +303,7 @@
                 <g:link controller="provider" action="show" target="_blank"
                         id="${tipp.pkg.provider.id}">${tipp.pkg.provider.name}</g:link>
 
-                <g:each in="${apisources}" var="gokbAPI">
+                <g:each in="${[Wekb.getInstance()]}" var="gokbAPI">
                     <g:if test="${tipp.pkg.provider.gokbId}">
                         <a role="button" class="${Btn.ICON.SIMPLE_TOOLTIP} tiny"
                            data-content="${message(code: 'wekb')}"
@@ -375,7 +375,7 @@
         </g:link>
     </g:if>
 
-    <g:each in="${apisources}" var="gokbAPI">
+    <g:each in="${[Wekb.getInstance()]}" var="gokbAPI">
         <g:if test="${tipp.gokbId}">
             <a role="button" class="${Btn.ICON.SIMPLE_TOOLTIP} tiny"
                data-content="${message(code: 'wekb')}"

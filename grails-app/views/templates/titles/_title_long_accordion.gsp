@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.remote.Wekb; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore" %>
 
 <div class="three wide column" data-ajaxTopic="true">
     <div class="ui list"  >
@@ -343,7 +343,7 @@
                                     </g:else>
 
 
-                                %{--<g:each in="${apisources}" var="gokbAPI">
+                                %{--<g:each in="${[Wekb.getInstance()]}" var="gokbAPI">
                                     <g:if test="${provider.gokbId}">
                                         <a role="button" class="${Btn.ICON.SIMPLE_TOOLTIP} tiny"
                                            data-content="${message(code: 'wekb')}"

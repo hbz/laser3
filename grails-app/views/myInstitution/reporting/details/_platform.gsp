@@ -6,7 +6,7 @@
 <g:set var="filterCache" value="${GlobalExportHelper.getFilterCache(token)}"/>
 <g:set var="esRecords" value="${filterCache.data.platformESRecords ?: [:]}"/>
 <g:set var="esRecordIds" value="${esRecords.keySet().collect{Long.parseLong(it)} ?: []}"/>
-<g:set var="wekb" value="${ElasticSearchHelper.getCurrentApiSource()}"/>
+<g:set var="wekb" value="${ElasticSearchHelper.getWekbSource()}"/>
 
 <g:set var="useLocalFields" value="${false}"/>%{-- DEBUG --}%
 

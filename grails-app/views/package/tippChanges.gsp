@@ -1,4 +1,4 @@
-<%@ page import="de.laser.wekb.TitleInstancePackagePlatform; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange; de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.RefdataValue;" %>
+<%@ page import="de.laser.remote.Wekb; de.laser.wekb.TitleInstancePackagePlatform; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange; de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.RefdataValue;" %>
 <laser:htmlStart message="myinst.menu.pendingChanges.label" />
 
 <ui:breadcrumbs>
@@ -58,7 +58,7 @@
                         <i class="${Icon.TIPP}"></i>
                     </g:link>
 
-                    <g:each in="${apisources}" var="gokbAPI">
+                    <g:each in="${[Wekb.getInstance()]}" var="gokbAPI">
                         <g:if test="${tipp.gokbId}">
                             <a role="button"
                                class="${Btn.ICON.SIMPLE_TOOLTIP} tiny"
