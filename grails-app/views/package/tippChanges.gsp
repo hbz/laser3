@@ -58,16 +58,14 @@
                         <i class="${Icon.TIPP}"></i>
                     </g:link>
 
-                    <g:each in="${[Wekb.getInstance()]}" var="gokbAPI">
                         <g:if test="${tipp.gokbId}">
                             <a role="button"
                                class="${Btn.ICON.SIMPLE_TOOLTIP} tiny"
                                data-content="${message(code: 'wekb')}"
-                               href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/public/tippContent/?id=' + tipp.gokbId : '#'}"
+                               href="${Wekb.getURL() + '/public/tippContent/?id=' + tipp.gokbId}"
                                target="_blank"><i class="${Icon.WEKB}"></i>
                             </a>
                         </g:if>
-                    </g:each>
                 </g:if>
             </td>
             <td>

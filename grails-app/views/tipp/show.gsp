@@ -189,16 +189,15 @@
 
                 <br/>
                 <br/>
-                <g:each in="${[Wekb.getInstance()]}" var="gokbAPI">
+
                     <g:if test="${tipp.pkg.gokbId}">
                         <a role="button"
                            class="${Btn.ICON.SIMPLE_TOOLTIP} tiny"
                            data-content="${message(code: 'wekb')}"
-                           href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/public/packageContent/?id=' + tipp.pkg.gokbId : '#'}"
+                           href="${Wekb.getURL() + '/public/packageContent/?id=' + tipp.pkg.gokbId}"
                            target="_blank"><i class="${Icon.WEKB}"></i>
                         </a>
                     </g:if>
-                </g:each>
 
             </div>
         </div>
@@ -244,16 +243,15 @@
                 </g:if>
             </div>
             <br/>
-            <g:each in="${[Wekb.getInstance()]}" var="gokbAPI">
+
                 <g:if test="${tipp.platform.gokbId}">
                     <a role="button"
                        class="${Btn.ICON.SIMPLE_TOOLTIP} tiny"
                        data-content="${message(code: 'wekb')}"
-                       href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/public/platformContent/?id=' + tipp.platform.gokbId : '#'}"
+                       href="${Wekb.getURL() + '/public/platformContent/?id=' + tipp.platform.gokbId}"
                        target="_blank"><i class="${Icon.WEKB}"></i>
                     </a>
                 </g:if>
-            </g:each>
 
         </div>
     </div>
