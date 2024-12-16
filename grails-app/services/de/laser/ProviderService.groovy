@@ -300,7 +300,7 @@ class ProviderService {
                                       contextOrg: org, //for templates
                                       isMyOrg:false,
                                       contextCustomerType:org.getCustomerType()]
-        result.wekbApi = Wekb.getInstance()
+
         if (params.id) {
             result.provider = Provider.get(params.id)
             result.editable = contextService.isInstEditor()

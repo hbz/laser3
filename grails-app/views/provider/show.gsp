@@ -1,4 +1,4 @@
-<%@ page import="de.laser.addressbook.PersonRole; de.laser.addressbook.Address; de.laser.wekb.Package; de.laser.wekb.ProviderLink; de.laser.wekb.Vendor; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.wekb.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.addressbook.Person; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.addressbook.Contact; de.laser.wekb.Provider" %>
+<%@ page import="de.laser.remote.Wekb; de.laser.addressbook.PersonRole; de.laser.addressbook.Address; de.laser.wekb.Package; de.laser.wekb.ProviderLink; de.laser.wekb.Vendor; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.wekb.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.addressbook.Person; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.addressbook.Contact; de.laser.wekb.Provider" %>
 
 <g:set var="entityName" value="${message(code: 'provider.label')}"/>
 
@@ -717,7 +717,7 @@
                                                                 <div class="row">
                                                                     <div class="two wide column">
                                                                         <g:if test="${provider}">
-                                                                            <a target="_blank" href="${wekbApi.baseUrl ? wekbApi.baseUrl + '/public/orgContent/' + provider.gokbId : '#'}"><i class="${Icon.WEKB} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
+                                                                            <a target="_blank" href="${Wekb.getURL() + '/public/orgContent/' + provider.gokbId}"><i class="${Icon.WEKB} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
                                                                         </g:if>
                                                                         <g:elseif test="${prs.isPublic}">
                                                                             <i class="${Icon.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.public')}"></i>

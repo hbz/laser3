@@ -928,7 +928,7 @@ class MyInstitutionController  {
             providerQuery = efq.query
             queryParams = efq.queryParams as Map<String, Object>
         }
-        result.wekbApi = Wekb.getInstance()
+
         Map queryCuratoryGroups = gokbService.executeQuery(Wekb.getGroupsURL(), [:])
         if(queryCuratoryGroups.error == 404) {
             result.error = message(code:'wekb.error.'+queryCuratoryGroups.error) as String
