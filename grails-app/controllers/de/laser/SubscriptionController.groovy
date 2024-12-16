@@ -230,7 +230,7 @@ class SubscriptionController {
                     }
                 }
             }
-            Map queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSearchApiURL(), [uuid: platformInstance.gokbId])
+            Map queryResult = gokbService.executeQuery(ApiSource.getSearchApiURL(), [uuid: platformInstance.gokbId])
             if (queryResult.error && queryResult.error == 404) {
                 result.wekbServerUnavailable = message(code: 'wekb.error.404')
             }
@@ -240,10 +240,10 @@ class SubscriptionController {
                     records[0].lastRun = platformInstance.counter5LastRun ?: platformInstance.counter4LastRun
                     records[0].id = platformInstance.id
                     result.platformInstanceRecords[platformInstance.gokbId] = records[0]
-                    result.platformInstanceRecords[platformInstance.gokbId].wekbUrl = ApiSource.getCurrent().getResourceShowURL() + "/${platformInstance.gokbId}"
+                    result.platformInstanceRecords[platformInstance.gokbId].wekbUrl = ApiSource.getResourceShowURL() + "/${platformInstance.gokbId}"
                     if(records[0].statisticsFormat == 'COUNTER' && records[0].counterR4SushiServerUrl == null && records[0].counterR5SushiServerUrl == null) {
                         result.error = 'noSushiSource'
-                        ArrayList<Object> errorArgs = ["${ApiSource.getCurrent().getResourceShowURL()}/${platformInstance.gokbId}", platformInstance.name]
+                        ArrayList<Object> errorArgs = ["${ApiSource.getResourceShowURL()}/${platformInstance.gokbId}", platformInstance.name]
                         result.errorArgs = errorArgs.toArray()
                     }
                     else {

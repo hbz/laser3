@@ -31,7 +31,7 @@ class LinkTagLib {
 
     // <wekbIconLink href="${target}" />
     def wekbIconLink = { attrs, body ->
-        String resourceUrl  = ApiSource.getCurrent().getResourceShowURL() + '/' + attrs.gokbId
+        String resourceUrl  = ApiSource.getResourceShowURL() + '/' + attrs.gokbId
         String href         = ''
         String label        = 'Unbekannter Fehler'
 
@@ -75,7 +75,7 @@ class LinkTagLib {
     }
 
     def wekbButtonLink = { attrs, body ->
-        String resourceUrl  = ApiSource.getCurrent().getResourceShowURL() + '/' + attrs.gokbId
+        String resourceUrl  = ApiSource.getResourceShowURL() + '/' + attrs.gokbId
         String href         = ''
         String label        = ''
 

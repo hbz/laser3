@@ -972,7 +972,7 @@ class SubscriptionControllerService {
                     contentType = titleTypes[0]
             }
             Platform platform = pkg.nominalPlatform
-            Map<String, Object> queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSushiSourcesURL(), [:])
+            Map<String, Object> queryResult = gokbService.executeQuery(ApiSource.getSushiSourcesURL(), [:])
             Map platformRecord
             if (queryResult) {
                 Map<String, Object> records = queryResult

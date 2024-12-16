@@ -13,7 +13,7 @@
     Set reportTypes
     String dummy
     subscribedPlatforms.each { Platform platformInstance ->
-        Map queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSearchApiURL(), [uuid: platformInstance.gokbId])
+        Map queryResult = gokbService.executeQuery(ApiSource.getSearchApiURL(), [uuid: platformInstance.gokbId])
         if (queryResult) {
             List records = queryResult.result
             if(records[0]) {

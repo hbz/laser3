@@ -68,7 +68,7 @@ class PlatformController  {
                 propList: PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.PLA_PROP], contextService.getOrg())
         ]
         SwissKnife.setPaginationParams(result, params, (User) result.user)
-        Map queryCuratoryGroups = gokbService.executeQuery(ApiSource.getCurrent().getGroupsURL(), [:])
+        Map queryCuratoryGroups = gokbService.executeQuery(ApiSource.getGroupsURL(), [:])
         if(queryCuratoryGroups.code == 404) {
             result.error = message(code: 'wekb.error.'+queryCuratoryGroups.error) as String
         }
@@ -267,7 +267,7 @@ class PlatformController  {
 
         result.flagContentGokb = true // gokbService.executeQuery
         result.platformInstanceRecord = [:]
-        Map queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSearchApiURL(), [uuid: platformInstance.gokbId])
+        Map queryResult = gokbService.executeQuery(ApiSource.getSearchApiURL(), [uuid: platformInstance.gokbId])
         if ((queryResult.error && queryResult.error == 404) || !queryResult) {
             flash.error = message(code:'wekb.error.404') as String
         }

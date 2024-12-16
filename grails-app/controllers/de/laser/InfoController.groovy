@@ -93,7 +93,7 @@ bei einem We:kb-Titel sind mir unvollständige/fehlerhafte Informationen aufgefa
 Betroffen ist das folgende Objekt:
 
 ${tipp.name}
-${ApiSource.getCurrent().getResourceShowURL() + '/' + tipp.gokbId}
+${ApiSource.getResourceShowURL() + '/' + tipp.gokbId}
 
 Vielen Dank,
 """ + sig['de'],
@@ -107,7 +107,7 @@ I noticed incomplete/incorrect information in a We:kb title:
 The following object is affected:
 
 ${tipp.name}
-${ApiSource.getCurrent().getResourceShowURL() + '/' + tipp.gokbId}
+${ApiSource.getResourceShowURL() + '/' + tipp.gokbId}
 
 Thank you,
 """ + sig['en']

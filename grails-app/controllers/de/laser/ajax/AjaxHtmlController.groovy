@@ -293,7 +293,7 @@ class AjaxHtmlController {
         result.editmode = result.subscription.isEditableBy(contextService.getUser())
         result.accessConfigEditable = contextService.isInstEditor(CustomerTypeService.ORG_INST_BASIC) || (contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_BASIC) && result.subscription.getSubscriberRespConsortia().id == contextService.getOrg().id)
         result.subscription.packages.pkg.gokbId.each { String uuid ->
-            Map queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSearchApiURL(), [uuid: uuid])
+            Map queryResult = gokbService.executeQuery(ApiSource.getSearchApiURL(), [uuid: uuid])
             if (queryResult) {
                 List records = queryResult.result
                 packageMetadata.put(uuid, records[0])
@@ -317,7 +317,7 @@ class AjaxHtmlController {
 
             packageInfos.packageInstance = subscriptionPackage.pkg
 
-            Map queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSearchApiURL(), [uuid: subscriptionPackage.pkg.gokbId])
+            Map queryResult = gokbService.executeQuery(ApiSource.getSearchApiURL(), [uuid: subscriptionPackage.pkg.gokbId])
             if (queryResult.error && queryResult.error == 404) {
                 flash.error = message(code: 'wekb.error.404') as String
             } else if (queryResult) {

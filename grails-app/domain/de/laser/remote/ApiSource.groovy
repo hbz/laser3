@@ -36,25 +36,25 @@ class ApiSource {
     /**
      * @return ConfigMapper.getWekbServerURL() + '/resource/show'
      */
-    String getResourceShowURL() {
-        baseUrl + '/resource/show'
+    static String getResourceShowURL() {
+        getURL() + '/resource/show'
     }
     /**
      * @return ConfigMapper.getWekbServerURL() + '/api2/searchApi'
      */
-    String getSearchApiURL() {
-        baseUrl + '/api2/searchApi'
+    static String getSearchApiURL() {
+        getURL() + '/api2/searchApi'
     }
     /**
      * @return ConfigMapper.getWekbServerURL() + '/api2/sushiSources'
      */
-    String getSushiSourcesURL() {
-        baseUrl + '/api2/sushiSources'
+    static String getSushiSourcesURL() {
+        getURL() + '/api2/sushiSources'
     }
     /**
      * @return ConfigMapper.getWekbServerURL() + '/api2/groups'
      */
-    String getGroupsURL() {
-        baseUrl + '/api2/groups'
+    static String getGroupsURL() {
+        getURL() + '/api2/groups'
     }
 }
