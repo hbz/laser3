@@ -170,21 +170,6 @@ class FinanceController  {
         }
         SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
         String filename = result.subscription ? escapeService.escapeString(result.subscription.name)+"_financialExport" : escapeService.escapeString(contextService.getOrg().name)+"_financialExport"
-        /*if(params.exportXLS) {
-            SXSSFWorkbook workbook = exportService.processFinancialXLSX(result)
-            response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date())}_${filename}.xlsx\"")
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            try {
-                workbook.write(response.outputStream)
-                response.outputStream.flush()
-                response.outputStream.close()
-                workbook.dispose()
-            }
-            catch (IOException e) {
-                log.error("A request was started before the started one was terminated")
-            }
-        }
-        */
         if(params.fileformat == 'xlsx') {
             if (params.filename) {
                 filename =params.filename

@@ -55,6 +55,7 @@ import org.springframework.web.multipart.MultipartFile
 
 import javax.sql.DataSource
 import java.math.RoundingMode
+import java.sql.Array
 import java.sql.Timestamp
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -78,6 +79,7 @@ class SubscriptionControllerService {
     AddressbookService addressbookService
     AuditService auditService
     BatchQueryService batchQueryService
+    CacheService cacheService
     ContextService contextService
     DocstoreService docstoreService
     FactService factService
@@ -346,7 +348,9 @@ class SubscriptionControllerService {
                 Map<String, Object> titles = [:] //structure: namespace -> value -> tipp
                 //Set<TitleInstancePackagePlatform> titlesSorted = [] //fallback structure to preserve sorting
                 if(params.reportType in Counter4Report.COUNTER_4_TITLE_REPORTS || params.reportType in Counter5Report.COUNTER_5_TITLE_REPORTS) {
-                    titles = fetchTitles(refSub)
+                    Map<String, Object> idSubsetQueryParams = [refSub: refSub, current: RDStore.TIPP_STATUS_CURRENT]
+                    Object[] titleArray = TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp, SubscriptionPackage sp where tipp.pkg = sp.pkg and sp.subscription = :refSub and tipp.status = :current', idSubsetQueryParams).toArray()
+                    titles = fetchTitles(titleArray)
                 }
                 Map<String, Object> dateRanges = getDateRange(params, refCostItems)
                 if(dateRanges.containsKey('alternatePeriodStart') && dateRanges.containsKey('alternatePeriodEnd')){
@@ -885,7 +889,7 @@ class SubscriptionControllerService {
      * @param refSub the {@link Subscription} whose entitlements should be queried; if none existent, the underlying package's are being queried
      * @return
      */
-    Map<String, Object> fetchTitles(Subscription refSub, boolean allTitles = false) {
+    Map<String, Object> fetchTitles(Object[] titleSet) {
         Map<String, Object> result = [:]
         /*
         desired:
@@ -908,39 +912,36 @@ class SubscriptionControllerService {
             }
         }
          */
-        String query
-        if(allTitles) {
-            query = "select * from " +
-                    "(select json_agg(json_build_object(id_value, id_tipp_fk)) as print_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_sub_fk = :refSub and tipp_status_rv_fk = :current and idns_ns = any(:printIdentifiers)) as print," +
-                    "(select json_agg(json_build_object(id_value, id_tipp_fk)) as online_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_sub_fk = :refSub and tipp_status_rv_fk = :current and idns_ns = any(:onlineIdentifiers)) as online," +
-                    "(select json_agg(json_build_object(id_value, id_tipp_fk)) as doi from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_sub_fk = :refSub and tipp_status_rv_fk = :current and idns_ns = :doi) as doi," +
-                    "(select json_agg(json_build_object(tipp_host_platform_url, tipp_id)) as url from title_instance_package_platform join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_sub_fk = :refSub and tipp_status_rv_fk = :current) as url," +
-                    "(select json_agg(json_build_object(id_value, id_tipp_fk)) as proprietary_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_sub_fk = :refSub and tipp_status_rv_fk = :current and idns_ns = :proprietary) as proprietary"
-        }
-        else {
-            query = "select * from " +
-                    "(select json_agg(json_build_object(id_value, id_tipp_fk)) as print_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on id_tipp_fk = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current and idns_ns = any(:printIdentifiers)) as print," +
-                    "(select json_agg(json_build_object(id_value, id_tipp_fk)) as online_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on id_tipp_fk = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current and idns_ns = any(:onlineIdentifiers)) as online," +
-                    "(select json_agg(json_build_object(id_value, id_tipp_fk)) as doi from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on id_tipp_fk = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current and idns_ns = :doi) as doi," +
-                    "(select json_agg(json_build_object(tipp_host_platform_url, tipp_id)) as url from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current) as url," +
-                    "(select json_agg(json_build_object(id_value, id_tipp_fk)) as proprietary_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on id_tipp_fk = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current and idns_ns = :proprietary) as proprietary"
-        }
         Sql sql = GlobalService.obtainSqlConnection()
         Object[] printIdentifierNamespaces = [IdentifierNamespace.ISBN, IdentifierNamespace.ISSN], onlineIdentifierNamespaces = [IdentifierNamespace.EISBN, IdentifierNamespace.EISSN]
-        Map<String, Object> queryParams = [refSub: refSub.id, current: RDStore.TIPP_STATUS_CURRENT.id, printIdentifiers: sql.getDataSource().getConnection().createArrayOf('varchar', printIdentifierNamespaces), onlineIdentifiers: sql.getDataSource().getConnection().createArrayOf('varchar', onlineIdentifierNamespaces), doi: IdentifierNamespace.DOI, proprietary: IdentifierNamespace.TITLE_ID] //current for now
+        Array titleIDs = sql.getDataSource().getConnection().createArrayOf('bigint', titleSet)
         JsonSlurper slurper = new JsonSlurper()
-        List<GroovyRowResult> rows = sql.rows(query, queryParams)
         Map<String, String> printIdentifiers = [:], onlineIdentifiers = [:], doi = [:], url = [:], proprietaryIdentifiers = [:]
-        List printIds = rows[0]['print_identifier'] ? slurper.parseText(rows[0]['print_identifier'].toString()) : [],
-        onlineIds = rows[0]['online_identifier'] ? slurper.parseText(rows[0]['online_identifier'].toString()) : [],
-        dois = rows[0]['doi'] ? slurper.parseText(rows[0]['doi'].toString()) : [],
-        urls = rows[0]['url'] ? slurper.parseText(rows[0]['url'].toString()) : [],
-        propIds = rows[0]['proprietary_identifier'] ? slurper.parseText(rows[0]['proprietary_identifier'].toString()) : []
-        printIdentifiers.putAll(printIds.collectEntries { row -> [row.entrySet()[0].getKey(), row.entrySet()[0].getValue()] })
-        onlineIdentifiers.putAll(onlineIds.collectEntries { row -> [row.entrySet()[0].getKey(), row.entrySet()[0].getValue()] })
-        doi.putAll(dois.collectEntries { row -> [row.entrySet()[0].getKey(), row.entrySet()[0].getValue()] })
-        url.putAll(urls.collectEntries { row -> [row.entrySet()[0].getKey(), row.entrySet()[0].getValue()] })
-        proprietaryIdentifiers.putAll(propIds.collectEntries { row -> [row.entrySet()[0].getKey(), row.entrySet()[0].getValue()] })
+        List<GroovyRowResult> printIds = sql.rows("select json_agg(json_build_object(id_value, id_tipp_fk)) as print_identifier from identifier join identifier_namespace on id_ns_fk = idns_id where id_tipp_fk = any(:tippIDs) and idns_ns = any(:printIdentifiers)", [printIdentifiers: sql.getDataSource().getConnection().createArrayOf('varchar', printIdentifierNamespaces), tippIDs: titleIDs])
+        List<GroovyRowResult> onlineIds = sql.rows("select json_agg(json_build_object(id_value, id_tipp_fk)) as online_identifier from identifier join identifier_namespace on id_ns_fk = idns_id where id_tipp_fk = any(:tippIDs) and idns_ns = any(:onlineIdentifiers)", [onlineIdentifiers: sql.getDataSource().getConnection().createArrayOf('varchar', onlineIdentifierNamespaces), tippIDs: titleIDs])
+        List<GroovyRowResult> dois = sql.rows("select json_agg(json_build_object(id_value, id_tipp_fk)) as doi from identifier join identifier_namespace on id_ns_fk = idns_id where id_tipp_fk = any(:tippIDs) and idns_ns = :doi", [doi: IdentifierNamespace.DOI, tippIDs: titleIDs])
+        List<GroovyRowResult> urls = sql.rows("select json_agg(json_build_object(tipp_host_platform_url, tipp_id)) as url from title_instance_package_platform where tipp_id = any(:tippIDs)", [tippIDs: titleIDs])
+        List<GroovyRowResult> propIds = sql.rows("select json_agg(json_build_object(id_value, id_tipp_fk)) as proprietary_identifier from identifier join identifier_namespace on id_ns_fk = idns_id where id_tipp_fk = any(:tippIDs) and idns_ns = :proprietary", [tippIDs: titleIDs, proprietary: IdentifierNamespace.TITLE_ID])
+        if(printIds[0]['print_identifier']) {
+            List records = slurper.parseText(printIds[0]['print_identifier'].toString())
+            printIdentifiers.putAll(records.collectEntries { row -> [row.entrySet()[0].getKey(), row.entrySet()[0].getValue()] })
+        }
+        if(onlineIds[0]['online_identifier']) {
+            List records = slurper.parseText(onlineIds[0]['online_identifier'].toString())
+            onlineIdentifiers.putAll(records.collectEntries { row -> [row.entrySet()[0].getKey(), row.entrySet()[0].getValue()] })
+        }
+        if(dois[0]['doi']) {
+            List records = slurper.parseText(dois[0]['doi'].toString())
+            doi.putAll(records.collectEntries { row -> [row.entrySet()[0].getKey(), row.entrySet()[0].getValue()] })
+        }
+        if(urls[0]['url']) {
+            List records = slurper.parseText(urls[0]['url'].toString())
+            url.putAll(records.collectEntries { row -> [row.entrySet()[0].getKey(), row.entrySet()[0].getValue()] })
+        }
+        if(propIds[0]['proprietary_identifier']) {
+            List records = slurper.parseText(propIds[0]['proprietary_identifier'].toString())
+            proprietaryIdentifiers.putAll(records.collectEntries { row -> [row.entrySet()[0].getKey(), row.entrySet()[0].getValue()] })
+        }
         result.put('printIdentifiers', printIdentifiers)
         result.put('onlineIdentifiers', onlineIdentifiers)
         result.put('doi', doi)
@@ -1521,8 +1522,6 @@ class SubscriptionControllerService {
                                             referenceYear: c == 0 ? referenceYear : currParent.referenceYear,
                                             administrative: currParent._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE,
                                             manualRenewalDate: currParent.manualRenewalDate,
-                                            /* manualCancellationDate: result.subscription.manualCancellationDate, */
-                                            holdingSelection: currParent.holdingSelection ?: null,
                                             identifier: UUID.randomUUID().toString(),
                                             instanceOf: currParent,
                                             isSlaved: true,
@@ -1715,6 +1714,8 @@ class SubscriptionControllerService {
         else {
             params.tab = params.tab ?: 'generalProperties'
 
+            EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/${params.tab}/${result.user.id}/pagination")
+            result.selectionCache = paginationCache.checkedMap ?: [:]
             result << managementService.subscriptionsManagement(controller, params, input_file)
 
             [result:result,status:STATUS_OK]
@@ -2149,13 +2150,7 @@ class SubscriptionControllerService {
                                 Package pkgToLink = Package.findByGokbId(pkgUUID)
                                 subscriptionService.addToSubscription(result.subscription, pkgToLink, createEntitlements)
                                 if(linkToChildren) {
-                                    if(holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL && auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
-                                        Subscription.findAllByInstanceOf(result.subscription).each { Subscription member ->
-                                            subscriptionService.addToSubscriptionCurrentStock(member, result.subscription, pkgToLink, true)
-                                        }
-                                    }
-                                    else
-                                        subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, createEntitlementsForChildren)
+                                    subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, createEntitlementsForChildren)
                                 }
                             }
                         }
@@ -2169,18 +2164,12 @@ class SubscriptionControllerService {
                         subscriptionService.cachePackageName("PackageTransfer_"+result.subscription.id, pkgToLink.name)
                         subscriptionService.addToSubscription(result.subscription, pkgToLink, createEntitlements)
                         if(linkToChildren) {
-                            if(holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL && auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
-                                Subscription.findAllByInstanceOf(result.subscription).each { Subscription member ->
-                                    subscriptionService.addToSubscriptionCurrentStock(member, result.subscription, pkgToLink, true)
-                                }
-                            }
-                            else
-                                subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, createEntitlementsForChildren)
+                            subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, createEntitlementsForChildren)
                         }
                     }
-                    if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
+                    /*if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
                         globalService.notifyBackgroundProcessFinish(result.user.id, "PackageTransfer_${result.subscription.id}", messageSource.getMessage('subscription.details.linkPackage.thread.completed', [result.subscription.name] as Object[], LocaleUtils.getCurrentLocale()))
-                    }
+                    }*/
                 })
             }
 
@@ -2204,7 +2193,6 @@ class SubscriptionControllerService {
         if(params.confirmed && !subscriptionService.checkThreadRunning('PackageUnlink_'+result.subscription.id)) {
             Set<Subscription> subList = []
             if(params.containsKey('option')) {
-                AuditConfig.removeConfig(result.subscription, 'holdingSelection')
                 subList << result.subscription
                 if(params.option in ['childWithIE', 'childOnlyIE'])
                     subList.addAll(Subscription.findAllByInstanceOf(result.subscription))
@@ -2267,6 +2255,7 @@ class SubscriptionControllerService {
      * @param params the request parameters including filter data and / or an eventual enrichment file
      * @return OK if the retrieval was successful, ERROR otherwise
      */
+    @Deprecated
     Map<String,Object> index(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
@@ -3193,11 +3182,15 @@ class SubscriptionControllerService {
      * @return OK if the creation was successful, ERROR otherwise
      */
     Map<String,Object> addCoverage(GrailsParameterMap params) {
-        IssueEntitlement base = IssueEntitlement.get(params.issueEntitlement)
+        IssueEntitlement base = IssueEntitlement.get(params.ieid)
         if(base) {
-            Map<String,Object> result = [subId:base.subscription.id]
+            Map<String,Object> result = [:]
             IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(issueEntitlement: base)
             if(ieCoverage.save()) {
+                base.refresh()
+                result.covStmt = ieCoverage
+                result.counterCoverage = base.coverages.size()
+                result.tipp = base.tipp
                 [result: result, status: STATUS_OK]
             }
             else {
@@ -3206,27 +3199,8 @@ class SubscriptionControllerService {
             }
         }
         else {
-            log.error("Issue entitlement with ID ${params.issueEntitlement} could not be found")
+            log.error("Issue entitlement with ID ${params.ieid} could not be found")
             [result: null, status: STATUS_ERROR]
-        }
-    }
-
-    /**
-     * Removes the given coverage statement from the issue entitlement
-     * @param params the request parameter map
-     * @return OK if the removal was successful, false otherwise
-     */
-    Map<String,Object> removeCoverage(GrailsParameterMap params) {
-        IssueEntitlementCoverage ieCoverage = IssueEntitlementCoverage.get(params.ieCoverage)
-        if(ieCoverage) {
-            Map<String,Object> result = [subId:ieCoverage.issueEntitlement.subscription.id]
-            PendingChange.executeUpdate('update PendingChange pc set pc.status = :rejected where pc.oid = :oid',[rejected:RDStore.PENDING_CHANGE_REJECTED,oid:"${ieCoverage.class.name}:${ieCoverage.id}"])
-            ieCoverage.delete()
-            [result:result,status:STATUS_OK]
-        }
-        else {
-            log.error("Issue entitlement coverage with ID ${params.ieCoverage} could not be found")
-            [result:null,status:STATUS_ERROR]
         }
     }
 

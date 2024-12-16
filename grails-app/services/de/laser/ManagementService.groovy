@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.cache.EhcacheWrapper
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.finance.CostItem
@@ -43,6 +44,7 @@ class ManagementService {
 
     AuditService auditService
     AddressbookService addressbookService
+    CacheService cacheService
     ContextService contextService
     ExecutorService executorService
     FormService formService
@@ -247,7 +249,18 @@ class ManagementService {
                     subscriptions = subscriptionService.getMySubscriptions(params,result.user,result.institution).allSubscriptions
                 }
             }
-            else subscriptions = Subscription.findAllByIdInList(params.list("selectedSubs"))
+            else {
+                EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/linkLicense/${result.user.id}/pagination")
+                List selectionCache = []
+                if(paginationCache.checkedMap) {
+                    selectionCache.addAll(paginationCache.checkedMap.values())
+                    paginationCache.remove('checkedMap')
+                }
+                else selectionCache.addAll(params.list('selectedSubs'))
+                if(selectionCache) {
+                    subscriptions = Subscription.findAllByIdInList(selectionCache)
+                }
+            }
             if(subscriptions && selectedLicenseIDs[0]) {
                 List<License> selectedLicenses = License.findAllByIdInList(selectedLicenseIDs.collect { String key -> Long.parseLong(key) })
                 selectedLicenses.each { License newLicense ->
@@ -345,7 +358,18 @@ class ManagementService {
                     subscriptions = []
                 }
             }
-            else subscriptions = Subscription.findAllByIdInList(params.list("selectedSubs"))
+            else {
+                EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/linkPackage/${result.user.id}/pagination")
+                List selectionCache = []
+                if(paginationCache.checkedMap) {
+                    selectionCache.addAll(paginationCache.checkedMap.values())
+                    paginationCache.remove('checkedMap')
+                }
+                else selectionCache.addAll(params.list('selectedSubs'))
+                if(selectionCache) {
+                    subscriptions = Subscription.findAllByIdInList(selectionCache)
+                }
+            }
             List selectedPackageKeys = params.list("selectedPackages")
             Set<Package> pkgsToProcess = []
             result.message = []
@@ -736,7 +760,18 @@ class ManagementService {
                     subscriptions = subscriptionService.getMySubscriptions(params,result.user,result.institution).allSubscriptions
                 }
             }
-            else subscriptions = Subscription.findAllByIdInList(params.list("selectedSubs"))
+            else {
+                EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/generalProperties/${result.user.id}/pagination")
+                List selectionCache = []
+                if(paginationCache.checkedMap) {
+                    selectionCache.addAll(paginationCache.checkedMap.values())
+                    paginationCache.remove('checkedMap')
+                }
+                else selectionCache.addAll(params.list('selectedSubs'))
+                if(selectionCache) {
+                    subscriptions = Subscription.findAllByIdInList(selectionCache)
+                }
+            }
             if (subscriptions) {
                 Set change = [], noChange = []
                 SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -981,7 +1016,18 @@ class ManagementService {
                     subscriptions = subscriptionService.getMySubscriptions(params,result.user,result.institution).allSubscriptions
                 }
             }
-            else subscriptions = Subscription.findAllByIdInList(params.list("selectedSubs"))
+            else {
+                EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/notes/${result.user.id}/pagination")
+                List selectionCache = []
+                if(paginationCache.checkedMap) {
+                    selectionCache.addAll(paginationCache.checkedMap.values())
+                    paginationCache.remove('checkedMap')
+                }
+                else selectionCache.addAll(params.list('selectedSubs'))
+                if(selectionCache) {
+                    subscriptions = Subscription.findAllByIdInList(selectionCache)
+                }
+            }
             if (subscriptions) {
                 if(params.noteTitle || params.noteContent) {
                     if(params.processOption == 'newNote') {
@@ -1044,7 +1090,14 @@ class ManagementService {
                 }
             }
             else {
-                if(params.selectedSubscriptionIds) {
+                EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/documents/${result.user.id}/pagination")
+                if(paginationCache.checkedMap.values()) {
+                    List selectionCache = []
+                    selectionCache.addAll(paginationCache.checkedMap.values())
+                    subscriptions = Subscription.findAllByIdInList(selectionCache)
+                    paginationCache.remove('checkedMap')
+                }
+                else if(params.selectedSubscriptionIds) {
                     List<Long> ids = Params.getLongList_forCommaSeparatedString(params, 'selectedSubscriptionIds')
                     subscriptions = Subscription.findAllByIdInList(ids)
                 }

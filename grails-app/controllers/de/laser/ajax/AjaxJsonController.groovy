@@ -1,6 +1,7 @@
 package de.laser.ajax
 
 import de.laser.AlternativeName
+import de.laser.CacheService
 import de.laser.CustomerTypeService
 import de.laser.DiscoverySystemFrontend
 import de.laser.DiscoverySystemIndex
@@ -10,9 +11,11 @@ import de.laser.ContextService
 import de.laser.ControlledListService
 import de.laser.DataConsistencyService
 import de.laser.IssueEntitlement
+import de.laser.IssueEntitlementCoverage
 import de.laser.License
 import de.laser.LicenseService
 import de.laser.LinksGenerationService
+import de.laser.PendingChange
 import de.laser.wekb.Package
 import de.laser.wekb.Provider
 import de.laser.ProviderService
@@ -69,6 +72,7 @@ import java.text.SimpleDateFormat
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxJsonController {
 
+    CacheService cacheService
     CompareService compareService
     ContextService contextService
     ControlledListService controlledListService
@@ -556,6 +560,31 @@ class AjaxJsonController {
     }
 
     /**
+     * Updates the pagination cache
+     */
+    @Secured(['ROLE_USER'])
+    def updatePaginationCache() {
+        Map result = [:]
+        if(params.containsKey('cacheKeyReferer')) {
+            EhcacheWrapper cache = cacheService.getTTL1800Cache("${params.cacheKeyReferer}/pagination")
+            Map<String, String> checkedMap = cache.get('checkedMap') ?: [:]
+            if(!checkedMap.containsKey(params.selId)) {
+                checkedMap.put(params.selId, params.selId.split('_')[1])
+                result.state = 'checked'
+            }
+            else {
+                checkedMap.remove(params.selId)
+                result.state = 'unchecked'
+            }
+            cache.put('checkedMap', checkedMap)
+            render result as JSON
+        }
+        else {
+            response.sendError(500, 'cacheKeyReferer missing! Which pagination should I update?!')
+        }
+    }
+
+    /**
      * Triggers the lookup of values for the given domain class; serves as fallback for static refdataFind calls
      * @return a sorted {@link List} of {@link Map}s of structure [id: oid, text: subscription text] with the query results
      */
@@ -1005,7 +1034,11 @@ class AjaxJsonController {
                 break
             case "index": removed = DiscoverySystemIndex.executeUpdate('delete from DiscoverySystemIndex dsi where dsi.id = :id', objId)
                 break
-            case "coverage": //TODO migrate SubscriptionController.removeCoverage()
+            case "coverage": IssueEntitlementCoverage ieCoverage = IssueEntitlementCoverage.get(params.objId)
+                if(ieCoverage) {
+                    PendingChange.executeUpdate('delete from PendingChange pc where pc.oid = :oid',[oid:"${ieCoverage.class.name}:${ieCoverage.id}"])
+                    removed = IssueEntitlementCoverage.executeUpdate('delete from IssueEntitlementCoverage ic where ic.id = :id', objId)
+                }
                 break
             //ex SubscriptionControllerService.removePriceItem()
             case "priceItem": removed = PriceItem.executeUpdate('delete from PriceItem pi where pi.id = :id', objId)

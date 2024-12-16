@@ -26,7 +26,7 @@
     </div>
 </div>
 
-<laser:script file="${this.getGroovyPageFileName()}">
+<%--<laser:script file="${this.getGroovyPageFileName()}">
     $(".removeObject").on('click', function(e) {
         e.preventDefault();
         let objType = $(this).attr('data-objType');
@@ -44,4 +44,4 @@
             }
         });
     });
-</laser:script>
+</laser:script>--%>

@@ -409,11 +409,6 @@
 
         <br>
         <br>
-
-
-        <%
-            params.remove("kbartPreselect")
-        %>
         <ui:paginate controller="subscription"
                         action="addEntitlements"
                         params="${params + [pagination: true]}"
@@ -482,33 +477,11 @@
         JSPC.app.updateSelectionCache($(this).parents(".la-js-checkItem").attr("data-gokbId"), $(this).prop('checked'));
     });
 
-    $(".ieOverwrite td").click(function() {
-        $(".ieOverwrite").trigger("change");
-    });
-
-    $(".ieOverwrite").change(function() {
-        $.ajax({
-            url: "<g:createLink controller="ajax" action="updateIssueEntitlementSelect" />",
-            data: {
-                sub: ${subscription.id},
-                key: $(this).parents("tr").attr("data-gokbId"),
-                referer: "${actionName}",
-                coverage: $(this).attr("data-coverage") === "true" || $(this).hasClass("coverage"),
-                prop: $(this).attr("name") ? $(this).attr("name") : $(this).find("input").attr("name"),
-                propValue: $(this).val() ? $(this).val() : $(this).find("input").val()
-            }
-        }).done(function(result){
-
-        }).fail(function(xhr,status,message){
-            console.log("error occurred, consult logs!");
-        });
-    });
-
     $('.kbartExport').click(function(e) {
         e.preventDefault();
         $('#globalLoadingIndicator').show();
         $.ajax({
-            url: "<g:createLink action="addEntitlements" params="${params + [exportKBart: true]}"/>",
+            url: "<g:createLink action="exportPossibleEntitlements" params="${params + [exportKBart: true]}"/>",
             type: 'POST',
             contentType: false
         }).done(function(response){

@@ -50,6 +50,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.transaction.TransactionStatus
 import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.web.multipart.MultipartFile
@@ -1365,19 +1366,20 @@ class MyInstitutionController  {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
         params.tab = params.tab ?: 'generalProperties'
-        EhcacheWrapper cache = contextService.getUserCache("/subscriptionsManagement/subscriptionFilter/")
+        EhcacheWrapper filterCache = contextService.getUserCache("/subscriptionsManagement/subscriptionFilter/"), paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/${params.tab}/${result.user.id}/pagination")
         Set<String> filterFields = ['q', 'identifier', 'referenceYears', 'status', 'filterPropDef', 'filterProp', 'form', 'resource', 'subKinds', 'isPublicForApi', 'hasPerpetualAccess', 'hasPublishComponent', 'holdingSelection', 'subRunTime', 'subRunTimeMultiYear', 'subType', 'consortia']
         filterFields.each { String subFilterKey ->
             if(params.containsKey('processOption')) {
-                if(cache.get(subFilterKey))
-                    params.put(subFilterKey, cache.get(subFilterKey))
+                if(filterCache.get(subFilterKey))
+                    params.put(subFilterKey, filterCache.get(subFilterKey))
             }
             else {
                 if(params.get(subFilterKey))
-                    cache.put(subFilterKey, params.get(subFilterKey))
-                else cache.remove(subFilterKey)
+                    filterCache.put(subFilterKey, params.get(subFilterKey))
+                else filterCache.remove(subFilterKey)
             }
         }
+        result.selectionCache = paginationCache.checkedMap ?: [:]
 
         if(!(params.tab in ['notes', 'documents', 'properties'])){
             //Important

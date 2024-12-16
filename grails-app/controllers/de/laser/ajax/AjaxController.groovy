@@ -513,7 +513,9 @@ class AjaxController {
               query = query.replace("where ", "where not exists (select ie.id from IssueEntitlement ie join ie.tipp tipp2 where ie.subscription.id = :sub and tipp.id = tipp2.id and ie.status = tipp2.status) and ")
               Set<String> tippUUIDs = TitleInstancePackagePlatform.executeQuery(query, tippFilter.queryParams+[sub: params.long("sub")])
               tippUUIDs.each { String e ->
-                  newChecked[e] = params.checked == 'true' ? 'checked' : null
+                  if(params.checked == 'true')
+                    newChecked[e] = 'checked'
+                  else newChecked.remove(e)
               }
           }
           cache.put('checked',newChecked)
@@ -522,32 +524,14 @@ class AjaxController {
 	  }
 	  else {
           Map<String, String> newChecked = checked ?: [:]
-		  newChecked[params.index] = params.checked == 'true' ? 'checked' : null
+          if(params.checked == 'true')
+              newChecked[params.index] = 'checked'
+          else newChecked.remove(params.index)
           cache.put('checked', newChecked)
           success.success = true
           success.checkedCount = newChecked.findAll {it.value == 'checked'}.size()
 	  }
       userCache.put('selectedTitles', cache)
-      render success as JSON
-  }
-
-    /**
-     * This method is used by the addEntitlements view and updates the cache for the entitlement candidates which should be added to the local subscription holding;
-     * when the entitlements are being processed, the data from the cache is being applied to the entitlements
-     * @return a {@link Map} reflecting the success status
-     */
-  @Secured(['ROLE_USER'])
-  @Deprecated
-  def updateIssueEntitlementSelect() {
-      Map success = [success:false]
-      EhcacheWrapper cache = contextService.getUserCache("/subscription/${params.referer}/${params.sub}")
-      Set issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
-      if(!issueEntitlementCandidates)
-          issueEntitlementCandidates = []
-      if(!issueEntitlementCandidates.add(params.key))
-          issueEntitlementCandidates.remove(params.key)
-      if(cache.put('issueEntitlementCandidates',issueEntitlementCandidates))
-          success.success = true
       render success as JSON
   }
 
@@ -1192,6 +1176,36 @@ class AjaxController {
             render([success: true] as JSON)
         else
             redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_USER'])
+    @Transactional
+    def switchPackageHoldingInheritance() {
+        if(formService.validateToken(params)) {
+            String prop = 'holdingSelection'
+            Subscription sub = Subscription.get(params.id)
+            RefdataValue value = RefdataValue.get(params.value)
+            sub.holdingSelection = value
+            sub.save()
+            if(value == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+                if(! AuditConfig.getConfig(sub, prop)) {
+                    AuditConfig.addConfig(sub, prop)
+
+                    Subscription.findAllByInstanceOf(sub).each { Subscription m ->
+                        m.setProperty(prop, sub.getProperty(prop))
+                        m.save()
+                    }
+                }
+            }
+            else if(!value) {
+                AuditConfig.removeConfig(sub, prop)
+                Subscription.findAllByInstanceOf(sub).each { Subscription m ->
+                    m.setProperty(prop, null)
+                    m.save()
+                }
+            }
+        }
+        render([success: true] as JSON)
     }
 
     /**

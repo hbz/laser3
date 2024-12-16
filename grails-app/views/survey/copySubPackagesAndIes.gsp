@@ -158,16 +158,21 @@
                 <div class="two fields">
                     <div class="eight wide field" style="text-align: left;">
                         <div class="ui buttons">
-                            <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning ? 'disabled="disabled"' : ''}
-                                    type="submit"
-                                    name="processOption"
-                                    value="linkwithoutIE">${message(code: 'subscriptionsManagement.linkwithoutIE')}</button>
+                            <g:if test="${parentSuccessorSubscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+                                <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning ? 'disabled="disabled"' : ''} type="submit"
+                                        name="processOption"
+                                        value="linkwithoutIE">${message(code: 'subscriptionsManagement.linkGeneral')}</button>
+                            </g:if>
+                            <g:else>
+                                <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning ? 'disabled="disabled"' : ''} type="submit"
+                                        name="processOption"
+                                        value="linkwithoutIE">${message(code: 'subscriptionsManagement.linkwithoutIE')}</button>
 
-                            <div class="or" data-text="${message(code: 'default.or')}"></div>
-                            <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning ? 'disabled="disabled"' : ''}
-                                    type="submit"
-                                    name="processOption"
-                                    value="linkwithIE">${message(code: 'subscriptionsManagement.linkwithIE')}</button>
+                                <div class="or" data-text="${message(code: 'default.or')}"></div>
+                                <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning ? 'disabled="disabled"' : ''} type="submit"
+                                        name="processOption"
+                                        value="linkwithIE">${message(code: 'subscriptionsManagement.linkwithIE')}</button>
+                            </g:else>
                         </div>
                     </div>
                 </div>

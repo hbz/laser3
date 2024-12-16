@@ -272,38 +272,38 @@ class PackageController {
         result
     }
 
-    /**
-     * Call to show all current titles in the package. The entitlement holding may be shown directly as HTML
-     * or exported as KBART (<a href="https://www.niso.org/standards-committees/kbart">Knowledge Base and related tools</a>) file, CSV file or Excel worksheet
-     * KBART files may take time to be prepared; therefor the download is not triggered by this method because te loading would generate a 502 timeout. Instead, a
-     * file is being prepared and written to the file storage and a download link is being generated which delivers the file after its full generation
-     * @return a HTML table showing the holding or the holding rendered as KBART or Excel worksheet
-     * @see de.laser.wekb.TitleInstancePackagePlatform
-     * @see GlobalService#obtainFileStorageLocation()
-     * @see #downloadLargeFile()
-     */
     @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
         ctx.contextService.isInstUser_denySupport()
     })
     @Check404()
-    def current() {
-        log.debug("current ${params}");
+    def exportStock(String func) {
         Map<String, Object> result = packageService.getResultGenerics(params)
+        String filename
+
+        if (func == "current") {
+            params.status = RDStore.TIPP_STATUS_CURRENT.id
+            filename = "${escapeService.escapeString(result.packageInstance.name.replaceAll('["\']', '') + '_' + message(code: 'package.show.nav.current'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
+        } else if (func == "planned") {
+            params.status = RDStore.TIPP_STATUS_EXPECTED.id
+            filename = "${escapeService.escapeString(result.packageInstance.name.replaceAll('["\']', '') + '_' + message(code: 'package.show.nav.planned'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
+        } else if (func == "expired") {
+            params.status = RDStore.TIPP_STATUS_RETIRED.id
+            filename = "${escapeService.escapeString(result.packageInstance.name.replaceAll('["\']', '') + '_' + message(code: 'package.show.nav.expired'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
+        } else if (func == "deleted") {
+            params.status = RDStore.TIPP_STATUS_DELETED.id
+            filename = "${escapeService.escapeString(result.packageInstance.name.replaceAll('["\']', '') + '_' + message(code: 'package.show.nav.deleted'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
+        }
+        if (params.filename) {
+            filename = params.filename
+        }
 
         Map<String, Object> query = filterService.getTippQuery(params, [result.packageInstance])
-        result.filterSet = query.filterSet
+        Set<Long> titlesSet = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
 
-
-        String filename = "${escapeService.escapeString(result.packageInstance.name.replaceAll('["\']', '') + '_' + message(code: 'package.show.nav.current'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
-
-        result.filename = filename
         Map<String, Object> selectedFields = [:]
 
         if(params.fileformat) {
-            if (params.filename) {
-                filename = params.filename
-            }
 
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
@@ -314,11 +314,10 @@ class PackageController {
             String dir = GlobalService.obtainFileStorageLocation()
             File f = new File(dir+'/'+filename)
             if(!f.exists()) {
-                List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams) //TODO migrate to tippSubsetQuery
                 Map<String, Object> configMap = [:]
                 configMap.format = ExportService.KBART
-                configMap.tippIDs = titlesList
-                Map<String, Object> tableData = titlesList ? exportService.generateTitleExport(configMap) : [:]
+                configMap.tippIDs = titlesSet
+                Map<String, Object> tableData = titlesSet ? exportService.generateTitleExport(configMap) : [:]
                 String tableOutput = exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t')
                 FileOutputStream fos = new FileOutputStream(f)
                 fos.withWriter { Writer w ->
@@ -332,8 +331,7 @@ class PackageController {
             return
         }
         if(params.fileformat == 'xlsx') {
-            List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(titlesList, selectedFields, ExportClickMeService.FORMAT.XLS)
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(titlesSet, selectedFields, ExportClickMeService.FORMAT.XLS)
             response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             wb.write(response.outputStream)
@@ -343,24 +341,16 @@ class PackageController {
             return
         }
         else if(params.fileformat == 'csv') {
-            List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
             response.setHeader( "Content-Disposition", "attachment; filename=${filename}.csv")
             response.contentType = "text/csv"
 
             ServletOutputStream out = response.outputStream
             out.withWriter { writer ->
-                writer.write((String) exportClickMeService.exportTipps(titlesList, selectedFields, ExportClickMeService.FORMAT.CSV))
+                writer.write((String) exportClickMeService.exportTipps(titlesSet, selectedFields, ExportClickMeService.FORMAT.CSV))
             }
             out.flush()
             out.close()
             return
-        }
-        else {
-            List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
-            //we can be sure that no one will request more than 32768 entries ...
-            result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: params.sort?: 'sortname', order: params.order]) : []
-            result.num_tipp_rows = titlesList.size()
-            result
         }
     }
 
@@ -409,39 +399,70 @@ class PackageController {
     }
 
     /**
+     * Call to show all current titles in the package. The entitlement holding may be shown directly as HTML
+     * or exported as KBART (<a href="https://www.niso.org/standards-committees/kbart">Knowledge Base and related tools</a>) file, CSV file or Excel worksheet
+     * KBART files may take time to be prepared; therefor the download is not triggered by this method because te loading would generate a 502 timeout. Instead, a
+     * file is being prepared and written to the file storage and a download link is being generated which delivers the file after its full generation
+     * @return a HTML table showing the holding or the holding rendered as KBART or Excel worksheet
+     * @see de.laser.wekb.TitleInstancePackagePlatform
+     * @see GlobalService#obtainFileStorageLocation()
+     * @see #downloadLargeFile()
+     */
+    @DebugInfo(isInstUser_denySupport = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport()
+    })
+    @Check404()
+    def current() {
+        if(params.containsKey('exportKBart') || params.containsKey('fileformat'))
+            exportStock("current")
+        else
+            getTitles("current")
+    }
+
+    /**
      * Call to see planned titles of the package
-     * @return {@link #planned_expired_deleted(java.lang.String)}
+     * @return {@link #getTitles(java.lang.String)}
      */
     @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
         ctx.contextService.isInstUser_denySupport()
     })
     def planned() {
-        planned_expired_deleted("planned")
+        if(params.containsKey('exportKBart') || params.containsKey('fileformat'))
+            exportStock("planned")
+        else
+            getTitles("planned")
     }
 
     /**
      * Call to see expired titles of the package
-     * @return {@link #planned_expired_deleted(java.lang.String)}
+     * @return {@link #getTitles(java.lang.String)}
      */
     @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
         ctx.contextService.isInstUser_denySupport()
     })
     def expired() {
-        planned_expired_deleted("expired")
+        if(params.containsKey('exportKBart') || params.containsKey('fileformat'))
+            exportStock("expired")
+        else
+            getTitles("expired")
     }
 
     /**
      * Call to see deleted titles of the package
-     * @return {@link #planned_expired_deleted(java.lang.String)}
+     * @return {@link #getTitles(java.lang.String)}
      */
     @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
         ctx.contextService.isInstUser_denySupport()
     })
     def deleted() {
-        planned_expired_deleted("deleted")
+        if(params.containsKey('exportKBart') || params.containsKey('fileformat'))
+            exportStock("deleted")
+        else
+            getTitles("deleted")
     }
 
     /**
@@ -456,8 +477,7 @@ class PackageController {
     @Secured(closure = {
         ctx.contextService.isInstUser_denySupport()
     })
-    def planned_expired_deleted(String func) {
-        log.debug("planned_expired_deleted ${params}");
+    def getTitles(String func) {
         Map<String, Object> result = packageService.getResultGenerics(params)
 
         if (!result.packageInstance) {
@@ -465,86 +485,21 @@ class PackageController {
             redirect action: 'index'
             return
         }
-
-        String filename
-
-        if (func == "planned") {
+        if(func == "current") {
+            params.status = RDStore.TIPP_STATUS_CURRENT.id
+        } else if (func == "planned") {
             params.status = RDStore.TIPP_STATUS_EXPECTED.id
-            filename = "${escapeService.escapeString(result.packageInstance.name + '_' + message(code: 'package.show.nav.planned'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
         } else if (func == "expired") {
             params.status = RDStore.TIPP_STATUS_RETIRED.id
-            filename = "${escapeService.escapeString(result.packageInstance.name + '_' + message(code: 'package.show.nav.expired'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
         } else if (func == "deleted") {
             params.status = RDStore.TIPP_STATUS_DELETED.id
-            filename = "${escapeService.escapeString(result.packageInstance.name + '_' + message(code: 'package.show.nav.deleted'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
         }
 
         Map<String, Object> query = filterService.getTippQuery(params, [result.packageInstance])
-        result.filterSet = query.filterSet
-
-        List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
-        result.filename = filename
-
-        Map<String, Object> selectedFields = [:]
-        ArrayList<TitleInstancePackagePlatform> tipps = []
-        if(params.fileformat) {
-            if (params.filename) {
-                filename = params.filename
-            }
-
-            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
-            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-            titlesList.collate(30000).each { subList ->
-                tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(subList,[sort:'sortname']))
-            }
-        }
-
-        if (params.exportKBart) {
-            String dir = GlobalService.obtainFileStorageLocation()
-            File f = new File(dir+'/'+filename)
-            if(!f.exists()) {
-                FileOutputStream fos = new FileOutputStream(f)
-                Map<String, Object> configMap = [:]
-                //configMap.putAll(params)
-                configMap.tippIDs = titlesList
-                configMap.format = ExportService.KBART
-                Map<String, Object> tableData = exportService.generateTitleExport(configMap)
-                fos.withWriter { writer ->
-                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
-                }
-                fos.flush()
-                fos.close()
-            }
-            Map fileResult = [token: filename, filenameDisplay: filename, fileformat: 'kbart']
-            render template: '/templates/bulkItemDownload', model: fileResult
-            return
-        }
-        else if(params.fileformat == 'xlsx') {
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(tipps, selectedFields, ExportClickMeService.FORMAT.XLS)
-            response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
-            return
-        }
-        else if(params.fileformat == 'csv') {
-            response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
-            response.contentType = "text/csv"
-
-            ServletOutputStream out = response.outputStream
-            out.withWriter { writer ->
-                writer.write((String) exportClickMeService.exportTipps(tipps, selectedFields, ExportClickMeService.FORMAT.CSV))
-            }
-            out.flush()
-            out.close()
-        }
-        else {
-            result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: params.sort?: 'sortname', order: params.order]) : []
-            result.num_tipp_rows = titlesList.size()
-            result
-        }
+        Set<Long> titlesSet = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+        result.titlesList = titlesSet ? TitleInstancePackagePlatform.findAllByIdInList(titlesSet.drop(result.offset).take(result.max), [sort: params.sort?: 'sortname', order: params.order]) : []
+        result.num_tipp_rows = titlesSet.size()
+        result
     }
 
     /**
@@ -556,6 +511,7 @@ class PackageController {
         ctx.contextService.isInstUser_denySupport()
     })
     @Check404()
+    @Deprecated
     def tippChanges() {
         Map<String, Object> result = packageService.getResultGenerics(params)
 

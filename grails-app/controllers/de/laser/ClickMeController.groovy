@@ -159,6 +159,8 @@ class ClickMeController {
                 result.exportFileName = result.exportFileName ?: escapeService.escapeString(result.surveyConfig.getSurveyName()) + "_" + message(code: 'financials.costItem')
                 break
             case ExportClickMeService.TIPPS:
+                if(params.exportAction == 'addEntitlements')
+                    result.exportAction = 'exportPossibleEntitlements'
                 result.formFields = exportClickMeService.getExportTippFieldsForUI()
                 result.exportFileName = result.exportFileName ?: message(code:'default.title.label')
                 break

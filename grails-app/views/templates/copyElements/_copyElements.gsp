@@ -136,13 +136,20 @@
                             <ui:showPropertyValue property="${sourceObject."${objProperty}"}"/>
                         </div>
                     </td>
-                    <g:if test="${isConsortialObjects}">
+                    <g:if test="${isConsortialObjects && objProperty == 'holdingSelection' && sourceObject.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+                        <td class="center aligned">
+                            <div class="ui disabled read-only checkbox la-toggle-radio la-inherit">
+                                <g:checkBox name="copyObject.toggleAudit" value="${objProperty}" checked="${AuditConfig.getConfig(sourceObject, objProperty) ? 'true' : 'false'}"/>
+                            </div>
+                        </td>
+                    </g:if>
+                    <g:elseif test="${isConsortialObjects}">
                         <td class="center aligned">
                             <div class="ui checkbox la-toggle-radio la-inherit">
                                 <g:checkBox name="copyObject.toggleAudit" value="${objProperty}" checked="${AuditConfig.getConfig(sourceObject, objProperty) ? 'true' : 'false'}"/>
                             </div>
                         </td>
-                    </g:if>
+                    </g:elseif>
                 %{--AKTIONEN:--}%
                     <td class="center aligned">
                         <g:if test="${sourceObject.hasProperty("${objProperty}") && !isRenewSub}">

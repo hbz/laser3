@@ -238,7 +238,7 @@
                         </g:if>
                     </td>
                     <g:set var="surveyOrg"
-                           value="${SurveyOrg.findBySurveyConfigAndOrg(surveyResult.surveyConfig, institution)}"/>
+                           value="${SurveyOrg.findBySurveyConfigAndOrg(surveyResult.surveyConfig, contextService.getOrg())}"/>
 
                     <g:if test="${surveyResult.surveyConfig.subSurveyUseForTransfer && surveyOrg && surveyOrg.existsMultiYearTerm()}">
                         <td>

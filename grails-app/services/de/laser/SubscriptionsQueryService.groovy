@@ -274,8 +274,8 @@ class SubscriptionsQueryService {
                 */
                 if (params.hasPerpetualAccess) {
                     if (Long.valueOf(params.hasPerpetualAccess) == RDStore.YN_YES.id) {
-                        base_qry += "or s.hasPerpetualAccess = :hasPerpetualAccess) "
-                        qry_params.put('hasPerpetualAccess', true)
+                        base_qry += "and s.hasPerpetualAccess = true or (s.status.id = :expired and s.hasPerpetualAccess = true)) "
+                        qry_params.put('expired', RDStore.SUBSCRIPTION_EXPIRED.id)
                     }
                     else if (Long.valueOf(params.hasPerpetualAccess) == RDStore.YN_NO.id) {
                         base_qry += "and s.hasPerpetualAccess = :hasPerpetualAccess) "
@@ -283,9 +283,9 @@ class SubscriptionsQueryService {
                     }
                     filterSet = true
                 }
-                else base_qry += ")" //opened in line 245 or 249
+                else base_qry += ")" //opened in line 262 or 266
             }
-            else if(params.status != 'FETCH_ALL') base_qry += ")" //opened in line 245 or 249
+            else if(params.status != 'FETCH_ALL') base_qry += ")" //opened in line 262 or 266
         }
         if (!(RDStore.SUBSCRIPTION_CURRENT.id in Params.getLongList(params,'status')) && params.hasPerpetualAccess) {
             base_qry += " and s.hasPerpetualAccess = :hasPerpetualAccess "

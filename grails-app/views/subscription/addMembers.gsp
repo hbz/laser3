@@ -144,26 +144,32 @@
                         <div class="field">
                             <g:if test="${validPackages}">
                                 <div class="grouped fields">
-                                    <div class="field">
-                                        <div class="ui checkbox">
-                                            <input type="checkbox" id="linkAllPackages" name="linkAllPackages_${subscription.id}">
-                                            <label for="linkAllPackages"><g:message code="myinst.addMembers.linkAllPackages"/></label>
-                                        </div>
-                                    </div>
-                                    <div class="field">
-                                        <g:select class="ui search multiple dropdown"
-                                                  optionKey="id" optionValue="${{ it.getPackageName() }}"
-                                                  from="${validPackages}" name="packageSelection_${subscription.id}" value=""
-                                                  noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.package')}"]'/>
-                                    </div>
-                                    <g:if test="${!auditService.getAuditConfig(subscription, 'holdingSelection')}">
+                                    <g:if test="${subscription.holdingSelection != RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
                                         <div class="field">
                                             <div class="ui checkbox">
-                                                <input type="checkbox" id="linkWithEntitlements" name="linkWithEntitlements_${subscription.id}">
-                                                <label for="linkWithEntitlements"><g:message code="myinst.addMembers.withEntitlements"/></label>
+                                                <input type="checkbox" id="linkAllPackages" name="linkAllPackages_${subscription.id}">
+                                                <label for="linkAllPackages"><g:message code="myinst.addMembers.linkAllPackages"/></label>
                                             </div>
                                         </div>
+                                        <div class="field">
+                                            <g:select class="ui search multiple dropdown"
+                                                      optionKey="id" optionValue="${{ it.getPackageName() }}"
+                                                      from="${validPackages}" name="packageSelection_${subscription.id}" value=""
+                                                      noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.package')}"]'/>
+                                        </div>
+                                        <g:if test="${!auditService.getAuditConfig(subscription, 'holdingSelection')}">
+                                            <div class="field">
+                                                <div class="ui checkbox">
+                                                    <input type="checkbox" id="linkWithEntitlements" name="linkWithEntitlements_${subscription.id}">
+                                                    <label for="linkWithEntitlements"><g:message code="myinst.addMembers.withEntitlements"/></label>
+                                                </div>
+                                            </div>
+                                        </g:if>
                                     </g:if>
+                                    <g:else>
+                                        <g:hiddenField name="linkAllPackages_${subscription.id}" value="on"/>
+                                        <g:message code="myinst.addMembers.packagesAutomaticallyLinked"/>
+                                    </g:else>
                                 </div>
                             </g:if>
                             <g:else>
@@ -309,26 +315,26 @@
 
                                 <laser:script file="${this.getGroovyPageFileName()}">
                                     $('.addToSubWithMultiYear_${nextSub.id}').checkbox({
-     fireOnInit : true,
-     onChecked: function() {
-       var $childCheckbox  = $('.checkboxLicAndPkg_${nextSub.id}');
-       $childCheckbox.checkbox('enable');
-       var $childCheckbox2  = $('.checkboxGenerateSlavedLics1_${nextSub.id}');
-       $childCheckbox2.checkbox('enable');
-       $childCheckbox2.checkbox('check');
+                                        fireOnInit : true,
+                                        onChecked: function() {
+                                           var $childCheckbox  = $('.checkboxLicAndPkg_${nextSub.id}');
+                                           $childCheckbox.checkbox('enable');
+                                           var $childCheckbox2  = $('.checkboxGenerateSlavedLics1_${nextSub.id}');
+                                           $childCheckbox2.checkbox('enable');
+                                           $childCheckbox2.checkbox('check');
 
-     },
-     onUnchecked: function() {
-       var $childCheckbox  = $('.checkboxLicAndPkg_${nextSub.id}');
-       $childCheckbox.checkbox('uncheck');
-       $childCheckbox.checkbox('disable');
+                                        },
+                                        onUnchecked: function() {
+                                           var $childCheckbox  = $('.checkboxLicAndPkg_${nextSub.id}');
+                                           $childCheckbox.checkbox('uncheck');
+                                           $childCheckbox.checkbox('disable');
 
-        var $childCheckbox2  = $('.checkboxGenerateSlavedLics1_${nextSub.id}');
-       $childCheckbox2.checkbox('uncheck');
-       $childCheckbox2.checkbox('disable');
+                                            var $childCheckbox2  = $('.checkboxGenerateSlavedLics1_${nextSub.id}');
+                                           $childCheckbox2.checkbox('uncheck');
+                                           $childCheckbox2.checkbox('disable');
 
-     }
-});
+                                        }
+                                    });
                                 </laser:script>
                             </g:each>
                         </div>

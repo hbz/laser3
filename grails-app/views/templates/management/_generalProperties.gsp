@@ -376,7 +376,7 @@
                                 <%-- This whole construct is necessary for that the form validation works!!! --%>
                                 <div class="field">
                                     <div class="ui checkbox">
-                                        <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}" checked="false"/>
+                                        <g:checkBox class="selectedSubs" id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}" checked="${selectionCache.containsKey('selectedSubs_'+sub.id)}"/>
                                     </div>
                                 </div>
                             </td>
@@ -491,11 +491,27 @@
 <laser:script file="${this.getGroovyPageFileName()}">
 
     $('#membersListToggler').click(function () {
+        let triggered = $("tr .selectedSubs[class!=disabled]");
         if ($(this).prop('checked')) {
-            $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', true)
+            triggered.prop('checked', true);
         } else {
-            $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', false)
+            triggered.prop('checked', false);
         }
+    });
+
+    $(".selectedSubs").change(function() {
+        let selId = $(this).attr("id");
+        $.ajax({
+            url: "<g:createLink controller="ajaxJson" action="updatePaginationCache" />",
+            data: {
+                selId: selId,
+                cacheKeyReferer: "/${controllerName}/subscriptionManagement/${params.tab}/${user.id}"
+            }
+        }).done(function(result){
+            console.log("updated cache for "+selId+": "+result.state);
+        }).fail(function(xhr,status,message){
+            console.log("error occurred, consult logs!");
+        });
     });
 
     $.fn.form.settings.rules.endDateNotBeforeStartDate = function() {

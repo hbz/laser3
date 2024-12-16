@@ -103,7 +103,7 @@
                         <ui:msg class="warning" header="${message(code: "message.attention")}"
                                     message="subscription.details.addEntitlements.warning"/>
 
-                        <g:form class="ui form" controller="subscription" action="index"
+                        <g:form class="ui form" controller="subscription" action="processIssueEntitlementEnrichment"
                                 params="${[sort: params.sort, order: params.order, filter: params.filter, pkgFilter: params.pkgfilter, startsBefore: params.startsBefore, endsAfter: params.endAfter, id: subscription.id]}"
                                 method="post" enctype="multipart/form-data">
                             <div class="three fields">
@@ -122,11 +122,13 @@
                                 </div>
 
                                 <div class="field">
-                                    <div class="ui checkbox toggle">
-                                        <g:checkBox name="uploadCoverageDates" value="${uploadCoverageDates}"/>
-                                        <label><g:message
-                                                code="subscription.details.issueEntitlementEnrichment.uploadCoverageDates.label"/></label>
-                                    </div>
+                                    <g:if test="${issueEntitlementService.existsSerialInHolding(subscription, params.list('status'))}">
+                                        <div class="ui checkbox toggle">
+                                            <g:checkBox name="uploadCoverageDates" value="${uploadCoverageDates}"/>
+                                            <label><g:message
+                                                    code="subscription.details.issueEntitlementEnrichment.uploadCoverageDates.label"/></label>
+                                        </div>
+                                    </g:if>
 
                                     <div class="ui checkbox toggle">
                                         <g:checkBox name="uploadPriceInfo" value="${uploadPriceInfo}"/>
@@ -622,9 +624,15 @@
                                                             </div>
                                                             <hr>
                                                             <g:if test="${editable}">
-                                                                <button class="${Btn.SIMPLE} tiny addObject" data-objType="priceItem" data-ie="${ie.id}">
+                                                                <button class="${Btn.SIMPLE} tiny addObject" data-wrapper="priceWrapper" data-objType="priceItem" data-ie="${ie.id}">
                                                                     <i class="${Icon.FNC.COST_CONFIG}"></i>${message(code: 'subscription.details.addEmptyPriceItem.info')}
                                                                 </button>
+                                                                <g:if test="${ie.tipp.titleType == 'serial'}">
+                                                                    <button class="${Btn.SIMPLE} tiny addObject" data-wrapper="coverageWrapper" data-objType="coverage" data-ie="${ie.id}">
+                                                                        <%-- TODO David new icon for coverage statement --%>
+                                                                        <i class="file icon"></i>${message(code: 'subscription.details.addCoverage')}
+                                                                    </button>
+                                                                </g:if>
                                                             </g:if>
 
                                                             <%-- GROUPS START--%>
@@ -788,7 +796,7 @@
         e.preventDefault();
         let objType = $(this).attr('data-objType');
         let ie = $(this).attr('data-ie');
-        let wrapper = "#priceWrapper_"+ie;
+        let wrapper = "#"+$(this).attr('data-wrapper')+"_"+ie;
         $.ajax({
             url: '<g:createLink controller="ajaxHtml" action="addObject"/>',
             data: {
@@ -799,6 +807,24 @@
             $(wrapper).append(result);
             r2d2.initDynamicUiStuff(wrapper);
             r2d2.initDynamicXEditableStuff(wrapper);
+        });
+    });
+
+    $(".removeObject").on('click', function(e) {
+        e.preventDefault();
+        let objType = $(this).attr('data-objType');
+        let objId = $(this).attr('data-objId');
+        let trigger = $(this).attr('data-trigger');
+        $.ajax({
+            url: '<g:createLink controller="ajaxJson" action="removeObject"/>',
+            data: {
+                object: objType,
+                objId: objId
+            }
+        }).done(function(result) {
+            if(result.success === true) {
+                $('[data-object="'+trigger+'"]').remove();
+            }
         });
     });
 

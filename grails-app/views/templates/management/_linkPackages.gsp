@@ -70,7 +70,12 @@
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
                     <div class="ui buttons">
-                        <g:if test="${!auditService.getAuditConfig(subscription, 'holdingSelection')}">
+                        <g:if test="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+                            <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning || isUnlinkingRunning  ? 'disabled="disabled"' : ''} type="submit"
+                                    name="processOption"
+                                    value="linkwithoutIE">${message(code: 'subscriptionsManagement.linkGeneral')}</button>
+                        </g:if>
+                        <g:else>
                             <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning || isUnlinkingRunning  ? 'disabled="disabled"' : ''} type="submit"
                                     name="processOption"
                                     value="linkwithoutIE">${message(code: 'subscriptionsManagement.linkwithoutIE')}</button>
@@ -79,17 +84,7 @@
                             <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning || isUnlinkingRunning ? 'disabled="disabled"' : ''} type="submit"
                                     name="processOption"
                                     value="linkwithIE">${message(code: 'subscriptionsManagement.linkwithIE')}</button>
-                        </g:if>
-                        <g:elseif test="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
-                            <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning || isUnlinkingRunning  ? 'disabled="disabled"' : ''} type="submit"
-                                    name="processOption"
-                                    value="linkwithoutIE">${message(code: 'subscriptionsManagement.linkGeneral')}</button>
-                        </g:elseif>
-                        <g:elseif test="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_PARTIAL}">
-                            <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning || isUnlinkingRunning ? 'disabled="disabled"' : ''} type="submit"
-                                    name="processOption"
-                                    value="linkwithIE">${message(code: 'subscriptionsManagement.linkwithIE')}</button>
-                        </g:elseif>
+                        </g:else>
                     </div>
                 </div>
                 <div class="eight wide field" style="text-align: right;">
@@ -164,8 +159,8 @@
                                 <%-- This whole construct is necessary for that the form validation works!!! --%>
                                 <div class="field">
                                     <div class="ui checkbox">
-                                        <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}"
-                                                    checked="false"/>
+                                        <g:checkBox class="selectedSubs" id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}"
+                                                    checked="${selectionCache.containsKey('selectedSubs_'+sub.id)}"/>
                                     </div>
                                 </div>
                             </td>
@@ -201,7 +196,7 @@
                                 <g:each in="${sub.packages}" var="sp">
                                     <div class="item"><div class="content">
                                         <g:if test="${sub.instanceOf && sub.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
-                                            <g:link controller="subscription" action="index" id="${sub.instanceOf.id}"
+                                            <g:link controller="subscription" action="index" id="${sub.id}"
                                                     params="[pkgfilter: sp.pkg.id]">
                                                 ${sp.pkg.name}<br/>(Bestand der Elternlizenz wird übernommen)
                                             </g:link>
@@ -266,6 +261,21 @@
         else {
             $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', false)
         }
+    });
+
+    $(".selectedSubs").change(function() {
+        let selId = $(this).attr("id");
+        $.ajax({
+            url: "<g:createLink controller="ajaxJson" action="updatePaginationCache" />",
+            data: {
+                selId: selId,
+                cacheKeyReferer: "/${controllerName}/subscriptionManagement/${params.tab}/${user.id}"
+            }
+        }).done(function(result){
+            console.log("updated cache for "+selId+": "+result.state);
+        }).fail(function(xhr,status,message){
+            console.log("error occurred, consult logs!");
+        });
     });
 
   $('.unlinkPackages').on('click',function() {
