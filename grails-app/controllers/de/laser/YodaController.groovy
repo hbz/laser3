@@ -13,7 +13,7 @@ import de.laser.properties.OrgProperty
 import de.laser.properties.PersonProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 import de.laser.remote.FTControl
 import de.laser.remote.GlobalRecordSource
 import de.laser.reporting.report.ReportingCache
@@ -721,7 +721,7 @@ class YodaController {
                 platformInstanceRecords: [:],
                 flagContentGokb : true // gokbService.executeQuery
         ]
-        Map allPlatforms = gokbService.executeQuery(ApiSource.getSushiSourcesURL(), [:])
+        Map allPlatforms = gokbService.executeQuery(Wekb.getSushiSourcesURL(), [:])
         if (allPlatforms.error && allPlatforms.error == 404) {
             result.wekbServerUnavailable = message(code: 'wekb.error.404')
         }

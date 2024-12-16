@@ -18,7 +18,7 @@ import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.properties.SubscriptionProperty
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
 import de.laser.stats.SushiCallError
@@ -2320,7 +2320,7 @@ class SubscriptionService {
         boolean result = false
         subscribedPlatforms.each { Platform platformInstance ->
             if(!result) {
-                Map queryResult = gokbService.executeQuery(ApiSource.getSearchApiURL(), [uuid: platformInstance.gokbId])
+                Map queryResult = gokbService.executeQuery(Wekb.getSearchApiURL(), [uuid: platformInstance.gokbId])
                 if (queryResult) {
                     List records = queryResult.result
                     if(records) {
@@ -2339,7 +2339,7 @@ class SubscriptionService {
      * @return
      */
     Map<String, Object> prepareSUSHIConnectionCheck(CustomerIdentifier ci) {
-        Map<String, Object> queryResult = gokbService.executeQuery(ApiSource.getSushiSourcesURL(), [:])
+        Map<String, Object> queryResult = gokbService.executeQuery(Wekb.getSushiSourcesURL(), [:])
         Map platformRecord
         if (queryResult) {
             Map<String, Object> records = queryResult

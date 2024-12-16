@@ -8,7 +8,7 @@ import de.laser.ctrl.SubscriptionControllerService
 import de.laser.finance.PriceItem
 import de.laser.helper.Profiler
 import de.laser.http.BasicHttpClient
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.storage.RDConstants
@@ -1760,7 +1760,7 @@ class ExportService {
 	Map<String, Object> getReports(Map configMap) {
 		Map<String, Object> result = [:]
 		SimpleDateFormat monthFormatter = DateUtils.getSDF_yyyyMM()
-		Map queryResult = gokbService.executeQuery(ApiSource.getSushiSourcesURL(), [:])
+		Map queryResult = gokbService.executeQuery(Wekb.getSushiSourcesURL(), [:])
 		Map platformRecord
 		if (queryResult) {
 			Map<String, Object> records = queryResult

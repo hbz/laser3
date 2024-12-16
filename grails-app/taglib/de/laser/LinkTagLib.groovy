@@ -2,7 +2,7 @@ package de.laser
 
 import de.laser.ui.Btn
 import de.laser.ui.Icon
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 
 class LinkTagLib {
 
@@ -31,7 +31,7 @@ class LinkTagLib {
 
     // <wekbIconLink href="${target}" />
     def wekbIconLink = { attrs, body ->
-        String resourceUrl  = ApiSource.getResourceShowURL() + '/' + attrs.gokbId
+        String resourceUrl  = Wekb.getResourceShowURL() + '/' + attrs.gokbId
         String href         = ''
         String label        = 'Unbekannter Fehler'
 
@@ -75,7 +75,7 @@ class LinkTagLib {
     }
 
     def wekbButtonLink = { attrs, body ->
-        String resourceUrl  = ApiSource.getResourceShowURL() + '/' + attrs.gokbId
+        String resourceUrl  = Wekb.getResourceShowURL() + '/' + attrs.gokbId
         String href         = ''
         String label        = ''
 

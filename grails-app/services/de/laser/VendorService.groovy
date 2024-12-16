@@ -1,15 +1,13 @@
 package de.laser
 
 import de.laser.addressbook.Address
-import de.laser.addressbook.Contact
 import de.laser.addressbook.Person
 import de.laser.addressbook.PersonRole
 import de.laser.auth.User
 import de.laser.convenience.Marker
 import de.laser.helper.Params
-import de.laser.properties.PropertyDefinition
 import de.laser.properties.VendorProperty
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfigVendor
 import de.laser.traces.DeletedObject
@@ -22,12 +20,10 @@ import de.laser.wekb.Package
 import de.laser.wekb.PackageVendor
 import de.laser.wekb.Platform
 import de.laser.wekb.Vendor
-import de.laser.wekb.VendorLink
 import de.laser.wekb.VendorRole
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
-import org.springframework.transaction.TransactionStatus
 
 @Transactional
 class VendorService {
@@ -381,7 +377,7 @@ class VendorService {
                                       institution: contextOrg,
                                       contextOrg: contextOrg, //for templates
                                       contextCustomerType:contextOrg.getCustomerType(),
-                                      wekbApi: ApiSource.getCurrent()]
+                                      wekbApi: Wekb.getInstance()]
         if(params.id) {
             result.vendor = Vendor.get(params.id)
             result.editable = contextService.isInstEditor()
@@ -402,7 +398,7 @@ class VendorService {
         User contextUser = contextService.getUser()
         SwissKnife.setPaginationParams(result, params, contextUser)
         Locale locale = LocaleUtils.getCurrentLocale()
-        result.wekbApi = ApiSource.getCurrent()
+        result.wekbApi = Wekb.getInstance()
 
         result.flagContentGokb = true // vendorService.getWekbVendorRecords()
         Map queryCuratoryGroups = gokbService.executeQuery(result.wekbApi.getGroupsURL(), [:])

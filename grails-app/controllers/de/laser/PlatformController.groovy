@@ -6,7 +6,7 @@ import de.laser.ctrl.PlatformControllerService
 import de.laser.annotations.DebugInfo
 import de.laser.helper.Params
 import de.laser.properties.PropertyDefinition
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 import de.laser.storage.RDStore
 import de.laser.utils.SwissKnife
 import de.laser.oap.OrgAccessPoint
@@ -62,13 +62,13 @@ class PlatformController  {
     def list() {
         Map<String, Object> result = [
                 user: contextService.getUser(),
-                baseUrl: ApiSource.getURL(),
+                baseUrl: Wekb.getURL(),
                 myPlatformIds: [],
                 flagContentGokb : true, // gokbService.doQuery
                 propList: PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.PLA_PROP], contextService.getOrg())
         ]
         SwissKnife.setPaginationParams(result, params, (User) result.user)
-        Map queryCuratoryGroups = gokbService.executeQuery(ApiSource.getGroupsURL(), [:])
+        Map queryCuratoryGroups = gokbService.executeQuery(Wekb.getGroupsURL(), [:])
         if(queryCuratoryGroups.code == 404) {
             result.error = message(code: 'wekb.error.'+queryCuratoryGroups.error) as String
         }
@@ -263,11 +263,11 @@ class PlatformController  {
         Map<String, Object> result = platformControllerService.getResultGenerics(params)
         Platform platformInstance = result.platformInstance
 
-        result.baseUrl = ApiSource.getURL() + '/'
+        result.baseUrl = Wekb.getURL() + '/'
 
         result.flagContentGokb = true // gokbService.executeQuery
         result.platformInstanceRecord = [:]
-        Map queryResult = gokbService.executeQuery(ApiSource.getSearchApiURL(), [uuid: platformInstance.gokbId])
+        Map queryResult = gokbService.executeQuery(Wekb.getSearchApiURL(), [uuid: platformInstance.gokbId])
         if ((queryResult.error && queryResult.error == 404) || !queryResult) {
             flash.error = message(code:'wekb.error.404') as String
         }

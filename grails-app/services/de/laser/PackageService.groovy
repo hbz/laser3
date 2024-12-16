@@ -3,7 +3,7 @@ package de.laser
 import de.laser.auth.User
 import de.laser.finance.CostItem
 import de.laser.oap.OrgAccessPointLink
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
@@ -12,7 +12,6 @@ import de.laser.wekb.TitleInstancePackagePlatform
 import grails.gorm.transactions.Transactional
 import grails.web.mapping.LinkGenerator
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.hibernate.Session
 import org.springframework.context.MessageSource
 
 /**
@@ -102,7 +101,7 @@ class PackageService {
                 [value: 'false', name: messageSource.getMessage('package.index.result.noAutomaticUpdates', null, locale)]
         ]
 
-        result.baseUrl = ApiSource.getURL()
+        result.baseUrl = Wekb.getURL()
 
         Map<String, Object> queryParams = [componentType: "Package"]
         if (params.q) {
@@ -153,7 +152,7 @@ class PackageService {
         if(params.uuids)
             queryParams.uuids = params.uuids
 
-        Map queryCuratoryGroups = gokbService.executeQuery(ApiSource.getGroupsURL(), [:])
+        Map queryCuratoryGroups = gokbService.executeQuery(Wekb.getGroupsURL(), [:])
         if(!params.sort)
             params.sort = 'name'
         if(queryCuratoryGroups.code == 404) {

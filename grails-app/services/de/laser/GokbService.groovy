@@ -2,7 +2,7 @@ package de.laser
 
 import de.laser.config.ConfigMapper
 import de.laser.http.BasicHttpClient
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import io.micronaut.http.client.DefaultHttpClientConfiguration
@@ -13,7 +13,7 @@ import java.time.Duration
 
 /**
  * Is actually a we:kb service. It contains methods to communicate with the we:kb ElasticSearch index
- * @see de.laser.remote.ApiSource
+ * @see Wekb
  */
 @Transactional
 class GokbService {
@@ -33,7 +33,7 @@ class GokbService {
 
         Set records = []
 
-        Map queryResult = executeQuery(ApiSource.getSearchApiURL(), queryParams)
+        Map queryResult = executeQuery(Wekb.getSearchApiURL(), queryParams)
         if (queryResult && queryResult.result) {
             records.addAll(queryResult.result)
             result.recordsCount = queryResult.result_count_total

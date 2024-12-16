@@ -7,7 +7,7 @@ import de.laser.auth.User
 import de.laser.convenience.Marker
 import de.laser.helper.Params
 import de.laser.properties.ProviderProperty
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 import de.laser.storage.RDStore
 import de.laser.traces.DeletedObject
 import de.laser.wekb.ElectronicBilling
@@ -300,7 +300,7 @@ class ProviderService {
                                       contextOrg: org, //for templates
                                       isMyOrg:false,
                                       contextCustomerType:org.getCustomerType()]
-        result.wekbApi = ApiSource.getCurrent()
+        result.wekbApi = Wekb.getInstance()
         if (params.id) {
             result.provider = Provider.get(params.id)
             result.editable = contextService.isInstEditor()

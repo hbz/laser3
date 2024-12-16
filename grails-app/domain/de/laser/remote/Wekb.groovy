@@ -6,23 +6,22 @@ import de.laser.config.ConfigMapper
  * Represents an external API-Source. Currently in use to retain we:kb API connections which are not used for bulk operations;
  * the title synchronisation is being done via {@link GlobalRecordSource}s
  */
-@Deprecated
-class ApiSource {
+class Wekb {
 
     // TODO - ERMS-5917
 
     String name
     String baseUrl
 
-    ApiSource() {
+    Wekb() {
         name     = 'WE:KB'
         baseUrl  = ConfigMapper.getWekbServerURL()
     }
 
     static mapWith = 'none'
 
-    static ApiSource getCurrent() {
-        new ApiSource()
+    static Wekb getInstance() {
+        new Wekb()
     }
 
     /**

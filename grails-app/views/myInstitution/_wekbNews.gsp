@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.Wekb" %>
 <laser:serviceInjection />
 
 <g:if test="${tmplView == 'info' && wekbNews.counts.all > 0}">
@@ -221,7 +221,7 @@
             Änderungen der letzten <strong>${wekbNews.query.days}</strong> Tage: <strong>${wekbNews.counts.all}</strong> Datensätze.<br />
             Letzter Datenabgleich: <strong>${wekbNews.query.call}</strong>
             <span style="float:right">
-                <a href="${ApiSource.getURL()}" target="_blank"><i class="${Icon.WEKB} large"></i></a>
+                <a href="${Wekb.getURL()}" target="_blank"><i class="${Icon.WEKB} large"></i></a>
             </span>
         </p>
         <div class="filter" style="margin:0 2em 0.5em; text-align:right;">

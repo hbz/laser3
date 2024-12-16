@@ -1,7 +1,8 @@
 package de.laser.reporting.export.myInstitution
 
+
 import de.laser.wekb.Provider
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 import de.laser.ContextService
 import de.laser.IdentifierNamespace
 import de.laser.wekb.Package
@@ -131,7 +132,7 @@ class PackageExport extends BaseDetailsExport {
                         List<Long> esRecordIdList = fCache.data.packageESRecords.keySet().collect{ Long.parseLong(it) }
 
                         if (esRecordIdList.contains(pkg.id)) {
-                            ApiSource wekb = ElasticSearchHelper.getCurrentApiSource()
+                            Wekb wekb = ElasticSearchHelper.getCurrentApiSource()
                             if (wekb?.baseUrl) {
                                 prop = wekb.baseUrl + '/public/packageContent/' + pkg.getProperty(key) + '@' + pkg.getProperty(key)
                             }

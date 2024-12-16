@@ -8,7 +8,7 @@ import de.laser.properties.PropertyDefinition
 import de.laser.storage.PropertyStore
 import de.laser.utils.DateUtils
 import de.laser.annotations.DebugInfo
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.SwissKnife
@@ -240,9 +240,9 @@ class PackageController {
         }
         result.gascoContacts = gascoContacts
 
-        result.baseUrl = ApiSource.getURL() + '/'
+        result.baseUrl = Wekb.getURL() + '/'
 
-        Map queryResult = gokbService.executeQuery(ApiSource.getSearchApiURL(), [uuid: result.packageInstance.gokbId])
+        Map queryResult = gokbService.executeQuery(Wekb.getSearchApiURL(), [uuid: result.packageInstance.gokbId])
         if ((queryResult.error && queryResult.error == 404) || !queryResult) {
             flash.error = message(code:'wekb.error.404') as String
         }
@@ -253,7 +253,7 @@ class PackageController {
         if(result.packageInstance.nominalPlatform) {
             //record filled with LAS:eR and we:kb data
             Map<String, Object> platformInstanceRecord = [:]
-            queryResult = gokbService.executeQuery(ApiSource.getSearchApiURL(), [uuid: result.packageInstance.nominalPlatform.gokbId])
+            queryResult = gokbService.executeQuery(Wekb.getSearchApiURL(), [uuid: result.packageInstance.nominalPlatform.gokbId])
             if(queryResult) {
                 List records = queryResult.result
                 if(records)
@@ -538,7 +538,7 @@ class PackageController {
         result.num_change_rows = result.countPendingChanges
         result.changes = changes
 
-        result.apisources = [ ApiSource.getCurrent() ]
+        result.apisources = [Wekb.getInstance()]
 
         result
     }

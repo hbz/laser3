@@ -3,13 +3,12 @@ package de.laser
 import de.laser.addressbook.Contact
 import de.laser.addressbook.Person
 import de.laser.addressbook.PersonRole
-import de.laser.base.AbstractCoverage
 import de.laser.base.AbstractLockableService
 import de.laser.config.ConfigMapper
 import de.laser.exceptions.SyncException
 import de.laser.finance.PriceItem
 import de.laser.http.BasicHttpClient
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 import de.laser.remote.GlobalRecordSource
 import de.laser.storage.Constants
 import de.laser.storage.RDConstants
@@ -28,7 +27,6 @@ import de.laser.wekb.Provider
 import de.laser.wekb.TIPPCoverage
 import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
-import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.client.DefaultHttpClientConfiguration
@@ -59,7 +57,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     GlobalService globalService
     PendingChangeService pendingChangeService
     PackageService packageService
-    ApiSource apiSource
+    Wekb apiSource
     GlobalRecordSource source
 
     static final long RECTYPE_PACKAGE = 0
@@ -120,7 +118,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             maxTimestamp = 0
             try {
                 Thread.currentThread().setName("GlobalDataSync_Json")
-                this.apiSource = ApiSource.getCurrent()
+                this.apiSource = Wekb.getInstance()
                 Date oldDate = source.haveUpTo
                 //Date oldDate = DateUtils.getSDF_ymd().parse('2022-01-01') //debug only
                 log.info("getting records from job #${source.id} with uri ${source.uri} since ${oldDate}")
@@ -248,7 +246,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             this.source = source
             try {
                 Thread.currentThread().setName("PackageReload")
-                this.apiSource = ApiSource.getCurrent()
+                this.apiSource = Wekb.getInstance()
                 String componentType = 'TitleInstancePackagePlatform'
                 //preliminary: build up list of all deleted components
                 Set<String> permanentlyDeletedTitles = getPermanentlyDeletedTitles()
@@ -362,7 +360,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     break
             }
             this.source = GlobalRecordSource.findByActiveAndRectype(true,rectype)
-            this.apiSource = ApiSource.getCurrent()
+            this.apiSource = Wekb.getInstance()
             log.info("getting all records from job #${source.id} with uri ${source.uri}")
             try {
                 Map<String,Object> result = fetchRecordJSON(false,[componentType: componentType, max: MAX_TIPP_COUNT_PER_PAGE, sort:'lastUpdated'])
@@ -387,7 +385,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     void updateData(String dataToLoad) {
         running = true
             this.source = GlobalRecordSource.findByActiveAndRectype(true,RECTYPE_TIPP)
-            this.apiSource = ApiSource.getCurrent()
+            this.apiSource = Wekb.getInstance()
             List<String> triggeredTypes
             int max
             switch(dataToLoad) {

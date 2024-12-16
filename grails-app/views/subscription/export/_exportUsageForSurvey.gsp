@@ -1,4 +1,4 @@
-<%@ page import="de.laser.wekb.Platform; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.ApiSource; de.laser.base.AbstractReport; grails.converters.JSON; de.laser.CustomerIdentifier; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.remote.Wekb; de.laser.wekb.Platform; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.base.AbstractReport; grails.converters.JSON; de.laser.CustomerIdentifier; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 <%
     Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscription])
@@ -13,7 +13,7 @@
     Set reportTypes
     String dummy
     subscribedPlatforms.each { Platform platformInstance ->
-        Map queryResult = gokbService.executeQuery(ApiSource.getSearchApiURL(), [uuid: platformInstance.gokbId])
+        Map queryResult = gokbService.executeQuery(Wekb.getSearchApiURL(), [uuid: platformInstance.gokbId])
         if (queryResult) {
             List records = queryResult.result
             if(records[0]) {
