@@ -68,7 +68,7 @@
             <th>${message(code: 'person.contacts.label')}</th>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyInvoicingInformation')}">
-        <th class="center aligned">${message(code: 'surveyOrg.person.selected')}</th>
+        <th class="center aligned la-th-wrap">${message(code: 'surveyOrg.person.selected')}</th>
     </g:if>
 </g:each>
         <g:if test="${showOptions}">
