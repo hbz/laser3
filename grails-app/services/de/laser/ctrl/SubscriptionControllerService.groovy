@@ -2119,8 +2119,8 @@ class SubscriptionControllerService {
                     holdingSelection = GrailsHibernateUtil.unwrapIfProxy(result.subscription.holdingSelection)
                 }
                 result.holdingSelection = holdingSelection
-                GlobalRecordSource source = GlobalRecordSource.findByUriLikeAndRectype(result.source+'%', GlobalSourceSyncService.RECTYPE_TIPP)
-                log.debug("linkPackage. Global Record Source URL: " +source.uri)
+                GlobalRecordSource source = GlobalRecordSource.findByRectype(GlobalSourceSyncService.RECTYPE_TIPP)
+                log.debug("linkPackage. Global Record Source URL: " + source.getUri())
                 globalSourceSyncService.source = source
                 globalSourceSyncService.defineMapFields()
 

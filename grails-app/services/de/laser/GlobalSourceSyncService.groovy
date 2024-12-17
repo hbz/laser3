@@ -117,7 +117,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 Thread.currentThread().setName("GlobalDataSync_Json")
                 Date oldDate = source.haveUpTo
                 //Date oldDate = DateUtils.getSDF_ymd().parse('2022-01-01') //debug only
-                log.info("getting records from job #${source.id} with uri ${source.uri} since ${oldDate}")
+                log.info("getting records from job #${source.id} with uri ${source.getUri()} since ${oldDate}")
                 SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd_HHmmss()
                 String componentType
                 /*
@@ -355,7 +355,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     break
             }
             this.source = GlobalRecordSource.findByActiveAndRectype(true,rectype)
-            log.info("getting all records from job #${source.id} with uri ${source.uri}")
+            log.info("getting all records from job #${source.id} with uri ${source.getUri()}")
             try {
                 Map<String,Object> result = fetchRecordJSON(false,[componentType: componentType, max: MAX_TIPP_COUNT_PER_PAGE, sort:'lastUpdated'])
                 if(result) {
@@ -2108,7 +2108,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
      */
     Map<String,Object> fetchRecordJSON(boolean useScroll, Map<String,Object> queryParams) throws SyncException {
         BasicHttpClient http
-        String uri = source.uri.endsWith('/') ? source.uri : source.uri+'/'
+        String uri = source.getUri() + '/'
         HttpClientConfiguration config = new DefaultHttpClientConfiguration()
         config.readTimeout = Duration.ofMinutes(5)
         config.maxContentLength = MAX_CONTENT_LENGTH

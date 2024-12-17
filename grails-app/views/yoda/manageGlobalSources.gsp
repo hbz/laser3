@@ -1,32 +1,27 @@
 <%@page import="de.laser.GlobalSourceSyncService; de.laser.config.ConfigMapper" %>
 
-<laser:htmlStart text="Manage Global Sources" />
+<laser:htmlStart message="menu.yoda.manageGlobalSources" />
 
     <ui:breadcrumbs>
         <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
-        <ui:crumb text="Global Sources" class="active" />
+        <ui:crumb message="menu.yoda.manageGlobalSources" class="active" />
     </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon text="Global Sources" type="yoda" />
+    <ui:h1HeaderWithIcon message="menu.yoda.manageGlobalSources" type="yoda" />
 
     <ui:messages data="${flash}" />
 
       <table class="ui celled la-js-responsive-table la-table table">
         <thead>
           <tr>
-              <th>${message(code:'sidewide.number')}</th>
-              <th>${message(code:'default.identifier.label')}</th>
-              <th>${message(code:'default.name.label')}</th>
-              <th>${message(code:'default.type.label')}</th>
-            <th>Up To</th>
+            <th>${message(code:'sidewide.number')}</th>
+            <th>${message(code:'default.name.label')}</th>
+            <th>${message(code:'default.type.label')}</th>
             <th>URL</th>
-            <th>URL to editable instance</th>
-            <th>URL with Up To</th>
-            <th>List Prefix</th>
-            <th>Full Prefix</th>
-            <th>Principal</th>
-            <th>Credentials</th>
             <th>RecType</th>
+            <th>Up To</th>
+            <th>URL with Up To</th>
+            <th>Active</th>
           </tr>
         </thead>
         <tbody>
@@ -47,13 +42,12 @@
                   }
               %>
             <tr>
-                <td>${source.id}</td>
-              <td>${source.identifier}</td>
+              <td>${source.id}</td>
               <td>${source.name}</td>
               <td>${source.type}</td>
+              <td>${source.getUri()}</td>
+              <td>${component}</td>
               <td><ui:xEditable owner="${source}" field="haveUpTo" type="date"/></td>
-              <td>${source.uri}</td>
-              <td>${source.editUri}</td>
               <td>
                   <%--
                       Set<String> requestedStatus = ["Current","Expected","Retired","Deleted",Constants.PERMANENTLY_DELETED,"Removed"]
@@ -62,15 +56,9 @@
                           statusString += "&status=${status}"
                       }
                   --%>
-                  <g:link uri="${source.uri + 'searchApi?componentType='+component+'&changedSince=' + formatDate(format: "yyyy-MM-dd HH:mm:ss", date: source.haveUpTo)}&username=${ConfigMapper.getWekbApiUsername()}&password=${ConfigMapper.getWekbApiPassword()}&sort=lastUpdated" target="_blank">Link</g:link>
+                  <g:link uri="${source.getUri() + '/searchApi?componentType='+component+'&changedSince=' + formatDate(format: "yyyy-MM-dd HH:mm:ss", date: source.haveUpTo)}&username=${ConfigMapper.getWekbApiUsername()}&password=${ConfigMapper.getWekbApiPassword()}&sort=lastUpdated" target="_blank">Link</g:link>
               </td>
-              <td>${source.listPrefix}</td>
-              <td>${source.fullPrefix}</td>
-              <td>${source.principal}</td>
-              <td>${source.credentials}</td>
-              <td>
-                  ${component}
-              </td>
+              <td>${source.active}</td>
             </tr>
           </g:each>
         </tbody>
