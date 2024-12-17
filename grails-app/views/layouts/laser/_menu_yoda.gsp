@@ -70,6 +70,8 @@
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'accessType']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateAccessType')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'openAccess']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateOpenAccess')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'titleNamespace']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateTitleNamespace')}</ui:link>
+
+                        <div class="divider"></div>
                         <ui:link addItemAttributes="true" controller="yoda" action="manageWekbNews" params="[cmd:'update']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateWekbNews')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="manageWekbNews" params="[cmd:'clear']" onclick="return confirm('${message(code:'confirm.start.clear')}')">${message(code:'menu.yoda.clearWekbNews')}</ui:link>
 %{--                    </div>--}%
@@ -86,7 +88,7 @@
             </div>
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="yoda" action="esIndexUpdate" onclick="return confirm('${message(code:'confirm.start.ESUpdateIndex')}')">${message(code:'menu.yoda.updateESIndex')}</ui:link>
-                <ui:link addItemAttributes="true" controller="yoda" action="manageFTControl">Manage FTControl</ui:link>
+                <ui:link addItemAttributes="true" controller="yoda" action="manageFTControl">${message(code:'menu.yoda.manageFTControl')}</ui:link>
                 <div class="divider"></div>
                 <ui:link addItemAttributes="true" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">${message(code:'menu.yoda.resetESIndex')}</ui:link>
                 <ui:link addItemAttributes="true" controller="yoda" action="killDataloadService">Kill ES Update Index</ui:link>

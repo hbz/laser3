@@ -1,12 +1,12 @@
 <%@ page import="de.laser.ui.Btn" %>
-<laser:htmlStart text="Manage FTControl" />
+<laser:htmlStart message="menu.yoda.manageFTControl" />
 
     <ui:breadcrumbs>
         <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
-        <ui:crumb text="FTControl" class="active" />
+        <ui:crumb message="menu.yoda.manageFTControl" class="active" />
     </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon text="FTControl" type="yoda" />
+    <ui:h1HeaderWithIcon message="menu.yoda.manageFTControl" type="yoda" />
 
     <ui:msg class="${dataload.running ? 'success' : 'info'}" hideClose="true">
         Last doFTUpdate: <strong>${dataload.lastFTIndexUpdateInfo}</strong> ; Currently running: <strong>${dataload.running.toString().toUpperCase()}</strong>
@@ -60,7 +60,7 @@
         </tbody>
       </table>
 
-    <h2 class="ui header">Elasticsearch</h2>
+    <h2 class="ui header">Indizes</h2>
 
     <table class="ui celled la-js-responsive-table la-table la-hover-table compact table">
         <thead>
