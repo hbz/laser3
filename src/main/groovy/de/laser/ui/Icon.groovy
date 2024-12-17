@@ -196,10 +196,10 @@ class Icon {
         // please do not touch during refactoring ..
         // convenient symbols
 
-        @UIDoc(usage = 'Generic symbol for: Radio Button Not Set (see also SET)')
-        public static String UNSET   = 'blue bordered circular icon la-radioButton'
-        @UIDoc(usage = 'Generic symbol for: Radio Button Set  (see also UNSET)')
-        public static String SET     = 'blue bordered circular circle icon la-radioButton'
+        @UIDoc(usage = 'Generic symbol for: Check Button Not Set (see also SET)')
+        public static String UNSET   = 'blue bordered icon la-checkButton'
+        @UIDoc(usage = 'Generic symbol for: Check Button Set  (see also UNSET)')
+        public static String SET     = 'blue bordered check icon la-checkButton'
 
         @UIDoc(usage = 'Generic symbol for: Yes/Accept/Done (see also NO)')
         public static String YES    = 'check icon'
