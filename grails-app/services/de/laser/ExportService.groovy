@@ -3874,7 +3874,7 @@ class ExportService {
 		Map<String, String> titleHeaders = getBaseTitleHeaders(TitleInstancePackagePlatform.class.name, true)
 		//the where clauses here
         Map<String, Object> queryClauseParts = filterService.prepareTitleSQLQuery(configMap, TitleInstancePackagePlatform.class.name, sql)
-        String baseQuery = "select tipp_id, ${titleHeaders.values().join(', ')} from title_instance_package_platform left join tippcoverage on tc_tipp_fk = tipp_id join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id ${queryClauseParts.join} where ${queryClauseParts.where}${queryClauseParts.order}"
+        String baseQuery = "select tipp_id, ${titleHeaders.values().join(', ')} from title_instance_package_platform left join tippcoverage on tc_tipp_fk = tipp_id join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id ${queryClauseParts.join} where tipp_id = any(:tippIDSubset)${queryClauseParts.order}"
 		queryClauseParts.params.subscriber = subscriber.id
 		userCache.put('label', 'Hole Daten vom Anbieter ...')
 		Map<String, Object> export = [titles: titleHeaders.keySet().toList()]
@@ -3911,7 +3911,15 @@ class ExportService {
 		}
 		userCache.put('progress', 20)
 		userCache.put('label', 'Hole Titel ...')
-		List<GroovyRowResult> rows = sql.rows(baseQuery, queryClauseParts.params)
+		//continue here with tests:
+		Connection conn = sql.getDataSource().getConnection()
+		List<GroovyRowResult> tippIDs = sql.rows("select tipp_id from title_instance_package_platform where ${queryClauseParts.where}${queryClauseParts.order}", queryClauseParts.params)
+		List<GroovyRowResult> hostPlatformURLRows = sql.rows("select tipp_host_platform_url from permanent_title join title_instance_package_platform on pt_tipp_fk = tipp_id where pt_owner_fk = :subscriber and pt_subscription_fk = any(:subIDs)", [subscriber: subscriber.id, subIDs: conn.createArrayOf('bigint', configMap.perpetualSubIDs.toArray() as Object[])])
+		List<GroovyRowResult> rows = []
+		Set<String> hostPlatformURLs = hostPlatformURLRows['tipp_host_platform_url']
+		tippIDs.collate(65000).each { List subset ->
+			rows.addAll(sql.rows(baseQuery, [tippIDSubset: conn.createArrayOf('bigint', subset['tipp_id'].toArray() as Object[]), hostPlatformURLs: conn.createArrayOf('varchar', hostPlatformURLs.toArray() as Object[])]))
+		}
 		Map<String, Object> identifierInverseMap = subscriptionControllerService.fetchTitles(configMap.refSub, true)
 		List excelRows = []
 		userCache.put('progress', 40)
@@ -4223,7 +4231,7 @@ class ExportService {
 		 localprice_gbp: '',
 		 localprice_usd: '']
 		if(checkPerpetuallyAccessToTitle) {
-			mapping.put(messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale), "(select case when tipp_host_platform_url in(select pt_tipp.tipp_host_platform_url from permanent_title join title_instance_package_platform as pt_tipp on pt_tipp_fk = pt_tipp.tipp_id where pt_owner_fk = :subscriber) then true else false end) as ${messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale)}")
+			mapping.put(messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale), "(select case when tipp_host_platform_url = any(:hostPlatformURLs) then true else false end) as ${messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale)}")
 		}
 		if(entitlementInstance == IssueEntitlement.class.name) {
 			mapping.date_first_issue_online = "to_char(ic_start_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') as date_first_issue_online"
