@@ -20,9 +20,9 @@ class Wekb {
 
     static mapWith = 'none'
 
-    static Wekb getInstance() {
-        new Wekb()
-    }
+//    static Wekb getInstance() {
+//        new Wekb()
+//    }
 
     /**
      * @return ConfigMapper.getWekbServerURL()
@@ -31,13 +31,13 @@ class Wekb {
         ConfigMapper.getWekbServerURL()
     }
 
-
     /**
      * @return ConfigMapper.getWekbServerURL() + '/resource/show'
      */
     static String getResourceShowURL() {
         getURL() + '/resource/show'
     }
+
     /**
      * @return ConfigMapper.getWekbServerURL() + '/api2/searchApi'
      */

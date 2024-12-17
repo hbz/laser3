@@ -1155,44 +1155,6 @@ class YodaController {
         redirect(action: 'manageFTControl')
     }
 
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    def newESSource() {
-        log.debug("manageGlobalSources ..")
-        redirect action:'manageGlobalSources'
-    }
-
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    def deleteGlobalSource() {
-        GlobalRecordSource.removeSource(params.long('id'))
-        redirect(action:'manageGlobalSources')
-    }
-
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    @Transactional
-    def newGlobalSource() {
-        Map<String, Object> result=[:]
-        log.debug("manageGlobalSources ..")
-
-        result.newSource = GlobalRecordSource.findByIdentifier(params.identifier) ?: new GlobalRecordSource(
-                identifier:params.identifier,
-                name:params.name,
-                type:params.type,
-                haveUpTo:null,
-                uri:params.uri,
-                editUri:params.editUri,
-                listPrefix:params.listPrefix,
-                fullPrefix:params.fullPrefix,
-                principal:params.principal,
-                credentials:params.credentials,
-                rectype:params.int('rectype'))
-        result.newSource.save()
-
-        redirect action:'manageGlobalSources'
-    }
-
     /**
      * Moves the Nationaler Statistikserver credentials from the OrgProperty into the OrgSettings structure
      */

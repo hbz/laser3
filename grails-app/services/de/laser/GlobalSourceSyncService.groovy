@@ -8,7 +8,6 @@ import de.laser.config.ConfigMapper
 import de.laser.exceptions.SyncException
 import de.laser.finance.PriceItem
 import de.laser.http.BasicHttpClient
-import de.laser.remote.Wekb
 import de.laser.remote.GlobalRecordSource
 import de.laser.storage.Constants
 import de.laser.storage.RDConstants
@@ -55,7 +54,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
     EscapeService escapeService
     ExecutorService executorService
     GlobalService globalService
-    PendingChangeService pendingChangeService
     PackageService packageService
     GlobalRecordSource source
 
