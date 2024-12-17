@@ -9,7 +9,7 @@ import de.laser.auth.User
 import de.laser.cache.EhcacheWrapper
 import de.laser.helper.Params
 import de.laser.properties.PropertyDefinition
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
 import de.laser.utils.PdfUtils
@@ -75,8 +75,7 @@ class ProviderController {
                 tenant: contextService.getOrg()
         ])
 
-        result.wekbApi = ApiSource.getCurrent()
-        Map queryCuratoryGroups = gokbService.executeQuery(ApiSource.getCurrent().getGroupsURL(), [:])
+        Map queryCuratoryGroups = gokbService.executeQuery(Wekb.getGroupsURL(), [:])
         if(queryCuratoryGroups.error == 404) {
             result.error = message(code:'wekb.error.'+queryCuratoryGroups.error) as String
         }

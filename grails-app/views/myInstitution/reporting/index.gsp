@@ -1,4 +1,4 @@
-<%@page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.config.ConfigMapper; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.GenericHelper; de.laser.ReportingFilter; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
+<%@page import="de.laser.remote.Wekb; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.config.ConfigMapper; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.GenericHelper; de.laser.ReportingFilter; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
 <laser:htmlStart message="myinst.reporting">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
@@ -75,9 +75,9 @@
                             <div class="item">
                             <div class="content middle aligned">
                                 <div class="header">We:kb</div>
-                                <g:set var="eshApiSource" value="${ElasticSearchHelper.getCurrentApiSource()}" />
-                                <g:if test="${eshApiSource}">
-                                    <a href="${eshApiSource.baseUrl}" target="_blank">${eshApiSource.baseUrl}</a>
+                                <g:set var="wekb_url" value="${Wekb.getURL()}" />
+                                <g:if test="${wekb_url}">
+                                    <a href="${wekb_url}" target="_blank">${wekb_url}</a>
                                 </g:if>
                                 <g:else>--</g:else>
                             </div>

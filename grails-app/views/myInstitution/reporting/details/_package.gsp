@@ -6,7 +6,6 @@
 <g:set var="filterCache" value="${GlobalExportHelper.getFilterCache(token)}"/>
 <g:set var="esRecords" value="${filterCache.data.packageESRecords ?: [:]}"/>
 <g:set var="esRecordIds" value="${esRecords.keySet().collect{Long.parseLong(it)}}"/>
-<g:set var="wekb" value="${ElasticSearchHelper.getCurrentApiSource()}"/>
 
 <div class="ui segment" id="reporting-detailsTable">
     <table class="ui table la-js-responsive-table la-table compact">

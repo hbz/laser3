@@ -39,7 +39,6 @@ class YodaService {
     DeletionService deletionService
     GlobalSourceSyncService globalSourceSyncService
     GlobalService globalService
-    PackageService packageService
     ExecutorService executorService
 
     boolean bulkOperationRunning = false

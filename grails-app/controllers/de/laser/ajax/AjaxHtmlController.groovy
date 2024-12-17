@@ -21,7 +21,6 @@ import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.OrganisationControllerService
 import de.laser.ctrl.SubscriptionControllerService
-import de.laser.remote.ApiSource
 import de.laser.ContextService
 import de.laser.GokbService
 import de.laser.IssueEntitlement
@@ -29,6 +28,7 @@ import de.laser.License
 import de.laser.LinksGenerationService
 import de.laser.Org
 import de.laser.OrgRole
+import de.laser.remote.Wekb
 import de.laser.wekb.Provider
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
@@ -56,7 +56,6 @@ import de.laser.UserSetting
 import de.laser.wekb.Vendor
 import de.laser.annotations.DebugInfo
 import de.laser.auth.User
-import de.laser.ctrl.LicenseControllerService
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.custom.CustomWkhtmltoxService
 import de.laser.utils.DateUtils
@@ -298,7 +297,7 @@ class AjaxHtmlController {
         result.editmode = result.subscription.isEditableBy(contextService.getUser())
         result.accessConfigEditable = contextService.isInstEditor(CustomerTypeService.ORG_INST_BASIC) || (contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_BASIC) && result.subscription.getSubscriberRespConsortia().id == contextService.getOrg().id)
         result.subscription.packages.pkg.gokbId.each { String uuid ->
-            Map queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSearchApiURL(), [uuid: uuid])
+            Map queryResult = gokbService.executeQuery(Wekb.getSearchApiURL(), [uuid: uuid])
             if (queryResult) {
                 List records = queryResult.result
                 packageMetadata.put(uuid, records[0])
@@ -322,7 +321,7 @@ class AjaxHtmlController {
 
             packageInfos.packageInstance = subscriptionPackage.pkg
 
-            Map queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSearchApiURL(), [uuid: subscriptionPackage.pkg.gokbId])
+            Map queryResult = gokbService.executeQuery(Wekb.getSearchApiURL(), [uuid: subscriptionPackage.pkg.gokbId])
             if (queryResult.error && queryResult.error == 404) {
                 flash.error = message(code: 'wekb.error.404') as String
             } else if (queryResult) {
@@ -1307,8 +1306,6 @@ class AjaxHtmlController {
     Map<String,Object> showAllTitleInfos() {
         Map<String, Object> result = [:]
 
-        result.apisources = [ ApiSource.getCurrent() ]
-
         result.tipp = params.tippID ? TitleInstancePackagePlatform.get(params.tippID) : null
         result.ie = params.ieID ? IssueEntitlement.get(params.ieID) : null
         result.showPackage = params.showPackage
@@ -1326,8 +1323,6 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     Map<String,Object> showAllTitleInfosAccordion() {
         Map<String, Object> result = [:]
-
-        result.apisources = [ ApiSource.getCurrent() ]
 
         result.tipp = params.tippID ? TitleInstancePackagePlatform.get(params.tippID) : null
         result.ie = params.ieID ? IssueEntitlement.get(params.ieID) : null

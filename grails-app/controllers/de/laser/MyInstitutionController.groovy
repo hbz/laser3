@@ -8,7 +8,7 @@ import de.laser.cache.SessionCacheWrapper
 import de.laser.convenience.Marker
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.UserControllerService
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.auth.Role
@@ -40,7 +40,6 @@ import de.laser.utils.SwissKnife
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
-import de.laser.wekb.ProviderRole
 import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import de.laser.wekb.VendorRole
@@ -50,7 +49,6 @@ import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.transaction.TransactionStatus
 import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.web.multipart.MultipartFile
@@ -295,7 +293,7 @@ class MyInstitutionController  {
         Map<String, Object> wekbParams = params.clone()
         if(!wekbParams.containsKey('sort'))
             wekbParams.sort = 'name'
-        Map queryCuratoryGroups = gokbService.executeQuery(ApiSource.getCurrent().getGroupsURL(), [:])
+        Map queryCuratoryGroups = gokbService.executeQuery(Wekb.getGroupsURL(), [:])
         if(queryCuratoryGroups.code == 404) {
             result.error = message(code: 'wekb.error.'+queryCuratoryGroups.error) as String
         }
@@ -930,8 +928,8 @@ class MyInstitutionController  {
             providerQuery = efq.query
             queryParams = efq.queryParams as Map<String, Object>
         }
-        result.wekbApi = ApiSource.getCurrent()
-        Map queryCuratoryGroups = gokbService.executeQuery(ApiSource.getCurrent().getGroupsURL(), [:])
+
+        Map queryCuratoryGroups = gokbService.executeQuery(Wekb.getGroupsURL(), [:])
         if(queryCuratoryGroups.error == 404) {
             result.error = message(code:'wekb.error.'+queryCuratoryGroups.error) as String
         }
@@ -1103,7 +1101,7 @@ class MyInstitutionController  {
 
         result.filterSet = params.filterSet ? true : false
         /*
-        Map queryCuratoryGroups = gokbService.executeQuery(ApiSource.getCurrent().getGroupsURL(), [:])
+        Map queryCuratoryGroups = gokbService.executeQuery(Wekb.getGroupsURL(), [:])
         if(queryCuratoryGroups.code == 404) {
             result.error = message(code: 'wekb.error.'+queryCuratoryGroups.error) as String
         }

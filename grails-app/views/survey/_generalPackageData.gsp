@@ -61,7 +61,7 @@
                                                                 <g:each in="${pkgInfo.packageInstanceRecord.curatoryGroups}"
                                                                         var="curatoryGroup">
                                                                     <div class="item"><g:link
-                                                                            url="${baseUrl}resource/show/${curatoryGroup.curatoryGroup}">${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}</g:link></div>
+                                                                            url="${baseUrl}/resource/show/${curatoryGroup.curatoryGroup}">${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}</g:link></div>
                                                                 </g:each>
                                                             </div>
                                                         </dd>

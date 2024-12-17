@@ -16,7 +16,7 @@ import de.laser.interfaces.CalculatedType
 import de.laser.properties.OrgProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 import de.laser.remote.GlobalRecordSource
 import de.laser.reporting.report.local.SubscriptionReport
 import de.laser.reporting.report.myInstitution.base.BaseConfig
@@ -973,7 +973,7 @@ class SubscriptionControllerService {
                     contentType = titleTypes[0]
             }
             Platform platform = pkg.nominalPlatform
-            Map<String, Object> queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSushiSourcesURL(), [:])
+            Map<String, Object> queryResult = gokbService.executeQuery(Wekb.getSushiSourcesURL(), [:])
             Map platformRecord
             if (queryResult) {
                 Map<String, Object> records = queryResult
@@ -2060,7 +2060,7 @@ class SubscriptionControllerService {
      * @param controller unused
      * @param params the request parameter map, containing also filter parameters to limit the package results
      * @return a filtered list of packages
-     * @see ApiSource
+     * @see de.laser.remote.Wekb
      * @see Package
      */
     Map<String,Object> linkPackage(SubscriptionController controller, GrailsParameterMap params) {
@@ -2108,7 +2108,7 @@ class SubscriptionControllerService {
                 linkToChildren = params.linkToChildren == 'on',
                 createEntitlementsForChildren = params.createEntitlementsForChildren == 'on'
                 String pkgUUID = params.addUUID
-                result.source = ApiSource.getCurrent().baseUrl
+                result.source = Wekb.getURL()
                 RefdataValue holdingSelection = RefdataValue.get(params.holdingSelection)
                 if(params.holdingSelection) {
                     holdingSelection = RefdataValue.get(params.holdingSelection)
@@ -2533,9 +2533,6 @@ class SubscriptionControllerService {
                 result.num_change_rows = subscriptionHistory.size()
             }
             */
-
-            result.apisources = [ ApiSource.getCurrent() ]
-
             result.packages = result.subscription.packages
 
             [result:result,status:STATUS_OK]

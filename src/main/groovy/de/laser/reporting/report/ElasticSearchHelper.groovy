@@ -1,7 +1,7 @@
 package de.laser.reporting.report
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.RefdataValue
@@ -244,11 +244,4 @@ class ElasticSearchHelper {
         }
     }
 
-    /**
-     * Returns the current active we:kb ElasticSearch API source
-     * @return the active {@link ApiSource}
-     */
-    static getCurrentApiSource() {
-        ApiSource.getCurrent()
-    }
 }
