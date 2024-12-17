@@ -127,9 +127,9 @@ class PlatformExport extends BaseDetailsExport {
                         List<Long> esRecordIdList = fCache.data.platformESRecords.keySet().collect{ Long.parseLong(it) }
 
                         if (esRecordIdList.contains(plt.id)) {
-                            Wekb wekb = ElasticSearchHelper.getWekbSource()
-                            if (wekb?.baseUrl) {
-                                prop = wekb.baseUrl + '/public/platformContent/' + plt.getProperty(key) + '@' + plt.getProperty(key)
+                            String wekb = Wekb.getURL()
+                            if (wekb) {
+                                prop = wekb + '/public/platformContent/' + plt.getProperty(key) + '@' + plt.getProperty(key)
                             }
                         }
                     }

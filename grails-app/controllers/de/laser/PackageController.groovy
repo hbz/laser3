@@ -240,7 +240,7 @@ class PackageController {
         }
         result.gascoContacts = gascoContacts
 
-        result.baseUrl = Wekb.getURL() + '/'
+        result.baseUrl = Wekb.getURL()
 
         Map queryResult = gokbService.executeQuery(Wekb.getSearchApiURL(), [uuid: result.packageInstance.gokbId])
         if ((queryResult.error && queryResult.error == 404) || !queryResult) {

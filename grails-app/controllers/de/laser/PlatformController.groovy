@@ -263,7 +263,7 @@ class PlatformController  {
         Map<String, Object> result = platformControllerService.getResultGenerics(params)
         Platform platformInstance = result.platformInstance
 
-        result.baseUrl = Wekb.getURL() + '/'
+        result.baseUrl = Wekb.getURL()
 
         result.flagContentGokb = true // gokbService.executeQuery
         result.platformInstanceRecord = [:]

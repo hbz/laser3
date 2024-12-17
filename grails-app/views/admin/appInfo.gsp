@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.helper.DatabaseInfo; de.laser.utils.AppUtils; de.laser.storage.BeanStore; de.laser.system.SystemSetting; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; grails.util.Environment; de.laser.config.ConfigMapper" %>
+<%@ page import="de.laser.remote.Wekb; de.laser.utils.DateUtils; de.laser.helper.DatabaseInfo; de.laser.utils.AppUtils; de.laser.storage.BeanStore; de.laser.system.SystemSetting; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; grails.util.Environment; de.laser.config.ConfigMapper" %>
 
 <laser:htmlStart message="menu.admin.appInfo" />
 
@@ -196,11 +196,11 @@
             </thead>
             <tbody>
             <tr>
-                <td>ElasticSearch url</td>
+                <td>ElasticSearch (reporting.elasticSearch.url)</td>
                 <td><a href="${ConfigMapper.getConfig('reporting.elasticSearch.url', String) + '/_cat/indices?v'}" target="_blank">${ConfigMapper.getConfig('reporting.elasticSearch.url', String)}</a></td>
             </tr>
             <tr>
-                <td>ElasticSearch indices</td>
+                <td>ElasticSearch (reporting.elasticSearch.indices)</td>
                 <td>
                     <g:if test="${ConfigMapper.getConfig('reporting.elasticSearch.indices', Map)}">
                         <g:each in="${ConfigMapper.getConfig('reporting.elasticSearch.indices', Map)}" var="k, v">
@@ -210,11 +210,11 @@
                 </td>
             </tr>
             <tr>
-                <td>ElasticSearch wekb</td>
+                <td>We:kb</td>
                 <td>
-                    <g:set var="wekbSource" value="${ElasticSearchHelper.getWekbSource()}" />
-                    <g:if test="${wekbSource}">
-                        <a href="${wekbSource.baseUrl}" target="_blank">${wekbSource.baseUrl}</a> (${wekbSource.name})
+                    <g:set var="wekb_url" value="${Wekb.getURL()}" />
+                    <g:if test="${wekb_url}">
+                        <a href="${wekb_url}" target="_blank">${wekb_url}</a>
                     </g:if>
                 </td>
             </tr>
