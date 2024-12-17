@@ -12,7 +12,7 @@ import de.laser.helper.Params
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5ApiSource
@@ -2544,7 +2544,7 @@ class SurveyService {
                         }
                         result.keyPairs.put(platformInstance.gokbId, keyPair)
                     }
-                    Map queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSearchApiURL(), [uuid: platformInstance.gokbId])
+                    Map queryResult = gokbService.executeQuery(Wekb.getSearchApiURL(), [uuid: platformInstance.gokbId])
                     if (queryResult.error && queryResult.error == 404) {
                         result.wekbServerUnavailable = message(code: 'wekb.error.404')
                     } else if (queryResult) {
@@ -2553,10 +2553,10 @@ class SurveyService {
                             records[0].lastRun = platformInstance.counter5LastRun ?: platformInstance.counter4LastRun
                             records[0].id = platformInstance.id
                             result.platformInstanceRecords[platformInstance.gokbId] = records[0]
-                            result.platformInstanceRecords[platformInstance.gokbId].wekbUrl = ApiSource.getCurrent().getResourceShowURL() + "/${platformInstance.gokbId}"
+                            result.platformInstanceRecords[platformInstance.gokbId].wekbUrl = Wekb.getResourceShowURL() + "/${platformInstance.gokbId}"
                             if (records[0].statisticsFormat == 'COUNTER' && records[0].counterR4SushiServerUrl == null && records[0].counterR5SushiServerUrl == null) {
                                 result.error = 'noSushiSource'
-                                ArrayList<Object> errorArgs = ["${ApiSource.getCurrent().getResourceShowURL()}/${platformInstance.gokbId}", platformInstance.name]
+                                ArrayList<Object> errorArgs = ["${Wekb.getResourceShowURL()}/${platformInstance.gokbId}", platformInstance.name]
                                 result.errorArgs = errorArgs.toArray()
                             } else {
                                 CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriberRespConsortia(), platformInstance)

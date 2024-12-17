@@ -83,13 +83,4 @@ class GlobalRecordSource {
     String getBaseEditUrl() {
         editUri.replaceAll('oai.*','')
     }
-
-    /**
-     * Removes a global record source
-     * @param source_id the ID of the source to be deleted
-     */
-    @Transient
-    static void removeSource(long source_id) {
-        GlobalRecordSource.executeUpdate("delete GlobalRecordSource grs where grs.id = :id", [id: source_id])
-    }
 }

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.remote.ApiSource; de.laser.survey.SurveyConfigProperties; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.Subscription; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.SubscriptionPackage;" %>
+<%@ page import="de.laser.remote.Wekb; de.laser.utils.DateUtils; de.laser.survey.SurveyConfigProperties; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.Subscription; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.SubscriptionPackage;" %>
 <g:set bean="genericOIDService" var="genericOIDService"/>
 <g:set bean="gokbService" var="gokbService"/>
 <g:set var="surveyOrg"
@@ -227,7 +227,7 @@
 
                 packageInfos.packageInstance = subscriptionPackage.pkg
 
-                Map queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSearchApiURL(), [uuid: subscriptionPackage.pkg.gokbId])
+                Map queryResult = gokbService.executeQuery(Wekb.getSearchApiURL(), [uuid: subscriptionPackage.pkg.gokbId])
                 if (queryResult) {
                     List records = queryResult.result
                     packageInfos.packageInstanceRecord = records ? records[0] : [:]
@@ -269,7 +269,7 @@
                                             <g:each in="${pkgInfo.packageInstanceRecord.curatoryGroups}"
                                                     var="curatoryGroup">
                                                 <g:link
-                                                        url="${baseUrl}resource/show/${curatoryGroup.curatoryGroup}">${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}</g:link>
+                                                        url="${baseUrl}/resource/show/${curatoryGroup.curatoryGroup}">${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}</g:link>
                                             </g:each>
                                         </div>
                                     </dd>

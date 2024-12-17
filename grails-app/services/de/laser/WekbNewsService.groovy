@@ -2,7 +2,7 @@ package de.laser
 
 import de.laser.cache.EhcacheWrapper
 import de.laser.convenience.Marker
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 import de.laser.utils.DateUtils
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
@@ -17,7 +17,7 @@ import java.time.ZoneId
  * This service keeps track of the changes performed in the <a href="https://wekb.hbz-nrw.de">we:kb knowledge base</a>. It replaces the entirely
  * functionality of {@link PendingChange}s for {@link de.laser.wekb.TitleInstancePackagePlatform}s (not for cost items and subscriptions!) just as the immediate
  * successors {@link TitleChange}s and {@link IssueEntitlementChange}s. Periodically, via a Cronjob, the last changes are being retrieved from the we:kb
- * using the {@link ApiSource} to fetch the data which is then being cached
+ * using the {@link Wekb} to fetch the data which is then being cached
  */
 @Transactional
 class WekbNewsService {
@@ -153,7 +153,7 @@ class WekbNewsService {
         Date frame = Date.from(LocalDate.now().minusDays(days).atStartOfDay(ZoneId.systemDefault()).toInstant())
         String cs = DateUtils.getSDF_yyyyMMdd_HHmmss().format(frame)
 
-        String apiUrl = ApiSource.getCurrent().getSearchApiURL()
+        String apiUrl = Wekb.getSearchApiURL()
         //log.debug('WekbNewsService.getCurrent() > ' + cs)
 
         Map base = [changedSince: cs, sort: 'lastUpdatedDisplay', order: 'desc', stubOnly: true, max: 10000]

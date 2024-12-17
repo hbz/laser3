@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.titles.TitleHistoryEventParticipant" %>
+<%@ page import="de.laser.remote.Wekb; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.titles.TitleHistoryEventParticipant" %>
 
 <laser:htmlStart text="${message(code:"tipp.show.label", args:[tipp.name, tipp.pkg.name, tipp.platform.name])}" />
 
@@ -189,16 +189,15 @@
 
                 <br/>
                 <br/>
-                <g:each in="${[ ApiSource.getCurrent() ]}" var="gokbAPI">
+
                     <g:if test="${tipp.pkg.gokbId}">
                         <a role="button"
                            class="${Btn.ICON.SIMPLE_TOOLTIP} tiny"
                            data-content="${message(code: 'wekb')}"
-                           href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/public/packageContent/?id=' + tipp.pkg.gokbId : '#'}"
+                           href="${Wekb.getURL() + '/public/packageContent/?id=' + tipp.pkg.gokbId}"
                            target="_blank"><i class="${Icon.WEKB}"></i>
                         </a>
                     </g:if>
-                </g:each>
 
             </div>
         </div>
@@ -244,16 +243,15 @@
                 </g:if>
             </div>
             <br/>
-            <g:each in="${[ ApiSource.getCurrent() ]}" var="gokbAPI">
+
                 <g:if test="${tipp.platform.gokbId}">
                     <a role="button"
                        class="${Btn.ICON.SIMPLE_TOOLTIP} tiny"
                        data-content="${message(code: 'wekb')}"
-                       href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/public/platformContent/?id=' + tipp.platform.gokbId : '#'}"
+                       href="${Wekb.getURL() + '/public/platformContent/?id=' + tipp.platform.gokbId}"
                        target="_blank"><i class="${Icon.WEKB}"></i>
                     </a>
                 </g:if>
-            </g:each>
 
         </div>
     </div>

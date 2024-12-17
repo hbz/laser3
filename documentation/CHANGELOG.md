@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5917    17.12.2024  dev     3.5         David   Feature     ES/WEKB-Quellen in Konfigurationsdateien
+
 6145    12.12.2024  rc-3.4  3.4.16      Andreas Bug         Filterstellung Dauerhafter Zugriff korrigiert
 
 6106    12.12.2024  dev     3.5         Andreas Bug         Korrektur der Darstellung der Nutzerzahlen

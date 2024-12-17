@@ -1,7 +1,8 @@
 package de.laser.reporting.export.myInstitution
 
-import de.laser.remote.ApiSource
+
 import de.laser.ContextService
+import de.laser.remote.Wekb
 import de.laser.wekb.Platform
 import de.laser.RefdataValue
 import de.laser.storage.BeanStore
@@ -126,9 +127,9 @@ class PlatformExport extends BaseDetailsExport {
                         List<Long> esRecordIdList = fCache.data.platformESRecords.keySet().collect{ Long.parseLong(it) }
 
                         if (esRecordIdList.contains(plt.id)) {
-                            ApiSource wekb = ElasticSearchHelper.getCurrentApiSource()
-                            if (wekb?.baseUrl) {
-                                prop = wekb.baseUrl + '/public/platformContent/' + plt.getProperty(key) + '@' + plt.getProperty(key)
+                            String wekb = Wekb.getURL()
+                            if (wekb) {
+                                prop = wekb + '/public/platformContent/' + plt.getProperty(key) + '@' + plt.getProperty(key)
                             }
                         }
                     }

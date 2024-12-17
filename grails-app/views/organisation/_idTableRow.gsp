@@ -1,4 +1,4 @@
-<%@page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.ApiSource; de.laser.IdentifierNamespace"%>
+<%@page import="de.laser.remote.Wekb; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.IdentifierNamespace"%>
 <tr>
     <td>${tableRowNr}</td>
     <td>
@@ -30,7 +30,7 @@
         </g:if>
         <g:elseif test="${showWekbId}">
             ${orgInstance.gokbId}
-            <ui:linkWithIcon href="${ApiSource.getCurrent().baseUrl}/public/orgContent/${orgInstance.gokbId}" />
+            <ui:linkWithIcon href="${Wekb.getURL()}/public/orgContent/${orgInstance.gokbId}" />
         </g:elseif>
         <g:else>
             ${id.value == IdentifierNamespace.UNKNOWN ? "" : id.value}

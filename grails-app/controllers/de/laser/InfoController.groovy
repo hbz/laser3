@@ -4,7 +4,7 @@ import de.laser.addressbook.Contact
 import de.laser.addressbook.Person
 import de.laser.auth.User
 import de.laser.ctrl.OrganisationControllerService
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
 import de.laser.wekb.TitleInstancePackagePlatform
@@ -93,7 +93,7 @@ bei einem We:kb-Titel sind mir unvollständige/fehlerhafte Informationen aufgefa
 Betroffen ist das folgende Objekt:
 
 ${tipp.name}
-${ApiSource.getCurrent().getResourceShowURL() + '/' + tipp.gokbId}
+${Wekb.getResourceShowURL() + '/' + tipp.gokbId}
 
 Vielen Dank,
 """ + sig['de'],
@@ -107,7 +107,7 @@ I noticed incomplete/incorrect information in a We:kb title:
 The following object is affected:
 
 ${tipp.name}
-${ApiSource.getCurrent().getResourceShowURL() + '/' + tipp.gokbId}
+${Wekb.getResourceShowURL() + '/' + tipp.gokbId}
 
 Thank you,
 """ + sig['en']

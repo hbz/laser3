@@ -46,7 +46,7 @@
 									</g:if>
 									<g:else>
 										${record.name}
-										<a target="_blank" href="${baseUrl ? baseUrl + '/public/platformContent?id=' + record.uuid : '#'}">
+										<a target="_blank" href="${baseUrl + '/public/platformContent?id=' + record.uuid}">
 											<i title="we:kb Link" class="${Icon.LNK.EXTERNAL}"></i>
 										</a>
 									</g:else>
@@ -71,7 +71,7 @@
 									</g:if>
 									<g:elseif test="${record.providerUuid}">
 										${record.providerName}
-										<a target="_blank" href="${baseUrl ? baseUrl + '/public/orgContent?id=' + record.providerUuid : '#'}">
+										<a target="_blank" href="${baseUrl + '/public/orgContent?id=' + record.providerUuid}">
 											<i title="we:kb Link" class="${Icon.LNK.EXTERNAL}"></i>
 										</a>
 									</g:elseif>

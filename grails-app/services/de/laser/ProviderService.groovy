@@ -1,15 +1,13 @@
 package de.laser
 
 import de.laser.addressbook.Address
-import de.laser.addressbook.Contact
 import de.laser.addressbook.Person
 import de.laser.addressbook.PersonRole
 import de.laser.auth.User
 import de.laser.convenience.Marker
 import de.laser.helper.Params
-import de.laser.properties.PropertyDefinition
 import de.laser.properties.ProviderProperty
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 import de.laser.storage.RDStore
 import de.laser.traces.DeletedObject
 import de.laser.wekb.ElectronicBilling
@@ -18,25 +16,18 @@ import de.laser.wekb.InvoicingVendor
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
-import de.laser.wekb.ProviderLink
 import de.laser.wekb.ProviderRole
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.springframework.context.MessageSource
-import org.springframework.transaction.TransactionStatus
 
 @Transactional
 class ProviderService {
 
     ContextService contextService
-    DeletionService deletionService
     DocstoreService docstoreService
     GokbService gokbService
     TaskService taskService
-    UserService userService
     WorkflowService workflowService
-
-    MessageSource messageSource
 
     static String RESULT_BLOCKED            = 'RESULT_BLOCKED'
     static String RESULT_SUCCESS            = 'RESULT_SUCCESS'
@@ -309,7 +300,7 @@ class ProviderService {
                                       contextOrg: org, //for templates
                                       isMyOrg:false,
                                       contextCustomerType:org.getCustomerType()]
-        result.wekbApi = ApiSource.getCurrent()
+
         if (params.id) {
             result.provider = Provider.get(params.id)
             result.editable = contextService.isInstEditor()

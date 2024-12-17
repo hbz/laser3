@@ -292,7 +292,7 @@
                                 <g:each in="${record.curatoryGroups}" var="curatoryGroup">
                                     <ui:wekbIconLink type="curatoryGroup" gokbId="${curatoryGroup.curatoryGroup}" />
                                     ${curatoryGroup.name}
-                                %{--<g:link url="${baseUrl.endsWith('/') ? baseUrl : baseUrl+'/'}resource/show/${curatoryGroup.curatoryGroup}" target="_blank">--}%
+                                %{--<g:link url="${baseUrl}/resource/show/${curatoryGroup.curatoryGroup}" target="_blank">--}%
                                 %{--    <i class="${Icon.LNK.EXTERNAL}"></i>--}%
                                 %{--</g:link>--}%
                                     <br />
