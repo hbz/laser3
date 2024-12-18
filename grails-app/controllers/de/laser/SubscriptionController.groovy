@@ -1209,6 +1209,7 @@ class SubscriptionController {
                 if (ttParams.tab)    { params.tab = ttParams.tab }
                 SwissKnife.setPaginationParams(result, params, (User) result.user)
                 Subscription targetSub = issueEntitlementService.getTargetSubscription(result.subscription)
+                result.editable = targetSub == result.subscription && result.editable
                 Set<Package> targetPkg = targetSub.packages.pkg
                 if(params.pkgFilter)
                     targetPkg = [Package.get(params.pkgFilter)]

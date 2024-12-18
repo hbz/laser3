@@ -158,7 +158,7 @@
         JSPC.app.updateHidden = function() {
             $(".updateHidden").each(function(i) {
                 let fieldId = $(this).attr("id");
-                let checked = $(this).attr("checked") === "checked" ? "on" : "off";
+                let checked = $('.withOverwrite.'+fieldId).checkbox("is checked") === true ? "on" : "off";
                 $("#"+fieldId+"Overwrite").val(checked);
             });
         }
