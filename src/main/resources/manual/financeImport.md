@@ -1,17 +1,18 @@
 ### Wie kann ich Kosten hochladen?
 
-~~Hier~~ So können Sie Kosten in Form einer Tabelle hochladen: Eine Vorlage finden Sie ~~im unten angegebenen Link~~ auf der jeweiligen Seite; 
-Erläuterungen darüber, mit welchen Daten Sie die Spalten befüllen müssen, finden Sie im Ausklappfenster, das Sie mit dem Fragezeichen oben rechts öffnen können.
+So können Sie Kosten in Form einer Tabelle hochladen: Eine Vorlage finden der Tabelle Sie unter **Meine Einrichtung > Kostenübersicht > Zauberstab > Finanzimport**. 
+Erläuterungen darüber, mit welchen Daten Sie die Spalten befüllen müssen, finden Sie dort in dem Ausklappfenster, das Sie mit dem Fragezeichen oben rechts öffnen können.
+![Abbildung_Fragezeichen_Icon.png]({{current_server_webapp}}/media/finance/Abbildung_Fragezeichen_Icon.png)
 
 Nachfolgend eine Anleitung, wie Sie die Tabelle mit Excel befüllen können. 
-Hinweis: die Anleitung wurde mit Excel 2019 erstellt, ggf. weichen einige Bezeichnungen und Abbildungen in anderen Versionen ab!
+**Hinweis:** die Anleitung wurde mit Excel 2019 erstellt, ggf. weichen einige Bezeichnungen und Abbildungen in anderen Versionen ab!
 
 1. Speichern Sie die Beispiel-Vorlagendatei auf Ihrem Rechner ab.
 2. Öffnen Sie Excel und erstellen Sie eine leere Arbeitsmappe.
 3. Klicken Sie in der oberen Menüleiste auf den Reiter "Daten".
 ![Abbildung_Punkt_01_03.png]({{current_server_webapp}}/media/finance/Abbildung_Punkt_01_03.png)
 
-4. Suchen Sie im sich nun öffnenden Menü den Eintrag "Aus Text/CSV".
+4. Suchen Sie im sich öffnenden Menü den Eintrag "Aus Text/CSV".
 ![Abbildung_Punkt_01_04.png]({{current_server_webapp}}/media/finance/Abbildung_Punkt_01_04.png)
 
 5. Laden Sie jetzt die Beispiel-Vorlagendatei.
