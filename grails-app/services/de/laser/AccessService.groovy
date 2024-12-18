@@ -222,7 +222,7 @@ class AccessService {
             if (perm == READ) {
                 check = true
             }
-            else if (perm == WRITE) {
+            else if (perm == WRITE && !address.tenant) { // public
                 check = contextService.isInstEditor()
             }
         }
