@@ -1039,7 +1039,7 @@ class SubscriptionController {
         }
         else {
             if(params.addUUID) {
-                if(params.createEntitlements == 'on') {
+                if(params.createEntitlements == 'on' || ctrlResult.result.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
                     flash.message = message(code: 'subscription.details.link.processingWithEntitlements') as String
                     redirect action: 'index', params: [id: params.id, gokbId: params.addUUID]
                     return

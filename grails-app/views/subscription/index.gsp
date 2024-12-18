@@ -206,7 +206,7 @@
             </div>
 
             <div class="eight wide column">
-                <g:if test="${entitlements}">
+                <g:if test="${entitlements && editable}">
                     <div class="field la-field-right-aligned">
                         <div class="${Btn.SIMPLE} right floated la-js-editButton la-la-clearfix>"><g:message code="default.button.edit.label"/></div>
                     </div>
