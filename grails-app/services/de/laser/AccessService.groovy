@@ -222,7 +222,9 @@ class AccessService {
             if (perm == READ) {
                 check = true
             }
-            // userService.hasFormalAffiliation(address.tenant ?: address.org, 'INST_EDITOR') // ?????
+            else if (perm == WRITE) {
+                check = contextService.isInstEditor()
+            }
         }
         else if (address.provider || address.vendor) {
             if (perm == READ) {

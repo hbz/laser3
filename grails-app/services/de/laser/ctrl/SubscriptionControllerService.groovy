@@ -2107,9 +2107,10 @@ class SubscriptionControllerService {
                 boolean createEntitlements = params.createEntitlements == 'on',
                 linkToChildren = params.linkToChildren == 'on',
                 createEntitlementsForChildren = params.createEntitlementsForChildren == 'on'
+                //overwrites from holding selection
                 String pkgUUID = params.addUUID
                 result.source = Wekb.getURL()
-                RefdataValue holdingSelection = RefdataValue.get(params.holdingSelection)
+                RefdataValue holdingSelection
                 if(params.holdingSelection) {
                     holdingSelection = RefdataValue.get(params.holdingSelection)
                     result.subscription.holdingSelection = holdingSelection
@@ -2119,6 +2120,13 @@ class SubscriptionControllerService {
                     holdingSelection = GrailsHibernateUtil.unwrapIfProxy(result.subscription.holdingSelection)
                 }
                 result.holdingSelection = holdingSelection
+                if(holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+                    createEntitlements = true
+                    if(auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
+                        linkToChildren = true
+                        createEntitlementsForChildren = false
+                    }
+                }
                 GlobalRecordSource source = GlobalRecordSource.findByRectype(GlobalSourceSyncService.RECTYPE_TIPP)
                 log.debug("linkPackage. Global Record Source URL: " + source.getUri())
                 globalSourceSyncService.source = source
