@@ -14,13 +14,17 @@ import de.laser.utils.LocaleUtils
 class SystemMessage {
 
     /**
-     * Messages of this type are showing up on top of each page, to be used for alerts
+     * Messages of this type are displayed on top of each page
      */
-    static final String TYPE_ATTENTION = "TYPE_ATTENTION"
+    static final String TYPE_GLOBAL = "TYPE_GLOBAL"
     /**
-     * Messages of this type are global announcements
+     * Messages of this type are displayed on the dashboard
      */
-    static final String TYPE_STARTPAGE_NEWS = "TYPE_STARTPAGE_NEWS"
+    static final String TYPE_DASHBOARD = "TYPE_DASHBOARD"
+    /**
+     * Global announcements on the start page
+     */
+    static final String TYPE_STARTPAGE = "TYPE_STARTPAGE"
 
     String content_de
     String content_en
@@ -55,7 +59,7 @@ class SystemMessage {
      * @return a {@link List} of types
      */
     static getTypes() {
-        [TYPE_ATTENTION, TYPE_STARTPAGE_NEWS]
+        [TYPE_GLOBAL, TYPE_DASHBOARD, TYPE_STARTPAGE]
     }
 
     /**

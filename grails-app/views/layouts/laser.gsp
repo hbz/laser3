@@ -177,9 +177,9 @@
                     </g:if>
                 </sec:ifAnyGranted>
 
-                %{-- system messages --}%
+                %{-- systemMessages: TYPE_GLOBAL --}%
 
-                <laser:render template="/templates/system/messages" />
+                <laser:render template="/templates/system/messages" model="${[type: SystemMessage.TYPE_GLOBAL]}"/>
 
                 %{-- content --}%
 

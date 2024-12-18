@@ -65,9 +65,9 @@
             </div>
 
             <!-- NEWS -->
-            <g:set var="systemMessages" value="${SystemMessage.getActiveMessages(SystemMessage.TYPE_STARTPAGE_NEWS)}" />
+            <g:set var="startpageMessages" value="${SystemMessage.getActiveMessages(SystemMessage.TYPE_STARTPAGE)}" />
 
-            <g:if test="${systemMessages}">
+            <g:if test="${startpageMessages}">
                 <div class="ui segment la-eye-catcher">
                     <div class="ui container">
                         <div class="ui labeled button" tabindex="0" >
@@ -77,7 +77,7 @@
 
                             <div class="ui basic blue left pointing label la-eye-catcher-txt">
 
-                            <g:each in="${systemMessages}" var="news" status="i">
+                            <g:each in="${startpageMessages}" var="news" status="i">
                                 <div <g:if test="${i>0}">style="padding-top:1.6em"</g:if>>
                                     <ui:renderContentAsMarkdown>${news.getLocalizedContent()}</ui:renderContentAsMarkdown>
                                 </div>

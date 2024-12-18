@@ -16,11 +16,10 @@
 <br />
 <br />
 
-<ui:msg class="info" hideClose="true">
-    <icon:pointingHand /> ${message(code: 'admin.systemMessage.info.TMP', args: [HeartbeatJob.HEARTBEAT_IN_SECONDS])}
-</ui:msg>
-<ui:msg class="info" hideClose="true">
-    <icon:pointingHand /> ${message(code: 'admin.help.markdown')}
+<ui:msg class="info" showIcon="true" hideClose="true">
+    ${message(code: 'admin.systemMessage.info.TMP', args: [HeartbeatJob.HEARTBEAT_IN_SECONDS])}
+    <br />
+    ${message(code: 'admin.help.markdown')}
 </ui:msg>
 
 <ui:messages data="${flash}" />
@@ -44,14 +43,14 @@
                     <ui:xEditable owner="${msg}" field="content_de" id="sm_content_de_${mi}" type="textarea"/>
                 </div>
                 <div class="ui attached segment">
-                    <span class="ui mini top right attached label">EN</span>
-                    <ui:xEditable owner="${msg}" field="content_en" id="sm_content_en_${mi}" type="textarea"/>
-                </div>
-                <div class="ui top attached segment">
 %{--                    <span class="ui top attached label">${message(code: 'default.preview.label')}</span>--}%
                     <div id="sm_preview_de_${mi}">
                         <ui:renderContentAsMarkdown>${msg.content_de}</ui:renderContentAsMarkdown>
                     </div>
+                </div>
+                <div class="ui top attached segment">
+                    <span class="ui mini top right attached label">EN</span>
+                    <ui:xEditable owner="${msg}" field="content_en" id="sm_content_en_${mi}" type="textarea"/>
                 </div>
                 <div class="ui attached segment">
                     <div id="sm_preview_en_${mi}">
@@ -60,12 +59,15 @@
                 </div>
             </td>
             <td>
-                <g:if test="${SystemMessage.TYPE_ATTENTION == msg.type}">
-                    <span class="ui label yellow">Systemmeldung</span>
+                <g:if test="${SystemMessage.TYPE_GLOBAL == msg.type}">
+                    <span class="ui label red">Systemmeldung</span>
                 </g:if>
-                <g:if test="${SystemMessage.TYPE_STARTPAGE_NEWS == msg.type}">
+                <g:elseif test="${SystemMessage.TYPE_DASHBOARD == msg.type}">
+                    <span class="ui label teal">Dashboard</span>
+                </g:elseif>
+                <g:elseif test="${SystemMessage.TYPE_STARTPAGE == msg.type}">
                     <span class="ui label blue">Startseite</span>
-                </g:if>
+                </g:elseif>
             </td>
             <td>
                 <ui:xEditableBoolean owner="${msg}" field="isActive"/>
@@ -119,11 +121,11 @@
 
             <div class="field">
                 <label for="type">${message(code: 'default.type.label')}</label>
-                <g:select from="${[[SystemMessage.TYPE_ATTENTION, 'Systemmeldung'], [SystemMessage.TYPE_STARTPAGE_NEWS, 'Startseite']]}"
+                <g:select from="${[[SystemMessage.TYPE_GLOBAL, 'Systemmeldung'], [SystemMessage.TYPE_DASHBOARD, 'Dashboard'], [SystemMessage.TYPE_STARTPAGE, 'Startseite']]}"
                           optionKey="${{it[0]}}"
                           optionValue="${{it[1]}}"
                           name="type"
-                          class="ui fluid search dropdown"/>
+                          class="ui fluid search dropdown la-not-clearable"/>
             </div>
         </fieldset>
     </g:form>

@@ -48,7 +48,7 @@ indexUpdateJobActive = false
 isSendEmailsForDueDatesOfAllUsers = false
 isUpdateDashboardTableInDatabase  = false
 
-laserSystemId = 'LAS:eR' // 'LAS:eR-DEV', 'LAS:eR-QA', 'LAS:eR-Productive'
+laserSystemId = 'LAS:eR' // 'LAS:eR-DEV', 'LAS:eR-QA', 'LAS:eR-TEST', 'LAS:eR-Productive'
 
 muleJobActive = false
 
