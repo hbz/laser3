@@ -1039,7 +1039,7 @@ class SubscriptionController {
         }
         else {
             if(params.addUUID) {
-                if(params.createEntitlements == 'on') {
+                if(params.createEntitlements == 'on' || ctrlResult.result.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
                     flash.message = message(code: 'subscription.details.link.processingWithEntitlements') as String
                     redirect action: 'index', params: [id: params.id, gokbId: params.addUUID]
                     return
@@ -1209,6 +1209,7 @@ class SubscriptionController {
                 if (ttParams.tab)    { params.tab = ttParams.tab }
                 SwissKnife.setPaginationParams(result, params, (User) result.user)
                 Subscription targetSub = issueEntitlementService.getTargetSubscription(result.subscription)
+                result.editable = targetSub == result.subscription && result.editable
                 Set<Package> targetPkg = targetSub.packages.pkg
                 if(params.pkgFilter)
                     targetPkg = [Package.get(params.pkgFilter)]

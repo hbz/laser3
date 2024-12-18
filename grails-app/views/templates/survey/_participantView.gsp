@@ -10,7 +10,7 @@
         </g:if>
         <g:else>
             <g:set var="parame" value="${[surveyConfigID: surveyConfig.id]}"/>
-            <g:set var="participant" value="${institution}"/>
+            <g:set var="participant" value="${contextService.getOrg()}"/>
         </g:else>
 
 

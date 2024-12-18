@@ -121,24 +121,21 @@
                 </g:if>
             </g:else>
             <div class="field">
-                    <div class="ui createEntitlements withOverwrite checkbox toggle">
-                        <g:checkBox class="updateHidden" name="createEntitlements" checked="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}" disabled="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}"/>
-                        <g:hiddenField id="createEntitlementsOverwrite" name="createEntitlements"/>
+                    <div class="ui createEntitlements checkbox toggle">
+                        <g:checkBox name="createEntitlements" checked="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}" disabled="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}"/>
                         <label><g:message code="subscription.details.link.with_ents"/></label>
                     </div>
             </div>
             <g:if test="${institution.isCustomerType_Consortium()}">
                 <div class="field">
-                    <div class="ui linkToChildren withOverwrite checkbox toggle">
-                        <g:checkBox class="updateHidden" name="linkToChildren" disabled="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}"/>
-                        <g:hiddenField id="linkToChildrenOverwrite" name="linkToChildren"/>
+                    <div class="ui linkToChildren checkbox toggle">
+                        <g:checkBox name="linkToChildren" disabled="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}"/>
                         <label><i data-content="${message(code:'consortium.member.plural')}" data-position="top center" class="users icon la-popup-tooltip"></i> <g:message code="subscription.details.linkPackage.label"/></label>
                     </div>
                 </div>
                 <div class="field">
-                    <div class="ui createEntitlementsForChildren withOverwrite checkbox toggle">
-                        <g:checkBox class="updateHidden" name="createEntitlementsForChildren" disabled="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}"/>
-                        <g:hiddenField id="createEntitlementsForChildrenOverwrite" name="createEntitlementsForChildren"/>
+                    <div class="ui createEntitlementsForChildren checkbox toggle">
+                        <g:checkBox name="createEntitlementsForChildren" disabled="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}"/>
                         <label><i data-content="${message(code:'consortium.member.plural')}" data-position="top center" class="users icon la-popup-tooltip"></i> <g:message code="subscription.details.link.with_ents"/></label>
                     </div>
                 </div>
@@ -154,13 +151,6 @@
         }
         JSPC.app.disableChildEnt = function() {
             $(".checkbox.createEntitlementsForChildren").checkbox('uncheck').checkbox('set disabled');
-        }
-        JSPC.app.updateHidden = function() {
-            $(".updateHidden").each(function(i) {
-                let fieldId = $(this).attr("id");
-                let checked = $(this).attr("checked") === "checked" ? "on" : "off";
-                $("#"+fieldId+"Overwrite").val(checked);
-            });
         }
 
         $("#holdingSelection .ui.dropdown").dropdown({
@@ -192,7 +182,6 @@
                         $(".checkbox.linkToChildren").checkbox('uncheck').checkbox('set enabled');
                         $(".checkbox.createEntitlementsForChildren").checkbox('set enabled');
                     }
-                    JSPC.app.updateHidden();
                 }).fail(function () {
                     console.log("AJAX error! Please check logs!");
                 });
@@ -241,7 +230,6 @@
         });
 
         JSPC.app.disableChildEnt();
-        JSPC.app.updateHidden();
     </laser:script>
 
 </ui:modal>
