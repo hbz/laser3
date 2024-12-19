@@ -348,8 +348,12 @@ class ApiManager {
                 if(tmp.obj instanceof Subscription) {
                     try {
                         Sql sql = GlobalService.obtainSqlConnection()
+                        try {
                         result = ApiSubscription.requestSubscription((Subscription) tmp.obj, contextOrg, isInvoiceTool, sql)
-                        sql.close()
+                        }
+                        finally {
+                            sql.close()
+                        }
                     }
                     catch (NativeSqlException e) {
                         log.error(e.getMessage())
