@@ -282,7 +282,7 @@
                     <g:link class="item ${params.viewTab == 'vendorSurvey' && params.subTab == 'selectVendors' ? 'active' : ''}"
                             controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
                             params="${parame + [viewTab: 'vendorSurvey', subTab: 'selectVendors']}">
-                        ${message(code: 'surveyVendors.selectedVendors')}
+                        ${message(code: 'surveyVendors.selectedVendor')}
                         <span class="ui floating blue circular label">${SurveyVendorResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}</span>
                     </g:link>
                 </div>
