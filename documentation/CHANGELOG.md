@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6154    19.12.2024  rc-3.4  3.4.16      Andreas Feature     Pro-Nutzer können jetzt ihre Merkmale in konsortiale Verträge kopieren
+
 6145    12.12.2024  rc-3.4  3.4.16      Andreas Bug         Filterstellung Dauerhafter Zugriff korrigiert
 
 6101    27.11.2024  rc-3.4  3.4.16      Moe     Bug         Umfrage Export Renewal falsche Preise bei MJL

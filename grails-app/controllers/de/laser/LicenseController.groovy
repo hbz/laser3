@@ -709,42 +709,14 @@ class LicenseController {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def copyElementsIntoLicense() {
-        def result             = [:]
-        result.user            = contextService.getUser()
-        result.institution     = contextService.getOrg()
-        result.contextOrg      = result.institution
-
+        Map<String, Object> ctrlResult = licenseService.getCopyResultGenerics(params), result = [:]
         flash.error = ""
         flash.message = ""
-        if (params.sourceObjectId == "null") params.remove("sourceObjectId")
-        result.sourceObjectId = params.sourceObjectId ?: params.id
-        result.sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
-
-        if (params.targetObjectId == "null") params.remove("targetObjectId")
-        if (params.targetObjectId) {
-            result.targetObjectId = params.targetObjectId
-            result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
-        }
-
-        result.editable = result.sourceObject.isEditableBy(result.user)
-
-        if (!result.editable) {
+        if (!ctrlResult.result.editable) {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
-
-        result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false
-
-        result.allObjects_readRights = licenseService.getMyLicenses_readRights([status: RDStore.LICENSE_CURRENT.id])
-        result.allObjects_writeRights = licenseService.getMyLicenses_writeRights([status: RDStore.LICENSE_CURRENT.id])
-
-        List<String> licTypSubscriberVisible = [CalculatedType.TYPE_CONSORTIAL,
-                                                CalculatedType.TYPE_ADMINISTRATIVE]
-        result.isSubscriberVisible =
-                result.sourceObject &&
-                        result.targetObject &&
-                        licTypSubscriberVisible.contains(result.sourceObject._getCalculatedType()) &&
-                        licTypSubscriberVisible.contains(result.targetObject._getCalculatedType())
-
+        if(ctrlResult.result.transferIntoMember && params.workFlowPart == CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS)
+            params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
         switch (params.workFlowPart) {
             case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
                 result << copyElementsService.copyObjectElements_DatesOwnerRelations(params)
@@ -784,6 +756,51 @@ class LicenseController {
 
 //        result
         render view: customerTypeService.getCustomerTypeDependingView('copyElementsIntoLicense'), model: result
+    }
+
+    /**
+     * Call for a single user to copy private properties into a consortial participation instance
+     * @return the reduced license element copy view
+     */
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_INST_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_PRO )
+    })
+    def copyMyElements() {
+        Map<String, Object> result = licenseService.getCopyResultGenerics(params+[copyMyElements: true])
+        if (!result.editable) {
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
+        }
+        else {
+            switch (params.workFlowPart) {
+                case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
+                    result << copyElementsService.copyObjectElements_DocsTasksWorkflows(params)
+                    result << copyElementsService.loadDataFor_DocsTasksWorkflows(params)
+                    break
+                case CopyElementsService.WORKFLOW_PROPERTIES:
+                    result << copyElementsService.copyObjectElements_Properties(params)
+                    result << copyElementsService.loadDataFor_Properties(params)
+                    break
+                case CopyElementsService.WORKFLOW_END:
+                    result << copyElementsService.copyObjectElements_Properties(params)
+                    if (result.targetObject){
+                        flash.error = ""
+                        flash.message = ""
+                        redirect controller: 'license', action: 'show', params: [id: result.targetObject.id]
+                        return
+                    }
+                    break
+                default:
+                    result << copyElementsService.loadDataFor_DocsTasksWorkflows(params)
+                    break
+            }
+            if (params.targetObjectId) {
+                result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
+            }
+            result.workFlowPart = params.workFlowPart ?: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+            result.workFlowPartNext = params.workFlowPartNext ?: CopyElementsService.WORKFLOW_PROPERTIES
+            result
+        }
     }
 
 }
