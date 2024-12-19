@@ -108,7 +108,7 @@
                 <div class="ui bottom attached tab segment active" data-tab="contacts">
 
                     <g:link controller="organisation" action="contacts" id="${participant.id}" class="ui right floated blue button">
-                        <g:message code="default.show.label" args="[message(code: 'org.publicContacts.label')]"/>
+                        <g:message code="survey.contacts.add"/>
                     </g:link>
                     <br>
                     <br>
@@ -127,7 +127,7 @@
                 <div class="ui bottom attached tab segment" data-tab="addresses">
 
                     <g:link controller="organisation" action="contacts" id="${participant.id}" class="ui right floated blue button">
-                        <g:message code="default.show.label" args="[message(code: 'org.publicContacts.label')]"/>
+                        <g:message code="survey.contacts.add"/>
                     </g:link>
                     <br>
                     <br>
