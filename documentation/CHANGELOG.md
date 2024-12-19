@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6159    19.12.2024  rc-3.4  3.4.16      David   Feature     Anzahl der Datenbankverbindungen erhöhen
+
 6127    19.12.2024  rc-3.4  3.4.16      Moe     Bug         Benennung Tab in der Lieferanten-Umfrage ändern
 
 6118    19.12.2024  rc-3.4  3.4.16      Moe     Bug         Rechnungsstellungsabfrage: Button "öffentliche Kontakte anzeigen" umbennen
