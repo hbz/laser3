@@ -22,6 +22,7 @@ import javax.xml.transform.stream.StreamSource
 import javax.xml.validation.SchemaFactory
 import javax.xml.validation.Validator
 import java.text.SimpleDateFormat
+import grails.web.servlet.mvc.GrailsParameterMap
 
 /**
  * This service handles license specific matters
@@ -31,6 +32,7 @@ import java.text.SimpleDateFormat
 class LicenseService {
 
     ContextService contextService
+    GenericOIDService genericOIDService
     GrailsApplication grailsApplication
     MessageSource messageSource
 
@@ -108,6 +110,9 @@ class LicenseService {
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
 
         } else {
+            tmpQ = getLicensesConsortialLicenseQuery(params)
+            result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
+
             tmpQ = getLicensesLocalLicenseQuery(params)
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
         }
@@ -2704,4 +2709,39 @@ class LicenseService {
     String toSnakeCase(String input) {
         input.replaceAll(/[:()-]/, "").replaceAll(/[ \/]/,"_").toLowerCase()
     }
+    Map<String, Object> getCopyResultGenerics(GrailsParameterMap params) {
+        Map<String, Object> result             = [:]
+        result.user            = contextService.getUser()
+        result.institution     = contextService.getOrg()
+        result.contextOrg      = result.institution
+
+        if (params.sourceObjectId == "null") params.remove("sourceObjectId")
+        result.sourceObjectId = params.sourceObjectId ?: params.id
+        result.sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
+
+        if (params.targetObjectId == "null") params.remove("targetObjectId")
+        if (params.targetObjectId) {
+            result.targetObjectId = params.targetObjectId
+            result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
+        }
+
+        if(params.containsKey('copyMyElements'))
+            result.editable = contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_INST_PRO)
+        else
+            result.editable = result.sourceObject.isEditableBy(result.user)
+
+        result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false
+        result.transferIntoMember = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_LOCAL && result.targetObject?._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
+
+        result.allObjects_readRights = getMyLicenses_readRights([status: RDStore.LICENSE_CURRENT.id])
+        result.allObjects_writeRights = getMyLicenses_writeRights([status: RDStore.LICENSE_CURRENT.id])
+
+        List<String> licTypSubscriberVisible = [CalculatedType.TYPE_CONSORTIAL,
+                                                CalculatedType.TYPE_ADMINISTRATIVE]
+        result.isSubscriberVisible = result.sourceObject && result.targetObject &&
+                licTypSubscriberVisible.contains(result.sourceObject._getCalculatedType()) &&
+                licTypSubscriberVisible.contains(result.targetObject._getCalculatedType())
+        result
+    }
+
 }

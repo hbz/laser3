@@ -219,6 +219,7 @@ class ApiEZB {
             }
             try {
                 Sql sql = GlobalService.obtainSqlConnection()
+                try {
                 String dateFilter = ""
                 Map<String, Object> genericFilter = [subId: sub.id]
                 if(changedFrom) {
@@ -264,7 +265,10 @@ class ApiEZB {
                         }
                     }
                 }
-                sql.close()
+                }
+                finally {
+                    sql.close()
+                }
                 //export.columnData = export.columnData.take(1000) //for debug purposes
             }
             catch (NativeSqlException e) {

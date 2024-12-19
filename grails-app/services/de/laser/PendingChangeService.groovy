@@ -106,7 +106,8 @@ class PendingChangeService extends AbstractLockableService {
                 //pending.put(sp.subscription, changes)
         }
         */
-        Sql sql = globalService.obtainSqlConnection()
+        Sql sql = GlobalService.obtainSqlConnection()
+        try {
         if(configMap.consortialView == true) {
             //keep as alternative
             /*
@@ -230,6 +231,10 @@ class PendingChangeService extends AbstractLockableService {
                 //notifications.put(sp.subscription, changes)
         }
         */
+        }
+        finally {
+            sql.close()
+        }
         //non title changes
         PendingChange.executeQuery("select pc from PendingChange pc full join pc.costItem ci where pc.owner = :contextOrg and pc.status in (:status) and (pc.msgToken in (:newSubscription) or (pc.costItem != null and ci.costItemStatus != :deleted))",
                 [contextOrg: configMap.contextOrg, status: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED, RDStore.PENDING_CHANGE_PENDING], newSubscription: [PendingChangeConfiguration.NEW_SUBSCRIPTION, PendingChangeConfiguration.SUBSCRIPTION_RENEWED], deleted: RDStore.COST_ITEM_DELETED]).each { PendingChange pc ->
@@ -336,8 +341,9 @@ class PendingChangeService extends AbstractLockableService {
         Map<String, Object> result = [:]
         Locale locale = LocaleUtils.getCurrentLocale()
         Date time = new Date(System.currentTimeMillis() - Duration.ofDays(configMap.periodInDays).toMillis())
-        Sql sql = GlobalService.obtainSqlConnection()
         List pending = [], notifications = []
+        Sql sql = GlobalService.obtainSqlConnection()
+        try {
         Map<String, Long> roleTypes = ["consortia": RDStore.OR_SUBSCRIPTION_CONSORTIUM.id, "subscriber": RDStore.OR_SUBSCRIBER.id, "member": RDStore.OR_SUBSCRIBER_CONS.id]
         Map<Long, String> status = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS).collectEntries { RefdataValue rdv -> [(rdv.id): rdv.getI10n("value")] }
         Map<Long, String> acceptedStatus = [(RDStore.PENDING_CHANGE_ACCEPTED.id): RDStore.PENDING_CHANGE_ACCEPTED.getI10n("value"), (RDStore.PENDING_CHANGE_REJECTED.id): RDStore.PENDING_CHANGE_REJECTED.getI10n("value"), (RDStore.PENDING_CHANGE_PENDING.id): RDStore.PENDING_CHANGE_PENDING.getI10n("value")]
@@ -455,6 +461,10 @@ class PendingChangeService extends AbstractLockableService {
                     }
                 }
             }
+        }
+        }
+        finally {
+            sql.close()
         }
         result.notifications = notifications.drop(configMap.acceptedOffset).take(configMap.max)
         result.notificationsCount = notifications.size()

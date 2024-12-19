@@ -21,6 +21,7 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
 <ui:subNav showInTabular="true">
     <ui:complexSubNavItem
             class="${workFlowPart == CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : ''}"
+            disabled="${transferIntoMember}"
             controller="license" action="copyElementsIntoLicense"
             params="${params << [workFlowPart: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS]}">
         <div class="content">
