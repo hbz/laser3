@@ -709,13 +709,13 @@ class LicenseController {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def copyElementsIntoLicense() {
-        Map<String, Object> ctrlResult = licenseService.getCopyResultGenerics(params), result = [:]
+        Map<String, Object> result = licenseService.getCopyResultGenerics(params)
         flash.error = ""
         flash.message = ""
-        if (!ctrlResult.result.editable) {
+        if (!result.editable) {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
-        if(ctrlResult.result.transferIntoMember && params.workFlowPart == CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS)
+        if(result.transferIntoMember && params.workFlowPart == CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS)
             params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
         switch (params.workFlowPart) {
             case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
