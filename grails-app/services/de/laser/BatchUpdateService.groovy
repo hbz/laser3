@@ -80,6 +80,7 @@ class BatchUpdateService {
      */
     void clearIssueEntitlements(Map configMap) {
         Sql sql = GlobalService.obtainSqlConnection()
+        try {
         Map queryParams = [pkg_id: configMap.pkg_id,
                 sub: sql.getDataSource().getConnection().createArrayOf('bigint', configMap.sub as Object[]),
                 removed: RDStore.TIPP_STATUS_REMOVED.id]
@@ -102,6 +103,9 @@ class BatchUpdateService {
             IssueEntitlement.executeUpdate(updateQuery, [idSet: idSet, removed: RDStore.TIPP_STATUS_REMOVED.id])
             */
         }
-        sql.close()
+        }
+        finally {
+            sql.close()
+        }
     }
 }

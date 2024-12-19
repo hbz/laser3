@@ -3,6 +3,7 @@ package de.laser
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.ctrl.SubscriptionControllerService
+import de.laser.exceptions.NativeSqlException
 import de.laser.finance.CostItem
 import de.laser.config.ConfigDefaults
 import de.laser.finance.PriceItem
@@ -1851,6 +1852,7 @@ class SurveyService {
     @Deprecated
     void transferPerpetualAccessTitlesOfOldSubs(List<Long> entitlementsToTake, Subscription participantSub) {
         Sql sql = GlobalService.obtainSqlConnection()
+        try {
         Connection connection = sql.dataSource.getConnection()
 
         List newIes = sql.executeInsert("insert into issue_entitlement (ie_version, ie_guid, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_status_rv_fk, ie_name, ie_perpetual_access_by_sub_fk) " +
@@ -1878,6 +1880,10 @@ class SurveyService {
                                 and ie.ie_id = any(:ieIds) order  by pi_last_updated DESC''', [newIeIds: connection.createArrayOf('bigint', newIesIds.toArray()), ieIds: connection.createArrayOf('bigint', entitlementsToTake.toArray())])
 
         }
+        }
+        finally {
+            sql.close()
+        }
     }
 
     @Deprecated
@@ -1890,6 +1896,7 @@ class SurveyService {
             List<Object> subIds = []
             subIds.addAll(subscriptions.id)
             Sql sql = GlobalService.obtainSqlConnection()
+            try {
             Connection connection = sql.dataSource.getConnection()
             def ieIds = sql.rows("select ie.ie_id from issue_entitlement ie join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk " +
                     "where ie.ie_subscription_fk = any(:subs) " +
@@ -1901,6 +1908,10 @@ class SurveyService {
                     "and tipp2.tipp_status_rv_fk = :tippStatus and ie2.ie_status_rv_fk = :tippStatus)", [subs: connection.createArrayOf('bigint', subIds.toArray()), tippStatus: RDStore.TIPP_STATUS_CURRENT.id])
 
             issueEntitlements = ieIds.size() > 0 ? IssueEntitlement.executeQuery("select ie from IssueEntitlement ie where ie.id in (:ieIDs)", [ieIDs: ieIds.ie_id]) : []
+            }
+            finally {
+                sql.close()
+            }
         }
         return issueEntitlements
     }
@@ -1915,6 +1926,7 @@ class SurveyService {
             List<Object> subIds = []
             subIds.addAll(subscriptions.id)
             Sql sql = GlobalService.obtainSqlConnection()
+            try {
             Connection connection = sql.dataSource.getConnection()
             def ieIds = sql.rows("select ie.ie_id from issue_entitlement ie join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk " +
                     "where ie.ie_subscription_fk = any(:subs) " +
@@ -1926,6 +1938,10 @@ class SurveyService {
                     " and ie2.ie_status_rv_fk = :tippStatus)", [subs: connection.createArrayOf('bigint', subIds.toArray()), tippStatus: RDStore.TIPP_STATUS_CURRENT.id])
 
             issueEntitlementIds = ieIds.ie_id
+            }
+            finally {
+                sql.close()
+            }
         }
         return issueEntitlementIds
     }
@@ -1945,6 +1961,7 @@ class SurveyService {
             List<Object> subIds = []
             subIds.addAll(subscriptions.id)
             Sql sql = GlobalService.obtainSqlConnection()
+            try {
             Connection connection = sql.dataSource.getConnection()
             /*def titles = sql.rows("select count(*) from issue_entitlement ie join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk " +
                     "where ie.ie_subscription_fk = any(:subs)  " +
@@ -1959,6 +1976,10 @@ class SurveyService {
                     " and ie2.ie_status_rv_fk = :tippStatus group by tipp2.tipp_host_platform_url", [subs: connection.createArrayOf('bigint', subIds.toArray()), tippStatus: RDStore.TIPP_STATUS_CURRENT.id])
 
             count = titles.size()
+            }
+            finally {
+                sql.close()
+            }
         }
         return count
     }
@@ -1981,6 +2002,7 @@ class SurveyService {
             List<Object> subIds = []
             subIds.addAll(subscriptions.id)
             Sql sql = GlobalService.obtainSqlConnection()
+            try {
             Connection connection = sql.dataSource.getConnection()
             /*def titles = sql.rows("select count(*) from issue_entitlement ie join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk " +
                     "where ie.ie_subscription_fk = any(:subs)  " +
@@ -1996,6 +2018,10 @@ class SurveyService {
                     " and ie2.ie_id not in (select igi_ie_fk from issue_entitlement_group_item where igi_ie_group_fk = :ieGroup) group by tipp2.tipp_host_platform_url", [subs: connection.createArrayOf('bigint', subIds.toArray()), tippStatus: RDStore.TIPP_STATUS_CURRENT.id, ieGroup: issueEntitlementGroup.id])
 
             count = titles.size()
+            }
+            finally {
+                sql.close()
+            }
         }
         return count
     }
@@ -2055,9 +2081,11 @@ class SurveyService {
     BigDecimal sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig, RefdataValue currency) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         if(issueEntitlementGroup) {
+            BigDecimal sumListPrice
             //sql bridge
             Sql sql = GlobalService.obtainSqlConnection()
-            BigDecimal sumListPrice = sql.rows("select sum(pi.pi_list_price) as sum_list_price from (select pi_tipp_fk, pi_list_price, row_number() over (partition by pi_tipp_fk order by pi_date_created desc) as rn, count(*) over (partition by pi_tipp_fk) as cn from price_item where pi_list_price is not null and pi_list_currency_rv_fk = :currency and pi_tipp_fk in (select ie_tipp_fk from issue_entitlement join issue_entitlement_group_item on ie_id = igi_ie_fk where igi_ie_group_fk = :ieGroup and ie_status_rv_fk <> :status)) as pi where pi.rn = 1", [ieGroup: issueEntitlementGroup.id, currency: currency.id, status: RDStore.TIPP_STATUS_REMOVED.id])[0]['sum_list_price']
+            try {
+            sumListPrice = sql.rows("select sum(pi.pi_list_price) as sum_list_price from (select pi_tipp_fk, pi_list_price, row_number() over (partition by pi_tipp_fk order by pi_date_created desc) as rn, count(*) over (partition by pi_tipp_fk) as cn from price_item where pi_list_price is not null and pi_list_currency_rv_fk = :currency and pi_tipp_fk in (select ie_tipp_fk from issue_entitlement join issue_entitlement_group_item on ie_id = igi_ie_fk where igi_ie_group_fk = :ieGroup and ie_status_rv_fk <> :status)) as pi where pi.rn = 1", [ieGroup: issueEntitlementGroup.id, currency: currency.id, status: RDStore.TIPP_STATUS_REMOVED.id])[0]['sum_list_price']
             sumListPrice ?: 0.0
             /*
             BigDecimal sumListPrice = issueEntitlementGroup ?
@@ -2066,6 +2094,11 @@ class SurveyService {
                     : 0.0
             sumListPrice
             */
+            }
+            finally {
+                sql.close()
+            }
+            sumListPrice
         }
         else 0.0
     }

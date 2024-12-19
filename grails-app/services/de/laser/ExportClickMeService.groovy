@@ -5085,6 +5085,7 @@ class ExportClickMeService {
         }
         else {
             Sql sql = GlobalService.obtainSqlConnection()
+            try {
             List sqlCols = []
             Map<String, Object> sqlParams = [:]
             selectedExportFields.eachWithIndex { String fieldKey, Map fields, int idx ->
@@ -5139,6 +5140,11 @@ class ExportClickMeService {
                     exportData.add(row)
                 }
             }
+            }
+            finally {
+                sql.close()
+            }
+
         }
 
         Map sheetData = [:]

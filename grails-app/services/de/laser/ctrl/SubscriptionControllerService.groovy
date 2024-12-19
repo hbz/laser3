@@ -918,6 +918,7 @@ class SubscriptionControllerService {
                     "(select json_agg(json_build_object(id_value, id_tipp_fk)) as proprietary_identifier from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on id_tipp_fk = ie_tipp_fk where ie_subscription_fk = :refSub and ie_status_rv_fk = :current and idns_ns = :proprietary) as proprietary"
         }
         Sql sql = GlobalService.obtainSqlConnection()
+        try {
         Object[] printIdentifierNamespaces = [IdentifierNamespace.ISBN, IdentifierNamespace.ISSN], onlineIdentifierNamespaces = [IdentifierNamespace.EISBN, IdentifierNamespace.EISSN]
         Map<String, Object> queryParams = [refSub: refSub.id, current: RDStore.TIPP_STATUS_CURRENT.id, printIdentifiers: sql.getDataSource().getConnection().createArrayOf('varchar', printIdentifierNamespaces), onlineIdentifiers: sql.getDataSource().getConnection().createArrayOf('varchar', onlineIdentifierNamespaces), doi: IdentifierNamespace.DOI, proprietary: IdentifierNamespace.TITLE_ID] //current for now
         JsonSlurper slurper = new JsonSlurper()
@@ -938,6 +939,10 @@ class SubscriptionControllerService {
         result.put('doi', doi)
         result.put('url', url)
         result.put('proprietaryIdentifiers', proprietaryIdentifiers)
+        }
+        finally {
+            sql.close()
+        }
         result
         /*
         else if(fetchWhat == 'ids') {
@@ -2036,6 +2041,7 @@ class SubscriptionControllerService {
 
                     //sql bridge
                     Sql sql = GlobalService.obtainSqlConnection()
+                    try {
                     String mainQry = "select pi_tipp_fk, pi_list_price, row_number() over (partition by pi_tipp_fk order by pi_date_created desc) as rn, count(*) over (partition by pi_tipp_fk) as cn from price_item where pi_list_price is not null and pi_list_currency_rv_fk = :currency and pi_tipp_fk = any(:tippIDs)"
                     result.tippsListPriceSumEUR = sql.rows('select sum(pi.pi_list_price) as list_price_eur from (' +
                             mainQry +
@@ -2046,7 +2052,10 @@ class SubscriptionControllerService {
                     result.tippsListPriceSumGBP = sql.rows('select sum(pi.pi_list_price) as list_price_gbp from (' +
                             mainQry +
                             ') as pi where pi.rn = 1', [currency: RDStore.CURRENCY_GBP.id, tippIDs: sql.getDataSource().getConnection().createArrayOf('bigint', titlesList as Object[])])[0]['list_price_gbp']
-                    sql.close()
+                    }
+                    finally {
+                        sql.close()
+                    }
                     /*
                     result.tippsListPriceSumEUR = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
                             'where p.listPrice is not null and p.listCurrency = :currency and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [currency: RDStore.CURRENCY_EUR, tiStatus: RDStore.TIPP_STATUS_CURRENT.id] + query.queryParams)[0] ?: 0
@@ -2102,6 +2111,7 @@ class SubscriptionControllerService {
                         result.num_rows = sourceIEs ? IssueEntitlement.countByIdInList(sourceIEs) : 0
                         //sql bridge
                         Sql sql = GlobalService.obtainSqlConnection()
+                        try {
                         String mainQry = "select pi_tipp_fk, pi_list_price, row_number() over (partition by pi_tipp_fk order by pi_date_created desc) as rn, count(*) over (partition by pi_tipp_fk) as cn from price_item where pi_list_price is not null and pi_list_currency_rv_fk = :currency and pi_tipp_fk in (select ie_tipp_fk from issue_entitlement where ie_id = any(:ieIDs))"
                         result.iesTotalListPriceSumEUR = sql.rows('select sum(pi.pi_list_price) as list_price_eur from (' +
                                 mainQry +
@@ -2112,7 +2122,10 @@ class SubscriptionControllerService {
                         result.iesTotalListPriceSumGBP = sql.rows('select sum(pi.pi_list_price) as list_price_gbp from (' +
                                 mainQry +
                                 ') as pi where pi.rn = 1', [currency: RDStore.CURRENCY_GBP.id, ieIDs: sql.getDataSource().getConnection().createArrayOf('bigint', sourceIEs as Object[])])[0]['list_price_gbp']
-                        sql.close()
+                        }
+                        finally {
+                            sql.close()
+                        }
                         /*
                         result.iesTotalListPriceSumEUR = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
                                 'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_EUR, ieIDs: sourceIEs])[0] ?: 0
@@ -2162,6 +2175,7 @@ class SubscriptionControllerService {
 
                     //sql bridge
                     Sql sql = GlobalService.obtainSqlConnection()
+                    try {
                     String mainQry = "select pi_tipp_fk, pi_list_price, row_number() over (partition by pi_tipp_fk order by pi_date_created desc) as rn, count(*) over (partition by pi_tipp_fk) as cn from price_item where pi_list_price is not null and pi_list_currency_rv_fk = :currency and pi_tipp_fk in (select ie_tipp_fk from issue_entitlement where ie_id = any(:ieIDs))"
                     result.iesTotalListPriceSumEUR = sql.rows('select sum(pi.pi_list_price) as list_price_eur from (' +
                             mainQry +
@@ -2172,7 +2186,10 @@ class SubscriptionControllerService {
                     result.iesTotalListPriceSumGBP = sql.rows('select sum(pi.pi_list_price) as list_price_gbp from (' +
                             mainQry +
                             ') as pi where pi.rn = 1', [currency: RDStore.CURRENCY_GBP.id, ieIDs: sql.getDataSource().getConnection().createArrayOf('bigint', sourceIEs as Object[])])[0]['list_price_gbp']
-                    sql.close()
+                    }
+                    finally {
+                        sql.close()
+                    }
                     /*
                     result.iesTotalListPriceSumEUR = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency ' +
                             'and p.tipp in (select ie.tipp from IssueEntitlement as ie where ie.id in (:ieIDs))', [currency: RDStore.CURRENCY_EUR, ieIDs: sourceIEs])[0] ?: 0
@@ -2899,12 +2916,16 @@ class SubscriptionControllerService {
                         subscriptionService.bulkAddEntitlements(result.subscription, checked.keySet(), result.subscription.hasPerpetualAccess)
                         if(params.withChildren == 'on') {
                             Sql sql = GlobalService.obtainSqlConnection()
+                            try {
                             childSubIds.each { Long childSubId ->
                                 pkgIds.each { Long pkgId ->
                                     batchUpdateService.bulkAddHolding(sql, childSubId, pkgId, result.subscription.hasPerpetualAccess, result.subscription.id)
                                 }
                             }
-                            sql.close()
+                            }
+                            finally {
+                                sql.close()
+                            }
                         }
                         //IssueEntitlement.withNewTransaction { TransactionStatus ts ->
                         /*
@@ -3147,10 +3168,15 @@ class SubscriptionControllerService {
                         //self-reassign because of setting null currency
                         PriceItem.executeUpdate('update PriceItem pi set pi.localPrice = :localPrice, pi.localCurrency = :localCurrency where (pi.localCurrency = :localCurrency or ((pi.listCurrency = :localCurrency and pi.localCurrency = null) or (pi.listCurrency = null and pi.localCurrency = null))) and pi.issueEntitlement.id in (select ie.id '+query.query+')', query.queryParams+[localPrice: localPrice, localCurrency: localCurrency])
                         Sql sql = GlobalService.obtainSqlConnection()
+                        try {
                         sql.withBatch('insert into price_item (pi_version, pi_ie_fk, pi_guid, pi_date_created, pi_last_updated, pi_local_price, pi_local_currency_rv_fk) values (0, :id, :guid, now(), now(), :localPrice, :localCurrency)') { BatchingStatementWrapper stmt ->
                             IssueEntitlement.executeQuery('select ie.id '+query.query+' and not exists (select pi from PriceItem pi where pi.issueEntitlement = ie and (pi.localCurrency = :localCurrency or ((pi.listCurrency = :localCurrency and pi.localCurrency = null) or (pi.listCurrency = null and pi.localCurrency = null))))', query.queryParams+[localCurrency: localCurrency]).each { Long ieid ->
                                 stmt.addBatch([id: ieid, guid: PriceItem.class.name+':'+UUID.randomUUID().toString(), localPrice: localPrice, localCurrency: localCurrency.id])
                             }
+                        }
+                        }
+                        finally {
+                            sql.close()
                         }
                     }
                     params.keySet().each { String bulkEditParam ->
@@ -3172,6 +3198,7 @@ class SubscriptionControllerService {
                                     break
                                 case 'titleGroupInsert':
                                     Sql sql = GlobalService.obtainSqlConnection()
+                                    try {
                                     cfgMap.select = 'bulkInsertTitleGroup'
                                     if(!params.pkgIds && !params.pkgfilter)
                                         cfgMap.pkgIds = result.subscription.packages.pkg.id
@@ -3187,6 +3214,10 @@ class SubscriptionControllerService {
                                             log.error("Problem saving IssueEntitlementGroupItem ${issueEntitlementGroupItem.errors}")
                                         }
                                     }*/
+                                    }
+                                    finally {
+                                        sql.close()
+                                    }
                                     break
                                 default:
                                     String updateClause

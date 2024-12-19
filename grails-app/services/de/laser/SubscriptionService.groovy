@@ -1012,6 +1012,7 @@ class SubscriptionService {
      */
     void addToSubscription(Subscription subscription, Package pkg, boolean createEntitlements) {
         Sql sql = GlobalService.obtainSqlConnection()
+        try {
         sql.executeInsert('insert into subscription_package (sp_version, sp_pkg_fk, sp_sub_fk, sp_date_created, sp_last_updated) values (0, :pkgId, :subId, now(), now()) on conflict on constraint sub_package_unique do nothing', [pkgId: pkg.id, subId: subscription.id])
         /*
         List<SubscriptionPackage> dupe = SubscriptionPackage.executeQuery(
@@ -1022,6 +1023,10 @@ class SubscriptionService {
         if ( createEntitlements ) {
             //List packageTitles = sql.rows("select * from title_instance_package_platform where tipp_pkg_fk = :pkgId and tipp_status_rv_fk = :current", [pkgId: pkg.id, current: RDStore.TIPP_STATUS_CURRENT.id])
             batchUpdateService.bulkAddHolding(sql, subscription.id, pkg.id, subscription.hasPerpetualAccess)
+        }
+        }
+        finally {
+            sql.close()
         }
     }
 
@@ -1035,6 +1040,7 @@ class SubscriptionService {
      */
     void addToMemberSubscription(Subscription subscription, List<Subscription> memberSubs, Package pkg, boolean createEntitlements) {
         Sql sql = GlobalService.obtainSqlConnection()
+        try {
         sql.withBatch('insert into subscription_package (sp_version, sp_pkg_fk, sp_sub_fk, sp_date_created, sp_last_updated) values (0, :pkgId, :subId, now(), now()) on conflict on constraint sub_package_unique do nothing') { BatchingPreparedStatementWrapper stmt ->
             memberSubs.each { Subscription memberSub ->
                 stmt.addBatch([pkgId: pkg.id, subId: memberSub.id])
@@ -1081,6 +1087,10 @@ class SubscriptionService {
                 }
             }
         }
+        }
+        finally {
+            sql.close()
+        }
     }
 
     /**
@@ -1092,6 +1102,7 @@ class SubscriptionService {
      */
     void addToSubscriptionCurrentStock(Subscription target, Subscription consortia, Package pkg, boolean withEntitlements) {
         Sql sql = GlobalService.obtainSqlConnection()
+        try {
         sql.executeInsert('insert into subscription_package (sp_version, sp_pkg_fk, sp_sub_fk, sp_date_created, sp_last_updated) values (0, :pkgId, :subId, now(), now()) on conflict on constraint sub_package_unique do nothing', [pkgId: pkg.id, subId: target.id])
         //List consortiumHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where tipp_pkg_fk = :pkgId and ie_subscription_fk = :consortium and ie_status_rv_fk = :current", [pkgId: pkg.id, consortium: consortia.id, current: RDStore.TIPP_STATUS_CURRENT.id])
         if(withEntitlements)
@@ -1155,6 +1166,10 @@ class SubscriptionService {
             }
         }
          */
+        }
+        finally {
+            sql.close()
+        }
     }
 
     /**
@@ -1575,6 +1590,7 @@ class SubscriptionService {
      */
     void bulkAddEntitlements(Subscription sub, Set <String> selectedTitles, boolean pickAndChoosePerpetualAccess, IssueEntitlementGroup ieGroup = null) {
         Sql sql = GlobalService.obtainSqlConnection()
+        try {
         Object[] keys = selectedTitles.toArray()
         sql.withTransaction {
             sql.executeUpdate('update issue_entitlement set ie_status_rv_fk = :current from title_instance_package_platform where ie_tipp_fk = tipp_id and ie_status_rv_fk = :expected and tipp_gokb_id = any(:keys) and ie_subscription_fk = :subId', [current: RDStore.TIPP_STATUS_CURRENT.id, expected: RDStore.TIPP_STATUS_EXPECTED.id, keys: sql.connection.createArrayOf('varchar', keys), subId: sub.id])
@@ -1628,7 +1644,10 @@ class SubscriptionService {
                 }
             }
         }
-        sql.close()
+        }
+        finally {
+            sql.close()
+        }
     }
 
     /**
@@ -3133,6 +3152,7 @@ class SubscriptionService {
                     Thread.currentThread().setName('permanentTitlesProcess_' + subscription.id)
                     Long ownerId = subscription.getSubscriberRespConsortia().id, subId = subscription.id, start = System.currentTimeSeconds()
                     Sql sql = GlobalService.obtainSqlConnection()
+                    try {
                     Connection connection = sql.dataSource.getConnection()
 
                     List<Long> status = [RDStore.TIPP_STATUS_CURRENT.id, RDStore.TIPP_STATUS_RETIRED.id, RDStore.TIPP_STATUS_DELETED.id]
@@ -3155,7 +3175,10 @@ class SubscriptionService {
 
                         }
                     }
-                    sql.close()
+                    }
+                    finally {
+                        sql.close()
+                    }
                     if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
                         globalService.notifyBackgroundProcessFinish(userId, 'permanentTitlesProcess_' + subscription.id, messageSource.getMessage('subscription.details.unmarkPermanentTitles.completed' ,[subscription.name] as Object[], LocaleUtils.getCurrentLocale()))
                     }
@@ -3175,6 +3198,7 @@ class SubscriptionService {
             executorService.execute({
                 Thread.currentThread().setName('permanentTitlesProcess_' + pkg.id + '_' + context.id)
                 Sql sql = GlobalService.obtainSqlConnection()
+                try {
                 Connection connection = sql.dataSource.getConnection()
                 orgSubs.eachWithIndex { Subscription subscription, int s ->
                     Long ownerId = subscription.getSubscriberRespConsortia().id, subId = subscription.id
@@ -3198,6 +3222,9 @@ class SubscriptionService {
 
                         }
                     }
+                }
+                }
+                finally {
                     sql.close()
                 }
             })
@@ -3212,6 +3239,7 @@ class SubscriptionService {
                     long start = System.currentTimeSeconds()
                     Thread.currentThread().setName('permanentTitlesProcess_' + subscription.id)
                     Sql sql = GlobalService.obtainSqlConnection()
+                    try {
                     String ieQuery = 'select ie_id from issue_entitlement where ie_subscription_fk = :sub and ie_perpetual_access_by_sub_fk is not null',
                     countIeQuery = 'select count(*) from issue_entitlement where ie_subscription_fk = :sub and ie_perpetual_access_by_sub_fk is not null',
                     permQuery = 'select pt_id from permanent_title where pt_subscription_fk = :sub',
@@ -3246,6 +3274,10 @@ class SubscriptionService {
                             }
                         }
                     }
+                    }
+                    finally {
+                        sql.close()
+                    }
                     if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
                         globalService.notifyBackgroundProcessFinish(userId, 'permanentTitlesProcess_' + subscription.id, messageSource.getMessage('subscription.details.unmarkPermanentTitles.completed' ,[subscription.name] as Object[], LocaleUtils.getCurrentLocale()))
                     }
@@ -3265,6 +3297,7 @@ class SubscriptionService {
             executorService.execute({
                 Thread.currentThread().setName('permanentTitlesProcess_' + pkg.id + '_' + context.id)
                 Sql sql = GlobalService.obtainSqlConnection()
+                try {
                 orgSubs.eachWithIndex { Subscription subscription, int s ->
                     String ieQuery = 'select ie_id from issue_entitlement where ie_subscription_fk = :sub and ie_perpetual_access_by_sub_fk is not null',
                            countIeQuery = 'select count(*) from issue_entitlement where ie_subscription_fk = :sub and ie_perpetual_access_by_sub_fk is not null',
@@ -3300,6 +3333,10 @@ class SubscriptionService {
                             }
                         }
                     }
+                }
+                }
+                finally {
+                    sql.close()
                 }
             })
         }
