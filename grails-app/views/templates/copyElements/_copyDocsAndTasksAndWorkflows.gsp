@@ -312,7 +312,7 @@
                             </div>
                         </g:each>
                     </td>
-                    <g:if test="${!copyObject && !(actionName == 'copyMyElements' && targetObject)}">%{-- todo: fix markup --}%
+                    <g:if test="${!copyObject && !(actionName == 'copyMyElements' && targetObject) && isConsortialObjects}">%{-- todo: fix markup --}%
                         <td></td>
                     </g:if>
                     <g:if test="${!copyObject && targetObject}">
@@ -378,7 +378,7 @@
                                 </div>
                             </g:each>
                         </td>
-                        <g:if test="${!copyObject && !(actionName == 'copyMyElements' && targetObject)}">%{-- todo: fix markup --}%
+                        <g:if test="${!copyObject && !(actionName == 'copyMyElements' && targetObject) && isConsortialObjects}">%{-- todo: fix markup --}%
                             <td></td>
                         </g:if>
                         <g:if test="${!copyObject && targetObject}">
