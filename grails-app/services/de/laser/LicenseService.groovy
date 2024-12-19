@@ -1,8 +1,11 @@
 package de.laser
 
 import de.laser.helper.Params
+import de.laser.interfaces.CalculatedType
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
+import grails.web.servlet.mvc.GrailsParameterMap
+import org.apache.http.HttpStatus
 
 /**
  * This service handles license specific matters
@@ -12,6 +15,7 @@ import grails.gorm.transactions.Transactional
 class LicenseService {
 
     ContextService contextService
+    GenericOIDService genericOIDService
 
     /**
      * Gets a (filtered) list of licenses to which the context institution has reading rights
@@ -59,6 +63,9 @@ class LicenseService {
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
 
         } else {
+            tmpQ = getLicensesConsortialLicenseQuery(params)
+            result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
+
             tmpQ = getLicensesLocalLicenseQuery(params)
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
         }
@@ -164,6 +171,41 @@ class LicenseService {
         SortedSet<VendorRole> visibleVendorRelations = new TreeSet<VendorRole>()
         visibleVendorRelations.addAll(VendorRole.executeQuery('select vr from VendorRole vr join vr.vendor v where vr.license = :license order by v.sortname', [license: license]))
         visibleVendorRelations
+    }
+
+    Map<String, Object> getCopyResultGenerics(GrailsParameterMap params) {
+        Map<String, Object> result             = [:]
+        result.user            = contextService.getUser()
+        result.institution     = contextService.getOrg()
+        result.contextOrg      = result.institution
+
+        if (params.sourceObjectId == "null") params.remove("sourceObjectId")
+        result.sourceObjectId = params.sourceObjectId ?: params.id
+        result.sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
+
+        if (params.targetObjectId == "null") params.remove("targetObjectId")
+        if (params.targetObjectId) {
+            result.targetObjectId = params.targetObjectId
+            result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
+        }
+
+        if(params.containsKey('copyMyElements'))
+            result.editable = contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_INST_PRO)
+        else
+            result.editable = result.sourceObject.isEditableBy(result.user)
+
+        result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false
+        result.transferIntoMember = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_LOCAL && result.targetObject?._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
+
+        result.allObjects_readRights = getMyLicenses_readRights([status: RDStore.LICENSE_CURRENT.id])
+        result.allObjects_writeRights = getMyLicenses_writeRights([status: RDStore.LICENSE_CURRENT.id])
+
+        List<String> licTypSubscriberVisible = [CalculatedType.TYPE_CONSORTIAL,
+                                                CalculatedType.TYPE_ADMINISTRATIVE]
+        result.isSubscriberVisible = result.sourceObject && result.targetObject &&
+                licTypSubscriberVisible.contains(result.sourceObject._getCalculatedType()) &&
+                licTypSubscriberVisible.contains(result.targetObject._getCalculatedType())
+        result
     }
 
 }

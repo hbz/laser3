@@ -1300,12 +1300,16 @@ class SubscriptionController {
                 subscriptionService.bulkAddEntitlements(result.subscription, result.selectedTitles, result.subscription.hasPerpetualAccess)
                 if(configMap.withChildrenKBART == 'on') {
                     Sql sql = GlobalService.obtainSqlConnection()
+                    try {
                     childSubIds.each { Long childSubId ->
                         pkgIds.each { Long pkgId ->
                             batchUpdateService.bulkAddHolding(sql, childSubId, pkgId, result.subscription.hasPerpetualAccess, result.subscription.id)
                         }
                     }
-                    sql.close()
+                    }
+                    finally {
+                        sql.close()
+                    }
                 }
                 if(globalService.isset(configMap, 'issueEntitlementGroupNewKBART') || globalService.isset(configMap, 'issueEntitlementGroupKBARTID')) {
                     IssueEntitlementGroup issueEntitlementGroup
@@ -1903,6 +1907,17 @@ class SubscriptionController {
                     queryMap.status = RDStore.TIPP_STATUS_CURRENT.id
                     queryMap.pkgIds = ctrlResult.result.parentSubscription.packages?.pkg?.id
                     queryMap.refSub = ctrlResult.result.parentSubscription
+                    Set<Subscription> subscriptions = []
+                    if(ctrlResult.result.surveyConfig.pickAndChoosePerpetualAccess) {
+                        subscriptions = linksGenerationService.getSuccessionChain(ctrlResult.result.subscriberSub, 'sourceSubscription')
+                        //subscriptions << subscriberSub
+                        //result.subscriptionIDs = surveyService.subscriptionsOfOrg(result.subscriber)
+                    }
+                    else {
+                        //subscriptions << previousSubscription
+                        subscriptions << ctrlResult.result.subscriberSub
+                    }
+                    queryMap.perpetualSubIDs = subscriptions.collect { Subscription s -> s.id }
                     Map<String, Object> export = exportService.generateRenewalExport(queryMap, monthsInRing, ctrlResult.result.subscriber)
                     //Map<String, List> export = exportService.generateTitleExportCustom(queryMap, TitleInstancePackagePlatform.class.name, monthsInRing.sort { Date monthA, Date monthB -> monthA <=> monthB }, ctrlResult.result.subscriber, true)
                     if(!export.status202 && !export.error) {

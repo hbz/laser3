@@ -7,6 +7,20 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6127    19.12.2024  rc-3.4  3.4.16      Moe     Bug         Benennung Tab in der Lieferanten-Umfrage ändern
+
+6118    19.12.2024  rc-3.4  3.4.16      Moe     Bug         Rechnungsstellungsabfrage: Button "öffentliche Kontakte anzeigen" umbennen
+
+6158    19.12.2024  rc-3.4  3.4.16      Moe     Bug         Performance Problem wegen offene SQL-Connections
+
+6154    19.12.2024  rc-3.4  3.4.16      Andreas Feature     Pro-Nutzer können jetzt ihre Merkmale in konsortiale Verträge kopieren
+
+6145    12.12.2024  rc-3.4  3.4.16      Andreas Bug         Filterstellung Dauerhafter Zugriff korrigiert
+
+6101    27.11.2024  rc-3.4  3.4.16      Moe     Bug         Umfrage Export Renewal falsche Preise bei MJL
+
+6100    26.11.2024  rc-3.4  3.4.16      Andreas Bug         Ausgabe der Nutzerzahlen korrigiert
+
 6099    25.11.2024  rc-3.4  3.4.15      Moe     Bug         Umfrage Kosten markieren wo unterjährige Einstiege bestehen
 
 6090:   25.11.2024  rc-3.4  3.4.15      Moe     Bug         500er Löschversuch Titelauswahl-Datei

@@ -1800,6 +1800,7 @@ class CopyElementsService {
                         newOrgAccessPointLink.save()
                     }
                     Sql sql = GlobalService.obtainSqlConnection()
+                    try {
                     //List subscriptionHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where tipp_pkg_fk = :pkgId and ie_subscription_fk = :source", [pkgId: newSubscriptionPackage.pkg.id, source: subscriptionPackage.subscription.id])
                     batchUpdateService.bulkAddHolding(sql, targetObject.id, newSubscriptionPackage.pkg.id, targetObject.hasPerpetualAccess, null, subscriptionPackage.subscription.id)
                     if(subscriptionPackage in packagesToTakeForChildren) {
@@ -1809,6 +1810,10 @@ class CopyElementsService {
                                 batchUpdateService.bulkAddHolding(sql, child.id, childSp.pkg.id, child.hasPerpetualAccess, targetObject.id)
                             }
                         }
+                    }
+                    }
+                    finally {
+                        sql.close()
                     }
                     /*
                     List<IssueEntitlement> targetIEs = subscriptionService.getIssueEntitlements(targetObject)

@@ -3090,9 +3090,11 @@ class ExportService {
 	 */
 	Map<String,Collection> generateTitleExportKBART(Map configMap, String entitlementInstance) {
 		log.debug("Begin generateTitleExportKBART")
-		Sql sql = GlobalService.obtainSqlConnection()
 		Map<String, String> titleHeaders = getBaseTitleHeaders(entitlementInstance)
 		Map<String, Collection> export = [titleRow:titleHeaders.keySet()]
+		List rows = []
+		Sql sql = GlobalService.obtainSqlConnection()
+		try {
 		Map<String, Object> queryClauseParts = filterService.prepareTitleSQLQuery(configMap, entitlementInstance, sql)
 		String queryBase, countQuery
 		if(entitlementInstance == IssueEntitlement.class.name) {
@@ -3105,7 +3107,7 @@ class ExportService {
 		}
 		//int count = sql.rows(countQuery, queryClauseParts.params)[0]['countTotal'] as int, max = 100000
 		//log.debug(queryBase)
-		List rows = []
+
 		/* kept in case of further experiments
 		if(count > 300000) {
 			for(int i = 0; i < count; i+=max) {
@@ -3115,6 +3117,10 @@ class ExportService {
 		}
 		else*/
 		rows.addAll(sql.rows(queryBase, queryClauseParts.params))
+		}
+		finally {
+			sql.close()
+		}
 		export.columnData = rows
 		/*
 		Map<String, Object> data = getTitleData(configMap+[format: 'kbart'], entitlementInstance, sql)
@@ -3772,9 +3778,15 @@ class ExportService {
 	 */
 	Map<String, Object> generateTitleExportCustom(Map configMap, String entitlementInstance, List showStatsInMonthRings = [], Org subscriber = null, boolean checkPerpetuallyPurchasedTitles = false) {
 		log.debug("Begin generateTitleExportCustom")
-		Sql sql = GlobalService.obtainSqlConnection()
+		Map<String, Object> data = [:]
 		Locale locale = LocaleUtils.getCurrentLocale()
-		Map<String, Object> data = getTitleData(configMap, entitlementInstance, sql, showStatsInMonthRings, subscriber)
+		Sql sql = GlobalService.obtainSqlConnection()
+		try {
+		data = getTitleData(configMap, entitlementInstance, sql, showStatsInMonthRings, subscriber)
+		}
+		finally {
+			sql.close()
+		}
 		//log.debug("after title data")
 		List<String> titleHeaders = [
 				messageSource.getMessage('tipp.name',null,locale),
@@ -3865,7 +3877,9 @@ class ExportService {
 
 	Map<String, Object> generateRenewalExport(Map configMap, Set showStatsInMonthRings, Org subscriber) {
 		log.debug("Begin generateRenewalExport")
+		Map<String, Object> export = [:]
 		Sql sql = GlobalService.obtainSqlConnection()
+		try {
 		Locale locale = LocaleUtils.getCurrentLocale()
 		//Map<String, Object> data = getTitleData(configMap, TitleInstancePackagePlatform.class.name, sql, showStatsInMonthRings, subscriber)
 		EhcacheWrapper userCache = contextService.getUserCache("/subscription/renewEntitlementsWithSurvey/generateRenewalExport")
@@ -3874,10 +3888,10 @@ class ExportService {
 		Map<String, String> titleHeaders = getBaseTitleHeaders(TitleInstancePackagePlatform.class.name, true)
 		//the where clauses here
         Map<String, Object> queryClauseParts = filterService.prepareTitleSQLQuery(configMap, TitleInstancePackagePlatform.class.name, sql)
-        String baseQuery = "select tipp_id, ${titleHeaders.values().join(', ')} from title_instance_package_platform left join tippcoverage on tc_tipp_fk = tipp_id join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id ${queryClauseParts.join} where ${queryClauseParts.where}${queryClauseParts.order}"
+        String baseQuery = "select tipp_id, ${titleHeaders.values().join(', ')} from title_instance_package_platform left join tippcoverage on tc_tipp_fk = tipp_id join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id ${queryClauseParts.join} where tipp_id = any(:tippIDSubset)${queryClauseParts.order}"
 		queryClauseParts.params.subscriber = subscriber.id
 		userCache.put('label', 'Hole Daten vom Anbieter ...')
-		Map<String, Object> export = [titles: titleHeaders.keySet().toList()]
+		export.titles = titleHeaders.keySet().toList()
 		export.titles.addAll(showStatsInMonthRings.collect { Date month -> DateUtils.getSDF_yyyyMM().format(month) })
 		export.titles << "Pick"
 		List<GroovyRowResult> platformData = sql.rows("select plat_title_namespace, plat_guid from platform join package on plat_id = pkg_nominal_platform_fk where pkg_id = any(:pkgIds) group by plat_guid, plat_title_namespace", [pkgIds: sql.getDataSource().getConnection().createArrayOf('bigint', configMap.pkgIds as Object[])])
@@ -3911,7 +3925,14 @@ class ExportService {
 		}
 		userCache.put('progress', 20)
 		userCache.put('label', 'Hole Titel ...')
-		List<GroovyRowResult> rows = sql.rows(baseQuery, queryClauseParts.params)
+		//continue here with tests:
+		List<GroovyRowResult> tippIDs = sql.rows("select tipp_id from title_instance_package_platform where ${queryClauseParts.where}${queryClauseParts.order}", queryClauseParts.params)
+		List<GroovyRowResult> hostPlatformURLRows = sql.rows("select tipp_host_platform_url from permanent_title join title_instance_package_platform on pt_tipp_fk = tipp_id where pt_owner_fk = :subscriber and pt_subscription_fk = any(:subIDs)", [subscriber: subscriber.id, subIDs: conn.createArrayOf('bigint', configMap.perpetualSubIDs.toArray() as Object[])])
+		List<GroovyRowResult> rows = []
+		Set<String> hostPlatformURLs = hostPlatformURLRows['tipp_host_platform_url']
+		tippIDs.collate(65000).each { List subset ->
+			rows.addAll(sql.rows(baseQuery, [tippIDSubset: conn.createArrayOf('bigint', subset['tipp_id'].toArray() as Object[]), hostPlatformURLs: conn.createArrayOf('varchar', hostPlatformURLs.toArray() as Object[])]))
+		}
 		Map<String, Object> identifierInverseMap = subscriptionControllerService.fetchTitles(configMap.refSub, true)
 		List excelRows = []
 		userCache.put('progress', 40)
@@ -4075,6 +4096,11 @@ class ExportService {
 		}
 		userCache.put('progress', 80)
 		export.rows = excelRows
+		}
+		finally {
+			sql.close()
+		}
+
 		log.debug("End generateRenewalExport")
 		export
         /*
@@ -4223,7 +4249,7 @@ class ExportService {
 		 localprice_gbp: '',
 		 localprice_usd: '']
 		if(checkPerpetuallyAccessToTitle) {
-			mapping.put(messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale), "(select case when tipp_host_platform_url in(select pt_tipp.tipp_host_platform_url from permanent_title join title_instance_package_platform as pt_tipp on pt_tipp_fk = pt_tipp.tipp_id where pt_owner_fk = :subscriber) then true else false end) as ${messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale)}")
+			mapping.put(messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale), "(select case when tipp_host_platform_url = any(:hostPlatformURLs) then true else false end) as ${messageSource.getMessage('renewEntitlementsWithSurvey.toBeSelectedIEs.export', null, locale)}")
 		}
 		if(entitlementInstance == IssueEntitlement.class.name) {
 			mapping.date_first_issue_online = "to_char(ic_start_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') as date_first_issue_online"
