@@ -1,6 +1,5 @@
-<%@ page import="de.laser.ui.Icon; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.myInstitution.base.BaseDetails; de.laser.properties.OrgProperty; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.storage.RDStore; de.laser.Org; de.laser.properties.PropertyDefinition;" %>
+<%@ page import="de.laser.remote.Wekb; de.laser.ui.Icon; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.myInstitution.base.BaseDetails; de.laser.properties.OrgProperty; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.storage.RDStore; de.laser.Org; de.laser.properties.PropertyDefinition;" %>
 <laser:serviceInjection />
-<g:set var="wekb" value="${ElasticSearchHelper.getCurrentApiSource()}"/>
 
 <laser:render template="/myInstitution/reporting/details/details_top" />
 
@@ -37,8 +36,8 @@
                         </g:if>
                     </td>
                     <td>
-                        <g:if test="${wekb?.baseUrl && vendor.gokbId}">
-                            <a href="${wekb.baseUrl + '/resource/show/' + vendor.gokbId}" target="_blank">
+                        <g:if test="${vendor.gokbId}">
+                            <a href="${Wekb.getURL() + '/resource/show/' + vendor.gokbId}" target="_blank">
                                 <span class="la-long-tooltip la-popup-tooltip" data-content="${message(code:'reporting.chart.result.link.unchecked.label')}"
                                         data-position="top right">
                                     <i class="${Icon.LNK.EXTERNAL} grey"></i>

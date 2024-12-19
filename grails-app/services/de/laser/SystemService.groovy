@@ -2,7 +2,6 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.config.ConfigMapper
-import de.laser.remote.ApiSource
 import de.laser.remote.GlobalRecordSource
 import de.laser.system.SystemEvent
 import de.laser.system.SystemMessage
@@ -76,7 +75,7 @@ class SystemService {
             result = [
                     status:      'ok',
                     maintenance: SystemSetting.findByName('MaintenanceMode').value == 'true',
-                    messages:    SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION) ? true : false
+                    messages:    SystemMessage.getActiveMessages(SystemMessage.TYPE_GLOBAL) ? true : false
             ]
         } catch(Exception e) {
             log.error( e.getMessage() )

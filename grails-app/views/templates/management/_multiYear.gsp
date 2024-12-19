@@ -217,7 +217,7 @@
             url: "<g:createLink controller="ajaxJson" action="updatePaginationCache" />",
             data: {
                 selId: selId,
-                cacheKeyReferer: "/myInstitution/subscriptionManagement/${params.tab}/${user.id}"
+                cacheKeyReferer: "/${controllerName}/subscriptionManagement/${params.tab}/${user.id}"
             }
         }).done(function(result){
             console.log("updated cache for "+selId+": "+result.state);

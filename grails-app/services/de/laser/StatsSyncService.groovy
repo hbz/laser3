@@ -8,7 +8,7 @@ import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
 import de.laser.stats.SushiCallError
 import de.laser.utils.DateUtils
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 import de.laser.stats.Fact
 import de.laser.stats.StatsTripleCursor
 import de.laser.storage.RDConstants
@@ -235,7 +235,7 @@ class StatsSyncService {
                 }
             }
             else {
-                http = new BasicHttpClient(ApiSource.getCurrent().getSushiSourcesURL())
+                http = new BasicHttpClient(Wekb.getSushiSourcesURL())
                 Closure success = { resp, json ->
                     if(resp.code() == 200) {
                         if(incremental) {

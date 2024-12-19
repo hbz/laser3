@@ -38,7 +38,6 @@
             <g:if test="${providerList}">
                 <laser:render template="/templates/filter/providerFilterTable"
                       model="[providerList: providerList,
-                              apiSource: wekbApi,
                               tmplShowCheckbox: false,
                               tmplConfigShow: ['lineNumber', 'sortname', 'name', 'altname', 'platform', 'isMyX', 'marker', 'isWekbCurated']
                       ]"/>

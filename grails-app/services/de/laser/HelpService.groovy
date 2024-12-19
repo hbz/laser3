@@ -12,7 +12,7 @@ import com.vladsch.flexmark.util.data.MutableDataSet
 import com.vladsch.flexmark.util.misc.Extension
 import de.laser.config.ConfigMapper
 import de.laser.flexmark.BaseExtension
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.io.support.GrailsResourceUtils
@@ -99,7 +99,7 @@ class HelpService {
     Map<String, String> getTokenMap() {
         [
             'current_server_laser'  : ConfigMapper.getGrailsServerURL(),
-            'current_server_wekb'   : ApiSource.getCurrent().baseUrl, // ConfigMapper.getWekbServerURL(), // TODO
+            'current_server_wekb'   : Wekb.getURL(), // ConfigMapper.getWekbServerURL(), // TODO
             'current_server_assets' : ConfigMapper.getGrailsServerURL() + '/assets',
             'current_server_webapp' : ConfigMapper.getGrailsServerURL() + '/static',
         ]

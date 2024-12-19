@@ -917,6 +917,7 @@ class CopyElementsService {
 
         if (formService.validateToken(params)) {
             boolean bulkOperationRunning = subscriptionService.checkThreadRunning('PackageTransfer_'+targetObject?.id)
+            /*
             if (params.subscription?.deletePackageSettings && isBothObjectsSet(sourceObject, targetObject)) {
                 List<SubscriptionPackage> packageSettingsToDelete = params.list('subscription.deletePackageSettings').collect {
                     genericOIDService.resolveOID(it)
@@ -929,6 +930,7 @@ class CopyElementsService {
                     PendingChangeConfiguration.executeUpdate('delete from PendingChangeConfiguration pcc where pcc.subscriptionPackage = :sp', [sp: toDelete])
                 }
             }
+            */
 
             //log.debug(params.toMapString())
             if(!bulkOperationRunning && isBothObjectsSet(sourceObject, targetObject, flash) && params.copyElementsSubmit) {
@@ -1779,6 +1781,7 @@ class CopyElementsService {
      */
     boolean copyPackages(List<SubscriptionPackage> packagesToTake, List<SubscriptionPackage> packagesToTakeForChildren, Object targetObject, def flash) {
         Locale locale = LocaleUtils.getCurrentLocale()
+        Sql sql = GlobalService.obtainSqlConnection()
         packagesToTake.each { SubscriptionPackage subscriptionPackage ->
             if (!SubscriptionPackage.findByPkgAndSubscription(subscriptionPackage.pkg, targetObject)) {
                 List<OrgAccessPointLink> pkgOapls = []
@@ -1800,58 +1803,17 @@ class CopyElementsService {
                         newOrgAccessPointLink.subPkg = newSubscriptionPackage
                         newOrgAccessPointLink.save()
                     }
-                    Sql sql = GlobalService.obtainSqlConnection()
-                    //List subscriptionHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where tipp_pkg_fk = :pkgId and ie_subscription_fk = :source", [pkgId: newSubscriptionPackage.pkg.id, source: subscriptionPackage.subscription.id])
                     batchQueryService.bulkAddHolding(sql, targetObject.id, newSubscriptionPackage.pkg.id, targetObject.hasPerpetualAccess, null, subscriptionPackage.subscription.id)
                     if(subscriptionPackage in packagesToTakeForChildren) {
                         Subscription.findAllByInstanceOf(targetObject).each { Subscription child ->
                             if(!SubscriptionPackage.findByPkgAndSubscription(subscriptionPackage.pkg, child)) {
                                 SubscriptionPackage childSp = new SubscriptionPackage(pkg: subscriptionPackage.pkg, subscription: child).save()
-                                batchQueryService.bulkAddHolding(sql, child.id, childSp.pkg.id, child.hasPerpetualAccess, targetObject.id)
-                            }
-                        }
-                    }
-                    /*
-                    List<IssueEntitlement> targetIEs = subscriptionService.getIssueEntitlements(targetObject)
-                            //.findAll { it.tipp.id == ie.tipp.id && it.status != RDStore.TIPP_STATUS_REMOVED }
-                    subscriptionPackage.getIssueEntitlementsofPackage().each { ie ->
-                        //deleted check on both levels here because there are issue entitlements pointing to TIPPs which have been removed from we:kb
-                        if (ie.status != RDStore.TIPP_STATUS_REMOVED && ie.tipp.status != RDStore.TIPP_STATUS_REMOVED) {
-                            boolean check = targetIEs.find { IssueEntitlement targetIE -> targetIE.tipp.id == ie.tipp.id && targetIE.status != RDStore.TIPP_STATUS_REMOVED }
-                            if (check) {
-                                // mich gibts schon! Da aber der Prozeß asynchron läuft, kann keine Fehlermeldung (mehr) ausgegeben werden!
-                                Object[] args = [ie.tipp.name]
-                                //flash.error += messageSource.getMessage('subscription.err.titleAlreadyExistsInTargetSub', args, locale)
-                            } else {
-                                def properties = ie.properties
-                                properties.globalUID = null
-                                IssueEntitlement newIssueEntitlement = new IssueEntitlement()
-                                InvokerHelper.setProperties(newIssueEntitlement, properties)
-                                newIssueEntitlement.coverages = null
-                                newIssueEntitlement.priceItems = null
-                                newIssueEntitlement.ieGroups = null
-                                newIssueEntitlement.subscription = targetObject
-
-                                if (save(newIssueEntitlement, flash)) {
-                                    ie.properties.coverages.each { coverage ->
-                                        def coverageProperties = coverage.properties
-                                        IssueEntitlementCoverage newIssueEntitlementCoverage = new IssueEntitlementCoverage()
-                                        InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
-                                        newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
-                                        newIssueEntitlementCoverage.save()
-                                    }
-                                    ie.properties.priceItems.each { priceItem ->
-                                        def priceItemProperties = priceItem.properties
-                                        PriceItem newPriceItem = new PriceItem()
-                                        InvokerHelper.setProperties(newPriceItem, priceItemProperties)
-                                        newPriceItem.issueEntitlement = newIssueEntitlement
-                                        newPriceItem.save()
-                                    }
+                                if(subscriptionPackage.subscription.holdingSelection != RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+                                    batchQueryService.bulkAddHolding(sql, child.id, childSp.pkg.id, child.hasPerpetualAccess, targetObject.id)
                                 }
                             }
                         }
                     }
-                     */
                 }
             }
         }
@@ -1864,6 +1826,7 @@ class CopyElementsService {
      * @param flash the message container
      * @return true if the deletion was deleted
      */
+    @Deprecated
     boolean deleteEntitlements(List<IssueEntitlement> entitlementsToDelete, Object targetObject, def flash) {
         entitlementsToDelete.each {
             it.status = RDStore.TIPP_STATUS_REMOVED

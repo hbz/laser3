@@ -11,9 +11,11 @@ import de.laser.ContextService
 import de.laser.ControlledListService
 import de.laser.DataConsistencyService
 import de.laser.IssueEntitlement
+import de.laser.IssueEntitlementCoverage
 import de.laser.License
 import de.laser.LicenseService
 import de.laser.LinksGenerationService
+import de.laser.PendingChange
 import de.laser.wekb.Package
 import de.laser.wekb.Provider
 import de.laser.ProviderService
@@ -1032,7 +1034,11 @@ class AjaxJsonController {
                 break
             case "index": removed = DiscoverySystemIndex.executeUpdate('delete from DiscoverySystemIndex dsi where dsi.id = :id', objId)
                 break
-            case "coverage": //TODO migrate SubscriptionController.removeCoverage()
+            case "coverage": IssueEntitlementCoverage ieCoverage = IssueEntitlementCoverage.get(params.objId)
+                if(ieCoverage) {
+                    PendingChange.executeUpdate('delete from PendingChange pc where pc.oid = :oid',[oid:"${ieCoverage.class.name}:${ieCoverage.id}"])
+                    removed = IssueEntitlementCoverage.executeUpdate('delete from IssueEntitlementCoverage ic where ic.id = :id', objId)
+                }
                 break
             //ex SubscriptionControllerService.removePriceItem()
             case "priceItem": removed = PriceItem.executeUpdate('delete from PriceItem pi where pi.id = :id', objId)

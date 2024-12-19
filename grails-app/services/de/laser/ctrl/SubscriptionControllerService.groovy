@@ -16,7 +16,7 @@ import de.laser.interfaces.CalculatedType
 import de.laser.properties.OrgProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 import de.laser.remote.GlobalRecordSource
 import de.laser.reporting.report.local.SubscriptionReport
 import de.laser.reporting.report.myInstitution.base.BaseConfig
@@ -79,6 +79,7 @@ class SubscriptionControllerService {
     AddressbookService addressbookService
     AuditService auditService
     BatchQueryService batchQueryService
+    CacheService cacheService
     ContextService contextService
     DocstoreService docstoreService
     FactService factService
@@ -972,7 +973,7 @@ class SubscriptionControllerService {
                     contentType = titleTypes[0]
             }
             Platform platform = pkg.nominalPlatform
-            Map<String, Object> queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSushiSourcesURL(), [:])
+            Map<String, Object> queryResult = gokbService.executeQuery(Wekb.getSushiSourcesURL(), [:])
             Map platformRecord
             if (queryResult) {
                 Map<String, Object> records = queryResult
@@ -1713,6 +1714,8 @@ class SubscriptionControllerService {
         else {
             params.tab = params.tab ?: 'generalProperties'
 
+            EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/${params.tab}/${result.user.id}/pagination")
+            result.selectionCache = paginationCache.checkedMap ?: [:]
             result << managementService.subscriptionsManagement(controller, params, input_file)
 
             [result:result,status:STATUS_OK]
@@ -2057,7 +2060,7 @@ class SubscriptionControllerService {
      * @param controller unused
      * @param params the request parameter map, containing also filter parameters to limit the package results
      * @return a filtered list of packages
-     * @see ApiSource
+     * @see de.laser.remote.Wekb
      * @see Package
      */
     Map<String,Object> linkPackage(SubscriptionController controller, GrailsParameterMap params) {
@@ -2104,9 +2107,10 @@ class SubscriptionControllerService {
                 boolean createEntitlements = params.createEntitlements == 'on',
                 linkToChildren = params.linkToChildren == 'on',
                 createEntitlementsForChildren = params.createEntitlementsForChildren == 'on'
+                //overwrites from holding selection
                 String pkgUUID = params.addUUID
-                result.source = ApiSource.getCurrent().baseUrl
-                RefdataValue holdingSelection = RefdataValue.get(params.holdingSelection)
+                result.source = Wekb.getURL()
+                RefdataValue holdingSelection
                 if(params.holdingSelection) {
                     holdingSelection = RefdataValue.get(params.holdingSelection)
                     result.subscription.holdingSelection = holdingSelection
@@ -2116,8 +2120,15 @@ class SubscriptionControllerService {
                     holdingSelection = GrailsHibernateUtil.unwrapIfProxy(result.subscription.holdingSelection)
                 }
                 result.holdingSelection = holdingSelection
-                GlobalRecordSource source = GlobalRecordSource.findByUriLikeAndRectype(result.source+'%', GlobalSourceSyncService.RECTYPE_TIPP)
-                log.debug("linkPackage. Global Record Source URL: " +source.uri)
+                if(holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+                    createEntitlements = true
+                    if(auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
+                        linkToChildren = true
+                        createEntitlementsForChildren = false
+                    }
+                }
+                GlobalRecordSource source = GlobalRecordSource.findByRectype(GlobalSourceSyncService.RECTYPE_TIPP)
+                log.debug("linkPackage. Global Record Source URL: " + source.getUri())
                 globalSourceSyncService.source = source
                 globalSourceSyncService.defineMapFields()
 
@@ -2190,7 +2201,6 @@ class SubscriptionControllerService {
         if(params.confirmed && !subscriptionService.checkThreadRunning('PackageUnlink_'+result.subscription.id)) {
             Set<Subscription> subList = []
             if(params.containsKey('option')) {
-                AuditConfig.removeConfig(result.subscription, 'holdingSelection')
                 subList << result.subscription
                 if(params.option in ['childWithIE', 'childOnlyIE'])
                     subList.addAll(Subscription.findAllByInstanceOf(result.subscription))
@@ -2531,9 +2541,6 @@ class SubscriptionControllerService {
                 result.num_change_rows = subscriptionHistory.size()
             }
             */
-
-            result.apisources = [ ApiSource.getCurrent() ]
-
             result.packages = result.subscription.packages
 
             [result:result,status:STATUS_OK]
@@ -3180,11 +3187,15 @@ class SubscriptionControllerService {
      * @return OK if the creation was successful, ERROR otherwise
      */
     Map<String,Object> addCoverage(GrailsParameterMap params) {
-        IssueEntitlement base = IssueEntitlement.get(params.issueEntitlement)
+        IssueEntitlement base = IssueEntitlement.get(params.ieid)
         if(base) {
-            Map<String,Object> result = [subId:base.subscription.id]
+            Map<String,Object> result = [:]
             IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage(issueEntitlement: base)
             if(ieCoverage.save()) {
+                base.refresh()
+                result.covStmt = ieCoverage
+                result.counterCoverage = base.coverages.size()
+                result.tipp = base.tipp
                 [result: result, status: STATUS_OK]
             }
             else {
@@ -3193,27 +3204,8 @@ class SubscriptionControllerService {
             }
         }
         else {
-            log.error("Issue entitlement with ID ${params.issueEntitlement} could not be found")
+            log.error("Issue entitlement with ID ${params.ieid} could not be found")
             [result: null, status: STATUS_ERROR]
-        }
-    }
-
-    /**
-     * Removes the given coverage statement from the issue entitlement
-     * @param params the request parameter map
-     * @return OK if the removal was successful, false otherwise
-     */
-    Map<String,Object> removeCoverage(GrailsParameterMap params) {
-        IssueEntitlementCoverage ieCoverage = IssueEntitlementCoverage.get(params.ieCoverage)
-        if(ieCoverage) {
-            Map<String,Object> result = [subId:ieCoverage.issueEntitlement.subscription.id]
-            PendingChange.executeUpdate('update PendingChange pc set pc.status = :rejected where pc.oid = :oid',[rejected:RDStore.PENDING_CHANGE_REJECTED,oid:"${ieCoverage.class.name}:${ieCoverage.id}"])
-            ieCoverage.delete()
-            [result:result,status:STATUS_OK]
-        }
-        else {
-            log.error("Issue entitlement coverage with ID ${params.ieCoverage} could not be found")
-            [result:null,status:STATUS_ERROR]
         }
     }
 

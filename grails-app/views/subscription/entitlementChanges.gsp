@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; grails.converters.JSON; de.laser.PendingChangeConfiguration; de.laser.wekb.TitleInstancePackagePlatform; de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange; de.laser.TitleChange; de.laser.IssueEntitlementChange; de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.RefdataValue;" %>
+<%@ page import="de.laser.remote.Wekb; de.laser.ui.Btn; de.laser.ui.Icon; grails.converters.JSON; de.laser.PendingChangeConfiguration; de.laser.wekb.TitleInstancePackagePlatform; de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange; de.laser.TitleChange; de.laser.IssueEntitlementChange; de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.RefdataValue;" %>
 
 <laser:htmlStart message="myinst.menu.pendingChanges.label" />
 
@@ -159,16 +159,14 @@
                                 <i class="${Icon.TIPP}"></i>
                             </g:link>
 
-                            <g:each in="${apisources}" var="gokbAPI">
                                 <g:if test="${tipp.gokbId}">
                                     <a role="button"
                                        class="${Btn.ICON.SIMPLE_TOOLTIP} tiny"
                                        data-content="${message(code: 'wekb')}"
-                                       href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/public/tippContent/?id=' + tipp.gokbId : '#'}"
+                                       href="${Wekb.getURL() + '/public/tippContent/?id=' + tipp.gokbId}"
                                        target="_blank"><i class="${Icon.WEKB}"></i>
                                     </a>
                                 </g:if>
-                            </g:each>
                         </g:if>
 
                     </td>

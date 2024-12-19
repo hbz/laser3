@@ -158,16 +158,21 @@
                 <div class="two fields">
                     <div class="eight wide field" style="text-align: left;">
                         <div class="ui buttons">
-                            <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning ? 'disabled="disabled"' : ''}
-                                    type="submit"
-                                    name="processOption"
-                                    value="linkwithoutIE">${message(code: 'subscriptionsManagement.linkwithoutIE')}</button>
+                            <g:if test="${parentSuccessorSubscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+                                <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning ? 'disabled="disabled"' : ''} type="submit"
+                                        name="processOption"
+                                        value="linkwithoutIE">${message(code: 'subscriptionsManagement.linkGeneral')}</button>
+                            </g:if>
+                            <g:else>
+                                <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning ? 'disabled="disabled"' : ''} type="submit"
+                                        name="processOption"
+                                        value="linkwithoutIE">${message(code: 'subscriptionsManagement.linkwithoutIE')}</button>
 
-                            <div class="or" data-text="${message(code: 'default.or')}"></div>
-                            <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning ? 'disabled="disabled"' : ''}
-                                    type="submit"
-                                    name="processOption"
-                                    value="linkwithIE">${message(code: 'subscriptionsManagement.linkwithIE')}</button>
+                                <div class="or" data-text="${message(code: 'default.or')}"></div>
+                                <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning ? 'disabled="disabled"' : ''} type="submit"
+                                        name="processOption"
+                                        value="linkwithIE">${message(code: 'subscriptionsManagement.linkwithIE')}</button>
+                            </g:else>
                         </div>
                     </div>
                 </div>
@@ -236,12 +241,21 @@
                         <td>
                             <div class="ui middle aligned selection list">
                                 <g:each in="${participant.oldSub?.packages}" var="sp">
-                                    <div class="item"><div class="content">
-                                        <g:link controller="subscription" action="index" id="${participant.oldSub.id}"
-                                                params="[pkgfilter: sp.pkg.id]">
-                                            ${sp.pkg.name}<br/><ui:ieAndPkgSize sp="${sp}" />
-                                        </g:link>
-                                    </div>
+                                    <div class="item">
+                                        <div class="content">
+                                            <g:if test="${participant.oldSub?.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+                                                <g:link controller="subscription" action="index" id="${participant.oldSub.id}"
+                                                        params="[pkgfilter: sp.pkg.id]">
+                                                    ${sp.pkg.name}<br/>(Bestand der Elternlizenz wird übernommen)
+                                                </g:link>
+                                            </g:if>
+                                            <g:else>
+                                                <g:link controller="subscription" action="index" id="${participant.oldSub.id}"
+                                                        params="[pkgfilter: sp.pkg.id]">
+                                                    ${sp.pkg.name}<br/><ui:ieAndPkgSize sp="${sp}" />
+                                                </g:link>
+                                            </g:else>
+                                        </div>
                                     </div>
                                 </g:each>
                             </div>
@@ -249,12 +263,21 @@
                         <td>
                             <div class="ui middle aligned selection list">
                                 <g:each in="${participant.newSub.packages}" var="sp">
-                                    <div class="item"><div class="content">
-                                        <g:link controller="subscription" action="index" id="${participant.newSub.id}"
-                                                params="[pkgfilter: sp.pkg.id]">
-                                            ${sp.pkg.name}<br/><ui:ieAndPkgSize sp="${sp}" />
-                                        </g:link>
-                                    </div>
+                                    <div class="item">
+                                        <div class="content">
+                                            <g:if test="${participant.newSub.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+                                                <g:link controller="subscription" action="index" id="${participant.newSub.id}"
+                                                        params="[pkgfilter: sp.pkg.id]">
+                                                    ${sp.pkg.name}<br/>(Bestand der Elternlizenz wird übernommen)
+                                                </g:link>
+                                            </g:if>
+                                            <g:else>
+                                                <g:link controller="subscription" action="index" id="${participant.newSub.id}"
+                                                        params="[pkgfilter: sp.pkg.id]">
+                                                    ${sp.pkg.name}<br/><ui:ieAndPkgSize sp="${sp}" />
+                                                </g:link>
+                                            </g:else>
+                                        </div>
                                     </div>
                                 </g:each>
                             </div>

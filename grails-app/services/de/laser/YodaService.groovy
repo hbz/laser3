@@ -39,7 +39,6 @@ class YodaService {
     DeletionService deletionService
     GlobalSourceSyncService globalSourceSyncService
     GlobalService globalService
-    PackageService packageService
     ExecutorService executorService
 
     boolean bulkOperationRunning = false
@@ -192,7 +191,7 @@ class YodaService {
             HttpClientConfiguration config = new DefaultHttpClientConfiguration()
             config.maxContentLength = 1024 * 1024 * 100
             config.readTimeout = Duration.ofMinutes(2)
-            BasicHttpClient http = new BasicHttpClient(grs.uri+'searchApi', config)
+            BasicHttpClient http = new BasicHttpClient(grs.getUri() + '/searchApi', config)
             int offset = 0, max = 20000
             boolean more = true
             Map<String, Object> queryParams = [componentType: 'TitleInstancePackagePlatform',

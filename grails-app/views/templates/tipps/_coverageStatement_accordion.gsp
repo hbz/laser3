@@ -1,8 +1,8 @@
-<%@ page import="de.laser.ui.Icon; de.laser.IssueEntitlementCoverage" %>
+<%@ page import="de.laser.ui.Icon; de.laser.ui.Btn; de.laser.IssueEntitlementCoverage" %>
 <g:set var="overwriteEditable" value="${(overwriteEditable == null) ? editable : overwriteEditable}"/>
 
 
-<div class="ui list la-label-list">
+<div class="ui list la-label-list" data-object="${genericOIDService.getOID(covStmt)}">
     <g:if test="${(covStmt.startDate || covStmt.startVolume || covStmt.startIssue) && !objectTypeIsIE}">
         <div class="ui label la-labelBlock">${message(code: 'tipp.coverage')} ${counterCoverage > 0 ? counterCoverage++ + 1 : ''}</div>
     </g:if>
@@ -90,15 +90,12 @@
             </div>
         </div>
     </g:if>
-%{--    <g:if test="${overwriteEditable && (covStmt instanceof IssueEntitlementCoverage) && subscription}">
+    <g:if test="${overwriteEditable && (covStmt instanceof IssueEntitlementCoverage) && subscription}">
         <span class="right floated">
-            <g:link controller="subscription" action="removeCoverage"
-                    params="${paramData + [ieCoverage: covStmt.id, id: subscription.id]}"
-                    class="${Btn.ICON.SIMPLE_TOOLTIP} negative compact tiny removeCoverage"
-                    data-content="Abdeckung entfernen">
-                        <i class="${Icon.CMD.REMOVE}"></i>
-                    </g:link>
+            <button class="${Btn.ICON.SIMPLE} compact tiny removeObject" data-objType="coverage" data-objId="${covStmt.id}" data-trigger="${genericOIDService.getOID(covStmt)}">
+                <i class="${Icon.CMD.REMOVE}" data-content="Abdeckung entfernen"></i>
+            </button>
         </span>
-    </g:if>--}%
+    </g:if>
 </div>
 

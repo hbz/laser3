@@ -177,9 +177,9 @@
                     </g:if>
                 </sec:ifAnyGranted>
 
-                %{-- system messages --}%
+                %{-- systemMessages: TYPE_GLOBAL --}%
 
-                <laser:render template="/templates/system/messages" />
+                <laser:render template="/templates/system/messages" model="${[type: SystemMessage.TYPE_GLOBAL]}"/>
 
                 %{-- content --}%
 
@@ -271,7 +271,10 @@
                         $('button#la-js-topButton').stop().fadeTo('slow',0);
                     }
                 });
-                if ( !$('#system-profiler').length || !$('#showDebugInfo').length || !$('#showSystemInfo').length ){
+                if ( $('#system-profiler').length || $('#showDebugInfo').length || $('#showSystemInfo').length ){
+
+                }
+                else{
                     $('button#la-js-topButton').css("bottom","10px");
                 }
             })

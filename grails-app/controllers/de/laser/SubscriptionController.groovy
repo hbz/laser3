@@ -7,16 +7,14 @@ import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.helper.FilterLogic
-import de.laser.helper.Params
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.utils.DateUtils
-import de.laser.utils.LocaleUtils
 import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
 import de.laser.wekb.Package
@@ -45,7 +43,6 @@ import java.util.concurrent.ExecutorService
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SubscriptionController {
 
-    AuditService auditService
     BatchQueryService batchQueryService
     ContextService contextService
     CopyElementsService copyElementsService
@@ -233,7 +230,7 @@ class SubscriptionController {
                     }
                 }
             }
-            Map queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSearchApiURL(), [uuid: platformInstance.gokbId])
+            Map queryResult = gokbService.executeQuery(Wekb.getSearchApiURL(), [uuid: platformInstance.gokbId])
             if (queryResult.error && queryResult.error == 404) {
                 result.wekbServerUnavailable = message(code: 'wekb.error.404')
             }
@@ -243,10 +240,10 @@ class SubscriptionController {
                     records[0].lastRun = platformInstance.counter5LastRun ?: platformInstance.counter4LastRun
                     records[0].id = platformInstance.id
                     result.platformInstanceRecords[platformInstance.gokbId] = records[0]
-                    result.platformInstanceRecords[platformInstance.gokbId].wekbUrl = ApiSource.getCurrent().getResourceShowURL() + "/${platformInstance.gokbId}"
+                    result.platformInstanceRecords[platformInstance.gokbId].wekbUrl = Wekb.getResourceShowURL() + "/${platformInstance.gokbId}"
                     if(records[0].statisticsFormat == 'COUNTER' && records[0].counterR4SushiServerUrl == null && records[0].counterR5SushiServerUrl == null) {
                         result.error = 'noSushiSource'
-                        ArrayList<Object> errorArgs = ["${ApiSource.getCurrent().getResourceShowURL()}/${platformInstance.gokbId}", platformInstance.name]
+                        ArrayList<Object> errorArgs = ["${Wekb.getResourceShowURL()}/${platformInstance.gokbId}", platformInstance.name]
                         result.errorArgs = errorArgs.toArray()
                     }
                     else {
@@ -926,7 +923,6 @@ class SubscriptionController {
             params.tab = params.tab ?: 'generalProperties'
             if(ctrlResult.result.tabPlat && !params.tabPlat)
                 params.tabPlat = ctrlResult.result.tabPlat.toString()
-
         }
         ctrlResult.result
     }
@@ -1043,7 +1039,7 @@ class SubscriptionController {
         }
         else {
             if(params.addUUID) {
-                if(params.createEntitlements == 'on') {
+                if(params.createEntitlements == 'on' || ctrlResult.result.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
                     flash.message = message(code: 'subscription.details.link.processingWithEntitlements') as String
                     redirect action: 'index', params: [id: params.id, gokbId: params.addUUID]
                     return
@@ -1213,6 +1209,7 @@ class SubscriptionController {
                 if (ttParams.tab)    { params.tab = ttParams.tab }
                 SwissKnife.setPaginationParams(result, params, (User) result.user)
                 Subscription targetSub = issueEntitlementService.getTargetSubscription(result.subscription)
+                result.editable = targetSub == result.subscription && result.editable
                 Set<Package> targetPkg = targetSub.packages.pkg
                 if(params.pkgFilter)
                     targetPkg = [Package.get(params.pkgFilter)]

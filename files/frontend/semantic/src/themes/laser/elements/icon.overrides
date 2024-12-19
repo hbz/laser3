@@ -396,3 +396,7 @@ i.icon.la-objectIsMine.fixed {
   left: 0;
   right: 0;
 }
+
+i.bordered.icon.la-radioButton {
+    box-shadow: @blue 0px 0px 0px 0.1em inset;
+}

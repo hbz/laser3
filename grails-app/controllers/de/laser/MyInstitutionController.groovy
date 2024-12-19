@@ -8,7 +8,7 @@ import de.laser.cache.SessionCacheWrapper
 import de.laser.convenience.Marker
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.UserControllerService
-import de.laser.remote.ApiSource
+import de.laser.remote.Wekb
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.auth.Role
@@ -40,7 +40,6 @@ import de.laser.utils.SwissKnife
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
-import de.laser.wekb.ProviderRole
 import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import de.laser.wekb.VendorRole
@@ -294,7 +293,7 @@ class MyInstitutionController  {
         Map<String, Object> wekbParams = params.clone()
         if(!wekbParams.containsKey('sort'))
             wekbParams.sort = 'name'
-        Map queryCuratoryGroups = gokbService.executeQuery(ApiSource.getCurrent().getGroupsURL(), [:])
+        Map queryCuratoryGroups = gokbService.executeQuery(Wekb.getGroupsURL(), [:])
         if(queryCuratoryGroups.code == 404) {
             result.error = message(code: 'wekb.error.'+queryCuratoryGroups.error) as String
         }
@@ -929,8 +928,8 @@ class MyInstitutionController  {
             providerQuery = efq.query
             queryParams = efq.queryParams as Map<String, Object>
         }
-        result.wekbApi = ApiSource.getCurrent()
-        Map queryCuratoryGroups = gokbService.executeQuery(ApiSource.getCurrent().getGroupsURL(), [:])
+
+        Map queryCuratoryGroups = gokbService.executeQuery(Wekb.getGroupsURL(), [:])
         if(queryCuratoryGroups.error == 404) {
             result.error = message(code:'wekb.error.'+queryCuratoryGroups.error) as String
         }
@@ -1102,7 +1101,7 @@ class MyInstitutionController  {
 
         result.filterSet = params.filterSet ? true : false
         /*
-        Map queryCuratoryGroups = gokbService.executeQuery(ApiSource.getCurrent().getGroupsURL(), [:])
+        Map queryCuratoryGroups = gokbService.executeQuery(Wekb.getGroupsURL(), [:])
         if(queryCuratoryGroups.code == 404) {
             result.error = message(code: 'wekb.error.'+queryCuratoryGroups.error) as String
         }
@@ -1365,7 +1364,7 @@ class MyInstitutionController  {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
         params.tab = params.tab ?: 'generalProperties'
-        EhcacheWrapper filterCache = contextService.getUserCache("/subscriptionsManagement/subscriptionFilter/"), paginationCache = cacheService.getTTL1800Cache("/myInstitution/subscriptionManagement/${params.tab}/${result.user.id}/pagination")
+        EhcacheWrapper filterCache = contextService.getUserCache("/subscriptionsManagement/subscriptionFilter/"), paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/${params.tab}/${result.user.id}/pagination")
         Set<String> filterFields = ['q', 'identifier', 'referenceYears', 'status', 'filterPropDef', 'filterProp', 'form', 'resource', 'subKinds', 'isPublicForApi', 'hasPerpetualAccess', 'hasPublishComponent', 'holdingSelection', 'subRunTime', 'subRunTimeMultiYear', 'subType', 'consortia']
         filterFields.each { String subFilterKey ->
             if(params.containsKey('processOption')) {

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.remote.Wekb" %>
 <div class="item">
     <ui:listIcon type="${tipp.titleType}"/>
 
@@ -45,13 +45,13 @@
             </g:link>
         </g:else>
     </g:if>
-    <g:each in="${[ ApiSource.getCurrent() ]}" var="gokbAPI">
+
         <g:if test="${tipp.gokbId}">
             <a role="button" class="${Btn.ICON.SIMPLE_TOOLTIP} tiny"
                data-content="${message(code: 'wekb')}"
-               href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/public/tippContent/?id=' + tipp.gokbId : '#'}"
+               href="${Wekb.getURL() + '/public/tippContent/?id=' + tipp.gokbId}"
                target="_blank"><i class="${Icon.WEKB}"></i>
             </a>
         </g:if>
-    </g:each>
+
 </div>

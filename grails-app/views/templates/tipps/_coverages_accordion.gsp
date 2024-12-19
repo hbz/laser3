@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon" %>
+<%@ page import="de.laser.ui.Icon; de.laser.ui.Btn" %>
 %{-- BOOK  --}%
 <g:if test="${(tipp.titleType == 'monograph')}">
     %{-- IE  --}%
@@ -87,10 +87,12 @@
                     }
                     paramData.putAll(params)
                 %>
-                <g:each in="${ie.coverages}" var="covStmt" status="counterCoverage">
-                    <laser:render template="/templates/tipps/coverageStatement_accordion"
-                                  model="${[covStmt: covStmt, paramData: paramData, showEmbargo: true, objectTypeIsIE: true, overwriteEditable: overwriteEditable, counterCoverage: counterCoverage]}"/>
-                </g:each>
+                <div id="coverageWrapper_${ie.id}">
+                    <g:each in="${ie.coverages}" var="covStmt" status="counterCoverage">
+                        <laser:render template="/templates/tipps/coverageStatement_accordion"
+                                      model="${[covStmt: covStmt, showEmbargo: true, objectTypeIsIE: true, overwriteEditable: overwriteEditable, counterCoverage: counterCoverage]}"/>
+                    </g:each>
+                </div>
             </div>
 %{--            <div class="five wide column">
                 <div class="ui list la-label-list">
@@ -132,14 +134,6 @@
                 </div>
             </div>--}%
         </div>
-%{--        <g:if test="${editable}">
-            <br/>
-            <g:link action="addCoverage" params="${paramData + [issueEntitlement: ie.id]}"
-                        class="${Btn.ICON.SIMPLE_TOOLTIP} positive compact tiny"
-                        data-content="${message(code: 'subscription.details.addCoverage')}">
-                    <i class="${Icon.CMD.ADD}" ></i>
-                </g:link>
-        </g:if>--}%
     </g:if>
 
     %{-- TIPP  --}%
