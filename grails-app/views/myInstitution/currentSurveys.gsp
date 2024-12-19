@@ -1,13 +1,13 @@
-<%@ page import="de.laser.survey.SurveyConfig; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.survey.SurveyResult; de.laser.survey.SurveyConfig; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.survey.SurveyConfig; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.survey.SurveyResult; de.laser.survey.SurveyConfig; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem;" %>
 
-<laser:htmlStart message="currentSurveys.label" serviceInjection="true" />
+<laser:htmlStart message="currentSurveys.label" />
 
 <ui:breadcrumbs>
     <ui:crumb message="currentSurveys.label" class="active"/>
 </ui:breadcrumbs>
 
 <ui:controlButtons>
-    <ui:exportDropdown>
+  %{--  <ui:exportDropdown>
         <ui:exportDropdownItem>
             <g:link class="item" controller="myInstitution" action="currentSurveys"
                     params="${params + [exportXLSX: true]}">${message(code: 'survey.exportSurveys')}</g:link>
@@ -16,10 +16,10 @@
             <g:link class="item" controller="myInstitution" action="currentSurveys"
                     params="${params + [exportXLSX: true, surveyCostItems: true]}">${message(code: 'survey.exportSurveyCostItems')}</g:link>
         </ui:exportDropdownItem>
-    </ui:exportDropdown>
+    </ui:exportDropdown>--}%
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon text="${institution.name} - ${message(code: 'currentSurveys.label')}" type="survey" total="${countSurveys.values().sum { it }}" floated="true" />
+<ui:h1HeaderWithIcon message="currentSurveys.label" type="survey" total="${countSurveys.values().sum { it }}" floated="true" />
 
 <ui:messages data="${flash}"/>
 
@@ -27,9 +27,7 @@
     <g:form action="currentSurveys" controller="myInstitution" method="post" class="ui small form" params="[tab: params.tab ]">
         <div class="three fields">
             <div class="field">
-                <label for="name">${message(code: 'surveyInfo.name.label')}
-                </label>
-
+                <label for="name">${message(code: 'surveyInfo.name.label')}</label>
                 <div class="ui input">
                     <input type="text" id="name" name="name"
                            placeholder="${message(code: 'default.search.ph')}"
@@ -79,13 +77,12 @@
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${providers.sort { it.name }}" var="provider">
-                        <option <%=(params.list('filterPvd').contains(provider.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'filterPvd').contains(provider.id) ? 'selected="selected"' : ''%>
                         value="${provider.id}">
                         ${provider.name}
                         </option>
                     </g:each>
                 </select>
-
             </div>
 
             <div class="field">
@@ -100,25 +97,26 @@
                         </option>
                     </g:each>
                 </select>
-
             </div>
 
         </div>
 
-        <div class="three fields">
+        <div class="two fields">
 
             <laser:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true, label:message(code: 'subscription.property.search')]"/>
 
             <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>
                 <ui:select class="ui dropdown" name="type"
-                              from="${RefdataCategory.getAllRefdataValues(de.laser.storage.RDConstants.SURVEY_TYPE)}"
-                              optionKey="id"
-                              optionValue="value"
-                              value="${params.type}"
-                              noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                           from="${RefdataCategory.getAllRefdataValues(de.laser.storage.RDConstants.SURVEY_TYPE)}"
+                           optionKey="id"
+                           optionValue="value"
+                           value="${params.type}"
+                           noSelection="${['': message(code: 'default.select.choose.label')]}"/>
             </div>
+        </div>
 
+        <div class="one fields">
             <div class="field">
                 <label>${message(code: 'surveyInfo.options')}</label>
 
@@ -149,20 +147,43 @@
                                    tabindex="0">
                         </div>
                     </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkPackageSurvey">${message(code: 'surveyconfig.packageSurvey.label')}</label>
+                            <input id="checkPackageSurvey" name="checkPackageSurvey" type="checkbox"
+                                   <g:if test="${params.checkPackageSurvey}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkVendorSurvey">${message(code: 'surveyconfig.vendorSurvey.label')}</label>
+                            <input id="checkVendorSurvey" name="checkVendorSurvey" type="checkbox"
+                                   <g:if test="${params.checkVendorSurvey}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkInvoicingInformation">${message(code: 'surveyconfig.invoicingInformation.label')}</label>
+                            <input id="checkInvoicingInformation" name="checkInvoicingInformation" type="checkbox"
+                                   <g:if test="${params.checkInvoicingInformation}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
                 </div>
             </div>
 
         </div>
 
         <div class="field la-field-right-aligned">
-
             <div class="field la-field-right-aligned">
-                <a href="${request.forwardURI}"
-                   class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-                <input type="submit" class="ui primary button"
-                       value="${message(code: 'default.button.filter.label')}">
+                <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+                <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}">
             </div>
-
         </div>
     </g:form>
 </ui:filter>
@@ -177,11 +198,14 @@
 
     <ui:tabs actionName="${actionName}">
         <ui:tabsItem controller="myInstitution" action="currentSurveys"
+                     params="${tmpParams+[id: params.id, tab: 'open']}" text="${message(code: "surveys.tabs.open")}" tab="open"
+                     counts="${countSurveys.open}"/>
+       %{-- <ui:tabsItem controller="myInstitution" action="currentSurveys"
                         params="${tmpParams+[id: params.id, tab: 'new']}" text="${message(code: "surveys.tabs.new")}" tab="new"
                         counts="${countSurveys.new}"/>
         <ui:tabsItem controller="myInstitution" action="currentSurveys"
                         params="${tmpParams+[id: params.id, tab: 'processed']}" text="${message(code: "surveys.tabs.processed")}" tab="processed"
-                        counts="${countSurveys.processed}"/>
+                        counts="${countSurveys.processed}"/>--}%
         <ui:tabsItem controller="myInstitution" action="currentSurveys"
                         params="${tmpParams+[id: params.id, tab: 'finish']}" text="${message(code: "surveys.tabs.finish")}" tab="finish"
                         counts="${countSurveys.finish}"/>
@@ -205,7 +229,7 @@
             <g:sortableColumn params="${params}" property="surInfo.type"
                               title="${message(code: 'surveyInfo.type.label')}"/>
             <g:sortableColumn params="${params}" property="surInfo.endDate"
-                              title="${message(code: 'default.endDate.label')}"/>
+                              title="${message(code: 'default.endDate.label.shy')}"/>
             <g:sortableColumn params="${params}" property="surInfo.owner"
                               title="${message(code: 'surveyInfo.owner.label')}"/>
 
@@ -235,9 +259,9 @@
                 <td>
                     <div class="la-flexbox">
                         <g:if test="${surveyConfig.subSurveyUseForTransfer}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                            <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                   data-content="${message(code: "surveyconfig.subSurveyUseForTransfer.label.info2")}">
-                                <i class="grey icon pie chart la-list-icon"></i>
+                                <i class="grey ${Icon.SURVEY} la-list-icon"></i>
                             </span>
                         </g:if>
 
@@ -254,9 +278,9 @@
                     </div>
 
                     <g:if test="${surveyInfo.isMandatory}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                               data-content="${message(code: "surveyInfo.isMandatory.label.info2")}">
-                            <i class="yellow icon exclamation triangle"></i>
+                            <i class="${Icon.TOOLTIP.IMPORTANT} yellow"></i>
                         </span>
                     </g:if>
                 </td>
@@ -273,25 +297,25 @@
 
                 <td class="center aligned">
 
-                    <uiSurvey:finishIcon participant="${institution}" surveyConfig="${surveyConfig}" surveyOwnerView="${false}"/>
+                    <uiSurvey:finishIcon participant="${contextService.getOrg()}" surveyConfig="${surveyConfig}" surveyOwnerView="${false}"/>
 
                 </td>
                 <g:if test="${params.tab == 'finish'}">
                     <td class="center aligned">
-                        <uiSurvey:finishDate participant="${institution}" surveyConfig="${surveyConfig}"/>
+                        <uiSurvey:finishDate participant="${contextService.getOrg()}" surveyConfig="${surveyConfig}"/>
                     </td>
                 </g:if>
 
                 <td class="x">
 
                     <g:if test="${editable}">
-                            <span class="la-popup-tooltip la-delay"
+                            <span class="la-popup-tooltip"
                                   data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                                 <g:link controller="myInstitution" action="surveyInfos" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]"
-                                        class="ui icon button blue la-modern-button"
+                                        class="${Btn.MODERN.SIMPLE}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                    <i aria-hidden="true" class="write icon"></i>
+                                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                 </g:link>
                             </span>
                     </g:if>
@@ -302,13 +326,5 @@
         </g:each>
     </table>
 </ui:greySegment>
-
-
-%{--<g:if test="${countSurveys."${params.tab}"}">
-    <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
-                    next="${message(code: 'default.paginate.next')}"
-                    prev="${message(code: 'default.paginate.prev')}" max="${max}"
-                    total="${countSurveys."${params.tab}"}"/>
-</g:if>--}%
 
 <laser:htmlEnd />

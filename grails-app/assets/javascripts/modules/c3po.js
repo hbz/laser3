@@ -26,7 +26,7 @@ c3po = {
     },
 
     remoteRefdataSearch: function (ajaxurl, cssId) {
-        console.log ('c3po.remoteRefdataSearch() ' + ajaxurl + ', ' + cssId + ' )')
+        console.log ('c3po.remoteRefdataSearch( ' + ajaxurl + ', ' + cssId + ' )')
 
         let $select = $(cssId + " .remoteRefdataSearch")
         let appender = ajaxurl.indexOf('?') < 0 ? '?' : '&'
@@ -48,9 +48,9 @@ c3po = {
                     value        : 'id',     // mapping: actual dropdown value
                     text         : 'text'    // mapping: displayed text when selected
                 },
-                placeholder : JSPC.dict.get('select2.placeholder', JSPC.currLanguage),
+                placeholder : JSPC.dict.get('select2.placeholder', JSPC.config.language),
                 message : {
-                    noResults : JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage)
+                    noResults : JSPC.dict.get('select2.noMatchesFound', JSPC.config.language)
                 },
                 duration : 50,
                 saveRemoteData : false,
@@ -87,11 +87,13 @@ c3po = {
                     remoteValues : 'values', // mapping: grouping for api results
                     name         : 'text',   // mapping: displayed dropdown text
                     value        : 'id',     // mapping: actual dropdown value
-                    text         : 'text'    // mapping: displayed text when selected
+                    text         : 'text',   // mapping: displayed text when selected
+                    icon         : 'icon',    //mapping: displayed icon
+
                 },
-                placeholder : JSPC.dict.get('select2.placeholder', JSPC.currLanguage),
+                placeholder : JSPC.dict.get('select2.placeholder', JSPC.config.language),
                 message : {
-                    noResults : JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage)
+                    noResults : JSPC.dict.get('select2.noMatchesFound', JSPC.config.language)
                 },
                 duration : 50,
                 saveRemoteData : false,

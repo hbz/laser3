@@ -38,60 +38,17 @@ class ProfileController {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
         result.editable = true
-        result.availableOrgs  = Org.executeQuery('from Org o where o.sector = :sector order by o.sortname', [sector: RDStore.O_SECTOR_HIGHER_EDU])
+        result.availableOrgs  = Org.executeQuery('from Org o order by o.sortname')
         result.availableOrgRoles = Role.findAllByRoleType('user')
 
         result
     }
 
-    /**
-     * Call to the help page with a collection of basic guidelines to the app
-     */
     @Secured(['ROLE_USER'])
-    def help() {
+    def importManuel() {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
         result
-    }
-
-    /**
-     * Call for a listing of public properties and reference data values, i.e. an overview of the controlled lists
-     */
-    @Secured(['ROLE_USER'])
-    def properties() {
-        Map<String, Object> propDefs = [:]
-
-        Locale locale = LocaleUtils.getCurrentLocale()
-        String i10nAttr = locale.getLanguage() == Locale.GERMAN.getLanguage() ? 'name_de' : 'name_en'
-        List usedPdList = []
-        List usedRdvList = []
-        List refdatas = []
-
-        params.tab = params.tab ?: 'propertyDefinitions'
-
-        if(params.tab == 'propertyDefinitions'){
-            String[] custPropDefs = PropertyDefinition.AVAILABLE_CUSTOM_DESCR.sort {a, b ->
-                messageSource.getMessage("propertyDefinition.${a}.label", null, locale) <=> messageSource.getMessage("propertyDefinition.${b}.label", null, locale)
-            }
-            custPropDefs.each { String it ->
-                List<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: i10nAttr]) // NO private properties!
-                propDefs.putAt( it, itResult )
-            }
-            usedPdList = propertyService.getUsageDetails()
-        }else{
-            usedRdvList = refdataService.getUsageDetails()
-            i10nAttr = locale.getLanguage() == Locale.GERMAN.getLanguage() ? 'desc_de' : 'desc_en'
-            println(i10nAttr)
-            refdatas = RefdataCategory.executeQuery("from RefdataCategory order by ${i10nAttr}")
-        }
-
-        render view: 'properties', model: [
-                editable    : false,
-                propertyDefinitions: propDefs,
-                rdCategories: refdatas,
-                usedRdvList : usedRdvList,
-                usedPdList  : usedPdList
-        ]
     }
 
     /**
@@ -129,9 +86,9 @@ class ProfileController {
          // TODO : isLastAdminForOrg
 
         if (params.process) {
-            User userReplacement = (User) genericOIDService.resolveOID(params.userReplacement)
+            User userReplacement = User.get(params.userReplacement)
 
-            result.delResult = deletionService.deleteUser(result.user, userReplacement, false)
+            result.delResult = deletionService.deleteUser(result.user as User, userReplacement, false)
 
             if (result.delResult.status == DeletionService.RESULT_SUCCESS) {
                 redirect controller: 'logout', action: 'index'
@@ -139,7 +96,7 @@ class ProfileController {
             }
         }
         else {
-            result.delResult = deletionService.deleteUser(result.user, null, DeletionService.DRY_RUN)
+            result.delResult = deletionService.deleteUser(result.user as User, null, DeletionService.DRY_RUN)
         }
 
         result.substituteList = result.user.formalOrg ? User.executeQuery(
@@ -379,16 +336,15 @@ class ProfileController {
             if ( params.isNotificationCCByEmail && ( ! params.notificationCCEmailaddress) ) {
                 flash.error += message(code:'profile.updateProfile.updated.isNotificationCCByEmail.noCCEmailAddressError')
             } else {
-                if (params.notificationCCEmailaddress){
-                    if (formService.validateEmailAddress(params.notificationCCEmailaddress)){
-                        _changeValue( user.getSetting(KEYS.NOTIFICATION_CC_EMAILADDRESS, null),
-                                'notificationCCEmailaddress',
-                                null,
-                                'profile.updateProfile.updated.notificationCCEmailaddress' )
-                    } else {
-                        flash.error += message(code:'profile.updateProfile.updated.email.error')
-                    }
+                if (params.notificationCCEmailaddress == null || params.notificationCCEmailaddress.trim() == '' || formService.validateEmailAddress(params.notificationCCEmailaddress)){
+                    _changeValue( user.getSetting(KEYS.NOTIFICATION_CC_EMAILADDRESS, null),
+                            'notificationCCEmailaddress',
+                            null,
+                            'profile.updateProfile.updated.notificationCCEmailaddress' )
+                } else {
+                    flash.error += message(code:'profile.updateProfile.updated.email.error')
                 }
+
                 _changeValue( user.getSetting(KEYS.IS_NOTIFICATION_CC_BY_EMAIL, RDStore.YN_NO),
                         'isNotificationCCByEmail',
                         "N",

@@ -4,13 +4,15 @@ import de.laser.annotations.RefdataInfo
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
+import de.laser.wekb.Package
+import de.laser.wekb.TitleInstancePackagePlatform
 import groovy.util.logging.Slf4j
 
 /**
  * A container class to retain language classifications of titles and packages.
  * The structure is the same as in {@link DeweyDecimalClassification} just as the purpose is
- * @see TitleInstancePackagePlatform
- * @see Package
+ * @see de.laser.wekb.TitleInstancePackagePlatform
+ * @see de.laser.wekb.Package
  * @see DeweyDecimalClassification
  */
 @Slf4j

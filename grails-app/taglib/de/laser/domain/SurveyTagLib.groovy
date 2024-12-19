@@ -6,6 +6,7 @@ import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyOrg
+import de.laser.ui.Icon
 
 class SurveyTagLib {
 
@@ -56,7 +57,7 @@ class SurveyTagLib {
         out << '<i aria-hidden="true" class="icon"></i>'
         out << '<span class="la-annual-rings-text">' + startDate + dash + endDate + '</span>'
 
-        out << "<a class='ui ${color} circular tiny label la-popup-tooltip la-delay'  data-variation='tiny' data-content='Status: ${tooltip}'>"
+        out << "<a class='ui ${color} circular tiny label la-popup-tooltip'  data-variation='tiny' data-content='Status: ${tooltip}'>"
         out << '       &nbsp;'
         out << '</a>'
         out << '<i aria-hidden="true" class="icon"></i>'
@@ -69,7 +70,7 @@ class SurveyTagLib {
             out << '</div>'
 
 /*            if(object.isMandatory) {
-                out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='right center' data-content='${message(code: "surveyInfo.isMandatory.label.info2")}'>"
+                out << "<span class='la-long-tooltip la-popup-tooltip' data-position='right center' data-content='${message(code: "surveyInfo.isMandatory.label.info2")}'>"
                 out << "<i class='yellow small icon exclamation triangle'></i>"
                 out << "</span>"
             }*/
@@ -134,7 +135,7 @@ class SurveyTagLib {
 
         out << '<span class="la-annual-rings-text">' + startDate + dash + endDate + '</span>'
 
-        out << "<a class='ui ${color} circular tiny label la-popup-tooltip la-delay'  data-variation='tiny' data-content='Status: ${tooltip}'>"
+        out << "<a class='ui ${color} circular tiny label la-popup-tooltip'  data-variation='tiny' data-content='Status: ${tooltip}'>"
         out << '       &nbsp;'
         out << '</a>'
 
@@ -152,12 +153,24 @@ class SurveyTagLib {
             out << '</div>'
 
 /*            if(object.isMandatory) {
-                out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='right center' data-content='${message(code: "surveyInfo.isMandatory.label.info2")}'>"
+                out << "<span class='la-long-tooltip la-popup-tooltip' data-position='right center' data-content='${message(code: "surveyInfo.isMandatory.label.info2")}'>"
                 out << "<i class='yellow small icon exclamation triangle'></i>"
                 out << "</span>"
             }*/
 
         }
+    }
+
+    def virtualState = { attrs, body ->
+        String us = '?'
+
+        switch (attrs.status) {
+            case 'notFinish':   us = 'Ausgelaufen'; break
+            case 'finish':      us = 'Abgeschlossen'; break
+            case 'open':        us = 'Offen'; break
+            case 'termination': us = 'Vorsorglich gekündigt'; break
+        }
+        out << us
     }
 
     def finishIcon = { attrs, body ->
@@ -169,23 +182,23 @@ class SurveyTagLib {
 
             if (finishDate) {
                 if (surveyOwnerView) {
-                    out << '<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right" data-variation="tiny"'
+                    out << '<span class="la-long-tooltip la-popup-tooltip" data-position="top right" data-variation="tiny"'
                     out << ' data-content="' + message(code: "surveyResult.finish.info.consortia") + '">'
-                    out <<   ' <i class="check big green icon"></i></span>'
+                    out <<   ' <i class="' + Icon.SYM.YES + ' big green"></i></span>'
                 } else {
-                    out << '<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right" data-variation="tiny"'
+                    out << '<span class="la-long-tooltip la-popup-tooltip" data-position="top right" data-variation="tiny"'
                     out << ' data-content="' + message(code: "surveyResult.finish.info") + '">'
-                    out <<   ' <i class="check big green icon"></i></span>'
+                    out <<   ' <i class="' + Icon.SYM.YES + ' big green"></i></span>'
                 }
             } else {
                 if (surveyOwnerView) {
-                    out << '<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right" data-variation="tiny"'
+                    out << '<span class="la-long-tooltip la-popup-tooltip" data-position="top right" data-variation="tiny"'
                     out << ' data-content="' + message(code: "surveyResult.noFinish.info.consortia") + '">'
-                    out <<   ' <i class="circle red icon"></i></span>'
+                    out <<   ' <i class="' + Icon.SYM.NO + ' red"></i></span>'
                 } else {
-                    out << '<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right" data-variation="tiny"'
+                    out << '<span class="la-long-tooltip la-popup-tooltip" data-position="top right" data-variation="tiny"'
                     out << ' data-content="' + message(code: "surveyResult.noFinish.info") + '">'
-                    out <<   ' <i class="circle red icon"></i></span>'
+                    out <<   ' <i class="' + Icon.SYM.NO + ' red"></i></span>'
                 }
             }
     }

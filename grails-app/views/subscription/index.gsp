@@ -1,6 +1,6 @@
-<%@ page import="de.laser.IssueEntitlementCoverage; de.laser.titles.JournalInstance; de.laser.titles.BookInstance; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.IssueEntitlementCoverage; de.laser.storage.RDStore; de.laser.Subscription; de.laser.wekb.Package; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
 
-<laser:htmlStart message="subscription.details.current_ent" serviceInjection="true"/>
+<laser:htmlStart message="subscription.details.current_ent" />
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 <ui:controlButtons>
@@ -17,7 +17,7 @@
     </h1>
 </g:if>
 
-<ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" visibleOrgRelations="${visibleOrgRelations}">
+<ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" visibleProviders="${providerRoles}">
     <laser:render template="iconSubscriptionIsChild"/>
     <ui:xEditable owner="${subscription}" field="name"/>
 </ui:h1HeaderWithIcon>
@@ -25,32 +25,47 @@
 
 <laser:render template="nav"/>
 
-<g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
+<g:if test="${permanentTitlesProcessRunning}">
+    <ui:msg class="warning" showIcon="true" hideClose="true" header="Info" message="subscription.details.permanentTitlesProcessRunning.info" />
+</g:if>
+
+<g:if test="${subscription.instanceOf && contextService.getOrg().id == subscription.getConsortium()?.id}">
     <laser:render template="message"/>
 </g:if>
 
 <g:if test="${enrichmentProcess}">
-    <ui:msg class="positive" header="${message(code: 'subscription.details.issueEntitlementEnrichment.label')}">
+    <ui:msg class="success" header="${message(code: 'subscription.details.issueEntitlementEnrichment.label')}">
         <g:message code="subscription.details.issueEntitlementEnrichment.enrichmentProcess"
-                   args="[enrichmentProcess.issueEntitlements, enrichmentProcess.processCount, enrichmentProcess.processCountChangesCoverageDates, enrichmentProcess.processCountChangesPrice]"/>
+                   args="[enrichmentProcess.countIes, enrichmentProcess.processCount, enrichmentProcess.processCountChangesCoverageDates, enrichmentProcess.processCountChangesPrice]"/>
     </ui:msg>
+
+    <g:if test="${truncatedRows}">
+        <ui:msg class="error" showIcon="true" message="subscription.details.addEntitlements.truncatedRows" args="[truncatedRows]"/>
+    </g:if>
+    <g:if test="${errorKBART}">
+        <ui:msg class="error" showIcon="true" message="subscription.details.addEntitlements.titleNotMatched" args="[errorCount]"/>
+        <g:link class="${Btn.ICON.SIMPLE}" controller="package" action="downloadLargeFile" params="[token: token, fileformat: fileformat]"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+    </g:if>
+
 </g:if>
 
 <g:if test="${deletedSPs}">
-    <div class="ui exclamation icon negative message">
-        <i class="exclamation icon"></i>
+    <div class="ui icon error message">
+        <i class="${Icon.UI.ERROR}"></i>
         <ul class="list">
             <g:each in="${deletedSPs}" var="sp">
-                <li><g:message code="subscription.details.packagesDeleted.header"
-                               args="${[sp.name]}"/> ${message(code: "subscription.details.packagesDeleted.entry", args: [raw(link(url: sp.link) { 'we:kb' })])}</li>
+                <li>
+                    <g:message code="subscription.details.packagesDeleted.header" args="${[sp.name]}"/>
+                    <g:message code="subscription.details.packagesDeleted.entry"/> <ui:wekbIconLink type="package" gokbId="${sp.uuid}"/>
+                </li>
             </g:each>
         </ul>
     </div>
 </g:if>
 
 <g:if test="${frozenHoldings}">
-    <div class="ui exclamation icon negative message">
-        <i class="exclamation icon"></i>
+    <div class="ui icon error message">
+        <i class="${Icon.UI.ERROR}"></i>
         <ul class="list">
             <g:each in="${frozenHoldings}" var="sp">
                 <li><g:message code="subscription.details.frozenHoldings.header"
@@ -60,29 +75,23 @@
     </div>
 </g:if>
 <div class="ui grid">
-
-    <div class="row">
-        <div class="column">
-
-            <g:if test="${entitlements && entitlements.size() > 0}">
-
-                <g:if test="${subscription.packages.size() > 1}">
-                    <a class="ui right floated button" data-href="#showPackagesModal" data-ui="modal"><g:message
-                            code="subscription.details.details.package.label"/></a>
-                </g:if>
-
-                <g:if test="${subscription.packages.size() == 1}">
-                    <g:link class="ui right floated button" controller="package" action="show"
-                            id="${subscription.packages[0].pkg.id}"><g:message
-                            code="subscription.details.details.package.label"/></g:link>
-                </g:if>
-            </g:if>
-            <g:else>
-                ${message(code: 'subscription.details.no_ents')}
-            </g:else>
-
+    <g:if test="${subscription.packages}">
+        <div class="sixteen wide column">
+            <div class="la-inline-lists">
+                <div id="packages" class="la-padding-top-1em"></div>
+            </div>
         </div>
-    </div><!--.row-->
+    </g:if>
+
+
+    <g:if test="${entitlements && entitlements.size() == 0}">
+        <div class="row">
+            <div class="column">
+                ${message(code: 'subscription.details.no_ents')}
+            </div>
+        </div><!--.row-->
+    </g:if>
+
 </div><!--.grid-->
     <g:if test="${issueEntitlementEnrichment}">
         <div class="ui grid">
@@ -92,8 +101,9 @@
                         <h4 class="ui header"><g:message code="subscription.details.issueEntitlementEnrichment.label"/></h4>
 
                         <ui:msg class="warning" header="${message(code: "message.attention")}"
-                                message="subscription.details.addEntitlements.warning"/>
-                        <g:form class="ui form" controller="subscription" action="index"
+                                    message="subscription.details.addEntitlements.warning"/>
+
+                        <g:form class="ui form" controller="subscription" action="processIssueEntitlementEnrichment"
                                 params="${[sort: params.sort, order: params.order, filter: params.filter, pkgFilter: params.pkgfilter, startsBefore: params.startsBefore, endsAfter: params.endAfter, id: subscription.id]}"
                                 method="post" enctype="multipart/form-data">
                             <div class="three fields">
@@ -105,18 +115,20 @@
                                                accept="text/tab-separated-values, text/plain"
                                                style="display: none;">
 
-                                        <div class="ui icon button">
-                                            <i class="attach icon"></i>
+                                        <div class="${Btn.ICON.SIMPLE}">
+                                            <i class="${Icon.CMD.ATTACHMENT}"></i>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="field">
-                                    <div class="ui checkbox toggle">
-                                        <g:checkBox name="uploadCoverageDates" value="${uploadCoverageDates}"/>
-                                        <label><g:message
-                                                code="subscription.details.issueEntitlementEnrichment.uploadCoverageDates.label"/></label>
-                                    </div>
+                                    <g:if test="${issueEntitlementService.existsSerialInHolding(subscription, params.list('status'))}">
+                                        <div class="ui checkbox toggle">
+                                            <g:checkBox name="uploadCoverageDates" value="${uploadCoverageDates}"/>
+                                            <label><g:message
+                                                    code="subscription.details.issueEntitlementEnrichment.uploadCoverageDates.label"/></label>
+                                        </div>
+                                    </g:if>
 
                                     <div class="ui checkbox toggle">
                                         <g:checkBox name="uploadPriceInfo" value="${uploadPriceInfo}"/>
@@ -128,7 +140,7 @@
                                 <div class="field">
                                     <input type="submit"
                                            value="${message(code: 'subscription.details.addEntitlements.preselect')}"
-                                           class="fluid ui button"/>
+                                           class="${Btn.SIMPLE} fluid"/>
                                 </div>
                             </div>
                         </g:form>
@@ -153,9 +165,7 @@
             <g:link controller="subscription" action="index" id="${subscription.id}"
                     class="item ${params.titleGroup ? '' : 'active'}">
                 Alle
-                <span class="ui blue circular label">
-                    ${num_ies_rows}
-                </span>
+                <ui:bubble count="${num_ies_rows}" />
             </g:link>
 
             <g:each in="${subscription.ieGroups.sort { it.name }}" var="titleGroup">
@@ -163,89 +173,59 @@
                         params="[titleGroup: titleGroup.id]"
                         class="item ${(params.titleGroup == titleGroup.id.toString()) ? 'active' : ''}">
                     ${titleGroup.name}
-                    <span class="ui blue circular label">
-                        ${titleGroup.countCurrentTitles()}
-                    </span>
+                    <ui:bubble count="${titleGroup.countCurrentTitles()}" />
                 </g:link>
             </g:each>
         </div>
         <div class="ui bottom attached tab active segment">
     </g:if>--}%
 
-<ui:tabs actionName="${actionName}">
-    <ui:tabsItem controller="subscription" action="${actionName}"
-                 params="[id: subscription.id, tab: 'currentIEs']"
-                 text="${message(code: "package.show.nav.current")}" tab="currentIEs"
-                 counts="${currentIECounts}"/>
-    <ui:tabsItem controller="subscription" action="${actionName}"
-                 params="[id: subscription.id, tab: 'plannedIEs']"
-                 text="${message(code: "package.show.nav.planned")}" tab="plannedIEs"
-                 counts="${plannedIECounts}"/>
-    <ui:tabsItem controller="subscription" action="${actionName}"
-                 params="[id: subscription.id, tab: 'expiredIEs']"
-                 text="${message(code: "package.show.nav.expired")}" tab="expiredIEs"
-                 counts="${expiredIECounts}"/>
-    <ui:tabsItem controller="subscription" action="${actionName}"
-                 params="[id: subscription.id, tab: 'deletedIEs']"
-                 text="${message(code: "package.show.nav.deleted")}" tab="deletedIEs"
-                 counts="${deletedIECounts}"/>
-    <ui:tabsItem controller="subscription" action="${actionName}"
-                 params="[id: subscription.id, tab: 'allIEs']"
-                 text="${message(code: "menu.public.all_titles")}" tab="allIEs"
-                 counts="${allIECounts}"/>
-</ui:tabs>
+<laser:render template="/templates/titles/top_attached_title_tabs"
+              model="${[
+                      tt_controller: 'subscription',
+                      tt_action:     actionName,
+                      tt_tabs:       ['currentIEs', 'plannedIEs', 'expiredIEs', 'deletedIEs', 'allIEs'],
+                      tt_counts:     [currentIECounts, plannedIECounts, expiredIECounts, deletedIECounts, allIECounts],
+                      tt_params:     [id: subscription.id]
+              ]}" />
 
-<% params.remove('tab')%>
-
+<% String tab = params.remove('tab')%>
 
 <div class="ui bottom attached tab active segment">
-   <div class="ui grid">
-       <div class="row">
-           <%--<div class="column" id="filterWrapper"></div>--%>
-           <div class="column">
-               <laser:render template="/templates/filter/tipp_ieFilter"/>
-           </div>
-        </div><!--.row-->
-    </div><!--.grid-->
+
+    <laser:render template="/templates/filter/tipp_ieFilter" model="[forTitles: tab]"/>
+
 <div id="downloadWrapper"></div>
-<%
-    Map<String, String>
-    sortFieldMap = ['tipp.sortname': message(code: 'title.label')]
-    if (journalsOnly) {
-        sortFieldMap['startDate'] = message(code: 'default.from')
-        sortFieldMap['endDate'] = message(code: 'default.to')
-    } else {
-        sortFieldMap['tipp.dateFirstInPrint'] = message(code: 'tipp.dateFirstInPrint')
-        sortFieldMap['tipp.dateFirstOnline'] = message(code: 'tipp.dateFirstOnline')
-    }
-    sortFieldMap['tipp.accessStartDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.from')}"
-    sortFieldMap['tipp.accessEndDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.to')}"
-%>
+
     <div class="ui grid">
         <div class="row">
             <div class="eight wide column">
-                <h3 class="ui icon header la-clear-before la-noMargin-top"><span
-                        class="ui circular  label">${num_ies_rows}</span> <g:message code="title.filter.result"/></h3>
+                <h3 class="ui icon header la-clear-before la-noMargin-top">
+                    <ui:bubble count="${num_ies_rows}" grey="true"/> <g:message code="title.filter.result"/>
+                </h3>
             </div>
 
-
             <div class="eight wide column">
-                <div class="field la-field-right-aligned">
-                    <div class="ui right floated button la-js-editButton la-la-clearfix>"><g:message code="default.button.edit.label"/></div>
-                </div>
+                <g:if test="${entitlements}">
+                    <div class="field la-field-right-aligned">
+                        <div class="${Btn.SIMPLE} right floated la-js-editButton la-la-clearfix>"><g:message code="default.button.edit.label"/></div>
+                    </div>
+                </g:if>
             </div>
         </div><!--.row-->
     </div><!--.grid-->
-
-
-<div class="ui form">
-    <div class="three wide fields">
-        <div class="field">
-            <ui:sortingDropdown noSelection="${message(code:'default.select.choose.label')}" from="${sortFieldMap}" sort="${params.sort}" order="${params.order}"/>
+    <g:if test="${entitlements}">
+        <div class="ui form">
+            <div class="two wide fields">
+                <div class="field">
+                    <laser:render template="/templates/titles/sorting_dropdown" model="${[sd_type: 1, sd_journalsOnly: journalsOnly, sd_sort: params.sort, sd_order: params.order]}" />
+                </div>
+                <div class="field la-field-noLabel">
+                    <ui:showMoreCloseButton />
+                </div>
+            </div>
         </div>
-    </div>
-</div>
-
+    </g:if>
 <div class="ui grid">
     <div class="row">
         <div class="column">
@@ -413,7 +393,7 @@
                                 <button data-position="top right"
                                         data-content="${message(code: 'default.button.apply_batch.label')}"
                                         type="submit" onClick="return JSPC.app.confirmSubmit()"
-                                        class="ui icon button la-popup-tooltip la-delay"><g:message code="default.button.apply_batch.label"/>
+                                        class="${Btn.SIMPLE_TOOLTIP}"><g:message code="default.button.apply_batch.label"/>
                                 </button>
                             </div>
                         </div>
@@ -429,11 +409,11 @@
                                         <div class="ui fluid segment title" data-ajaxTippId="${ie.tipp.id}" data-ajaxIeId="${ie ? ie.id : null}">
                                             <div class="ui stackable equal width grid">
                                                 <g:set var="participantPerpetualAccessToTitle"
-                                                       value="${surveyService.listParticipantPerpetualAccessToTitle(subscription.getSubscriber(), ie.tipp)}"/>
+                                                       value="${surveyService.listParticipantPerpetualAccessToTitle(subscription.getSubscriberRespConsortia(), ie.tipp)}"/>
                                                 <g:if test="${participantPerpetualAccessToTitle.size() > 0}">
                                                     <g:if test="${ie.perpetualAccessBySub && ie.perpetualAccessBySub != subscription}">
                                                         <g:link controller="subscription" action="index" id="${ie.perpetualAccessBySub.id}">
-                                                            <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip la-delay"
+                                                            <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip"
                                                                   data-content="${message(code: 'subscription.start.with')} ${ie.perpetualAccessBySub.dropdownNamingConvention()}"
                                                                   data-position="left center" data-variation="tiny">
                                                                 <i class="star blue icon"></i>
@@ -441,8 +421,8 @@
                                                         </g:link>
                                                     </g:if>
                                                     <g:else>
-                                                        <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip la-delay"
-                                                              data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitle.collect{it.getPermanentTitleInfo(contextOrg)}.join(',')}"
+                                                        <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip"
+                                                              data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitle.collect{it.getPermanentTitleInfo()}.join(',')}"
                                                               data-position="left center" data-variation="tiny">
                                                             <i class="star icon"></i>
                                                         </span>
@@ -455,7 +435,6 @@
                                                 </div>
 
                                                 <div class="one wide column">
-
                                                     <span class="la-vertical-centered">${counter++}</span>
                                                 </div>
 
@@ -464,7 +443,7 @@
 
                                                         <!-- START TEMPLATE -->
                                                         <laser:render
-                                                                template="/templates/title_short_accordion"
+                                                                template="/templates/titles/title_short_accordion"
                                                                 model="${[ie         : ie, tipp: ie.tipp,
                                                                           showPackage: true, showPlattform: true, showEmptyFields: false, sub: subscription.id]}"/>
                                                         <!-- END TEMPLATE -->
@@ -480,8 +459,7 @@
                                                 <div class="four wide column">
 
                                                     <!-- START TEMPLATE -->
-                                                    <laser:render template="/templates/identifier"
-                                                                  model="${[tipp: ie.tipp]}"/>
+                                                    <laser:render template="/templates/identifier" model="${[tipp: ie.tipp]}"/>
                                                     <!-- END TEMPLATE -->
                                                 </div>
 
@@ -498,8 +476,6 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-
-
                                                         </g:if>
                                                     </g:each>
                                                 </div>
@@ -507,33 +483,31 @@
                                                 <div class="one wide column">
                                                     <div class="ui right floated buttons">
                                                         <div class="right aligned wide column">
-
                                                         </div>
-
-                                                        <div class="ui icon blue button la-modern-button "><i
-                                                                class="ui angle double down icon"></i>
+                                                        <div class="${Btn.MODERN.SIMPLE}">
+                                                            <i class="${Icon.CMD.SHOW_MORE}"></i>
                                                         </div>
                                                         <g:if test="${editable}">
                                                             <g:if test="${subscription.ieGroups.size() > 0}">
                                                                 <g:link action="removeEntitlementWithIEGroups"
-                                                                        class="ui icon negative button la-modern-button js-open-confirm-modal"
-                                                                        params="${[ieid: ie.id, sub: subscription.id]}"
+                                                                        class="${Btn.MODERN.NEGATIVE_CONFIRM}"
+                                                                        params="${[ieid: ie.id, sub: subscription.id, tab: tab]}"
                                                                         role="button"
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlementWithIEGroups", args: [ie.tipp.name])}"
                                                                         data-confirm-term-how="delete"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="trash alternate outline icon"></i>
+                                                                    <i class="${Icon.CMD.DELETE}"></i>
                                                                 </g:link>
                                                             </g:if>
                                                             <g:else>
                                                                 <g:link action="removeEntitlement"
-                                                                        class="ui icon negative button la-modern-button js-open-confirm-modal"
-                                                                        params="${[ieid: ie.id, sub: subscription.id]}"
+                                                                        class="${Btn.MODERN.NEGATIVE_CONFIRM}"
+                                                                        params="${[ieid: ie.id, sub: subscription.id, tab: tab]}"
                                                                         role="button"
                                                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlement", args: [ie.tipp.name])}"
                                                                         data-confirm-term-how="delete"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                                    <i class="trash alternate outline icon"></i>
+                                                                    <i class="${Icon.CMD.DELETE}"></i>
                                                                 </g:link>
                                                             </g:else>
                                                         </g:if>
@@ -544,15 +518,6 @@
 
                                         <div class="ui fluid segment content" data-ajaxTargetWrap="true">
                                             <div class="ui stackable grid" data-ajaxTarget="true">
-
-
-    %{--
-                                                <laser:render template="/templates/title_long_accordion"
-                                                              model="${[ie         : ie, tipp: ie.tipp,
-                                                                        showPackage: showPackage, showPlattform: showPlattform, showCompact: showCompact, showEmptyFields: showEmptyFields]}"/>
-
-    --}%
-
 
                                                 <div class="three wide column">
                                                     <div class="ui list la-label-list">
@@ -587,7 +552,7 @@
                                                             </g:if>
                                                             <g:if test="${covStmt.coverageNote}">
                                                                 <div class="item">
-                                                                    <i class="grey icon quote right la-popup-tooltip la-delay" data-content="${message(code: 'default.note.label')}"></i>
+                                                                    <i class="grey icon quote right la-popup-tooltip" data-content="${message(code: 'default.note.label')}"></i>
                                                                     <div class="content">
                                                                         <div class="header">
                                                                             ${message(code: 'default.note.label')}
@@ -600,7 +565,7 @@
                                                             </g:if>
                                                             <g:if test="${covStmt.coverageDepth}">
                                                                 <div class="item">
-                                                                    <i class="grey icon file alternate right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageDepth')}"></i>
+                                                                    <i class="grey ${Icon.ATTR.TIPP_COVERAGE_DEPTH} right la-popup-tooltip" data-content="${message(code: 'tipp.coverageDepth')}"></i>
                                                                     <div class="content">
                                                                         <div class="header">
                                                                             ${message(code: 'tipp.coverageDepth')}
@@ -613,7 +578,7 @@
                                                             </g:if>
                                                             <g:if test="${covStmt.embargo}">
                                                                 <div class="item">
-                                                                    <i class="grey icon hand paper right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.embargo')}"></i>
+                                                                    <i class="grey icon hand paper right la-popup-tooltip" data-content="${message(code: 'tipp.embargo')}"></i>
                                                                     <div class="content">
                                                                         <div class="header">
                                                                             ${message(code: 'tipp.embargo')}
@@ -630,7 +595,7 @@
                                                 </div>
                                                 <%-- My Area START--%>
                                                 <div class="seven wide column">
-                                                    <i class="grey icon circular inverted fingerprint la-icon-absolute la-popup-tooltip la-delay"
+                                                    <i class="grey icon circular inverted fingerprint la-icon-absolute la-popup-tooltip"
                                                        data-content="${message(code: 'tipp.tooltip.myArea')}"></i>
 
                                                     <div class="ui la-segment-with-icon">
@@ -641,13 +606,12 @@
                                                         <div class="ui list">
                                                             <g:if test="${ie}">
                                                                 <div class="item">
-                                                                    <i class="grey icon edit la-popup-tooltip la-delay"
+                                                                    <i class="grey ${Icon.CMD.EDIT} la-popup-tooltip"
                                                                        data-content="${message(code: 'issueEntitlement.myNotes')}"></i>
                                                                     <div class="content">
                                                                         <div class="header"><g:message code="issueEntitlement.myNotes"/></div>
                                                                         <div class="description">
-                                                                            <ui:xEditable owner="${ie}" type="text"
-                                                                                          field="notes"/>
+                                                                            <ui:xEditable owner="${ie}" type="text" field="notes"/>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -660,8 +624,8 @@
                                                             </div>
                                                             <hr>
                                                             <g:if test="${editable}">
-                                                                <button class="ui tiny button addObject" data-objType="priceItem" data-ie="${ie.id}">
-                                                                    <i class="money icon"></i>${message(code: 'subscription.details.addEmptyPriceItem.info')}
+                                                                <button class="${Btn.SIMPLE} tiny addObject" data-objType="priceItem" data-ie="${ie.id}">
+                                                                    <i class="${Icon.FNC.COST_CONFIG}"></i>${message(code: 'subscription.details.addEmptyPriceItem.info')}
                                                                 </button>
                                                             </g:if>
 
@@ -669,7 +633,7 @@
                                                             <g:if test="${subscription.ieGroups.size() > 0}">
                                                                 <g:each in="${ie.ieGroups.sort { it.ieGroup.name }}" var="titleGroup">
                                                                     <div class="item">
-                                                                        <i class="grey icon object group la-popup-tooltip la-delay"
+                                                                        <i class="${Icon.IE_GROUP} grey la-popup-tooltip"
                                                                            data-content="${message(code: 'issueEntitlementGroup.label')}"></i>
                                                                         <div class="content">
                                                                             <div class="header"><g:message code="subscription.details.ieGroups"/></div>
@@ -683,8 +647,8 @@
                                                                 <g:if test="${editable}">
                                                                     <g:link action="editEntitlementGroupItem"
                                                                             params="${[cmd: 'edit', ie: ie.id, id: subscription.id]}"
-                                                                            class="ui tiny button trigger-modal">
-                                                                        <i class="object group icon"></i>${message(code: 'subscription.details.ieGroups.edit')}
+                                                                            class="${Btn.SIMPLE} tiny trigger-modal">
+                                                                        <i class="${Icon.IE_GROUP}"></i>${message(code: 'subscription.details.ieGroups.edit')}
                                                                     </g:link>
                                                                 </g:if>
                                                             </g:if>
@@ -706,6 +670,11 @@
         </div><%-- .column --%>
     </div><%--.row --%>
 </div><%--.grid --%>
+<g:if test="${entitlements}">
+    <div class="ui clearing segment la-segmentNotVisable">
+        <ui:showMoreCloseButton />
+    </div>
+</g:if>
 </div>
 
 %{--<g:if test="${subscription.ieGroups.size() > 0}">
@@ -721,24 +690,6 @@
 
 <div id="magicArea">
 </div>
-
-<laser:render template="export/individuallyExportIEsModal" model="[modalID: 'individuallyExportIEsModal']"/>
-
-<ui:modal id="showPackagesModal" message="subscription.packages.label" hideSubmitButton="true">
-    <div class="ui ordered list">
-        <g:each in="${subscription.packages.sort { it.pkg.name.toLowerCase() }}" var="subPkg">
-            <div class="item">
-                ${subPkg.pkg.name}
-                <g:if test="${subPkg.pkg.contentProvider}">
-                    (${subPkg.pkg.contentProvider.name})
-                </g:if>:
-                <g:link controller="package" action="show" id="${subPkg.pkg.id}"><g:message
-                        code="subscription.details.details.package.label"/></g:link>
-            </div>
-        </g:each>
-    </div>
-
-</ui:modal>
 
 
 <laser:script file="${this.getGroovyPageFileName()}">
@@ -766,12 +717,7 @@
       }
     </g:if>
 
-    $('.la-books.icon').popup({
-        delay: {
-            show: 150, hide: 0
-        }
-      });
-    $('.la-notebook.icon').popup({
+    $('.la-books.icon, .la-notebook.icon').popup({
         delay: {
             show: 150, hide: 0
         }
@@ -807,7 +753,7 @@
         e.preventDefault();
         $('#globalLoadingIndicator').show();
         $.ajax({
-            url: "<g:createLink action="index" params="${params + [exportKBart: true]}"/>",
+            url: "<g:createLink action="exportHolding" params="${params + [exportKBart: true]}"/>",
             type: 'POST',
             contentType: false
         }).done(function(response){
@@ -817,7 +763,8 @@
     });
     <g:if test="${params.asAt && params.asAt.length() > 0}">$(function() { document.body.style.background = "#fcf8e3"; });</g:if>
 
-    $("[data-ajaxTippId]").accordion().on('click', function(e) {
+
+    $("[data-ajaxTippId]").on('click', function(e) {
             var tippID = $(this).attr('data-ajaxTippId');
             var ieID = $(this).attr('data-ajaxIeId');
 
@@ -873,5 +820,22 @@
 
     JSPC.app.loadFilter();
     --%>
+
+    JSPC.app.loadPackages = function () {
+    $.ajax({
+        url: "<g:createLink controller="ajaxHtml" action="getPackageData"/>",
+                  data: {
+                      subscription: "${subscription.id}"
+                  }
+              }).done(function(response){
+                  $("#packages").html(response);
+                  r2d2.initDynamicUiStuff("#packages");
+              })
+          }
+
+    JSPC.app.loadPackages();
 </laser:script>
+
+<g:render template="/clickMe/export/js"/>
+
 <laser:htmlEnd/>

@@ -1,7 +1,7 @@
 package de.laser.jobs
 
-import de.laser.WekbStatsService
-import de.laser.annotations.UnderDevelopment
+import de.laser.WekbNewsService
+import de.laser.annotations.UnstableFeature
 import de.laser.config.ConfigMapper
 import de.laser.system.SystemActivityProfiler
 import de.laser.base.AbstractJob
@@ -16,7 +16,7 @@ import groovy.util.logging.Slf4j
 class HeartbeatJob extends AbstractJob {
 
 //    SystemService systemService
-    WekbStatsService wekbStatsService
+    WekbNewsService wekbNewsService
 //    SimpMessagingTemplate brokerMessagingTemplate
 
     static final int HEARTBEAT_IN_SECONDS = 5 * 60
@@ -43,9 +43,9 @@ class HeartbeatJob extends AbstractJob {
         jobIsRunning
     }
 
-    @UnderDevelopment
+    @UnstableFeature
     def execute() {
-        if (! start(null, true)) { // suppress logging to shrink file
+        if (! simpleStart(true)) { // shrinking logs
             return false
         }
         try {
@@ -67,6 +67,6 @@ class HeartbeatJob extends AbstractJob {
             log.error e.getMessage()
         }
 
-        stop(null, true) // suppress logging to shrink file
+        simpleStop(true) // shrinking logs
     }
 }

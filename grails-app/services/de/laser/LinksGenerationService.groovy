@@ -6,6 +6,10 @@ import de.laser.exceptions.CreationException
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Provider
+import de.laser.wekb.ProviderLink
+import de.laser.wekb.Vendor
+import de.laser.wekb.VendorLink
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
@@ -259,6 +263,13 @@ class LinksGenerationService {
                     configMap.source = genericOIDService.resolveOID(params["pair_${configMap.link.id}"])
                     configMap.destination = genericOIDService.resolveOID(params.context)
                 }
+                def currentObject = genericOIDService.resolveOID(params.context)
+                List childInstances = currentObject.getClass().findAllByInstanceOf(currentObject)
+                if(childInstances) {
+                    configMap.contextInstances = childInstances
+                    def pairObject = genericOIDService.resolveOID(params["pair_${configMap.link.id}"])
+                    configMap.pairInstances = pairObject.getClass().findAllByInstanceOf(pairObject)
+                }
             }
             else if(!params["linkType_${configMap.link.id}"]) {
                 result.error = messageSource.getMessage('default.linking.linkTypeError',null,locale)
@@ -313,7 +324,7 @@ class LinksGenerationService {
                     configMap.contextInstances.each { contextInstance ->
                         def pairChild
                         if(contextInstance instanceof Subscription) {
-                            pairChild = (Subscription) configMap.pairInstances.find { child -> child.getSubscriber() == contextInstance.getSubscriber() }
+                            pairChild = (Subscription) configMap.pairInstances.find { child -> child.getSubscriberRespConsortia() == contextInstance.getSubscriberRespConsortia() }
                         }
                         else if(contextInstance instanceof License) {
                             pairChild = (License) configMap.pairInstances.find { child -> child.getLicensee() == contextInstance.getLicensee() }
@@ -404,16 +415,103 @@ class LinksGenerationService {
             sourceChildren.each { sourceChild ->
                 def destinationChild
                 if(sourceChild instanceof Subscription)
-                    destinationChild = destinationChildren.find { dest -> dest.getSubscriber() == sourceChild.getSubscriber() }
+                    destinationChild = destinationChildren.find { dest -> dest.getSubscriberRespConsortia() == sourceChild.getSubscriberRespConsortia() }
                 else if(sourceChild instanceof License)
                     destinationChild = destinationChildren.find { dest -> dest.getLicensee() == sourceChild.getLicensee() }
-                if(destinationChild)
-                    Links.executeUpdate('delete from Links li where :source in (li.sourceSubscription,li.sourceLicense) and :destination in (li.destinationSubscription,li.destinationLicense) and li.linkType = :linkType and li.owner = :owner',[source:sourceChild, destination:destinationChild, linkType:obj.linkType, owner:obj.owner])
+                if(destinationChild) {
+                    //cleaning up doublets as well
+                    Links.executeQuery('select li from Links li where :source in (li.sourceSubscription,li.sourceLicense) and :destination in (li.destinationSubscription,li.destinationLicense) and li.linkType = :linkType and li.owner = :owner',[source:sourceChild, destination:destinationChild, linkType:obj.linkType, owner:obj.owner]).each { Links li ->
+                        DocContext childComment = DocContext.findByLink(li)
+                        if(childComment) {
+                            Doc commentContent = childComment.owner
+                            childComment.delete()
+                            commentContent.delete()
+                        }
+                        li.delete()
+                    }
+                }
             }
             obj.delete()
             true
         }
         else false
+    }
+
+    /**
+     * Links two organisations by combo
+     * @param params the parameter map, containing the link parameters
+     * @return true if the link saving was successful, false otherwise
+     */
+    boolean linkOrgs(GrailsParameterMap params) {
+        log.debug(params.toMapString())
+        Combo c
+        if(params.linkType_new) {
+            c = new Combo()
+            int perspectiveIndex = Integer.parseInt(params["linkType_new"].split("§")[1])
+            c.type = RDStore.COMBO_TYPE_FOLLOWS
+            if(perspectiveIndex == 0) {
+                c.fromOrg = Org.get(params.pair_new)
+                c.toOrg = Org.get(params.context)
+            }
+            else if(perspectiveIndex == 1) {
+                c.fromOrg = Org.get(params.context)
+                c.toOrg = Org.get(params.pair_new)
+            }
+        }
+        c.save()
+    }
+
+    /**
+     * Disjoins the given link between two organisatons
+     * @param params the parameter map containing the combo to unlink
+     * @return true if the deletion was successful, false otherwise
+     */
+    boolean unlinkOrg(GrailsParameterMap params) {
+        int del = Combo.executeUpdate('delete from Combo c where c.id = :id',[id: params.long("combo")])
+        return del > 0
+    }
+
+    /**
+     * Links two organisations by combo
+     * @param params the parameter map, containing the link parameters
+     * @return true if the link saving was successful, false otherwise
+     */
+    boolean linkProviderVendor(GrailsParameterMap params, String linkInstanceType) {
+        log.debug(params.toMapString())
+        def l
+        if(params.linkType_new) {
+            Long from, to
+            int perspectiveIndex = Integer.parseInt(params["linkType_new"].split("§")[1])
+            if(perspectiveIndex == 0) {
+                from = params.long('pair_new')
+                to = params.long('context')
+            }
+            else if(perspectiveIndex == 1) {
+                from = params.long('context')
+                to = params.long('pair_new')
+            }
+            switch(linkInstanceType) {
+                case ProviderLink: l = new ProviderLink(type: RDStore.PROVIDER_LINK_FOLLOWS, from: Provider.get(from), to: Provider.get(to))
+                    break
+                case VendorLink: l = new VendorLink(type: RDStore.PROVIDER_LINK_FOLLOWS, from: Vendor.get(from), to: Vendor.get(to))
+                    break
+            }
+            if(l) {
+                l.save()
+                true
+            }
+        }
+        false
+    }
+
+    /**
+     * Disjoins the given link between two organisatons
+     * @param params the parameter map containing the combo to unlink
+     * @return true if the deletion was successful, false otherwise
+     */
+    boolean unlinkProviderVendor(GrailsParameterMap params) {
+        int del = Combo.executeUpdate('delete from Combo c where c.id = :id',[id: params.long("combo")])
+        return del > 0
     }
 
     /**

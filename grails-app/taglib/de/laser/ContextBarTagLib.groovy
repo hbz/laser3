@@ -3,8 +3,9 @@ package de.laser
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.convenience.Marker
+import de.laser.ui.Btn
+import de.laser.ui.Icon
 import de.laser.interfaces.MarkerSupport
-import de.laser.utils.AppUtils
 
 class ContextBarTagLib {
 
@@ -16,40 +17,25 @@ class ContextBarTagLib {
     // <ui:cbItemCustomerType org="${contextService.getOrg()}" />
 
     def cbItemCustomerType = {attrs, body ->
-        String icon  = 'question'
-        String color = 'grey'
+        String icon  = Icon.SYM.UNKOWN + ' grey'
         String text  = '?'
         Org org = attrs.org as Org
 
-        if (org.isCustomerType_Consortium_Pro()) {
-            icon  = 'trophy'
-            color = 'teal'
-            text  = Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_PRO).getI10n('authority')
+        if (!org) {
+            icon  = Icon.UI.ERROR + ' red'
+            text  = message(code: 'profile.membership.error1')
         }
-        else if (org.isCustomerType_Consortium_Basic()) {
-            icon  = 'user circle'
-            color = 'teal'
-            text  = Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_BASIC).getI10n('authority')
-        }
-        else if (org.isCustomerType_Inst_Pro()) {
-            icon  = 'trophy'
-            color = 'grey'
-            text  = Role.findByAuthority(CustomerTypeService.ORG_INST_PRO).getI10n('authority')
-        }
-        else if (org.isCustomerType_Inst()) {
-            icon  = 'user circle'
-            color = 'grey'
-            text  = Role.findByAuthority(CustomerTypeService.ORG_INST_BASIC).getI10n('authority')
-        }
-        else if (org.isCustomerType_Support()) {
-            icon = 'theater masks'
-            color = 'red'
-            text  = Role.findByAuthority(CustomerTypeService.ORG_SUPPORT).getI10n('authority')
+        else {
+            Map ctm = org.getCustomerTypeInfo()
+            if (ctm.icon && ctm.text) {
+                icon = ctm.icon
+                text = ctm.text
+            }
         }
 
         out << '<div class="item la-cb-context">'
         out <<     '<span class="ui label" data-display="' + text + '">'
-        out <<         '<i class="icon ' + icon + ' ' + color + '"></i>'
+        out <<         '<i class="' + icon + '"></i>'
         out <<     '</span>'
         out << '</div>'
     }
@@ -57,31 +43,36 @@ class ContextBarTagLib {
     // <ui:cbItemUserAffiliation user="${contextService.getUser()}" showGlobalRole="true|false" />
 
     def cbItemUserAffiliation = {attrs, body ->
-        String icon = 'user slash'
-        String color = 'grey'
-        String text = '?'
+        String icon     = 'user slash icon'
+        String color    = 'grey'
+        String text     = '?'
 
         User user = attrs.user as User
         Role fr = user.formalRole
 
         if (fr) {
             if (fr.authority == Role.INST_USER) {
-                icon = 'user'
+                icon = Icon.AUTH.INST_USER
                 text = message(code: 'cv.roles.INST_USER')
             }
             else if (fr.authority == Role.INST_EDITOR) {
-                icon = 'user edit'
+                icon = Icon.AUTH.INST_EDITOR
                 text = message(code: 'cv.roles.INST_EDITOR')
             }
             else if (fr.authority == Role.INST_ADM) {
-                icon = 'user shield'
+                icon = Icon.AUTH.INST_ADM
                 text = message(code: 'cv.roles.INST_ADM')
             }
+        }
+        else {
+            icon  = Icon.UI.ERROR
+            color = 'red'
+            text  = message(code: 'profile.membership.error2')
         }
 
         out << '<div class="item la-cb-context">'
         out <<     '<span class="ui label" data-display="' + text + '">'
-        out <<         '<i class="icon ' + icon + ' ' + color + '"></i>'
+        out <<         '<i class="' + icon + ' ' + color + '"></i>'
         out <<     '</span>'
         out << '</div>'
     }
@@ -89,25 +80,25 @@ class ContextBarTagLib {
     // <ui:cbItemUserSysRole user="${contextService.getUser()}" showGlobalRole="true|false" />
 
     def cbItemUserSysRole = {attrs, body ->
-        String icon = ''
-        String color = 'grey'
-        String text = '?'
+        String icon     = Icon.SYM.UNKOWN
+        String color    = 'grey'
+        String text     = '?'
 
         User user = attrs.user as User
 
         if (user.isYoda()) {
             text = 'Systemberechtigung: YODA'
-            icon = 'key'
+            icon = Icon.AUTH.ROLE_YODA
         }
         else if (user.isAdmin()) {
             text = 'Systemberechtigung: ADMIN'
-            icon = 'tools'
+            icon = Icon.AUTH.ROLE_ADMIN
         }
 
-        if (icon) {
+        if (icon != Icon.SYM.UNKOWN) {
             out << '<div class="item la-cb-context">'
             out <<     '<span class="ui label" data-display="' + text + '">'
-            out <<         '<i class="icon ' + icon + ' ' + color + '"></i>'
+            out <<         '<i class="' + icon + ' ' + color + '"></i>'
             out <<     '</span>'
             out << '</div>'
         }
@@ -124,7 +115,7 @@ class ContextBarTagLib {
 
         out << '<div class="item la-cb-info">'
         out <<     openSpan
-        out <<         '<i class="icon ' + (attrs.icon ? attrs.icon + ' ' : '') + (attrs.color ? attrs.color + ' ' : '') + '"></i>'
+        out <<         '<i class="icon ' + (attrs.icon ? attrs.icon + ' ' : '') + (attrs.color ? attrs.color + ' ' : '') + '"></i>' // TODO erms-5784 doubles 'icon'
         out <<     '</span>'
         out << '</div>'
     }
@@ -137,11 +128,16 @@ class ContextBarTagLib {
         String icon = attrs.icon ?: ''
 
         out << '<div class="item la-cb-action">'
-        out <<     '<button class="ui icon button ' + status + ' toggle la-toggle-advanced la-popup-tooltip la-delay" ' // toggle -> JS
+        if (attrs.id) {
+            out << '<button id="' + attrs.id + '" class="ui icon button ' + status + ' toggle la-toggle-green-red la-popup-tooltip" '
+            // toggle -> JS
+        } else {
+            out << '<button class="ui icon button ' + status + ' toggle la-toggle-green-red la-popup-tooltip" ' // toggle -> JS
+        }
         if (attrs.reload) {
             out <<      'data-reload="' + attrs.reload + '" '
         }
-        out <<          'data-content="' + tooltip + '" data-position="bottom center">'
+        out <<          'data-content="' + tooltip + '" data-position="bottom left">'
         out <<              '<i class="icon ' + icon + '"></i>'
         out <<     '</button>'
         out << '</div>'
@@ -151,48 +147,59 @@ class ContextBarTagLib {
 
     def cbItemMarkerAction = { attrs, body ->
 
-        if (! AppUtils.isPreviewOnly()) {
-            return
-        }
-
-        MarkerSupport obj   = (attrs.org ?: attrs.package ?: attrs.platform) as MarkerSupport
-        boolean isMarked    = obj.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)
-        String tt           = '?'
-        String tt_list      = message(code: 'marker.WEKB_CHANGES')
+        MarkerSupport obj   = (attrs.org ?: attrs.package ?: attrs.platform ?: attrs.provider ?: attrs.vendor ?: attrs.tipp) as MarkerSupport
+        Marker.TYPE mType   = attrs.type ? Marker.TYPE.get(attrs.type as String) : Marker.TYPE.UNKOWN // TODO
+        boolean isMarked    = obj.isMarked(contextService.getUser(), mType)
+        String tt           = ''
+        String tt_list      = message(code: 'marker.' + mType.value)
 
         if (attrs.org) {
-            tt = isMarked ? 'Der Anbieter/Lieferant ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
-                    : 'Anklicken, um den Anbieter/Lieferant auf die ' + tt_list + ' zu setzen.'
+            tt = isMarked ? 'Das Objekt' : 'das Objekt'
         }
         else if (attrs.package) {
-            tt = isMarked ? 'Das Paket ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
-                    : 'Anklicken, um das Paket auf die ' + tt_list + ' zu setzen.'
+            tt = isMarked ? 'Das Paket' : 'das Paket'
         }
         else if (attrs.platform) {
-            tt = isMarked ? 'Der Plattform ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
-                    : 'Anklicken, um die Plattform auf die ' + tt_list + ' zu setzen.'
+            tt = isMarked ? 'Die Plattform' : 'die Plattform'
+        }
+        else if (attrs.provider) {
+            tt = isMarked ? 'Der Anbieter' : 'den Anbieter'
+        }
+        else if (attrs.vendor) {
+            tt = isMarked ? 'Der Lieferant' : 'den Lieferanten'
+        }
+        else if (attrs.tipp) {
+            tt = isMarked ? 'Der Titel' : 'den Titel'
+        }
+
+        if (tt) {
+            tt = isMarked   ? tt + ' ist auf der Beobachtungsliste (' + tt_list + '). Anklicken, um zu entfernen.'
+                            : 'Anklicken, um ' + tt + ' auf die Beobachtungsliste (' + tt_list + ') zu setzen.'
+        }
+        else {
+            tt = '???'
         }
 
         if (obj) {
             Map<String, Object> jsMap = [
                     controller:     'ajax',
                     action:         'toggleMarker',
-                    data:           '{oid:\'' + genericOIDService.getOID(obj) + '\', type:\'' + Marker.TYPE.WEKB_CHANGES + '\'}',
+                    data:           '{oid:\'' + genericOIDService.getOID(obj) + '\', type:\'' + mType + '\'}',
                     update:         '#marker-' + obj.id,
                     successFunc:    'tooltip.init(\'#marker-' + obj.id + '\')'
             ]
 
             if (attrs.simple) {
-                jsMap.data = '{oid:\'' + genericOIDService.getOID(obj) + '\', type:\'' + Marker.TYPE.WEKB_CHANGES + '\', simple: true}'
+                jsMap.data = '{oid:\'' + genericOIDService.getOID(obj) + '\', type:\'' + mType + '\', simple: true}'
                 String onClick = ui.remoteJsToggler(jsMap)
 
                 if (! attrs.ajax) {
-                    out << '<span id="marker-' + obj.id + '" style="margin-left:1em;">'
+                    out << '<span id="marker-' + obj.id + '">'
                 }
 
-                out <<      '<a class="ui icon label la-popup-tooltip la-long-tooltip la-delay" onclick="' + onClick + '" '
+                out <<      '<a class="ui icon label la-popup-tooltip la-long-tooltip" onclick="' + onClick + '" '
                 out <<          'data-content="' + tt + '" data-position="top right">'
-                out <<              '<i class="icon purple bookmark' + (isMarked ? '' : ' outline') + '"></i>'
+                out <<              '<i class="' + Icon.MARKER + ' purple' + (isMarked ? '' : ' outline') + '"></i>'
                 out <<      '</a>'
 
                 if (! attrs.ajax) {
@@ -206,9 +213,9 @@ class ContextBarTagLib {
                     out << '<div class="item la-cb-action" id="marker-' + obj.id + '">'
                 }
 
-                out <<      '<div class="ui icon button purple ' + (isMarked ? 'active' : ' inactive ') + ' la-popup-tooltip la-long-tooltip la-delay" onclick="' + onClick + '" '
+                out <<      '<div class="' + Btn.ICON.SIMPLE_TOOLTIP + ' purple la-long-tooltip' + (isMarked ? ' active' : ' inactive') + '" onclick="' + onClick + '" '
                 out <<          'data-content="' + tt + '" data-position="top right">'
-                out <<              '<i class="icon ' + (isMarked ? 'bookmark' : ' la-bookmark slash' ) + '"></i>'
+                out <<              '<i class="' + (isMarked ? Icon.MARKER : 'la-bookmark slash icon' ) + '"></i>'
                 out <<      '</div>'
 
                 if (! attrs.ajax) {

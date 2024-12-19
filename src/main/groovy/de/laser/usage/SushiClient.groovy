@@ -5,6 +5,7 @@ import de.laser.http.BasicHttpClient
 import groovy.util.logging.Slf4j
 import groovy.xml.slurpersupport.GPathResult
 
+@Deprecated
 @Slf4j
 class SushiClient {
 

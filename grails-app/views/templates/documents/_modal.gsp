@@ -1,4 +1,4 @@
-<%@page import="de.laser.*; de.laser.storage.RDStore; de.laser.storage.RDConstants"%>
+<%@page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.*; de.laser.storage.RDStore; de.laser.storage.RDConstants"%>
 <laser:serviceInjection/>
 <%
     String modalText
@@ -9,20 +9,20 @@
     if(docctx && doc) {
         modalText = message(code:'template.documents.edit')
         submitButtonLabel = message(code:'default.button.edit.label')
-        formUrl = createLink(controller:'docstore', action:'editDocument')
+        formUrl = createLink(controller:'document', action:'editDocument')
         modalId = "modalEditDocument_${docctx.id}"
     }
     else if(owntp == 'surveyConfig') {
         modalText = message(code:'surveyConfigDocs.createSurveyDoc')
         submitButtonLabel = message(code:'default.button.create_new.label')
-        formUrl = createLink(controller: 'docstore', action:'uploadDocument')
+        formUrl = createLink(controller: 'document', action:'uploadDocument')
         modalId = "modalCreateDocument"
         docForAll = false
     }
     else {
         modalText = message(code:'template.documents.add')
         submitButtonLabel = message(code:'default.button.create_new.label')
-        formUrl = createLink(controller: 'docstore', action:'uploadDocument')
+        formUrl = createLink(controller: 'document', action:'uploadDocument')
         modalId = newModalId ?: "modalCreateDocument"
     }
 %>
@@ -56,8 +56,8 @@
                         <div class="ui fluid action input">
                             <input type="text" name="upload_file_placeholder" readonly="readonly" placeholder="${message(code:'template.addDocument.selectFile')}">
                             <input type="file" name="upload_file" style="display: none;">
-                            <div class="ui icon button" style="padding-left:30px; padding-right:30px">
-                                <i class="attach icon"></i>
+                            <div class="${Btn.ICON.SIMPLE}" style="padding-left:30px; padding-right:30px">
+                                <i class="${Icon.CMD.ATTACHMENT}"></i>
                             </div>
                         </div>
                     </dd>
@@ -99,7 +99,7 @@
                               optionValue="${{ it.getI10n('value') }}"
                               id="doctype-${labelId}"
                               name="doctype"
-                              value="${doc?.type?.value}"
+                              value="${selectedDocType ?: doc?.type?.value}"
                               noSelection="${['': message(code: 'default.select.choose.label')]}" />
                 </dd>
             </dl>
@@ -119,7 +119,7 @@
                 </dd>
             </dl>
 
-            <g:if test="${controllerName == 'organisation'}"> <%-- orgs and availableConfigs are set in getResultGenerics() in OrganisationControllerService --%>
+            <g:if test="${controllerName == 'organisation'}">
                 <g:if test="${inContextOrg}">
                     <dl>
                         <dt>
@@ -130,33 +130,46 @@
                         </dd>
                     </dl>
                 </g:if>
-                <g:else>
-                    <g:hiddenField name="targetOrg" value="${ownobj.id}"/>
-                </g:else>
+                <g:elseif test="${controllerName == 'organisation'}">
+                    <g:hiddenField name="targetOrg" id="targetOrg-${labelId}" value="${ownobj.id}"/>
+                </g:elseif>
+            </g:if>
+            <%
+                Long value = RDStore.SHARE_CONF_UPLOADER_ORG.id
+                if(docctx) {
+                    value = docctx.shareConf?.id
+                }
+                Set<RefdataValue> availableConfigs = []
+                if(controllerName == 'organisation') {
+                    availableConfigs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.SHARE_CONFIGURATION)
+                }
+                else if(controllerName in ['license', 'subscription']) {
+                    availableConfigs = [RDStore.SHARE_CONF_UPLOADER_ORG, RDStore.SHARE_CONF_UPLOADER_AND_TARGET]
+                }
+                if(inContextOrg)
+                    availableConfigs.remove(RDStore.SHARE_CONF_UPLOADER_AND_TARGET)
+            %>
+            <g:if test="${availableConfigs.size() > 1}">
                 <dl>
                     <dt>
                         <label for="shareConf-${labelId}">${message(code:'template.addDocument.shareConf')}</label>
                     </dt>
                     <dd>
-                        <%
-                            Long value = RDStore.SHARE_CONF_UPLOADER_ORG.id
-                            if(docctx) {
-                                value = docctx.shareConf?.id
-                            }
-                        %>
-                        <ui:select from="${availableConfigs}" class="ui dropdown fluid la-not-clearable" name="shareConf" id="shareConf-${labelId}"
-                                      optionKey="id" optionValue="value" value="${value}"/>
+                        <ui:select from="${availableConfigs}" class="ui dropdown fluid la-not-clearable" name="shareConf" id="shareConf-${labelId}" optionKey="id" optionValue="value" value="${value}"/>
                     </dd>
                 </dl>
             </g:if>
-            <g:elseif test="${controllerName != 'myInstitution' && showConsortiaFunctions}">
+            <g:elseif test="${!showConsortiaFunctions}">
+                <g:hiddenField name="shareConf" value="${RDStore.SHARE_CONF_UPLOADER_ORG}"/>
+            </g:elseif>
+            <g:if test="${controllerName != 'myInstitution' && showConsortiaFunctions}">
                 <dl>
                     <dt>
                         <label for="setSharing-${labelId}">${message(code:'template.addDocument.setSharing')}</label>
                     </dt>
                     <dd><g:checkBox id="setSharing-${labelId}" name="setSharing" class="ui checkbox" value="${docctx?.isShared}"/></dd>
                 </dl>
-            </g:elseif>
+            </g:if>
         <g:if test="${docForAll}">
             <dl>
                 <dt>

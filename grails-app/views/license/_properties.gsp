@@ -11,7 +11,7 @@
     <laser:render template="/templates/properties/groupBindings" model="${[
             propDefGroup: propDefGroup,
             ownobj: license,
-            editable: contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC),
+            editable: contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC),
             availPropDefGroups: availPropDefGroups
     ]}" />
 
@@ -19,7 +19,7 @@
 
 <g:if test="${memberProperties}">%{-- check for content --}%
     <g:if test="${license._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL}">
-        <div class="ui card la-dl-no-table ">
+        <div class="ui card la-dl-no-table">
             <div class="content">
                 <h2 class="ui header">${message(code:'license.properties.consortium')}</h2>
                 <div id="member_props_div">
@@ -33,11 +33,11 @@
     </g:if>
 </g:if>
 
-<div class="ui card la-dl-no-table la-js-hideable">
+<div class="ui card la-dl-no-table">
 
 <%-- grouped custom properties --%>
 
-    <g:set var="allPropDefGroups" value="${license.getCalculatedPropDefGroups(institution)}" />
+    <g:set var="allPropDefGroups" value="${license.getCalculatedPropDefGroups(contextService.getOrg())}" />
 
     <% List<String> hiddenPropertiesMessages = [] %>
 
@@ -47,7 +47,7 @@
             PropertyDefinitionGroup pdg            = entry[1]
             PropertyDefinitionGroupBinding binding = entry[2]
             List numberOfConsortiaProperties       = []
-            if(license.getLicensingConsortium() && institution.id != license.getLicensingConsortium().id)
+            if(license.getLicensingConsortium() && contextService.getOrg().id != license.getLicensingConsortium().id)
                 numberOfConsortiaProperties.addAll(pdg.getCurrentPropertiesOfTenant(license,license.getLicensingConsortium()))
 
             boolean isVisible = false
@@ -82,7 +82,7 @@
             </g:if>
         </g:if>
         <g:else>
-            <g:set var="numberOfProperties" value="${pdg.getCurrentPropertiesOfTenant(license,institution)}" />
+            <g:set var="numberOfProperties" value="${pdg.getCurrentPropertiesOfTenant(license, contextService.getOrg())}" />
 
             <g:if test="${numberOfProperties.size() > 0}">
                 <%
@@ -100,7 +100,7 @@
 
 <%-- orphaned properties --%>
 
-    <%--<div class="ui card la-dl-no-table la-js-hideable">--%>
+    <%--<div class="ui card la-dl-no-table">--%>
     <div class="content">
         <h5 class="ui header">
             <g:if test="${allPropDefGroups.global || allPropDefGroups.local || allPropDefGroups.member}">
@@ -116,7 +116,7 @@
                     prop_desc: PropertyDefinition.LIC_PROP,
                     ownobj: license,
                     orphanedProperties: allPropDefGroups.orphanedProperties,
-                    editable: contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC),
+                    editable: contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC),
                     custom_props_div: "custom_props_div_props" ]}"/>
         </div>
     </div>
@@ -130,19 +130,19 @@
 
 <%-- private properties --%>
 
-<div class="ui card la-dl-no-table la-js-hideable">
+<div class="ui card la-dl-no-table">
     <div class="content">
-        <h2 class="ui header">${message(code:'license.properties.private')} ${contextOrg.name}</h2>
-        <g:set var="propertyWrapper" value="private-property-wrapper-${contextOrg.id}" />
+        <h2 class="ui header">${message(code:'license.properties.private')} ${contextService.getOrg().name}</h2>
+        <g:set var="propertyWrapper" value="private-property-wrapper-${contextService.getOrg().id}" />
         <div id="${propertyWrapper}">
             <laser:render template="/templates/properties/private" model="${[
                     prop_desc: PropertyDefinition.LIC_PROP,
                     ownobj: license,
                     propertyWrapper: "${propertyWrapper}",
-                    tenant: contextOrg]}"/>
+                    tenant: contextService.getOrg()]}"/>
 
             <laser:script file="${this.getGroovyPageFileName()}">
-                c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${contextOrg.id});
+                c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#${propertyWrapper}", ${contextService.getOrg().id});
             </laser:script>
 
         </div>

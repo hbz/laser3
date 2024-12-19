@@ -2,6 +2,7 @@ package de.laser.finance
 
 import de.laser.IssueEntitlement
 import de.laser.IssueEntitlementGroup
+import de.laser.wekb.Package
 import de.laser.survey.SurveyOrg
 import de.laser.Org
 import de.laser.RefdataValue
@@ -54,9 +55,13 @@ class CostItem extends AbstractBase
 
     Org owner
     Subscription sub // NOT set if surveyOrg (exclusive)
+
+    @Deprecated
     SubscriptionPackage subPkg // only set if sub
+
     IssueEntitlement issueEntitlement // only set if sub
     SurveyOrg surveyOrg // NOT set if sub (exclusive)
+    Package pkg // only set if sub
     Order order
     Invoice invoice
     IssueEntitlementGroup issueEntitlementGroup // only set if sub
@@ -117,18 +122,19 @@ class CostItem extends AbstractBase
     static mapping = {
         id              column: 'ci_id'
         globalUID       column: 'ci_guid'
-        type            column: 'ci_type_rv_fk'
+        type            column: 'ci_type_rv_fk',    index: 'ci_type_idx'
         version         column: 'ci_version'
         sub             column: 'ci_sub_fk',        index: 'ci_sub_idx'
         owner           column: 'ci_owner',         index: 'ci_owner_idx'
-        subPkg          column: 'ci_sub_pkg_fk'
+        subPkg          column: 'ci_sub_pkg_fk',    index: 'ci_sub_pkg_idx'
+        pkg             column: 'ci_pkg_fk',        index: 'ci_pkg_idx'
         issueEntitlement    column: 'ci_e_fk',      index: 'ci_e_idx' //the index is needed for deletion checks of issue entitlements where each foreign key is being checked
-        surveyOrg       column: 'ci_surorg_fk'
-        order           column: 'ci_ord_fk'
-        invoice         column: 'ci_inv_fk'
-        issueEntitlementGroup column: 'ci_ie_group_fk'
-        costItemStatus  column: 'ci_status_rv_fk'
-        billingCurrency column: 'ci_billing_currency_rv_fk'
+        surveyOrg       column: 'ci_surorg_fk',     index: 'ci_surorg_idx'
+        order           column: 'ci_ord_fk',        index: 'ci_ord_idx'
+        invoice         column: 'ci_inv_fk',        index: 'ci_inv_idx'
+        issueEntitlementGroup column: 'ci_ie_group_fk',         index: 'ci_ie_group_idx'
+        costItemStatus  column: 'ci_status_rv_fk',              index: 'ci_status_idx'
+        billingCurrency column: 'ci_billing_currency_rv_fk',    index: 'ci_billing_currency_idx'
         costDescription column: 'ci_cost_description', type:'text'
         costTitle       column: 'ci_cost_title'
         costInBillingCurrency           column: 'ci_cost_in_billing_currency'
@@ -141,12 +147,12 @@ class CostItem extends AbstractBase
         invoiceDate                     column: 'ci_invoice_date'
         financialYear                   column: 'ci_financial_year'
         isVisibleForSubscriber          column: 'ci_is_viewable'
-        costItemCategory    column: 'ci_cat_rv_fk'
-        costItemElement     column: 'ci_element_rv_fk'
-        costItemElementConfiguration column: 'ci_element_configuration_rv_fk'
-        endDate         column: 'ci_end_date',    index:'ci_dates_idx'
-        startDate       column: 'ci_start_date',  index:'ci_dates_idx'
-        copyBase        column: 'ci_copy_base'
+        costItemCategory    column: 'ci_cat_rv_fk',                             index: 'ci_cat_idx'
+        costItemElement     column: 'ci_element_rv_fk',                         index: 'ci_element_idx'
+        costItemElementConfiguration column: 'ci_element_configuration_rv_fk',  index: 'ci_element_configuration_idx'
+        endDate         column: 'ci_end_date',    index: 'ci_dates_idx'
+        startDate       column: 'ci_start_date',  index: 'ci_dates_idx'
+        copyBase        column: 'ci_copy_base',   index: 'ci_copy_base_idx'
         reference       column: 'ci_reference'
         dateCreated     column: 'ci_date_created'
         lastUpdated     column: 'ci_last_updated'
@@ -163,9 +169,18 @@ class CostItem extends AbstractBase
                 if (obj.subPkg.subscription.id != obj.sub.id) return ['subscriptionPackageMismatch']
             }
         })
+        pkg  (nullable: true, validator: { val, obj ->
+            if (!obj.surveyOrg) {
+                SubscriptionPackage subscriptionPackage = SubscriptionPackage.findBySubscriptionAndPkg(obj.sub, obj.pkg)
+                if (subscriptionPackage) {
+                    if (subscriptionPackage.subscription.id != obj.sub.id) return ['subscriptionPackageMismatch']
+                }
+            }
+        })
+
         issueEntitlement(nullable: true, validator: { val, obj ->
             if (obj.issueEntitlement) {
-                if (!obj.subPkg || (obj.issueEntitlement.tipp.pkg.gokbId != obj.subPkg.pkg.gokbId)) return ['issueEntitlementNotInPackage']
+                if (!obj.pkg || (obj.issueEntitlement.tipp.pkg.gokbId != obj.pkg.gokbId)) return ['issueEntitlementNotInPackage']
             }
         })
         surveyOrg       (nullable: true)
@@ -241,8 +256,9 @@ class CostItem extends AbstractBase
     //needs to be def because of GORM magic, looking for a database mapping ...
     def getCostInLocalCurrencyAfterTax() {
         Double result = ( costInLocalCurrency ?: 0.0 ) * ( taxKey ? ((taxKey.taxRate/100) + 1) : 1.0 )
-
-        finalCostRounding ? result.round(0) : result.round(2)
+        if(currencyRate > 0)
+            finalCostRounding ? result.round(0) : result.round(2)
+        else null
     }
 
     /**

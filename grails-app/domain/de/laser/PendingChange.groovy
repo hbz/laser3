@@ -7,6 +7,9 @@ import de.laser.finance.PriceItem
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
+import de.laser.wekb.Package
+import de.laser.wekb.TIPPCoverage
+import de.laser.wekb.TitleInstancePackagePlatform
 import groovy.util.logging.Slf4j
 
 import java.text.SimpleDateFormat
@@ -93,7 +96,7 @@ class PendingChange {
         ts column: 'pc_ts', index: 'pending_change_ts_idx'
         owner column: 'pc_owner', index: 'pending_change_owner_idx'
         desc column: 'pc_desc', type: 'text'
-        status column: 'pc_status_rdv_fk'
+        status column: 'pc_status_rdv_fk', index: 'pc_status_idx'
         actionDate column: 'pc_action_date'
         sort "ts": "asc"
 

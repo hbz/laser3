@@ -107,9 +107,6 @@ class NavigationTagLib {
         if (attrs.id != null) {
             linkTagAttrs.id = attrs.id
         }
-        if (attrs.fragment != null) {
-            linkTagAttrs.fragment = attrs.fragment
-        }
         linkTagAttrs.params = linkParams
 
         Map prevMap = [title: (attrs.prev ?: messageSource.getMessage('default.paginate.prev', null, null, locale))]
@@ -203,7 +200,8 @@ class NavigationTagLib {
 
                 def lastLinkAttrs = linkTagAttrs.clone()
 
-                linkParams.offset = total - max
+                int tmp = linkParams.offset + (max * maxsteps)
+                linkParams.offset = tmp < total ? tmp : ((laststep - 1) * max)
                 out << link(lastLinkAttrs) {laststep.toString() }
 
                 // | > | >> |
@@ -216,7 +214,7 @@ class NavigationTagLib {
                     out << link((nextLinkAttrs1 += nextMap), '<i class="angle right icon"></i>')
                     if (currentstep < laststep-maxsteps-1) {
                         // | >> |
-                        int tmp = linkParams.offset + (max * maxsteps)
+                        tmp = linkParams.offset + (max * maxsteps)
                         linkParams.offset = tmp < total ? tmp : ((laststep - 1) * max)
                         linkTagAttrs.class = (currentstep == laststep) ? "item disabled nextLink" : "item nextLink"
 
@@ -265,10 +263,13 @@ class NavigationTagLib {
         def (lbText, lbMessage) = SwissKnife.getTextAndMessage(attrs)
         String linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
 
+        if (attrs.icon) {
+            linkBody = '<i class="icon ' + attrs.icon + '"></i> ' + linkBody
+        }
+
         if (!attrs.instRole) {
             attrs.instRole = Role.INST_USER // new default
         }
-
         boolean check = contextService.checkCachedNavPerms(attrs)
 
         if (attrs.addItemAttributes) {
@@ -287,10 +288,11 @@ class NavigationTagLib {
             )
         }
         else {
-            if (userService.hasAffiliation_or_ROLEADMIN(contextService.getUser(), contextService.getOrg(), attrs.instRole as String)) {
-                out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" data-content="' + message(code:'tooltip.onlyFullMembership') + '" role="menuitem">' + linkBody + '</div>'
+            if (userService.hasFormalAffiliation(contextService.getOrg(), attrs.instRole as String)) {
+                out << '<div class="item disabled"  '
+                out << 'role="menuitem">' + linkBody + '</div>'
             }
-//            else out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" role="menuitem">' + linkBody + '</div>'
+//            else out << '<div class="item disabled la-popup-tooltip" data-position="left center" role="menuitem">' + linkBody + '</div>'
         }
     }
 
@@ -299,7 +301,7 @@ class NavigationTagLib {
         Map<Object, Object> filteredAttrs = attrs.findAll{ it ->
             ! (it.key in ['addItemAttributes', 'class'])
         }
-        String css = attrs.class ? (attrs.class != 'item' ? attrs.class + ' item' : attrs.class) : 'item'
+        String css = attrs.class ? (attrs.class != 'item' ? 'item ' + attrs.class  : attrs.class) : 'item'
         filteredAttrs.put('class', css)
 
         if (attrs.addItemAttributes) {

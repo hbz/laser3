@@ -36,40 +36,40 @@ r2d2 = {
                     if (month<10) month="0"+month;
                     var year = date.getFullYear();
 
-                    if ('dd.mm.yyyy' == JSPC.vars.dateFormat) {
+                    if ('dd.mm.yyyy' == JSPC.config.dateFormat) {
                         return day + '.' + month + '.' + year;
                     }
-                    else if ('yyyy-mm-dd' == JSPC.vars.dateFormat) {
+                    else if ('yyyy-mm-dd' == JSPC.config.dateFormat) {
                         return year + '-' + month + '-' + day;
                     }
                     else {
-                        alert('Please report this error: ' + JSPC.vars.dateFormat + ' for ui-datepicker unsupported');
+                        alert('Please report this error: ' + JSPC.config.dateFormat + ' for ui-datepicker unsupported');
                     }
                 }
             },
             text: {
                 days: [
-                    JSPC.dict.get('loc.weekday.short.Sunday', JSPC.currLanguage),
-                    JSPC.dict.get('loc.weekday.short.Monday', JSPC.currLanguage),
-                    JSPC.dict.get('loc.weekday.short.Tuesday', JSPC.currLanguage),
-                    JSPC.dict.get('loc.weekday.short.Wednesday', JSPC.currLanguage),
-                    JSPC.dict.get('loc.weekday.short.Thursday', JSPC.currLanguage),
-                    JSPC.dict.get('loc.weekday.short.Friday', JSPC.currLanguage),
-                    JSPC.dict.get('loc.weekday.short.Saturday', JSPC.currLanguage)
+                    JSPC.dict.get('loc.weekday.short.Sunday', JSPC.config.language),
+                    JSPC.dict.get('loc.weekday.short.Monday', JSPC.config.language),
+                    JSPC.dict.get('loc.weekday.short.Tuesday', JSPC.config.language),
+                    JSPC.dict.get('loc.weekday.short.Wednesday', JSPC.config.language),
+                    JSPC.dict.get('loc.weekday.short.Thursday', JSPC.config.language),
+                    JSPC.dict.get('loc.weekday.short.Friday', JSPC.config.language),
+                    JSPC.dict.get('loc.weekday.short.Saturday', JSPC.config.language)
                 ],
                 months: [
-                    JSPC.dict.get('loc.January', JSPC.currLanguage),
-                    JSPC.dict.get('loc.February', JSPC.currLanguage),
-                    JSPC.dict.get('loc.March', JSPC.currLanguage),
-                    JSPC.dict.get('loc.April', JSPC.currLanguage),
-                    JSPC.dict.get('loc.May', JSPC.currLanguage),
-                    JSPC.dict.get('loc.June', JSPC.currLanguage),
-                    JSPC.dict.get('loc.July', JSPC.currLanguage),
-                    JSPC.dict.get('loc.August', JSPC.currLanguage),
-                    JSPC.dict.get('loc.September', JSPC.currLanguage),
-                    JSPC.dict.get('loc.October', JSPC.currLanguage),
-                    JSPC.dict.get('loc.November', JSPC.currLanguage),
-                    JSPC.dict.get('loc.December', JSPC.currLanguage)
+                    JSPC.dict.get('loc.January', JSPC.config.language),
+                    JSPC.dict.get('loc.February', JSPC.config.language),
+                    JSPC.dict.get('loc.March', JSPC.config.language),
+                    JSPC.dict.get('loc.April', JSPC.config.language),
+                    JSPC.dict.get('loc.May', JSPC.config.language),
+                    JSPC.dict.get('loc.June', JSPC.config.language),
+                    JSPC.dict.get('loc.July', JSPC.config.language),
+                    JSPC.dict.get('loc.August', JSPC.config.language),
+                    JSPC.dict.get('loc.September', JSPC.config.language),
+                    JSPC.dict.get('loc.October', JSPC.config.language),
+                    JSPC.dict.get('loc.November', JSPC.config.language),
+                    JSPC.dict.get('loc.December', JSPC.config.language)
                 ]
             }
         },
@@ -103,14 +103,14 @@ r2d2 = {
                     if (month<10) month="0"+month;
                     var year = date.getFullYear();
 
-                    if ('dd.mm.yyyy' == JSPC.vars.dateFormat) {
+                    if ('dd.mm.yyyy' == JSPC.config.dateFormat) {
                         return day + '.' + month + '.' + year;
                     }
-                    else if ('yyyy-mm-dd' == JSPC.vars.dateFormat) {
+                    else if ('yyyy-mm-dd' == JSPC.config.dateFormat) {
                         return year + '-' + month + '-' + day;
                     }
                     else {
-                        alert('Please report this error: ' + JSPC.vars.dateFormat + ' for ui-datepicker unsupported');
+                        alert('Please report this error: ' + JSPC.config.dateFormat + ' for ui-datepicker unsupported');
                     }
                 }
             }*/
@@ -143,7 +143,7 @@ r2d2 = {
 
         function loadAjaxLoginModal() {
             $.ajax({
-                url: JSPC.vars.ajax.openLogin,
+                url: JSPC.config.ajax.openLogin,
                 success: function (data) {
                     $('body').append(data);
 
@@ -173,7 +173,7 @@ r2d2 = {
                         $('#ajaxLoginModal').modal('hide');
                     }
                     else if (json.error) {
-                        $('#ajaxLoginMessage').html('<div class="ui negative message">' + json.error + '</div>');
+                        $('#ajaxLoginMessage').html('<div class="ui error message">' + json.error + '</div>');
                     }
                     else {
                         $('#loginMessage').html(xhr.responseText);
@@ -183,21 +183,21 @@ r2d2 = {
                     if (xhr.status == 401 && xhr.getResponseHeader('Location')) {
                         // the login request itself wasn't allowed, possibly because the
                         // post url is incorrect and access was denied to it
-                        $('#loginMessage').html('<div class="ui negative message">Unbekannter Fehler beim Login. Melden Sie sich bitte über die Startseite an.</div>');
+                        $('#loginMessage').html('<div class="ui error message">Unbekannter Fehler beim Login. Melden Sie sich bitte über die Startseite an.</div>');
                     }
                     else {
                         var responseText = xhr.responseText;
                         if (responseText) {
                             var json = $.parseJSON(responseText);
                             if (json.error) {
-                                $('#loginMessage').html('<div class="ui negative message">' + json.error + '</div>');
+                                $('#loginMessage').html('<div class="ui error message">' + json.error + '</div>');
                                 return;
                             }
                         }
                         else {
                             responseText = 'Status: ' + textStatus + ', Fehler: ' + errorThrown + ')';
                         }
-                        $('#ajaxLoginMessage').html('<div class="ui negative message">' + responseText + '</div>');
+                        $('#ajaxLoginMessage').html('<div class="ui error message">' + responseText + '</div>');
                     }
                 }
             })
@@ -216,15 +216,15 @@ r2d2 = {
             $temp.val($.trim($(element).text())).select();
             document.execCommand("copy");
             clearTimeout(timeout);
-            $(element).html(JSPC.dict.get('copied', JSPC.currLanguage));
+            $(element).html(JSPC.dict.get('copied', JSPC.config.language));
             var timeout = setTimeout(function() {
                 $(element).html(html);
             }, 2000); // change the HTML after 2 seconds
             $temp.remove();
         });
         $('.js-copyTrigger').hover(
-            function(){ $(this).find('.la-js-copyTriggerIcon').addClass('open') },
-            function(){ $(this).find('.la-js-copyTriggerIcon').removeClass('open') }
+            function(){ $(this).parent().find('.la-js-copyTriggerIcon').addClass('open') },
+            function(){ $(this).parent().find('.la-js-copyTriggerIcon').removeClass('open') }
         )
 
         $('.js-linkGoogle').hover(
@@ -234,8 +234,8 @@ r2d2 = {
         //JS Library readmore.js
         $('.la-readmore').readmore({
             speed: 75,
-            lessLink: '<a href="#">' + JSPC.dict.get('link.readless', JSPC.currLanguage) + '</a>',
-            moreLink: '<a href="#">' + JSPC.dict.get('link.readmore', JSPC.currLanguage) + '</a>',
+            lessLink: '<a href="#">' + JSPC.dict.get('link.readless', JSPC.config.language) + '</a>',
+            moreLink: '<a href="#">' + JSPC.dict.get('link.readmore', JSPC.config.language) + '</a>',
             collapsedHeight: 115
         });
         //overwriting the template for input search (spotlight)
@@ -247,7 +247,7 @@ r2d2 = {
             if (message !== undefined && type !== undefined) {
                 html += '' + '<div class="message ' + type + '">';
                 if (type == 'empty') {
-                    html += '' + '<div class="header">' + JSPC.dict.get('search.API.heading.noResults', JSPC.currLanguage) + '</div class="header">' + '<div class="description">' + message + '</div class="description">';
+                    html += '' + '<div class="header">' + JSPC.dict.get('search.API.heading.noResults', JSPC.config.language) + '</div class="header">' + '<div class="description">' + message + '</div class="description">';
                 } else {
                     html += ' <div class="description">' + message + '</div>';
                 }
@@ -260,21 +260,21 @@ r2d2 = {
 
         $('.ui.search.spotlight').search({
             error : {
-                source          : '"' + JSPC.dict.get('search.API.source', JSPC.currLanguage) + '"',
+                source          : '"' + JSPC.dict.get('search.API.source', JSPC.config.language) + '"',
                 noResults       : '',
-                logging         : '"' + JSPC.dict.get('search.API.logging', JSPC.currLanguage) + '"',
-                noEndpoint      : '"' + JSPC.dict.get('search.API.noEndpoint', JSPC.currLanguage) + '"',
-                noTemplate      : '"' + JSPC.dict.get('search.API.noTemplate', JSPC.currLanguage) + '"',
-                serverError     : '"' + JSPC.dict.get('search.API.serverError', JSPC.currLanguage) + '"',
-                maxResults      : '"' + JSPC.dict.get('search.API.maxResults', JSPC.currLanguage) + '"',
-                method          : '"' + JSPC.dict.get('search.API.method', JSPC.currLanguage) + '"'
+                logging         : '"' + JSPC.dict.get('search.API.logging', JSPC.config.language) + '"',
+                noEndpoint      : '"' + JSPC.dict.get('search.API.noEndpoint', JSPC.config.language) + '"',
+                noTemplate      : '"' + JSPC.dict.get('search.API.noTemplate', JSPC.config.language) + '"',
+                serverError     : '"' + JSPC.dict.get('search.API.serverError', JSPC.config.language) + '"',
+                maxResults      : '"' + JSPC.dict.get('search.API.maxResults', JSPC.config.language) + '"',
+                method          : '"' + JSPC.dict.get('search.API.method', JSPC.config.language) + '"'
             },
 
             type: 'category',
             minCharacters: 3,
             apiSettings: {
 
-                url: JSPC.vars.searchSpotlightSearch + "/?query={query}",
+                url: JSPC.config.searchSpotlightSearch + "/?query={query}",
                 onResponse: function(elasticResponse) {
                     var response = { results : {} };
 
@@ -353,16 +353,16 @@ r2d2 = {
                             identifier: $inputInput.attr('data-validate'),
                             rules: [
                                 {
-                                    type: "empty", prompt: JSPC.dict.get('pagination.keyboardInput.validation.integer', JSPC.currLanguage)
+                                    type: "empty", prompt: JSPC.dict.get('pagination.keyboardInput.validation.integer', JSPC.config.language)
                                 },
                                 {
-                                    type: "integer", prompt: JSPC.dict.get('pagination.keyboardInput.validation.integer', JSPC.currLanguage)
+                                    type: "integer", prompt: JSPC.dict.get('pagination.keyboardInput.validation.integer', JSPC.config.language)
                                 },
                                 {
-                                    type: "smallerEqualThanTotal[" + stepsValue + "]", prompt: JSPC.dict.get('pagination.keyboardInput.validation.smaller', JSPC.currLanguage)
+                                    type: "smallerEqualThanTotal[" + stepsValue + "]", prompt: JSPC.dict.get('pagination.keyboardInput.validation.smaller', JSPC.config.language)
                                 },
                                 {
-                                    type: "biggerThan[0]", prompt: JSPC.dict.get('pagination.keyboardInput.validation.biggerZero', JSPC.currLanguage)
+                                    type: "biggerThan[0]", prompt: JSPC.dict.get('pagination.keyboardInput.validation.biggerZero', JSPC.config.language)
                                 }
                             ]
                         }
@@ -399,8 +399,8 @@ r2d2 = {
         console.log("r2d2.initGlobalXEditableStuff()");
 
         $.fn.editable.defaults.mode = 'inline'
-        $.fn.editableform.buttons = '<button aria-label="' + JSPC.dict.get('xEditable.button.ok', JSPC.currLanguage) + '" type="submit" class="ui icon button editable-submit"><i aria-hidden="true" class="check icon"></i></button>' +
-            '<button aria-label="' + JSPC.dict.get('xEditable.button.cancel', JSPC.currLanguage) + '" type="button" class="ui icon button editable-cancel"><i aria-hidden="true" class="times icon"></i></button>'
+        $.fn.editableform.buttons = '<button aria-label="' + JSPC.dict.get('xEditable.button.ok', JSPC.config.language) + '" type="submit" class="ui icon button editable-submit"><i aria-hidden="true" class="check icon"></i></button>' +
+            '<button aria-label="' + JSPC.dict.get('xEditable.button.cancel', JSPC.config.language) + '" type="button" class="ui icon button editable-cancel"><i aria-hidden="true" class="times icon"></i></button>'
         $.fn.editableform.template =
             '<form class="ui form editableform">' +
             '	<div class="control-group">' +
@@ -418,7 +418,7 @@ r2d2 = {
         $.fn.editableform.loading =
             '<div class="ui active inline loader"></div>'
 
-        // TODO $.fn.datepicker.defaults.language = JSPC.vars.locale
+        // TODO $.fn.datepicker.defaults.language = JSPC.config.language
     },
 
 
@@ -430,41 +430,49 @@ r2d2 = {
         $(ctxSel + ' .xEditableValue').editable({
 
             highlight: false,
-            language: JSPC.vars.locale,
-            format:   JSPC.vars.dateFormat,
+            language: JSPC.config.language,
+            format:   JSPC.config.dateFormat,
             validate: function(value) {
                 if ($(this).attr('data-format') && value) {
                     if($(this).attr('data-format') === 'YYYY') {
                         if(! (value.match(/^\d{4}$/) ) ) {
-                            return "Ungültiges Format";
+                            return  JSPC.dict.get('xEditable.validation.dataFormat', JSPC.config.language);
                         }
                     }
                     else {
                         if(! (value.match(/^\d{1,2}\.\d{1,2}\.\d{4}$/) || value.match(/^\d{4}-\d{1,2}-\d{1,2}$/)) ) {
-                            return "Ungültiges Format";
+                            return  JSPC.dict.get('xEditable.validation.dataFormat', JSPC.config.language);
                         }
                     }
                 }
-                // custom validate functions via ui:xEditable validation="xy"
+                // custom validate functions via ui:xEditable.validation."xy"
                 var dVal = $(this).attr('data-validation')
                 if (dVal) {
                     if (dVal.includes('notEmpty')) {
                         if($.trim(value) == '') {
-                            return "Das Feld darf nicht leer sein";
+                            return  JSPC.dict.get('xEditable.validation.notEmpty', JSPC.config.language);
                         }
                     }
                     if (dVal.includes('url')) {
                         var regex = /^(https?|ftp):\/\/(.)*/;
                         var test = regex.test($.trim(value)) || $.trim(value) == ''
                         if (! test) {
-                            return "Ein URL muss mit 'http://' oder 'https://' oder 'ftp://' beginnen."
+                            //return "Ein URL muss mit 'http://' oder 'https://' oder 'ftp://' beginnen."
+                            return  JSPC.dict.get('xEditable.validation.url', JSPC.config.language);
                         }
                     }
                     if (dVal.includes('email')) {
                         let regex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$/
                         let test = regex.test($.trim(value)) || $.trim(value) === ''
                         if(!test) {
-                            return "Bitte geben Sie eine gültige Mailadresse ein!"
+                            return  JSPC.dict.get('xEditable.validation.mail', JSPC.config.language)
+                        }
+                    }
+                    if (dVal.includes('number')) {
+                        let regex =  /^[0-9]+$/;
+                        let test = regex.test($.trim(value)) || $.trim(value) === ''
+                        if(!test) {
+                            return  JSPC.dict.get('xEditable.validation.number', JSPC.config.language);
                         }
                     }
                     if (dVal.includes('datesCheck')) {
@@ -482,12 +490,13 @@ r2d2 = {
                             endDate = Date.parse(JSPC.helper.formatDate(endDateInput));
                             console.log(startDate+" "+endDate);
                             if(startDate > endDate)
-                                return "Das Enddatum darf nicht vor dem Anfangsdatum liegen.";
+                                return  JSPC.dict.get('xEditable.validation.endDateNotBeforStartDate', JSPC.config.language);
                         }
                     }
                     if (dVal.includes('maxlength')) {
                         if(value.length > $(this).attr("data-maxlength")) {
-                            return "Der eingegebene Wert ist zu lang!";
+                            return   JSPC.dict.get('xEditable.validation.tooLong', JSPC.config.language)
+
                         }
                     }
                 }
@@ -550,8 +559,8 @@ r2d2 = {
         });
 
         $(ctxSel + ' .simpleHiddenValue').editable({
-            language: JSPC.vars.locale,
-            format:   JSPC.vars.dateFormat,
+            language: JSPC.config.language,
+            format:   JSPC.config.dateFormat,
             url: function(params) {
                 var hidden_field_id = $(this).data('hidden-id');
                 $("#" + hidden_field_id).val(params.value);
@@ -570,7 +579,7 @@ r2d2 = {
         //tooltip
         tooltip.init(ctxSel);
 
-        $(ctxSel + " a[href], " + ctxSel + " input.js-wait-wheel").not("a[href^='#'], a[href*='ajax'], a[target='_blank'], .js-open-confirm-modal, a[data-tab], a[data-content], a.la-ctrls , .close, .js-no-wait-wheel, .trigger-modal").click(function() {
+        $(ctxSel + " a[href], " + ctxSel + " input.js-wait-wheel").not("a[href^='#'], a[href*='ajax'], a[target='_blank'], .js-open-confirm-modal, a[data-tab], a[data-content], .close, .js-no-wait-wheel, .trigger-modal").click(function() {
             $('html').css('cursor', 'wait');
         });
 
@@ -639,7 +648,20 @@ r2d2 = {
 
         // accordions
 
-        $(ctxSel + ' .ui.accordion').accordion();
+        $(ctxSel + ' .ui.accordion').not('.la-accordion-showMore').accordion();
+
+        $(ctxSel + ' .la-accordion-showMore').accordion({
+                exclusive: false
+            }
+        );
+        $('.la-js-closeAll-showMore').on('click', function () {
+            $('.accordion.la-accordion-showMore .la-accordion-segments .segment.content').each(function (i, e) {
+                if ($(e).hasClass("active")) {
+                    $('.la-accordion-showMore').accordion("close", i);
+                }
+            });
+        });
+
 
         $(ctxSel + ' .ui.la-metabox.accordion').accordion({
 
@@ -690,7 +712,7 @@ r2d2 = {
         // simple dropdown
         $(ctxSel + ' .ui.dropdown').not('#mainMenue .ui.dropdown').not('.la-not-clearable').dropdown({
             selectOnKeydown: false,
-            clearable: true,
+            clearable: true
         });
         // all dropdowns but dropdowns la-not-clearable
         $(ctxSel + ' .ui.dropdown.la-not-clearable').dropdown({
@@ -705,7 +727,7 @@ r2d2 = {
             selectOnKeydown: false,
             fullTextSearch: 'exact',
             clearable: true,
-            message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage)}
+            message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.config.language)}
         });
 
         // FILTER
@@ -724,7 +746,7 @@ r2d2 = {
             selectOnKeydown: false,
             fullTextSearch: 'exact',
             clearable: true,
-            message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage)},
+            message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.config.language)},
             onChange: function(value, text, $choice){
                 (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
             }
@@ -734,7 +756,7 @@ r2d2 = {
             forceSelection: false,
             hideAdditions: false,
             clearable: true,
-            message: {addResult:JSPC.dict.get('dropdown.message.addResult', JSPC.currLanguage)},
+            message: {addResult:JSPC.dict.get('dropdown.message.addResult', JSPC.config.language)},
             onChange: function(value, text, $choice){
                 (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
             }
@@ -818,30 +840,19 @@ r2d2 = {
                 }
                 var $jscb = $('#js-confirmation-button')
 
-                switch (how) {
-                    case "delete":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.delete', JSPC.currLanguage) + '<i aria-hidden="true" class="trash alternate outline icon"></i>');
-                        break;
-                    case "unlink":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.unlink', JSPC.currLanguage) + '<i aria-hidden="true" class="la-chain broken icon"></i>');
-                        break;
-                    case "share":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.share', JSPC.currLanguage) + '<i aria-hidden="true" class="la-share icon"></i>');
-                        break;
-                    case "inherit":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.inherit', JSPC.currLanguage) + '<i aria-hidden="true" class="thumbtack icon"></i>');
-                        break;
-                    case "ok":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.ok', JSPC.currLanguage) + '<i aria-hidden="true" class="check icon"></i>');
-                        break;
-                    case "concludeBinding":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.concludeBinding', JSPC.currLanguage) + '<i aria-hidden="true" class="check icon"></i>');
-                        break;
-                    case "clearUp":
-                        $jscb.html(JSPC.dict.get('confirm.dialog.clearUp', JSPC.currLanguage) + '<i aria-hidden="true" class="bath icon"></i>');
-                        break;
-                    default:
-                        $('').html('Entfernen<i aria-hidden="true" class="x icon"></i>');
+                let map = {
+                    'delete'            : JSPC.icons.CMD.DELETE,
+                    'unlink'            : 'la-chain broken icon',
+                    'unset'             : JSPC.icons.CMD.ERASE,
+                    'share'             : JSPC.icons.SIG.SHARED_OBJECT_ON,
+                    'inherit'           : JSPC.icons.SIG.INHERITANCE,
+                    'ok'                : JSPC.icons.SYM.YES,
+                    'concludeBinding'   : JSPC.icons.SYM.YES
+                }
+                if (map[how]) {
+                    $jscb.html(JSPC.dict.get('confirm.dialog.' + how, JSPC.config.language) + '<i aria-hidden="true" class="' + map[how] + '"></i>');
+                } else {
+                    $('').html('Entfernen<i aria-hidden="true" class="' + JSPC.icons.SYM.NO + '"></i>');
                 }
 
                 var remoteLink = $(elem).hasClass('la-js-remoteLink')

@@ -1,7 +1,8 @@
-<%@ page import="de.laser.properties.PropertyDefinition;de.laser.*"%>
-<laser:htmlStart message="menu.institutions.prop_groups" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.properties.PropertyDefinition;de.laser.*"%>
+<laser:htmlStart message="menu.institutions.prop_groups" />
 
         <ui:breadcrumbs>
+            <ui:crumb controller="org" action="show" id="${contextService.getOrg().id}" text="${contextService.getOrg().getDesignation()}"/>
             <ui:crumb message="menu.institutions.manage_props" class="active"/>
         </ui:breadcrumbs>
 
@@ -22,14 +23,15 @@
 
     <div class="ui styled fluid accordion">
         <g:each in="${propDefGroups}" var="typeEntry">
-            <div class="title">
+            <div class="title ${params.ownerType == typeEntry.key ? 'active' : ''}">
                 <i class="dropdown icon"></i>
-                <g:message code="propertyDefinition.${typeEntry.key}.label"/>
+                <g:message code="propertyDefinition.${typeEntry.key}.label"/> (${typeEntry.value.size()})
             </div>
-            <div class="content">
-                <table class="ui celled sortable table la-js-responsive-table la-table compact">
+            <div class="content ${params.ownerType == typeEntry.key ? 'active' : ''}">
+                <table class="ui sortable table la-js-responsive-table la-table compact">
                     <thead>
                     <tr>
+                        <th><g:message code="default.order.label"/></th>
                         <th><g:message code="default.name.label"/></th>
                         <th><g:message code="propertyDefinitionGroup.table.header.description"/></th>
                         <th><g:message code="propertyDefinitionGroup.table.header.properties"/></th>
@@ -40,8 +42,38 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <g:each in="${typeEntry.value}" var="pdGroup">
+                    <g:each in="${typeEntry.value}" var="pdGroup" status="i">
+                        <g:set var="pdgOID" value="${genericOIDService.getOID(pdGroup)}" />
                         <tr>
+                            <td>
+                                <g:if test="${i == 1 && propDefGroups.size() == 2}">%{-- override layout --}%
+                                    <div class="${Btn.ICON.SIMPLE} compact la-hidden"><icon:placeholder /></div>
+                                    <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveUp', oid:pdgOID, ownerType: typeEntry.key]}" class="${Btn.MODERN.SIMPLE} compact"
+                                            role="button">
+                                        <i class="${Icon.CMD.MOVE_UP}"></i>
+                                    </g:link>
+                                </g:if>
+                                <g:elseif test="${typeEntry.value.size() > 1}">
+                                    <g:if test="${i > 0}">
+                                        <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveUp', oid:pdgOID, ownerType: typeEntry.key]}" class="${Btn.MODERN.SIMPLE} compact"
+                                                role="button">
+                                            <i class="${Icon.CMD.MOVE_UP}"></i>
+                                        </g:link>
+                                    </g:if>
+                                    <g:else>
+                                        <div class="${Btn.ICON.SIMPLE} compact la-hidden"><icon:placeholder /></div>
+                                    </g:else>
+                                    <g:if test="${i < typeEntry.value.size()-1}">
+                                        <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'moveDown', oid:pdgOID, ownerType: typeEntry.key]}" class="${Btn.MODERN.SIMPLE} compact"
+                                                role="button">
+                                            <i class="${Icon.CMD.MOVE_DOWN}"></i>
+                                        </g:link>
+                                    </g:if>
+                                    <g:else>
+                                        <div class="${Btn.ICON.SIMPLE} compact la-hidden"><icon:placeholder /></div>
+                                    </g:else>
+                                </g:elseif>
+                            </td>
                             <td>
                                 <ui:xEditable owner="${pdGroup}" field="name" />
                             </td>
@@ -56,21 +88,20 @@
                             </td>
                             <g:if test="${editable}">
                                 <td class="x">
-                                    <g:set var="pdgOID" value="${genericOIDService.getOID(pdGroup)}" />
-                                    <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'edit', oid:pdgOID]}" class="ui icon button blue la-modern-button trigger-modal"
+                                    <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'edit', oid:pdgOID]}" class="${Btn.MODERN.SIMPLE} trigger-modal"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                        <i aria-hidden="true" class="write icon"></i>
+                                        <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                     </g:link>
                                     <g:link controller="myInstitution"
                                             action="managePropertyGroups"
                                             params="${[cmd:'delete', oid:pdgOID]}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.prop_groups", args: [fieldValue(bean: pdGroup, field: "name")])}"
                                             data-confirm-term-how="delete"
-                                            class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                            class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="trash alternate outline icon"></i>
+                                        <i class="${Icon.CMD.DELETE}"></i>
                                     </g:link>
                                 </td>
                             </g:if>

@@ -1,7 +1,7 @@
-<%@ page import="de.laser.reporting.report.myInstitution.base.BaseDetails; de.laser.Org; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.storage.RDStore; de.laser.Subscription; de.laser.properties.PropertyDefinition; de.laser.properties.SubscriptionProperty;" %>
+<%@ page import="de.laser.wekb.Provider; de.laser.reporting.report.myInstitution.base.BaseDetails; de.laser.Org; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.storage.RDStore; de.laser.Subscription; de.laser.properties.PropertyDefinition; de.laser.properties.SubscriptionProperty;" %>
 <laser:serviceInjection />
 
-<laser:render template="/myInstitution/reporting/details/top" />
+<laser:render template="/myInstitution/reporting/details/details_top" />
 
 <div class="ui segment">
     <table class="ui table la-js-responsive-table la-table compact">
@@ -23,14 +23,17 @@
                 <th>${message(code:'reporting.details.property.value')}</th>
             </g:if>
             <g:elseif test="${query == 'subscription-x-platform'}">
-                <th>${message(code:'default.provider.label')}</th>
+                <th>${message(code:'provider.label')}</th>
             </g:elseif>
             <g:elseif test="${query == 'subscription-x-identifier'}">
                 <th>${message(code:'identifier.label')}</th>
             </g:elseif>
             <g:elseif test="${query == 'subscription-x-memberProvider'}">
-                <th>${message(code:'default.provider.label')}</th>
+                <th>${message(code:'provider.label')}</th>
             </g:elseif>
+            <g:if test="${! (query in ['subscription-x-referenceYear', 'subscription-x-memberReferenceYear'])}">
+                <th>${message(code:'subscription.referenceYear.label')}</th>
+            </g:if>
             <th>${message(code:'subscription.startDate.label')}</th>
             <th>${message(code:'subscription.endDate.label')}</th>
         </tr>
@@ -49,7 +52,7 @@
                                 Org.executeQuery('select oo.org from Subscription s join s.orgRelations oo where s = :sub and oo.roleType in :subscriberRoleTypes',
                                         [sub: sub, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
                                 ).each { o ->
-                                    println g.link( o.name, controller: 'organisation', action: 'show', id: o.id, ) + '<br />'
+                                    println g.link( o.name, controller: 'organisation', action: 'show', id: o.id, target: '_blank') + '<br />'
                                 }
                             %>
                         </td>
@@ -58,7 +61,7 @@
                         <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                             <td>
                                 <%
-                                    println Subscription.executeQuery('select count(s) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',
+                                    println Subscription.executeQuery('select count(*) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',
                                             [parent: sub, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
                                     )[0]
                                 %>
@@ -76,10 +79,13 @@
                     <g:elseif test="${query == 'subscription-x-platform'}">
                     <td>
                         <%
-                            Org.executeQuery('select ro.org from OrgRole ro where ro.sub.id = :id and ro.roleType in (:roleTypes)',
-                                    [id: sub.id, roleTypes: [RDStore.OR_PROVIDER]]
+                            // todo: SubscriptionPackage -> Package -> Provider ?
+                            // todo: SubscriptionPackage -> Package -> Platform -> Provider ?
+                            Provider.executeQuery(
+                                    'select pr.provider from ProviderRole pr where pr.subscription.id = :id order by pr.provider.sortname, pr.provider.name',
+                                    [id: sub.id]
                             ).each { p ->
-                                println g.link( p.name, controller: 'organisation', action: 'show', id: p.id, ) + '<br />'
+                                println g.link( p.name, controller: 'provider', action: 'show', id: p.id, target: '_blank') + '<br />'
                             }
                         %>
                     </td>
@@ -95,15 +101,23 @@
                     <g:elseif test="${query == 'subscription-x-memberProvider'}">
                         <td>
                             <%
-                                Org.executeQuery('select ro.org from OrgRole ro where ro.sub.id = :id and ro.roleType in (:roleTypes)',
-                                        [id: sub.id, roleTypes: [RDStore.OR_PROVIDER]]
+                                // todo: SubscriptionPackage -> Package -> Provider ?
+                                // todo: SubscriptionPackage -> Package -> Platform -> Provider ?
+                                Provider.executeQuery(
+                                        'select pr.provider from ProviderRole pr where pr.subscription.id = :id order by pr.provider.sortname, pr.provider.name',
+                                        [id: sub.id]
                                 ).each { p ->
-                                    println g.link( p.name, controller: 'organisation', action: 'show', id: p.id, ) + '<br />'
+                                    println g.link( p.name, controller: 'provider', action: 'show', id: p.id, target: '_blank') + '<br />'
                                 }
                             %>
                         </td>
                     </g:elseif>
 
+                    <g:if test="${! (query in ['subscription-x-referenceYear', 'subscription-x-memberReferenceYear'])}">
+                        <td>
+                            ${sub.referenceYear}
+                        </td>
+                    </g:if>
                     <td>
                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.startDate}" />
                     </td>

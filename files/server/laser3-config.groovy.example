@@ -15,7 +15,8 @@ aggr_es_indices = [
     "SurveyConfig" : "laser3_survey_configs",
     "SurveyOrg" : "laser3_survey_orgs",
     "Task" : "laser3_tasks",
-    "TitleInstancePackagePlatform" : "laser3_tipps"
+    "TitleInstancePackagePlatform" : "laser3_tipps",
+    "Vendor" : "laser3_vendors"
 ]
 
 dataSource.url      = 'jdbc:postgresql://localhost:5432/laser'
@@ -76,3 +77,4 @@ systemInsightEmails = admin1@localhost,admin2@localhost,admin3@localhost
 
 wekbApiUsername = 'user'
 wekbApiPassword = 'password'
+wekbServerURL   = 'http://localhost2:8080'

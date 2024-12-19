@@ -1,4 +1,4 @@
-<%@ page import="de.laser.remote.ApiSource; de.laser.Platform; de.laser.titles.BookInstance" %>
+<%@ page import="de.laser.wekb.Platform" %>
 
 <table class="ui sortable celled la-js-responsive-table la-table table ignore-floatThead la-bulk-header">
     <thead>
@@ -28,7 +28,7 @@
             <td>${counter++}</td>
             <td>
                 <!-- START TEMPLATE -->
-                <laser:render template="/templates/title_short"
+                <laser:render template="/templates/titles/title_short"
                           model="${[ie: null, tipp: tipp,
                                     showPackage: showPackage, showPlattform: showPlattform, showCompact: true, showEmptyFields: false]}"/>
                 <!-- END TEMPLATE -->

@@ -1,12 +1,12 @@
 <%@ page import="de.laser.storage.RDStore;" %>
-<laser:htmlStart message="default.documents.label" serviceInjection="true"/>
+<laser:htmlStart message="default.documents.label" />
 
     <laser:render template="breadcrumb" model="${[ params:params ]}"/>
     <ui:controlButtons>
       <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
     </ui:controlButtons>
 
-    <ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" visibleOrgRelations="${visibleOrgRelations}">
+    <ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" visibleProviders="${providerRoles}">
         <laser:render template="iconSubscriptionIsChild"/>
         <ui:xEditable owner="${subscription}" field="name" />
     </ui:h1HeaderWithIcon>
@@ -14,7 +14,7 @@
 
     <laser:render template="${customerTypeService.getNavTemplatePath()}" />
 
-    <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
+    <g:if test="${subscription.instanceOf && contextService.getOrg().id == subscription.getConsortium()?.id}">
       <laser:render template="message" />
     </g:if>
 

@@ -2,10 +2,16 @@ package de.laser
 
 import de.laser.annotations.DebugInfo
 import de.laser.auth.User
+import de.laser.cache.EhcacheWrapper
+import de.laser.helper.FilterLogic
+import de.laser.helper.Profiler
 import de.laser.storage.RDStore
 import de.laser.utils.SwissKnife
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
+
+import java.security.MessageDigest
 
 /**
  * This controller manages calls for title listing
@@ -13,6 +19,7 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class TitleController  {
 
+    CacheService cacheService
     ContextService contextService
     ESSearchService ESSearchService
     FilterService filterService
@@ -33,9 +40,9 @@ class TitleController  {
      * Call to the list of all title instances recorded in the system
      * @return the result of {@link #list()}
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport()
     })
     def index() {
         redirect controller: 'title', action: 'list', params: params
@@ -43,60 +50,50 @@ class TitleController  {
 
     /**
      * Lists all recorded title in the app; the result may be filtered
-     * @return a list of {@link TitleInstancePackagePlatform}s
+     * @return a list of {@link de.laser.wekb.TitleInstancePackagePlatform}s
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport()
     })
     def list() {
         log.debug("list : ${params}")
-
+        Profiler prf = new Profiler()
+        prf.setBenchmark('init')
         Map<String, Object> result = [:]
 
         result.user = contextService.getUser()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        if(params.tab){
-            if(params.tab == 'currentTipps'){
-                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-            }else if(params.tab == 'plannedTipps'){
-                params.status = [RDStore.TIPP_STATUS_EXPECTED.id.toString()]
-            }else if(params.tab == 'expiredTipps'){
-                params.status = [RDStore.TIPP_STATUS_RETIRED.id.toString()]
-            }else if(params.tab == 'deletedTipps'){
-                params.status = [RDStore.TIPP_STATUS_DELETED.id.toString()]
-            }else if(params.tab == 'allTipps'){
-                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_EXPECTED.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString(), RDStore.TIPP_STATUS_DELETED.id.toString()]
-            }
-        }
-        else if(params.list('status').size() == 1) {
-            if(params.list('status')[0] == RDStore.TIPP_STATUS_CURRENT.id.toString()){
-                params.tab = 'currentTipps'
-            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_RETIRED.id.toString()){
-                params.tab = 'expiredTipps'
-            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_EXPECTED.id.toString()){
-                params.tab = 'plannedTipps'
-            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_DELETED.id.toString()){
-                params.tab = 'deletedTipps'
-            }
-        }else{
-            if(params.list('status').size() > 1){
-                params.tab = 'allTipps'
-            }else {
-                params.tab = 'currentTipps'
-                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-            }
-        }
-
+        Map ttParams = FilterLogic.resolveTabAndStatusForTitleTabsMenu(params, 'Tipps')
+        if (ttParams.status) { params.status = ttParams.status }
+        if (ttParams.tab)    { params.tab = ttParams.tab }
+        prf.setBenchmark('before tipp query')
         Map<String, Object> query = filterService.getTippQuery(params, [])
         result.filterSet = query.filterSet
+        MessageDigest messageDigest = MessageDigest.getInstance("SHA-256")
+        Map<String, Object> cachingKeys = params.clone()
+        cachingKeys.remove("offset")
+        cachingKeys.remove("max")
+        String checksum = "${result.user.id}_${cachingKeys.entrySet().join('_')}"
+        messageDigest.update(checksum.getBytes())
+        EhcacheWrapper subCache = cacheService.getTTL300Cache("/title/list/subCache/${messageDigest.digest().encodeHex()}")
 
-        List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+        List<Long> titlesList = subCache.get('titleIDs') ?: []
+        if(!titlesList) {
+            prf.setBenchmark('load title IDs, no cache or cache changed')
+            titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+            subCache.put('titleIDs', titlesList)
+        }
 
         if(!params.containsKey('fileformat')) {
             //List counts = TitleInstancePackagePlatform.executeQuery('select new map(count(*) as count, tipp.status as status) '+countQueryString+' group by tipp.status', countQueryParams)
-            List counts = TitleInstancePackagePlatform.executeQuery('select new map(count(*) as count, tipp.status as status) from TitleInstancePackagePlatform tipp where tipp.status != :removed group by tipp.status', [removed: RDStore.TIPP_STATUS_REMOVED])
+            List counts = subCache.get('counts') ?: []
+            if(!counts) {
+                prf.setBenchmark('get counts')
+                counts = TitleInstancePackagePlatform.executeQuery('select new map(count(*) as count, tipp.status as status) from TitleInstancePackagePlatform tipp where tipp.status != :removed group by tipp.status', [removed: RDStore.TIPP_STATUS_REMOVED])
+                subCache.put('counts', counts)
+            }
             result.allTippsCounts = 0
             counts.each { row ->
                 switch (row['status']) {
@@ -132,10 +129,11 @@ class TitleController  {
             result.allTippsCounts = result.currentTippsCounts + result.plannedTippsCounts +  result.expiredTippsCounts + result.deletedTippsCounts
             */
         }
-
+        prf.setBenchmark('before title objects')
         result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: params.sort?: 'sortname', order: params.order]) : []
         result.num_tipp_rows = titlesList.size()
-
+        List bm = prf.stopBenchmark()
+        result.benchMark = bm
         result
     }
 
@@ -143,9 +141,9 @@ class TitleController  {
      * Lists all recorded title in the app; the result may be filtered
      * @return a list of {@link TitleInstancePackagePlatform}s
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])
+    @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
+        ctx.contextService.isInstUser_denySupport()
     })
     def listES() {
         log.debug("titleSearch : ${params}")

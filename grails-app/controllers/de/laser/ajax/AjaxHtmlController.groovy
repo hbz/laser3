@@ -4,15 +4,21 @@ import de.laser.AlternativeName
 import de.laser.CacheService
 import de.laser.ControlledListService
 import de.laser.CustomerTypeService
+import de.laser.DiscoverySystemFrontend
+import de.laser.DiscoverySystemIndex
 import de.laser.DocContext
 import de.laser.GenericOIDService
+import de.laser.HelpService
+import de.laser.OrgSetting
 import de.laser.PendingChangeService
 import de.laser.AddressbookService
-import de.laser.WekbStatsService
+import de.laser.AccessService
+import de.laser.WekbNewsService
 import de.laser.WorkflowService
 import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
+import de.laser.ctrl.OrganisationControllerService
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.remote.ApiSource
 import de.laser.ContextService
@@ -22,16 +28,17 @@ import de.laser.License
 import de.laser.LinksGenerationService
 import de.laser.Org
 import de.laser.OrgRole
+import de.laser.wekb.Provider
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.ReportingFilter
 import de.laser.ReportingGlobalService
 import de.laser.ReportingLocalService
 import de.laser.Subscription
-import de.laser.Address
+import de.laser.addressbook.Address
 import de.laser.Doc
-import de.laser.Person
-import de.laser.PersonRole
+import de.laser.addressbook.Person
+import de.laser.addressbook.PersonRole
 import de.laser.SubscriptionPackage
 import de.laser.SubscriptionService
 import de.laser.storage.BeanStore
@@ -43,8 +50,9 @@ import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
 import de.laser.Task
 import de.laser.TaskService
-import de.laser.TitleInstancePackagePlatform
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.UserSetting
+import de.laser.wekb.Vendor
 import de.laser.annotations.DebugInfo
 import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService
@@ -87,19 +95,23 @@ class AjaxHtmlController {
     CacheService cacheService
     ContextService contextService
     ControlledListService controlledListService
+    CustomerTypeService customerTypeService
     CustomWkhtmltoxService wkhtmltoxService // custom
     GenericOIDService genericOIDService
     GokbService gokbService
+    HelpService helpService
     LicenseControllerService licenseControllerService
     LinksGenerationService linksGenerationService
     MyInstitutionControllerService myInstitutionControllerService
     PendingChangeService pendingChangeService
     ReportingGlobalService reportingGlobalService
     ReportingLocalService reportingLocalService
+    OrganisationControllerService organisationControllerService
     SubscriptionService subscriptionService
     SubscriptionControllerService subscriptionControllerService
     TaskService taskService
-    WekbStatsService wekbStatsService
+    AccessService accessService
+    WekbNewsService wekbNewsService
     WorkflowService workflowService
 
     /**
@@ -123,14 +135,34 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def addObject() {
-        def resultObj, owner
-        String field
+        def resultObj, owner = genericOIDService.resolveOID(params.owner)
         switch(params.object) {
-            case "altname": owner= Org.get(params.owner)
-                resultObj = AlternativeName.construct([org: owner, name: 'Unknown'])
-                field = "name"
+            case "altname": Map<String, Object> config = [name: 'Unknown']
+                if(owner instanceof License)
+                    config.license = owner
+                else if(owner instanceof Org)
+                    config.org = owner
+                else if(owner instanceof Provider)
+                    config.provider = owner
+                else if(owner instanceof Subscription)
+                    config.subscription = owner
+                else if(owner instanceof Vendor)
+                    config.vendor = owner
+                resultObj = AlternativeName.construct(config)
                 if(resultObj) {
-                    render template: '/templates/ajax/newXEditable', model: [wrapper: params.object, ownObj: resultObj, field: field, overwriteEditable: true]
+                    render template: '/templates/ajax/newXEditable', model: [wrapper: params.object, showConsortiaFunctions: contextService.getOrg().isCustomerType_Consortium(), ownObj: resultObj, objOID: genericOIDService.getOID(resultObj), field: "name", overwriteEditable: true]
+                }
+                break
+            case "frontend":
+                resultObj = new DiscoverySystemFrontend([org: owner, frontend: RDStore.GENERIC_NULL_VALUE]).save()
+                if(resultObj) {
+                    render template: '/templates/ajax/newXEditable', model: [wrapper: params.object, ownObj: resultObj, objOID: genericOIDService.getOID(resultObj), field: "frontend", config: RDConstants.DISCOVERY_SYSTEM_FRONTEND, overwriteEditable: true]
+                }
+                break
+            case "index":
+                resultObj = new DiscoverySystemIndex([org: owner, index: RDStore.GENERIC_NULL_VALUE]).save()
+                if(resultObj) {
+                    render template: '/templates/ajax/newXEditable', model: [wrapper: params.object, ownObj: resultObj, objOID: genericOIDService.getOID(resultObj), field: "index", config: RDConstants.DISCOVERY_SYSTEM_INDEX, overwriteEditable: true]
                 }
                 break
             case "coverage": //TODO
@@ -158,8 +190,8 @@ class AjaxHtmlController {
         result.pendingOffset = params.pendingOffset ? params.int("pendingOffset") : result.offset
         def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
         Map<String, Object> pendingChangeConfigMap = [
-                contextOrg: result.institution,
-                consortialView: (result.institution as Org).isCustomerType_Consortium(),
+                contextOrg: contextService.getOrg(),
+                consortialView: contextService.getOrg().isCustomerType_Consortium(),
                 periodInDays:periodInDays,
                 max:result.max,
                 acceptedOffset:result.acceptedOffset,
@@ -181,13 +213,13 @@ class AjaxHtmlController {
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         List activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org and surOrg.finishDate is null AND surConfig.surveyInfo.status = :status) " +
                 " order by surConfig.surveyInfo.endDate",
-                [org: result.institution,
+                [org: contextService.getOrg(),
                  status: RDStore.SURVEY_SURVEY_STARTED])
 
         if (contextService.getOrg().isCustomerType_Consortium_Pro()){
             activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
                     " order by surConfig.surveyInfo.endDate",
-                    [org: result.institution,
+                    [org: contextService.getOrg(),
                      status: RDStore.SURVEY_SURVEY_STARTED])
         }
 
@@ -205,14 +237,14 @@ class AjaxHtmlController {
      * @return the template fragment for the changes
      */
     @Secured(['ROLE_USER'])
-    def wekbChangesFlyout() {
-        log.debug('ajaxHtmlController.wekbChangesFlyout ' + params)
+    def wekbNewsFlyout() {
+        log.debug('ajaxHtmlController.wekbNewsFlyout ' + params)
 
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(null, params)
-        result.wekbChanges = wekbStatsService.getCurrentChanges()
+        result.wekbNews = wekbNewsService.getCurrentNews()
         result.tmplView = 'details'
 
-        render template: '/myInstitution/wekbChanges', model: result
+        render template: '/myInstitution/wekbNews', model: result
     }
 
     //-------------------------------------------------- subscription/show ---------------------------------------------
@@ -224,16 +256,17 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def getLinks() {
         Map<String, Object> result = [user:contextService.getUser(), contextOrg:contextService.getOrg(), subscriptionLicenseLink:params.subscriptionLicenseLink]
+
         def entry = genericOIDService.resolveOID(params.entry)
         result.entry = entry
         result.editable = entry.isEditableBy(result.user)
         if(entry instanceof Subscription) {
             result.subscription = (Subscription) entry
-            result.atConsortialParent = result.contextOrg.id == result.subscription.getConsortia()?.id ? "true" : "false"
+            result.atConsortialParent = contextService.getOrg().id == result.subscription.getConsortium()?.id && !result.subscription.instanceOf ? "true" : "false"
         }
         else if(entry instanceof License) {
             result.license = (License) entry
-            result.atConsortialParent = result.contextOrg == result.license.getLicensingConsortium() ? "true" : "false"
+            result.atConsortialParent = contextService.getOrg() == result.license.getLicensingConsortium() && !result.license.instanceOf ? "true" : "false"
         }
         List<RefdataValue> linkTypes = RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE)
         if(result.subscriptionLicenseLink) {
@@ -251,20 +284,18 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def getPackageData() {
         Map<String,Object> result = [subscription:Subscription.get(params.subscription), curatoryGroups: []], packageMetadata = [:]
-        Org contextOrg = contextService.getOrg()
-        result.contextCustomerType = contextOrg.getCustomerType()
-        result.institution = contextOrg
-        result.showConsortiaFunctions = contextOrg.isCustomerType_Consortium()
-        result.roleLinks = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]) }
+
+        result.contextCustomerType = contextService.getOrg().getCustomerType()
+        result.showConsortiaFunctions = contextService.getOrg().isCustomerType_Consortium()
+        result.roleLinks = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIUM]) }
         result.roleObject = result.subscription
-        result.roleRespValue = 'Specific subscription editor'
+        result.roleRespValue = RDStore.PRS_RESP_SPEC_SUB_EDITOR.value
         result.editmode = result.subscription.isEditableBy(contextService.getUser())
-        result.accessConfigEditable = contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_INST_BASIC) || (contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC) && result.subscription.getSubscriber().id == contextOrg.id)
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        result.accessConfigEditable = contextService.isInstEditor(CustomerTypeService.ORG_INST_BASIC) || (contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_BASIC) && result.subscription.getSubscriberRespConsortia().id == contextService.getOrg().id)
         result.subscription.packages.pkg.gokbId.each { String uuid ->
-            Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: uuid])
-            if (queryResult.warning) {
-                List records = queryResult.warning.result
+            Map queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSearchApiURL(), [uuid: uuid])
+            if (queryResult) {
+                List records = queryResult.result
                 packageMetadata.put(uuid, records[0])
             }
         }
@@ -281,23 +312,22 @@ class AjaxHtmlController {
         Map<String,Object> result = [subscription:Subscription.get(params.subscription)]
 
         result.packages = []
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         result.subscription.packages.each { SubscriptionPackage subscriptionPackage ->
             Map packageInfos = [:]
 
             packageInfos.packageInstance = subscriptionPackage.pkg
 
-            Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: subscriptionPackage.pkg.gokbId])
+            Map queryResult = gokbService.executeQuery(ApiSource.getCurrent().getSearchApiURL(), [uuid: subscriptionPackage.pkg.gokbId])
             if (queryResult.error && queryResult.error == 404) {
                 flash.error = message(code: 'wekb.error.404') as String
-            } else if (queryResult.warning) {
-                List records = queryResult.warning.result
+            } else if (queryResult) {
+                List records = queryResult.result
                 packageInfos.packageInstanceRecord = records ? records[0] : [:]
             }
             result.packages << packageInfos
         }
 
-        render template: '/survey/packages', model: result
+        render template: '/survey/generalPackageData', model: result
     }
 
     /**
@@ -312,53 +342,47 @@ class AjaxHtmlController {
     }
 
     /**
-     * Gets the properties to the given subscription or license
-     * @return the properties view for the respective details view
-     */
-    @Secured(['ROLE_USER'])
-    def getProperties() {
-        Org contextOrg = contextService.getOrg()
-        User user = contextService.getUser()
-        if(params.subscription) {
-            Subscription subscription = Subscription.get(params.subscription)
-            render template: "/subscription/properties", model: [subscription: subscription,
-                                                                 showConsortiaFunctions: subscriptionService.showConsortiaFunctions(contextOrg, subscription),
-                                                                 contextOrg: contextOrg,
-                                                                 editable: subscription.isEditableBy(user)]
-        }
-        else if(params.license) {
-            License license = License.get(params.license)
-            render template: "/license/properties", model: [license: license,
-                                                            showConsortiaFunctions: licenseControllerService.showConsortiaFunctions(license),
-                                                            contextOrg: contextOrg,
-                                                            institution: contextOrg,
-                                                            editable: license.isEditableBy(user)]
-        }
-    }
-
-    /**
      * Generates a list of selectable metrics or access types for the given report types in the statistics filter
      * @return a {@link List} of available metric types
      */
     @Secured(['ROLE_USER'])
     def loadFilterList() {
         Map<String, Object> result = subscriptionControllerService.loadFilterList(params)
-        result.noMultiple = params.noMultiple == 'true'
+        result.multiple = params.multiple ? Boolean.valueOf(params.multiple) : true
         render template: "/templates/filter/statsFilter", model: result
     }
 
     /**
-     * Retrieves a list of provider and agency {@link Org}s for table view
-     * @return the result of {@link de.laser.ControlledListService#getProvidersAgencies(java.util.Map)}
+     * Retrieves a list of {@link Provider}s for table view
+     * @return the result of {@link de.laser.ControlledListService#getProviders(grails.web.servlet.mvc.GrailsParameterMap)}
      */
     @Secured(['ROLE_USER'])
-    def lookupProvidersAgencies() {
-        Map<String, Object> model = [:], result = controlledListService.getProvidersAgencies(params)
-        model.orgList = result.results
+    def lookupProviders() {
+        Map<String, Object> model = [:], result = controlledListService.getProviders(params)
+        model.providerList = result.results
         model.tmplShowCheckbox = true
         model.tmplConfigShow = ['sortname', 'name', 'altname', 'isWekbCurated']
         model.fixedHeader = 'la-ignore-fixed'
-        render template: "/templates/filter/orgFilterTable", model: model
+        render template: "/templates/filter/providerFilterTable", model: model
+    }
+
+    /**
+     * Retrieves a list of {@link Vendor}s for table view
+     * @return the result of {@link de.laser.ControlledListService#getVendors(grails.web.servlet.mvc.GrailsParameterMap)}
+     */
+    @Secured(['ROLE_USER'])
+    def lookupVendors() {
+        Map<String, Object> model = [:], result = controlledListService.getVendors(params)
+        model.vendorList = result.results
+        model.tmplShowCheckbox = true
+        model.tmplConfigShow = ['sortname', 'name', 'isWekbCurated', 'linkVendors']
+        model.fixedHeader = 'la-ignore-fixed'
+        render template: "/templates/filter/vendorFilterTable", model: model
+    }
+
+    def renderMarkdown() {
+        String text = params.text ?: ''
+        render helpService.parseMarkdown2(text)
     }
 
     /**
@@ -366,11 +390,17 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def editNote() {
-        Map<String, Object> result = [:]
-        result.params = params
-        result.noteInstance = Doc.get(params.id)
+        Map<String, Object> result = [ params: params ]
 
-        render template: "/templates/notes/modal_edit", model: result
+        DocContext dctx = DocContext.findById(params.long('dctx'))
+        if (accessService.hasAccessToDocNote(dctx, AccessService.WRITE)) {
+            result.docContext   = dctx
+            result.noteInstance = dctx.owner
+            render template: "/templates/notes/modal_edit", model: result
+        }
+        else {
+            render template: "/templates/generic_modal403", model: result
+        }
     }
 
     /**
@@ -378,11 +408,17 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def readNote() {
-        Map<String, Object> result = [:]
-        result.params = params
-        result.noteInstance = Doc.get(params.id)
+        Map<String, Object> result = [ params: params ]
 
-        render template: "/templates/notes/modal_read", model: result
+        DocContext dctx = DocContext.findById(params.long('dctx'))
+        if (accessService.hasAccessToDocNote(dctx, AccessService.READ)) {
+            result.docContext   = dctx
+            result.noteInstance = dctx.owner
+            render template: "/templates/notes/modal_read", model: result
+        }
+        else {
+            render template: "/templates/generic_modal403", model: result
+        }
     }
 
     /**
@@ -390,9 +426,7 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def createTask() {
-        Org contextOrg = contextService.getOrg()
-        Map<String, Object> result = taskService.getPreconditions(contextOrg)
-        result.contextOrg = contextOrg
+        Map<String, Object> result = taskService.getPreconditions()
 
         render template: "/templates/tasks/modal_create", model: result
     }
@@ -402,25 +436,32 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def editTask() {
-        Map<String, Object> result = [:]
-        result.params = params
-        result.taskInstance = Task.get(params.id)
-        result.contextOrg = contextService.getOrg()
+        Map<String, Object> result = [ params: params ]
+        Task task = Task.get(params.id)
 
-        if (result.taskInstance){
+        if (accessService.hasAccessToTask(task, AccessService.WRITE, true)) {
+            result.taskInstance = task
             render template: "/templates/tasks/modal_edit", model: result
+        }
+        else {
+            render template: "/templates/generic_modal403", model: result
         }
     }
 
+    /**
+     * Opens the task reading modal
+     */
     @Secured(['ROLE_USER'])
     def readTask() {
-        Map<String, Object> result = [:]
-        result.params = params
-        result.taskInstance = Task.get(params.id)
-        result.contextOrg = contextService.getOrg()
+        Map<String, Object> result = [ params: params ]
+        Task task = Task.get(params.id)
 
-        if (result.taskInstance) {
+        if (accessService.hasAccessToTask(task, AccessService.READ, true)) { // TODO ??? WRITE
+            result.taskInstance = task
             render template: "/templates/tasks/modal_read", model: result
+        }
+        else {
+            render template: "/templates/generic_modal403", model: result
         }
     }
 
@@ -441,14 +482,24 @@ class AjaxHtmlController {
                 if(params.orgId)
                     model.orgId = params.orgId
                 else
-                    model.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id = :orgType ) and o.sector.id = :orgSector order by LOWER(o.sortname) nulls last", [orgSector: RDStore.O_SECTOR_HIGHER_EDU.id, orgType: RDStore.OT_INSTITUTION.id])
+                    model.orgList = Org.executeQuery(
+                            "select o from Org o, OrgSetting os where os.org = o and os.key = :ct and os.roleValue in (:roles) order by LOWER(o.sortname) nulls last",
+                            [ct: OrgSetting.KEYS.CUSTOMER_TYPE, roles: customerTypeService.getOrgInstRoles()]
+                    )
                 model.tenant = model.contextOrg.id
                 break
-            case 'addressForProviderAgency':
-                if(params.orgId)
-                    model.orgId = params.orgId
+            case 'addressForProvider':
+                if(params.providerId)
+                    model.providerId = params.providerId
                 else
-                    model.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) ) and o.sector.id = :orgSector order by LOWER(o.sortname) nulls last", [orgSector: RDStore.O_SECTOR_PUBLISHER.id, orgType: [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]])
+                    model.providerList = Provider.executeQuery("from Provider p order by LOWER(p.sortname), LOWER(p.name)")
+                model.tenant = model.contextOrg.id
+                break
+            case 'addressForVendor':
+                if(params.vendorId)
+                    model.vendorId = params.vendorId
+                else
+                    model.vendorList = Vendor.executeQuery("from Vendor v order by LOWER(v.sortname), LOWER(v.name)")
                 model.tenant = model.contextOrg.id
                 break
             default: model.orgId = params.orgId ?: model.contextOrg.id
@@ -478,9 +529,9 @@ class AjaxHtmlController {
             model.modalText = message(code: 'default.new.label', args: [message(code: 'person.address.label')])
         }
         model.modalMsgSave = message(code: 'default.button.create.label')
-        model.url = [controller: 'address', action: 'create']
+        model.url = [controller: 'addressbook', action: 'createAddress']
 
-        render template: "/templates/cpa/addressFormModal", model: model
+        render template: "/addressbook/addressFormModal", model: model
     }
 
     /**
@@ -488,16 +539,14 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def editAddress() {
-        Map<String, Object> model = [:]
-        model.addressInstance = Address.get(params.id)
+        Map<String, Object> model = [
+            addressInstance : Address.get(params.id)
+        ]
 
-        if (model.addressInstance){
+        if (accessService.hasAccessToAddress(model.addressInstance as Address, AccessService.WRITE)) {
             model.modalId = 'addressFormModal'
             String messageCode = 'person.address.label'
             model.typeId = model.addressInstance.type.id
-            /*if(model.addressInstance.prs) {
-                model.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)]) + ' (' + model.addressInstance.prs.toString() + ')'
-            }*/
             if(model.addressInstance.org) {
                 model.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)]) + ' (' + model.addressInstance.org.toString() + ')'
             }
@@ -505,9 +554,12 @@ class AjaxHtmlController {
                 model.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)])
             }
             model.modalMsgSave = message(code: 'default.button.save_changes')
-            model.url = [controller: 'address', action: 'edit']
+            model.url = [controller: 'addressbook', action: 'editAddress']
 
-            render template: "/templates/cpa/addressFormModal", model: model
+            render template: "/addressbook/addressFormModal", model: model
+        }
+        else {
+            render template: "/templates/generic_modal403", model: model
         }
     }
 
@@ -517,17 +569,16 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def createPerson() {
         Map<String, Object> result = [:]
-        result.contextOrg = contextService.getOrg()
-        result.tenant = result.contextOrg
+        result.tenant = contextService.getOrg()
         result.modalId = 'personModal'
         result.presetFunctionType = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
         result.showContacts = params.showContacts == "true" ? true : ''
         result.addContacts = params.showContacts == "true" ? true : ''
-        result.showAddresses = params.showAddresses == "true" ? true : ''
-        result.addAddresses = params.showAddresses == "true" ? true : ''
-        result.org = params.org ? Org.get(Long.parseLong(params.org)) : null
-        result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
-        if(result.contextOrg.isCustomerType_Consortium()){
+        result.org = params.org ? Org.get(params.long('org')) : null
+        result.provider = params.provider ? Provider.get(params.long('provider')) : null
+        result.vendor = params.vendor ? Vendor.get(params.long('vendor')) : null
+        result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_INVOICING_CONTACT, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
+        if (contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()) {
             result.functions << RDStore.PRS_FUNC_GASCO_CONTACT
         }
         result.positions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
@@ -539,22 +590,42 @@ class AjaxHtmlController {
                     result.modalText = message(code: "person.create_new.contactPersonForInstitution.label") + ' (' + result.org.toString() + ')'
                 } else {
                     result.modalText = message(code: "person.create_new.contactPersonForInstitution.label")
-                    result.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id = :orgType ) and o.sector.id = :orgSector order by LOWER(o.sortname)", [orgSector: RDStore.O_SECTOR_HIGHER_EDU.id, orgType: RDStore.OT_INSTITUTION.id])
+                    result.orgList = Org.executeQuery(
+                            "select o from Org o, OrgSetting os where os.org = o and os.key = :ct and os.roleValue in (:roles) order by LOWER(o.sortname)",
+                            [ct: OrgSetting.KEYS.CUSTOMER_TYPE, roles: customerTypeService.getOrgInstRoles()]
+                    )
                 }
                 break
-            case 'contactPersonForProviderAgency':
-            case 'contactPersonForProviderAgencyPublic':
-                result.isPublic    = params.contactFor == 'contactPersonForProviderAgencyPublic'
+            case 'contactPersonForProvider':
+            case 'contactPersonForProviderPublic':
+                result.isPublic    = params.contactFor == 'contactPersonForProviderPublic'
                 Set<RefdataValue> excludes = [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FC_DELIVERY_ADDRESS]
                 if(params.existsWekbRecord)
                     excludes.addAll([RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_METADATA])
                 result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - excludes
                 result.positions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
-                if (result.org) {
-                    result.modalText = message(code: "person.create_new.contactPersonForProviderAgency.label") + ' (' + result.org.toString() + ')'
-                } else {
-                    result.modalText = message(code: "person.create_new.contactPersonForProviderAgency.label")
-                    result.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) ) and o.sector.id = :orgSector order by LOWER(o.sortname)", [orgSector: RDStore.O_SECTOR_PUBLISHER.id, orgType: [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]])
+                if (result.provider) {
+                    result.modalText = message(code: "person.create_new.contactPersonForProvider.label") + ' (' + result.provider.sortname + ')'
+                }
+                else {
+                    result.modalText = message(code: "person.create_new.contactPersonForProvider.label")
+                    result.provList = Provider.executeQuery("from Provider p order by LOWER(p.sortname), LOWER(p.name)")
+                }
+                break
+            case 'contactPersonForVendor':
+            case 'contactPersonForVendorPublic':
+                result.isPublic    = params.contactFor == 'contactPersonForVendorPublic'
+                Set<RefdataValue> excludes = [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FC_DELIVERY_ADDRESS]
+                if(params.existsWekbRecord)
+                    excludes.addAll([RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_METADATA])
+                result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - excludes
+                result.positions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
+                if (result.vendor) {
+                    result.modalText = message(code: "person.create_new.contactPersonForVendor.label") + ' (' + result.vendor.sortname + ')'
+                }
+                else {
+                    result.modalText = message(code: "person.create_new.contactPersonForVendor.label")
+                    result.venList = Vendor.executeQuery("from Vendor v order by LOWER(v.sortname), LOWER(v.name)")
                 }
                 break
             case 'contactPersonForPublic':
@@ -562,10 +633,9 @@ class AjaxHtmlController {
                 result.modalText = message(code: "person.create_new.contactPersonForPublic.label")
                 break
         }
-        result.url = [controller: 'person', action: 'create']
+        result.url = [controller: 'addressbook', action: 'createPerson']
 
-
-        render template: "/templates/cpa/personFormModal", model: result
+        render template: "/addressbook/personFormModal", model: result
     }
 
     /**
@@ -573,30 +643,43 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def editPerson() {
-        Map<String, Object> result = [:]
-        Org contextOrg = contextService.getOrg()
-        result.personInstance = Person.get(params.id)
+        Map<String, Object> result = [
+            personInstance : Person.get(params.id)
+        ]
 
-        if (result.personInstance){
+        if (accessService.hasAccessToPerson(result.personInstance as Person, AccessService.WRITE)) {
             result.org = result.personInstance.getBelongsToOrg()
-            result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
-            if(contextOrg.isCustomerType_Consortium()){
+            result.vendor = PersonRole.executeQuery("select distinct(pr.vendor) from PersonRole as pr where pr.prs = :person ", [person: result.personInstance])[0]
+            result.provider = PersonRole.executeQuery("select distinct(pr.provider) from PersonRole as pr where pr.prs = :person ", [person: result.personInstance])[0]
+            result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_INVOICING_CONTACT, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
+            if (contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()) {
                 result.functions << RDStore.PRS_FUNC_GASCO_CONTACT
             }
             result.positions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
 
             if (result.org || (params.org && params.org instanceof String)) {
-                result.org = params.org ? Org.get(Long.parseLong(params.org)) : result.org
-                List allOrgTypeIds =result.org.getAllOrgTypeIds()
-                if(RDStore.OT_PROVIDER.id in allOrgTypeIds || RDStore.OT_AGENCY.id in allOrgTypeIds){
-                    result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FC_DELIVERY_ADDRESS]
-                    result.positions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
-                    result.modalText = message(code: 'default.edit.label', args: [message(code: "person.contactPersonForProviderAgency.label")]) + ' (' + result.org.toString() + ')'
-                    result.contactPersonForProviderAgencyPublic = result.personInstance.isPublic
-                }else{
-                    result.modalText = message(code: 'default.edit.label', args: [message(code: "person.contactPersonForInstitution.label")]) + ' (' + result.org.toString() + ')'
-                }
-            }else {
+                result.org = params.org ? Org.get(params.long('org')) : result.org
+                result.modalText = message(code: 'default.edit.label', args: [message(code: "person.contactPersonForInstitution.label")]) + ' (' + result.org.toString() + ')'
+            }
+            else if(result.provider != null || params.containsKey('provider')) {
+                Provider prv = Provider.get(params.long('provider'))
+                if(prv)
+                    result.provider = prv
+                result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FC_DELIVERY_ADDRESS]
+                result.positions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
+                result.modalText = message(code: 'default.edit.label', args: [message(code: "person.contactPersonForProvider.label")]) + ' (' + result.provider.toString() + ')'
+                result.contactPersonForProviderPublic = result.personInstance.isPublic
+            }
+            else if(result.vendor != null || params.containsKey('vendor')) {
+                Vendor ven = Vendor.get(params.long('vendor'))
+                if(ven)
+                    result.vendor = ven
+                result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FC_DELIVERY_ADDRESS]
+                result.positions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
+                result.modalText = message(code: 'default.edit.label', args: [message(code: "person.contactPersonForVendor.label")]) + ' (' + result.vendor.toString() + ')'
+                result.contactPersonForVendorPublic = result.personInstance.isPublic
+            }
+            else {
                 result.modalText = message(code: 'default.edit.label', args: [message(code: 'person.label')])
             }
 
@@ -604,15 +687,16 @@ class AjaxHtmlController {
             result.modalMsgSave = message(code: 'default.button.save_changes')
             result.showContacts = params.showContacts == "true" ? true : ''
             result.addContacts = params.showContacts == "true" ? true : ''
-            result.showAddresses = params.showAddresses == "true" ? true : ''
-            result.addAddresses = params.showAddresses == "true" ? true : ''
             result.isPublic = result.personInstance.isPublic
-            result.editable = addressbookService.isPersonEditable(result.personInstance, contextService.getUser())
+//            result.editable = addressbookService.isPersonEditable(result.personInstance, contextService.getUser())
+            result.editable = true // ??
             result.tmplShowDeleteButton = result.editable
-            result.url = [controller: 'person', action: 'edit', id: result.personInstance.id]
-            result.contextOrg = contextService.getOrg()
+            result.url = [controller: 'addressbook', action: 'editPerson', id: result.personInstance.id]
 
-            render template: "/templates/cpa/personFormModal", model: result
+            render template: "/addressbook/personFormModal", model: result
+        }
+        else {
+            render template: "/templates/generic_modal403", model: result
         }
     }
 
@@ -621,15 +705,7 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def contactFields() {
-        render template: "/templates/cpa/contactFields"
-    }
-
-    /**
-     * Retrieves the address fields for an entity modal
-     */
-    @Secured(['ROLE_USER'])
-    def addressFields() {
-        render template: "/templates/cpa/addressFields", model: [multipleAddresses: params.multipleAddresses]
+        render template: "/addressbook/contactFields"
     }
 
     /**
@@ -644,6 +720,23 @@ class AjaxHtmlController {
         }
     }
 
+    /**
+     * Opens the modal for selection title with kbart upload
+     */
+    @Secured(['ROLE_USER'])
+    def kbartSelectionUpload() {
+        log.debug('ajaxHtmlController.kbartSelectionUpload ' + params)
+        Map<String,Object> result = [subscription:Subscription.get(params.id)]
+        result.institution = contextService.getOrg()
+        result.tab = params.tab
+
+        if(params.surveyConfigID){
+            result.surveyConfig = SurveyConfig.findById(params.surveyConfigID)
+        }
+
+        render template: '/subscription/KBARTSelectionUploadFormModal', model: result
+    }
+
     // ----- surveyInfos -----
 
     /**
@@ -652,33 +745,37 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def getSurveyFinishMessage() {
-        Org contextOrg = contextService.getOrg()
         SurveyInfo surveyInfo = SurveyInfo.get(params.id)
         SurveyConfig surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID) : surveyInfo.surveyConfigs[0]
-        SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(contextOrg, surveyConfig)
-        List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(contextOrg, surveyConfig)
+        SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(contextService.getOrg(), surveyConfig)
+        List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(contextService.getOrg(), surveyConfig)
         boolean allResultHaveValue = true
         List<String> notProcessedMandatoryProperties = []
-        surveyResults.each { SurveyResult surre ->
-            SurveyConfigProperties surveyConfigProperties = SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surre.type)
-            if (surveyConfigProperties.mandatoryProperty && !surre.isResultProcessed() && !surveyOrg.existsMultiYearTerm()) {
-                allResultHaveValue = false
-                notProcessedMandatoryProperties << surre.type.getI10n('name')
+        //see ERMS-5815
+        boolean noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)?.refValue == RDStore.YN_NO)
+        if(!noParticipation) {
+            surveyResults.each { SurveyResult surre ->
+                SurveyConfigProperties surveyConfigProperties = SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surre.type)
+                if (surveyConfigProperties.mandatoryProperty && !surre.isResultProcessed() && !surveyOrg.existsMultiYearTerm()) {
+                    allResultHaveValue = false
+                    notProcessedMandatoryProperties << surre.type.getI10n('name')
+                }
             }
         }
-        boolean noParticipation = false
+        /*
         if(surveyInfo.isMandatory) {
             if(surveyConfig && surveyConfig.subSurveyUseForTransfer){
-                noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(contextOrg, surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
+                noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
             }
         }
-            if(notProcessedMandatoryProperties.size() > 0){
-                render message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')])
-            }
-            else if(noParticipation || allResultHaveValue)
-                render message(code: "confirm.dialog.concludeBinding.survey")
-            else if(!noParticipation && !allResultHaveValue)
-                render message(code: "confirm.dialog.concludeBinding.surveyIncomplete")
+        */
+        if(notProcessedMandatoryProperties.size() > 0){
+            render message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')])
+        }
+        else if(noParticipation || allResultHaveValue)
+            render message(code: "confirm.dialog.concludeBinding.survey")
+        else if(!noParticipation && !allResultHaveValue)
+            render message(code: "confirm.dialog.concludeBinding.surveyIncomplete")
     }
 
     // ----- reporting -----
@@ -687,13 +784,13 @@ class AjaxHtmlController {
      * Retrieves the filter history and bookmarks for the given reporting view.
      * If a command is being submitted, the cache is being updated. The updated view is being rendered afterwards
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+        ctx.contextService.isInstUser_denySupport(CustomerTypeService.PERMS_PRO)
     })
     def reporting() {
         Map<String, Object> result = [
-            tab: params.tab
+                tab: params.tab
         ]
 
         String cachePref = ReportingCache.CTX_GLOBAL + '/' + BeanStore.getContextService().getUser().id // user bound
@@ -735,18 +832,18 @@ class AjaxHtmlController {
     /**
      * Retrieves the details for the given charts
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+        ctx.contextService.isInstUser_denySupport(CustomerTypeService.PERMS_PRO)
     })
     def chartDetails() {
         // TODO - SESSION TIMEOUTS
 
         Map<String, Object> result = [
-            token:  params.token,
-            query:  params.query
+                token:  params.token,
+                query:  params.query
         ]
-        result.id = params.id ? params.id != 'null' ? params.id as Long : '' : ''
+        result.id = params.id ? (params.id != 'null' ? params.long('id') : '') : ''
 
         if (params.context == BaseConfig.KEY_MYINST) {
             reportingGlobalService.doChartDetails( result, params ) // manipulates result
@@ -772,9 +869,9 @@ class AjaxHtmlController {
      *     <li>PDF</li>
      * </ul>
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+        ctx.contextService.isInstUser_denySupport(CustomerTypeService.PERMS_PRO)
     })
     def chartDetailsExport() {
 
@@ -938,9 +1035,9 @@ class AjaxHtmlController {
      *     <li>PDF</li>
      * </ul>
      */
-    @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+        ctx.contextService.isInstUser_denySupport(CustomerTypeService.PERMS_PRO)
     })
     def chartQueryExport() {
 
@@ -1017,7 +1114,7 @@ class AjaxHtmlController {
 //                struct = ExportHelper.calculatePdfPageStruct(content, 'chartQueryExport')
 //            }
 //            if (params.contentType == 'image') {
-                // struct = ExportHelper.calculatePdfPageStruct(content, 'chartQueryExport-image') // TODO
+            // struct = ExportHelper.calculatePdfPageStruct(content, 'chartQueryExport-image') // TODO
 
 //                struct = [
 //                        width       : Float.parseFloat( params.imageSize.split(':')[0] ),
@@ -1031,8 +1128,8 @@ class AjaxHtmlController {
 //                    struct.orientation = 'Landscape'
 //                }
 
-                //Map<String, Object> queryCache = BaseQuery.getQueryCache( params.token )
-                //queryCache.put( 'tmpBase64Data', params.imageData )
+            //Map<String, Object> queryCache = BaseQuery.getQueryCache( params.token )
+            //queryCache.put( 'tmpBase64Data', params.imageData )
 //            }
 
             Map<String, Object> model = [
@@ -1070,6 +1167,8 @@ class AjaxHtmlController {
         }
     }
 
+    // ----- workflows -----
+
     /**
      * Call to render the flyout containing the steps of a given workflow
      * @return the template containing the data for the flyout
@@ -1085,7 +1184,7 @@ class AjaxHtmlController {
             String[] cmd = params.cmd.split(':')
 
             if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY] ) {
-                result.putAll( workflowService.executeCmd(params) )
+                result.putAll( workflowService.executeCmd(params) ) // TODO !!!
             }
         }
 //        if (params.info) {
@@ -1106,7 +1205,13 @@ class AjaxHtmlController {
         }
         result.referer = request.getHeader('referer')
 
-        render template: '/templates/workflow/flyout', model: result
+        WfChecklist toCheck = result.clist as WfChecklist
+        if (!accessService.hasAccessToWorkflow(toCheck, AccessService.READ, true)) {
+            render template: "/templates/generic_flyout403"
+        }
+        else {
+            render template: '/templates/workflow/flyout', model: result
+        }
     }
 
     /**
@@ -1129,20 +1234,29 @@ class AjaxHtmlController {
 
             // myInstitution::action:WF_X:id
             // subscription:id:action:WF_X:id
-            if (key[0] in [License.class.name, Subscription.class.name, Org.class.name]) {
+            if (key[0] in [License.class.name, Org.class.name, Provider.class.name, Subscription.class.name, Vendor.class.name]) {
 
                 if (key[0] == License.class.name) {
                     result.targetObject = License.get( key[1] )
                     result.tmplFormUrl  = createLink(controller: 'lic', action: key[2], id: key[1])
                 }
+                else if (key[0] == Org.class.name){
+                    result.targetObject = Org.get( key[1] )
+                    result.tmplFormUrl  = createLink(controller: 'org', action: key[2], id: key[1])
+                }
+                else if (key[0] == Provider.class.name){
+                    result.targetObject = Provider.get( key[1] )
+                    result.tmplFormUrl  = createLink(controller: 'provider', action: key[2], id: key[1])
+                }
                 else if (key[0] == Subscription.class.name) {
                     result.targetObject = Subscription.get( key[1] )
                     result.tmplFormUrl  = createLink(controller: 'subscription', action: key[2], id: key[1])
                 }
-                else {
-                    result.targetObject = Org.get( key[1] )
-                    result.tmplFormUrl  = createLink(controller: 'org', action: key[2], id: key[1])
+                else if (key[0] == Vendor.class.name) {
+                    result.targetObject = Vendor.get( key[1] )
+                    result.tmplFormUrl  = createLink(controller: 'vendor', action: key[2], id: key[1])
                 }
+
             }
             else if (key[0] == 'myInstitution') {
                 result.tmplFormUrl  = createLink(controller: 'myInstitution', action: key[2])
@@ -1159,10 +1273,10 @@ class AjaxHtmlController {
                 result.checkpoint     = WfCheckpoint.get( key[4] )
 
                 if (result.checkpoint.done) {
-                    result.tmplModalTitle = '<i class="icon ' + WorkflowHelper.getCssIconAndColorByStatus( RDStore.WF_TASK_STATUS_DONE ) + '"></i>&nbsp;' + result.checkpoint.title
+                    result.tmplModalTitle = '<i class="' + WorkflowHelper.getCssIconAndColorByStatus( RDStore.WF_TASK_STATUS_DONE ) + '"></i>&nbsp;' + result.checkpoint.title
                 }
                 else {
-                    result.tmplModalTitle = '<i class="icon ' + WorkflowHelper.getCssIconAndColorByStatus( RDStore.WF_TASK_STATUS_OPEN ) + '"></i>&nbsp;' + result.checkpoint.title
+                    result.tmplModalTitle = '<i class="' + WorkflowHelper.getCssIconAndColorByStatus( RDStore.WF_TASK_STATUS_OPEN ) + '"></i>&nbsp;' + result.checkpoint.title
                 }
             }
         }
@@ -1170,8 +1284,16 @@ class AjaxHtmlController {
             result.info = params.info
         }
 
-        render template: '/templates/workflow/modal', model: result
+        WfChecklist toCheck = result.checklist ? result.checklist as WfChecklist : (result.checkpoint as WfCheckpoint).getChecklist()
+        if (!accessService.hasAccessToWorkflow(toCheck, AccessService.READ, true)) {
+            render template: "/templates/generic_modal403"
+        }
+        else {
+            render template: '/templates/workflow/modal', model: result
+        }
     }
+
+    // ----- titles -----
 
     /**
      * Retrieves detailed title information to a given entitlement and opens a modal showing those details
@@ -1180,7 +1302,7 @@ class AjaxHtmlController {
     Map<String,Object> showAllTitleInfos() {
         Map<String, Object> result = [:]
 
-        result.apisources = ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        result.apisources = [ ApiSource.getCurrent() ]
 
         result.tipp = params.tippID ? TitleInstancePackagePlatform.get(params.tippID) : null
         result.ie = params.ieID ? IssueEntitlement.get(params.ieID) : null
@@ -1189,7 +1311,7 @@ class AjaxHtmlController {
         result.showCompact = params.showCompact
         result.showEmptyFields = params.showEmptyFields
 
-        render template: "/templates/title_modal", model: result
+        render template: "/templates/titles/title_modal", model: result
 
     }
 
@@ -1200,7 +1322,7 @@ class AjaxHtmlController {
     Map<String,Object> showAllTitleInfosAccordion() {
         Map<String, Object> result = [:]
 
-        result.apisources = ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        result.apisources = [ ApiSource.getCurrent() ]
 
         result.tipp = params.tippID ? TitleInstancePackagePlatform.get(params.tippID) : null
         result.ie = params.ieID ? IssueEntitlement.get(params.ieID) : null
@@ -1209,118 +1331,76 @@ class AjaxHtmlController {
         result.showCompact = params.showCompact
         result.showEmptyFields = params.showEmptyFields
 
-        render template: "/templates/title_long_accordion", model: result
+        render template: "/templates/titles/title_long_accordion", model: result
 
     }
 
     /**
      * Opens a modal containing a preview of the given document if rights are granted and the file being found.
      * The preview is being generated according to the MIME type of the requested document; the document key is
-     * expected in structure docUUID:docContextID
+     * expected as docContextID
      * @return the template containing a preview of the document (either document viewer or fulltext extract)
      */
     @Secured(['ROLE_USER'])
     def documentPreview() {
-        Map<String, Object> result = [:]
+        Map<String, Object> result = [
+                modalId : 'document-preview-' + params.dctx,
+                modalTitle : message(code: 'template.documents.preview')
+        ]
 
         try {
-            if (params.key) {
-                String[] keys = params.key.split(':')
+            DocContext docCtx = DocContext.findById(params.long('dctx'))
 
-                Doc doc = Doc.findByUuid(keys[0])
-                DocContext docCtx = DocContext.findByIdAndOwner(Long.parseLong(keys[1]), doc)
+            if (docCtx) {
+                if (accessService.hasAccessToDocument(docCtx, AccessService.READ)) {
+                    Doc doc = docCtx.owner
 
-                if (doc && docCtx) {
-                    result.doc = doc
                     result.docCtx = docCtx
+                    result.doc = doc
+                    result.modalTitle = doc.title
 
-                    Closure checkPermission = {
-                        // logic based on /views/templates/documents/card
+                    Map<String, String> mimeTypes = Doc.getPreviewMimeTypes()
+                    if (mimeTypes.containsKey(doc.mimeType)) {
+                        String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
+                        File f = new File(fPath + '/' +  doc.uuid)
 
-                        boolean check = false
-                        long ctxOrgId = contextService.getOrg().id
-
-                        if ( doc.owner.id == ctxOrgId ) {
-                            check = true
-                        }
-                        else if ( docCtx.shareConf ) {
-                            if ( docCtx.shareConf == RDStore.SHARE_CONF_UPLOADER_ORG ) {
-                                check = (doc.owner.id == ctxOrgId)
+                        if (f.exists()) {
+                            if (mimeTypes.get(doc.mimeType) == 'raw'){
+                                result.docBase64 = f.getBytes().encodeBase64()
+                                result.docDataType = doc.mimeType
                             }
-                            if ( docCtx.shareConf == RDStore.SHARE_CONF_UPLOADER_AND_TARGET ) {
-                                check = (doc.owner.id == ctxOrgId) || (docCtx.targetOrg.id == ctxOrgId)
-                            }
-                            if ( docCtx.shareConf == RDStore.SHARE_CONF_CONSORTIUM || docCtx.shareConf == RDStore.SHARE_CONF_ALL ) {
-                                // context based restrictions must be applied
-                                check = true
-                            }
-                        }
-                        else if ( docCtx.sharedFrom ) {
-                            if (docCtx.license) {
-                                docCtx.license.orgRelations.each {
-                                    if (it.org.id == ctxOrgId && it.roleType in [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]) {
-                                        check = true
-                                    }
-                                }
-                            }
-                            else if (docCtx.subscription) {
-                                docCtx.subscription.orgRelations.each {
-                                    if (it.org.id == ctxOrgId && it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER]) {
-                                        check = true
-                                    }
-                                }
-                            }
-                        }
-                        // survey workaround
-                        else if ( docCtx.surveyConfig ) {
-                            Map orgIdMap = docCtx.surveyConfig.getSurveyOrgsIDs()
-                            if (contextService.getOrg().id in orgIdMap.orgsWithSubIDs || contextService.getOrg().id in orgIdMap.orgsWithoutSubIDs) {
-                                check = true
-                            }
-                        }
-                        return check
-                    }
-
-                    if (checkPermission()) {
-                        Map<String, String> mimeTypes = Doc.getPreviewMimeTypes()
-                        if (mimeTypes.containsKey(doc.mimeType)) {
-                            String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
-                            File f = new File(fPath + '/' +  doc.uuid)
-
-                            if (f.exists()) {
-
-                                if (mimeTypes.get(doc.mimeType) == 'raw'){
-                                    result.docBase64 = f.getBytes().encodeBase64()
-                                    result.docDataType = doc.mimeType
-                                }
-                                else if (mimeTypes.get(doc.mimeType) == 'encode') {
-                                    String fCharset = UniversalDetector.detectCharset(f) ?: Charset.defaultCharset()
-                                    result.docBase64 = f.getText(fCharset).encodeAsRaw().getBytes().encodeBase64()
-                                    result.docDataType = 'text/plain;charset=' + fCharset
-                                }
-                                else {
-                                    result.error = 'Unbekannter Fehler'
-                                }
-                                // encodeAsHTML().replaceAll(/\r\n|\r|\n/,'<br />')
+                            else if (mimeTypes.get(doc.mimeType) == 'encode') {
+                                String fCharset = UniversalDetector.detectCharset(f) ?: Charset.defaultCharset()
+                                result.docBase64 = f.getText(fCharset).encodeAsRaw().getBytes().encodeBase64()
+                                result.docDataType = 'text/plain;charset=' + fCharset
                             }
                             else {
-                                result.error = message(code: 'template.documents.preview.fileNotFound') as String
+                                result.error = message(code: 'template.documents.preview.error') as String
                             }
+                            // encodeAsHTML().replaceAll(/\r\n|\r|\n/,'<br />')
                         }
                         else {
-                            result.error = message(code: 'template.documents.preview.unsupportedMimeType') as String
+                            result.error = message(code: 'template.documents.preview.fileNotFound') as String
                         }
                     }
                     else {
-                        result.info = message(code: 'template.documents.preview.forbidden') as String
+                        result.error = message(code: 'template.documents.preview.unsupportedMimeType') as String
                     }
                 }
+                else {
+                    result.warning = message(code: 'template.documents.preview.forbidden') as String
+                }
+            }
+            else {
+                result.error = message(code: 'template.documents.preview.fileNotFound') as String
             }
         }
         catch (Exception e) {
+            result.error = message(code: 'template.documents.preview.error') as String
             log.error e.getMessage()
         }
 
         render template: '/templates/documents/preview', model: result
     }
+
 }

@@ -1,6 +1,6 @@
-<%@ page import="de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Subscription; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.Org; de.laser.CustomerTypeService; de.laser.Doc; de.laser.survey.SurveyOrg;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.helper.Params; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Subscription; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.Org; de.laser.CustomerTypeService; de.laser.Doc; de.laser.survey.SurveyOrg;" %>
 
-<laser:htmlStart message="menu.my.currentSubscriptionsTransfer" serviceInjection="true"/>
+<laser:htmlStart message="menu.my.currentSubscriptionsTransfer" />
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.my.currentSubscriptionsTransfer" class="active"/>
@@ -9,7 +9,7 @@
 <ui:controlButtons>
     <ui:exportDropdown>
         <ui:exportDropdownItem>
-            <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
+            <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.SUBSCRIPTIONS_TRANSFER]"/>
         </ui:exportDropdownItem>
     </ui:exportDropdown>
 </ui:controlButtons>
@@ -19,11 +19,11 @@
 <g:if test="${params.referenceYears}">
     <div class="ui large label la-annual-rings"><g:link action="currentSubscriptionsTransfer"
                                                         params="${[referenceYears: (Integer.parseInt(params.referenceYears).value - 1).toString()]}"
-                                                        class="item"><i class="arrow left icon"
+                                                        class="item"><i class="${Icon.LNK.PREV}"
                                                                         aria-hidden="true"></i></g:link><span
             class="la-annual-rings-text">${params.referenceYears}</span><g:link action="currentSubscriptionsTransfer"
                                                                                 params="${[referenceYears: (Integer.parseInt(params.referenceYears).value + 1).toString()]}"
-                                                                                class="item"><i class="arrow right icon"
+                                                                                class="item"><i class="${Icon.LNK.NEXT}"
                                                                                                 aria-hidden="true"></i></g:link>
     </div>
 </g:if>
@@ -33,14 +33,15 @@
 <ui:filter>
     <g:form action="${actionName}" controller="${controllerName}" method="get" class="ui small form clearing">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
+        <input type="hidden" name="referenceYears" value="${params.referenceYears}"/>
 
         <div class="four fields">
             <% /* 1-1 */ %>
             <div class="field">
                 <label for="search-title">${message(code: 'default.search.text')}
-                    <span data-position="right center" class="la-popup-tooltip la-delay"
+                    <span data-position="right center" class="la-popup-tooltip"
                           data-content="${message(code: 'default.search.tooltip.subscription')}">
-                        <i class="question circle icon"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </label>
 
@@ -53,9 +54,9 @@
             <% /* 1-2 */ %>
             <div class="field">
                 <label for="identifier">${message(code: 'default.search.identifier')}
-                    <span data-position="right center" class="la-popup-tooltip la-delay"
+                    <span data-position="right center" class="la-popup-tooltip"
                           data-content="${message(code: 'default.search.tooltip.subscription.identifier')}">
-                        <i class="question circle icon"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </label>
 
@@ -94,7 +95,7 @@
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}" var="form">
-                        <option <%=(params.list('form').contains(form.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'form').contains(form.id) ? 'selected="selected"' : ''%>
                                 value="${form.id}">
                             ${form.getI10n('value')}
                         </option>
@@ -109,7 +110,7 @@
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
                             var="resource">
-                        <option <%=(params.list('resource').contains(resource.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'resource').contains(resource.id) ? 'selected="selected"' : ''%>
                                 value="${resource.id}">
                             ${resource.getI10n('value')}
                         </option>
@@ -127,7 +128,7 @@
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}" var="subKind">
-                        <option <%=(params.list('subKinds').contains(subKind.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'subKinds').contains(subKind.id) ? 'selected="selected"' : ''%>
                                 value="${subKind.id}">
                             ${subKind.getI10n('value')}
                         </option>
@@ -176,7 +177,7 @@
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}"
                             var="holdingSelection">
-                        <option <%=(params.list('holdingSelection').contains(holdingSelection.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'holdingSelection').contains(holdingSelection.id) ? 'selected="selected"' : ''%>
                                 value="${holdingSelection.id}">
                             ${holdingSelection.getI10n('value')}
                         </option>
@@ -224,7 +225,7 @@
                                         <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
                                         <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox"
                                                value="${subType.id}"
-                                            <g:if test="${params.list('subTypes').contains(subType.id.toString())}">checked=""</g:if>
+                                            <g:if test="${Params.getLongList(params, 'subTypes').contains(subType.id)}">checked=""</g:if>
                                                tabindex="0">
                                     </div>
                                 </div>
@@ -253,8 +254,8 @@
             </g:if>
             <div class="field la-field-right-aligned">
                 <a href="${createLink(controller: controllerName, action: actionName, params: [id: params.id, resetFilter: true, tab: params.tab])}"
-                   class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-                <input type="submit" class="ui primary button" value="${message(code: 'default.button.filter.label')}">
+                   class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+                <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}">
             </div>
 
         </div>
@@ -270,52 +271,54 @@
             <table class="ui compact monitor stackable celled sortable table la-table la-js-responsive-table">
                 <thead>
                 <tr>
-%{--                    <th scope="col" rowspan="3" class="center aligned">
+                   <th scope="col" rowspan="3" class="center aligned">
                         ${message(code: 'sidewide.number')}
-                    </th>--}%
-                    <g:sortableColumn scope="col" rowspan="3" params="${params}" property="providerAgency"
-                                      title="${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}"/>
+                    </th>
+                    <g:sortableColumn scope="col" rowspan="3" params="${params}" property="provider"
+                                      title="${message(code: 'provider.label')}"/>
+
+                    <g:sortableColumn scope="col" rowspan="3" params="${params}" property="vendor"
+                                      title="${message(code: 'vendor.label')}"/>
 
                     <g:sortableColumn scope="col" rowspan="3" params="${params}" property="name"
                                       title="${message(code: 'subscription')}"/>
 
                     <g:sortableColumn scope="col" rowspan="2" class="la-smaller-table-head" params="${params}"
                                       property="startDate"
-                                      title="${message(code: 'default.startDate.label')}"/>
+                                      title="${message(code: 'default.startDate.label.shy')}"/>
 
                     <g:sortableColumn scope="col" rowspan="3" params="${params}" property="manualCancellationDate"
-                                      title="${message(code: 'subscription.manualCancellationDate.label')}"/>
+                                      title="${message(code: 'subscription.manualCancellationDate.label.shy')}"/>
 
                     <th colspan="3" class="la-smaller-table-head center aligned">
                         ${message(code: 'subscription.offer.table.th')}
                     </th>
-
 
                     <th scope="col" rowspan="3" class="center aligned">
                         ${message(code: 'subscription.priceIncreaseInfo.label')}
                     </th>
 
                     <th scope="col" rowspan="3" class="center aligned">
-                        <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'survey.label')}" data-position="top center">
-                            <i class="chart pie large icon"></i>
+                        <a href="#" class="la-popup-tooltip" data-content="${message(code: 'survey.label')}" data-position="top center">
+                            <i class="${Icon.SURVEY} large"></i>
                         </a>
                     </th>
 
                     <th scope="col" rowspan="3" class="center aligned">
-                        <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.survey.evaluation.label')}" data-position="top center">
-                            <i class="comments large icon"></i>
+                        <a href="#" class="la-popup-tooltip" data-content="${message(code: 'subscription.survey.evaluation.label')}" data-position="top center">
+                            <i class="${Icon.ATTR.SURVEY_EVALUTAION} large"></i>
                         </a>
                     </th>
 
                     <th scope="col" rowspan="3" class="center aligned">
-                        <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.survey.cancellation.label')}" data-position="top center">
-                            <i class="times circle large icon"></i>
+                        <a href="#" class="la-popup-tooltip" data-content="${message(code: 'subscription.survey.cancellation.label')}" data-position="top center">
+                            <i class="${Icon.ATTR.SURVEY_CANCELLATION} large"></i>
                         </a>
                     </th>
 
                     <th scope="col" rowspan="3" class="center aligned">
-                        <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.discountScale.label')}" data-position="top center">
-                            <i class="percentage large icon"></i>
+                        <a href="#" class="la-popup-tooltip" data-content="${message(code: 'subscription.discountScale.label')}" data-position="top center">
+                            <i class="${Icon.ATTR.SUBSCRIPTION_DISCOUNT_SCALE} large"></i>
                         </a>
                     </th> %{--Discount Scale--}%
 
@@ -323,14 +326,14 @@
                         Reminder
                     </th>
 
-                    <th colspan="2" class="la-smaller-table-head center aligned">
+                    <th colspan="3" class="la-smaller-table-head center aligned">
                         Renewal
                     </th>
 
                     <th scope="col" rowspan="3" class="center aligned sortable ${params.sort == 'participantTransferWithSurvey' ? ('sorted '+(params.order == 'asc' ? 'desc' : 'asc')) : ''}">
-                        <g:link action="currentSubscriptionsTransfer" params="${params+[sort: 'participantTransferWithSurvey', order: params.order == 'asc' ? 'desc' : 'asc']}" class="la-popup-tooltip la-delay " data-content="${message(code: 'subscription.participantTransferWithSurvey.label')}" data-position="top center">
+                        <g:link action="currentSubscriptionsTransfer" params="${params+[sort: 'participantTransferWithSurvey', order: params.order == 'asc' ? 'desc' : 'asc']}" class="la-popup-tooltip" data-content="${message(code: 'subscription.participantTransferWithSurvey.label')}" data-position="top center">
                             <i class="large icons">
-                                <i class="chart pie icon"></i>
+                                <i class="${Icon.SURVEY}"></i>
                                 <i class="top right corner redo icon"></i>
                             </i>
                         </g:link>
@@ -358,11 +361,14 @@
                     <th scope="col" rowspan="2" class="center aligned two wide">
                         ${message(code: 'subscriptionsManagement.documents')}
                     </th>%{-- Documents--}%
+                    <th scope="col" rowspan="2" class="center aligned two wide">
+                      <g:message code="default.change.label"/>
+                    </th>
                 </tr>
                 <tr>
                     <g:sortableColumn scope="col" rowspan="1" class="la-smaller-table-head" params="${params}"
                                       property="endDate"
-                                      title="${message(code: 'default.endDate.label')}"/>
+                                      title="${message(code: 'default.endDate.label.shy')}"/>
                     <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}"
                                       property="offerRequestedDate"
                                       title="${message(code: 'subscription.offerRequestedDate.table.th')}"/>
@@ -379,27 +385,29 @@
                 <tbody>
                 <g:each in="${subscriptions}" var="s" status="i">
                     <tr>
-%{--                        <td class="center aligned">
+                        <td class="center aligned">
                             ${(params.int('offset') ?: 0) + i + 1}
-                        </td>--}%
+                        </td>
                         <td>
                         <%-- as of ERMS-584, these queries have to be deployed onto server side to make them sortable --%>
-                            <g:each in="${s.providers}" var="org">
-                                <g:link controller="organisation" action="show"
-                                        id="${org.id}">${fieldValue(bean: org, field: "name")}
-                                    <g:if test="${org.sortname}">
+                            <g:each in="${s.providers}" var="provider">
+                                <g:link controller="provider" action="show"
+                                        id="${provider.id}">${fieldValue(bean: provider, field: "name")}
+                                    <g:if test="${provider.sortname}">
                                         <br/>
-                                        (${fieldValue(bean: org, field: "sortname")})
+                                        (${fieldValue(bean: provider, field: "sortname")})
                                     </g:if>
                                 </g:link><br/>
                             </g:each>
-                            <g:each in="${s.agencies}" var="org">
-                                <g:link controller="organisation" action="show" id="${org.id}">
-                                    ${fieldValue(bean: org, field: "name")}
-                                    <g:if test="${org.sortname}">
+                        </td>
+                        <td>
+                            <g:each in="${s.vendors}" var="vendor">
+                                <g:link controller="vendor" action="show" id="${vendor.id}">
+                                    ${fieldValue(bean: vendor, field: "name")}
+                                    <g:if test="${vendor.sortname}">
                                         <br/>
-                                        (${fieldValue(bean: org, field: "sortname")})
-                                    </g:if> (${message(code: 'default.agency.label')})
+                                        (${fieldValue(bean: vendor, field: "sortname")})
+                                    </g:if> (${message(code: 'vendor.label')})
                                 </g:link><br/>
                             </g:each>
                         </td>
@@ -416,7 +424,7 @@
                         <td>
                             <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/><br/>
                             <span class="la-secondHeaderRow"
-                                  data-label="${message(code: 'default.endDate.label')}:"><g:formatDate
+                                  data-label="${message(code: 'default.endDate.label.shy')}:"><g:formatDate
                                     formatName="default.date.format.notime" date="${s.endDate}"/></span>
                         </td>
                         <td>
@@ -428,15 +436,19 @@
                             <ui:xEditable owner="${s}" field="offerRequestedDate" type="date"/>
                         </td>
                         <td>
-                            <button type="button" class="ui icon small button blue la-modern-button" data-ui="modal"
-                                    data-href="${"#modalCreateDocumentOffer" + s.id}"><i aria-hidden="true"
-                                                                                         class="plus small icon"></i>
-                            </button>
-                            <laser:render template="/templates/documents/modal"
-                                          model="${[newModalId: "modalCreateDocumentOffer" + s.id, ownobj: s, owntp: 'subscription']}"/>
+                            <g:if test="${editable}">
+                                <button type="button" class="${Btn.MODERN.SIMPLE} tiny"
+                                        data-ownerid="${s.id}"
+                                        data-ownerclass="${s.class.name}"
+                                        data-doctype="${RDStore.DOC_TYPE_OFFER.value}"
+                                        data-ui="modal"
+                                        data-href="#modalCreateDocument">
+                                    <i aria-hidden="true" class="${Icon.CMD.ADD} small"></i>
+                                </button>
+                            </g:if>
 
                             <%
-                                Set<DocContext> documentSet = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType', [subscription: s, docType: RDStore.DOC_TYPE_OFFER])
+                                Set<DocContext> documentSet = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType and owner.owner = :owner', [subscription: s, docType: RDStore.DOC_TYPE_OFFER, owner: contextService.getOrg()])
                                 documentSet = documentSet.sort { it.owner?.title }
                             %>
                             <g:each in="${documentSet}" var="docctx">
@@ -450,7 +462,7 @@
                                                        value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                                 <g:if test="${supportedMimeType}">
                                                     <a href="#documentPreview"
-                                                       data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
+                                                       data-dctx="${docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
                                                 </g:if>
                                                 <g:else>
                                                     ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
@@ -465,40 +477,40 @@
 
                                                 <g:if test="${!(editable)}">
                                                 <%-- 1 --%>
-                                                    <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                            class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
-                                                            target="_blank"><i class="download small icon"></i></g:link>
+                                                    <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}"
+                                                            class="${Btn.MODERN.SIMPLE} tiny"
+                                                            target="_blank"><i class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
                                                 </g:if>
                                                 <g:else>
-                                                    <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
+                                                    <g:if test="${docctx.owner.owner?.id == contextService.getOrg().id}">
                                                     <%-- 1 --%>
-                                                        <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                                class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
-                                                                target="_blank"><i class="download small icon"></i></g:link>
+                                                        <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}"
+                                                                class="${Btn.MODERN.SIMPLE} tiny"
+                                                                target="_blank"><i class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
 
                                                     <%-- 2 --%>
                                                         <laser:render template="/templates/documents/modal"
                                                                       model="[ownobj: s, owntp: 'subscription', docctx: docctx, doc: docctx.owner]"/>
                                                         <button type="button"
-                                                                class="ui icon blue tiny button la-modern-button"
+                                                                class="${Btn.MODERN.SIMPLE} tiny"
                                                                 data-ui="modal"
                                                                 data-href="#modalEditDocument_${docctx.id}"
                                                                 aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                                            <i class="pencil small icon"></i>
+                                                            <i class="${Icon.CMD.EDIT} small"></i>
                                                         </button>
                                                     </g:if>
 
                                                 <%-- 4 --%>
-                                                    <g:if test="${docctx.owner.owner?.id == contextOrg.id && !docctx.isShared}">
+                                                    <g:if test="${docctx.owner.owner?.id == contextService.getOrg().id && !docctx.isShared}">
                                                         <g:link controller="${ajaxCallController ?: controllerName}"
                                                                 action="deleteDocuments"
-                                                                class="ui icon negative tiny button la-modern-button js-open-confirm-modal"
+                                                                class="${Btn.MODERN.NEGATIVE_CONFIRM} tiny"
                                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                                                 data-confirm-term-how="delete"
                                                                 params='[instanceId: "${s.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                                 role="button"
                                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                            <i class="trash alternate outline small icon"></i>
+                                                            <i class="${Icon.CMD.DELETE} small"></i>
                                                         </g:link>
                                                     </g:if>
                                                 </g:else>%{-- (editable || editable2) --}%
@@ -510,7 +522,7 @@
                             <div class="ui small feed content">
                                 <div class="ui grid summary">
                                     <div class="sixteen wide column">
-                                        <ui:xEditable owner="${s}" field="offerNote"/>
+                                        <ui:xEditable owner="${s}" field="offerNote" validation="maxlength" maxlength="255"/>
                                     </div>
                                 </div>
                             </div>
@@ -535,7 +547,7 @@
                                     <g:formatDate formatName="default.date.format.notime"
                                                   date="${surveyConfig.surveyInfo.startDate}"/><br/>
                                     <span class="la-secondHeaderRow"
-                                          data-label="${message(code: 'default.endDate.label')}:"><g:formatDate
+                                          data-label="${message(code: 'default.endDate.label.shy')}:"><g:formatDate
                                             formatName="default.date.format.notime"
                                             date="${surveyConfig.surveyInfo.endDate}"/></span>
                                 </g:link>
@@ -554,10 +566,11 @@
                                 <g:if test="${finishProcess >= 0}">
                                     <g:link controller="survey" action="surveyEvaluation"
                                             id="${surveyConfig.surveyInfo.id}">
-                                        <g:formatNumber number="${finishProcess}"
+                                        ${finish}/${total}
+                                        (<g:formatNumber number="${finishProcess}"
                                                         type="number"
                                                         maxFractionDigits="2"
-                                                        minFractionDigits="2"/>%
+                                                        minFractionDigits="2"/>%)
                                     </g:link>
                                 </g:if>
                             </td>
@@ -590,9 +603,9 @@
                                     <g:if test="${s.discountScale}">
                                         ${s.discountScale.name} : ${s.discountScale.discount}
                                         <g:if test="${s.discountScale.note}">
-                                            <span data-position="top left" class="la-popup-tooltip la-delay"
+                                            <span data-position="top left" class="la-popup-tooltip"
                                                   data-content="${s.discountScale.note}">
-                                                <i class="info circle icon blue"></i>
+                                                <i class="${Icon.TOOLTIP.INFO} blue"></i>
                                             </span>
                                         </g:if>
                                     </g:if>
@@ -619,6 +632,15 @@
                             <ui:xEditableBoolean owner="${s}" field="reminderSent"/>
                             <br/>
                             <ui:xEditable owner="${s}" field="reminderSentDate" type="date"/>
+                            <br/>
+                            <g:if test="${surveyConfig}">
+                                <g:set var="notfinish"
+                                       value="${SurveyOrg.findAllBySurveyConfigAndFinishDateIsNull(surveyConfig).size()}"/>
+                                <g:link controller="survey" action="surveyEvaluation"
+                                        id="${surveyConfig.surveyInfo.id}" params="[tab: 'participantsViewAllNotFinish']">
+                                    ${notfinish}
+                                </g:link>
+                            </g:if>
                         </td>
 
                         <td class="${s.renewalSent ? 'positive' : 'negative'}">
@@ -627,20 +649,24 @@
                             <ui:xEditable owner="${s}" field="renewalSentDate" type="date"/>
                         </td>
                         <td>
-                            <button type="button" class="ui icon tiny button blue la-modern-button" data-ui="modal"
-                                    data-href="${"#modalCreateDocumentRenewal" + s.id}"><i aria-hidden="true"
-                                                                                           class="plus small icon"></i>
-                            </button>
-                            <laser:render template="/templates/documents/modal"
-                                          model="${[newModalId: "modalCreateDocumentRenewal" + s.id, ownobj: s, owntp: 'subscription']}"/>
+                            <g:if test="${editable}">
+                                <button type="button" class="${Btn.MODERN.SIMPLE} tiny"
+                                        data-ownerid="${s.id}"
+                                        data-ownerclass="${s.class.name}"
+                                        data-doctype="${RDStore.DOC_TYPE_RENEWAL.value}"
+                                        data-ui="modal"
+                                        data-href="#modalCreateDocument">
+                                    <i aria-hidden="true" class="${Icon.CMD.ADD} small"></i>
+                                </button>
+                            </g:if>
 
                             <%
-                                Set<DocContext> documentSet2 = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType', [subscription: s, docType: RDStore.DOC_TYPE_RENEWAL])
+                                Set<DocContext> documentSet2 = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType and owner.owner = :owner', [subscription: s, docType: RDStore.DOC_TYPE_RENEWAL, owner: contextService.getOrg()])
                                 documentSet2 = documentSet2.sort { it.owner?.title }
                             %>
                             <g:each in="${documentSet2}" var="docctx">
                                 <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
-                                    <div class="ui small feed content la-js-dont-hide-this-card">
+                                    <div class="ui small feed content">
                                         <div class="ui grid summary">
                                             <div class="eleven wide column la-column-right-lessPadding">
                                                 <ui:documentIcon doc="${docctx.owner}" showText="false"
@@ -649,7 +675,7 @@
                                                        value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                                 <g:if test="${supportedMimeType}">
                                                     <a href="#documentPreview"
-                                                       data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
+                                                       data-dctx="${docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}</a>
                                                 </g:if>
                                                 <g:else>
                                                     ${docctx.owner.title ?: docctx.owner.filename ?: message(code: 'template.documents.missing')}
@@ -663,40 +689,40 @@
 
                                                 <g:if test="${!(editable)}">
                                                 <%-- 1 --%>
-                                                    <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                            class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
-                                                            target="_blank"><i class="download small icon"></i></g:link>
+                                                    <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}"
+                                                            class="${Btn.MODERN.SIMPLE} tiny"
+                                                            target="_blank"><i class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
                                                 </g:if>
                                                 <g:else>
-                                                    <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
+                                                    <g:if test="${docctx.owner.owner?.id == contextService.getOrg().id}">
                                                     <%-- 1 --%>
-                                                        <g:link controller="docstore" id="${docctx.owner.uuid}"
-                                                                class="ui icon blue tiny button la-modern-button la-js-dont-hide-button"
-                                                                target="_blank"><i class="download small icon"></i></g:link>
+                                                        <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}"
+                                                                class="${Btn.MODERN.SIMPLE} tiny"
+                                                                target="_blank"><i class="${Icon.CMD.DOWNLOAD} small"></i></g:link>
 
                                                     <%-- 2 --%>
                                                         <laser:render template="/templates/documents/modal"
                                                                       model="[ownobj: s, owntp: 'subscription', docctx: docctx, doc: docctx.owner]"/>
                                                         <button type="button"
-                                                                class="ui icon blue tiny button la-modern-button"
+                                                                class="${Btn.MODERN.SIMPLE} tiny"
                                                                 data-ui="modal"
                                                                 data-href="#modalEditDocument_${docctx.id}"
                                                                 aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                                            <i class="pencil small icon"></i>
+                                                            <i class="${Icon.CMD.EDIT} small"></i>
                                                         </button>
                                                     </g:if>
 
                                                 <%-- 4 --%>
-                                                    <g:if test="${docctx.owner.owner?.id == contextOrg.id && !docctx.isShared}">
+                                                    <g:if test="${docctx.owner.owner?.id == contextService.getOrg().id && !docctx.isShared}">
                                                         <g:link controller="${ajaxCallController ?: controllerName}"
                                                                 action="deleteDocuments"
-                                                                class="ui icon negative tiny button la-modern-button js-open-confirm-modal"
+                                                                class="${Btn.MODERN.NEGATIVE_CONFIRM} tiny"
                                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                                                 data-confirm-term-how="delete"
                                                                 params='[instanceId: "${s.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                                 role="button"
                                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                            <i class="trash alternate outline small icon"></i>
+                                                            <i class="${Icon.CMD.DELETE} small"></i>
                                                         </g:link>
                                                     </g:if>
                                                 </g:else>%{-- (editable || editable2) --}%
@@ -705,6 +731,22 @@
                                     </div>
                                 </g:if>
                             </g:each>
+                        </td>
+
+                        <g:set var="countModificationToContactInformationAfterRenewalDoc" value="${surveyConfig ? surveyService.countModificationToContactInformationAfterRenewalDoc(s) : 0}"/>
+
+                        <td class="${surveyConfig ? countModificationToContactInformationAfterRenewalDoc == 0 ? 'positive' : 'negative' : ''}">
+                            <g:if test="${countModificationToContactInformationAfterRenewalDoc > 0}">
+                                <g:link class="ui label triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
+                                        params="[exportController: 'survey', exportAction: 'renewalEvaluation', exportParams: params, clickMeType: ExportClickMeService.SURVEY_RENEWAL_EVALUATION, id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id, modalText: message(code: 'renewalEvaluation.exportRenewal')]">
+                                    <i class="${Icon.CMD.DOWNLOAD}"></i> ${countModificationToContactInformationAfterRenewalDoc}
+                                </g:link>
+                            </g:if>
+                            <g:else>
+                                <g:if test="${surveyConfig}">
+                                    ${countModificationToContactInformationAfterRenewalDoc}
+                                </g:if>
+                            </g:else>
                         </td>
 
                         <td class="${s.participantTransferWithSurvey ? 'positive' : 'negative'}">
@@ -733,6 +775,22 @@
     <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}" max="${max}" total="${num_sub_rows}"/>
 </g:if>
 
-<laser:render template="export/individuallyExportModalSubsTransfer" model="[modalID: 'individuallyExportModal']"/>
+<g:if test="${editable}">
+    <laser:render template="/templates/documents/modal"
+                  model="${[newModalId: "modalCreateDocument", owntp: 'subscription']}"/>
+
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    JSPC.callbacks.modal.onShow.modalCreateDocument = function(trigger) {
+        $('#modalCreateDocument input[name=ownerid]').attr('value', $(trigger).attr('data-ownerid'))
+        $('#modalCreateDocument input[name=ownerclass]').attr('value', $(trigger).attr('data-ownerclass'))
+        $('#modalCreateDocument input[name=ownertp]').attr('value', $(trigger).attr('data-ownertp'))
+        $('#modalCreateDocument select[name=doctype]').dropdown('set selected', $(trigger).attr('data-doctype'))
+    }
+</laser:script>
+
+</g:if>
+
+<g:render template="/clickMe/export/js"/>
 
 <laser:htmlEnd/>

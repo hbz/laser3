@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.Org; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.CustomerTypeService; de.laser.Org; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 <laser:serviceInjection />
 
 <ui:filter>
@@ -6,6 +6,9 @@
         <input type="hidden" name="isSiteReloaded" value="yes"/>
         <g:if test="${license}">
             <input type="hidden" name="id" value="${license.id}"/>
+        </g:if>
+        <g:if test="${packageInstance}">
+            <input type="hidden" name="id" value="${packageInstance.id}"/>
         </g:if>
         <g:if test="${actionName == 'subscriptionsManagement'}">
             <input type="hidden" name="tab" value="${params.tab}"/>
@@ -16,8 +19,8 @@
             <% /* 1-1 */ %>
             <div class="field">
                 <label for="search-title">${message(code: 'default.search.text')}
-                    <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription')}">
-                        <i class="question circle icon"></i>
+                    <span data-position="right center" class="la-popup-tooltip" data-content="${message(code:'default.search.tooltip.subscription')}">
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </label>
 
@@ -30,8 +33,8 @@
             <% /* 1-2 */ %>
             <div class="field">
                 <label for="identifier">${message(code: 'default.search.identifier')}
-                    <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${message(code:'default.search.tooltip.subscription.identifier')}">
-                        <i class="question circle icon"></i>
+                    <span data-position="right center" class="la-popup-tooltip" data-content="${message(code:'default.search.tooltip.subscription.identifier')}">
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </label>
 
@@ -77,7 +80,7 @@
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" var="status">
-                        <option <%=(params.list('status').contains(status.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'status').contains(status.id) ? 'selected="selected"' : ''%>
                         value="${status.id}">
                         ${status.getI10n('value')}
                         </option>
@@ -121,7 +124,7 @@
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}" var="form">
-                        <option <%=(params.list('form').contains(form.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'form').contains(form.id) ? 'selected="selected"' : ''%>
                         value="${form.id}">
                         ${form.getI10n('value')}
                         </option>
@@ -135,7 +138,7 @@
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}" var="resource">
-                        <option <%=(params.list('resource').contains(resource.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'resource').contains(resource.id) ? 'selected="selected"' : ''%>
                         value="${resource.id}">
                         ${resource.getI10n('value')}
                         </option>
@@ -153,7 +156,7 @@
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}" var="subKind">
-                        <option <%=(params.list('subKinds').contains(subKind.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'subKinds').contains(subKind.id) ? 'selected="selected"' : ''%>
                         value="${subKind.id}">
                         ${subKind.getI10n('value')}
                         </option>
@@ -200,7 +203,7 @@
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" var="holdingSelection">
-                        <option <%=(params.list('holdingSelection').contains(holdingSelection.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'holdingSelection').contains(holdingSelection.id) ? 'selected="selected"' : ''%>
                                 value="${holdingSelection.id}">
                             ${holdingSelection.getI10n('value')}
                         </option>
@@ -239,7 +242,7 @@
                                     <div class="ui checkbox">
                                         <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
                                         <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox" value="${subType.id}"
-                                            <g:if test="${params.list('subTypes').contains(subType.id.toString())}"> checked="" </g:if>
+                                            <g:if test="${Params.getLongList(params, 'subTypes').contains(subType.id)}"> checked="" </g:if>
                                                tabindex="0">
                                     </div>
                                 </div>
@@ -267,8 +270,8 @@
                 </div>
             </g:if>
             <div class="field la-field-right-aligned">
-                <a href="${createLink(controller:controllerName,action:actionName,params:[id:params.id,resetFilter:true, tab: params.tab])}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
-                <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}">
+                <a href="${createLink(controller:controllerName,action:actionName,params:[id:params.id,resetFilter:true, tab: params.tab])}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
+                <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.filter.label')}">
             </div>
 
         </div>

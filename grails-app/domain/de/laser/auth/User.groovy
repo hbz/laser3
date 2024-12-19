@@ -25,10 +25,13 @@ class User {
     Date dateCreated
     Date lastUpdated
 
-    boolean enabled         = false
-    boolean accountExpired  = false
-    boolean accountLocked   = false
-    boolean passwordExpired = false
+    Date lastLogin
+    Integer invalidLoginAttempts = 0
+
+    boolean enabled         = false     // administrative
+    boolean accountExpired  = false     // inactivity
+    boolean accountLocked   = false     // too many login attempts
+    boolean passwordExpired = false     // not used
 
     static hasMany      = [ roles: UserRole ]
     static mappedBy     = [ roles: 'user' ]
@@ -37,10 +40,11 @@ class User {
         username    blank: false, unique: true
         password    blank: false, password: true
         display     blank: true, nullable: true
-        email       blank: true, nullable: true
         image       blank: true, nullable: true
         formalOrg                nullable: true
         formalRole               nullable: true
+        lastLogin                nullable: true
+        invalidLoginAttempts     nullable: true
     }
 
     static mapping = {
@@ -63,8 +67,11 @@ class User {
         formalOrg       column: 'usr_formal_org_fk', lazy: false
         formalRole      column: 'usr_formal_role_fk', lazy: false
 
-        lastUpdated     column: 'usr_last_updated'
         dateCreated     column: 'usr_date_created'
+        lastUpdated     column: 'usr_last_updated'
+
+        lastLogin               column: 'usr_last_login'
+        invalidLoginAttempts    column: 'usr_invalid_login_attempts'
 
         roles           batchSize: 10
     }

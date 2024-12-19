@@ -54,13 +54,12 @@
                                              overwriteEditable="${false}"
                                              class="la-overflow la-ellipsis"/>
                             <g:if test="${changedProperty.subscriptionProperty.value}">
-                                <ui:linkWithIcon
-                                        href="${changedProperty.subscriptionProperty.value}"/>
+                                <ui:linkWithIcon href="${changedProperty.subscriptionProperty.value}"/>
                             </g:if>
                         </g:elseif>
                         <g:elseif
                                 test="${changedProperty.subscriptionProperty.type.isRefdataValueType()}">
-                            <span data-position="top left" class="la-popup-tooltip la-delay"
+                            <span data-position="top left" class="la-popup-tooltip"
                                   data-content="${changedProperty.subscriptionProperty.refValue?.getI10n("value")}">
                                 ${changedProperty.subscriptionProperty.refValue?.getI10n("value")}
                             </span>

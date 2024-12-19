@@ -1,10 +1,9 @@
-<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.FormService; de.laser.Subscription;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.FormService; de.laser.Subscription;" %>
 <laser:serviceInjection/>
 <g:if test="${filteredSubscriptions}">
 
     <g:if test="${controllerName == "subscription"}">
         <div class="ui segment">
-%{--            <h3 class="ui header"><g:message code="subscriptionsManagement.subscription" args="${args.superOrgType}"/></h3>--}%
             <laser:render template="/templates/notes/table" model="${[instance: subscription, redirect: actionName]}"/>
         </div>
     </g:if>
@@ -35,7 +34,7 @@
             </div>
         </g:if>
 
-        <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
+        <button class="${Btn.SIMPLE}" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
                 value="newNote">${message(code: 'default.button.create.label')}</button>
 
         </div><!-- .segment -->
@@ -60,6 +59,9 @@
                 <g:if test="${controllerName == "subscription"}">
                     <th>${message(code: 'default.sortname.label')}</th>
                     <th>${message(code: 'subscriptionDetails.members.members')}</th>
+                    <g:if test="${params.showMembersSubWithMultiYear}">
+                        <th>${message(code: 'subscription.referenceYear.label.shy')}</th>
+                    </g:if>
                 </g:if>
                 <g:if test="${controllerName == "myInstitution"}">
                     <th>${message(code: 'default.subscription.label')}</th>
@@ -71,14 +73,14 @@
             <tbody>
             <g:each in="${filteredSubscriptions}" status="i" var="zeile">
                 <g:set var="sub" value="${zeile instanceof Subscription ? zeile : zeile.sub}"/>
-                <g:set var="subscr" value="${zeile instanceof Subscription ? zeile.getSubscriber() : zeile.orgs}"/>
+                <g:set var="subscr" value="${zeile instanceof Subscription ? zeile.getSubscriberRespConsortia() : zeile.orgs}"/>
                 <tr>
                     <g:if test="${editable}">
                         <td>
                             <%-- This whole construct is necessary for that the form validation works!!! --%>
                             <div class="field">
                                 <div class="ui checkbox">
-                                    <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}" checked="false"/>
+                                    <g:checkBox class="selectedSubs" id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}" checked="${selectionCache.containsKey('selectedSubs_'+sub.id)}"/>
                                 </div>
                             </div>
                         </td>
@@ -92,15 +94,14 @@
                             <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
 
                             <g:if test="${sub.isSlaved}">
-                                <span data-position="top right"
-                                      class="la-popup-tooltip la-delay"
-                                      data-content="${message(code: 'license.details.isSlaved.tooltip')}">
-                                    <i class="grey la-thumbtack-regular icon"></i>
-                                </span>
+                                <ui:auditIcon type="auto2" />
                             </g:if>
 
                             <ui:customerTypeProIcon org="${subscr}" />
                         </td>
+                        <g:if test="${params.showMembersSubWithMultiYear}">
+                            <td>${sub.referenceYear}</td>
+                        </g:if>
                     </g:if>
                     <g:if test="${controllerName == "myInstitution"}">
                         <td>
@@ -113,10 +114,10 @@
                     </td>
                     <td class="x">
                         <g:link controller="subscription" action="show" id="${sub.id}"
-                                class="ui icon button blue la-modern-button"
+                                class="${Btn.MODERN.SIMPLE}"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                            <i aria-hidden="true" class="write icon"></i>
+                            <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                         </g:link>
                     </td>
                 </tr>
@@ -147,6 +148,21 @@
         } else {
             $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', false)
         }
+    });
+
+    $(".selectedSubs").change(function() {
+        let selId = $(this).attr("id");
+        $.ajax({
+            url: "<g:createLink controller="ajaxJson" action="updatePaginationCache" />",
+            data: {
+                selId: selId,
+                cacheKeyReferer: "/myInstitution/subscriptionManagement/${params.tab}/${user.id}"
+            }
+        }).done(function(result){
+            console.log("updated cache for "+selId+": "+result.state);
+        }).fail(function(xhr,status,message){
+            console.log("error occurred, consult logs!");
+        });
     });
 
     $('.notes').form({

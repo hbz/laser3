@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn" %>
 
 <g:if test="${editmode}">
     <a role="button" class="ui button ${tmplCss}" data-ui="modal" href="#${tmplModalID}">

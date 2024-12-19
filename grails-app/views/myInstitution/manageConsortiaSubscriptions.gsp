@@ -1,6 +1,6 @@
-<%@ page import="de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 
-<laser:htmlStart message="menu.my.consortiaSubscriptions" serviceInjection="true"/>
+<laser:htmlStart message="menu.my.consortiaSubscriptions" />
 
     <g:set var="entityName" value="${message(code: 'org.label')}"/>
 
@@ -15,7 +15,7 @@
 <ui:controlButtons>
     <ui:exportDropdown>
         <ui:exportDropdownItem>
-            <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
+            <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.CONSORTIA_PARTICIPATIONS]"/>
         </ui:exportDropdownItem>
         <%--
         <ui:exportDropdownItem>
@@ -64,7 +64,7 @@
     </ui:actionsDropdown>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon message="menu.my.consortiaSubscriptions" total="${totalCount}" floated="true" />
+<ui:h1HeaderWithIcon message="menu.my.consortiaSubscriptions" total="${totalSubsCount}" floated="true" />
 
 <ui:messages data="${flash}"/>
 
@@ -74,6 +74,6 @@
 
 <laser:render template="/templates/copyEmailaddresses" model="[orgList: totalMembers]"/>
 
-<laser:render template="export/individuallyExportModalConsortiaParticipations" model="[modalID: 'individuallyExportModal']" />
+<g:render template="/clickMe/export/js"/>
 
 <laser:htmlEnd />

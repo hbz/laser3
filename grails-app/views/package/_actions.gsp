@@ -1,30 +1,18 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.PendingChangeConfiguration; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.PendingChangeConfiguration; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore;" %>
 <laser:serviceInjection/>
 
 <g:set var="user" value="${contextService.getUser()}"/>
 <g:set var="org" value="${contextService.getOrg()}"/>
 
 <ui:actionsDropdown>
-%{--    <g:if test="${(editable || contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC)) && ! ['list'].contains(actionName)}">
-        <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
-        <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />
-    </g:if>
-    <g:if test="${userService.hasFormalAffiliation(user,org,'INST_EDITOR') && ! ['list'].contains(actionName)}">
-        <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
-    </g:if>
-    <g:if test="${(editable || contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC)) && ! ['list'].contains(actionName)}">
-        <div class="divider"></div>
-    </g:if>--}%
-
-    <g:if test="${(editable || contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)) && !['list'].contains(actionName) && packageInstance}">
+    <g:if test="${(editable || contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)) && !['list'].contains(actionName) && packageInstance}">
         <ui:actionsDropdownItem message="package.show.linkToSub" data-ui="modal" href="#linkToSubModal"/>
     </g:if>
 
 %{--    <ui:actionsDropdownItemDisabled controller="package" action="compare" message="menu.public.comp_pkg"/>--}%
-
 </ui:actionsDropdown>
 
-<g:if test="${(editable || contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)) && !['list'].contains(actionName) && packageInstance}">
+<g:if test="${(editable || contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)) && !['list'].contains(actionName) && packageInstance}">
     <ui:modal id="linkToSubModal" contentClass="scrolling" message="package.show.linkToSub" msgSave="${message(code: 'default.button.link.label')}">
 
         <g:form class="ui form" url="[controller: 'package', action: 'processLinkToSub', id: params.id]">
@@ -45,7 +33,7 @@
             <br/>
             <br/>
             <div class="field holdingSelection">
-                <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')} <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="question circle icon la-popup"></i></span></label>
+                <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')} <span class="la-long-tooltip la-popup-tooltip" data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="${Icon.TOOLTIP.HELP} la-popup"></i></span></label>
             </div>
             <div class="two fields holdingSelection">
                 <div class="field">
@@ -54,8 +42,8 @@
                 <g:if test="${org.isCustomerType_Consortium()}">
                     <g:hiddenField name="subOID" value="null"/>
                     <div class="field">
-                        <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherit')}" class="ui icon blue button la-modern-button la-audit-button la-popup-tooltip la-delay" data-inherited="false">
-                            <i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash"></i>
+                        <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherit')}" class="${Btn.MODERN.SIMPLE_TOOLTIP} la-audit-button" data-inherited="false">
+                            <i aria-hidden="true" class="icon la-thumbtack slash"></i>
                         </button>
                     </div>
                 </g:if>
@@ -98,14 +86,14 @@
                         <th class="control-label">
                             <g:message code="subscription.packages.setting.label"/>
                         </th>
-                        <th class="control-label la-popup-tooltip la-delay"
+                        <th class="control-label la-popup-tooltip"
                             data-content="${message(code: "subscription.packages.notification.label")}">
-                            <i class="ui large icon bullhorn"></i>
+                            <i class="large icon bullhorn"></i>
                         </th>
                         <g:if test="${customerTypeService.isConsortium( contextCustomerType )}">
-                            <th class="control-label la-popup-tooltip la-delay"
+                            <th class="control-label la-popup-tooltip"
                                 data-content="${message(code: 'subscription.packages.auditable')}">
-                                <i class="ui large icon thumbtack"></i>
+                                <i class="${Icon.SIG.INHERITANCE} large"></i>
                             </th>
                         </g:if>
                     </tr>
@@ -260,12 +248,3 @@
 
     </ui:modal>
 </g:if>
-
-%{--
-<g:if test="${(editable && contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)) && ! ['list'].contains(actionName)}">
-    <laser:render template="/templates/documents/modal" model="${[ownobj: packageInstance, institution: contextService.getOrg(), owntp: 'pkg']}"/>
-    <laser:render template="/templates/tasks/modal_create" model="${[ownobj:packageInstance, owntp:'pkg']}"/>
-</g:if>
-<g:if test="${userService.hasFormalAffiliation(user,org,'INST_EDITOR') && ! ['list'].contains(actionName)}">
-    <laser:render template="/templates/notes/modal_create" model="${[ownobj: packageInstance, owntp: 'pkg']}"/>
-</g:if>--}%

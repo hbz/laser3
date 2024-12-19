@@ -1,12 +1,12 @@
 package de.laser.properties
 
 import de.laser.Org
-import de.laser.Platform
+import de.laser.wekb.Platform
 import de.laser.RefdataValue
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 
 /**
- * The class's name is what it does: a property (implicitly general) to a {@link de.laser.Platform}.
+ * The class's name is what it does: a property (implicitly general) to a {@link de.laser.wekb.Platform}.
  * The flag whether it is visible by everyone or not is determined by the {@link #isPublic} flag.
  * This flag is particularly important here because platforms are accessible by everyone.
  */
@@ -36,7 +36,7 @@ class PlatformProperty extends AbstractPropertyWithCalculatedLastUpdated {
         stringValue column: 'plp_string_value', type: 'text'
         intValue    column: 'plp_int_value'
         decValue    column: 'plp_dec_value'
-        refValue    column: 'plp_ref_value_rv_fk'
+        refValue    column: 'plp_ref_value_rv_fk', index: 'plp_ref_value_idx'
         urlValue    column: 'plp_url_value'
         note        column: 'plp_note', type: 'text'
         dateValue   column: 'plp_date_value'

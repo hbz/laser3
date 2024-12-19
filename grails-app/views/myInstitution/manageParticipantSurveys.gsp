@@ -1,19 +1,22 @@
-<%@ page import="de.laser.survey.SurveyConfig; de.laser.Org;de.laser.RefdataCategory;de.laser.survey.SurveyInfo;de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem;de.laser.survey.SurveyResult" %>
-<laser:htmlStart message="manageParticipantSurveys.header" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.Org;de.laser.RefdataCategory;de.laser.survey.SurveyInfo;de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem;de.laser.survey.SurveyResult" %>
+<laser:htmlStart message="manageParticipantSurveys.header" />
 
 <ui:breadcrumbs>
     <ui:crumb message="manageParticipantSurveys.header" class="active"/>
 </ui:breadcrumbs>
 <ui:controlButtons>
-    <ui:exportDropdown>
+    <ui:actionsDropdown>
+            <ui:actionsDropdownItem controller="myInstitution" action="manageParticipantSurveys" params="${params + [reminder: true]}" class="item" message="participantsReminder.button"/>
+    </ui:actionsDropdown>
+%{--    <ui:exportDropdown>
         <ui:exportDropdownItem>
             <g:link class="item" controller="myInstitution" action="manageParticipantSurveys"
                     params="${params + [exportXLSX: true]}">${message(code: 'survey.exportSurveys')}</g:link>
         </ui:exportDropdownItem>
-    </ui:exportDropdown>
+    </ui:exportDropdown>--}%
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon message="manageParticipantSurveys.header" total="${countSurveys.values().sum { it }}" floated="true" />
+<ui:h1HeaderWithIcon message="manageParticipantSurveys.header" total="${surveyResultsCount}" floated="true" />
 
 <ui:messages data="${flash}"/>
 
@@ -90,6 +93,34 @@
                                    tabindex="0">
                         </div>
                     </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkPackageSurvey">${message(code: 'surveyconfig.packageSurvey.label')}</label>
+                            <input id="checkPackageSurvey" name="checkPackageSurvey" type="checkbox"
+                                   <g:if test="${params.checkPackageSurvey}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkVendorSurvey">${message(code: 'surveyconfig.vendorSurvey.label')}</label>
+                            <input id="checkVendorSurvey" name="checkVendorSurvey" type="checkbox"
+                                   <g:if test="${params.checkVendorSurvey}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkInvoicingInformation">${message(code: 'surveyconfig.invoicingInformation.label')}</label>
+                            <input id="checkInvoicingInformation" name="checkInvoicingInformation" type="checkbox"
+                                   <g:if test="${params.checkInvoicingInformation}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -98,10 +129,8 @@
         <div class="field la-field-right-aligned">
 
             <div class="field la-field-right-aligned">
-                <a href="${request.forwardURI}"
-                   class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-                <input type="submit" class="ui primary button"
-                       value="${message(code: 'default.button.filter.label')}">
+                <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+                <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}">
             </div>
 
         </div>
@@ -125,7 +154,7 @@
                     <g:set var="oldEditable" value="${editable}"/>
                     <g:set var="editable" value="${false}" scope="request"/>
                     <g:each in="${choosenOrgCPAs}" var="gcp">
-                        <laser:render template="/templates/cpa/person_details"
+                        <laser:render template="/addressbook/person_details"
                                   model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
                     </g:each>
                     <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
@@ -138,43 +167,62 @@
 
 
 <div>
-    <ui:tabs actionName="${actionName}">
-        <ui:tabsItem controller="myInstitution" action="manageParticipantSurveys"
-                        params="${[id: params.id, tab: 'new', name: params.name, validOn: params.validOn, validOnYear: params.validOnYear, type: params.type, mandatory: params.mandatory, noMandatory: params.noMandatory, checkSubSurveyUseForTransfer: params.checkSubSurveyUseForTransfer]}" text="${message(code: "surveys.tabs.new")}" tab="new"
-                        counts="${countSurveys?.new}"/>
-        <ui:tabsItem controller="myInstitution" action="manageParticipantSurveys"
-                        params="${[id: params.id, tab: 'processed', name: params.name, validOn: params.validOn, validOnYear: params.validOnYear, type: params.type, mandatory: params.mandatory, noMandatory: params.noMandatory, checkSubSurveyUseForTransfer: params.checkSubSurveyUseForTransfer]}" text="${message(code: "surveys.tabs.processed")}" tab="processed"
-                        counts="${countSurveys?.processed}"/>
-        <ui:tabsItem controller="myInstitution" action="manageParticipantSurveys"
-                        params="${[id: params.id, tab: 'finish', name: params.name, validOn: params.validOn, validOnYear: params.validOnYear, type: params.type, mandatory: params.mandatory, noMandatory: params.noMandatory, checkSubSurveyUseForTransfer: params.checkSubSurveyUseForTransfer]}" text="${message(code: "surveys.tabs.finish")}" tab="finish"
-                        counts="${countSurveys?.finish}"/>
-        <ui:tabsItem controller="myInstitution" action="manageParticipantSurveys" class="ui red"
-                        countsClass="red"
-                        params="${[id: params.id, tab: 'termination', name: params.name, validOn: params.validOn, validOnYear: params.validOnYear, type: params.type, mandatory: params.mandatory, noMandatory: params.noMandatory, checkSubSurveyUseForTransfer: params.checkSubSurveyUseForTransfer]}" text="${message(code: "surveys.tabs.termination")}"
-                        tab="termination"
-                        counts="${countSurveys?.termination}"/>
-        <ui:tabsItem controller="myInstitution" action="manageParticipantSurveys" class="ui orange" countsClass="orange"
-                        params="${[id: params.id, tab: 'notFinish', name: params.name, validOn: params.validOn, validOnYear: params.validOnYear, type: params.type, mandatory: params.mandatory, noMandatory: params.noMandatory, checkSubSurveyUseForTransfer: params.checkSubSurveyUseForTransfer]}" text="${message(code: "surveys.tabs.notFinish")}" tab="notFinish"
-                        counts="${countSurveys?.notFinish}"/>
-    </ui:tabs>
 
+        <ui:tabs actionName="${actionName}">
+            <ui:tabsItem controller="myInstitution" action="manageParticipantSurveys"
+                         params="${[id: params.id, tab: 'open', name: params.name, validOn: params.validOn, validOnYear: params.validOnYear, type: params.type, mandatory: params.mandatory, noMandatory: params.noMandatory, checkSubSurveyUseForTransfer: params.checkSubSurveyUseForTransfer, checkPackageSurvey: params.checkPackageSurvey]}" text="${message(code: "surveys.tabs.open")}" tab="open"
+                         counts="${countSurveys?.open}"/>
+           %{-- <ui:tabsItem controller="myInstitution" action="manageParticipantSurveys"
+                            params="${[id: params.id, tab: 'new', name: params.name, validOn: params.validOn, validOnYear: params.validOnYear, type: params.type, mandatory: params.mandatory, noMandatory: params.noMandatory, checkSubSurveyUseForTransfer: params.checkSubSurveyUseForTransfer, checkPackageSurvey: params.checkPackageSurvey]}" text="${message(code: "surveys.tabs.new")}" tab="new"
+                            counts="${countSurveys?.new}"/>
+            <ui:tabsItem controller="myInstitution" action="manageParticipantSurveys"
+                            params="${[id: params.id, tab: 'processed', name: params.name, validOn: params.validOn, validOnYear: params.validOnYear, type: params.type, mandatory: params.mandatory, noMandatory: params.noMandatory, checkSubSurveyUseForTransfer: params.checkSubSurveyUseForTransfer, checkPackageSurvey: params.checkPackageSurvey]}" text="${message(code: "surveys.tabs.processed")}" tab="processed"
+                            counts="${countSurveys?.processed}"/>--}%
+            <ui:tabsItem controller="myInstitution" action="manageParticipantSurveys"
+                            params="${[id: params.id, tab: 'finish', name: params.name, validOn: params.validOn, validOnYear: params.validOnYear, type: params.type, mandatory: params.mandatory, noMandatory: params.noMandatory, checkSubSurveyUseForTransfer: params.checkSubSurveyUseForTransfer, checkPackageSurvey: params.checkPackageSurvey]}" text="${message(code: "surveys.tabs.finish")}" tab="finish"
+                            counts="${countSurveys?.finish}"/>
+            <ui:tabsItem controller="myInstitution" action="manageParticipantSurveys" class="ui red"
+                            countsClass="red"
+                            params="${[id: params.id, tab: 'termination', name: params.name, validOn: params.validOn, validOnYear: params.validOnYear, type: params.type, mandatory: params.mandatory, noMandatory: params.noMandatory, checkSubSurveyUseForTransfer: params.checkSubSurveyUseForTransfer, checkPackageSurvey: params.checkPackageSurvey]}" text="${message(code: "surveys.tabs.termination")}"
+                            tab="termination"
+                            counts="${countSurveys?.termination}"/>
+            <ui:tabsItem controller="myInstitution" action="manageParticipantSurveys" class="ui orange" countsClass="orange"
+                            params="${[id: params.id, tab: 'notFinish', name: params.name, validOn: params.validOn, validOnYear: params.validOnYear, type: params.type, mandatory: params.mandatory, noMandatory: params.noMandatory, checkSubSurveyUseForTransfer: params.checkSubSurveyUseForTransfer, checkPackageSurvey: params.checkPackageSurvey]}" text="${message(code: "surveys.tabs.notFinish")}" tab="notFinish"
+                            counts="${countSurveys?.notFinish}"/>
+        </ui:tabs>
+
+<g:form action="createOwnMail" controller="mail" method="post" class="ui form"
+        params="[id: params.id]">
+
+    <g:hiddenField name="objectType" value="${participant.class.name}"/>
+    <g:hiddenField name="originalAction" value="${actionName}"/>
 
     <div class="ui bottom attached tab segment active">
         <table class="ui celled sortable table la-js-responsive-table la-table">
             <thead>
             <tr>
+                <g:if test="${editable && params.tab == 'open' && reminder}">
+                <th>
+                        <g:checkBox name="surveyListToggler" id="surveyListToggler" checked="false"/>
+                </th>
+                </g:if>
                 <th rowspan="2" class="center aligned">
                     ${message(code: 'sidewide.number')}
                 </th>
-                <g:sortableColumn params="${params}" property="surveyInfo.name"
+                <g:sortableColumn params="${params}" property="surInfo.name"
                                   title="${message(code: 'surveyInfo.slash.name')}"/>
-                <g:sortableColumn params="${params}" property="surveyInfo.type"
+                <g:sortableColumn params="${params}" property="surInfo.type"
                                   title="${message(code: 'surveyInfo.type.label')}"/>
-                <g:sortableColumn params="${params}" property="surveyInfo.endDate"
-                                  title="${message(code: 'default.endDate.label')}"/>
+                <g:sortableColumn params="${params}" property="surInfo.endDate"
+                                  title="${message(code: 'default.endDate.label.shy')}"/>
                 <th><g:message code="surveyInfo.finished"/></th>
                 <g:if test="${params.tab == 'finish'}">
                     <th><g:message code="surveyInfo.finishedDate"/></th>
+                </g:if>
+                <g:if test="${params.tab == 'open'}">
+                    <th>
+                        ${message(code: 'surveyOrg.reminderMailDate')}
+                    </th>
                 </g:if>
                 <th class="la-action-info">${message(code: 'default.actions.label')}</th>
             </tr>
@@ -189,15 +237,20 @@
                        value="${surveyConfig.surveyInfo}"/>
 
                 <tr>
+                    <g:if test="${editable && params.tab == 'open' && reminder}">
+                        <td>
+                            <g:checkBox name="selectedSurveys" value="${surveyInfo.id}" checked="false"/>
+                        </td>
+                    </g:if>
                     <td class="center aligned">
                         ${(params.int('offset') ?: 0) + i + 1}
                     </td>
                     <td>
                         <div class="la-flexbox">
                             <g:if test="${surveyConfig?.subSurveyUseForTransfer}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                       data-content="${message(code: "surveyconfig.subSurveyUseForTransfer.label.info2")}">
-                                    <i class="icon pie chart la-list-icon"></i>
+                                    <i class="${Icon.SURVEY} la-list-icon"></i>
                                 </span>
                             </g:if>
                             <g:link controller="survey" action="show" id="${surveyInfo.id}" class="ui ">
@@ -211,9 +264,9 @@
                         </div>
 
                         <g:if test="${surveyInfo.isMandatory}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                            <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                   data-content="${message(code: "surveyInfo.isMandatory.label.info2")}">
-                                <i class="yellow icon exclamation triangle"></i>
+                                <i class="${Icon.TOOLTIP.IMPORTANT} yellow"></i>
                             </span>
                         </g:if>
                     </td>
@@ -222,22 +275,28 @@
                     </td>
 
                     <td class="center aligned">
-                        <uiSurvey:finishIcon participant="${Org.get(params.id)}" surveyConfig="${surveyConfig}" surveyOwnerView="${true}"/>
+                        <uiSurvey:finishIcon participant="${participant}" surveyConfig="${surveyConfig}" surveyOwnerView="${true}"/>
                     </td>
                     <g:if test="${params.tab == 'finish'}">
                         <td class="center aligned">
-                            <uiSurvey:finishDate participant="${Org.get(params.id)}" surveyConfig="${surveyConfig}"/>
+                            <uiSurvey:finishDate participant="${participant}" surveyConfig="${surveyConfig}"/>
+                        </td>
+                    </g:if>
+                    <g:if test="${params.tab == 'open'}">
+                        <td>
+                            <g:set var="surveyOrg" value="${SurveyOrg.findByOrgAndSurveyConfig(participant, surveyConfig)}"/>
+                            <ui:xEditable owner="${surveyOrg}" type="date" field="reminderMailDate"/>
                         </td>
                     </g:if>
                     <td>
-                        <span class="la-popup-tooltip la-delay"
+                        <span class="la-popup-tooltip"
                               data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                             <g:link controller="survey" action="evaluationParticipant"
                                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]"
-                                    class="ui icon button blue la-modern-button"
+                                    class="${Btn.MODERN.SIMPLE}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="write icon"></i>
+                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                             </g:link>
                         </span>
                     </td>
@@ -246,7 +305,25 @@
 
             </g:each>
         </table>
+        <g:if test="${editable && params.tab == 'open' && reminder}">
+            <div class="eight wide field" style="text-align: left;">
+                <button name="openOption" type="submit" value="ReminderMail" class="${Btn.SIMPLE}">
+                    ${message(code: 'openParticipantsAgain.reminder')}
+                </button>
+            </div>
+        </g:if>
     </div>
+</g:form>
 </div>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('#surveyListToggler').click(function () {
+        if ($(this).prop('checked')) {
+            $("tr[class!=disabled] input[name=selectedSurveys]").prop('checked', true)
+        } else {
+            $("tr[class!=disabled] input[name=selectedSurveys]").prop('checked', false)
+        }
+    })
+</laser:script>
 
 <laser:htmlEnd />

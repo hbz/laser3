@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.reporting.export.LocalExportHelper;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.utils.LocaleUtils; de.laser.reporting.export.LocalExportHelper;" %>
 <laser:serviceInjection />
 <%
     String lang = (LocaleUtils.getCurrentLang() == 'en') ? 'en' : 'de'
@@ -62,18 +62,34 @@
             ],
             'timeline-entitlement' : [
                     'de' : [
-                            'Die Abfrage visualisiert die zeitliche Entwicklung des Bestands für diese Lizenz',
+                            'Die Abfrage visualisiert die zeitliche Entwicklung der Paketinhalte für diese Lizenz',
                             'Gelistet werden alle relevanten Lizenzen (referenzierte Vorgänger, bzw. Nachfolger) mit ihren jeweiligen Datumsgrenzen. Für jede Lizenz sind mögliche Veränderungen, bezogen auf den Vorgänger, wie folgt erkennbar:',
                             'Titel hinzugefügt',
                             'Titel entfernt',
-                            'Aktueller Bestand'
+                            'Aktuelle Titel'
                     ],
                     'en' : [
                             'The query visualizes the development of the entitlements for this subscription over time',
                             'All relevant subscriptions (referenced predecessors or successors) are listed with their respective date limits. For each subscription, possible changes in relation to the predecessor can be identified as follows:',
                             'Title added',
                             'Title removed',
-                            'Current entitlements'
+                            'Current Titles'
+                    ]
+            ],
+            'timeline-package' : [
+                    'de' : [
+                            'Die Abfrage visualisiert die zeitliche Entwicklung relevanter Pakete für diese Lizenz',
+                            'Gelistet werden alle relevanten Lizenzen (referenzierte Vorgänger, bzw. Nachfolger) mit ihren jeweiligen Datumsgrenzen. Für jede Lizenz sind mögliche Veränderungen, bezogen auf den Vorgänger, wie folgt erkennbar:',
+                            'Pakete hinzugefügt',
+                            'Pakete entfernt',
+                            'Aktuelle Pakete'
+                    ],
+                    'en' : [
+                            'The query visualizes the development of the packages relevant to this subscription over time',
+                            'All relevant subscriptions (referenced predecessors or successors) are listed with their respective date limits. For each subscription, possible changes in relation to the predecessor can be identified as follows:',
+                            'Packages added',
+                            'Packages removed',
+                            'Current Packages'
                     ]
             ],
             'timeline-annualMember-subscription' : [
@@ -105,9 +121,9 @@
             ${text['timeline-member'][lang][1]}
         </p>
         <p>
-            <i class="icon circle green"></i> ${text['timeline-member'][lang][2]}, <br />
-            <i class="icon circle red"></i> ${text['timeline-member'][lang][3]}, <br />
-            <i class="icon circle blue"></i> ${text['timeline-member'][lang][4]}
+            <i class="${Icon.SYM.CIRCLE} green"></i> ${text['timeline-member'][lang][2]}, <br />
+            <i class="${Icon.SYM.CIRCLE} red"></i> ${text['timeline-member'][lang][3]}, <br />
+            <i class="${Icon.SYM.CIRCLE} blue"></i> ${text['timeline-member'][lang][4]}
         </p>
     </div>
     <div class="help-section" data-help-section="timeline-member-cost">
@@ -118,10 +134,10 @@
             ${text['timeline-member-cost'][lang][1]}
         </p>
         <p>
-            <i class="icon circle blue"></i> ${text['timeline-member-cost'][lang][2]}, <br />
-            <i class="icon circle green"></i> ${text['timeline-member-cost'][lang][3]}, <br />
-            <i class="icon circle orange"></i> ${text['timeline-member-cost'][lang][4]}, <br />
-            <i class="icon circle yellow"></i> ${text['timeline-member-cost'][lang][5]}
+            <i class="${Icon.SYM.CIRCLE} blue"></i> ${text['timeline-member-cost'][lang][2]}, <br />
+            <i class="${Icon.SYM.CIRCLE} green"></i> ${text['timeline-member-cost'][lang][3]}, <br />
+            <i class="${Icon.SYM.CIRCLE} orange"></i> ${text['timeline-member-cost'][lang][4]}, <br />
+            <i class="${Icon.SYM.CIRCLE} yellow"></i> ${text['timeline-member-cost'][lang][5]}
         </p>
     </div>
     <div class="help-section" data-help-section="timeline-participant-cost">
@@ -132,10 +148,10 @@
             ${text['timeline-participant-cost'][lang][1]}
         </p>
         <p>
-            <i class="icon circle blue"></i> ${text['timeline-participant-cost'][lang][2]}, <br />
-            <i class="icon circle green"></i> ${text['timeline-participant-cost'][lang][3]}, <br />
-            <i class="icon circle orange"></i> ${text['timeline-participant-cost'][lang][4]}, <br />
-            <i class="icon circle yellow"></i> ${text['timeline-participant-cost'][lang][5]}
+            <i class="${Icon.SYM.CIRCLE} blue"></i> ${text['timeline-participant-cost'][lang][2]}, <br />
+            <i class="${Icon.SYM.CIRCLE} green"></i> ${text['timeline-participant-cost'][lang][3]}, <br />
+            <i class="${Icon.SYM.CIRCLE} orange"></i> ${text['timeline-participant-cost'][lang][4]}, <br />
+            <i class="${Icon.SYM.CIRCLE} yellow"></i> ${text['timeline-participant-cost'][lang][5]}
         </p>
     </div>
     <div class="help-section" data-help-section="timeline-entitlement">
@@ -146,9 +162,22 @@
             ${text['timeline-entitlement'][lang][1]}
         </p>
         <p>
-            <i class="icon circle green"></i> ${text['timeline-entitlement'][lang][2]}, <br />
-            <i class="icon circle red"></i> ${text['timeline-entitlement'][lang][3]}, <br />
-            <i class="icon circle blue"></i> ${text['timeline-entitlement'][lang][4]}
+            <i class="${Icon.SYM.CIRCLE} green"></i> ${text['timeline-entitlement'][lang][2]}, <br />
+            <i class="${Icon.SYM.CIRCLE} red"></i> ${text['timeline-entitlement'][lang][3]}, <br />
+            <i class="${Icon.SYM.CIRCLE} blue"></i> ${text['timeline-entitlement'][lang][4]}
+        </p>
+    </div>
+    <div class="help-section" data-help-section="timeline-package">
+        <p class="ui header">
+            ${text['timeline-package'][lang][0]}
+        </p>
+        <p>
+            ${text['timeline-package'][lang][1]}
+        </p>
+        <p>
+            <i class="${Icon.SYM.CIRCLE} green"></i> ${text['timeline-package'][lang][2]}, <br />
+            <i class="${Icon.SYM.CIRCLE} red"></i> ${text['timeline-package'][lang][3]}, <br />
+            <i class="${Icon.SYM.CIRCLE} blue"></i> ${text['timeline-package'][lang][4]}
         </p>
     </div>
     <div class="help-section" data-help-section="timeline-annualMember-subscription">
@@ -158,14 +187,26 @@
         <p>
             ${text['timeline-annualMember-subscription'][lang][1]}
         </p>
+%{--        <p>--}%
+%{--            <g:if test="${lang == 'de'}">--}%
+%{--                Start- und Enddatum <strong>dieser Lizenz</strong> werden bei der Abfrage nicht beachtet, <br />--}%
+%{--            </g:if>--}%
+%{--            <g:if test="${lang == 'en'}">--}%
+%{--                Start and end dates <strong>from this subscription</strong> are ignored when querying, <br />--}%
+%{--            </g:if>--}%
+%{--            ${text['timeline-annualMember-subscription'][lang][3]}--}%
+%{--        </p>--}%
         <p>
             <g:if test="${lang == 'de'}">
-                Start- und Enddatum <strong>in dieser Lizenz</strong> werden bei der Abfrage nicht beachtet; <br />
+                Einrichtungslizenzen ohne Enddatum werden <strong>zusätzlich</strong> in der Gruppe <i class="${Icon.SYM.CIRCLE} teal"></i><strong>* ohne Ablauf</strong> gelistet. <br />
+                Einrichtungslizenzen ohne Startdatum werden <strong>exklusive</strong> in der Gruppe <i class="${Icon.SYM.CIRCLE} pink"></i><strong>* ohne Startdatum</strong> gelistet. <br />
+                Einrichtungslizenzen ohne Angabe von Start- und Enddatum werden <strong>exklusive</strong> in der Gruppe <i class="${Icon.SYM.CIRCLE} pink"></i><strong>* keine Angabe</strong> gelistet. <br />
             </g:if>
             <g:if test="${lang == 'en'}">
-                Start and end dates <strong>in this subscription</strong> are ignored when querying; <br />
+                Participant subscriptions without an end date are <strong>additionally</strong> listed in the group <i class="${Icon.SYM.CIRCLE} teal"></i><strong>* no End date</strong>. <br />
+                Participant subscriptions without a start date will be <strong>exclusive</strong> listed in the group <i class="${Icon.SYM.CIRCLE} pink"></i><strong>* no Start date</strong>. <br />
+                Participant subscriptions without a start and end date will be <strong>exclusive</strong> listed in the group <i class="${Icon.SYM.CIRCLE} pink"></i><strong>* no Information</strong>. <br />
             </g:if>
-            ${text['timeline-annualMember-subscription'][lang][3]}
         </p>
     </div>
 

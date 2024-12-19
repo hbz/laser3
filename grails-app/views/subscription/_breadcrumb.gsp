@@ -11,13 +11,3 @@
         ${message(code:'subscription.compare.label')}
     </g:if>
 </ui:breadcrumbs>
-
-<g:if test="${actionName == 'compare'}">
-    <ui:controlButtons>
-        <ui:exportDropdown>
-            <ui:exportDropdownItem>
-                <g:link class="item" action="compare" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
-            </ui:exportDropdownItem>
-        </ui:exportDropdown>
-    </ui:controlButtons>
-</g:if>

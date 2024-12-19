@@ -2,6 +2,9 @@ package de.laser.reporting.report.local
 
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 
+/**
+ * Container class for the report configurations holding for each subscription type
+ */
 class SubscriptionXCfg {
 
     static Map<String, Object> CONFIG = [
@@ -38,6 +41,11 @@ class SubscriptionXCfg {
                                             detailsTemplate : 'timeline/entitlement',
                                             chartTemplate   : 'timeline/1axis3values',
                                             chartLabels     : [ 'entitlement.1', 'entitlement.2', 'entitlement.3' ]
+                                    ],
+                                    'timeline-package' : [
+                                            detailsTemplate : 'timeline/package',
+                                            chartTemplate   : 'timeline/1axis3values',
+                                            chartLabels     : [ 'package.1', 'package.2', 'package.3' ]
                                     ]
                             ]
                     ]
@@ -78,6 +86,11 @@ class SubscriptionXCfg {
                                             detailsTemplate : 'timeline/entitlement',
                                             chartTemplate   : 'timeline/1axis3values',
                                             chartLabels     : [ 'entitlement.1', 'entitlement.2', 'entitlement.3' ]
+                                    ],
+                                    'timeline-package' : [
+                                            detailsTemplate : 'timeline/package',
+                                            chartTemplate   : 'timeline/1axis3values',
+                                            chartLabels     : [ 'package.1', 'package.2', 'package.3' ]
                                     ]
                             ]
                     ]
@@ -94,7 +107,6 @@ class SubscriptionXCfg {
                             default: [
                                     member : [
                                             'member-customerType' :     [ 'generic.org.customerType' ],
-                                            'member-orgType' :          [ 'generic.org.orgType' ],
                                             //'member-legalInfo' : [ '@' ],
                                             'member-libraryNetwork' :   [ 'generic.org.libraryNetwork' ],
                                             'member-libraryType' :      [ 'generic.org.libraryType' ],
@@ -137,7 +149,17 @@ class SubscriptionXCfg {
                                             chartTemplate   : 'timeline/1axis3values',
                                             chartLabels     : [ 'entitlement.1', 'entitlement.2', 'entitlement.3' ]
                                     ],
+                                    'timeline-package' : [
+                                            detailsTemplate : 'timeline/package',
+                                            chartTemplate   : 'timeline/1axis3values',
+                                            chartLabels     : [ 'package.1', 'package.2', 'package.3' ]
+                                    ],
                                     'timeline-annualMember-subscription' : [
+                                            detailsTemplate : 'timeline/subscription',
+                                            chartTemplate   : 'timeline/annualMember',
+                                            chartLabels     : [ 'annualMember-subscription' ]
+                                    ],
+                                    'timeline-referenceYearMember-subscription' : [
                                             detailsTemplate : 'timeline/subscription',
                                             chartTemplate   : 'timeline/annualMember',
                                             chartLabels     : [ 'annualMember-subscription' ]
@@ -181,6 +203,11 @@ class SubscriptionXCfg {
                                             detailsTemplate : 'timeline/entitlement',
                                             chartTemplate   : 'timeline/1axis3values',
                                             chartLabels     : [ 'entitlement.1', 'entitlement.2', 'entitlement.3' ]
+                                    ],
+                                    'timeline-package' : [
+                                            detailsTemplate : 'timeline/package',
+                                            chartTemplate   : 'timeline/1axis3values',
+                                            chartLabels     : [ 'package.1', 'package.2', 'package.3' ]
                                     ]
                             ],
                     ]

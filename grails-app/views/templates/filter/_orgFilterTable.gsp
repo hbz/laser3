@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.remote.ApiSource; de.laser.AlternativeName" %>
+<%@ page import="de.laser.addressbook.PersonRole; de.laser.addressbook.Contact; de.laser.wekb.Package; de.laser.wekb.Vendor; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyInfo; de.laser.utils.AppUtils; de.laser.convenience.Marker; java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.remote.ApiSource; de.laser.AlternativeName; de.laser.RefdataCategory;" %>
 <laser:serviceInjection/>
 <g:if test="${'surveySubCostItem' in tmplConfigShow}">
     <g:set var="oldCostItem" value="${0.0}"/>
@@ -7,7 +7,7 @@
     <g:set var="sumOldCostItem" value="${0.0}"/>
 </g:if>
 
-<g:if test="${'surveyCostItem' in tmplConfigShow}">
+<g:if test="${'surveyCostItem' in tmplConfigShow || 'surveyCostItemPackage' in tmplConfigShow}">
     <g:set var="sumNewCostItem" value="${0.0}"/>
     <g:set var="sumSurveyCostItem" value="${0.0}"/>
     <g:set var="sumNewCostItemAfterTax" value="${0.0}"/>
@@ -15,7 +15,7 @@
 </g:if>
 
 <g:if test="${['platform', 'altname'].any { String tmplConfig -> tmplConfig in tmplConfigShow }}">
-    <g:set var="apiSource" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
+    <g:set var="apiSource" value="${ApiSource.getCurrent()}"/>
 </g:if>
 
 <table id="${tableID ?: ''}" class="ui sortable celled la-js-responsive-table la-table table ${fixedHeader ?: ''}">
@@ -35,17 +35,14 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('lineNumber')}">
                 <th>${message(code: 'sidewide.number')}</th>
             </g:if>
-
             <g:if test="${tmplConfigItem.equalsIgnoreCase('sortname')}">
-                <g:sortableColumn title="${message(code: 'org.sortname.label')}"
-                                  property="lower(o.sortname)" params="${request.getParameterMap()}"/>
+                <g:sortableColumn title="${message(code: 'org.sortname.label')}" property="lower(o.sortname)" params="${request.getParameterMap()}"/>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
-                <g:sortableColumn title="${message(code: 'org.fullName.label')}" property="lower(o.name)"
-                                  params="${request.getParameterMap()}"/>
+                <g:sortableColumn title="${message(code: 'org.fullName.label')}" property="lower(o.name)" params="${request.getParameterMap()}"/>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('altname')}">
-                <th>${message(code: 'org.altname.label')}</th>
+                <th>${message(code: 'altname.plural')}</th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('mainContact')}">
                 <th>${message(code: 'org.mainContact.label')}</th>
@@ -53,16 +50,13 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('hasInstAdmin')}">
                 <th>${message(code: 'org.hasInstAdmin.label')}</th>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('isWekbCurated')}">
-                <th>${message(code: 'org.isWekbCurated.label')}</th>
-            </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('status')}">
                 <th>${message(code: 'default.status.label')}</th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('legalInformation')}">
                 <th class="la-no-uppercase">
-                    <span class="la-popup-tooltip la-delay" data-content="${message(code: 'org.legalInformation.tooltip')}">
-                        <i class="handshake outline icon"></i>
+                    <span class="la-popup-tooltip" data-content="${message(code: 'org.legalInformation.tooltip')}">
+                        <i class="${Icon.ATTR.ORG_LEGAL_INFORMATION}"></i>
                     </span>
                 </th>
             </g:if>
@@ -93,11 +87,8 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('platform')}">
                 <th>${message(code: 'platform')}</th>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('type')}">
-                <th>${message(code: 'default.type.label')}</th>
-            </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('sector')}">
-                <th>${message(code: 'org.sector.label')}</th>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('customerType')}">
+                <th>${message(code: 'org.customerType.label')}</th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('region')}">
                 <th>${message(code: 'org.region.label')}</th>
@@ -142,48 +133,59 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubCostItem')}">
                 <th>
-                    <g:if test="${actionName == 'surveyCostItems'}">
-                        <%
-                            def tmpParams = params.clone()
-                            tmpParams.remove("sort")
-                        %>
-                        <g:if test="${sortOnCostItemsUp}">
-                            <g:link action="surveyCostItems" class="ui icon"
-                                    params="${tmpParams + [sortOnCostItemsDown: true]}"><span
-                                    class="la-popup-tooltip la-delay"
-                                    data-position="top right"
-                                    data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
-                                <i class="arrow down circle icon blue"></i>
-                            </span></g:link>
-                        </g:if>
-                        <g:else>
-                            <g:link action="surveyCostItems" class="ui icon"
-                                    params="${tmpParams + [sortOnCostItemsUp: true]}"><span
-                                    class="la-popup-tooltip la-delay"
-                                    data-position="top right"
-                                    data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
-                                <i class="arrow up circle icon blue"></i>
-                            </span></g:link>
-                        </g:else>
-                    </g:if>
-
-                    <g:set var="costItemElements"
-                           value="${RefdataValue.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org', [org: institution])}"/>
-
-                        <ui:select name="selectedCostItemElement"
-                                      from="${costItemElements}"
-                                      optionKey="id"
-                                      optionValue="value"
-                                      value="${selectedCostItemElement}"
-                                      class="ui dropdown"
-                                      id="selectedCostItemElement"/>
+                    ${message(code: 'exportClickMe.subscription.costItems')}: ${selectedCostItemElementID ? RefdataValue.get(selectedCostItemElementID).getI10n('value') : ''}
                 </th>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
+                <th>
+                    ${message(code: 'surveyCostItems.label')}:
+
+                    <g:set var="costItemElements"
+                           value="${costItemsByCostItemElement ? costItemsByCostItemElement.collect { RefdataValue.findByValueAndOwner(it.key, RefdataCategory.findByDesc(RDConstants.COST_ITEM_ELEMENT))} : [RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE]}"/>
+
+                    <g:if test="${costItemElements}">
+                        <g:if test="${actionName == 'surveyCostItems'}">
+                            <%
+                                def tmpParams = params.clone()
+                                tmpParams.remove("sort")
+                            %>
+                            <g:if test="${sortOnCostItemsUp}">
+                                <g:link action="surveyCostItems"
+                                        params="${tmpParams + [sortOnCostItemsDown: true]}"><span
+                                        class="la-popup-tooltip"
+                                        data-position="top right"
+                                        data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
+                                    <i class="arrow down circle icon blue"></i>
+                                </span></g:link>
+                            </g:if>
+                            <g:else>
+                                <g:link action="surveyCostItems"
+                                        params="${tmpParams + [sortOnCostItemsUp: true]}"><span
+                                        class="la-popup-tooltip"
+                                        data-position="top right"
+                                        data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
+                                    <i class="arrow up circle icon blue"></i>
+                                </span></g:link>
+                            </g:else>
+                        </g:if>
+
+
+                        %{--<ui:select name="selectedCostItemElementID"
+                                   from="${costItemElements}"
+                                   optionKey="id"
+                                   optionValue="value"
+                                   value="${selectedCostItemElementID}"
+                                   class="ui dropdown"
+                                   id="selectedCostItemElementID"
+                                   noSelection="${['': message(code: 'default.select.choose.label')]}"/>--}%
+                    </g:if>
+                    ${selectedCostItemElementID ? RefdataValue.get(selectedCostItemElementID).getI10n('value') : ''}
+                </th>
+            </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemPackage') && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
                 <th>
                     ${message(code: 'surveyCostItems.label')}
                 </th>
-                <th></th>
             </g:if>
 
             <g:if test="${tmplConfigItem.equalsIgnoreCase('marker')}">
@@ -206,6 +208,11 @@
                 </th>
             </g:if>
 
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('mailInfos')}">
+                <th class="center aligned">
+                </th>
+            </g:if>
+
         </g:each>
     </tr>
     </thead>
@@ -216,9 +223,9 @@
             <g:set var="surveyOrg" value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org)}"/>
 
             <g:set var="existSubforOrg"
-                   value="${Subscription.get(surveyConfig.subscription?.id)?.getDerivedSubscribers()?.id?.contains(org?.id)}"/>
+                   value="${Subscription.get(surveyConfig.subscription?.id)?.getDerivedNonHiddenSubscribers()?.id?.contains(org?.id)}"/>
 
-            <g:set var="orgSub" value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(org)}"/>
+            <g:set var="orgSub" value="${surveyConfig.subscription?.getDerivedSubscriptionForNonHiddenSubscriber(org)}"/>
         </g:if>
 
         <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
@@ -231,10 +238,15 @@
         <g:if test="${tmplShowCheckbox}">
             <td>
                 <g:if test="${controllerName in ["survey"] && actionName == "surveyCostItems"}">
-                    <g:if test="${CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg, RDStore.COST_ITEM_DELETED)}">
+                    <g:if test="${CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED)}">
                         <g:checkBox id="selectedOrgs_${org.id}" name="selectedOrgs" value="${org.id}" checked="false"/>
                     </g:if>
                 </g:if>
+                <g:elseif test="${controllerName in ["survey"] && actionName == "surveyCostItemsPackages"}">
+                    <g:if test="${selectedPackageID && CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, Package.get(Long.valueOf(selectedPackageID)))}">
+                        <g:checkBox id="selectedOrgs_${org.id}" name="selectedOrgs" value="${org.id}" checked="false"/>
+                    </g:if>
+                </g:elseif>
                 <g:else>
                     <g:checkBox id="selectedOrgs_${org.id}" name="selectedOrgs" value="${org.id}" checked="false"/>
                 </g:else>
@@ -257,22 +269,30 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
                 <th scope="row" class="la-th-column la-main-object">
                     <div class="la-flexbox">
-                        <ui:customerTypeProIcon org="${org}" cssClass="la-list-icon" />
-                        <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
-                            ${fieldValue(bean: org, field: "name")}
+                        <g:if test="${org instanceof Org}">
+                            <ui:customerTypeProIcon org="${org}" cssClass="la-list-icon" />
+
+                            <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
+                                ${fieldValue(bean: org, field: "name")}
+                            </g:if>
+                            <g:else>
+                                <g:link controller="organisation" action="show" id="${org.id}">
+                                    ${fieldValue(bean: org, field: "name")}
+                                </g:link>
+                            </g:else>
+
+                            <g:if test="${surveyOrg && surveyOrg.orgInsertedItself}">
+                                <span data-position="top right" class="la-popup-tooltip"
+                                      data-content="${message(code: 'surveyLinks.newParticipate')}">
+                                    <i class="paper plane outline large icon"></i>
+                                </span>
+                            </g:if>
                         </g:if>
-                        <g:else>
-                            <g:link controller="organisation" action="show" id="${org.id}">
+                        <g:elseif test="${org instanceof Vendor}">
+                            <g:link controller="vendor" action="show" id="${org.id}">
                                 ${fieldValue(bean: org, field: "name")}
                             </g:link>
-                        </g:else>
-
-                        <g:if test="${surveyOrg && surveyOrg.orgInsertedItself}">
-                            <span data-position="top right" class="la-popup-tooltip la-delay"
-                                  data-content="${message(code: 'surveyLinks.newParticipate')}">
-                                <i class="paper plane outline large icon"></i>
-                            </span>
-                        </g:if>
+                        </g:elseif>
                     </div>
                 </th>
             </g:if>
@@ -295,7 +315,7 @@
                     <g:if test="${altnames.size() > 10}">
                         <div class="ui accordion">
                             <%-- TODO translation string if this solution is going to be accepted --%>
-                            <div class="title">Weitere ...<i class="ui dropdown icon"></i></div>
+                            <div class="title">Weitere ...<i class="dropdown icon"></i></div>
                             <div class="content">
                                 <ul class="la-simpleList">
                                     <g:each in="${altnames.drop(10)}" var="altname">
@@ -313,16 +333,6 @@
                     <g:each in="${PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, org)}"
                             var="personRole">
                         <g:if test="${personRole.prs.isPublic || (!personRole.prs.isPublic && personRole.prs.tenant?.id == contextService.getOrg().id)}">
-                                <%--
-                                <g:if test="${! personRole.prs.isPublic}">
-                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
-                                        <i class="address card outline icon"></i>
-                                    </span>
-                                </g:if>
-                                <g:else>
-                                    <i class="address card icon"></i>
-                                </g:else>
-                                --%>
                                 ${personRole.getPrs()?.getFirst_name()} ${personRole.getPrs()?.getLast_name()} <br />
 
                                 <g:each in="${Contact.findAllByPrsAndContentType(
@@ -330,7 +340,7 @@
                                 )}" var="email">
                                     <div class="item js-copyTriggerParent">
                                             <span data-position="right center"
-                                                  class="la-popup-tooltip la-delay js-copyTrigger"
+                                                  class="la-popup-tooltip js-copyTrigger"
                                                   data-content="Mail senden an ${personRole.getPrs()?.getFirst_name()} ${personRole.getPrs()?.getLast_name()}">
                                         <ui:contactIcon type="${email.contentType.value}"/>
                                         <a class="js-copyTopic" href="mailto:${email.content}">${email.content}</a>
@@ -342,7 +352,7 @@
                                 )}" var="telNr">
                                     <div class="item">
                                         <span data-position="right center">
-                                            <i class="ui icon phone"></i>
+                                            <i class="${Icon.SYM.PHONE}"></i>
                                             ${telNr.content}
                                         </span><br />
                                     </div>
@@ -356,25 +366,13 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('hasInstAdmin')}">
                 <td class="center aligned">
-                    <%
-                        String instAdminIcon = '<i class="large red times icon"></i>'
-                        if (org.hasInstAdminEnabled())
-                            instAdminIcon = '<i class="large green check icon"></i>'
-                    %>
-                    <g:if test="${contextService.isInstAdm_or_ROLEADMIN()}">
+                    <g:if test="${contextService.isInstAdm()}">
                         <br /><g:link controller="organisation" action="users"
-                                    params="${[id: org.id]}">${raw(instAdminIcon)}</g:link>
+                                    params="${[id: org.id]}"><i class="${Icon.SYM.NO} large red"></i></g:link>
                     </g:if>
                     <g:else>
-                        ${raw(instAdminIcon)}
+                        <i class="${Icon.SYM.YES} large green"></i>
                     </g:else>
-                </td>
-            </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('isWekbCurated')}">
-                <td class="center aligned">
-                    <g:if test="${org.gokbId != null && org.getAllOrgTypeIds().any { ot -> [RDStore.OT_AGENCY.id, RDStore.OT_PROVIDER.id].contains(ot) }}">
-                        <ui:wekbButtonLink type="org" gokbId="${org.gokbId}" />
-                    </g:if>
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('status')}">
@@ -383,21 +381,21 @@
                         <g:set var="precedents" value="${Org.executeQuery('select c.toOrg from Combo c where c.fromOrg = :org and c.type = :follows',[org: org, follows: RDStore.COMBO_TYPE_FOLLOWS])}"/>
                         <g:each in="${precedents}" var="precedent">
                             <span class="la-popup-tooltip" data-position="top right" data-content="<g:message code="org.succeedsTo.label" args="${[precedent.sortname ?: precedent.name]}"/>">
-                                <g:link controller="org" action="show" id="${precedent.id}"><i class="ui icon left arrow"></i></g:link>
+                                <g:link controller="org" action="show" id="${precedent.id}"><i class="${Icon.LNK.PREV}"></i></g:link>
                             </span>
                         </g:each>
-                        <span class="la-popup-tooltip la-delay" data-position="top right">
-                            <i class="ui icon green circle"></i>
+                        <span class="la-popup-tooltip" data-position="top right">
+                            <i class="${Icon.SYM.CIRCLE} green"></i>
                         </span>
                     </g:if>
                     <g:if test="${org.status == RDStore.ORG_STATUS_RETIRED}">
-                        <span class="la-popup-tooltip la-delay" data-position="top right" <g:if test="${org.retirementDate}">data-content="<g:message code="org.retirementDate.label"/>: <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${org.retirementDate}"/>"</g:if>>
-                            <i class="ui icon yellow circle"></i>
+                        <span class="la-popup-tooltip" data-position="top right" <g:if test="${org.retirementDate}">data-content="<g:message code="org.retirementDate.label"/>: <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${org.retirementDate}"/>"</g:if>>
+                            <i class="${Icon.SYM.CIRCLE} yellow"></i>
                         </span>
                         <g:set var="successors" value="${Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :org and c.type = :follows',[org: org, follows: RDStore.COMBO_TYPE_FOLLOWS])}"/>
                         <g:each in="${successors}" var="successor">
                             <span class="la-popup-tooltip" data-position="top right" data-content="<g:message code="org.succeededBy.label" args="${[successor.sortname ?: successor.name]}"/>">
-                                <g:link controller="org" action="show" id="${successor.id}"><i class="ui icon right arrow"></i></g:link>
+                                <g:link controller="org" action="show" id="${successor.id}"><i class="${Icon.LNK.NEXT}"></i></g:link>
                             </span>
                         </g:each>
                     </g:if>
@@ -406,21 +404,21 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('legalInformation')}">
                 <td>
                     <g:if test="${org.createdBy && org.legallyObligedBy}">
-                        <span class="la-popup-tooltip la-delay" data-position="top right"
-                              data-content="${message(code: 'org.legalInformation.1.tooltip', args: [org.createdBy, org.legallyObligedBy])}">
-                            <i class="ui icon green check circle"></i>
+                        <span class="la-popup-tooltip" data-position="top right"
+                              data-content="${message(code: 'org.legalInformation.11.tooltip', args: [org.createdBy, org.legallyObligedBy])}">
+                            <i class="${Icon.ATTR.ORG_LEGAL_INFORMATION_11}"></i>
                         </span>
                     </g:if>
                     <g:elseif test="${org.createdBy}">
-                        <span class="la-popup-tooltip la-delay" data-position="top right"
-                              data-content="${message(code: 'org.legalInformation.2.tooltip', args: [org.createdBy])}">
-                            <i class="ui icon grey outline circle"></i>
+                        <span class="la-popup-tooltip" data-position="top right"
+                              data-content="${message(code: 'org.legalInformation.10.tooltip', args: [org.createdBy])}">
+                            <i class="${Icon.ATTR.ORG_LEGAL_INFORMATION_10}"></i>
                         </span>
                     </g:elseif>
                     <g:elseif test="${org.legallyObligedBy}">
-                        <span class="la-popup-tooltip la-delay" data-position="top right"
-                              data-content="${message(code: 'org.legalInformation.3.tooltip', args: [org.legallyObligedBy])}">
-                            <i class="ui icon red question mark"></i>
+                        <span class="la-popup-tooltip" data-position="top right"
+                              data-content="${message(code: 'org.legalInformation.01.tooltip', args: [org.legallyObligedBy])}">
+                            <i class="${Icon.ATTR.ORG_LEGAL_INFORMATION_01}"></i>
                         </span>
                     </g:elseif>
                 </td>
@@ -432,7 +430,7 @@
                     <g:each in="${org?.prsLinks?.toSorted()}" var="pl">
                         <g:if test="${pl.functionType?.value && pl.prs.isPublic}">
                             <g:if test="${plctr == 0}">
-                                <laser:render template="/templates/cpa/person_details" model="${[
+                                <laser:render template="/addressbook/person_details" model="${[
                                         personRole          : pl,
                                         tmplShowDeleteButton: false,
                                         tmplConfigShow      : ['E-Mail', 'Mail', 'Phone'],
@@ -449,7 +447,7 @@
                                         </div>
                                         <div class="content">
                                 </g:if>
-                                <laser:render template="/templates/cpa/person_details" model="${[
+                                <laser:render template="/addressbook/person_details" model="${[
                                         personRole          : pl,
                                         tmplShowDeleteButton: false,
                                         tmplConfigShow      : ['E-Mail', 'Mail', 'Phone'],
@@ -474,13 +472,10 @@
                             <g:if test="${!visiblePrivateContacts.contains(pl.prs.id)}">
                                 <g:set var="visiblePrivateContacts" value="${visiblePrivateContacts + pl.prs.id}"/>
                                 <g:if test="${ol == 0}">
-                                    <laser:render template="/templates/cpa/person_full_details" model="${[
+                                    <laser:render template="/addressbook/person_full_details" model="${[
                                             person                 : pl.prs,
                                             personContext          : org,
                                             tmplShowDeleteButton   : true,
-                                            tmplShowAddPersonRoles : false,
-                                            tmplShowAddContacts    : false,
-                                            //tmplShowAddAddresses   : false,
                                             tmplShowFunctions      : true,
                                             tmplShowPositions      : true,
                                             tmplShowResponsiblities: false,
@@ -499,13 +494,10 @@
                                         </div>
                                         <div class="content">
                                     </g:if>
-                                    <laser:render template="/templates/cpa/person_full_details" model="${[
+                                    <laser:render template="/addressbook/person_full_details" model="${[
                                             person                 : pl.prs,
                                             personContext          : org,
                                             tmplShowDeleteButton   : true,
-                                            tmplShowAddPersonRoles : false,
-                                            tmplShowAddContacts    : false,
-                                            //tmplShowAddAddresses   : false,
                                             tmplShowFunctions      : true,
                                             tmplShowPositions      : true,
                                             tmplShowResponsiblities: false,
@@ -520,18 +512,6 @@
                                 <g:set var="ol" value="${ol+1}"/>
                             </g:if>
                         </g:if>
-                    <%--
-                    <g:if test="${pl?.functionType?.value && (! pl.prs.isPublic) && pl?.prs?.tenant?.id == contextService.getOrg().id}">
-                        <laser:render template="/templates/cpa/person_details" model="${[
-                                personRole          : pl,
-                                tmplShowDeleteButton: false,
-                                tmplConfigShow      : ['E-Mail', 'Mail', 'Phone'],
-                                controller          : 'organisation',
-                                action              : 'show',
-                                id                  : org.id
-                        ]}"/>
-                    </g:if>
-                    --%>
                     </g:each>
                 </td>
             </g:if>
@@ -539,121 +519,69 @@
                 <td class="center aligned">
                     <div class="la-flexbox">
                         <%
-                        def subStatus
-                        if(actionName == 'currentProviders') {
-                            subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
-                        }
-                        else subStatus = params.subStatus
 
                         if(params.filterPvd && params.filterPvd != "" && params.list('filterPvd')){
                             (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(
-                                    [org: org, actionName: actionName, status: subStatus ?: null, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null, providers: params.list('filterPvd')]
+                                    [org: org, actionName: actionName, status: RDStore.SUBSCRIPTION_CURRENT.id, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null, count: true, providers: params.list('filterPvd')]
                             )
                         }else {
                             (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(
-                                    [org: org, actionName: actionName, status: subStatus ?: null, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null]
+                                    [org: org, actionName: actionName, status: RDStore.SUBSCRIPTION_CURRENT.id, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null, count: true]
                             )
                         }
-                        def numberOfSubscriptions = Subscription.executeQuery("select s.id " + base_qry, qry_params).size()
+                        int numberOfSubscriptions = Subscription.executeQuery("select count(*) " + base_qry, qry_params)[0]
                         /*if(params.subPerpetual == "on") {
-                            (base_qry2, qry_params2) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: subStatus == RDStore.SUBSCRIPTION_CURRENT.id.toString() ? RDStore.SUBSCRIPTION_EXPIRED.id.toString() : null, hasPerpetualAccess: RDStore.YN_YES.id.toString()])
+                            (base_qry2, qry_params2) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName, status: subStatus == RDStore.SUBSCRIPTION_CURRENT.id ? RDStore.SUBSCRIPTION_EXPIRED.id : null, hasPerpetualAccess: RDStore.YN_YES.id])
                             numberOfSubscriptions+=Subscription.executeQuery("select s.id " + base_qry2, qry_params2).size()
                         }*/
                         %>
                         <g:if test="${actionName == 'manageMembers'}">
                             <g:link controller="myInstitution" action="manageConsortiaSubscriptions"
-                                    params="${[member: org.id, status: params.subStatus ?: null, validOn: params.subValidOn, filterSet: true, filterPvd: params.list('filterPvd')]}">
-                                <div class="ui blue circular label">
-                                    ${numberOfSubscriptions}
-                                </div>
+                                    params="${[member: org.id, status: RDStore.SUBSCRIPTION_CURRENT.id, validOn: params.subValidOn, filterSet: true, filterPvd: params.list('filterPvd')]}">
+                                <ui:bubble count="${numberOfSubscriptions}" />
                             </g:link>
                         </g:if>
                         <g:elseif test="${actionName == 'currentConsortia'}">
                             <g:link controller="myInstitution" action="currentSubscriptions"
-                                    params="${[consortia: genericOIDService.getOID(org), status: subStatus ?: null, validOn: params.subValidOn, filterSet: true]}"
+                                    params="${[consortia: genericOIDService.getOID(org), status: RDStore.SUBSCRIPTION_CURRENT.id, validOn: params.subValidOn, filterSet: true]}"
                                     title="${message(code: 'org.subscriptions.tooltip', args: [org.name])}">
-                                <div class="ui blue circular label">
-                                    ${numberOfSubscriptions}
-                                </div>
+                                <ui:bubble count="${numberOfSubscriptions}" />
                             </g:link>
                         </g:elseif>
                         <g:elseif test="${actionName == 'currentProviders'}">
                             <g:link controller="myInstitution" action="currentSubscriptions"
-                                    params="${[identifier: org.globalUID, status: [RDStore.SUBSCRIPTION_CURRENT.id.toString()], isSiteReloaded: 'yes']}"
+                                    params="${[identifier: org.globalUID, status: RDStore.SUBSCRIPTION_CURRENT.id, isSiteReloaded: 'yes']}"
                                     title="${message(code: 'org.subscriptions.tooltip', args: [org.name])}">
-                                <div class="ui blue circular label">
-                                    ${numberOfSubscriptions}
-                                </div>
+                                <ui:bubble count="${numberOfSubscriptions}" />
                             </g:link>
                         </g:elseif>
                         <g:else>
                             <g:link controller="myInstitution" action="currentSubscriptions"
                                     params="${[identifier: org.globalUID]}"
                                     title="${message(code: 'org.subscriptions.tooltip', args: [org.name])}">
-                                <div class="ui blue circular label">
-                                    ${numberOfSubscriptions}
-                                </div>
+                                <ui:bubble count="${numberOfSubscriptions}" />
                             </g:link>
                         </g:else>
                     </div>
-                </td>
-            </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('currentSubscriptions')}">
-                <td>
-                    <g:if test="${actionName == 'currentProviders'}">
-                        <%
-                            if (params.filterPvd && params.filterPvd != "" && params.list('filterPvd')){
-                                (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(
-                                        [org: org, actionName: actionName, status: RDStore.SUBSCRIPTION_CURRENT.id, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null, providers: params.list('filterPvd')]
-                                    )
-                            } else {
-                                (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(
-                                        [org: org, actionName: actionName, status: RDStore.SUBSCRIPTION_CURRENT.id, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null]
-                                    )
-                            }
-                            List<Subscription> currentSubscriptions = Subscription.executeQuery("select s " + base_qry, qry_params)
-                        %>
-                        <g:if test="${currentSubscriptions}">
-                            <ul class="la-simpleList">
-                                <g:each in="${currentSubscriptions}" var="sub">
-                                    <li><g:link controller="subscription" action="show" id="${sub.id}">${sub}</g:link></li>
-                                </g:each>
-                            </ul>
-                        </g:if>
-                    </g:if>
                 </td>
             </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSurveys')}">
                     <td class="center aligned">
                         <div class="la-flexbox">
                             <g:if test="${invertDirection}">
-                                <g:set var="participantSurveys"
-                                       value="${SurveyResult.findAllByParticipantAndOwnerAndEndDateGreaterThanEquals(contextService.getOrg(), org, new Date())}"/>
+                                <g:set var="countNotFinish"
+                                       value="${SurveyInfo.executeQuery("select count(*) from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg where surOrg.org = :org and surOrg.finishDate is null and surInfo.status = :status and surInfo.owner = :owner", [org: contextService.getOrg(), owner: org, status: RDStore.SURVEY_SURVEY_STARTED])[0]}"/>
                             </g:if>
                             <g:else>
-                                <g:set var="participantSurveys"
-                                       value="${SurveyResult.findAllByOwnerAndParticipantAndEndDateGreaterThanEquals(contextService.getOrg(), org, new Date())}"/>
+                                <g:set var="countNotFinish"
+                                       value="${SurveyInfo.executeQuery("select count(*) from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg where surOrg.org = :org and surOrg.finishDate is null and surInfo.status = :status and surInfo.owner = :owner", [org: org, owner: contextService.getOrg(), status: RDStore.SURVEY_SURVEY_STARTED])[0]}"/>
                             </g:else>
-                            <g:set var="numberOfSurveys"
-                                   value="${participantSurveys.groupBy { it.surveyConfig.id }.size()}"/>
                             <%
                                 def finishColor = ""
-                                def countFinish = 0
-                                def countNotFinish = 0
-
-                                participantSurveys.each {
-                                    if (it.isResultProcessed()) {
-                                        countFinish++
-                                    } else {
-                                        countNotFinish++
-                                    }
-                                }
-                                if (countFinish > 0 && countNotFinish == 0) {
+                                if (countNotFinish == 0) {
                                     finishColor = "green"
-                                } else if (countFinish > 0 && countNotFinish > 0) {
+                                } else if (countNotFinish > 0) {
                                     finishColor = "yellow"
-                                } else {
-                                    finishColor = "red"
                                 }
                             %>
 
@@ -661,7 +589,7 @@
                                 <g:link controller="myInstitution" action="currentSurveys"
                                         params="[owner: org.id]">
                                     <div class="ui circular ${finishColor} label">
-                                        ${numberOfSurveys}
+                                        ${countNotFinish}
                                     </div>
                                 </g:link>
                             </g:if>
@@ -669,7 +597,7 @@
                                 <g:link controller="myInstitution" action="manageParticipantSurveys"
                                         id="${org.id}">
                                     <div class="ui circular ${finishColor} label">
-                                        ${numberOfSurveys}
+                                        ${countNotFinish}
                                     </div>
                                 </g:link>
                             </g:else>
@@ -702,15 +630,10 @@
                     </g:each>
                 </td>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('type')}">
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('customerType')}">
                 <td>
-                    <g:each in="${org.orgType?.sort { it?.getI10n("value") }}" var="type">
-                        ${type.getI10n("value")}
-                    </g:each>
+                    ${org.getCustomerTypeI10n()}
                 </td>
-            </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('sector')}">
-                <td>${org.sector?.getI10n('value')}</td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('region')}">
                 <td>${org.region?.getI10n('value')}</td>
@@ -760,49 +683,29 @@
                         <g:if test="${orgSub.isCurrentMultiYearSubscriptionNew()}">
                             <g:message code="surveyOrg.perennialTerm.available"/>
                             <br />
-                            <g:link controller="subscription" action="show"
-                                    id="${orgSub.id}">
-                                ${orgSub.name}
-                            </g:link>
                         </g:if>
-                        <g:else>
-                            <g:link controller="subscription" action="show"
-                                    id="${orgSub.id}">
-                                ${orgSub.name}
-                            </g:link>
-                        </g:else>
+
+                        <g:link controller="subscription" action="show" id="${orgSub.id}">${orgSub.getLabel()}</g:link>
 
                         <ui:xEditableAsIcon owner="${orgSub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea" overwriteEditable="${false}"/>
-
                     </g:if>
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubInfoStartEndDate')}">
-                <td>
-                    <g:if test="${existSubforOrg}">
+                <td class="center aligned" style="${(existSubforOrg && orgSub && orgSub.endDate && ChronoUnit.DAYS.between(DateUtils.dateToLocalDate(orgSub.startDate), DateUtils.dateToLocalDate(orgSub.endDate)) < 364) ? 'background: #FFBF00 !important;' : ''}">
+
+                        <g:if test="${existSubforOrg}">
                         <g:if test="${orgSub.isCurrentMultiYearSubscriptionNew()}">
                             <g:message code="surveyOrg.perennialTerm.available"/>
                             <br />
-                            <g:link controller="subscription" action="show"
-                                    id="${orgSub.id}">
-                                <g:formatDate formatName="default.date.format.notime"
-                                              date="${orgSub.startDate}"/><br />
-                                <g:formatDate formatName="default.date.format.notime"
-                                              date="${orgSub.endDate}"/>
-                            </g:link>
                         </g:if>
-                        <g:else>
-                            <g:link controller="subscription" action="show"
-                                    id="${orgSub.id}">
-                                <g:formatDate formatName="default.date.format.notime"
-                                              date="${orgSub.startDate}"/><br />
-                                <g:formatDate formatName="default.date.format.notime"
-                                              date="${orgSub.endDate}"/>
-                            </g:link>
-                        </g:else>
+
+                        <g:link controller="subscription" action="show" id="${orgSub.id}">
+                            <g:formatDate formatName="default.date.format.notime" date="${orgSub.startDate}"/><br />
+                            <g:formatDate formatName="default.date.format.notime" date="${orgSub.endDate}"/>
+                        </g:link>
 
                         <ui:xEditableAsIcon owner="${orgSub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea" overwriteEditable="${false}"/>
-
                     </g:if>
                 </td>
             </g:if>
@@ -812,18 +715,9 @@
                         <g:if test="${orgSub.isCurrentMultiYearSubscriptionNew()}">
                             <g:message code="surveyOrg.perennialTerm.available"/>
                             <br />
-                            <g:link controller="subscription" action="show"
-                                    id="${orgSub.id}">
-                                ${orgSub.status.getI10n('value')}
-                            </g:link>
                         </g:if>
-                        <g:else>
-                            <g:link controller="subscription" action="show"
-                                    id="${orgSub.id}">
-                                ${orgSub.status.getI10n('value')}
-                            </g:link>
-                        </g:else>
 
+                        <g:link controller="subscription" action="show" id="${orgSub.id}">${orgSub.status.getI10n('value')}</g:link>
                     </g:if>
                 </td>
             </g:if>
@@ -837,117 +731,253 @@
                         <g:message code="surveyOrg.perennialTerm.available"/>
                     </g:if>
                     <g:else>
-                        <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemStatusNotEqual(orgSub, institution, RDStore.COST_ITEM_DELETED)}"
-                                var="costItem">
+                        <table class="ui very basic compact table">
+                            <tbody>
+                            <g:if test="${selectedCostItemElementID}">
+                                <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemStatusNotEqualAndCostItemElement(orgSub, institution, RDStore.COST_ITEM_DELETED, RefdataValue.get(Long.valueOf(selectedCostItemElementID)))}"
+                                        var="costItem">
+                                    <g:set var="sumOldCostItem"
+                                           value="${sumOldCostItem + (costItem.costInBillingCurrency ?: 0)}"/>
+                                    <g:set var="sumOldCostItemAfterTax"
+                                           value="${sumOldCostItemAfterTax + (costItem.costInBillingCurrencyAfterTax ?: 0)}"/>
 
-                            <g:if test="${costItem.costItemElement?.id?.toString() == selectedCostItemElement}">
+                                    <g:set var="oldCostItem" value="${costItem.costInBillingCurrency ?: 0.0}"/>
+                                    <g:set var="oldCostItemAfterTax" value="${costItem.costInBillingCurrencyAfterTax ?: 0.0}"/>
 
-                                <strong><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}"
-                                                   minFractionDigits="2"
-                                                   maxFractionDigits="2" type="number"/></strong>
+                                    <tr>
+                                        <td>
+                                            <strong><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}"
+                                                                    minFractionDigits="2"
+                                                                    maxFractionDigits="2" type="number"/></strong>
 
-                                (<g:formatNumber number="${costItem.costInBillingCurrency}" minFractionDigits="2"
-                                                 maxFractionDigits="2" type="number"/>)
-
-                                ${(costItem.billingCurrency?.getI10n('value')?.split('-')).first()}
-
-                                <br />
-                                <g:if test="${costItem.startDate || costItem.endDate}">
-                                    (${costItem.startDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.startDate) : ''} - ${costItem.endDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.endDate) : ''})
-                                </g:if>
-
-                                <g:set var="sumOldCostItem"
-                                       value="${sumOldCostItem + costItem.costInBillingCurrency?:0}"/>
-                                <g:set var="sumOldCostItemAfterTax"
-                                       value="${sumOldCostItemAfterTax + costItem.costInBillingCurrencyAfterTax?:0}"/>
-
-                                <g:set var="oldCostItem" value="${costItem.costInBillingCurrency?:null}"/>
-                                <g:set var="oldCostItemAfterTax" value="${costItem.costInBillingCurrencyAfterTax?:null}"/>
-
+                                            (<g:formatNumber number="${costItem.costInBillingCurrency}" minFractionDigits="2"
+                                                             maxFractionDigits="2" type="number"/>)
+                                        </td>
+                                        <td>
+                                            ${costItem.billingCurrency?.getI10n('value')}
+                                        </td>
+                                        <td style="${(costItem.startDate && costItem.endDate && ChronoUnit.DAYS.between(DateUtils.dateToLocalDate(costItem.startDate), DateUtils.dateToLocalDate(costItem.endDate)) < 364) ? 'background: #FFBF00 !important;' : ''}">
+                                            <g:if test="${costItem.startDate || costItem.endDate}">
+                                                ${costItem.startDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.startDate) : ''} - ${costItem.endDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.endDate) : ''}
+                                            </g:if>
+                                            <g:link class="ui blue right right floated mini button" controller="finance" action="showCostItem" id="${costItem.id}" params="[sub: costItem.sub?.id]" target="_blank"><g:message code="default.show.label" args="[g.message(code: 'costItem.label')]"/></g:link>
+                                        </td>
+                                    </tr>
+                                </g:each>
                             </g:if>
-                        </g:each>
+                            </tbody>
+                        </table>
                     </g:else>
                 </g:if>
 
                 </td>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
-                %{-- // TODO Moe - date.minusDays() --}%
-                <td class="center aligned" style="${(existSubforOrg && orgSub && orgSub.endDate && ChronoUnit.DAYS.between(DateUtils.dateToLocalDate(orgSub.startDate), DateUtils.dateToLocalDate(orgSub.endDate)) < 364) ? 'background: #FFBF00 !important;' : ''}">
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
+                <td class="center aligned">
 
                     <g:if test="${surveyConfig.subSurveyUseForTransfer && orgSub && orgSub.isCurrentMultiYearSubscriptionNew()}">
                         <g:message code="surveyOrg.perennialTerm.available"/>
                     </g:if>
                     <g:else>
 
-                        <g:set var="costItem" scope="request"
-                               value="${CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg, RDStore.COST_ITEM_DELETED)}"/>
+                        <g:set var="costItems" scope="request"
+                               value="${selectedCostItemElementID ? CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, RefdataValue.get(Long.valueOf(selectedCostItemElementID))) : null}"/>
 
-                        <g:if test="${costItem}">
+                        <g:if test="${costItems}">
+                            <table class="ui very basic compact table">
+                                <tbody>
+                                <g:each in="${costItems}"
+                                        var="costItem">
+                                    <g:set var="sumSurveyCostItem"
+                                           value="${sumSurveyCostItem + (costItem.costInBillingCurrency ?: 0)}"/>
+                                    <g:set var="sumSurveyCostItemAfterTax"
+                                           value="${sumSurveyCostItemAfterTax + (costItem.costInBillingCurrencyAfterTax ?: 0)}"/>
 
-                            <strong><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}" minFractionDigits="2"
-                                               maxFractionDigits="2" type="number"/></strong>
+                                    <tr>
+                                        <td>
+                                            <strong><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}" minFractionDigits="2"
+                                                                    maxFractionDigits="2" type="number"/></strong>
 
-                            (<g:formatNumber number="${costItem.costInBillingCurrency}" minFractionDigits="2"
-                                             maxFractionDigits="2" type="number"/>)
+                                            (<g:formatNumber number="${costItem.costInBillingCurrency}" minFractionDigits="2"
+                                                             maxFractionDigits="2" type="number"/>)
 
-                            ${(costItem.billingCurrency?.getI10n('value')?.split('-')).first()}
+                                        </td>
+                                        <td>
+                                            ${costItem.billingCurrency?.getI10n('value')}
+                                        </td>
 
-                            <g:set var="sumSurveyCostItem"
-                                   value="${sumSurveyCostItem + costItem.costInBillingCurrency?:0}"/>
-                            <g:set var="sumSurveyCostItemAfterTax"
-                                   value="${sumSurveyCostItemAfterTax + costItem.costInBillingCurrencyAfterTax?:0}"/>
+                                        <td>
+                                            <g:if test="${oldCostItem || oldCostItemAfterTax}">
 
-                            <g:if test="${oldCostItem || oldCostItemAfterTax}">
-                                <br /><strong><g:formatNumber number="${((costItem.costInBillingCurrencyAfterTax-oldCostItemAfterTax)/oldCostItemAfterTax)*100}"
-                                                       minFractionDigits="2"
-                                                       maxFractionDigits="2" type="number"/>%</strong>
+                                                <strong><g:formatNumber
+                                                        number="${(((costItem.costInBillingCurrencyAfterTax ?: 0) - oldCostItemAfterTax) / oldCostItemAfterTax) * 100}"
+                                                        minFractionDigits="2"
+                                                        maxFractionDigits="2" type="number"/>%</strong>
 
-                                (<g:formatNumber number="${((costItem.costInBillingCurrency-oldCostItem)/oldCostItem)*100}" minFractionDigits="2"
-                                                 maxFractionDigits="2" type="number"/>%)
-                            </g:if>
+                                                (<g:formatNumber number="${(((costItem.costInBillingCurrency ?: 0) - oldCostItem) / oldCostItem) * 100}"
+                                                                 minFractionDigits="2"
+                                                                 maxFractionDigits="2" type="number"/>%)
 
-                            <br />
-                            <g:if test="${costItem.startDate || costItem.endDate}">
-                                (${costItem.startDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.startDate) : ''} - ${costItem.endDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.endDate) : ''})
-                            </g:if>
+                                            </g:if>
+                                        </td>
+                                        <td style="${(costItem.startDate && costItem.endDate && ChronoUnit.DAYS.between(DateUtils.dateToLocalDate(costItem.startDate), DateUtils.dateToLocalDate(costItem.endDate)) < 364) ? 'background: #FFBF00 !important;' : ''}">
+                                            <g:if test="${costItem.startDate || costItem.endDate}">
+                                                ${costItem.startDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.startDate) : ''} - ${costItem.endDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.endDate) : ''}
+                                            </g:if>
+                                        </td>
 
-                            <button onclick="JSPC.app.addEditSurveyCostItem(${params.id}, ${surveyConfig.id}, ${org.id}, ${costItem.id})"
-                                    class="ui icon circular button right floated trigger-modal"
-                                    role="button"
-                                    aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="write icon"></i>
-                            </button>
+                                        <td>
+                                            <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
+                                                    data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                  : params.id,
+                                                                                                                surveyConfigID: surveyConfig.id,
+                                                                                                                participant              : org.id,
+                                                                                                                costItem                 : costItem.id,
+                                                                                                                selectedCostItemElementID: selectedCostItemElementID,
+                                                                                                                selectedPackageID        : selectedPackageID,
+                                                                                                                selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
+                                                    role="button"
+                                                    aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <g:if test="${costItem && costItem.costDescription}">
+
+                                                <div class="ui icon la-popup-tooltip" data-content="${costItem.costDescription}">
+                                                    <i class="info circular inverted icon"></i>
+                                                </div>
+                                            </g:if>
+                                        </td>
+                                    </tr>
+                                </g:each>
+                                </tbody>
+                            </table>
+
                         </g:if>
                         <g:else>
-                            <button onclick="JSPC.app.addEditSurveyCostItem(${params.id}, ${surveyConfig.id}, ${org.id}, ${'null'})"
-                                    class="ui icon circular button right floated trigger-modal"
+                            <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
+                                    data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                  : params.id,
+                                                                                                surveyConfigID: surveyConfig.id,
+                                                                                                participant              : org.id,
+                                                                                                selectedCostItemElementID: selectedCostItemElementID,
+                                                                                                selectedPackageID        : selectedPackageID,
+                                                                                                selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="write icon"></i>
+                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                             </button>
                         </g:else>
 
                     </g:else>
                 </td>
+            </g:if>
 
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemPackage') && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
+            %{-- // TODO Moe - date.minusDays() --}%
                 <td class="center aligned">
-                    <g:set var="costItem" scope="request"
-                           value="${CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg, RDStore.COST_ITEM_DELETED)}"/>
-                    <g:if test="${costItem && costItem.costDescription}">
 
-                        <div class="ui icon la-popup-tooltip la-delay" data-content="${costItem.costDescription}">
-                            <i class="info circular inverted icon"></i>
-                        </div>
+                    <g:if test="${selectedPackageID && selectedCostItemElementID}">
+                        <g:set var="costItems" scope="request"
+                               value="${CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, RefdataValue.get(Long.valueOf(selectedCostItemElementID)), Package.get(Long.valueOf(selectedPackageID)))}"/>
+
+                        <g:if test="${costItems}">
+                            <table class="ui very basic compact table">
+                                <tbody>
+                                <g:each in="${costItems}"
+                                        var="costItem">
+                                    <g:set var="sumSurveyCostItem"
+                                           value="${sumSurveyCostItem + (costItem.costInBillingCurrency ?: 0)}"/>
+                                    <g:set var="sumSurveyCostItemAfterTax"
+                                           value="${sumSurveyCostItemAfterTax + (costItem.costInBillingCurrencyAfterTax ?: 0)}"/>
+
+                                    <tr>
+                                        <td>
+                                            <strong><g:formatNumber number="${costItem.costInBillingCurrencyAfterTax}" minFractionDigits="2"
+                                                                    maxFractionDigits="2" type="number"/></strong>
+
+                                            (<g:formatNumber number="${costItem.costInBillingCurrency}" minFractionDigits="2"
+                                                             maxFractionDigits="2" type="number"/>)
+
+                                        </td>
+                                        <td>
+                                            ${costItem.billingCurrency?.getI10n('value')}
+                                        </td>
+
+                                        <td>
+                                            <g:if test="${oldCostItem || oldCostItemAfterTax}">
+
+                                                <strong><g:formatNumber
+                                                        number="${(((costItem.costInBillingCurrencyAfterTax ?: 0) - oldCostItemAfterTax) / oldCostItemAfterTax) * 100}"
+                                                        minFractionDigits="2"
+                                                        maxFractionDigits="2" type="number"/>%</strong>
+
+                                                (<g:formatNumber number="${(((costItem.costInBillingCurrency ?: 0) - oldCostItem) / oldCostItem) * 100}"
+                                                                 minFractionDigits="2"
+                                                                 maxFractionDigits="2" type="number"/>%)
+
+                                            </g:if>
+                                        </td>
+                                        <td style="${(costItem.startDate && costItem.endDate && ChronoUnit.DAYS.between(DateUtils.dateToLocalDate(costItem.startDate), DateUtils.dateToLocalDate(costItem.endDate)) < 364) ? 'background: #FFBF00 !important;' : ''}">
+                                            <g:if test="${costItem.startDate || costItem.endDate}">
+                                                ${costItem.startDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.startDate) : ''} - ${costItem.endDate ? DateUtils.getLocalizedSDF_noTimeShort().format(costItem.endDate) : ''}
+                                            </g:if>
+                                        </td>
+
+                                        <td>
+                                            <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
+                                                    data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                  : params.id,
+                                                                                                                surveyConfigID: surveyConfig.id,
+                                                                                                                participant              : org.id,
+                                                                                                                costItem                 : costItem.id,
+                                                                                                                selectedCostItemElementID: selectedCostItemElementID,
+                                                                                                                selectedPackageID        : selectedPackageID,
+                                                                                                                selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
+                                                    role="button"
+                                                    aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <g:if test="${costItem && costItem.costDescription}">
+
+                                                <div class="ui icon la-popup-tooltip" data-content="${costItem.costDescription}">
+                                                    <i class="info circular inverted icon"></i>
+                                                </div>
+                                            </g:if>
+                                        </td>
+                                    </tr>
+                                </g:each>
+                                </tbody>
+                            </table>
+
+                        </g:if>
+                        <g:else>
+                            <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
+                                    data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                  : params.id,
+                                                                                                surveyConfigID: surveyConfig.id,
+                                                                                                participant              : org.id,
+                                                                                                selectedCostItemElementID: selectedCostItemElementID,
+                                                                                                selectedPackageID        : selectedPackageID,
+                                                                                                selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
+                                    role="button"
+                                    aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
+                            </button>
+                        </g:else>
                     </g:if>
-
                 </td>
             </g:if>
+
 
             <g:if test="${tmplConfigItem.equalsIgnoreCase('marker')}">
                 <td class="center aligned">
                     <g:if test="${org.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)}">
-                        <ui:markerIcon type="WEKB_CHANGES" color="purple" />
+                        <g:if test="${org instanceof Org}">
+                            <ui:cbItemMarkerAction org="${org}" type="${Marker.TYPE.WEKB_CHANGES}" simple="true"/>
+                        </g:if>
+                        <g:elseif test="${org instanceof Vendor}">
+                            <ui:cbItemMarkerAction vendor="${org}" type="${Marker.TYPE.WEKB_CHANGES}" simple="true"/>
+                        </g:elseif>
                     </g:if>
                 </td>
             </g:if>
@@ -956,19 +986,27 @@
                 <td class="center aligned">
                     <g:if test="${actionName == 'listProvider'}">
                         <g:if test="${currentProviderIdList && (org.id in currentProviderIdList)}">
-                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.providers')}"><i class="icon yellow star"></i></span>
+                            <span class="la-popup-tooltip" data-content="${message(code: 'menu.my.providers')}"><i class="${Icon.SIG.MY_OBJECT} yellow"></i></span>
                         </g:if>
                     </g:if>
                     <g:if test="${actionName == 'listInstitution'}">
                         <g:if test="${currentConsortiaMemberIdList && (org.id in currentConsortiaMemberIdList)}">
-                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.insts')}"><i class="icon yellow star"></i></span>
+                            <span class="la-popup-tooltip" data-content="${message(code: 'menu.my.insts')}"><i class="${Icon.SIG.MY_OBJECT} yellow"></i></span>
                         </g:if>
                     </g:if>
                     <g:if test="${actionName == 'listConsortia'}">
                         <g:if test="${currentConsortiaIdList && (org.id in currentConsortiaIdList)}">
-                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.consortia')}"><i class="icon yellow star"></i></span>
+                            <span class="la-popup-tooltip" data-content="${message(code: 'menu.my.consortia')}"><i class="${Icon.SIG.MY_OBJECT} yellow"></i></span>
                         </g:if>
                     </g:if>
+                </td>
+            </g:if>
+
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('mailInfos')}">
+                <td class="center aligned">
+                    <a href="#" class="ui button icon la-modern-button infoFlyout-trigger" data-template="org" data-org="${org.id}">
+                        <i class="ui info icon"></i>
+                    </a>
                 </td>
             </g:if>
 
@@ -976,7 +1014,7 @@
         </tr>
     </g:each><!-- orgList -->
     </tbody>
-    <g:if test="${orgList && ('surveySubCostItem' in tmplConfigShow || 'surveyCostItem' in tmplConfigShow)}">
+    <g:if test="${orgList && ('surveySubCostItem' in tmplConfigShow || 'surveyCostItem' in tmplConfigShow || 'surveyCostItemPackage' in tmplConfigShow)}">
         <tfoot>
         <tr>
             <g:if test="${tmplShowCheckbox}">
@@ -993,7 +1031,7 @@
                                      maxFractionDigits="2" type="number"/>)
                 </td>
             </g:if>
-            <g:if test="${'surveyCostItem' in tmplConfigShow}">
+            <g:if test="${'surveyCostItem' in tmplConfigShow || 'surveyCostItemPackage' in tmplConfigShow}">
                 <td>
                     <strong><g:formatNumber number="${sumSurveyCostItemAfterTax}" minFractionDigits="2"
                                        maxFractionDigits="2" type="number"/></strong>
@@ -1009,7 +1047,6 @@
                                          maxFractionDigits="2" type="number"/>%)
                     </g:if>
                 </td>
-                <td></td>
             </g:if>
         </tr>
         </tfoot>
@@ -1042,71 +1079,47 @@
     </laser:script>
 
 </g:if>
-<g:if test="${tmplConfigShow?.contains('surveyCostItem') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
+<g:if test="${(tmplConfigShow?.contains('surveyCostItem') || tmplConfigShow?.contains('surveyCostItemPackage')) && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
     <laser:script file="${this.getGroovyPageFileName()}">
-   $('table[id^=costTable] .x .trigger-modal').on('click', function(e) {
-                    e.preventDefault();
+        $('.triggerSurveyCostItemModal').on('click', function(e) {
+            e.preventDefault();
 
-                    $.ajax({
-                        url: $(this).attr('href')
-                    }).done( function(data) {
-                        $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
-                        $('#dynamicModalContainer').empty().html(data);
-
-                        $('#dynamicModalContainer .ui.modal').modal({
-                            onVisible: function () {
-                                r2d2.initDynamicUiStuff('#costItem_ajaxModal');
-                                r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
-                            },
-                            detachable: true,
-                            closable: false,
-                            transition: 'scale',
-                            onApprove : function() {
-                                $(this).find('.ui.form').submit();
-                                return false;
-                            }
-                        }).modal('show');
-                    })
-                });
-
-        JSPC.app.addEditSurveyCostItem = function (id, surveyConfigID, participant, costItem) {
-            event.preventDefault();
             $.ajax({
-                url: "<g:createLink controller='survey' action='editSurveyCostItem'/>",
-                                data: {
-                                    id: id,
-                                    surveyConfigID: surveyConfigID,
-                                    participant: participant,
-                                    costItem: costItem
-                                }
-            }).done( function(data) {
-                $('.ui.dimmer.modals > #modalSurveyCostItem').remove();
+                url: $(this).attr('data-href')
+            }).done( function (data) {
+                $('.ui.dimmer.modals > #surveyCostItemModal').remove();
                 $('#dynamicModalContainer').empty().html(data);
 
                 $('#dynamicModalContainer .ui.modal').modal({
-                    onVisible: function () {
-                        r2d2.initDynamicUiStuff('#modalSurveyCostItem');
-                        r2d2.initDynamicXEditableStuff('#modalSurveyCostItem');
+                   onShow: function () {
+                        r2d2.initDynamicUiStuff('#surveyCostItemModal');
+                        r2d2.initDynamicXEditableStuff('#surveyCostItemModal');
+                        $("html").css("cursor", "auto");
                     },
                     detachable: true,
+                    autofocus: false,
                     closable: false,
                     transition: 'scale',
                     onApprove : function() {
-                        $(this).find('.ui.form').submit();
+                        $(this).find('#surveyCostItemModal .ui.form').submit();
                         return false;
                     }
                 }).modal('show');
             })
-        };
-
+        });
     </laser:script>
+
 </g:if>
-<g:if test="${tmplConfigShow?.contains('surveySubCostItem') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
+<g:if test="${tmplConfigShow?.contains('surveySubCostItem') && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
     <laser:script file="${this.getGroovyPageFileName()}">
-        $('#selectedCostItemElement').on('change', function() {
-            var selectedCostItemElement = $("#selectedCostItemElement").val()
-            var url = "<g:createLink controller="survey" action="surveyCostItems" params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]}"/>&selectedCostItemElement="+selectedCostItemElement;
+        $('#selectedCostItemElementID').on('change', function() {
+            var selectedCostItemElementID = $(this).val()
+            var url = "<g:createLink controller="survey" action="surveyCostItems" params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]}"/>&selectedCostItemElementID="+selectedCostItemElementID;
             location.href = url;
          });
     </laser:script>
+</g:if>
+
+<g:if test="${tmplConfigShow?.contains('mailInfos')}">
+    <laser:render template="/info/flyoutWrapper"/>
 </g:if>

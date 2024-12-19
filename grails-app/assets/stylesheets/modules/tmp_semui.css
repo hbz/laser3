@@ -85,6 +85,12 @@ body.myInstitution_dashboard .ui.tab .item .header {
     margin: 0.5rem 0;
 }
 
+/* filter > form > fields + field -> reduced additive margin */
+
+.la-filter .form .fields .field {
+    margin-bottom: 0.5em;
+}
+
 /* mainSearch */
 
 #mainSearch {
@@ -150,6 +156,7 @@ body.myInstitution_dashboard .ui.tab .item .header {
     bottom: 0;
     font-size: 1.1em;
     border-top: 2px solid orange;
+    z-index: 999;
 }
 #systemMaintenanceMode > .segment {
     padding: 3em 0;
@@ -204,22 +211,7 @@ body.myInstitution_dashboard .ui.tab .item .header {
     background-color: rgba(0,0,0, 0.40)
 }
 
-/* debug info */
 
-#showSystemInfo {
-    bottom: 45px;
-    right: 10px;
-}
-
-#showDebugInfo {
-    bottom: 45px;
-    right: 55px;
-}
-
-#system-profiler {
-    bottom: 10px;
-    right: 10px;
-}
 
 /* -- 2021-01-06 -- */
 
@@ -239,7 +231,7 @@ main.ui.container.main {
 
 /* -- workflows -- */
 
-a.icon.button.wfModalLink { background-color: white; }
+a.icon.button.wfModalLink       { background-color: white; }
 a.icon.button.wfModalLink:hover { background-color: #eeeeee; }
 
 div.column.wf-centered {
@@ -248,34 +240,11 @@ div.column.wf-centered {
     justify-content: center;
 }
 
-div.wf-details div.ui.segment {
-    padding-top:1.5em;
-    padding-bottom:1.5em;
-}
-div.wf-details .ui.list > .item.positive .icon.plus,
-div.wf-details .ui.list > .item.positive .icon.check:not(.square) {
-    color: #b5c334;
-}
-div.wf-details .ui.list > .item.negative .icon.caret.right {
-    color: #d12e34;
-}
-div.wf-buttonGroup {
-    border-bottom: 1px dotted grey;
-    padding: 0 0 2px;
-    margin: 0 3px;
-}
-
 /* -- new header icons -- */
 
-h1.header.icon > i.key {
-    background-color:#d12e34; border-color:#d12e34; color:white;
-}
-h1.header.icon > i.hdd {
-    background-color:#b5c334; border-color:#b5c334; color:white;
-}
-h1.header.icon > i.tools {
-    background-color:#f3a43b; border-color:#f3a43b; color:white;
-}
+h1.header.icon > i.star.of.life { background-color:#d12e34; border-color:#d12e34; color:white; }
+h1.header.icon > i.hdd      { background-color:#b5c334; border-color:#b5c334; color:white; }
+h1.header.icon > i.tools    { background-color:#f3a43b; border-color:#f3a43b; color:white; }
 
 /* -- simple color helper - fallback if no fomantic style is available -- */
 
@@ -288,7 +257,7 @@ h1.header.icon > i.tools {
 
 /* -- simple format helper -- */
 
-*.sf_underline  { text-decoration: underline dotted; }
+*.sf_simple  { font-style: italic; color: #6e6e6e; }
 
 /* Temp Identifier Bugfix for 3.0, for 3.1 already fixed in LESS Structure - has to delete later */
 
@@ -324,3 +293,48 @@ body.survey_copyElementsIntoSurvey nav.tabular .item .content .description
     line-height: 1.2em;
     margin-top: 0.25em;
 }
+.trumbowyg-editor[contenteditable=true]:empty::before{
+    content: attr(data-placeholder);
+    color: #999;
+}
+
+/* customer type hack @ ui:customerTypeProIcon */
+
+.icon.teal.la-list-icon:before {
+    color: #00b5ad;
+}
+
+/* -- flyouts / markdown -- */
+
+#help-content.la-markdown > .content {
+    padding-top: 70px;
+}
+#help-content.la-markdown > .basic.actions {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #E9E9E9;
+}
+
+.la-markdown img {
+    max-width: 100%;
+}
+
+/* todo .. fix markup and remove */
+
+.ui.flyout:not(.la-markdown) {
+    padding: 50px 0 10px 0;
+    overflow: scroll
+}
+
+/*
+.ui.flyout:not(.markdown) > .header {
+    padding-top: 70px;
+}
+.ui.flyout:not(.markdown) > .content {
+    padding-top: 70px;
+}
+.ui.flyout:not(.markdown) > .header + .content {
+    padding-top: 0px;
+}
+*/
+
+

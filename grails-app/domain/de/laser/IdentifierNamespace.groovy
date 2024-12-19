@@ -3,7 +3,8 @@ package de.laser
 import de.laser.base.AbstractI10n
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.storage.BeanStore
-import de.laser.titles.TitleInstance
+import de.laser.wekb.Package
+import de.laser.wekb.TitleInstancePackagePlatform
 import groovy.util.logging.Slf4j
 
 /**
@@ -31,6 +32,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
     public static final String DBPEDIA     = "dbpedia"
     public static final String DBS_ID      = "DBS-ID"
     public static final String DBIS_ORG_ID = "dbis_org_id"
+    public static final String DEAL_ID     = "deal_id"
     public static final String EZB_ORG_ID  = "ezb_org_id"
     public static final String GND_ORG_NR  = "gnd_org_nr"
     public static final String ISIL        = "ISIL"
@@ -54,6 +56,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
     public static final String EISSN      = 'eissn'
     public static final String EISBN      = 'eisbn'
     public static final String ISBN       = 'isbn'
+    public static final String TITLE_ID   = 'title_id'
 
     //package identifier namespaces
     public static final String PKG_ID        = 'Anbieter_Produkt_ID'
@@ -61,6 +64,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
     //subscription identifier namespaces
     public static final String EZB_ANCHOR = 'ezb_anchor'
     public static final String EZB_COLLECTION_ID = 'ezb_collection_id'
+    public static final String EZB_SUB_ID = 'ezb_sub_id'
     public static final String ISIL_PAKETSIGEL = 'package_isil'
     public static final String ISCI = 'ISCI'
 
@@ -77,6 +81,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
             ROR_ID,
             DBS_ID,
             DBIS_ORG_ID,
+            DEAL_ID,
             VAT,
             WIKIDATA_ID,
             LEIT_ID,

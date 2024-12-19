@@ -1,12 +1,22 @@
-<%@ page import="de.laser.remote.ApiSource; de.laser.titles.BookInstance; de.laser.storage.RDStore; de.laser.titles.TitleHistoryEventParticipant" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.titles.TitleHistoryEventParticipant" %>
 
 <laser:htmlStart text="${message(code:"tipp.show.label", args:[tipp.name, tipp.pkg.name, tipp.platform.name])}" />
 
+<ui:debugInfo>
+    <div style="padding: 1em 0;">
+        <p>tipp.dateCreated: ${tipp.dateCreated}</p>
+        <p>tipp.lastUpdated: ${tipp.lastUpdated}</p>
+    </div>
+</ui:debugInfo>
+
 <ui:breadcrumbs>
-    <ui:crumb controller="package" action="show" id="${tipp.pkg.id}"
-                 text="${tipp.pkg.name} [${message(code: 'package.label')}]"/>
+    <ui:crumb controller="package" action="show" id="${tipp.pkg.id}" text="${tipp.pkg.name} [${message(code: 'package.label')}]"/>
     <ui:crumb text="${tipp.name} [${message(code: 'title.label')}]" class="active"/>
 </ui:breadcrumbs>
+
+<ui:controlButtons>
+    <laser:render template="actions" />
+</ui:controlButtons>
 
 <ui:h1HeaderWithIcon message="tipp.show.label" args="${[tipp.name, tipp.pkg.name, tipp.platform.name]}" type="${tipp.titleType}" />
 
@@ -14,6 +24,7 @@
 
 <ui:messages data="${flash}"/>
 
+<laser:render template="/templates/tasks/reportTitleToProvider" model="${[tipp: tipp]}"/>
 
 <div class="la-inline-lists">
     <g:if test="${participantPerpetualAccessToTitle}">
@@ -28,12 +39,12 @@
                         <div class="item">
                             <div class="sixteen wide column">
                                 <i class="icon clipboard outline la-list-icon"></i>
-                                <g:if test="${pt.subscription.getConsortia() != contextOrg}">
-                                    ${pt.getPermanentTitleInfo(contextOrg)}
+                                <g:if test="${pt.subscription.getConsortium() != contextService.getOrg()}">
+                                    ${pt.getPermanentTitleInfo()}
                                 </g:if><g:else>
                                     <g:link controller="subscription"
                                             action="index"
-                                            id="${pt.subscription.id}">${pt.subscription.dropdownNamingConvention(contextOrg)}</g:link>
+                                            id="${pt.subscription.id}">${pt.subscription.dropdownNamingConvention()}</g:link>
                                     &nbsp;
                                     <br/>
                                     <br/>
@@ -61,17 +72,17 @@
         <div class="content">
 
             <!-- START TEMPLATE -->
-                <laser:render template="/templates/title_long"
+                <laser:render template="/templates/titles/title_long"
                           model="${[ie: null, tipp: tipp,
                                     showPackage: false, showPlattform: false, showCompact: false, showEmptyFields: true]}"/>
             <!-- END TEMPLATE -->
             <br/>
             <br/>
 
-            <g:if test="${(tipp.titleType == 'Book')}">
+            <g:if test="${(tipp.titleType == 'monograph')}">
                 <div class="la-title">${message(code: 'tipp.print')} & ${message(code: 'tipp.online')}</div>
             </g:if>
-            <g:elseif test="${tipp.titleType == "Journal"}">
+            <g:elseif test="${tipp.titleType == "serial"}">
                 <div class="la-title">${message(code: 'tipp.coverage')}</div>
             </g:elseif>
             <g:else>
@@ -87,7 +98,7 @@
 
             <div class="la-icon-list">
                 <div class="item">
-                    <i class="grey clipboard check clip icon la-popup-tooltip la-delay"
+                    <i class="grey clipboard check clip icon la-popup-tooltip"
                        data-content="${message(code: 'tipp.accessStartDate.tooltip')}"></i>
 
                     <div class="content">
@@ -97,7 +108,7 @@
                 </div>
 
                 <div class="item">
-                    <i class="grey clipboard check clip icon la-popup-tooltip la-delay"
+                    <i class="grey clipboard check clip icon la-popup-tooltip"
                        data-content="${message(code: 'tipp.accessEndDate.tooltip')}"></i>
 
                     <div class="content">
@@ -153,40 +164,38 @@
 
         <div class="content">
             <div class="item">
-                <i class="grey icon gift scale la-popup-tooltip la-delay"
+                <i class="grey ${Icon.PACKAGE} la-popup-tooltip"
                    data-content="${message(code: 'package.label')}"></i>
                 <g:link controller="package" action="show"
                         id="${tipp.pkg?.id}">${tipp.pkg?.name}</g:link>
 
                 <br/>
                 <br/>
-                <g:link controller="package" action="current"
-                        id="${tipp.pkg?.id}">
-                    <g:message code="package.show.nav.current"/>: <g:message code="package.compare.overview.tipps"/> ${currentTippsCounts}</g:link>
+                <g:link controller="package" action="current" id="${tipp.pkg?.id}">
+                    <g:message code="package.show.nav.current"/>: <g:message code="package.compare.overview.tipps"/> ${currentTippsCounts}
+                </g:link>
                 <br/>
-                <g:link controller="package" action="planned"
-                        id="${tipp.pkg?.id}">
-                    <g:message code="package.show.nav.planned"/>: <g:message code="package.compare.overview.tipps"/> ${plannedTippsCounts}</g:link>
+                <g:link controller="package" action="planned" id="${tipp.pkg?.id}">
+                    <g:message code="package.show.nav.planned"/>: <g:message code="package.compare.overview.tipps"/> ${plannedTippsCounts}
+                </g:link>
                 <br/>
-                <g:link controller="package" action="expired"
-                        id="${tipp.pkg?.id}">
-                    <g:message code="package.show.nav.expired"/>: <g:message code="package.compare.overview.tipps"/> ${expiredTippsCounts}</g:link>
+                <g:link controller="package" action="expired" id="${tipp.pkg?.id}">
+                    <g:message code="package.show.nav.expired"/>: <g:message code="package.compare.overview.tipps"/> ${expiredTippsCounts}
+                </g:link>
+                <br/>
+                <g:link controller="package" action="deleted" id="${tipp.pkg?.id}">
+                    <g:message code="package.show.nav.deleted"/>: <g:message code="package.compare.overview.tipps"/> ${deletedTippsCounts}
+                </g:link>
 
                 <br/>
-                <g:link controller="package" action="deleted"
-                        id="${tipp.pkg?.id}">
-                    <g:message code="package.show.nav.deleted"/>: <g:message code="package.compare.overview.tipps"/> ${deletedTippsCounts}</g:link>
-
                 <br/>
-                <br/>
-                <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
-                        var="gokbAPI">
+                <g:each in="${[ ApiSource.getCurrent() ]}" var="gokbAPI">
                     <g:if test="${tipp.pkg.gokbId}">
                         <a role="button"
-                           class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                           class="${Btn.ICON.SIMPLE_TOOLTIP} tiny"
                            data-content="${message(code: 'wekb')}"
                            href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/public/packageContent/?id=' + tipp.pkg.gokbId : '#'}"
-                           target="_blank"><i class="la-gokb  icon"></i>
+                           target="_blank"><i class="${Icon.WEKB}"></i>
                         </a>
                     </g:if>
                 </g:each>
@@ -202,7 +211,7 @@
 
         <div class="content">
             <div class="item">
-                <i class="grey icon cloud la-popup-tooltip la-delay"
+                <i class="${Icon.PLATFORM} grey la-popup-tooltip"
                    data-content="${message(code: 'platform.label')}"></i>
                 <g:if test="${tipp.platform.name}">
                     <g:link controller="platform" action="show" id="${tipp.platform.id}">
@@ -214,37 +223,34 @@
                 </g:else>
 
                 <g:if test="${tipp.hostPlatformURL}">
-                    <br/>
-                    <ui:linkWithIcon
-                            href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
+                    <ui:linkWithIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
                 </g:if>
             </div>
 
             <div class="item">
-                ${message(code: 'platform.provider')}:  <g:if test="${tipp.platform.org}">
-                    <g:link controller="organisation" action="show"
-                            id="${tipp.platform.org.id}">${tipp.platform.org.name}</g:link>
+                ${message(code: 'platform.provider')}:  <g:if test="${tipp.platform.provider}">
+                    <g:link controller="provider" action="show"
+                            id="${tipp.platform.provider.id}">${tipp.platform.provider.name}</g:link>
                 </g:if>
 
             </div>
 
             <div class="item">${message(code: 'platform.primaryURL')}:               ${tipp.platform.primaryUrl}
                 <g:if test="${tipp.platform.primaryUrl}">
-                    <a role="button" class="ui icon mini blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
+                    <a role="button" class="${Btn.MODERN.SIMPLE_TOOLTIP} mini"
                        data-content="${message(code: 'tipp.tooltip.callUrl')}"
                        href="${tipp.platform.primaryUrl?.contains('http') ? tipp.platform.primaryUrl : 'http://' + tipp.platform.primaryUrl}"
-                       target="_blank"><i class="external alternate icon"></i></a>
+                       target="_blank"><i class="${Icon.LNK.EXTERNAL}"></i></a>
                 </g:if>
             </div>
             <br/>
-            <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
-                    var="gokbAPI">
+            <g:each in="${[ ApiSource.getCurrent() ]}" var="gokbAPI">
                 <g:if test="${tipp.platform.gokbId}">
                     <a role="button"
-                       class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
+                       class="${Btn.ICON.SIMPLE_TOOLTIP} tiny"
                        data-content="${message(code: 'wekb')}"
                        href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/public/platformContent/?id=' + tipp.platform.gokbId : '#'}"
-                       target="_blank"><i class="la-gokb  icon"></i>
+                       target="_blank"><i class="${Icon.WEKB}"></i>
                     </a>
                 </g:if>
             </g:each>
@@ -253,7 +259,7 @@
     </div>
 
 
-    <div class="ui card">
+%{--    <div class="ui card">
         <div class="content">
             <div class="header"><g:message code="title.edit.orglink"/></div>
         </div>
@@ -263,7 +269,7 @@
             <table class="ui celled la-js-responsive-table la-table table ">
                 <thead>
                 <tr>
-                    %{--<th><g:message code="title.edit.component_id.label"/></th>--}%
+                    --}%%{--<th><g:message code="title.edit.component_id.label"/></th>--}%%{--
                     <th><g:message code="template.orgLinks.name"/></th>
                     <th><g:message code="default.role.label"/></th>
                     <th><g:message code="default.from"/></th>
@@ -273,7 +279,7 @@
                 <tbody>
                 <g:each in="${tipp.orgs}" var="org">
                     <tr>
-                        %{--<td>${org.org.id}</td>--}%
+                        --}%%{--<td>${org.org.id}</td>--}%%{--
                         <td><g:link controller="organisation" action="show"
                                     id="${org.org.id}">${org.org.name}</g:link></td>
                         <td>${org.roleType.getI10n("value")}</td>
@@ -288,7 +294,7 @@
                 </tbody>
             </table>
         </div>
-    </div>
+    </div>--}%
 
   <div class="ui card">
                 <div class="content">

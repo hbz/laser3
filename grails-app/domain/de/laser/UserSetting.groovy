@@ -24,15 +24,12 @@ class UserSetting {
     static enum KEYS {
         PAGE_SIZE                                   (Integer),
         THEME                                       (RefdataValue, RDConstants.USER_SETTING_THEME),
-        DASHBOARD                                   (Org), // todo - remove after migration
         DASHBOARD_TAB                               (RefdataValue, RDConstants.USER_SETTING_DASHBOARD_TAB),
         DASHBOARD_ITEMS_TIME_WINDOW                 (Integer),
         LANGUAGE                                    (RefdataValue, RDConstants.LANGUAGE),
         LANGUAGE_OF_EMAILS                          (RefdataValue, RDConstants.LANGUAGE),
         SHOW_SIMPLE_VIEWS                           (RefdataValue, RDConstants.Y_N),
         SHOW_EXTENDED_FILTER                        (RefdataValue, RDConstants.Y_N),
-        SHOW_INFO_ICON                              (RefdataValue, RDConstants.Y_N),
-        SHOW_EDIT_MODE                              (RefdataValue, RDConstants.Y_N),
 
         REMIND_CC_EMAILADDRESS                      (String),
         NOTIFICATION_CC_EMAILADDRESS                (String),
@@ -102,8 +99,8 @@ class UserSetting {
         user       column:'us_user_fk', index: 'us_user_idx'
         key        column:'us_key_enum'
         strValue   column:'us_string_value'
-        rdValue    column:'us_rv_fk'
-        orgValue   column:'us_org_fk'
+        rdValue    column:'us_rv_fk',   index: 'us_rv_idx'
+        orgValue   column:'us_org_fk',  index: 'us_org_idx'
 
         dateCreated column: 'us_date_created'
         lastUpdated column: 'us_last_updated'

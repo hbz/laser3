@@ -93,8 +93,8 @@
                 <td>
                     <g:if test="${choosenOrgCPAs}">
                         <g:each in="${choosenOrgCPAs}" var="gcp">
-                            <g:render template="/templates/cpa/person_details"
-                                      model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
+                            %{-- EXPORT PROBLEM @ laser:render in call stack - ERMS-5437 --}%
+                            <g:render template="/addressbook/person_details"  model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
                         </g:each>
 
                     </g:if>
@@ -123,40 +123,39 @@
 
 <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
 
+    %{-- EXPORT PROBLEM @ laser:render in call stack - ERMS-5437 --}%
     <g:render template="/templates/survey/export/subscriptionSurveyPDF" model="[surveyConfig       : surveyConfig,
-                                                                                costItemSums       : costItemSums,
                                                                                 subscription       : subscription,
-                                                                                visibleOrgRelations: visibleOrgRelations,
+                                                                                visibleProviders: providerRoles,
                                                                                 surveyResults      : surveyResults,
                                                                                 institution: institution,
-                                                                                ownerView: ownerView,
-                                                                                contextOrg: contextOrg]"/>
+                                                                                ownerView: ownerView]"/>
 </g:if>
 
 <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
 
     <g:render template="/templates/survey/export/generalSurveyPDF" model="[surveyConfig       : surveyConfig,
-                                                                           costItemSums       : costItemSums,
                                                                            subscription       : surveyConfig.subscription,
                                                                            tasks              : tasks,
-                                                                           visibleOrgRelations: visibleOrgRelations,
+                                                                           visibleProviders: providerRoles,
                                                                            institution: institution,
                                                                            ownerView: ownerView]"/>
 </g:if>
 
 <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
 
+    %{-- EXPORT PROBLEM @ laser:render in call stack - ERMS-5437 --}%
     <g:render template="/templates/survey/export/subscriptionSurveyPDF" model="[surveyConfig       : surveyConfig,
-                                                                                costItemSums       : costItemSums,
                                                                                 subscription       : subscription,
-                                                                                visibleOrgRelations: visibleOrgRelations,
+                                                                                visibleProviders: providerRoles,
                                                                                 surveyResults      : surveyResults,
                                                                                 institution: institution,
-                                                                                ownerView: ownerView,
-                                                                                contextOrg: contextOrg]"/>
+                                                                                ownerView: ownerView]"/>
 
     <g:render template="/templates/survey/export/entitlementSurveyPDF" model="[countSelectedIEs: countSelectedIEs,
-                                                                               sumListPriceSelectedIEs: sumListPriceSelectedIEs,
+                                                                               sumListPriceSelectedIEsEUR: sumListPriceSelectedIEsEUR,
+                                                                               sumListPriceSelectedIEsUSD: sumListPriceSelectedIEsUSD,
+                                                                               sumListPriceSelectedIEsGBP: sumListPriceSelectedIEsGBP,
                                                                                countCurrentPermanentTitles: countCurrentPermanentTitles,
                                                                                surveyConfig       : surveyConfig,
                                                                                subscription       : subscription,

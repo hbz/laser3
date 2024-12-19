@@ -1,23 +1,23 @@
-<%@ page import="de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore" %>
     <ui:messages data="${flash}" />
     <div id="filterTemplateWrapper" class="wrapper">
         <div id="filterTemplate">
             <laser:render template="filter" model="[filterPresets:filterPresets,fixedSubscription:fixedSubscription,showView:showView,ciTitles:ciTitles]"/>
-            <div id="financeFilterData" class="ui top attached tabular la-tab-with-js menu" data-current="${showView}">
+            <div id="financeFilterData" class="ui top attached tabular menu" data-current="${showView}">
                 <g:each in="${dataToDisplay}" var="view">
                     <g:if test="${view == 'own'}">
                         <div class="item" data-tab="own">
-                            <g:message code="financials.tab.ownCosts"/>
+                            <g:message code="financials.tab.ownCosts"/> <ui:bubble count="${own.count}" grey="true"/>
                         </div>
                     </g:if>
                     <g:if test="${view in ['cons','consAtSubscr']}">
                         <div class="item" data-tab="cons">
-                            <g:message code="financials.tab.consCosts"/>
+                            <g:message code="financials.tab.consCosts"/> <ui:bubble count="${cons.count}" grey="true"/>
                         </div>
                     </g:if>
                     <g:if test="${view == 'subscr'}">
                         <div class="item" data-tab="subscr">
-                            <g:message code="financials.tab.subscrCosts"/>
+                            <g:message code="financials.tab.subscrCosts"/> <ui:bubble count="${subscr.count}" grey="true"/>
                         </div>
                     </g:if>
                 </g:each>
@@ -39,24 +39,24 @@
                             <div class="field" style="text-align: right;">
                                 <g:if test="${showBulkCostItems == null || showBulkCostItems == 'false'}">
                                     <g:if test="${fixedSubscription}">
-                                        <g:link class="ui button" mapping="subfinance" controller="finance" action="index" params="${params+[showView:showView, showBulkCostItems: 'true']}">
+                                        <g:link class="${Btn.SIMPLE}" mapping="subfinance" controller="finance" action="index" params="${params+[showView:showView, showBulkCostItems: 'true']}">
                                             ${g.message(code: 'financials.bulkCostItems.show')}
                                         </g:link>
                                     </g:if>
                                     <g:else>
-                                        <g:link class="ui button" action="finance" controller="myInstitution" params="${params+[showView:showView, showBulkCostItems: 'true']}">
+                                        <g:link class="${Btn.SIMPLE}" action="finance" controller="myInstitution" params="${params+[showView:showView, showBulkCostItems: 'true']}">
                                             ${g.message(code: 'financials.bulkCostItems.show')}
                                         </g:link>
                                     </g:else>
                                 </g:if>
                                 <g:else>
                                     <g:if test="${fixedSubscription}">
-                                        <g:link class="ui button" mapping="subfinance" controller="finance" action="index" params="${params+[showView:showView, showBulkCostItems: 'false']}">
+                                        <g:link class="${Btn.SIMPLE}" mapping="subfinance" controller="finance" action="index" params="${params+[showView:showView, showBulkCostItems: 'false']}">
                                             ${g.message(code: 'financials.bulkCostItems.hidden')}
                                         </g:link>
                                     </g:if>
                                     <g:else>
-                                        <g:link class="ui button" action="finance" controller="myInstitution" params="${params+[showView:showView, showBulkCostItems: 'false']}">
+                                        <g:link class="${Btn.SIMPLE}" action="finance" controller="myInstitution" params="${params+[showView:showView, showBulkCostItems: 'false']}">
                                             ${g.message(code: 'financials.bulkCostItems.hidden')}
                                         </g:link>
                                     </g:else>
@@ -93,9 +93,31 @@
                                                 </fieldset>
                                             </div>
 
+                                            <div class="ui horizontal divider"><g:message
+                                                    code="search.advancedSearch.option.OR"/></div>
+                                            <div class="fields la-forms-grid">
+                                                <fieldset
+                                                        class="sixteen wide field la-modal-fieldset-margin-right la-account-currency">
+                                                    <div class="field center aligned">
+
+                                                        <label>${message(code: 'surveyCostItems.bulkOption.percentOnCurrentPrice')}</label>
+
+                                                        <div class="ui right labeled input">
+                                                            <input type="number"
+                                                                   name="percentOnCurrentPrice"
+                                                                   id="percentOnCurrentPrice"
+                                                                   placeholder="${g.message(code: 'surveyCostItems.bulkOption.percentOnCurrentPrice')}"
+                                                                   value="" step="0.01"/>
+
+                                                            <div class="ui basic label">%</div>
+                                                        </div>
+                                                    </div>
+                                                </fieldset>
+                                            </div>
+
                                             <div class="two fields">
                                                 <div class="eight wide field" style="text-align: left;">
-                                                    <button class="ui button"
+                                                    <button class="${Btn.SIMPLE}"
                                                             type="submit">${message(code: 'financials.bulkCostItems.submit')}</button>
                                                 </div>
 
@@ -111,7 +133,7 @@
                                         <input name="sub" type="hidden" value="${fixedSubscription.id}"/>
                                     </g:if> --%>
                                     <input name="view" type="hidden" value="${view}"/>
-                                    <button type="submit" id="deleteButton" class="ui negative button js-open-confirm-modal" role="button"
+                                    <button type="submit" id="deleteButton" class="${Btn.NEGATIVE_CONFIRM}" role="button"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItem.bulk")}"
                                             data-confirm-term-how="delete">${message(code: 'financials.bulkCostItems.delete')}</button>
                                 </div>

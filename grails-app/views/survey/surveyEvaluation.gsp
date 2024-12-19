@@ -1,5 +1,6 @@
-<%@ page import="de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue; de.laser.storage.RDStore" %>
-<laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyResult.label')})" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue; de.laser.storage.RDStore" %>
+<laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyResult.label')})" />
+<laser:javascript src="echarts.js"/>
 
 <ui:breadcrumbs>
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
@@ -11,34 +12,17 @@
 </ui:breadcrumbs>
 
 <ui:controlButtons>
-    <g:if test="${surveyInfo.status != RDStore.SURVEY_IN_PROCESSING}">
-        <ui:exportDropdown>
-            <ui:exportDropdownItem>
-                <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
-            </ui:exportDropdownItem>
-
-            %{--<ui:exportDropdownItem>
-                <g:link class="item" action="surveyEvaluation" id="${surveyInfo.id}"
-                        params="[surveyConfigID: surveyConfig.id, exportXLSX: true]">${message(code: 'survey.exportSurvey')}</g:link>
-            </ui:exportDropdownItem>
-
-            <g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
-            <ui:exportDropdownItem>
-                <g:link class="item" action="surveyEvaluation" id="${surveyInfo.id}"
-                        params="[surveyConfigID: surveyConfig.id, exportXLSX: true, surveyCostItems: true]">${message(code: 'survey.exportSurveyCostItems')}</g:link>
-            </ui:exportDropdownItem>
-            </g:if>--}%
-        </ui:exportDropdown>
-    </g:if>
-
+    <laser:render template="exports"/>
     <laser:render template="actions"/>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon type="Survey">
-<ui:xEditable owner="${surveyInfo}" field="name"/>
-</ui:h1HeaderWithIcon>
+<ui:h1HeaderWithIcon text="${surveyInfo.name}" type="Survey"/>
 
-<uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="surveyEvaluation"/>
+<uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="${actionName}"/>
+
+<g:if test="${surveyConfig.subscription}">
+ <ui:buttonWithIcon style="vertical-align: super;" message="${message(code: 'button.message.showLicense')}" variation="tiny" icon="${Icon.SUBSCRIPTION}" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+</g:if>
 
 <laser:render template="nav"/>
 
@@ -49,8 +33,8 @@
 <br />
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">
-    <g:if test="${surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]}">
-        <i class="icon clipboard outline la-list-icon"></i>
+    <g:if test="${surveyConfig.subscription}">
+        <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
         <g:link controller="subscription" action="show" id="${surveyConfig.subscription.id}">
             ${surveyConfig.getConfigNameShort()}
         </g:link>
@@ -74,30 +58,93 @@
             controller="survey" action="surveyEvaluation"
             params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllFinish']">
         ${message(code: 'surveyEvaluation.participantsViewAllFinish')}
-        <div class="ui floating blue circular label">${participantsFinishTotal}</div>
+        <ui:bubble float="true" count="${participantsFinishTotal}"/>
     </g:link>
 
     <g:link class="item ${params.tab == 'participantsViewAllNotFinish' ? 'active' : ''}"
             controller="survey" action="surveyEvaluation"
             params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllNotFinish']">
         ${message(code: 'surveyEvaluation.participantsViewAllNotFinish')}
-        <div class="ui floating blue circular label">${participantsNotFinishTotal}</div>
+        <ui:bubble float="true" count="${participantsNotFinishTotal}"/>
     </g:link>
 
     <g:link class="item ${params.tab == 'participantsView' ? 'active' : ''}"
             controller="survey" action="surveyEvaluation"
             params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsView']">
         ${message(code: 'surveyEvaluation.participantsView')}
-        <div class="ui floating blue circular label">${participantsTotal}</div>
+        <ui:bubble float="true" count="${participantsTotal}"/>
     </g:link>
 
 </div>
 <div class="ui bottom attached tab segment active">
-    <laser:render template="evaluationParticipantsView" model="[showCheckbox: false,
-                                                        tmplConfigShow   : ['lineNumber', 'name', (surveyConfig.pickAndChoose ? 'finishedDate' : ''), (surveyConfig.pickAndChoose ? 'surveyTitlesCount' : ''), 'surveyProperties', 'commentOnlyForOwner']]"/>
+
+    <div id="chartWrapper" style="width:100%; min-height:500px"></div>
+
+    <g:if test="${surveyConfig.pickAndChoose}">
+        <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'finishedDate', 'surveyTitlesCount', 'uploadTitleListDoc', 'surveyProperties', 'commentOnlyForOwner', 'downloadTitleList']}"/>
+    </g:if>
+    <g:else>
+        <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyProperties', 'commentOnlyForOwner']}"/>
+    </g:else>
+
+    <laser:render template="evaluationParticipantsView" model="[showCheckboxForParticipantsHasAccess: false,
+                                                                showCheckboxForParticipantsHasNoAccess: false,
+                                                                tmplConfigShow   : tmplConfigShowList]"/>
 </div>
-<laser:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal', contactSwitch: true]" />
 
-</g:else>
 
+<laser:script file="${this.getGroovyPageFileName()}">
+    let chartDom = $('#chartWrapper')[0];
+    let surveyEvChart = echarts.init(chartDom);
+    let option;
+
+    option = {
+        tooltip: {
+                                        trigger: 'axis'
+                                    },
+        title: {
+            text: '<g:message code="surveyInfo.evaluation"/>'
+            },
+         grid: {
+                left: '4%',
+                right: '10%',
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            dataset: {
+            source: [
+            <g:each in="${charts}" var="data">
+                [
+                <g:each in="${data}" var="value">
+                    <%
+                        print '"'
+                        print value
+                        print '",'
+                    %>
+                </g:each>
+                ],
+            </g:each>
+    ]
+  },
+  xAxis: {name: "${g.message(code: 'surveyEvaluation.participants')}", max: "${participants.size()}"},
+  yAxis: {  name: "${g.message(code: 'surveyProperty.plural.label')}", type: 'category' },
+  series: [
+    {
+      type: 'bar',
+      encode: {
+        x: 'value',
+        y: 'property'
+      },
+      barWidth: '50%'
+    }
+  ]
+};
+surveyEvChart.setOption(option);
+</laser:script>
+
+    </g:else>
 <laser:htmlEnd />

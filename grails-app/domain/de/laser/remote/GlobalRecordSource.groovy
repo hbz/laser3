@@ -6,10 +6,10 @@ import javax.persistence.Transient
  * This is a source entry to an ElasticSearch scroll endpoint; it is currently used for we:kb data mirroring but may be extended to other sources as well
  * A source may have a record type ({@link #rectype}):
  * <ul>
- *     <li>{@link de.laser.Package}</li>
- *     <li>{@link de.laser.Platform}</li>
+ *     <li>{@link de.laser.wekb.Package}</li>
+ *     <li>{@link de.laser.wekb.Platform}</li>
  *     <li>{@link de.laser.Org}</li>
- *     <li>{@link de.laser.TitleInstancePackagePlatform}</li>
+ *     <li>{@link de.laser.wekb.TitleInstancePackagePlatform}</li>
  * </ul>
  * and a source type ({@link #type}):
  * <ul>

@@ -1,13 +1,13 @@
-<%@ page import="de.laser.survey.SurveyConfig; de.laser.RefdataCategory; de.laser.survey.SurveyResult; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.survey.SurveyConfig; de.laser.RefdataCategory; de.laser.survey.SurveyResult; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem; de.laser.storage.RDConstants" %>
 
-<laser:htmlStart message="currentSurveys.label" serviceInjection="true" />
+<laser:htmlStart message="currentSurveys.label" />
 
 <ui:breadcrumbs>
     <ui:crumb message="currentSurveys.label" class="active"/>
 </ui:breadcrumbs>
 
 <ui:controlButtons>
-    <ui:exportDropdown>
+%{--    <ui:exportDropdown>
         <ui:exportDropdownItem>
             <g:link class="item" controller="survey" action="currentSurveysConsortia"
                     params="${params + [exportXLSX: true]}">${message(code: 'survey.exportSurveys')}</g:link>
@@ -16,7 +16,7 @@
             <g:link class="item" controller="survey" action="currentSurveysConsortia"
                     params="${params + [exportXLSX: true, surveyCostItems: true]}">${message(code: 'survey.exportSurveyCostItems')}</g:link>
         </ui:exportDropdownItem>
-    </ui:exportDropdown>
+    </ui:exportDropdown>--}%
     <laser:render template="actions"/>
 </ui:controlButtons>
 
@@ -67,7 +67,7 @@
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SURVEY_STATUS)}"
                             var="status">
-                        <option <%=(params.list('filterStatus').contains(status.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'filterStatus').contains(status.id) ? 'selected="selected"' : ''%>
                                 value="${status.id}" title="${status.getI10n('value')}">
                             ${status.getI10n('value')}
                         </option>
@@ -85,13 +85,12 @@
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${providers.sort { it.name }}" var="provider">
-                        <option <%=(params.list('filterPvd').contains(provider.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'filterPvd').contains(provider.id) ? 'selected="selected"' : ''%>
                         value="${provider.id}" >
                         ${provider.name}
                         </option>
                     </g:each>
                 </select>
-
             </div>
 
             <div class="field">
@@ -155,6 +154,33 @@
                                    tabindex="0">
                         </div>
                     </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkPackageSurvey">${message(code: 'surveyconfig.packageSurvey.label')}</label>
+                            <input id="checkPackageSurvey" name="checkPackageSurvey" type="checkbox"
+                                   <g:if test="${params.checkPackageSurvey}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkVendorSurvey">${message(code: 'surveyconfig.vendorSurvey.label')}</label>
+                            <input id="checkVendorSurvey" name="checkVendorSurvey" type="checkbox"
+                                   <g:if test="${params.checkVendorSurvey}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
+
+                    <div class="inline field">
+                        <div class="ui checkbox">
+                            <label for="checkInvoicingInformation">${message(code: 'surveyconfig.invoicingInformation.label')}</label>
+                            <input id="checkInvoicingInformation" name="checkInvoicingInformation" type="checkbox"
+                                   <g:if test="${params.checkInvoicingInformation}">checked=""</g:if>
+                                   tabindex="0">
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -164,9 +190,8 @@
 
             <div class="field la-field-right-aligned">
                 <g:link controller="survey" action="currentSurveysConsortia"
-                        class="ui reset secondary button">${message(code: 'default.button.reset.label')}</g:link>
-                <input type="submit" class="ui primary button"
-                       value="${message(code: 'default.button.filter.label')}">
+                        class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</g:link>
+                <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}">
             </div>
 
         </div>
@@ -190,26 +215,26 @@
             <th rowspan="2" scope="col">${message(code: 'surveyInfo.type.label')}</th>
             <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}"
                               property="surInfo.startDate"
-                              title="${message(code: 'default.startDate.label')}"/>
+                              title="${message(code: 'default.startDate.label.shy')}"/>
             <th rowspan="2" scope="col">${message(code: 'default.status.label')}</th>
             <th rowspan="2" scope="col">${message(code: 'surveyProperty.plural.label')}</th>
 
 
             <th rowspan="2" scope="col">
-                <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyConfigDocs.label')}" data-position="top center">
-                    <i class="file alternate large icon"></i>
+                <a href="#" class="la-popup-tooltip" data-content="${message(code: 'surveyConfigDocs.label')}" data-position="top center">
+                    <i class="${Icon.DOCUMENT} large"></i>
                 </a>
             </th>
 
             <th scope="col" rowspan="2">
-                <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyParticipants.label')}" data-position="top center">
-                    <i class="users large icon"></i>
+                <a href="#" class="la-popup-tooltip" data-content="${message(code: 'surveyParticipants.label')}" data-position="top center">
+                    <i class="${Icon.ATTR.SURVEY_PARTICIPANTS} large"></i>
                 </a>
             </th>
 
             <th scope="col" rowspan="2">
-                <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'surveyCostItems.label')}" data-position="top center">
-                    <i class="money bill large icon"></i>
+                <a href="#" class="la-popup-tooltip" data-content="${message(code: 'surveyCostItems.label')}" data-position="top center">
+                    <i class="${Icon.FNC.COST} large"></i>
                 </a>
             </th>
 
@@ -222,7 +247,7 @@
         <tr>
             <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}"
                               property="surInfo.endDate"
-                              title="${message(code: 'default.endDate.label')}"/>
+                              title="${message(code: 'default.endDate.label.shy')}"/>
         </tr>
         </thead>
         <g:each in="${surveys}" var="survey" status="i">
@@ -263,16 +288,16 @@
                     </div>
 
                     <g:if test="${surveyInfo.isMandatory}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                               data-content="${message(code: "surveyInfo.isMandatory.label.info2")}">
-                            <i class="yellow icon exclamation triangle"></i>
+                            <i class="${Icon.TOOLTIP.IMPORTANT} yellow"></i>
                         </span>
                     </g:if>
                 </td>
                 <td>
                     <g:formatDate formatName="default.date.format.notime" date="${surveyInfo.startDate}"/>
                     <br />
-                    <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label')}:">
+                    <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label.shy')}:">
                         <g:formatDate formatName="default.date.format.notime" date="${surveyInfo.endDate}"/>
                     </span>
                 </td>
@@ -284,7 +309,7 @@
                 <td class="center aligned">
                     <g:if test="${surveyConfig}">
                             <g:link controller="survey" action="show" id="${surveyInfo.id}"
-                                    params="[surveyConfigID: surveyConfig.id]" class="ui icon">
+                                    params="[surveyConfigID: surveyConfig.id]">
                                 <div class="ui circular ${surveyConfig.configFinish ? "green" : ""} label">
                                     %{--Titel-Umfrage kann keine Umfrage-Merkmale haben--}%
                                     ${surveyConfig.surveyProperties?.size() ?: 0}
@@ -296,10 +321,8 @@
                     <td class="center aligned">
                         <g:if test="${surveyConfig}">
                             <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
-                                    params="[surveyConfigID: surveyConfig.id]" class="ui icon">
-                                <div class="ui blue circular label">
-                                    ${surveyConfig.getCurrentDocs().size() ?: 0}
-                                </div>
+                                    params="[surveyConfigID: surveyConfig.id]">
+                                <ui:bubble count="${surveyConfig.getCurrentDocs().size()}" />
                             </g:link>
                         </g:if>
                     </td>
@@ -308,7 +331,7 @@
                 <td class="center aligned">
                     <g:if test="${surveyConfig}">
                         <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
-                                params="[surveyConfigID: surveyConfig.id]" class="ui icon">
+                                params="[surveyConfigID: surveyConfig.id]">
                                 <div class="ui circular ${surveyConfig.configFinish ? "green" : ""} label">
                                 ${surveyConfig.orgs?.size() ?: 0}
                                 </div>
@@ -321,9 +344,9 @@
 
 
                 <td class="center aligned">
-                    <g:if test="${surveyConfig && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION && !surveyConfig.pickAndChoose && surveyInfo.type in [RDStore.SURVEY_TYPE_RENEWAL, RDStore.SURVEY_TYPE_SUBSCRIPTION]}">
+                    <g:if test="${surveyConfig && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
                         <g:link controller="survey" action="surveyCostItems" id="${surveyInfo.id}"
-                                params="[surveyConfigID: surveyConfig.id]" class="ui icon">
+                                params="[surveyConfigID: surveyConfig.id]">
                             <div class="ui circular ${surveyConfig.costItemsFinish ? "green" : ""} label">
                                 ${surveyConfig.getSurveyConfigCostItems().size() ?: 0}
                             </div>
@@ -335,7 +358,7 @@
                     %{--<g:if test="${surveyConfig && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION && !surveyConfig.pickAndChoose}">
                         <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id]"
-                                class="ui icon button">
+                                class="${Btn.BASIC_ICON}">
                                 --}%%{--<div class="ui circular ${(participantsFinish.size() == participantsTotal.size()) ? "green" : (participantsFinish.size() > 0) ? "yellow" : ""} label">
                                 <g:if
                                         test="${participantsFinish && participantsTotal}">
@@ -347,25 +370,34 @@
                                 <g:else>
                                     0%
                                 </g:else>--}%%{--
-                                <i class="icon blue chart pie"></i>
+                                <i class="${Icon.SURVEY} blue"></i>
                             </div>
                         </g:link>
                     </g:if>--}%
                         <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id]"
-                                class="ui icon blue button la-modern-button">
-                            <i class="icon chart pie"></i>
+                                class="${Btn.MODERN.SIMPLE}">
+                            <i class="${Icon.SURVEY}"></i>
                             </div>
                         </g:link>
                 </td>
                 <td>
                     <g:link controller="survey" action="show" id="${surveyInfo.id}"
                             params="[surveyConfigID: surveyConfig.id]"
-                            class="ui button blue icon la-modern-button"
+                            class="${Btn.MODERN.SIMPLE}"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.change.universal')}">
-                        <i class="pencil icon"></i>
+                        <i class="${Icon.CMD.EDIT}"></i>
                     </g:link>
+
+                    <g:if test="${editable}">
+                        <g:link controller="survey" action="copySurvey" id="${surveyInfo.id}"
+                                params="[surveyConfigID: surveyConfig.id, q: surveyConfig?.subscription?.providers ? surveyConfig.subscription.providers[0].name : '']"
+                                class="${Btn.MODERN.SIMPLE}">
+                            <i class="${Icon.CMD.COPY}"></i>
+                            </div>
+                        </g:link>
+                    </g:if>
                 </td>
 
 

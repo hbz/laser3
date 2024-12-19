@@ -1,12 +1,21 @@
 // templates/jspc/_jspc.js.gsp
 
 JSPC = {
-    currLanguage : $('html').attr('lang'),
 
-    vars : { // -- var injection
+    app : { // -- dynamic logic container
+    },
+
+    callbacks : {
+        modal : { // -- dynamic storage; search modalCallbackFunction@r2d2.js for more information
+            onShow : {},
+            onVisible : {}
+        }
+    },
+
+    config : { // -- static var injection
         dateFormat: "${message(code:'default.date.format.notime').toLowerCase()}",
-        locale: "${message(code:'default.locale.label')}",
-        server: "${de.laser.utils.AppUtils.getCurrentServer()}",
+        language:   "${message(code:'default.locale.label').toLowerCase()}",
+        server:     "${de.laser.utils.AppUtils.getCurrentServer()}",
         searchSpotlightSearch: "<g:createLink controller='search' action='spotlightSearch'/>",
         ajax: {
             openLogin:    "<g:createLink controller='ajaxOpen' action='login'/>",
@@ -15,10 +24,11 @@ JSPC = {
             jsonLookup:   "<g:createLink controller='ajaxJson' action='lookup'/>",
             htmlDocumentPreview: "<g:createLink controller='ajaxHtml' action='documentPreview'/>"
         },
-%{--        ws: {--}%
-%{--            stompUrl: "${createLink(uri: de.laser.custom.CustomWebSocketMessageBrokerConfig.WS_STOMP)}",--}%
-%{--            topicStatusUrl: "${de.laser.custom.CustomWebSocketMessageBrokerConfig.WS_TOPIC_STATUS}",--}%
-%{--        }--}%
+        jquery: jQuery().jquery
+%{--        ws: {
+           stompUrl: "${createLink(uri: de.laser.custom.CustomWebSocketMessageBrokerConfig.WS_STOMP)}",
+           topicStatusUrl: "${de.laser.custom.CustomWebSocketMessageBrokerConfig.WS_TOPIC_STATUS}",
+        }--}%
     },
 
     modules : { // -- module registry
@@ -42,20 +52,10 @@ JSPC = {
                 if (JSPC.modules.registry.get (label)) {
                     console.debug ('%c> running module ' + label + ' (' + (++i) + ')', 'color:grey');
                     JSPC.modules.registry.get (label).go();
-                    if ('LOCAL' == JSPC.vars.server) { why.tap(); }
+                    if ('LOCAL' == JSPC.config.server) { why.tap(); }
                 }
                 else { console.error ('> module NOT found ? ' + label ); }
             }
-        }
-    },
-
-    app : { // -- dynamic logic container
-    },
-
-    callbacks : {
-        modal : { // -- dynamic storage; search modalCallbackFunction@r2d2.js for more information
-            onShow : {},
-            onVisible : {}
         }
     },
 
@@ -66,13 +66,13 @@ JSPC = {
     Locale localeEn = de.laser.utils.LocaleUtils.getLocaleEN()
 
     List<String> translations = [
-            'confirm.dialog.clearUp',
             'confirm.dialog.concludeBinding',
             'confirm.dialog.delete',
             'confirm.dialog.inherit',
             'confirm.dialog.ok',
             'confirm.dialog.share',
             'confirm.dialog.unlink',
+            'confirm.dialog.unset',
             'copied',
             'default.actions.label',
             'default.informations',
@@ -99,10 +99,16 @@ JSPC = {
             'search.API.source',
             'select2.placeholder',
             'select2.noMatchesFound',
-            'statusbar.hideButtons.tooltip',
-            'statusbar.showButtons.tooltip',
             'xEditable.button.cancel',
-            'xEditable.button.ok'
+            'xEditable.button.ok',
+            'xEditable.validation.dataFormat',
+            'xEditable.validation.notEmpty',
+            'xEditable.validation.url',
+            'xEditable.validation.mail',
+            'xEditable.validation.number',
+            'xEditable.validation.endDateNotBeforStartDate',
+            'xEditable.validation.tooLong'
+
     ]
     translations.eachWithIndex { it, index ->
         String tmp = "            '${it}' : { "
@@ -114,6 +120,38 @@ JSPC = {
         },
         get : function (key, lang) {
             return JSPC.dict.registry[key][lang]
+        },
+    },
+
+    icons : {
+<%
+    // ~ 6kb
+    de.laser.ui.Icon.getDeclaredClasses().findAll{ true }.each { ic ->
+        println '        ' + ic.simpleName + ' : {'
+        ic.getDeclaredFields().findAll{ ! it.isSynthetic() }.each { f ->
+            println "            ${f.name} : '${ic[f.name]}', "
+        }
+        println '        },'
+    }
+    de.laser.ui.Icon.getDeclaredFields().findAll{ ! it.isSynthetic() }.each { f ->
+        println "          ${f.name} : '${de.laser.ui.Icon[f.name]}', "
+    }
+%>
+    },
+
+    colors : { // -- charts
+        palette: [ '#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc', '#c4c4c4' ],
+        hex : {
+            blue:       '#5470c6',
+            green:      '#91cc75',
+            yellow:     '#fac858',
+            red:        '#ee6666',
+            ice:        '#73c0de',
+            darkgreen:  '#3ba272',
+            orange:     '#fc8452',
+            purple:     '#9a60b4',
+            pink:       '#ea7ccc',
+            grey:       '#d4d4d4'
         },
     },
 

@@ -5,11 +5,17 @@ import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.finance.Invoice
 import de.laser.finance.Order
+import de.laser.helper.Params
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.storage.RDStore
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
+import de.laser.wekb.TitleInstancePackagePlatform
+import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
@@ -25,68 +31,22 @@ class ControlledListService {
 
     ContextService contextService
     GenericOIDService genericOIDService
+    IssueEntitlementService issueEntitlementService
     MessageSource messageSource
-
-    /**
-     * Retrieves a list of providers and agencies
-     * @param params eventual request params
-     * @return a map containing a sorted list of providers, an empty one if no providers match the filter
-     */
-    Map getProvidersAgencies(Map params) {
-        LinkedHashMap result = [results:[]]
-        Set<RefdataValue> providerAgency = []
-        Org org = contextService.getOrg()
-        if(params.orgType) {
-            providerAgency << RefdataValue.get(params.orgType)
-        }
-        else providerAgency.addAll([RDStore.OT_PROVIDER,RDStore.OT_AGENCY,RDStore.OT_LICENSOR])
-        if(params.forFinanceView) {
-            //PLEASE! Do not assign providers or agencies to administrative subscriptions! That will screw up this query ...
-            List<Long> subIDs = Subscription.executeQuery('select s.id from CostItem ci join ci.sub s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in (:orgRoles)',[org:org,orgRoles:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIPTION_CONSORTIA]])
-            if(subIDs) {
-                Map filter = [providerAgency: [RDStore.OR_PROVIDER,RDStore.OR_AGENCY],subscriptions:subIDs]
-                String filterString = " "
-                if(params.query && params.query.length() > 0) {
-                    filter.put("query",params.query)
-                    filterString += " and genfunc_filter_matcher(oo.org.name,:query) = true "
-                }
-                List providers = Org.executeQuery("select distinct concat('"+Org.class.name+":',oo.org.id), oo.org.sortname from OrgRole oo where oo.sub.id in (:subscriptions) and oo.roleType in (:providerAgency)"+filterString+"order by oo.org.sortname asc",filter)
-                providers.each { p ->
-                    result.results.add([name:p[1],value:p[0]])
-                }
-            }
-        }
-        else {
-            String queryString = 'select o from Org o join o.orgType ot where ot in (:providerTypes) and o.status = :current'
-            LinkedHashMap filter = [providerTypes:providerAgency, current: RDStore.ORG_STATUS_CURRENT]
-            if(params.query && params.query.length() > 0) {
-                filter.put("query",params.query)
-                queryString += " and (genfunc_filter_matcher(o.name,:query) = true or genfunc_filter_matcher(o.sortname,:query) = true or exists(select alt from o.altnames alt where genfunc_filter_matcher(alt.name,:query) = true)) "
-            }
-            Set providers = Org.executeQuery(queryString+" order by o.sortname asc",filter)
-            providers.each { p ->
-                if(params.tableView)
-                    result.results.add(p)
-                else
-                    result.results.add([name:p.name,value:genericOIDService.getOID(p)])
-            }
-        }
-        result
-    }
 
     /**
      * Retrieves a list of organisations
      * @param params eventual request params
      * @return a map containing a sorted list of organisations, an empty one if no organisations match the filter
      */
-    Map getOrgs(Map params) {
+    Map getOrgs(GrailsParameterMap params) {
         LinkedHashMap result = [results:[]]
         Org org = genericOIDService.resolveOID(params.ctx)
         String queryString = 'select o from Org o where o.status != :deleted and o != :context'
         LinkedHashMap filter = [deleted: RDStore.ORG_STATUS_DELETED, context: org]
-        if(params.query && params.query.length() > 0) {
-            filter.put("query",params.query)
-            queryString += " and genfunc_filter_matcher(o.name,:query) = true " //taking also sortname into consideration causes GC overhead
+        if (params.query && params.query.length() > 0) {
+            queryString += " and (genfunc_filter_matcher(o.name, :query) = true or genfunc_filter_matcher(o.sortname, :query) = true) "
+            filter.put('query', params.query)
         }
         Set<Org> orgs = Org.executeQuery(queryString+" order by o.name asc",filter)
         orgs.each { Org o ->
@@ -100,15 +60,15 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a sorted list of subscriptions, an empty one if no subscriptions match the filter
      */
-    Map getSubscriptions(Map params) {
+    Map getSubscriptions(GrailsParameterMap params) {
         Org org = contextService.getOrg()
         LinkedHashMap result = [results:[]]
         String queryString = 'select distinct s, org.sortname from Subscription s join s.orgRelations orgRoles join orgRoles.org org left join s.propertySet sp where org = :org and orgRoles.roleType in ( :orgRoles )'
-        LinkedHashMap filter = [org:org,orgRoles:[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN,RDStore.OR_SUBSCRIPTION_CONSORTIA]]
+        LinkedHashMap filter = [org:org,orgRoles:[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN,RDStore.OR_SUBSCRIPTION_CONSORTIUM]]
         //may be generalised later - here it is where to expand the query filter
-        if(params.query && params.query.length() > 0) {
-            filter.put("query",params.query)
-            queryString += " and (genfunc_filter_matcher(s.name,:query) = true or genfunc_filter_matcher(orgRoles.org.sortname,:query) = true) "
+        if (params.query && params.query.length() > 0) {
+            queryString += " and (genfunc_filter_matcher(s.name, :query) = true or genfunc_filter_matcher(orgRoles.org.sortname, :query) = true) "
+            filter.put('query', params.query)
         }
         def ctx = null
         if(params.ctx && params.ctx.contains(Subscription.class.name)) {
@@ -123,7 +83,10 @@ class ControlledListService {
                 queryString += " and s.instanceOf = null "
                 break
             case CalculatedType.TYPE_PARTICIPATION:
-                queryString += " and s.instanceOf != null "
+                Org subscriber = ctx.getSubscriberRespConsortia()
+                queryString += " and s.instanceOf != null and exists (select os from OrgRole os where os.sub = s and os.roleType in (:subscriberCons) and os.org = :subscriber) "
+                filter.subscriberCons = [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
+                filter.subscriber = subscriber
                 break
         }
         if(params.restrictLevel) {
@@ -209,6 +172,23 @@ class ControlledListService {
                 filter.values = filterPropVal
             }
         }
+        if(params.providerFilter) {
+            queryString += " and exists (select pvr from ProviderRole pvr where pvr.subscription = s and pvr.provider = :filterProvider) "
+            filter.filterProvider = genericOIDService.resolveOID(params.providerFilter)
+        }
+        //weird naming ... Fomantic UI API does it so
+        else if(params.'providerFilter[]') {
+            queryString += " and exists (select pvr from ProviderRole pvr where pvr.subscription = s and pvr.provider in (:filterProvider)) "
+            filter.filterProvider = params.list('providerFilter[]').collect { String key -> genericOIDService.resolveOID(key) }
+        }
+        if(params.vendorFilter) {
+            queryString += " and exists (select vr from VendorRole vr where vr.subscription = s and vr.vendor = :filterVendor) "
+            filter.filterVendor = genericOIDService.resolveOID(params.providerVendor)
+        }
+        else if(params.'vendorFilter[]') {
+            queryString += " and exists (select vr from VendorRole vr where vr.subscription = s and vr.vendor in (:filterVendor)) "
+            filter.filterVendor = params.list('vendorFilter[]').collect { String key -> genericOIDService.resolveOID(key) }
+        }
         Set<String> refdataFields = ['form','resource','kind']
         refdataFields.each { String refdataField ->
             if(params[refdataField]) {
@@ -234,17 +214,17 @@ class ControlledListService {
             switch (params.ltype) {
                 case CalculatedType.TYPE_PARTICIPATION:
                     if (s._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION]){
-                        if(org.id == s.getConsortia().id)
-                            result.results.add([name:s.dropdownNamingConvention(org), value:genericOIDService.getOID(s)])
+                        if(org.id == s.getConsortium().id)
+                            result.results.add([name:s.dropdownNamingConvention(), value:genericOIDService.getOID(s)])
                     }
                     break
                 case CalculatedType.TYPE_CONSORTIAL:
                     if (s._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
-                        result.results.add([name:s.dropdownNamingConvention(org), value:genericOIDService.getOID(s)])
+                        result.results.add([name:s.dropdownNamingConvention(), value:genericOIDService.getOID(s)])
                     break
                 default:
                     if(!params.nameOnly)
-                        result.results.add([name:s.dropdownNamingConvention(org), value:genericOIDService.getOID(s)])
+                        result.results.add([name:s.dropdownNamingConvention(), value:genericOIDService.getOID(s)])
                     else result.results.add([name:s.name,value:genericOIDService.getOID(s)])
                     break
             }
@@ -257,15 +237,16 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a list of issue entitlements, an empty one if no issue entitlements match the filter
      */
-    Map getIssueEntitlements(Map params) {
+    Map getIssueEntitlements(GrailsParameterMap params) {
         Org org = contextService.getOrg()
         LinkedHashMap issueEntitlements = [results:[]]
         //build up set of subscriptions which are owned by the current institution or instances of such - or filter for a given subscription
         String filter = 'in (select distinct o.sub from OrgRole as o where o.org = :org and o.roleType in ( :orgRoles ) and o.sub.status = :current ) '
-        LinkedHashMap filterParams = [org:org, orgRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS], current:RDStore.SUBSCRIPTION_CURRENT]
+        LinkedHashMap filterParams = [org:org, orgRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIUM,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS], current:RDStore.SUBSCRIPTION_CURRENT]
         if(params.sub) {
             filter = '= :sub'
-            filterParams = ['sub':genericOIDService.resolveOID(params.sub)]
+            Subscription s = Subscription.get(params.sub)
+            filterParams = ['sub':issueEntitlementService.getTargetSubscription(s)]
         }
         if(params.pkg) {
             try {
@@ -289,7 +270,7 @@ class ControlledListService {
             result.each { res ->
                 Subscription s = (Subscription) res.subscription
 
-                issueEntitlements.results.add([name:"${res.tipp.name} (${res.tipp.titleType}) (${s.dropdownNamingConvention(org)})",value:genericOIDService.getOID(res)])
+                issueEntitlements.results.add([name:"${res.tipp.name} (${res.tipp.titleType}) (${s.dropdownNamingConvention()})",value:res.id])
             }
         }
         issueEntitlements
@@ -300,15 +281,16 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a list of issue entitlement groups, an empty one if no issue entitlement group match the filter
      */
-    Map getTitleGroups(Map params) {
+    Map getTitleGroups(GrailsParameterMap params) {
         Org org = contextService.getOrg()
         LinkedHashMap issueEntitlementGroup = [results:[]]
         //build up set of subscriptions which are owned by the current institution or instances of such - or filter for a given subscription
         String filter = 'in (select distinct o.sub from OrgRole as o where o.org = :org and o.roleType in ( :orgRoles ) and o.sub.status = :current ) '
-        LinkedHashMap filterParams = [org:org, orgRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], current:RDStore.SUBSCRIPTION_CURRENT]
+        LinkedHashMap filterParams = [org:org, orgRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], current:RDStore.SUBSCRIPTION_CURRENT]
         if(params.sub) {
             filter = '= :sub'
-            filterParams = ['sub':genericOIDService.resolveOID(params.sub)]
+            Subscription s = Subscription.get(params.sub)
+            filterParams = ['sub':issueEntitlementService.getTargetSubscription(s)]
         }
 
         if(params.query && params.query.length() > 0) {
@@ -319,7 +301,7 @@ class ControlledListService {
         if(result.size() > 0) {
             result.each { res ->
                 Subscription s = (Subscription) res.sub
-                issueEntitlementGroup.results.add([name:"${res.name} (${s.dropdownNamingConvention(org)})",value:genericOIDService.getOID(res)])
+                issueEntitlementGroup.results.add([name:"${res.name} (${s.dropdownNamingConvention()})",value:res.id])
             }
         }
         issueEntitlementGroup
@@ -330,15 +312,15 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing licenses, an empty one if no licenses match the filter
      */
-    Map getLicenses(Map params) {
+    Map getLicenses(GrailsParameterMap params) {
         Org org = contextService.getOrg()
         LinkedHashMap licenses = [results:[]]
         List<License> result = []
         String licFilter = ''
         LinkedHashMap filterParams = [org:org,orgRoles:[RDStore.OR_LICENSING_CONSORTIUM,RDStore.OR_LICENSEE]]
-        if(params.query && params.query.length() > 0) {
-            licFilter = ' and genfunc_filter_matcher(l.reference,:query) = true '
-            filterParams.put('query',params.query)
+        if (params.query && params.query.length() > 0) {
+            licFilter = ' and genfunc_filter_matcher(l.reference, :query) = true '
+            filterParams.put('query', params.query)
         }
         def ctx = null
         if(params.ctx && params.ctx.contains(License.class.name)) {
@@ -350,12 +332,16 @@ class ControlledListService {
             ctx = genericOIDService.resolveOID(params.ctx)
         }
         switch(ctx?._getCalculatedType()) {
-            case [ CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE ]:
+            case [ CalculatedType.TYPE_LOCAL, CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE ]:
                 licFilter += " and l.instanceOf = null "
                 break
             case CalculatedType.TYPE_PARTICIPATION:
                 licFilter += " and l.instanceOf != null "
                 break
+        }
+        if(params.providerFilter) {
+            licFilter += " and exists (select pvr from ProviderRole pvr where pvr.license = l and pvr.provider = :filterProvider) "
+            filterParams.filterProvider = genericOIDService.resolveOID(params.providerFilter)
         }
         result = License.executeQuery('select l from License as l join l.orgRelations ol where ol.org = :org and ol.roleType in (:orgRoles)'+licFilter+" order by l.reference asc",filterParams)
         if(result.size() > 0) {
@@ -373,18 +359,18 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a sorted list of issue entitlements, an empty one if no issue entitlements match the filter
      */
-    Map getSubscriptionPackages(Map params) {
+    Map getSubscriptionPackages(GrailsParameterMap params) {
         Org org = contextService.getOrg()
         LinkedHashMap result = [results:[]]
         String queryString = 'select distinct s, orgRoles.org.sortname from Subscription s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in ( :orgRoles )'
-        LinkedHashMap filter = [org:org,orgRoles:[RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
+        LinkedHashMap filter = [org:org,orgRoles:[RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
         //may be generalised later - here it is where to expand the query filter
         if(params.query && params.query.length() > 0) {
-            filter.put("query",params.query)
+            filter.put('query', params.query)
             queryString += " and (genfunc_filter_matcher(s.name,:query) = true or genfunc_filter_matcher(orgRoles.org.sortname,:query) = true) "
         }
         if(params.ctx) {
-            Subscription ctx = (Subscription) genericOIDService.resolveOID(params.ctx)
+            Subscription ctx = Subscription.get(params.ctx)
             filter.ctx = ctx
             if (org.isCustomerType_Consortium())
                 queryString += " and (s = :ctx or s.instanceOf = :ctx)"
@@ -392,7 +378,7 @@ class ControlledListService {
                 queryString += " and s = :ctx"
         }
         else if(params.sub) {
-            filter.sub = genericOIDService.resolveOID(params.sub)
+            filter.sub = Subscription.get(params.sub)
             queryString += " and s = :sub"
         }
         if(params.status) {
@@ -419,7 +405,7 @@ class ControlledListService {
         subscriptions.each { row ->
             Subscription s = (Subscription) row[0]
             s.packages.each { sp ->
-                result.results.add([name:"${sp.pkg.name}/${s.dropdownNamingConvention(org)}",value:genericOIDService.getOID(sp)])
+                result.results.add([name:"${sp.pkg.name}/${s.dropdownNamingConvention()}",value:sp.pkg.id])
             }
         }
         result
@@ -430,13 +416,12 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a sorted list of budget codes, an empty one if no budget codes match the filter
      */
-    Map getBudgetCodes(Map params) {
+    Map getBudgetCodes(GrailsParameterMap params) {
         Map result = [results:[]]
-        Org org = contextService.getOrg()
         String queryString = 'select bc from BudgetCode bc where bc.owner = :owner'
-        LinkedHashMap filter = [owner:org]
+        LinkedHashMap filter = [owner: contextService.getOrg()]
         if(params.query && params.query.length() > 0) {
-            filter.put("query",params.query)
+            filter.put('query', params.query)
             queryString += " and genfunc_filter_matcher(bc.value,:query) = true"
         }
         queryString += " order by bc.value asc"
@@ -452,13 +437,12 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a sorted list of invoice numbers, an empty one if no invoice numbers match the filter
      */
-    Map getInvoiceNumbers(Map params) {
+    Map getInvoiceNumbers(GrailsParameterMap params) {
         Map result = [results:[]]
-        Org org = contextService.getOrg()
         String queryString = 'select distinct(i.invoiceNumber) from Invoice i where i.owner = :owner'
-        LinkedHashMap filter = [owner:org]
+        LinkedHashMap filter = [owner: contextService.getOrg()]
         if(params.query && params.query.length() > 0) {
-            filter.put("query",params.query)
+            filter.put('query', params.query)
             queryString += " and genfunc_filter_matcher(i.invoiceNumber,:query) = true"
         }
         queryString += " order by i.invoiceNumber asc"
@@ -474,13 +458,12 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a sorted list of invoice numbers, an empty one if no invoice numbers match the filter
      */
-    Map getOrderNumbers(Map params) {
+    Map getOrderNumbers(GrailsParameterMap params) {
         Map result = [results:[]]
-        Org org = contextService.getOrg()
         String queryString = 'select distinct(ord.orderNumber) from Order ord where ord.owner = :owner'
-        LinkedHashMap filter = [owner:org]
+        LinkedHashMap filter = [owner: contextService.getOrg()]
         if(params.query && params.query.length() > 0) {
-            filter.put("query",params.query)
+            filter.put('query', params.query)
             //queryString += " and ord.orderNumber like :query"
             queryString += " and genfunc_filter_matcher(ord.orderNumber,:query) = true"
         }
@@ -497,13 +480,12 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a sorted list of references, an empty one if no references match the filter
      */
-    Map getReferences(Map params) {
+    Map getReferences(GrailsParameterMap params) {
         Map result = [results:[]]
-        Org org = contextService.getOrg()
         String queryString = 'select distinct(ci.reference) from CostItem ci where ci.owner = :owner and ci.reference != null'
-        LinkedHashMap filter = [owner:org]
+        LinkedHashMap filter = [owner: contextService.getOrg()]
         if(params.query && params.query.length() > 0) {
-            filter.put("query",params.query)
+            filter.put('query', params.query)
             queryString += " and genfunc_filter_matcher(ci.reference,:query) = true"
         }
         queryString += " order by ci.reference asc"
@@ -516,7 +498,7 @@ class ControlledListService {
 
     /**
      * Moved from {@link de.laser.ctrl.OrganisationControllerService#getResultGenericsAndCheckAccess(de.laser.OrganisationController, grails.web.servlet.mvc.GrailsParameterMap)}
-     * Retrieves a list of organisations, too, just like {@link #getOrgs(java.util.Map)} does, but used is the context institution, the list is moreover not
+     * Retrieves a list of organisations, too, just like {@link #getOrgs(grails.web.servlet.mvc.GrailsParameterMap)} does, but used is the context institution, the list is moreover not
      * filterable and retrieved are the instititutions linked by combo to the given institution or providers and agencies
      * @return a map containing a sorted list of organisations, an empty one if no results are being obtained
      * @see Combo
@@ -525,7 +507,7 @@ class ControlledListService {
         Org org = contextService.getOrg()
         List<Map<String,Object>> result = []
         //to translate in hql: select org_name from org left join combo on org_id = combo_from_org_fk where combo_to_org_fk = 1 or org_sector_rv_fk = 82 order by org_sortname asc, org_name asc;
-        List orgs = Org.executeQuery("select new map(o.id as id,o.name as name,o.sortname as sortname) from Combo c right join c.fromOrg o where (o.status = null or o.status != :deleted) and (c.toOrg = :contextOrg or o.sector = :publisher) order by o.sortname asc, o.name asc",[contextOrg:org, deleted:RDStore.O_STATUS_DELETED, publisher: RDStore.O_SECTOR_PUBLISHER])
+        List orgs = Org.executeQuery("select new map(o.id as id,o.name as name,o.sortname as sortname) from Combo c right join c.fromOrg o where (o.status = null or o.status != :deleted) and (c.toOrg = :contextOrg) order by o.sortname asc, o.name asc",[contextOrg:org, deleted:RDStore.O_STATUS_DELETED])
         orgs.each { row ->
             if(row.id != org.id) {
                 String text = row.sortname ? "${row.sortname} (${row.name})" : "${row.name}"
@@ -541,7 +523,7 @@ class ControlledListService {
      * @param params eventual request params
      * @return a map containing a sorted list of objects, sorted by their name; an empty list if no objects match the filter
      */
-    Map getElements(Map params) {
+    Map getElements(GrailsParameterMap params) {
         Map result = [results:[]]
         Org org = contextService.getOrg()
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -565,46 +547,10 @@ class ControlledListService {
             List allSubscriptions = DocContext.executeQuery('select distinct dc.subscription,dc.subscription.name from DocContext dc where dc.owner.owner = :ctxOrg and dc.subscription != null and genfunc_filter_matcher(dc.subscription.name,:query) = true order by dc.subscription.name asc',[ctxOrg:org,query:params.query])
             allSubscriptions.each { DocContext it ->
                 Subscription subscription = (Subscription) it[0]
-                /*
-                String tenant
-                if(subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && subscription.getConsortia().id == org.id) {
-                    try {
-                        tenant = " - ${subscription.getAllSubscribers().get(0).sortname}"
-                    }
-                    catch (IndexOutOfBoundsException e) {
-                        log.debug("Please check subscription #${subscription.id}")
-                    }
-                }
-                else {
-                    tenant = ''
-                }
-                String dateString = "("
-                if (subscription.startDate)
-                    dateString += sdf.format(subscription.startDate) + " - "
-                else dateString += "???"
-                if (subscription.endDate)
-                    dateString += sdf.format(subscription.endDate)
-                else dateString += ""
-                dateString += ")"
-                */
                 result.results.add([name:"(${messageSource.getMessage('default.subscription.label',null, locale)}) ${subscription.dropdownNamingConvention()}",value:genericOIDService.getOID(it[0])])
             }
         }
-        if(params.package == "true") {
-            List allPackages = DocContext.executeQuery('select distinct dc.pkg,dc.pkg.name from DocContext dc where dc.owner.owner = :ctxOrg and dc.pkg != null and genfunc_filter_matcher(dc.pkg.name,:query) = true order by dc.pkg.name asc', [ctxOrg: org, query: params.query])
-            allPackages.each { DocContext it ->
-                result.results.add([name: "(${messageSource.getMessage('spotlight.package', null, locale)}) ${it[1]}", value: genericOIDService.getOID(it[0])])
-            }
-        }
         result
-    }
-
-    /**
-     * Retrieves all possible title types
-     * @return a list of title types
-     */
-    List getAllPossibleTitleTypes() {
-        return TitleInstancePackagePlatform.executeQuery('select distinct(tipp.titleType) from TitleInstancePackagePlatform tipp where tipp.titleType is not null')
     }
 
     /**
@@ -620,16 +566,16 @@ class ControlledListService {
         Set<String> titleTypes = []
         Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
         String nameFilter = ""
-        if(query) {
-            nameFilter += "and genfunc_filter_matcher(titleType, :query) = true"
+        if (query) {
+            nameFilter += " and genfunc_filter_matcher(titleType, :query) = true "
             queryParams.query = query
         }
 
         titleTypes = TitleInstancePackagePlatform.executeQuery("select new map(titleType as name, titleType as value) from TitleInstancePackagePlatform where titleType is not null and pkg = :pkg and status = :status "+nameFilter+" group by titleType", queryParams)
 
-        if(titleTypes.size() == 0){
-            titleTypes << messageSource.getMessage('titleInstance.noTitleType.label', null, LocaleUtils.getCurrentLocale())
-        }
+//        if (titleTypes.size() == 0){
+//            titleTypes << [name: messageSource.getMessage('titleInstance.noTitleType.label', null, LocaleUtils.getCurrentLocale()), value: null]
+//        }
         titleTypes
     }
 
@@ -638,23 +584,28 @@ class ControlledListService {
      * Retrieves all possible title types for the given subscription
      * @param subscription the subscription whose titles should be inspected
      * @param query a query filter to restrict on certain title types
+     * @param forTitles the title tab view
      * @return a set of possible title types
      */
-    Set<String> getAllPossibleTitleTypesBySub(Subscription subscription, String query) {
+    Set<String> getAllPossibleTitleTypesBySub(Subscription subscription, String query, String forTitles) {
         Set<String> titleTypes = []
-        String nameFilter = ""
-        Map<String, Object> queryParams = [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED]
-        if(query) {
-            nameFilter += "and genfunc_filter_matcher(titleType, :query) = true"
+        String nameFilter = "", statusFilter = " and status = :status "
+        Map<String, Object> queryParams = [pkg: subscription.packages.pkg, status: getTippStatusForRequest(forTitles)]
+        if (query) {
+            nameFilter += " and genfunc_filter_matcher(titleType, :query) = true "
             queryParams.query = query
+        }
+        if(forTitles && forTitles == 'allIEs') {
+            statusFilter = " and status != :status "
+            queryParams.status = RDStore.TIPP_STATUS_REMOVED
         }
 
         if(subscription.packages){
-            titleTypes = TitleInstancePackagePlatform.executeQuery("select new map(titleType as name, titleType as value) from TitleInstancePackagePlatform where titleType is not null and pkg in (:pkg) and status != :removed "+nameFilter+" group by titleType", queryParams)
+            titleTypes = TitleInstancePackagePlatform.executeQuery("select new map(titleType as name, titleType as value) from TitleInstancePackagePlatform where titleType is not null and pkg in (:pkg) "+statusFilter+nameFilter+" group by titleType", queryParams)
         }
-        if(titleTypes.size() == 0){
-            titleTypes << messageSource.getMessage('titleInstance.noTitleType.label', null, LocaleUtils.getCurrentLocale())
-        }
+//        if (titleTypes.size() == 0){
+//            titleTypes << [name: messageSource.getMessage('titleInstance.noTitleType.label', null, LocaleUtils.getCurrentLocale()), value: null]
+//        }
         titleTypes
     }
 
@@ -667,29 +618,26 @@ class ControlledListService {
     Set<String> getAllPossibleTitleTypesByStatus(GrailsParameterMap params) {
         Set<String> titleTypes = []
 
-       if(params.status != '' && params.status != null && params.list('status')) {
-            List<Long> statusList = []
-            params.list('status').each { String statusId ->
-                statusList << Long.parseLong(statusId)
-            }
+       if (params.list('status').findAll()) {
+           List<Long> statusList = Params.getLongList(params, 'status')
            String query = "select new map(titleType as name, titleType as value) from TitleInstancePackagePlatform tipp where tipp.titleType is not null and tipp.status.id in (:status) "
            Map queryMap = [status: statusList]
 
            if(params.institution && params.filterForPermanentTitle){
-               queryMap.inst = params.institution
+               queryMap.inst = Org.get(params.institution)
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
-           if(params.query) {
+           if (params.query) {
+               query += " and genfunc_filter_matcher(titleType, :query) = true "
                queryMap.query = params.query
-               query += " and genfunc_filter_matcher(titleType, :query) = true"
            }
            query += " group by titleType order by titleType"
 
            titleTypes = TitleInstancePackagePlatform.executeQuery(query, queryMap)
-        }
-        if(titleTypes.size() == 0){
-            titleTypes << messageSource.getMessage('titleInstance.noTitleType.label', null, LocaleUtils.getCurrentLocale())
-        }
+       }
+//        if (titleTypes.size() == 0){
+//            titleTypes << [name: messageSource.getMessage('titleInstance.noTitleType.label', null, LocaleUtils.getCurrentLocale()), value: null]
+//        }
         titleTypes
     }
 
@@ -706,12 +654,12 @@ class ControlledListService {
         Set<String> mediumTypes = []
         String nameFilter = "", i18n = LocaleUtils.getCurrentLang()
         Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
-        if(query) {
-            nameFilter += "and genfunc_filter_matcher(tipp.medium.value_"+i18n+", :query) = true"
+        if (query) {
+            nameFilter += " and genfunc_filter_matcher(tipp.medium.value_" + i18n + ", :query) = true "
             queryParams.query = query
         }
 
-        mediumTypes.addAll(TitleInstancePackagePlatform.executeQuery("select new map(tipp.medium.value_"+i18n+" as name tipp.medium.id as value) from TitleInstancePackagePlatform tipp where tipp.medium is not null and tipp.pkg = :pkg and tipp.status = :status "+nameFilter+" group by tipp.medium.id, tipp.medium.value_"+i18n+" order by tipp.medium.value_"+i18n, queryParams))
+        mediumTypes.addAll(TitleInstancePackagePlatform.executeQuery("select new map(tipp.medium.value_"+i18n+" as name, tipp.medium.id as value) from TitleInstancePackagePlatform tipp where tipp.medium is not null and tipp.pkg = :pkg and tipp.status = :status "+nameFilter+" group by tipp.medium.id, tipp.medium.value_"+i18n+" order by tipp.medium.value_"+i18n, queryParams))
 
         mediumTypes
     }
@@ -721,18 +669,23 @@ class ControlledListService {
      * Retrieves all possible medium types for the given subscription
      * @param subscription the subscription whose titles should be inspected
      * @param query a query filter to restrict on certain medium types
+     * @param forTitles the title tab view
      * @return a set of possible title types
      */
-    Set<String> getAllPossibleMediumTypesBySub(Subscription subscription, String query) {
+    Set<String> getAllPossibleMediumTypesBySub(Subscription subscription, String query, String forTitles) {
         Set<String> mediumTypes = []
-        String nameFilter = "", i18n = LocaleUtils.getCurrentLang()
-        Map<String, Object> queryParams = [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED]
-        if(query) {
-            nameFilter += "and genfunc_filter_matcher(tipp.medium.value_"+i18n+", :query) = true"
+        String nameFilter = "", statusFilter = " and tipp.status = :status ", i18n = LocaleUtils.getCurrentLang()
+        Map<String, Object> queryParams = [pkg: subscription.packages.pkg, status: getTippStatusForRequest(forTitles)]
+        if (query) {
+            nameFilter += " and genfunc_filter_matcher(tipp.medium.value_" + i18n + ", :query) = true "
             queryParams.query = query
         }
+        if(forTitles && forTitles == 'allIEs') {
+            statusFilter = " and status != :status "
+            queryParams.status = RDStore.TIPP_STATUS_REMOVED
+        }
         if(subscription.packages){
-            mediumTypes.addAll(TitleInstancePackagePlatform.executeQuery("select new map(tipp.medium_value_"+i18n+" as name, tipp.medium.id as value) from TitleInstancePackagePlatform tipp where tipp.medium is not null and tipp.pkg in (:pkg) and tipp.status != :removed "+nameFilter+" group by tipp.medium.id, tipp.medium.value_"+i18n+" order by tipp.medium.value_"+i18n, queryParams))
+            mediumTypes.addAll(TitleInstancePackagePlatform.executeQuery("select new map(tipp.medium.value_"+i18n+" as name, tipp.medium.id as value) from TitleInstancePackagePlatform tipp where tipp.medium is not null and tipp.pkg in (:pkg) "+statusFilter+nameFilter+" group by tipp.medium.id, tipp.medium.value_"+i18n+" order by tipp.medium.value_"+i18n, queryParams))
         }
         mediumTypes
     }
@@ -747,22 +700,19 @@ class ControlledListService {
         Set<String> mediumTypes = []
         String i18n = LocaleUtils.getCurrentLang()
 
-       if(params.status != '' && params.status != null && params.list('status')) {
-            List<Long> statusList = []
-            params.list('status').each { String statusId ->
-                statusList << Long.parseLong(statusId)
-            }
+       if (params.list('status').findAll()) {
+           List<Long> statusList = Params.getLongList(params, 'status')
            String query = "select new map(tipp.medium.value_"+i18n+" as name, tipp.medium.id as value) from TitleInstancePackagePlatform tipp where tipp.medium is not null and tipp.status.id in (:status) "
            Map queryMap = [status: statusList]
 
            if(params.institution && params.filterForPermanentTitle){
-               queryMap.inst = params.institution
+               queryMap.inst = Org.get(params.institution)
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
 
-           if(params.query) {
+           if (params.query) {
+               query += " and genfunc_filter_matcher(tipp.medium.value_" + i18n + ", :query) = true "
                queryMap.query = params.query
-               query += " and genfunc_filter_matcher(tipp.medium.value_"+i18n+", :query) = true"
            }
            query += " group by tipp.medium.id, tipp.medium.value_"+i18n+" order by tipp.medium.value_"+i18n
 
@@ -784,9 +734,9 @@ class ControlledListService {
         String nameFilter = "", i18n = LocaleUtils.getCurrentLang()
         Set<Map> coverageDepths = []
         Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
-        if(query) {
+        if (query) {
+            nameFilter += " and genfunc_filter_matcher(rdv.value_" + i18n + ", :query) = true "
             queryParams.query = query
-            nameFilter += "and genfunc_filter_matcher(rdv.value_${i18n}, :query) = true"
         }
 
         coverageDepths.addAll(RefdataValue.executeQuery("select new map(rdv.value_"+i18n+" as name, rdv.id as value) from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.pkg = :pkg and tipp.status = :status) "+nameFilter+" group by rdv.id, rdv.value_"+i18n+" order by rdv.value_"+i18n, queryParams))
@@ -799,19 +749,24 @@ class ControlledListService {
      * Retrieves all possible coverage depths for the given subscription
      * @param subscription the subscription whose titles should be inspected
      * @param query a query filter to restrict on certain coverage depths
+     * @param forTitles the title tab view
      * @return a set of possible coverage depths
      */
-    Set getAllPossibleCoverageDepthsBySub(Subscription subscription, String query) {
+    Set getAllPossibleCoverageDepthsBySub(Subscription subscription, String query, String forTitles) {
         Set<Map> coverageDepths = []
-        Map<String, Object> queryParams = [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED]
-        String nameFilter = "", i18n = LocaleUtils.getCurrentLang()
-        if(query) {
+        Map<String, Object> queryParams = [pkg: subscription.packages.pkg, status: getTippStatusForRequest(forTitles)]
+        String nameFilter = "", statusFilter = " and tipp.status = :status ", i18n = LocaleUtils.getCurrentLang()
+        if (query) {
+            nameFilter += " and genfunc_filter_matcher(rdv.value_" + i18n + ", :query) = true "
             queryParams.query = query
-            nameFilter += "and genfunc_filter_matcher(rdv.value_"+i18n+", :query) = true"
+        }
+        if(forTitles && forTitles == 'allIEs') {
+            statusFilter = " and status != :status "
+            queryParams.status = RDStore.TIPP_STATUS_REMOVED
         }
 
         if(subscription.packages){
-            coverageDepths = RefdataValue.executeQuery("select new map(rdv.value_"+i18n+" as name, rdv.id as value) from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.pkg in (:pkg) and tipp.status != :removed) "+nameFilter+" group by rdv.id, rdv.value_"+i18n+" order by rdv.value_"+i18n, queryParams)
+            coverageDepths = RefdataValue.executeQuery("select new map(rdv.value_"+i18n+" as name, rdv.id as value) from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.pkg in (:pkg)"+statusFilter+") "+nameFilter+" group by rdv.id, rdv.value_"+i18n+" order by rdv.value_"+i18n, queryParams)
         }
 
         coverageDepths
@@ -827,19 +782,22 @@ class ControlledListService {
         Set<Map> coverageDepths = []
         String i18n = LocaleUtils.getCurrentLang()
 
-       if(params.status != '' && params.status != null && params.list('status')) {
-            List<Long> statusList = []
-            params.list('status').each { String statusId ->
-                statusList << Long.parseLong(statusId)
-            }
+       if (params.list('status').findAll()) {
+           List<Long> statusList = Params.getLongList(params, 'status')
            String query = "select new map(rdv.value_"+i18n+" as name, rdv.id as value) from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.status.id in (:status) "
            Map queryMap = [status: statusList]
 
            if(params.institution && params.filterForPermanentTitle){
-               queryMap.inst = params.institution
+               queryMap.inst = Org.get(params.institution)
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
+           // TODO
+           if (params.query) {
+               query += " and genfunc_filter_matcher(rdv.value_" + i18n + ", :query) = true "
+               queryMap.query = params.query
+           }
            query += " ) group by rdv.id, rdv.value_"+i18n+" order by rdv.value_"+i18n
+
             coverageDepths = RefdataValue.executeQuery(query, queryMap)
         }
 
@@ -859,11 +817,10 @@ class ControlledListService {
         Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
         Set<Map> seriesName = []
         String nameFilter = ""
-        if(query) {
-            nameFilter += "and genfunc_filter_matcher(seriesName, :query) = true"
+        if (query) {
+            nameFilter += " and genfunc_filter_matcher(seriesName, :query) = true "
             queryParams.query = query
         }
-
         seriesName = TitleInstancePackagePlatform.executeQuery("select new map(seriesName as name, seriesName as value) from TitleInstancePackagePlatform where seriesName is not null and pkg = :pkg and status = :status "+nameFilter+" group by seriesName order by seriesName", queryParams)
 
         if(seriesName.size() == 0){
@@ -877,20 +834,25 @@ class ControlledListService {
      * Retrieves all possible series for the given subscription
      * @param subscription the subscription whose titles should be inspected
      * @param query a query filter to restrict on certain series
+     * @param forTitles the title tab view
      * @return a set of possible series
      */
-    Set getAllPossibleSeriesBySub(Subscription subscription, String query) {
+    Set getAllPossibleSeriesBySub(Subscription subscription, String query, String forTitles) {
         Set<Map> seriesName = []
 
         if(subscription.packages){
-            Map<String, Object> queryParams = [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED]
-            String nameFilter = ""
-            if(query) {
-                nameFilter += "and genfunc_filter_matcher(seriesName, :query) = true"
+            Map<String, Object> queryParams = [pkg: subscription.packages.pkg, status: getTippStatusForRequest(forTitles)]
+            String nameFilter = "", statusFilter = " and status = :status "
+            if (query) {
+                nameFilter += " and genfunc_filter_matcher(seriesName, :query) = true "
                 queryParams.query = query
             }
+            if(forTitles && forTitles == 'allIEs') {
+                statusFilter = " and status != :status "
+                queryParams.status = RDStore.TIPP_STATUS_REMOVED
+            }
             //fomantic UI dropdown expects maps in structure [name: name, value: value]; a pure set is not being accepted ...
-            seriesName = TitleInstancePackagePlatform.executeQuery("select new map(seriesName as name, seriesName as value) from TitleInstancePackagePlatform where seriesName is not null and pkg in (:pkg) and status != :removed "+nameFilter+" group by seriesName order by seriesName", queryParams)
+            seriesName = TitleInstancePackagePlatform.executeQuery("select new map(seriesName as name, seriesName as value) from TitleInstancePackagePlatform where seriesName is not null and pkg in (:pkg) "+statusFilter+nameFilter+" group by seriesName order by seriesName", queryParams)
         }
         if(seriesName.size() == 0){
             seriesName << [name: messageSource.getMessage('titleInstance.noSeriesName.label', null, LocaleUtils.getCurrentLocale()), value: null]
@@ -907,23 +869,20 @@ class ControlledListService {
     Set getAllPossibleSeriesByStatus(GrailsParameterMap params) {
         Set<Map> seriesName = []
 
-       if(params.status != '' && params.status != null && params.list('status')) {
-            List<Long> statusList = []
-            params.list('status').each { String statusId ->
-                statusList << Long.parseLong(statusId)
-            }
+       if (params.list('status').findAll()) {
+           List<Long> statusList = Params.getLongList(params, 'status')
            //fomantic UI dropdown expects maps in structure [name: name, value: value]; a pure set is not being accepted ...
            String query = "select new map(tipp.seriesName as name, tipp.seriesName as value) from TitleInstancePackagePlatform as tipp where tipp.seriesName is not null and tipp.status.id in (:status) "
            Map queryMap = [status: statusList]
 
            if(params.institution && params.filterForPermanentTitle){
-               queryMap.inst = params.institution
+               queryMap.inst = Org.get(params.institution)
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
 
-           if(params.query) {
+           if (params.query) {
+               query += " and genfunc_filter_matcher(tipp.seriesName, :query) = true "
                queryMap.query = params.query
-               query += " and genfunc_filter_matcher(tipp.seriesName, :query) = true"
            }
 
            query += " group by tipp.seriesName order by tipp.seriesName"
@@ -949,10 +908,9 @@ class ControlledListService {
         String nameFilter = "", i18n = LocaleUtils.getCurrentLang()
         Set<Map> ddcs = []
         Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
-        if(query) {
-            nameFilter += "and (genfunc_filter_matcher(ddc.ddc.value_${i18n}, :query) = true or ddc.ddc.value like :query2)"
-            queryParams.query = query
-            queryParams.query2 = "%${query}%"
+        if (query) {
+            nameFilter += " and (genfunc_filter_matcher(ddc.ddc.value_" + i18n + ", :query) = true or genfunc_filter_matcher(ddc.ddc.value, :query) = true) "
+            queryParams.query  = query
         }
 
         ddcs.addAll(TitleInstancePackagePlatform.executeQuery("select new map(concat(ddc.ddc.value,' - ',ddc.ddc.value_"+i18n+") as name, ddc.ddc.id as value) from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg = :pkg and tipp.status = :status "+nameFilter+" group by ddc.ddc.id, ddc.ddc.value, ddc.ddc.value_"+i18n+" order by ddc.ddc.value", queryParams))
@@ -965,20 +923,24 @@ class ControlledListService {
      * Retrieves all possible Dewey decimal classification entries for the given subscription
      * @param subscription the subscription whose titles should be inspected
      * @param query query filter to restrict to certain values
+     * @param forTitles the title tab view
      * @return a set of possible Dewey decimal classification entries
      */
-    Set getAllPossibleDdcsBySub(Subscription subscription, String query) {
+    Set getAllPossibleDdcsBySub(Subscription subscription, String query, String forTitles) {
         Set<Map> ddcs = []
-        String nameFilter = "", i18n = LocaleUtils.getCurrentLang()
-        Map<String, Object> queryParams = [pkg: subscription.packages.pkg, status: RDStore.TIPP_STATUS_REMOVED]
-        if(query) {
-            nameFilter += "and (genfunc_filter_matcher(ddc.ddc.value_${i18n}, :query) = true or ddc.ddc.value like :query2)"
-            queryParams.query = query
-            queryParams.query2 = "%${query}%"
+        String nameFilter = "", statusFilter = " and tipp.status = :status ", i18n = LocaleUtils.getCurrentLang()
+        Map<String, Object> queryParams = [pkg: subscription.packages.pkg, status: getTippStatusForRequest(forTitles)]
+        if (query) {
+            nameFilter += " and (genfunc_filter_matcher(ddc.ddc.value_" + i18n + ", :query) = true or genfunc_filter_matcher(ddc.ddc.value, :query) = true) "
+            queryParams.query  = query
+        }
+        if(forTitles && forTitles == 'allIEs') {
+            statusFilter = " and status != :status "
+            queryParams.status = RDStore.TIPP_STATUS_REMOVED
         }
 
         if(subscription.packages){
-            ddcs.addAll(DeweyDecimalClassification.executeQuery("select new map(concat(ddc.ddc.value,' - ',ddc.ddc.value_"+i18n+") as name, ddc.ddc.id as value) from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg in (:pkg) and tipp.status != :status "+nameFilter+" group by ddc.ddc.id, ddc.ddc.value, ddc.ddc.value_"+i18n+" order by ddc.ddc.value", queryParams))
+            ddcs.addAll(DeweyDecimalClassification.executeQuery("select new map(concat(ddc.ddc.value,' - ',ddc.ddc.value_"+i18n+") as name, ddc.ddc.id as value) from DeweyDecimalClassification ddc join ddc.tipp tipp join tipp.pkg pkg where pkg in (:pkg) "+statusFilter+nameFilter+" group by ddc.ddc.id, ddc.ddc.value, ddc.ddc.value_"+i18n+" order by ddc.ddc.value", queryParams))
         }
         ddcs
     }
@@ -993,23 +955,19 @@ class ControlledListService {
         Set<Map> ddcs = []
         String i18n = LocaleUtils.getCurrentLang()
 
-       if(params.status != '' && params.status != null && params.list('status')) {
-            List<Long> statusList = []
-            params.list('status').each { String statusId ->
-                statusList << Long.parseLong(statusId)
-            }
+       if (params.list('status').findAll()) {
+           List<Long> statusList = Params.getLongList(params, 'status')
            String query = "select new map(concat(ddc.ddc.value,' - ',ddc.ddc.value_"+i18n+") as name, ddc.ddc.id as value) from DeweyDecimalClassification ddc join ddc.tipp tipp where tipp.status.id in (:status) "
            Map queryMap = [status: statusList]
 
            if(params.institution && params.filterForPermanentTitle){
-               queryMap.inst = params.institution
+               queryMap.inst = Org.get(params.institution)
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
 
-           if(params.query) {
-               query += " and (genfunc_filter_matcher(ddc.ddc.value_${i18n}, :query) = true or ddc.ddc.value like :query2)"
-               queryMap.query = params.query
-               queryMap.query2 = "%${params.query}%"
+           if (params.query) {
+               query += " and (genfunc_filter_matcher(ddc.ddc.value_" + i18n + ", :query) = true or genfunc_filter_matcher(ddc.ddc.value, :query) = true) "
+               queryMap.query  = params.query
            }
 
            query += "group by ddc.ddc.id, ddc.ddc.value, ddc.ddc.value_"+i18n+" order by ddc.ddc.value"
@@ -1031,8 +989,8 @@ class ControlledListService {
         Set<Map> languages = []
         String nameFilter = "", i18n = LocaleUtils.getCurrentLang()
         Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
-        if(query) {
-            nameFilter += "and genfunc_filter_matcher(lang.language.value_${i18n}, :query) = true"
+        if (query) {
+            nameFilter += " and genfunc_filter_matcher(lang.language.value_" + i18n + ", :query) = true "
             queryParams.query = query
         }
 
@@ -1045,20 +1003,25 @@ class ControlledListService {
      * Called from title filter views
      * Retrieves all possible language entries for the given subscription
      * @param subscription the subscription whose titles should be inspected
-     * @params query query filter to restrict to certain values
+     * @param query query filter to restrict to certain values
+     * @param forTitle the title tab view
      * @return a set of possible language entries
      */
-    Set getAllPossibleLanguagesBySub(Subscription subscription, String query) {
+    Set getAllPossibleLanguagesBySub(Subscription subscription, String query, String forTitles) {
         Set<Map> languages = []
-        String nameFilter = "", i18n = LocaleUtils.getCurrentLang()
-        Map<String, Object> queryParams = [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED]
-        if(query) {
-            nameFilter += "and genfunc_filter_matcher(lang.language.value_${i18n}, :query) = true"
+        String nameFilter = "", statusFilter = " and tipp.status = :status ", i18n = LocaleUtils.getCurrentLang()
+        Map<String, Object> queryParams = [pkg: subscription.packages.pkg, status: getTippStatusForRequest(forTitles)]
+        if (query) {
+            nameFilter += " and genfunc_filter_matcher(lang.language.value_" + i18n + ", :query) = true "
             queryParams.query = query
+        }
+        if(forTitles && forTitles == 'allIEs') {
+            statusFilter = " and status != :status "
+            queryParams.status = RDStore.TIPP_STATUS_REMOVED
         }
 
         if(subscription.packages){
-            languages.addAll(DeweyDecimalClassification.executeQuery("select new map(lang.language.value_"+i18n+" as name, lang.language.id as value) from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg in (:pkg) and tipp.status != :removed "+nameFilter+" group by lang.language.id, lang.language.value_"+i18n+" order by lang.language.value_" + i18n, queryParams))
+            languages.addAll(DeweyDecimalClassification.executeQuery("select new map(lang.language.value_"+i18n+" as name, lang.language.id as value) from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg in (:pkg)"+statusFilter+nameFilter+" group by lang.language.id, lang.language.value_"+i18n+" order by lang.language.value_" + i18n, queryParams))
         }
         languages
     }
@@ -1073,21 +1036,18 @@ class ControlledListService {
         Set<Map> languages = []
         String i18n = LocaleUtils.getCurrentLang()
 
-       if(params.status != '' && params.status != null && params.list('status')) {
-            List<Long> statusList = []
-            params.list('status').each { String statusId ->
-                statusList << Long.parseLong(statusId)
-            }
+       if (params.list('status').findAll()) {
+           List<Long> statusList = Params.getLongList(params, 'status')
            String query = "select new map(lang.language.value_"+i18n+" as name, lang.language.id as value) from Language lang join lang.tipp tipp where tipp.status.id in (:status) "
            Map queryMap = [status: statusList]
 
            if(params.institution && params.filterForPermanentTitle){
-               queryMap.inst = params.institution
+               queryMap.inst = Org.get(params.institution)
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
 
-           if(params.query) {
-               query += "and genfunc_filter_matcher(lang.language.value_${i18n}, :query) = true"
+           if (params.query) {
+               query += " and genfunc_filter_matcher(lang.language.value_" + i18n + ", :query) = true "
                queryMap.query = params.query
            }
 
@@ -1111,15 +1071,15 @@ class ControlledListService {
         SortedSet<String> subjects = new TreeSet<String>()
         Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
         String nameFilter = ""
-        if(query) {
+        if (query) {
+            nameFilter += " and genfunc_filter_matcher(subjectReference, :query) = true "
             queryParams.query = query
-            nameFilter += "and genfunc_filter_matcher(subjectReference, :query) = true"
         }
 
         List<String> rawSubjects = TitleInstancePackagePlatform.executeQuery("select distinct(subjectReference) from TitleInstancePackagePlatform where subjectReference is not null and pkg = :pkg and status = :status "+nameFilter+" order by subjectReference", queryParams)
 
         if(rawSubjects.size() == 0){
-            subjects << messageSource.getMessage('titleInstance.noSubjectReference.label', null, LocaleUtils.getCurrentLocale())
+//            subjects << messageSource.getMessage('titleInstance.noSubjectReference.label', null, LocaleUtils.getCurrentLocale())
         }
         else {
             rawSubjects.each { String rawSubject ->
@@ -1138,24 +1098,29 @@ class ControlledListService {
      * Called from title filter views
      * Retrieves all possible subject references for the given subscription
      * @param subscription the subscription whose titles should be inspected
-     * @params query query filter to restrict to certain values
+     * @param query query filter to restrict to certain values
+     * @param forTitles title tab view
      * @return a set of possible subject references
      */
-    Set getAllPossibleSubjectsBySub(Subscription subscription, String query) {
+    Set getAllPossibleSubjectsBySub(Subscription subscription, String query, String forTitles) {
         SortedSet<String> subjects = new TreeSet<String>()
         List<String> rawSubjects = []
-        Map<String, Object> queryParams = [pkg: subscription.packages.pkg, removed: RDStore.TIPP_STATUS_REMOVED]
-        String nameFilter = ""
-        if(query) {
+        Map<String, Object> queryParams = [pkg: subscription.packages.pkg, status: getTippStatusForRequest(forTitles)]
+        String nameFilter = "", statusFilter = " and status = :status "
+        if (query) {
+            nameFilter += " and genfunc_filter_matcher(subjectReference, :query) = true "
             queryParams.query = query
-            nameFilter += "and genfunc_filter_matcher(subjectReference, :query) = true"
+        }
+        if(forTitles && forTitles == 'allIEs') {
+            statusFilter = " and status != :status "
+            queryParams.status = RDStore.TIPP_STATUS_REMOVED
         }
 
         if(subscription.packages){
-            rawSubjects = TitleInstancePackagePlatform.executeQuery("select distinct(subjectReference) from TitleInstancePackagePlatform where subjectReference is not null and pkg in (:pkg) and status != :removed "+nameFilter+" order by subjectReference", queryParams)
+            rawSubjects = TitleInstancePackagePlatform.executeQuery("select distinct(subjectReference) from TitleInstancePackagePlatform where subjectReference is not null and pkg in (:pkg)"+statusFilter+nameFilter+" order by subjectReference", queryParams)
         }
         if(rawSubjects.size() == 0){
-            subjects << messageSource.getMessage('titleInstance.noSubjectReference.label', null, LocaleUtils.getCurrentLocale())
+//            subjects << messageSource.getMessage('titleInstance.noSubjectReference.label', null, LocaleUtils.getCurrentLocale())
         }
         else {
             rawSubjects.each { String rawSubject ->
@@ -1179,30 +1144,26 @@ class ControlledListService {
         SortedSet<String> subjects = new TreeSet<String>()
         List<String> rawSubjects = []
 
-       if(params.status != '' && params.status != null && params.list('status')) {
-            List<Long> statusList = []
-            params.list('status').each { String statusId ->
-                statusList << Long.parseLong(statusId)
-            }
-
+       if (params.list('status').findAll()) {
+           List<Long> statusList = Params.getLongList(params, 'status')
            String query = "select distinct(tipp.subjectReference) from TitleInstancePackagePlatform tipp where tipp.subjectReference is not null and tipp.status.id in (:status) "
            Map queryMap = [status: statusList]
 
            if(params.institution && params.filterForPermanentTitle){
-               queryMap.inst = params.institution
+               queryMap.inst = Org.get(params.institution)
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
 
-           if(params.query) {
+           if (params.query) {
+               query += " and genfunc_filter_matcher(tipp.subjectReference, :query) = true "
                queryMap.query = params.query
-               query += " and genfunc_filter_macher(tipp.subjectReference, :query) = true"
            }
 
            query += " order by tipp.subjectReference"
            rawSubjects = TitleInstancePackagePlatform.executeQuery(query, queryMap)
         }
         if(rawSubjects.size() == 0){
-            return [[name: messageSource.getMessage('titleInstance.noSubjectReference.label', null, LocaleUtils.getCurrentLocale()), value: null]]
+//            return [[name: messageSource.getMessage('titleInstance.noSubjectReference.label', null, LocaleUtils.getCurrentLocale()), value: null]]
         }
         else {
             rawSubjects.each { String rawSubject ->
@@ -1229,16 +1190,16 @@ class ControlledListService {
         Set<Map> subjects = []
         String nameFilter = ""
         Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
-        if(query) {
-            nameFilter += "and Year(dateFirstOnline) like :query"
+        if (query) {
+            nameFilter += " and to_char(Year(dateFirstOnline), '9999') like :query "
             queryParams.query = "%${query}%"
         }
 
         subjects = TitleInstancePackagePlatform.executeQuery("select new map(Year(dateFirstOnline) as name, Year(dateFirstOnline) as value) from TitleInstancePackagePlatform where dateFirstOnline is not null and pkg = :pkg and status = :status "+nameFilter+" group by YEAR(dateFirstOnline) order by YEAR(dateFirstOnline)", queryParams)
 
-        if(subjects.size() == 0){
-            subjects << [name: messageSource.getMessage('default.selectionNotPossible.label', null, LocaleUtils.getCurrentLocale()), value: null]
-        }
+//        if(subjects.size() == 0){
+//            subjects << [name: messageSource.getMessage('default.selectionNotPossible.label', null, LocaleUtils.getCurrentLocale()), value: null]
+//        }
 
         subjects
     }
@@ -1247,24 +1208,29 @@ class ControlledListService {
      * Called from title filter views
      * Retrieves all possible years of first online publication for the given subscription
      * @param subscription the subscription whose titles should be inspected
-     * @params query query filter to restrict to certain values
+     * @param query query filter to restrict to certain values
+     * @param forTitles the title tab view
      * @return a set of possible years of first online publication
      */
-    Set getAllPossibleDateFirstOnlineYearBySub(Subscription subscription, String query) {
+    Set getAllPossibleDateFirstOnlineYearBySub(Subscription subscription, String query, String forTitles) {
         Set<Map> yearsFirstOnline = []
-        String nameFilter = ""
-        Map<String, Object> queryParams = [pkg: subscription.packages.pkg,current: RDStore.TIPP_STATUS_CURRENT]
-        if(query) {
-            nameFilter += "and Year(dateFirstOnline) like :query"
+        String nameFilter = "", statusFilter = " and status = :status "
+        Map<String, Object> queryParams = [pkg: subscription.packages.pkg, status: getTippStatusForRequest(forTitles)]
+        if (query) {
+            nameFilter += " and to_char(Year(dateFirstOnline), '9999') like :query "
             queryParams.query = "%${query}%"
+        }
+        if(forTitles && forTitles == 'allIEs') {
+            statusFilter = " and status != :status "
+            queryParams.status = RDStore.TIPP_STATUS_REMOVED
         }
 
         if(subscription.packages){
-            yearsFirstOnline = TitleInstancePackagePlatform.executeQuery("select new map(Year(dateFirstOnline) as name, Year(dateFirstOnline) as value) from TitleInstancePackagePlatform where dateFirstOnline is not null and pkg in (:pkg) and status = :current "+nameFilter+" group by YEAR(dateFirstOnline) order by YEAR(dateFirstOnline)", queryParams)
+            yearsFirstOnline = TitleInstancePackagePlatform.executeQuery("select new map(Year(dateFirstOnline) as name, Year(dateFirstOnline) as value) from TitleInstancePackagePlatform where dateFirstOnline is not null and pkg in (:pkg) "+statusFilter+nameFilter+" group by YEAR(dateFirstOnline) order by YEAR(dateFirstOnline)", queryParams)
         }
-        if(yearsFirstOnline.size() == 0){
-            yearsFirstOnline << messageSource.getMessage('default.selectionNotPossible.label', null, LocaleUtils.getCurrentLocale())
-        }
+//        if(yearsFirstOnline.size() == 0){
+//            yearsFirstOnline << [name: messageSource.getMessage('default.selectionNotPossible.label', null, LocaleUtils.getCurrentLocale()), value: null]
+//        }
 
         yearsFirstOnline
     }
@@ -1278,30 +1244,27 @@ class ControlledListService {
     Set getAllPossibleDateFirstOnlineYearByStatus(GrailsParameterMap params) {
         Set<Map> yearsFirstOnline = []
 
-       if(params.status != '' && params.status != null && params.list('status')) {
-            List<Long> statusList = []
-            params.list('status').each { String statusId ->
-                statusList << Long.parseLong(statusId)
-            }
+       if (params.list('status').findAll()) {
+           List<Long> statusList = Params.getLongList(params, 'status')
            String query = "select new map(Year(dateFirstOnline) as name, Year(dateFirstOnline) as value) from TitleInstancePackagePlatform tipp where tipp.dateFirstOnline is not null and tipp.status.id in (:status) "
            Map queryMap = [status: statusList]
 
            if(params.institution && params.filterForPermanentTitle){
-               queryMap.inst = params.institution
+               queryMap.inst = Org.get(params.institution)
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
 
-           if(params.query) {
+           if (params.query) {
+               query += " and to_char(Year(dateFirstOnline), '9999') like :query "
                queryMap.query = "%${params.query}%"
-               query += " and Year(dateFirstOnline) like :query"
            }
 
            query += " group by YEAR(tipp.dateFirstOnline) order by YEAR(tipp.dateFirstOnline)"
            yearsFirstOnline = TitleInstancePackagePlatform.executeQuery(query, queryMap)
         }
-        if(yearsFirstOnline.size() == 0){
-            yearsFirstOnline << messageSource.getMessage('default.selectionNotPossible.label', null, LocaleUtils.getCurrentLocale())
-        }
+//        if(yearsFirstOnline.size() == 0){
+//            yearsFirstOnline << [name: messageSource.getMessage('default.selectionNotPossible.label', null, LocaleUtils.getCurrentLocale()), value: null]
+//        }
 
         yearsFirstOnline
     }
@@ -1319,7 +1282,7 @@ class ControlledListService {
         Set<String> publishers = []
         Map<String, Object> queryParams = [pkg: pkg, status: tippStatus]
         String nameFilter = ""
-        if(query) {
+        if (query) {
             nameFilter += " and genfunc_filter_matcher(publisherName, :query) = true "
             queryParams.query = query
         }
@@ -1334,21 +1297,27 @@ class ControlledListService {
      * Called from title filter views
      * Retrieves all possible publishers for the given subscription
      * @param subscription the subscription whose titles should be inspected
-     * @params query query filter to restrict to certain values
+     * @param query query filter to restrict to certain values
+     * @param forTitles the title tab view
      * @return a set of possible publishers
      */
-    Set<String> getAllPossiblePublisherBySub(Subscription subscription, String query) {
+    Set<String> getAllPossiblePublisherBySub(Subscription subscription, String query, String forTitles) {
         Set<String> publishers = []
 
         if(subscription.packages){
-            Map<String, Object> queryParams = [pkg: subscription.packages.pkg,current: RDStore.TIPP_STATUS_CURRENT]
-            String nameFilter = ""
-            if(query) {
+
+            Map<String, Object> queryParams = [pkg: subscription.packages.pkg, status: getTippStatusForRequest(forTitles)]
+            String nameFilter = "", statusFilter = " and status = :status "
+            if (query) {
                 nameFilter += " and genfunc_filter_matcher(publisherName, :query) = true "
                 queryParams.query = query
             }
+            if(forTitles && forTitles == 'allIEs') {
+                statusFilter = " and status != :status "
+                queryParams.status = RDStore.TIPP_STATUS_REMOVED
+            }
             //publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(orgRole.org.name) from TitleInstancePackagePlatform tipp left join tipp.orgs orgRole where orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and tipp.pkg in (:pkg) order by orgRole.org.name", [pkg: subscription.packages.pkg]))
-            publishers.addAll(TitleInstancePackagePlatform.executeQuery("select new map(publisherName as name, publisherName as value) from TitleInstancePackagePlatform where publisherName is not null and pkg in (:pkg) and status = :current "+nameFilter+" group by publisherName order by publisherName", queryParams))
+            publishers.addAll(TitleInstancePackagePlatform.executeQuery("select new map(publisherName as name, publisherName as value) from TitleInstancePackagePlatform where publisherName is not null and pkg in (:pkg) "+statusFilter+nameFilter+" group by publisherName order by publisherName", queryParams))
         }
 
         publishers
@@ -1363,21 +1332,18 @@ class ControlledListService {
     Set<String> getAllPossiblePublisherByStatus(GrailsParameterMap params) {
         Set<String> publishers = []
 
-       if(params.status != '' && params.status != null && params.list('status')) {
-            List<Long> statusList = []
-            params.list('status').each { String statusId ->
-                statusList << Long.parseLong(statusId)
-            }
+       if (params.list('status').findAll()) {
+           List<Long> statusList = Params.getLongList(params, 'status')
            String query = "select new map(tipp.publisherName as name, tipp.publisherName as value) from TitleInstancePackagePlatform tipp where tipp.publisherName is not null and tipp.status.id in (:status) "
            Map queryMap = [status: statusList]
 
            if(params.institution && params.filterForPermanentTitle){
-               queryMap.inst = params.institution
+               queryMap.inst = Org.get(params.institution)
                query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
            }
-           if(params.query) {
+           if (params.query) {
+               query += " and genfunc_filter_matcher(tipp.publisherName, :query) = true "
                queryMap.query = params.query
-               query += " and genfunc_filter_name(tipp.publisherName, :query) = true"
            }
            query += " group by tipp.publisherName order by tipp.publisherName"
             //publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(orgRole.org.name) from TitleInstancePackagePlatform tipp left join tipp.orgs orgRole where orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and tipp.pkg in (:pkg) order by orgRole.org.name", [pkg: subscription.packages.pkg]))
@@ -1394,42 +1360,151 @@ class ControlledListService {
      */
     RefdataValue getTippStatusForRequest(String forTitles) {
         switch(forTitles) {
-            case 'planned': RDStore.TIPP_STATUS_EXPECTED
+            case ['planned', 'plannedIEs']: RDStore.TIPP_STATUS_EXPECTED
                 break
-            case 'expired': RDStore.TIPP_STATUS_RETIRED
+            case ['expired', 'expiredIEs']: RDStore.TIPP_STATUS_RETIRED
                 break
-            case 'deleted': RDStore.TIPP_STATUS_DELETED
+            case ['deleted', 'deletedIEs']: RDStore.TIPP_STATUS_DELETED
                 break
             default: RDStore.TIPP_STATUS_CURRENT
                 break
         }
     }
 
+    /**
+     * Retrieves a list of platforms matching the given request parameters
+     * @param params the request parameter map
+     * @return a map containing platforms, an empty one if no platforms match the filter
+     */
     Map getPlatforms(GrailsParameterMap params) {
         Org institution = contextService.getOrg()
         String consortiumFilter = "", platNameFilter = ""
         Map qryParams = [context: institution]
         if(institution.isCustomerType_Consortium())
             consortiumFilter = "and sub.instanceOf is null"
-        if(params.query) {
-            platNameFilter = "and genfunc_filter_matcher(plat.name,:query) = true"
+        if (params.query) {
+            platNameFilter = " and genfunc_filter_matcher(plat.name, :query) = true "
             qryParams.query = params.query
         }
         String qryString = "select new map(concat('${Platform.class.name}:',plat.id) as value,plat.name as name) from SubscriptionPackage sp join sp.pkg pkg join pkg.nominalPlatform plat where sp.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context ${consortiumFilter}) ${platNameFilter} group by plat.id order by plat.name asc"
         [results: Platform.executeQuery(qryString, qryParams)]
     }
 
+    /**
+     * Retrieves a list of provider organisations matching the given request parameters
+     * @param params the request parameter map
+     * @return a map containing providers, an empty one if no providers match the filter
+     */
     Map getProviders(GrailsParameterMap params) {
         Org institution = contextService.getOrg()
-        String consortiumFilter = "", orgNameFilter = ""
-        Map qryParams = [context: institution]
+        String consortiumFilter = "", providerNameFilter = ""
+        Set results = []
+        Map qryParams = [:]
         if(institution.isCustomerType_Consortium())
             consortiumFilter = "and sub.instanceOf is null"
-        if(params.query) {
-            orgNameFilter = "and (genfunc_filter_matcher(org.name,:query) = true or genfunc_filter_matcher(org.sortname,:query) = true)"
+        if (params.query) {
+            providerNameFilter = " (genfunc_filter_matcher(p.name, :query) = true or genfunc_filter_matcher(p.sortname, :query) = true or exists (select alt from p.altnames alt where genfunc_filter_matcher(alt.name, :query) = true)) "
             qryParams.query = params.query
         }
-        String qryString = "select new map(concat('${Org.class.name}:',org.id) as value,org.name as name) from SubscriptionPackage sp join sp.pkg pkg join pkg.orgs oo join oo.org org where sp.subscription in (select sub from OrgRole os join os.sub sub where os.org = :context ${consortiumFilter}) ${orgNameFilter} group by org.id order by org.sortname asc"
-        [results: Org.executeQuery(qryString, qryParams)]
+        if(params.forFinanceView) {
+            List<Long> subIDs = Subscription.executeQuery('select s.id from CostItem ci join ci.sub s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in (:orgRoles)',[org: institution, orgRoles: [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIPTION_CONSORTIUM]])
+            if(subIDs) {
+                qryParams.subscriptions = subIDs
+                if(providerNameFilter)
+                    providerNameFilter = "and ${providerNameFilter}"
+                String qryString = "select new map(concat('${Provider.class.name}:',p.id) as value, p.name as name) from ProviderRole pvr join pvr.provider p where pvr.subscription.id in (:subscriptions) ${providerNameFilter} order by p.sortname asc"
+                results.addAll(Provider.executeQuery(qryString, qryParams))
+            }
+        }
+        else if(params.tableView) {
+            String qryString = "select p from Provider p where ${providerNameFilter} order by p.sortname, p.name"
+            results.addAll(Provider.executeQuery(qryString, qryParams))
+        }
+        else {
+            if(params.displayWekbFlag) {
+                if(providerNameFilter)
+                    providerNameFilter = "where ${providerNameFilter}"
+                String qryString = "select new map(concat('${Provider.class.name}:',p.id) as value,case when p.gokbId != null then concat(p.name,' (we:kb)') else p.name end as name) from Provider p ${providerNameFilter} order by p.sortname, p.name"
+                results.addAll(Provider.executeQuery(qryString, qryParams))
+            }
+            else {
+                if(providerNameFilter)
+                    providerNameFilter = "and ${providerNameFilter}"
+                qryParams.context = institution
+                String qryString1 = "select new map(concat('${Provider.class.name}:',p.id) as value,p.name as name,p.sortname as sortname) from SubscriptionPackage sp join sp.pkg pkg join pkg.provider p where sp.subscription in (select sub from OrgRole os join os.sub sub where os.org = :context ${consortiumFilter}) ${providerNameFilter} group by p.id order by p.sortname, p.name",
+                qryString2 = "select new map(concat('${Provider.class.name}:',p.id) as value,p.name as name,p.sortname as sortname) from Provider p where p.createdBy = :context ${providerNameFilter} order by p.sortname, p.name",
+                qryString3 = "select new map(concat('${Provider.class.name}:',p.id) as value,p.name as name,p.sortname as sortname) from ProviderRole pvr join pvr.provider p where pvr.subscription in (select sub from OrgRole os join os.sub sub where os.org = :context ${consortiumFilter}) ${providerNameFilter} group by p.id order by p.sortname, p.name"
+                results.addAll(Provider.executeQuery(qryString1, qryParams))
+                results.addAll(Provider.executeQuery(qryString2, qryParams))
+                results.addAll(Provider.executeQuery(qryString3, qryParams))
+                results.sort { Map rowA, Map rowB ->
+                    int cmp = rowA.sortname <=> rowB.sortname
+                    if(!cmp)
+                        cmp = rowA.name <=> rowB.name
+                    cmp
+                }
+            }
+        }
+        [results: results]
+    }
+
+    /**
+     * Retrieves a list of {@link de.laser.wekb.Vendor}s matching the given request parameters
+     * @param params the request parameter map
+     * @return a map containing vendors, an empty one if no providers match the filter
+     */
+    Map getVendors(GrailsParameterMap params) {
+        Org institution = contextService.getOrg()
+        String consortiumFilter = "", vendorNameFilter = ""
+        Map qryParams = [:]
+        Set results = []
+        /*
+        we must consider child instances as well this time ...
+        if(institution.isCustomerType_Consortium())
+            consortiumFilter = "and sub.instanceOf is null"
+        */
+        if (params.query) {
+            vendorNameFilter = "(genfunc_filter_matcher(vendor.name, :query) = true or genfunc_filter_matcher(vendor.sortname, :query) = true) "
+            qryParams.query = params.query
+        }
+        if(params.forFinanceView) {
+            List<Long> subIDs = Subscription.executeQuery('select s.id from CostItem ci join ci.sub s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in (:orgRoles)',[org: institution, orgRoles: [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIPTION_CONSORTIUM]])
+            if(subIDs) {
+                qryParams.subscriptions = subIDs
+                if(vendorNameFilter)
+                    vendorNameFilter = "and ${vendorNameFilter}"
+                String qryString = "select new map(concat('${Vendor.class.name}:',v.id) as value, v.name as name) from VendorRole vr join vr.vendor v where vr.subscription.id in (:subscriptions) ${vendorNameFilter} order by v.sortname, v.name"
+                results.addAll(Vendor.executeQuery(qryString, qryParams))
+            }
+        }
+        else if(params.tableView) {
+            String qryString = "select vendor from Vendor vendor where ${vendorNameFilter} order by vendor.sortname, vendor.name"
+            results.addAll(Vendor.executeQuery(qryString, qryParams))
+        }
+        else {
+            if(params.displayWekbFlag) {
+                if(vendorNameFilter)
+                    vendorNameFilter = "where ${vendorNameFilter}"
+                String qryString = "select new map(concat('${Vendor.class.name}:',vendor.id) as value,case when vendor.gokbId != null then concat(vendor.name,' (we:kb)') else vendor.name end as name) from Vendor vendor ${vendorNameFilter} order by vendor.sortname, vendor.name"
+                results.addAll(Vendor.executeQuery(qryString, qryParams))
+            }
+            else {
+                if(vendorNameFilter)
+                    vendorNameFilter = "and ${vendorNameFilter}"
+                qryParams.context = institution
+                String qryString1 = "select new map(concat('${Vendor.class.name}:',vendor.id) as value,vendor.name as name,vendor.sortname as sortname) from PackageVendor pv join pv.vendor vendor, SubscriptionPackage sp join sp.pkg pkg where sp.pkg = pv.pkg and sp.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context ${consortiumFilter}) ${vendorNameFilter} group by vendor.id order by vendor.sortname asc",
+                qryString2 = "select new map(concat('${Vendor.class.name}:',vendor.id) as value,vendor.name as name,vendor.sortname as sortname) from Vendor vendor where vendor.createdBy = :context ${vendorNameFilter} order by vendor.sortname asc",
+                qryString3 = "select new map(concat('${Vendor.class.name}:',v.id) as value,v.name as name,v.sortname as sortname) from VendorRole vr join vr.vendor v where vr.subscription in (select sub from OrgRole os join os.sub sub where os.org = :context ${consortiumFilter}) ${vendorNameFilter} group by v.id order by v.sortname, v.name"
+                results.addAll(Vendor.executeQuery(qryString1, qryParams))
+                results.addAll(Vendor.executeQuery(qryString2, qryParams))
+                results.addAll(Vendor.executeQuery(qryString3, qryParams))
+                results.sort { Map rowA, Map rowB ->
+                    int cmp = rowA.sortname <=> rowB.sortname
+                    if(!cmp)
+                        rowA.name <=> rowB.name
+                }
+            }
+        }
+        [results: results]
     }
 }

@@ -1,5 +1,5 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.Org; de.laser.finance.CostItem; de.laser.Subscription; de.laser.Platform; de.laser.Package; java.text.SimpleDateFormat; de.laser.PendingChangeConfiguration; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.storage.RDStore;" %>
-<laser:htmlStart message="subscription.details.linkPackage.heading" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.Org; de.laser.finance.CostItem; de.laser.Subscription; de.laser.wekb.Platform; de.laser.wekb.Package; java.text.SimpleDateFormat; de.laser.PendingChangeConfiguration; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.storage.RDStore;" %>
+<laser:htmlStart message="subscription.details.linkPackage.heading" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code: 'myinst.currentSubscriptions.label')}"/>
@@ -25,7 +25,11 @@
 
 
 <g:if test="${!error}">
-    <laser:render template="/templates/filter/packageGokbFilter"/>
+    <laser:render template="/templates/filter/packageGokbFilter" model="[tmplConfigShow: [
+            ['q', 'pkgStatus'],
+            ['provider', 'vendor', 'ddc', 'curatoryGroup'],
+            ['curatoryGroupType', 'automaticUpdates']
+    ]]"/>
 </g:if>
 
 <ui:messages data="${flash}"/>
@@ -45,139 +49,15 @@
 
 
 <g:if test="${records}">
-
-    <table class="ui sortable celled la-js-responsive-table la-table table">
-        <thead>
-        <tr>
-            <th>${message(code: 'sidewide.number')}</th>
-            <g:sortableColumn property="name"
-                              title="${message(code: 'package.show.pkg_name')}"
-                              params="${params}"/>
-            <th>${message(code: 'package.status.label')}</th>
-            <g:sortableColumn property="titleCount"
-                              title="${message(code: 'package.compare.overview.tipps')}"
-                              params="${params}"/>
-            <g:sortableColumn property="providerName" title="${message(code: 'package.content_provider')}"
-                              params="${params}"/>
-            <g:sortableColumn property="nominalPlatformName"
-                              title="${message(code: 'platform.label')}"
-                              params="${params}"/>
-            <th>${message(code: 'package.curatoryGroup.label')}</th>
-            <th>${message(code: 'package.source.automaticUpdates')}</th>
-            <g:sortableColumn property="lastUpdatedDisplay"
-                              title="${message(code: 'package.lastUpdated.label')}"
-                              params="${params}"/>
-            <th>${message(code: 'default.action.label')}</th>
-        </tr>
-        </thead>
-        <tbody>
-        <g:each in="${records}" var="record" status="jj">
-            <tr>
-                <g:set var="pkg" value="${Package.findByGokbId(record.uuid)}"/>
-                <g:set var="org" value="${Org.findByGokbId(record.providerUuid)}"/>
-                <g:set var="plat" value="${Platform.findByGokbId(record.nominalPlatformUuid)}"/>
-                <td>${(params.int('offset') ?: 0) + jj + 1}</td>
-                <td>
-                <%--UUID: ${record.uuid} --%>
-                <%--Package: ${Package.findByGokbId(record.uuid)} --%>
-                    <g:if test="${pkg}">
-                        <g:link controller="package" action="show"
-                                id="${pkg.id}">${record.name}</g:link>
-                    </g:if>
-                    <g:else>
-                        ${record.name} <a target="_blank"
-                                          href="${editUrl ? editUrl + '/public/packageContent/?id=' + record.uuid : '#'}"><i
-                                title="we:kb Link" class="external alternate icon"></i></a>
-                    </g:else>
-                </td>
-                <td>
-                    ${RefdataValue.getByValueAndCategory(record.status, RDConstants.PACKAGE_STATUS)?.getI10n("value")}
-                </td>
-                <td>
-                    <g:if test="${record.currentTippCount}">
-                        ${record.currentTippCount}
-                    </g:if>
-                    <g:else>
-                        0
-                    </g:else>
-                </td>
-                <td><g:if test="${org}"><g:link
-                        controller="organisation" action="show"
-                        id="${org.id}">${record.providerName}</g:link></g:if>
-                <g:else>${record.providerName}</g:else>
-                </td>
-                <td><g:if test="${plat}"><g:link
-                        controller="platform" action="show"
-                        id="${plat.id}">${record.nominalPlatformName}</g:link></g:if>
-                    <g:else>${record.nominalPlatformName}</g:else></td>
-                <td>
-                    <div class="ui bulleted list">
-                        <g:each in="${record.curatoryGroups}" var="curatoryGroup">
-                            <div class="item"><g:link url="${editUrl.endsWith('/') ? editUrl : editUrl+'/'}resource/show/${curatoryGroup.curatoryGroup}">${curatoryGroup.name}</g:link></div>
-                        </g:each>
-                    </div>
-                </td>
-                <td>
-                    <g:if test="${record.source?.automaticUpdates}">
-                        <g:message code="package.index.result.automaticUpdates"/>
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${record.source.frequency}">
-                            <i class="question circle icon"></i>
-                        </span>
-                    </g:if>
-                    <g:else>
-                        <g:message code="package.index.result.noAutomaticUpdates"/>
-                    </g:else>
-                </td>
-                <td>
-                    <g:if test="${record.lastUpdatedDisplay}">
-                        <g:formatDate formatName="default.date.format.notime"
-                                      date="${DateUtils.parseDateGeneric(record.lastUpdatedDisplay)}"/>
-                    </g:if>
-                </td>
-                <td class="right aligned">
-                    <g:if test="${editable && (!pkgs || !(record.uuid in pkgs))}">
-                        <g:set var="disabled" value="${bulkProcessRunning ? 'disabled' : ''}" />
-                        <button type="button" class="ui icon button la-popup-tooltip la-delay ${disabled}"
-                                data-addUUID="${record.uuid}"
-                                data-packageName="${record.name}"
-                                data-ui="modal"
-                                data-href="#linkPackageModal"
-                                data-content="${message(code: 'subscription.details.linkPackage.button', args: [record.name])}"><g:message
-                                code="subscription.details.linkPackage.label"/></button>
-
-                    </g:if>
-                %{--<g:else>
-                    <g:set var="hasCostItems"
-                           value="${CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.pkg.gokbId = :record and ci.subPkg.subscription = :sub', [record: record.uuid, sub: subscription])}"/>
-                    <g:if test="${editable && !hasCostItems}">
-                        <div class="ui icon negative buttons">
-                            <button class="ui button la-selectable-button"
-                                    onclick="JSPC.app.unlinkPackage(${Package.findByGokbId(record.uuid)?.id})">
-                                <i class="unlink icon"></i>
-                            </button>
-                        </div>
-                    </g:if>
-                    <g:elseif test="${editable && hasCostItems}">
-                        <div class="ui icon negative buttons la-popup-tooltip"
-                             data-content="${message(code: 'subscription.delete.existingCostItems')}">
-                            <button class="ui disabled button la-selectable-button">
-                                <i class="unlink icon"></i>
-                            </button>
-                        </div>
-                    </g:elseif>
-                    <br/>
-                </g:else>--}%
-                </td>
-            </tr>
-        </g:each>
-        </tbody>
-    </table>
-
-
+    <laser:render template="/templates/filter/packageGokbFilterTable"
+                  model="[
+                          tmplConfigShow: ['lineNumber', 'name', 'status', 'titleCount', 'provider', 'vendor', 'platform', 'curatoryGroup', 'automaticUpdates', 'lastUpdatedDisplay', 'linkPackage'],
+                          pkgs: pkgs,
+                          bulkProcessRunning: bulkProcessRunning
+                  ]"
+    />
     <ui:paginate action="linkPackage" controller="subscription" params="${params}"
                     max="${max}" total="${recordsCount}"/>
-
 </g:if>
 <g:else>
     <g:if test="${filterSet}">
@@ -205,290 +85,172 @@
             <input type="text" id="pkgName" name="pkgName" value="" readonly/>
         </div>
         <div class="field">
-            <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')} <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="question circle icon"></i></span></label>
+            <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')} <span class="la-long-tooltip la-popup-tooltip" data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="${Icon.TOOLTIP.HELP}"></i></span></label>
         </div>
         <div class="four fields">
-            <div class="field">
-                <ui:select class="ui dropdown search selection" id="holdingSelection" name="holdingSelection" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" optionKey="id" optionValue="value"/>
-            </div>
-            <g:if test="${institution.isCustomerType_Consortium()}">
+            <g:if test="${subscription.instanceOf && auditService.getAuditConfig(subscription.instanceOf, 'holdingSelection')}">
                 <div class="field">
-                    <g:if test="${auditService.getAuditConfig(subscription, 'holdingSelection')}">
-                        <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherited')}" class="ui icon green button la-modern-button la-audit-button la-popup-tooltip la-delay" data-inherited="true">
-                            <i aria-hidden="true" class="icon la-js-editmode-icon thumbtack"></i>
-                        </button>
-                    </g:if>
-                    <g:else>
-                        <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherit')}" class="ui icon blue button la-modern-button la-audit-button la-popup-tooltip la-delay" data-inherited="false">
-                            <i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash"></i>
-                        </button>
-                    </g:else>
+                    ${subscription.holdingSelection.getI10n('value')}
                 </div>
             </g:if>
-            <div class="field">
-                <div class="ui checkbox toggle">
-                    <g:checkBox name="createEntitlements"/>
-                    <label><g:message code="subscription.details.link.with_ents"/></label>
+            <g:else>
+                <div class="field" id="holdingSelection">
+                    <ui:select class="ui dropdown search selection" name="holdingSelection" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}"
+                               optionKey="id" optionValue="value" value="${subscription.holdingSelection?.id}" noSelection="${['':message(code:'default.select.choose.label')]}"/>
                 </div>
+                <g:if test="${institution.isCustomerType_Consortium() && !subscription.instanceOf}">
+                    <div class="field">
+                        <g:if test="${auditService.getAuditConfig(subscription, 'holdingSelection')}">
+                            <g:if test="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+                                <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherited')}" class="${Btn.MODERN.POSITIVE_TOOLTIP} la-audit-button disabled" data-inherited="true">
+                                    <i aria-hidden="true" class="${Icon.SIG.INHERITANCE}"></i>
+                                </button>
+                            </g:if>
+                            <g:else>
+                                <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherited')}" class="${Btn.MODERN.POSITIVE_TOOLTIP} la-audit-button" data-inherited="true">
+                                    <i aria-hidden="true" class="${Icon.SIG.INHERITANCE}"></i>
+                                </button>
+                            </g:else>
+                        </g:if>
+                        <g:else>
+                            <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherit')}" class="${Btn.MODERN.SIMPLE_TOOLTIP} la-audit-button" data-inherited="false">
+                                <i aria-hidden="true" class="icon la-thumbtack slash"></i>
+                            </button>
+                        </g:else>
+                    </div>
+                </g:if>
+            </g:else>
+            <div class="field">
+                    <div class="ui createEntitlements withOverwrite checkbox toggle">
+                        <g:checkBox class="updateHidden" name="createEntitlements" checked="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}" disabled="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}"/>
+                        <g:hiddenField id="createEntitlementsOverwrite" name="createEntitlements"/>
+                        <label><g:message code="subscription.details.link.with_ents"/></label>
+                    </div>
             </div>
             <g:if test="${institution.isCustomerType_Consortium()}">
                 <div class="field">
-                    <div class="ui linkToChildren checkbox toggle">
-                        <g:checkBox name="linkToChildren"/>
-                        <label><i data-content="${message(code:'consortium.member.plural')}" data-position="top center" class="users icon la-popup-tooltip la-delay"></i> <g:message code="subscription.details.linkPackage.label"/></label>
+                    <div class="ui linkToChildren withOverwrite checkbox toggle">
+                        <g:checkBox class="updateHidden" name="linkToChildren" disabled="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}"/>
+                        <g:hiddenField id="linkToChildrenOverwrite" name="linkToChildren"/>
+                        <label><i data-content="${message(code:'consortium.member.plural')}" data-position="top center" class="users icon la-popup-tooltip"></i> <g:message code="subscription.details.linkPackage.label"/></label>
                     </div>
                 </div>
                 <div class="field">
-                    <div class="ui createEntitlementsForChildren checkbox toggle">
-                        <g:checkBox name="createEntitlementsForChildren"/>
-                        <label><i data-content="${message(code:'consortium.member.plural')}" data-position="top center" class="users icon la-popup-tooltip la-delay"></i> <g:message code="subscription.details.link.with_ents"/></label>
+                    <div class="ui createEntitlementsForChildren withOverwrite checkbox toggle">
+                        <g:checkBox class="updateHidden" name="createEntitlementsForChildren" disabled="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}"/>
+                        <g:hiddenField id="createEntitlementsForChildrenOverwrite" name="createEntitlementsForChildren"/>
+                        <label><i data-content="${message(code:'consortium.member.plural')}" data-position="top center" class="users icon la-popup-tooltip"></i> <g:message code="subscription.details.link.with_ents"/></label>
                     </div>
                 </div>
             </g:if>
         </div>
     </g:form>
-
-        <%--
-        <div class="ui divided grid">
-            <g:set var="colCount" value="${institution.isCustomerType_Consortium() ? 'eight' : 'sixteen'}"/>
-            <div class="${colCount} wide column">
-                <div class="grouped required fields">
-                    <label for="With">${message(code: 'subscription.details.linkPackage.label')}</label>
-
-                    <div class="field">
-                        <div class="ui radio checkbox">
-                            <input type="radio" name="addType" id="With" value="With" tabindex="0" class="hidden">
-                            <label for="With">${message(code: 'subscription.details.link.with_ents')}</label>
-                        </div>
-                    </div>
-
-                    <div class="field">
-                        <div class="ui radio checkbox">
-                            <input type="radio" name="addType" id="Without" value="Without" tabindex="0" class="hidden">
-                            <label for="Without">${message(code: 'subscription.details.link.no_ents')}</label>
-                        </div>
-                    </div>
-                </div>
-
-                <br/>
-                <br/>
-            </div>
-        </div>
-        --%>
-
-                <%--
-                <div class="field">
-                    <h5 class="ui dividing header">
-                        <g:message code="subscription.packages.config.label" args="${[""]}"/>
-                    </h5>
-
-                    <table class="ui table compact la-table-height53px">
-                        <tr>
-                            <th class="control-label"><g:message code="subscription.packages.changeType.label"/></th>
-                            <th class="control-label">
-                                <g:message code="subscription.packages.setting.label"/>
-                            </th>
-                            <th class="control-label la-popup-tooltip la-delay"
-                                data-content="${message(code: "subscription.packages.notification.label")}">
-                                <i class="ui large icon bullhorn"></i>
-                            </th>
-                        </tr>
-                        <g:set var="excludes"
-                               value="${[PendingChangeConfiguration.PACKAGE_PROP,
-                                         PendingChangeConfiguration.PACKAGE_DELETED]}"/>
-                        <g:each in="${PendingChangeConfiguration.SETTING_KEYS-PendingChangeConfiguration.TITLE_REMOVED}" var="settingKey">
-                            <tr>
-                                <td class="control-label">
-                                    <g:message code="subscription.packages.${settingKey}"/>
-                                </td>
-                                <td>
-                                    <g:if test="${!(settingKey in excludes)}">
-                                        <g:if test="${editable}">
-                                            <ui:select class="ui dropdown"
-                                                          name="${settingKey}!§!setting"
-                                                          from="${RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)}"
-                                                          optionKey="id" optionValue="value"
-                                                          value="${RDStore.PENDING_CHANGE_CONFIG_PROMPT.id}"/>
-                                        </g:if>
-                                        <g:else>
-                                            ${RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n("value")}
-                                        </g:else>
-                                    </g:if>
-                                </td>
-                                <td>
-                                    <g:if test="${editable}">
-                                        <g:checkBox class="ui checkbox" name="${settingKey}!§!notification"
-                                                    checked="${false}"/>
-                                    </g:if>
-                                    <g:else>
-                                        ${RDStore.YN_NO.getI10n("value")}
-                                    </g:else>
-                                </td>
-                            </tr>
-                        </g:each>
-                    </table>
-                </div>
-                <div class="inline field">
-                    <label for="freezeHolding"><g:message code="subscription.packages.freezeHolding"/> <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.packages.freezeHolding.expl')}"><i class="ui question circle icon"></i></span></label>
-                    <g:checkBox class="ui checkbox" name="freezeHolding" checked="${false}"/>
-                </div>
-            </div>
-            <g:if test="${institution.isCustomerType_Consortium()}">
-                <div class="${colCount} wide column">
-                    <div class="grouped fields">
-                        <label for="WithForChildren">${message(code: 'subscription.details.linkPackage.children.label')}</label>
-
-                        <div class="field">
-                            <div class="ui radio checkbox">
-                                <input type="radio" name="addTypeChildren" id="WithForChildren" value="WithForChildren" tabindex="0" class="hidden">
-                                <label>${message(code: 'subscription.details.link.with_ents')}</label>
-                            </div>
-                        </div>
-
-                        <div class="field">
-                            <div class="ui radio checkbox">
-                                <input type="radio" name="addTypeChildren" id="WithoutForChildren" value="WithoutForChildren" tabindex="0" class="hidden">
-                                <label>${message(code: 'subscription.details.link.no_ents')}</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <br/>
-                    <br/>
-                    <div class="field">
-                        <h5 class="ui dividing header">
-                            <g:message code="subscription.packages.config.children.label" args="${[""]}"/>
-                        </h5>
-
-                        <table class="ui table compact la-table-height53px">
-                            <tr>
-                                <th class="control-label la-popup-tooltip la-delay" data-contet="${message(code: "subscription.packages.auditable")}">
-                                    <i class="ui large icon thumbtack"></i>
-                                </th>
-                                <th class="control-label la-popup-tooltip la-delay" data-content="${message(code: "subscription.packages.notification.auditable")}">
-                                    <i class="ui large icon bullhorn"></i>
-                                </th>
-                            </tr>
-                            <g:set var="excludes"
-                                   value="${[PendingChangeConfiguration.PACKAGE_PROP,
-                                             PendingChangeConfiguration.PACKAGE_DELETED]}"/>
-                            <g:each in="${PendingChangeConfiguration.SETTING_KEYS-PendingChangeConfiguration.TITLE_REMOVED}" var="settingKey">
-                                <tr>
-                                    <td>
-                                        <g:if test="${!(settingKey in excludes)}">
-                                            <g:checkBox class="ui checkbox" name="${settingKey}!§!auditable"
-                                                        checked="${false}"/>
-                                        </g:if>
-                                    </td>
-                                    <td>
-                                        <g:if test="${editable}">
-                                            <g:checkBox class="ui checkbox" name="${settingKey}!§!notificationAudit"
-                                                        checked="${false}"/>
-                                        </g:if>
-                                        <g:else>
-                                            ${RDStore.YN_NO.getI10n("value")}
-                                        </g:else>
-                                    </td>
-                                </tr>
-                            </g:each>
-                        </table>
-                    </div>
-                    <div class="inline field">
-                        <label for="freezeHoldingAudit"><g:message code="subscription.packages.freezeHolding"/> <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.packages.freezeHolding.expl')}"><i class="ui question circle icon"></i></span></label>
-                        <g:checkBox class="ui checkbox" name="freezeHoldingAudit" checked="${false}"/>
-                    </div>
-                </div>
-            </g:if>
-        </div>
-
-    </g:form>
-    --%>
 
     <laser:script file="${this.getGroovyPageFileName()}">
         JSPC.callbacks.modal.onShow.linkPackageModal = function(trigger) {
             tooltip.init("#linkPackageModal");
-            $('#linkPackageModal #pkgName').attr('value', $(trigger).attr('data-packageName'))
-            $('#linkPackageModal input[name=addUUID]').attr('value', $(trigger).attr('data-addUUID'))
+            $('#linkPackageModal #pkgName').attr('value', $(trigger).attr('data-packageName'));
+            $('#linkPackageModal input[name=addUUID]').attr('value', $(trigger).attr('data-addUUID'));
         }
+        JSPC.app.disableChildEnt = function() {
+            $(".checkbox.createEntitlementsForChildren").checkbox('uncheck').checkbox('set disabled');
+        }
+        JSPC.app.updateHidden = function() {
+            $(".updateHidden").each(function(i) {
+                let fieldId = $(this).attr("id");
+                let checked = $(this).attr("checked") === "checked" ? "on" : "off";
+                $("#"+fieldId+"Overwrite").val(checked);
+            });
+        }
+
+        $("#holdingSelection .ui.dropdown").dropdown({
+            onChange: function(value, text, $selectedItem) {
+                let rdvId = Number(value);
+                let button = $("#inheritHoldingSelection");
+                let icon = button.find('i');
+                let holdingEntire = rdvId === ${RDStore.SUBSCRIPTION_HOLDING_ENTIRE.id};
+                $.ajax({
+                    url: '<g:createLink controller="ajax" action="switchPackageHoldingInheritance" />',
+                    data: {
+                        id: ${subscription.id},
+                        value: rdvId
+                    }
+                }).done(function(response) {
+                    if(holdingEntire) {
+                        button.removeClass('blue').addClass('green').addClass('disabled');
+                        icon.removeClass('la-thumbtack slash').addClass('thumbtack');
+                        button.attr('data-inherited', 'true');
+                        $(".checkbox.createEntitlements").checkbox('check').checkbox('set disabled');
+                        $(".checkbox.linkToChildren").checkbox('uncheck').checkbox('set disabled');
+                        $(".checkbox.createEntitlementsForChildren").checkbox('uncheck').checkbox('set disabled');
+                    }
+                    else {
+                        button.removeClass('green').addClass('blue').removeClass('disabled');
+                        icon.addClass('la-thumbtack slash').removeClass('thumbtack');
+                        button.attr('data-inherited', 'false');
+                        $(".checkbox.createEntitlements").checkbox('uncheck').checkbox('set enabled');
+                        $(".checkbox.linkToChildren").checkbox('set enabled');
+                        $(".checkbox.createEntitlementsForChildren").checkbox('set enabled');
+                    }
+                    JSPC.app.updateHidden();
+                }).fail(function () {
+                    console.log("AJAX error! Please check logs!");
+                });
+            }
+        });
+
+        $("#inheritHoldingSelection").click(function(e) {
+            e.preventDefault();
+            let isInherited = $(this).attr('data-inherited') === 'true';
+            let button = $(this);
+            let icon = $(this).find('i');
+            $.ajax({
+                url: '<g:createLink controller="ajax" action="toggleAudit" params="[owner: genericOIDService.getOID(subscription), property: 'holdingSelection', returnSuccessAsJSON: true]"/>'
+            }).done(function(response) {
+                button.toggleClass('blue').toggleClass('green');
+                if(isInherited) {
+                    icon.addClass('la-thumbtack slash').removeClass('thumbtack');
+                    button.attr('data-inherited', 'false');
+                }
+                else {
+                    icon.removeClass('la-thumbtack slash').addClass('thumbtack');
+                    button.attr('data-inherited', 'true');
+                }
+            }).fail(function () {
+                console.log("AJAX error! Please check logs!");
+            });
+        });
+
+        $(".checkbox.withOverwrite").checkbox({
+            onChecked: function() {
+                let fieldId = $(this).attr("id");
+                $("#"+fieldId+"Overwrite").val('on');
+                if(fieldId === 'linkToChildren') {
+                    console.log("linkToChildren enabled!");
+                    $(".checkbox.createEntitlementsForChildren").checkbox('set enabled');
+                }
+            },
+            onUnchecked: function() {
+                let fieldId = $(this).attr("id");
+                $("#"+fieldId+"Overwrite").val('off');
+                if(fieldId === 'linkToChildren') {
+                    console.log("linkToChildren disabled!");
+                    JSPC.app.disableChildEnt();
+                }
+            }
+        });
+
+        JSPC.app.disableChildEnt();
+        JSPC.app.updateHidden();
     </laser:script>
 
 </ui:modal>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-%{--    JSPC.app.unlinkPackage = function (pkg_id){
-      var req_url = "${createLink(controller: 'subscription', action: 'unlinkPackage', params: [subscription: subscription.id])}&package="+pkg_id
 
-        $.ajax({url: req_url,
-          success: function(result){
-             $("#unlinkPackageModal").remove();
-             $('#magicArea').html(result);
-          },
-          complete: function(){
-            $("#unlinkPackageModal").modal("show");
-          }
-        });
-      }--}%
     JSPC.app.toggleAlert = function() {
       $('#durationAlert').toggle();
     }
-    JSPC.app.disableChildEnt = function() {
-        $(".checkbox.createEntitlementsForChildren").checkbox('uncheck').checkbox('set disabled');
-    }
-
-    $("#inheritHoldingSelection").click(function(e) {
-        e.preventDefault();
-        let isInherited = $(this).attr('data-inherited') === 'true';
-        let button = $(this);
-        let icon = $(this).find('i');
-        $.ajax({
-            url: '<g:createLink controller="ajax" action="toggleAudit" params="[owner: genericOIDService.getOID(subscription), property: 'holdingSelection', returnSuccessAsJSON: true]"/>'
-        }).done(function(response) {
-            button.toggleClass('blue').toggleClass('green');
-            if(isInherited) {
-                icon.addClass('la-thumbtack slash').removeClass('thumbtack');
-                button.attr('data-inherited', 'false');
-            }
-            else {
-                icon.removeClass('la-thumbtack slash').addClass('thumbtack');
-                button.attr('data-inherited', 'true');
-            }
-        }).fail(function () {
-            console.log("AJAX error! Please check logs!");
-        });
-    });
-
-    $(".checkbox.linkToChildren").checkbox({
-        onChecked: function() {
-            $(".checkbox.createEntitlementsForChildren").checkbox('set enabled');
-        },
-        onUnchecked: function() {
-            JSPC.app.disableChildEnt();
-        }
-    });
-
-    JSPC.app.disableChildEnt();
-
-      $(".packageLink").click(function(evt) {
-          evt.preventDefault();
-
-          var check = confirm('${message(code: 'subscription.details.link.with_ents.confirm')}');
-            console.log(check)
-            if (check == true) {
-                JSPC.app.toggleAlert();
-                window.open($(this).attr('href'), "_self");
-            }
-        });
-
-        $(".packageLinkWithoutIE").click(function(evt) {
-            evt.preventDefault();
-
-            var check = confirm('${message(code: 'subscription.details.link.no_ents.confirm')}');
-            console.log(check)
-            if (check == true) {
-                JSPC.app.toggleAlert();
-                window.open($(this).attr('href'), "_self");
-            }
-        });
 </laser:script>
 
 <laser:htmlEnd />

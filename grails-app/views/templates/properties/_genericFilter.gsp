@@ -1,19 +1,19 @@
 <!-- A: templates/properties/_genericFilter -->
-<%@ page import="de.laser.CustomerTypeService; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 <%--params.filterProp: ${params.filterProp}--%>
 <div class="field">
     <label for="filterPropDef">${label}
-        <i class="question circle icon la-popup"></i>
+        <i class="${Icon.TOOLTIP.HELP} la-popup"></i>
         <span class="ui popup">
-            <i class="shield alternate icon"></i> = ${message(code: 'subscription.properties.my')}
+            <i class="${Icon.PROP.IS_PRIVATE}"></i> = ${message(code: 'subscription.properties.my')}
         </span>
     </label>
     <%-- value="${params.filterPropDef}" --%>
     <ui:dropdown id="filterPropDef" name="${newfilterPropDefName ?: 'filterPropDef'}"
                  class="la-filterPropDef"
                  from="${propList}"
-                 iconWhich="shield alternate"
+                 iconWhich="${Icon.PROP.IS_PRIVATE}"
                  optionKey="${{
                      it.refdataCategory ?
                              "${it}\" data-rdc=\"${it.refdataCategory}" :
@@ -41,38 +41,51 @@
         </div>
     </g:if>
 
-    <g:if test="${params.descr in [PropertyDefinition.ORG_PROP]}">
-        <div class="two fields">
-            <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
-
-                <div class="field">
-                    <div class="inline fields la-filter-inline">
-                        <div class="inline field">
-                            <div class="ui checkbox">
-                                <label for="checkMyInsts">${message(code: 'menu.my.insts')}</label>
-                                <input id="checkMyInsts" name="myInsts" type="checkbox"
-                                       <g:if test="${params.myInsts == "on"}">checked=""</g:if>
-                                       tabindex="0">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </g:if>
+    <g:if test="${params.descr == PropertyDefinition.ORG_PROP}">
+        <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
 
             <div class="field">
                 <div class="inline fields la-filter-inline">
                     <div class="inline field">
                         <div class="ui checkbox">
-                            <label for="checkMyProviderAgency">${message(code: 'default.myProviderAgency.label')}</label>
-                            <input id="checkMyProviderAgency" name="myProviderAgency" type="checkbox"
-                                   <g:if test="${params.myProviderAgency == "on"}">checked=""</g:if>
+                            <label for="checkMyInsts">${message(code: 'menu.my.insts')}</label>
+                            <input id="checkMyInsts" name="myInsts" type="checkbox"
+                                   <g:if test="${params.myInsts == "on"}">checked=""</g:if>
                                    tabindex="0">
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </g:if>
     </g:if>
+    <g:elseif test="${params.descr in PropertyDefinition.PRV_PROP}">
+        <div class="field">
+            <div class="inline fields la-filter-inline">
+                <div class="inline field">
+                    <div class="ui checkbox">
+                        <label for="checkMyProvider">${message(code: 'menu.my.providers')}</label>
+                        <input id="checkMyProvider" name="myProvider" type="checkbox"
+                               <g:if test="${params.myProvider == "on"}">checked=""</g:if>
+                               tabindex="0">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </g:elseif>
+    <g:elseif test="${params.descr == PropertyDefinition.VEN_PROP}">
+        <div class="field">
+            <div class="inline fields la-filter-inline">
+                <div class="inline field">
+                    <div class="ui checkbox">
+                        <label for="checkMyVendor">${message(code: 'menu.my.vendors')}</label>
+                        <input id="checkMyVendor" name="myVendor" type="checkbox"
+                               <g:if test="${params.myVendor == "on"}">checked=""</g:if>
+                               tabindex="0">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </g:elseif>
 </g:elseif>
 
 
@@ -132,7 +145,7 @@
                                 clearable: true,
                                 forceSelection: false,
                                 selectOnKeydown: false,
-                                message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage)},
+                                message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.config.language)},
                                 onChange: function (value, text, $selectedItem) {
                                     value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
                                 }
@@ -181,7 +194,7 @@ $.ajax({
                                 clearable: true,
                                 forceSelection: false,
                                 selectOnKeydown: false,
-                                message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage)},
+                                message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.config.language)},
                                 onChange: function (value, text, $selectedItem) {
                                     value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
                                 }
@@ -222,7 +235,7 @@ $.ajax({
                                 clearable: true,
                                 forceSelection: false,
                                 selectOnKeydown: false,
-                                message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage)},
+                                message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.config.language)},
                                 onChange: function (value, text, $selectedItem) {
                                     value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
                                 }
@@ -246,7 +259,7 @@ $.ajax({
                 clearable: true,
                 forceSelection: false,
                 selectOnKeydown: false,
-                message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage)},
+                message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.config.language)},
                 onChange: function (value, text, $selectedItem) {
                     value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
                     if ((typeof $selectedItem != 'undefined')){

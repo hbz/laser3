@@ -1,12 +1,12 @@
 package de.laser
 
+import de.laser.annotations.FixedFeature_DoNotModify
 import de.laser.auth.User
 import de.laser.cache.SessionCacheWrapper
-import de.laser.convenience.Marker
-import de.laser.interfaces.MarkerSupport
+import de.laser.ui.Btn
+import de.laser.ui.Icon
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
-import de.laser.utils.AppUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
@@ -16,6 +16,7 @@ import org.grails.encoder.Encoder
 import org.grails.taglib.TagLibraryLookup
 import org.grails.taglib.TagOutput
 import org.grails.taglib.encoder.OutputContextLookupHelper
+import org.grails.web.servlet.GrailsFlashScope
 import org.springframework.context.MessageSource
 import org.springframework.web.servlet.support.RequestContextUtils
 
@@ -44,10 +45,13 @@ class UiTagLib {
             out << '<h1 class="ui icon header la-clear-before la-noMargin-top">'
         }
 
-        if (attrs.visibleOrgRelations && attrs.visibleOrgRelations instanceof Collection) {
-            attrs.visibleOrgRelations = attrs.visibleOrgRelations.findAll{ it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA }.sort{ it.org.sortname }.collect{ it.org }.join(' – ')
+        if (attrs.visibleProviders && attrs.visibleProviders instanceof Collection) {
+            attrs.visibleProviders = attrs.visibleProviders.collect{ it.provider.name }.join(' – ')
         }
-        if ( (attrs.referenceYear) || (attrs.visibleOrgRelations) ){
+        if (attrs.visibleVendors && attrs.visibleVendors instanceof Collection) {
+            attrs.visibleVendors = attrs.visibleVendors.collect{ it.vendor.name }.join(' – ')
+        }
+        if ( (attrs.referenceYear) || (attrs.visibleProviders) || (attrs.visibleVendors) ){
             out << '<div class="la-subPlusYear">'
         }
         if (attrs.type) {
@@ -55,7 +59,7 @@ class UiTagLib {
         } else {
             out << ui.headerIcon()
         }
-        if ( (attrs.referenceYear)|| (attrs.visibleOrgRelations) ) {
+        if ( (attrs.referenceYear) || (attrs.visibleProviders) || (attrs.visibleVendors) ) {
             out << '<div class="la-subPlusYear-texts">'
         }
         if (attrs.text) {
@@ -73,14 +77,14 @@ class UiTagLib {
         if ( body ) {
             out << body()
         }
-        if ( (attrs.referenceYear)|| (attrs.visibleOrgRelations) ) {
+        if ( (attrs.referenceYear)|| (attrs.visibleProviders) ) {
             out << '<span class="la-subPlusYear-year">'
             out << attrs.referenceYear
             if (attrs.referenceYear) {
                 out << ' – '
             }
             out << '<span class="la-orgRelations">'
-            out << attrs.visibleOrgRelations
+            out << attrs.visibleProviders
             out << '</span>'
             out << '</span>'
             out << '</div>'
@@ -91,58 +95,92 @@ class UiTagLib {
 
     // <ui:messages data="${flash}" />
 
+    @FixedFeature_DoNotModify
     def messages = { attrs, body ->
 
         def flash = attrs.data
-
-        if (flash && flash.message) {
-            out << '<div class="ui success message la-clear-before">'
-            out << '<i aria-hidden="true" class="close icon"></i>'
-            out << '<p>' + flash.message + '</p>'
-            out << '</div>'
-        }
-
-        if (flash && flash.error) {
-            out << '<div class="ui negative message la-clear-before">'
-            out << '<i aria-hidden="true" class="close icon"></i>'
-            out << '<p>' + flash.error + '</p>'
-            out << '</div>'
+        if (flash) {
+            if (flash instanceof GrailsFlashScope) {
+                if (flash.message) {
+                    out << ui.msg(class: 'success', text: flash.message)
+                }
+                if (flash.error) {
+                    out << ui.msg(class: 'error', text: flash.error)
+                }
+                if (flash.invalidToken) {
+                    out << ui.msg(class: 'error', text: flash.invalidToken)
+                }
+            }
+            else {
+                log.warn 'INVALID USAGE: <ui:messages/> only accepts GrailsFlashScope: ' + flash.getClass()
+            }
         }
     }
 
-    // <ui:msg class="negative|positive|warning|.." icon="${icon}" header="${text}" text="${text}" message="18n.token" noClose="true" />
+    // <ui:msg class="error|info|success|warning" header="${text}" text="${text}" message="18n.token" showIcon="true" hideClose="true" />
 
+    @FixedFeature_DoNotModify
     def msg = { attrs, body ->
 
-        out << '<div class="ui ' + attrs.class + ' message ' + (attrs.icon ? 'icon ' : '') + 'la-clear-before">'
+        String clss = ''
+        String icon = ''
 
-        if (! attrs.noClose) {
+        if (attrs.class) {
+            clss = attrs.class.toString()
+
+            if (attrs.showIcon) {
+                if (clss.toLowerCase() in ['error', 'info', 'success', 'warning']) {
+                    icon = Icon.UI[clss.toUpperCase()]
+                }
+                else {
+                    icon = 'poo icon'
+                }
+            }
+        }
+//        println '> ' + clss + ', ' + attrs.showIcon + ' = ' +  icon
+
+        out << '<div class="ui ' + clss + ' message ' + (icon ? 'icon ' : '') + 'la-clear-before">'
+
+        if (! attrs.hideClose) {
             out << '<i aria-hidden="true" class="close icon"></i>'
         }
-        if (attrs.icon) {
-            out << '<i class="icon ' + attrs.icon + '"></i>'
+        if (icon) {
+            out << '<i class="' + icon + '"></i>'
+            out << '<div class="content">'
         }
         if (attrs.header) {
-            out << '<div class="header">'
-            out << attrs.header
-            out << '</div>'
+            out << '<div class="header">' + attrs.header + '</div>'
         }
 
-        out << '<p>'
+        out << '<p> ' // only phrasing content allowed
 
         if (attrs.text) {
             out << attrs.text
         }
         if (attrs.message) {
             SwissKnife.checkMessageKey(attrs.message as String)
-
-            out << "${message(code: attrs.message, args: attrs.args)}"
+            out << message(code: attrs.message, args: attrs.args)
         }
-        if ( body ) {
-            out << body()
-        }
+        if (body) {
+            String content = body()
+            out << content
 
-        out << '</p>'
+            boolean phraseCheck = true
+            for (String bad : ['</p>, </div>', '<input', '</li>']) {
+                if (phraseCheck && content.contains(bad)) {
+                    phraseCheck = false
+                    break
+                }
+            }
+            if (!phraseCheck) {
+                log.warn 'INVALID USAGE: <ui:msg/> only accepts phrasing content'
+            }
+        }
+        out << ' </p>'
+
+        if (icon) {
+            out << '</div>' //.content
+        }
         out << '</div>'
     }
 
@@ -151,8 +189,9 @@ class UiTagLib {
     def errors = { attrs, body ->
 
         if (attrs.bean?.errors?.allErrors) {
-            out << '<div class="ui negative message">'
+            out << '<div class="ui error message">'
             out << '<i aria-hidden="true" class="close icon"></i>'
+//            out << '<i class="exclamation triangle icon" aria-hidden="true"></i>'
             out << '<ul class="list">'
             attrs.bean.errors.allErrors.each { e ->
                 if (e in org.springframework.validation.FieldError) {
@@ -160,7 +199,7 @@ class UiTagLib {
                     out << BeanStore.getMessageSource().getMessage(e, LocaleUtils.getCurrentLocale())
                     out << '</li>'
                 } else {
-                    out << '<li>' + g.message(error: "${e}") + '</li>'
+                    out << '<li>' + message(error: "${e}") + '</li>'
                 }
             }
             out << '</ul>'
@@ -198,7 +237,7 @@ class UiTagLib {
             out << '            </div>'
             if (attrs.editable && attrs.href) {
                 out << '        <div class="right aligned four wide column">'
-                out << '            <button type="button" class="ui icon button blue la-modern-button" data-ui="modal" data-href="' + attrs.href + '" ><i aria-hidden="true" class="plus icon"></i></button>'
+                out << '            <button type="button" class="' + Btn.MODERN.SIMPLE + '" data-ui="modal" data-href="' + attrs.href + '" ><i aria-hidden="true" class="' + Icon.CMD.ADD + '"></i></button>'
                 out << '        </div>'
             }
             out << '        </div>'
@@ -227,16 +266,7 @@ class UiTagLib {
                             hasAuditConfig = attrs.auditConfigs[objAttr]
                         else hasAuditConfig = auditService.getAuditConfig(obj.instanceOf, objAttr)
                         if (hasAuditConfig) {
-                            if (obj.isSlaved) {
-                                out << '<span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
-                                out << '<i aria-hidden="true" class="icon grey la-thumbtack-regular"></i>'
-                                out << '</span>'
-                            }
-                            else {
-                                out << '<span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt" data-position="top right">'
-                                out << '<i aria-hidden="true" class="icon thumbtack grey"></i>'
-                                out << '</span>'
-                            }
+                            out << (obj.isSlaved ? ui.auditIcon(type: 'auto') : ui.auditIcon(type: 'default'))
                         }
                     }
                     // inherit (from)
@@ -248,19 +278,19 @@ class UiTagLib {
 
                         if (hasAuditConfig) {
                             if(attrs.withoutOptions) {
-                                out << '<a role="button" data-content="Wert wird vererbt" class="ui icon green button la-modern-button ' + attrs.class + ' la-audit-button la-popup-tooltip la-delay" href="'
+                                out << '<a role="button" data-content="Wert wird vererbt" class="ui icon green button la-modern-button ' + attrs.class + ' la-audit-button la-popup-tooltip" href="'
                                 out << g.createLink(
                                         controller: 'ajax',
                                         action: 'toggleAudit',
                                         params: ['owner': oid, 'property': [objAttr], keep: true],
                                 )
                                 out << '">'
-                                out << '<i aria-hidden="true" class="icon la-js-editmode-icon thumbtack"></i>'
+                                out << '<i aria-hidden="true" class="' + Icon.SIG.INHERITANCE + '"></i>'
                                 out << '</a>'
                             }
                             else {
                                 out << '<div class="ui simple dropdown icon green button la-modern-button ' + attrs.class + ' la-audit-button" data-content="Wert wird vererbt">'
-                                out   << '<i aria-hidden="true" class="icon la-js-editmode-icon thumbtack"></i>'
+                                out   << '<i aria-hidden="true" class="' + Icon.SIG.INHERITANCE + '"></i>'
                                 out   << '<div class="menu">'
                                 out << g.link( 'Vererbung deaktivieren. Wert für Einrichtung <strong>löschen</strong>',
                                         controller: 'ajax',
@@ -279,14 +309,14 @@ class UiTagLib {
                             }
                         }
                         else {
-                            out << '<a role="button" data-content="Wert wird nicht vererbt" class="ui icon blue button la-modern-button ' + attrs.class + ' la-audit-button la-popup-tooltip la-delay" href="'
+                            out << '<a role="button" data-content="Wert wird nicht vererbt" class="ui icon button la-modern-button ' + attrs.class + ' la-audit-button la-popup-tooltip" href="'
                             out << g.createLink(
                                     controller: 'ajax',
                                     action: 'toggleAudit',
                                     params: ['owner': oid, 'property': [objAttr]],
                             )
                             out << '">'
-                            out << '<i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash"></i>'
+                            out << '<i aria-hidden="true" class="icon la-thumbtack slash"></i>'
                             out << '</a>'
                         }
                     }
@@ -308,39 +338,17 @@ class UiTagLib {
 
                     // inherited (to)
                     if (obj.instanceOf) {
-
                         if (auditService.getAuditConfig(obj.instanceOf, objAttr)) {
-                            if (obj.isSlaved) {
-                                out << '<span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
-                                out << '<i aria-hidden="true" class="icon grey la-thumbtack-regular"></i>'
-                                out << '</span>'
-                            }
-                            else {
-                                out << '<span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt" data-position="top right">'
-                                out << '<i aria-hidden="true" class="icon thumbtack grey"></i>'
-                                out << '</span>'
-                            }
+                            out << (obj.isSlaved ? ui.auditIcon(type: 'auto') : ui.auditIcon(type: 'default'))
                         }
                     }
                     // inherit (from)
                     else if (obj?.showUIShareButton()) {
-                        String oid = "${obj.getClass().getName()}:${obj.getId()}"
-
                         if (auditService.getAuditConfig(obj, objAttr)) {
-
-                            if (obj.isSlaved) {
-                                out << '<span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt" data-position="top right">'
-                                out << '<i aria-hidden="true" class="icon grey la-thumbtack-regular"></i>'
-                                out << '</span>'
-                            }
-                            else {
-                                out << '<span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt" data-position="top right">'
-                                out << '<i aria-hidden="true" class="icon thumbtack grey"></i>'
-                                out << '</span>'
-                            }
+                            out << (obj.isSlaved ? ui.auditIcon(type: 'auto') : ui.auditIcon(type: 'default'))
                         }
                         else {
-                            out << '<span class="la-popup-tooltip la-delay" data-content="Wert wird nicht vererbt" data-position="top right">'
+                            out << '<span class="la-popup-tooltip" data-content="Wert wird nicht vererbt" data-position="top right">'
                             out << '<i aria-hidden="true" class="icon la-thumbtack slash"></i>'
                             out << '</span>'
                         }
@@ -348,6 +356,35 @@ class UiTagLib {
                 }
 
             } catch (Exception e) {
+            }
+        }
+    }
+
+    // <ui:auditIcon type="default|auto|auto2" />
+
+    def auditIcon = { attrs, body ->  // TODO - in progress
+
+        if (! ['default', 'auto', 'auto2'].contains(attrs.type)) {
+            out << "[auditIconWithTooltip: missing/faulty attribute 'type']"
+        }
+        else {
+            if (attrs.type == 'default') {
+                // Wert wird geerbt
+                out << '<span class="la-popup-tooltip" data-content="' + message(code:'property.audit.target.inherit') + '" data-position="top right">'
+                out << '<i class="' + Icon.SIG.INHERITANCE + ' grey"></i>'
+                out << '</span>'
+            }
+            else if (attrs.type == 'auto') {
+                // Wert wird automatisch geerbt
+                out << '<span class="la-popup-tooltip" data-content="' + message(code: 'property.audit.target.inherit.auto') + '" data-position="top right">'
+                out << '<i class="' + Icon.SIG.INHERITANCE_AUTO + '"></i>'
+                out << '</span>'
+            }
+            else if (attrs.type == 'auto2') { // TODO: merge with 'auto'
+                // Änderungen werden automatisch übernommen
+                out << '<span class="la-popup-tooltip" data-content="' + message(code: 'license.details.isSlaved.tooltip') + '" data-position="top right">'
+                out << '<i class="' + Icon.SIG.INHERITANCE_AUTO + '"></i>'
+                out << '</span>'
             }
         }
     }
@@ -365,50 +402,6 @@ class UiTagLib {
 
             // CAUTION: inject default mode
             attrs.params.mode = mode
-        }
-    }
-
-    def markerSwitch = { attrs, body ->
-
-        MarkerSupport obj   = (attrs.org ?: attrs.package ?: attrs.platform) as MarkerSupport
-        boolean isMarked    = obj.isMarked(contextService.getUser(), Marker.TYPE.WEKB_CHANGES)
-        String tt           = '?'
-        String tt_list      = message(code: 'marker.WEKB_CHANGES')
-
-        if (attrs.org) {
-            tt = isMarked ? 'Der Anbieter/Lieferant ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
-                    : 'Anklicken, um den Anbieter/Lieferant auf die ' + tt_list + ' zu setzen.'
-        }
-        else if (attrs.package) {
-            tt = isMarked ? 'Das Paket ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
-                    : 'Anklicken, um das Paket auf die ' + tt_list + ' zu setzen.'
-        }
-        else if (attrs.platform) {
-            tt = isMarked ? 'Der Plattform ist auf der ' + tt_list + '. Anklicken, um zu entfernen.'
-                    : 'Anklicken, um die Plattform auf die ' + tt_list + ' zu setzen.'
-        }
-
-        if (obj) {
-            String onClick = ui.remoteJsToggler(
-                    controller:     'ajax',
-                    action:         'toggleMarker',
-                    data:           '{oid:\'' + genericOIDService.getOID(obj) + '\', type:\'' + Marker.TYPE.WEKB_CHANGES + '\'}',
-                    update:         '#marker-' + obj.id,
-                    successFunc:    'tooltip.init(\'#marker-' + obj.id + '\')'
-            )
-
-            if (! attrs.ajax) {
-                out << '<span id="marker-' + obj.id + '" style="margin-left:1em;">'
-            }
-
-            out <<      '<a class="ui icon label la-popup-tooltip la-long-tooltip la-delay" onclick="' + onClick + '" '
-            out <<          'data-content="' + tt + '" data-position="top right">'
-            out <<              '<i class="icon purple bookmark' + (isMarked ? '' : ' outline') + '"></i>'
-            out <<      '</a>'
-
-            if (! attrs.ajax) {
-                out << '</span>'
-            }
         }
     }
 
@@ -454,7 +447,7 @@ class UiTagLib {
             if (! simpleFilter) {
                 out << '<button aria-expanded="' + (extended ? 'true':'false') + '" class="ui right floated button la-inline-labeled la-js-filterButton la-clearfix' + (extended ? '':' blue') + '">'
                 out << '    Filter'
-                out << '    <i aria-hidden="true" class="filter icon"></i>'
+                out << '    <i aria-hidden="true" class="' + Icon.LNK.FILTERED + '"></i>'
                 out << '   <span class="ui circular label la-js-filter-total hidden">0</span>'
                 out << '</button>'
 
@@ -490,12 +483,7 @@ class UiTagLib {
 
     def flagDeprecated = { attrs, body ->
 
-        out << '<div class="ui icon message error">'
-        out << '<i class="icon exclamation triangle"></i>'
-        out << '<div class="content">'
-        out << 'Diese Funktionalität wird demnächst entfernt.<br/>Bitte nicht mehr verwenden und ggfs. Daten migrieren.'
-        out << '</div>'
-        out << '</div>'
+        out << ui.msg(class: 'error', showIcon: 'true', text: 'Diese Funktionalität wird demnächst entfernt.<br/>Bitte nicht mehr verwenden und ggfs. Daten migrieren.')
     }
 
     /**
@@ -618,7 +606,7 @@ class UiTagLib {
         String type = attrs.type == 'year' ? 'yearpicker' : 'datepicker'
         out <<   '<div class="ui calendar '+type+'">'
         out <<     '<div class="ui input left icon">'
-        out <<       '<i aria-hidden="true" class="calendar icon"></i>'
+        out <<       '<i aria-hidden="true" class="' + Icon.SYM.DATE + '"></i>'
         out <<       '<input class="' + inputCssClass + '" name="' + name +  '" id="' + id +'" type="text" placeholder="' + placeholder + '" value="' + value + '" ' + required + '>'
         out <<     '</div>'
         out <<   '</div>'
@@ -705,7 +693,7 @@ class UiTagLib {
         if ( (startDate) || (endDate) ) {
             out << '<span class="la-annual-rings-text">' + startDate + dash + endDate + '</span>'
         }
-        out << "<a class='ui ${color} circular tiny label la-popup-tooltip la-delay'  data-variation='tiny' data-content='Status: ${tooltip}'>"
+        out << "<a class='ui ${color} circular tiny label la-popup-tooltip'  data-variation='tiny' data-content='Status: ${tooltip}'>"
         out << '       &nbsp;'
         out << '</a>'
 
@@ -816,7 +804,7 @@ class UiTagLib {
         }
         out << '<span class="la-annual-rings-text">' + startDate + dash + endDate + '</span>'
 
-        out << "<a class='ui ${color} circular tiny label la-popup-tooltip la-delay'  data-variation='tiny' data-content='Status: ${tooltip}'>"
+        out << "<a class='ui ${color} circular tiny label la-popup-tooltip'  data-variation='tiny' data-content='Status: ${tooltip}'>"
         out << '       &nbsp;'
         out << '</a>'
 
@@ -878,7 +866,7 @@ class UiTagLib {
         String linkBody = (text && message) ? text + " - " + message : text + message
         String cssClass = ((this.pageScope.variables?.actionName == attrs.action && (attrs.tab == params.tab || attrs.tab == params[attrs.subTab])) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
-        String counts = (attrs.counts >= 0) ? '<div class="ui '  + ' circular label">' + attrs.counts + '</div>' : null
+        String counts = (attrs.counts >= 0) ? '<span class="ui circular label">' + attrs.counts + '</span>' : null
 
         linkBody = counts ? linkBody + counts : linkBody
 
@@ -1023,5 +1011,78 @@ class UiTagLib {
         }
         String cleanLink = g.link(attrs, body)
         out << cleanLink.replaceAll("(?<!(http:|https:))[//]+", "/")
+    }
+
+    def showMoreCloseButton = { attrs, body ->
+        out << '<button class="' + Btn.SIMPLE +' la-js-closeAll-showMore right floated">'
+        out << message(code: "accordion.button.closeAll")
+        out << '</button>'
+    }
+
+    // <ui:bubble count="${list.size()}" grey="true" float="true" />
+
+    def bubble = { attrs, body ->
+        String color = attrs.grey ? '' : ' blue'
+
+        if (attrs.float) {
+            out << '<span class="ui circular label floating' + color + '">'
+            out << (attrs.count ?: '0')
+            out << '</span>'
+        }
+        else {
+            out << '<span class="ui circular label' + color + '">'
+            out << (attrs.count ?: '0')
+            out << '</span>'
+        }
+    }
+
+    def costSign = { attrs, body ->
+        if(attrs.ci) {
+            de.laser.finance.CostItem ci = attrs.ci
+            switch(ci.costItemElementConfiguration) {
+                case RDStore.CIEC_POSITIVE: out << '<span class="la-popup-tooltip" data-position="right center" data-content="'+message(code:'financials.costItemConfiguration.positive')+'"><i class="'+Icon.FNC.COST_POSITIVE+'"></i></span>'
+                    break
+                case RDStore.CIEC_NEGATIVE: out << '<span class="la-popup-tooltip" data-position="right center" data-content="'+message(code:'financials.costItemConfiguration.negative')+'"><i class="'+Icon.FNC.COST_NEGATIVE+'"></i></span>'
+                    break
+                case RDStore.CIEC_NEUTRAL: out << '<span class="la-popup-tooltip" data-position="right center" data-content="'+message(code:'financials.costItemConfiguration.neutral')+'"><i class="'+Icon.FNC.COST_NEUTRAL+'"></i></span>'
+                    break
+                default: out << '<span class="la-popup-tooltip" data-position="right center" data-content="'+ message(code:'financials.costItemConfiguration.notSet') +'"><i class="'+Icon.FNC.COST_NOT_SET+'"></i></span>'
+                    break
+            }
+        }
+    }
+
+    // moved from Package.getPackageSize()
+    def pkgSize = { attrs, body ->
+
+        if (attrs.pkg) {
+            de.laser.wekb.Package pkg = attrs.pkg as de.laser.wekb.Package
+            def c1 = de.laser.wekb.TitleInstancePackagePlatform.executeQuery('select count(*) from TitleInstancePackagePlatform tipp where tipp.pkg = :ctx and tipp.status = :current', [ctx: pkg, current:RDStore.TIPP_STATUS_CURRENT])[0]
+            out << '('
+            out << '<span data-tooltip="Titel im Paket"><i class="' + Icon.TIPP + '"></i> ' + c1 + '</span>'
+            out << ')'
+        }
+        else {
+            out << '[ ERROR @ ui:pkgSize ]'
+        }
+    }
+
+    // moved from SubscriptionPackage.getIEandPackageSize() // TODO: icons
+    def ieAndPkgSize = { attrs, body ->
+
+        if (attrs.sp) {
+            SubscriptionPackage sp = attrs.sp as SubscriptionPackage
+            def c1 = SubscriptionPackage.executeQuery('select count(*) from IssueEntitlement ie where ie.subscription = :sub and ie.tipp.pkg = :pkg and ie.status = :current', [sub: sp.subscription, pkg: sp.pkg, current: RDStore.TIPP_STATUS_CURRENT])[0]
+            def c2 = SubscriptionPackage.executeQuery('select count(*) from TitleInstancePackagePlatform tipp join tipp.pkg pkg where pkg = :ctx and tipp.status = :current', [ctx: sp.pkg, current:RDStore.TIPP_STATUS_CURRENT])[0]
+
+            out << '('
+            out << '<span data-tooltip="Titel in der Lizenz"><i class="icon archive"></i> ' + c1 + '</span>'
+            out << ' / '
+            out << '<span data-tooltip="Titel im Paket"><i class="' + Icon.TIPP + '"></i> ' + c2 + '</span>'
+            out << ')'
+        }
+        else {
+            out << '[ ERROR @ ui:ieAndPkgSize ]'
+        }
     }
 }

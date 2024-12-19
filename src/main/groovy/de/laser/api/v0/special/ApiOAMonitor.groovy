@@ -6,14 +6,13 @@ import de.laser.OrgRole
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.SubscriptionPackage
-import de.laser.TitleInstancePackagePlatform
+import de.laser.exceptions.NativeSqlException
 import de.laser.finance.CostItem
 import de.laser.OrgSetting
 import de.laser.api.v0.*
 import de.laser.storage.Constants
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.titles.TitleInstance
 import de.laser.traces.DeletedObject
 import grails.converters.JSON
 import groovy.json.JsonSlurper
@@ -66,7 +65,7 @@ class ApiOAMonitor {
                         "where sub = :sub and org in (:orgs) and oo.roleType in (:roles) ", [
                             sub  : sub,
                             orgs : orgs,
-                            roles: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]
+                            roles: [RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]
                         ]
                 )
                 hasAccess = ! valid.isEmpty()
@@ -146,18 +145,17 @@ class ApiOAMonitor {
 
             // RefdataValues
 
-            result.sector       = org.sector?.value
-            result.type         = org.orgType?.collect{ it.value }
+            result.type         = org.getOrgType() ? [org.getOrgType().value] : [] // TODO: ERMS-6009
             result.status       = org.status?.value
 
             // References
 
-            //result.addresses    = ApiCollectionReader.retrieveAddressCollection(org.addresses, ApiReader.NO_CONSTRAINT) // de.laser.Address
-            //result.contacts     = ApiCollectionReader.retrieveContactCollection(org.contacts, ApiReader.NO_CONSTRAINT)  // de.laser.Contact
+            //result.addresses    = ApiCollectionReader.retrieveAddressCollection(org.addresses, ApiReader.NO_CONSTRAINT) // de.laser.addressbook.Address
+            //result.contacts     = ApiCollectionReader.retrieveContactCollection(org.contacts, ApiReader.NO_CONSTRAINT)  // de.laser.addressbook.Contact
             result.identifiers  = ApiCollectionReader.getIdentifierCollection(org.ids) // de.laser.Identifier
             //result.persons      = ApiCollectionReader.retrievePrsLinkCollection(
             //        org.prsLinks, ApiCollectionReader.NO_CONSTRAINT, ApiCollectionReader.NO_CONSTRAINT, context
-            //) // de.laser.PersonRole
+            //) // de.laser.addressbook.PersonRole
 
             result.properties    = ApiCollectionReader.getPropertyCollection(org, context, ApiReader.IGNORE_PRIVATE_PROPERTIES) // de.laser.(OrgCustomProperty, OrgPrivateProperty)
             result.subscriptions = getSubscriptionCollection(org)
@@ -235,7 +233,14 @@ class ApiOAMonitor {
 
             result.organisations = ApiCollectionReader.getOrgLinkCollection(allOrgRoles, ApiReader.IGNORE_SUBSCRIPTION, context) // de.laser.OrgRole
 
-            result.packages = ApiOAMonitor.getPackageCollectionWithTitleStubMaps(sub.packages, GlobalService.obtainSqlConnection())
+            try {
+                Sql sql = GlobalService.obtainSqlConnection()
+                result.packages = ApiOAMonitor.getPackageCollectionWithTitleStubMaps(sub.packages, sql)
+                sql.close()
+            }
+            catch(NativeSqlException e) {
+                result.packages = 'unable to fetch, please retry call later'
+            }
 
             Collection<CostItem> filtered = []
 
@@ -274,7 +279,7 @@ class ApiOAMonitor {
         List<Subscription> tmp = OrgRole.executeQuery(
                 'select distinct(oo.sub) from OrgRole oo where oo.org = :org and oo.roleType in (:roleTypes)', [
                         org: org,
-                        roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]
+                        roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]
                 ]
         )
         log.debug ("found ${tmp.size()} subscriptions .. processing")
@@ -299,18 +304,24 @@ class ApiOAMonitor {
         Collection<Object> result = []
 
         list.each { subPkg ->
-            Map<String, Object> pkg = ApiUnsecuredMapReader.getPackageStubMap(subPkg.pkg), qryParams = [sub: subPkg.subscription.id, pkg: subPkg.pkg.id, removed: RDStore.TIPP_STATUS_REMOVED.id] // de.laser.Package
+            Map<String, Object> pkg = ApiUnsecuredMapReader.getPackageStubMap(subPkg.pkg), qryParams = [sub: subPkg.subscription.id, pkg: subPkg.pkg.id, removed: RDStore.TIPP_STATUS_REMOVED.id] // de.laser.wekb.Package
 
-            pkg.organisations = ApiCollectionReader.getOrgLinkCollection(subPkg.pkg.orgs, ApiReader.IGNORE_PACKAGE, null) // de.laser.OrgRole
+            pkg.provider = ApiUnsecuredMapReader.getProviderStubMap(subPkg.pkg.provider) // de.laser.wekb.Provider
             result << pkg
             JsonSlurper slurper = new JsonSlurper()
             List tmp = []
-            List<GroovyRowResult> tiRows = sql.rows("select tipp_id, tipp_guid as globalUID, tipp_gokb_id as gokbId, tipp_name as name, tipp_norm_name as normName, (select rdv_value from refdata_value where rdv_id = tipp_medium_rv_fk) as medium from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :sub and tipp_pkg_fk = :pkg", qryParams),
-            idRows = sql.rows("select id_tipp_fk, json_agg(json_build_object('namespace', idns_ns, 'value', id_value)) as identifiers from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join issue_entitlement on ie_tipp_fk = tipp_id where id_value != '' and id_value != 'Unknown' and ie_subscription_fk = :sub and tipp_pkg_fk = :pkg group by id_tipp_fk", qryParams)
-            Map<String, Map> idMap = idRows.collectEntries { GroovyRowResult row -> [row['id_tipp_fk'], slurper.parseText(row['identifiers'].toString())] }
-            tiRows.each { GroovyRowResult tiRow ->
-                tiRow.put('identifiers', idMap.get(tiRow['tipp_id']))
-                tmp << tiRow
+            int total = sql.rows('select count(*) from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :sub and tipp_pkg_fk = :pkg', qryParams)[0]['count'],
+            limit = 50000
+            for(int i = 0; i < total; i += limit) {
+                List<GroovyRowResult> tiRows = sql.rows("select tipp_id, tipp_guid as globalUID, tipp_gokb_id as gokbId, tipp_name as name, tipp_norm_name as normName, (select rdv_value from refdata_value where rdv_id = tipp_medium_rv_fk) as medium from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :sub and tipp_pkg_fk = :pkg limit ${limit} offset ${i}", qryParams)
+                Set<Long> idSubSet = tiRows.tipp_id.toSet()
+                String query = "select id_tipp_fk, json_agg(json_build_object('namespace', idns_ns, 'value', id_value)) as identifiers from identifier join identifier_namespace on id_ns_fk = idns_id where id_value != '' and id_value != 'Unknown' and id_tipp_fk in (${idSubSet.join(',')}) group by id_tipp_fk"
+                List<GroovyRowResult> idRows = sql.rows(query)
+                Map<String, Map> idMap = idRows.collectEntries { GroovyRowResult row -> [row['id_tipp_fk'], slurper.parseText(row['identifiers'].toString())] }
+                tiRows.each { GroovyRowResult tiRow ->
+                    tiRow.put('identifiers', idMap.get(tiRow['tipp_id']))
+                    tmp << tiRow
+                }
             }
             // move to sql
             /*

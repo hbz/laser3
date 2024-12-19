@@ -6,6 +6,7 @@ import de.laser.storage.RDStore
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseQuery
 import de.laser.reporting.report.local.SubscriptionReport
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.gorm.transactions.Transactional
 
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -123,7 +124,7 @@ class ReportingLocalService {
                 result.localSums   = typeDependingCosts.sums?.localSums ?: []
                 result.tmpl        = TMPL_PATH_DETAILS + cfg.getAt('detailsTemplate')
             }
-            else if (params.query in ['timeline-entitlement', 'timeline-member']) {
+            else if (params.query in ['timeline-entitlement', 'timeline-package', 'timeline-member']) {
                 result.labels = SubscriptionReport.getTimelineQueryLabels(params)
 
                 if (params.query == 'timeline-entitlement') {
@@ -132,6 +133,14 @@ class ReportingLocalService {
                     result.list      = idList      ? TitleInstancePackagePlatform.executeQuery( hql, [idList: idList] ) : []
                     result.plusList  = plusIdList  ? TitleInstancePackagePlatform.executeQuery( hql, [idList: plusIdList] ) : []
                     result.minusList = minusIdList ? TitleInstancePackagePlatform.executeQuery( hql, [idList: minusIdList] ) : []
+                    result.tmpl      = TMPL_PATH_DETAILS + cfg.getAt('detailsTemplate')
+                }
+                else if (params.query == 'timeline-package') {
+                    String hql = 'select pkg from Package pkg where pkg.id in (:idList) order by pkg.sortname, pkg.name'
+
+                    result.list      = idList      ? de.laser.wekb.Package.executeQuery( hql, [idList: idList] ) : []
+                    result.plusList  = plusIdList  ? de.laser.wekb.Package.executeQuery( hql, [idList: plusIdList] ) : []
+                    result.minusList = minusIdList ? de.laser.wekb.Package.executeQuery( hql, [idList: minusIdList] ) : []
                     result.tmpl      = TMPL_PATH_DETAILS + cfg.getAt('detailsTemplate')
                 }
                 else {
@@ -143,10 +152,10 @@ class ReportingLocalService {
                     result.tmpl      = TMPL_PATH_DETAILS + cfg.getAt('detailsTemplate')
                 }
             }
-            else if (params.query == 'timeline-annualMember-subscription') {
+            else if (params.query in ['timeline-annualMember-subscription', 'timeline-referenceYearMember-subscription']) {
                 result.labels = SubscriptionReport.getTimelineQueryLabelsForAnnual(params)
 
-                result.list = Subscription.executeQuery( 'select sub from Subscription sub where sub.id in (:idList) order by sub.name, sub.startDate, sub.endDate', [idList: idList])
+                result.list = Subscription.executeQuery( 'select sub from Subscription sub where sub.id in (:idList) order by sub.name, sub.startDate, sub.referenceYear, sub.endDate', [idList: idList])
                 result.tmpl = TMPL_PATH_DETAILS + cfg.getAt('detailsTemplate')
             }
             else {

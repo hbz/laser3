@@ -1,6 +1,6 @@
-<%@ page import="java.lang.management.ManagementFactory" %>
+<%@ page import="de.laser.ui.Icon; java.lang.management.ManagementFactory" %>
 
-<laser:htmlStart text="${message(code:'menu.yoda')} ${message(code:'default.dashboard')}" serviceInjection="true" />
+<laser:htmlStart text="${message(code:'menu.yoda')} ${message(code:'default.dashboard')}" />
 
     <ui:breadcrumbs>
         <ui:crumb message="menu.yoda" class="active"/>
@@ -134,10 +134,16 @@
                         <g:link controller="admin" action="databaseInfo" target="_blank">${message(code: "menu.admin.databaseInfo")}</g:link> <span class="ui mini label">Admin</span>
                     </div>
                     <div class="item">
+                        <g:link controller="admin" action="databaseIndices" target="_blank">${message(code: "menu.admin.databaseIndices")}</g:link> <span class="ui mini label">Admin</span>
+                    </div>
+                    <div class="item">
                         <g:link controller="admin" action="databaseCollations" target="_blank">${message(code: "menu.admin.databaseCollations")}</g:link> <span class="ui mini label">Admin</span>
                     </div>
                     <div class="item">
                         <g:link controller="admin" action="dataConsistency" target="_blank">${message(code: "menu.admin.dataConsistency")}</g:link> <span class="ui mini label">Admin</span>
+                    </div>
+                    <div class="item">
+                        <g:link controller="admin" action="identifierValidation" target="_blank">${message(code: "menu.admin.identifierValidation")}</g:link> <span class="ui mini label">Admin</span>
                     </div>
                     <div class="item">
                         <g:link controller="admin" action="fileConsistency" target="_blank">${message(code: "menu.admin.fileConsistency")}</g:link> <span class="ui mini label">Admin</span>
@@ -164,8 +170,6 @@
     </div>
 </div>
 
-
-    <ui:messages data="${flash}" />
 
     <%--
     <p>TODO: New Errors</p>

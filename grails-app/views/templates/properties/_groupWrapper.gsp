@@ -1,5 +1,5 @@
 <!-- A: templates/properties/_groupWrapper -->
-<%@ page import="de.laser.CustomerTypeService; de.laser.Subscription; de.laser.License; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.*" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.Subscription; de.laser.License; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.*" %>
 <laser:serviceInjection />
 <%-- SHOW --%>
 <%--<div class="ui card la-dl-no-table">--%>
@@ -11,8 +11,8 @@
             <g:if test="${showConsortiaFunctions}">
                 <g:if test="${propDefGroup.ownerType in [License.class.name, Subscription.class.name]}">
                     <g:if test="${propDefGroupBinding?.isVisibleForConsortiaMembers}">
-                        <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
-                            <i class="ui icon eye orange"></i>
+                        <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
+                            <i class="${Icon.SIG.VISIBLE_ON} orange"></i>
                         </span>
                     </g:if>
                 </g:if>
@@ -26,7 +26,7 @@
                     propDefGroupBinding: propDefGroupBinding,
                     prop_desc: prop_desc,
                     ownobj: ownobj,
-                    editable: (!(controllerName in ['survey', 'myInstitution'] ) && contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)),
+                    editable: (!(controllerName in ['survey', 'myInstitution'] ) && contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)),
                     custom_props_div: custom_props_div
             ]}"/>
         </div>

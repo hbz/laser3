@@ -1,4 +1,4 @@
-<%@ page import="de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.TitleInstancePackagePlatform;" %>
+<%@ page import="de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.wekb.TitleInstancePackagePlatform;" %>
 <laser:serviceInjection />
 
 <laser:render template="/subscription/reporting/details/timeline/base.part1" />
@@ -23,18 +23,18 @@
                     ${message(code:'sidewide.number')}
                 </th>
                 <th scope="col">${message(code:'tipp.name')}</th>
-                <th scope="col">${message(code:'tipp.titleType')} / ${message(code:'tipp.medium')}</th>
+                <th scope="col">${message(code:'package.label')}</th>
             </tr>
             </thead>
             <tbody>
                 <g:each in="${list}" var="tipp" status="i">
-                    <g:if test="${plusListNames.contains(tipp.name)}">
-                        <tr>
+                    <tr>
+                        <g:if test="${plusListNames.contains(tipp.name)}">
                             <td class="center aligned"><span class="ui label circular green">${i + 1}</span></td>
-                    </g:if>
-                    <g:else>
-                        <td class="center aligned">${i + 1}</td>
-                    </g:else>
+                        </g:if>
+                        <g:else>
+                            <td class="center aligned">${i + 1}</td>
+                        </g:else>
                         <td>
                             <%
                                 Long ieId = IssueEntitlement.executeQuery(
@@ -45,11 +45,7 @@
                             <g:link controller="issueEntitlement" action="show" id="${ieId}" target="_blank">${tipp.name}</g:link>
                         </td>
                         <td>
-                            ${tipp.titleType}
-                            <g:if test="${tipp.medium}">
-                                <g:if test="${tipp.titleType}"> / </g:if>
-                                ${tipp.medium.getI10n('value')}
-                            </g:if>
+                            <g:link controller="package" action="show" id="${tipp.pkg.id}" target="_blank">${tipp.pkg.name}</g:link>
                         </td>
                     </tr>
                 </g:each>
@@ -67,7 +63,7 @@
                     ${message(code:'sidewide.number')}
                 </th>
                 <th scope="col">${message(code:'tipp.name')}</th>
-                <th scope="col">${message(code:'tipp.titleType')} / ${message(code:'tipp.medium')}</th>
+                <th scope="col">${message(code:'package.label')}</th>
             </tr>
             </thead>
             <tbody>
@@ -84,11 +80,7 @@
                             <g:link controller="issueEntitlement" action="show" id="${ieId2}" target="_blank">${tipp.name}</g:link>
                         </td>
                         <td>
-                            ${tipp.titleType}
-                            <g:if test="${tipp.medium}">
-                                <g:if test="${tipp.titleType}"> / </g:if>
-                                ${tipp.medium.getI10n('value')}
-                            </g:if>
+                            <g:link controller="package" action="show" id="${tipp.pkg.id}" target="_blank">${tipp.pkg.name}</g:link>
                         </td>
                     </tr>
                 </g:each>

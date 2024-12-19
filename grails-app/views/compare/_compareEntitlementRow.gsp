@@ -1,4 +1,4 @@
-<%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.titles.JournalInstance; de.laser.titles.BookInstance; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.wekb.TitleInstancePackagePlatform; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 <g:each in="${ies}" var="ie">
     <%
@@ -7,7 +7,7 @@
     <tr>
         <td>
             <!-- START TEMPLATE -->
-            <laser:render template="/templates/title_short"
+            <laser:render template="/templates/titles/title_short"
                       model="${[ie: null, tipp: tipp,
                                 showPackage: showPackage, showPlattform: showPlattform, showCompact: true, showEmptyFields: false, overwriteEditable: false]}"/>
             <!-- END TEMPLATE -->

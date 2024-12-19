@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.OrgRole" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.OrgRole" %>
 <laser:serviceInjection/>
 <h3 class="ui header"><g:message code="surveys.active"/></h3>
 
@@ -31,9 +31,9 @@
 
                     <g:if test="${surveyInfo.isMandatory}">
                         &nbsp;
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                               data-content="${message(code: "surveyInfo.isMandatory.label.info2")}">
-                            <i class="yellow icon exclamation triangle"></i>
+                            <i class="${Icon.TOOLTIP.IMPORTANT} yellow"></i>
                         </span>
                     </g:if>
 
@@ -43,7 +43,7 @@
                     <p>
                         <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                             <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
-                                    params="[surveyConfigID: surveyConfig.id]" class="ui icon">
+                                    params="[surveyConfigID: surveyConfig.id]">
                                 <strong>${message(code: 'surveyParticipants.label')}:</strong>
                                 <span class="ui circular ${surveyConfig.configFinish ? "green" : ""} label">
                                     ${surveyConfig.orgs.size()}
@@ -51,12 +51,12 @@
                             </g:link>
 
                             <span class="la-float-right">
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center"
+                                    <span class="la-long-tooltip la-popup-tooltip" data-position="top center"
                                         data-content="${message(code: "surveyResult.label")} anzeigen">
                                             <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
                                                     params="[surveyConfigID: surveyConfig.id]"
-                                                    class="ui icon blue button la-modern-button">
-                                                <i class="icon chart pie"></i>
+                                                    class="${Btn.MODERN.SIMPLE}">
+                                                <i class="${Icon.SURVEY}"></i>
                                             </g:link>
                                     </span>
                             </span>

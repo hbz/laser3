@@ -30,12 +30,12 @@ class Links {
     static mapping = {
         id                      column: 'l_id'
         version                 column: 'l_version'
-        sourceSubscription      column: 'l_source_sub_fk', index: 'l_source_sub_idx'
-        destinationSubscription column: 'l_dest_sub_fk', index: 'l_dest_sub_idx'
-        sourceLicense           column: 'l_source_lic_fk', index: 'l_source_lic_idx'
-        destinationLicense      column: 'l_dest_lic_fk', index: 'l_dest_lic_idx'
-        linkType         column: 'l_link_type_rv_fk'
-        owner            column: 'l_owner_fk'
+        sourceSubscription      column: 'l_source_sub_fk',  index: 'l_source_sub_idx'
+        destinationSubscription column: 'l_dest_sub_fk',    index: 'l_dest_sub_idx'
+        sourceLicense           column: 'l_source_lic_fk',  index: 'l_source_lic_idx'
+        destinationLicense      column: 'l_dest_lic_fk',    index: 'l_dest_lic_idx'
+        linkType                column: 'l_link_type_rv_fk',index: 'l_link_type_idx'
+        owner                   column: 'l_owner_fk',       index: 'l_owner_idx'
         dateCreated      column: 'l_date_created'
         lastUpdated      column: 'l_last_updated'
         autoTimestamp true
@@ -110,7 +110,10 @@ class Links {
                 determineSource()
             }
         }
-        else null
+        else {
+            log.error("No context! key was ${key}.")
+            null
+        }
     }
 
     /**

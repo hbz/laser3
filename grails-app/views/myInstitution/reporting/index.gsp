@@ -1,10 +1,10 @@
-<%@page import="de.laser.config.ConfigMapper; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.GenericHelper; de.laser.ReportingFilter; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
-<laser:htmlStart message="myinst.reporting" serviceInjection="true">
+<%@page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.config.ConfigMapper; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.GenericHelper; de.laser.ReportingFilter; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
+<laser:htmlStart message="myinst.reporting">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
 
         <ui:breadcrumbs>
-            <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
+            <ui:crumb controller="org" action="show" id="${contextService.getOrg().id}" text="${contextService.getOrg().getDesignation()}"/>
             <ui:crumb text="${message(code:'myinst.reporting')}" class="active" />
         </ui:breadcrumbs>
 
@@ -13,16 +13,16 @@
         <laser:render template="/templates/reporting/helper" />%{--js--}%
 
         <div style="margin-right:0.5em">
-            <div id="bookmark-toggle" class="ui icon button right floated disabled la-long-tooltip la-popup-tooltip la-delay"
+            <div id="bookmark-toggle" class="${Btn.ICON.SIMPLE_TOOLTIP} right floated disabled la-long-tooltip"
                     data-content="${message(code:'reporting.ui.global.bookmarks')}" data-position="top right">
                     <i class="icon bookmark"></i>
             </div>
-            <div id="history-toggle" class="ui icon button right floated disabled la-long-tooltip la-popup-tooltip la-delay"
+            <div id="history-toggle" class="${Btn.ICON.SIMPLE_TOOLTIP} right floated disabled la-long-tooltip"
                     data-content="${message(code:'reporting.ui.global.history')}" data-position="top right">
                     <i class="icon history"></i>
             </div>
-            <div id="info-toggle" class="ui icon button right floated">
-                <i class="icon question"></i>
+            <div id="info-toggle" class="${Btn.ICON.SIMPLE} right floated">
+                <i class="${Icon.UI.HELP}"></i>
             </div>
         </div>
 
@@ -32,7 +32,7 @@
 
             <div class="ui segment">
                 <span class="ui top attached label" style="text-align:center;">
-                    <i class="icon question large"></i>${message(code:'reporting.ui.global.help')}
+                    <i class="${Icon.UI.HELP} large"></i>${message(code:'reporting.ui.global.help')}
                 </span>
                 <div style="margin: 3.5em 2em 0.5em !important">
                     <p>
@@ -56,7 +56,7 @@
                         ${message(code:'reporting.ui.global.infoBookmarks')}
                     </p>
                     <p>
-                        <i class="icon question blue"></i><strong>${message(code:'reporting.ui.global.help')}</strong> <br />
+                        <i class="${Icon.UI.HELP} blue"></i><strong>${message(code:'reporting.ui.global.help')}</strong> <br />
                         ${message(code:'reporting.ui.global.infoHelp')}
                     </p>
                     <p>
@@ -95,7 +95,7 @@
                                 <div class="content middle aligned">
                                     <div class="header">Cache</div>
                                     <g:if test="${token}">
-                                        <g:link controller="yoda" action="systemCache" params="${[key: ReportingCache.CTX_GLOBAL + token ]}" target="_blank">${token}</g:link>
+                                        <g:link controller="yoda" action="systemCache" params="${[cmd:'get', type:'reporting', token:token]}" target="_blank">${token}</g:link>
                                     </g:if>
                                     <g:else>--</g:else>
                                 </div>
@@ -113,12 +113,36 @@
                 <div class="fields two">
                     <div class="field">
                         <label for="filter-chooser">${message(code:'reporting.ui.global.filter.base')}</label>
-                        <g:select name="filter-chooser"
-                                  from="${cfgFilterList}"
-                                  optionKey="${{it}}"
-                                  optionValue="${{BaseConfig.getFilterLabel(it)}}"
-                                  class="ui selection dropdown la-not-clearable"
-                                  noSelection="${['': message(code: 'default.select.choose.label')]}" />
+%{--                        <g:select name="filter-chooser"--}%
+%{--                                  from="${cfgFilterList}"--}%
+%{--                                  optionKey="${{it}}"--}%
+%{--                                  optionValue="${{BaseConfig.getFilterLabel(it)}}"--}%
+%{--                                  class="ui selection dropdown la-not-clearable"--}%
+%{--                                  noSelection="${['': message(code: 'default.select.choose.label')]}" />--}%
+
+%{--                        <select id="filter-chooser" name="filter-chooser" class="ui selection dropdown la-not-clearable">--}%
+%{--                            <option value="">${message(code: 'default.select.choose.label')}</option>--}%
+%{--                            <g:each in="${cfgFilterList}" var="cfg">--}%
+%{--                                <option class="item" value="${cfg}">${BaseConfig.getFilterLabel(cfg)}</option>--}%
+%{--                            </g:each>--}%
+%{--                        </select>--}%
+
+                        <div id="filter-chooser" class="ui selection dropdown la-not-clearable">
+                            <input type="hidden" name="filter-chooser">
+                            <i class="dropdown icon"></i>
+                            <div class="default text">${message(code: 'default.select.choose.label')}</div>
+                            <div class="menu">
+                                <g:each in="${cfgFilterList}" var="cfg">
+                                    <div class="item" data-value="${cfg}">
+                                        <i class="${BaseConfig.getIcon(cfg)} grey"></i> ${BaseConfig.getFilterLabel(cfg)}
+                                    </div>
+                                </g:each>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label></label>
+                        <div>${message(code:'reporting.cfg.filter.asterisk')}</div>
                     </div>
                 </div>
             </div>
@@ -126,21 +150,20 @@
 
         <div id="filter-wrapper">
             <g:if test="${filter}">
-                <laser:render template="/myInstitution/reporting/filter/form" />
+                <laser:render template="/myInstitution/reporting/filter/filter_form" />
             </g:if>
         </div>
 
         <g:if test="${filterResult}">
-
             %{-- <sec:ifAnyGranted roles="ROLE_YODA">
-                <g:link controller="yoda" action="systemCache" params="${[key: ReportingCache.CTX_GLOBAL + token]}" target="_blank" class="ui button small right floated"><i class="icon bug"></i> YODA only CACHE</g:link>
+                <g:link controller="yoda" action="systemCache" params="${[key: ReportingCache.CTX_GLOBAL + token]}" target="_blank" class="${Btn.SIMPLE} small right floated"><icon:bug /> YODA only CACHE</g:link>
             </sec:ifAnyGranted> --}%
 
             <h3 class="ui header">${message(code:'reporting.ui.global.step2')}</h3>
 
             <laser:render template="/myInstitution/reporting/query/${filter}" />
 
-            <div id="reporting-chart-nodata" class="ui message negative">${message(code:'reporting.modal.nodata')}</div>
+            <div id="reporting-chart-nodata" class="ui error message">${message(code:'reporting.modal.nodata')}</div>
 
             <div id="chart-wrapper"></div>
             <div id="chart-details"></div>
@@ -190,7 +213,10 @@
             $('#filter-chooser').on ('change', function (e) {
                 $.ajax({
                     url: '<g:createLink controller="myInstitution" action="reporting" />',
-                    data: { init: true, filter: $(this).val() },
+                    data: {
+                        init: true,
+                        filter: $('input[name=filter-chooser]').val()   /* filter: $(this).val() */
+                    },
                     dataType: 'html',
                     beforeSend: function (xhr) { $('#globalLoadingIndicator').show(); }
                 })
@@ -279,10 +305,12 @@
 
                             JSPC.app.reporting.current.chart.echart = echart;
 
-                            $('#query-export-button').removeAttr('disabled');
-                            if (JSPC.app.reporting.current.request.query.indexOf('-x-') >=0) {
+                            let escQuery = JSPC.app.reporting.current.request.query.replaceAll('*', '\\*')
+                            let $dhs = $('#queryHelpModal .help-section[data-help-section=' + escQuery + ']');
+                            if ($dhs.length) {
                                 $('#query-help-button').removeAttr('disabled');
                             }
+                            $('#query-export-button').removeAttr('disabled');
                         }
                     })
                     .fail (function (data) {
@@ -391,6 +419,6 @@
         </laser:script>
 
         <ui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">
-            <p><i class="icon exclamation triangle large orange"></i> ${message(code:'reporting.modal.error')}</p>
+            <p><i class="${Icon.UI.ERROR} large orange"></i> ${message(code:'reporting.modal.error')}</p>
         </ui:modal>
 <laser:htmlEnd />

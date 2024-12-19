@@ -1,14 +1,17 @@
-<%@ page import="de.laser.IssueEntitlementGroup; de.laser.titles.BookInstance; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.IssueEntitlementGroup; de.laser.storage.RDStore" %>
+<laser:serviceInjection/>
 <div class="sixteen wide column">
     <g:set var="counter" value="${offset + 1}"/>
-    <g:set var="sumlistPrice" value="${0}"/>
-    <g:set var="sumlocalPrice" value="${0}"/>
+    <g:set var="sumlistPriceEuro" value="${0}"/>
+    <g:set var="sumlistPriceUSD" value="${0}"/>
+    <g:set var="sumlistPriceGBP" value="${0}"/>
+    %{-- <g:set var="sumlocalPrice" value="${0}"/>--}%
 
     <div class="ui accordion la-accordion-showMore" id="surveyEntitlements">
         <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>
         <g:each in="${titlesList}" var="tipp">
             <g:set var="ieInNewSub"
-                   value="${surveyService.titleContainedBySubscription(subscriberSub, tipp)}"/>
+                   value="${surveyService.titleContainedBySubscription(subscription, tipp, [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_EXPECTED])}"/>
             <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
                 <g:set var="participantPerpetualAccessToTitle"
                        value="${surveyService.hasParticipantPerpetualAccessToTitle3(subscriber, tipp)}"/>
@@ -28,8 +31,8 @@
                         <g:if test="${participantPerpetualAccessToTitle}">
                             <g:set var="participantPerpetualAccessToTitleList"
                                    value="${surveyService.listParticipantPerpetualAccessToTitle(subscriber, tipp)}"/>
-                            <span class="ui mini left corner label la-perpetualAccess la-popup-tooltip la-delay"
-                                  data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitleList.collect{it.getPermanentTitleInfo(contextOrg)}.join(',')}"
+                            <span class="ui mini left corner label la-perpetualAccess la-popup-tooltip"
+                                  data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')} ${participantPerpetualAccessToTitleList.collect{it.getPermanentTitleInfo()}.join(',')}"
                                   data-position="left center" data-variation="tiny">
                                 <i class="star icon"></i>
                             </span>
@@ -50,9 +53,9 @@
                             <div class="ui list">
                                 <!-- START TEMPLATE -->
                                 <laser:render
-                                        template="/templates/title_short_accordion"
+                                        template="/templates/titles/title_short_accordion"
                                         model="${[tipp: tipp,
-                                                  showPackage: true, showPlattform: true, showEmptyFields: false, sub: subscriberSub.id]}"/>
+                                                  showPackage: true, showPlattform: true, showEmptyFields: false, sub: subscription.id]}"/>
                                 <!-- END TEMPLATE -->
 
                             </div>
@@ -94,9 +97,17 @@
                                         <g:if test="${priceItem.listPrice && (i < tipp.priceItems.size() - 1)}">
                                             <hr>
                                         </g:if>
-                                        <g:set var="sumlistPrice" value="${sumlistPrice + (priceItem.listPrice ?: 0)}"/>
-                                        <g:set var="sumlocalPrice"
-                                               value="${sumlocalPrice + (priceItem.localPrice ?: 0)}"/>
+                                        <g:if test="${priceItem.listCurrency == RDStore.CURRENCY_EUR}">
+                                            <g:set var="sumlistPriceEuro" value="${sumlistPriceEuro + (priceItem.listPrice ?: 0)}"/>
+                                        </g:if>
+                                        <g:if test="${priceItem.listCurrency == RDStore.CURRENCY_USD}">
+                                            <g:set var="sumlistPriceUSD" value="${sumlistPriceUSD + (priceItem.listPrice ?: 0)}"/>
+                                        </g:if>
+                                        <g:if test="${priceItem.listCurrency == RDStore.CURRENCY_GBP}">
+                                            <g:set var="sumlistPriceGBP" value="${sumlistPriceGBP + (priceItem.listPrice ?: 0)}"/>
+                                        </g:if>
+                                        %{--<g:set var="sumlocalPrice"
+                                               value="${sumlocalPrice + (priceItem.localPrice ?: 0)}"/>--}%
                                     </g:each>
                                 </g:if>
                         </div>
@@ -107,25 +118,25 @@
 
                                 </div>
 
-                                <div class="ui icon blue button la-modern-button "><i
-                                        class="ui angle double down icon"></i>
+                                <div class="${Btn.MODERN.SIMPLE}">
+                                    <i class="${Icon.CMD.SHOW_MORE}"></i>
                                 </div>
-                                <g:if test="${(params.tab == 'allTipps') && editable && ieInNewSub && de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ieInNewSub, de.laser.IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub))}">
-                                    <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay"
+                                <g:if test="${(params.tab == 'allTipps') && editable && ieInNewSub && de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ieInNewSub, de.laser.IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription))}">
+                                    <g:link class="${Btn.MODERN.NEGATIVE_TOOLTIP}"
                                             action="processRemoveIssueEntitlementsSurvey"
-                                            params="${[id: subscriberSub.id, singleTitle: ieInNewSub.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
+                                            params="${[id: subscription.id, singleTitle: ieInNewSub.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
-                                        <i class="shopping basket icon"></i>
+                                        <i class="la-basket-shopping slash icon"></i>
                                     </g:link>
                                 </g:if>
 
 
                                 <g:if test="${(params.tab == 'allTipps') && editable && !ieInNewSub && allowedToSelect}">
-                                    <g:link class="ui icon negative button la-modern-button la-popup-tooltip la-delay"
+                                    <g:link class="${Btn.MODERN.SIMPLE_TOOLTIP}"
                                             action="processAddIssueEntitlementsSurvey"
-                                            params="${[id: subscriberSub.id, singleTitle: tipp.id, surveyConfigID: surveyConfig?.id]}"
+                                            params="${[id: subscription.id, singleTitle: tipp.id, surveyConfigID: surveyConfig?.id]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
-                                        <i class="la-basket-shopping slash icon"></i>
+                                        <i class="shopping basket icon"></i>
                                     </g:link>
                                 </g:if>
                             </div>
@@ -136,7 +147,7 @@
                 <div class="ui fluid segment content" data-ajaxTargetWrap="true">
                     <div class="ui stackable grid" data-ajaxTarget="true">
 
-                        <laser:render template="/templates/title_long_accordion"
+                        <laser:render template="/templates/titles/title_long_accordion"
                                       model="${[tipp: tipp,
                                                 showPackage: true, showPlattform: true, showEmptyFields: false]}"/>
 
@@ -177,7 +188,7 @@
                                     </g:if>
                                     <g:if test="${covStmt.coverageNote}">
                                         <div class="item">
-                                            <i class="grey icon quote right la-popup-tooltip la-delay"
+                                            <i class="grey icon quote right la-popup-tooltip"
                                                data-content="${message(code: 'default.note.label')}"></i>
 
                                             <div class="content">
@@ -193,7 +204,7 @@
                                     </g:if>
                                     <g:if test="${covStmt.coverageDepth}">
                                         <div class="item">
-                                            <i class="grey icon file alternate right la-popup-tooltip la-delay"
+                                            <i class="grey ${Icon.ATTR.TIPP_COVERAGE_DEPTH} right la-popup-tooltip"
                                                data-content="${message(code: 'tipp.coverageDepth')}"></i>
 
                                             <div class="content">
@@ -209,7 +220,7 @@
                                     </g:if>
                                     <g:if test="${covStmt.embargo}">
                                         <div class="item">
-                                            <i class="grey icon hand paper right la-popup-tooltip la-delay"
+                                            <i class="grey icon hand paper right la-popup-tooltip"
                                                data-content="${message(code: 'tipp.embargo')}"></i>
 
                                             <div class="content">
@@ -243,21 +254,58 @@
                     </div>
                 </div>--}%
 
-                <div class="item">
-                    <div class="contet">
-                        <strong><g:message code="renewEntitlementsWithSurvey.totalCostOnPage"/>:</strong> <g:formatNumber
-                            number="${sumlistPrice}" type="currency"/><br/>
+                <g:if test="${sumlistPriceEuro > 0}">
+                    <div class="item">
+                        <div class="contet">
+                            <strong><g:message code="renewEntitlementsWithSurvey.totalCostOnPage"/>:</strong> <g:formatNumber
+                                number="${sumlistPriceEuro}" type="currency" currencyCode="EUR"/><br/>
+                        </div>
                     </div>
-                </div>
+                </g:if>
+                <g:if test="${sumlistPriceUSD > 0}">
+                    <div class="item">
+                        <div class="contet">
+                            <strong><g:message code="renewEntitlementsWithSurvey.totalCostOnPage"/>:</strong> <g:formatNumber
+                                number="${sumlistPriceUSD}" type="currency" currencyCode="USD"/><br/>
+                        </div>
+                    </div>
+                </g:if>
+                <g:if test="${sumlistPriceGBP > 0}">
+                    <div class="item">
+                        <div class="contet">
+                            <strong><g:message code="renewEntitlementsWithSurvey.totalCostOnPage"/>:</strong> <g:formatNumber
+                                number="${sumlistPriceGBP}" type="currency" currencyCode="GBP"/><br/>
+                        </div>
+                    </div>
+                </g:if>
                 %{--<g:message code="tipp.price.localPrice"/>: <g:formatNumber number="${sumlocalPrice}" type="currency"/>--}%
-                <div class="item">
-                    <div class="contet">
-                        <strong><g:message code="renewEntitlementsWithSurvey.totalCost"/>:</strong> <g:formatNumber
-                            number="${tippsListPriceSum}" type="currency"/>
+                <g:if test="${tippsListPriceSumEUR > 0}">
+                    <div class="item">
+                        <div class="contet">
+                            <strong><g:message code="renewEntitlementsWithSurvey.totalCost"/>:</strong> <g:formatNumber
+                                number="${tippsListPriceSumEUR}" type="currency" currencyCode="EUR"/><br/>
+                        </div>
                     </div>
-                </div>
+                </g:if>
+                <g:if test="${tippsListPriceSumUSD > 0}">
+                    <div class="item">
+                        <div class="contet">
+                            <strong><g:message code="renewEntitlementsWithSurvey.totalCost"/>:</strong> <g:formatNumber
+                                number="${tippsListPriceSumUSD}" type="currency" currencyCode="USD"/><br/>
+                        </div>
+                    </div>
+                </g:if>
+                <g:if test="${tippsListPriceSumGBP > 0}">
+                    <div class="item">
+                        <div class="contet">
+                            <strong><g:message code="renewEntitlementsWithSurvey.totalCost"/>:</strong> <g:formatNumber
+                                number="${tippsListPriceSumGBP}" type="currency" currencyCode="GBP"/><br/>
+                        </div>
+                    </div>
+                </g:if>
 
             </div>
         </div>
+    </div>
 
 </div>

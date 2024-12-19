@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.Person; de.laser.SubscriptionsQueryService; java.text.SimpleDateFormat; de.laser.storage.RDStore; de.laser.FormService" %>
+<%@ page import="de.laser.ui.Btn; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.addressbook.Person; de.laser.SubscriptionsQueryService; java.text.SimpleDateFormat; de.laser.storage.RDStore; de.laser.FormService" %>
 <laser:serviceInjection/>
 
     <g:if test="${!copyObject}">
@@ -14,7 +14,7 @@
             method="post" class="ui form newLicence">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <g:if test="${targetObject instanceof Subscription && SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(targetObject, true)}">
-            <ui:msg class="negative" message="copyElementsIntoObject.surveyExist"/>
+            <ui:msg class="error" message="copyElementsIntoObject.surveyExist"/>
         </g:if>
         <g:else>
 
@@ -33,13 +33,13 @@
                             </tr>
                             <tr>
                                 <th>${message(code: 'default.sortname.label')}</th>
-                                <th>${message(code: 'default.startDate.label')}</th>
-                                <th>${message(code: 'default.endDate.label')}</th>
+                                <th>${message(code: 'default.startDate.label.shy')}</th>
+                                <th>${message(code: 'default.endDate.label.shy')}</th>
                                 <th class="la-no-uppercase">
                                     <ui:multiYearIcon />
                                 </th>
                                 <th>${message(code: 'default.status.label')}</th>
-                                <th class=" center aligned">
+                                <th class="center aligned">
                                     <input type="checkbox" data-action="copy" onClick="JSPC.app.toggleAllCheckboxes(this)" checked/>
                                 </th>
                             </tr>
@@ -61,7 +61,7 @@
                                             </g:if>
                                         </td>
                                         <td>${sub.status.getI10n('value')}</td>
-                                        <td class=" center aligned">
+                                        <td class="center aligned">
                                             <g:set var="orgInSurveyRenewal" value="${sub.isOrgInSurveyRenewal()}"/>
                                             <g:if test="${!orgInSurveyRenewal}">
                                                 <div class="ui checkbox la-toggle-radio la-replace">
@@ -71,7 +71,7 @@
                                                 </div>
                                             </g:if>
                                             <g:else>
-                                                <span class="la-popup-tooltip la-delay" data-content="${g.message(code: 'renewalEvaluation.orgsInSurvey')}" data-position="top right"><i class="icon times circle red"></i></span>
+                                                <span class="la-popup-tooltip" data-content="${g.message(code: 'renewalEvaluation.orgsInSurvey')}" data-position="top right"><i class="icon times circle red"></i></span>
                                             </g:else>
                                         </td>
                                     </g:each>
@@ -92,8 +92,8 @@
                             </tr>
                             <tr>
                                 <th>${message(code: 'default.sortname.label')}</th>
-                                <th>${message(code: 'default.startDate.label')}</th>
-                                <th>${message(code: 'default.endDate.label')}</th>
+                                <th>${message(code: 'default.startDate.label.shy')}</th>
+                                <th>${message(code: 'default.endDate.label.shy')}</th>
                                 <th class="la-no-uppercase">
                                     <ui:multiYearIcon />
                                 </th>
@@ -128,7 +128,7 @@
 
         <g:set var="submitDisabled" value="${(sourceObject && targetObject) || processRunning ? '' : 'disabled'}"/>
         <div class="sixteen wide field" style="text-align: right;">
-            <input id="copySubscriber" type="submit" class="ui button js-click-control"
+            <input id="copySubscriber" type="submit" class="${Btn.SIMPLE_CLICKCONTROL}"
                    value="${message(code: 'copyElementsIntoObject.copySubscriber.button')}" ${submitDisabled}/>
         </div>
     </g:form>

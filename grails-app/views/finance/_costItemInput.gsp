@@ -1,5 +1,5 @@
 <!-- _costItemInput.gsp -->
-<%@ page import="de.laser.CustomerTypeService; de.laser.finance.BudgetCode; de.laser.finance.CostItem; de.laser.IssueEntitlement; de.laser.IssueEntitlementGroup; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.UserSetting; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.*; de.laser.interfaces.CalculatedType; de.laser.finance.CostItemElementConfiguration" %>
+<%@ page import="de.laser.wekb.Package; de.laser.ui.Btn; de.laser.CustomerTypeService; de.laser.finance.BudgetCode; de.laser.finance.CostItem; de.laser.IssueEntitlement; de.laser.IssueEntitlementGroup; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.UserSetting; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.*; de.laser.interfaces.CalculatedType; de.laser.finance.CostItemElementConfiguration" %>
 <laser:serviceInjection />
 
         <g:if test="${costItem}">
@@ -118,7 +118,7 @@
                                name="newCostInBillingCurrency" id="newCostInBillingCurrency_${idSuffix}" placeholder="${g.message(code:'financials.invoice_total')}"
                                value="<g:formatNumber number="${costItem?.costInBillingCurrency}" minFractionDigits="2" maxFractionDigits="2" />"/>
 
-                        <div id="calculateBillingCurrency_${idSuffix}" class="ui icon blue button la-long-tooltip calcButton" data-tooltip="${message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
+                        <div id="calculateBillingCurrency_${idSuffix}" class="${Btn.ICON.SIMPLE} la-long-tooltip calcButton" data-tooltip="${message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
 
@@ -160,7 +160,7 @@
                                placeholder="${g.message(code:'financials.newCosts.exchangeRate')}"
                                value="${value}" />
 
-                        <div  id="calculateExchangeRate_${idSuffix}" class="ui icon blue button la-long-tooltip calcButton" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
+                        <div  id="calculateExchangeRate_${idSuffix}" class="${Btn.ICON.SIMPLE} la-long-tooltip calcButton" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
                     </div><!-- .field -->
@@ -184,7 +184,7 @@
                                placeholder="${message(code:'financials.newCosts.value')}"
                                value="<g:formatNumber number="${costItem?.costInLocalCurrency}" minFractionDigits="2" maxFractionDigits="2"/>" />
 
-                        <div id="calculateLocalCurrency_${idSuffix}" class="ui icon blue button la-long-tooltip calcButton" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
+                        <div id="calculateLocalCurrency_${idSuffix}" class="${Btn.ICON.SIMPLE} la-long-tooltip calcButton" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
                     </div><!-- .field -->
@@ -230,7 +230,7 @@
                                    value="${costItem.sub.getName()}" />
                             <input name="newSubscription" id="newSubscription_${idSuffix}"
                                    type="hidden"
-                                   value="${Subscription.class.name + ':' + costItem.sub.id}" />
+                                   value="${costItem.sub.id}" />
                         </g:if>
                         <g:else>
                             <g:if test="${subscription}">
@@ -239,7 +239,7 @@
                                        value="${subscription.getName()}" />
                                 <input name="newSubscription" id="newSubscription_${idSuffix}"
                                        type="hidden"
-                                       value="${Subscription.class.name + ':' + subscription.id}" />
+                                       value="${subscription.id}" />
                             </g:if>
                             <g:else>
                                 <div class="ui search selection dropdown newCISelect" id="newSubscription_${idSuffix}">
@@ -256,26 +256,26 @@
                         <g:if test="${validSubChilds}">
                             <label>${licenseeLabel}</label>
                             <g:if test="${(mode != 'copy') && costItem && costItem.sub && costItem.sub.instanceOf}">
-                                <input class="la-full-width" readonly="readonly" value="${costItem.sub.getSubscriber().sortname}" />
+                                <input class="la-full-width" readonly="readonly" value="${costItem.sub.getSubscriberRespConsortia().sortname}" />
                             </g:if>
                             <g:elseif test="${costItem?.sub == subscription && subscription._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL}">
-                                <input type="button" name="toggleLicenseeTarget" id="toggleLicenseeTarget_${idSuffix}" class="ui blue button la-full-width" value="${message(code:'financials.newCosts.toggleLicenseeTarget')}">
+                                <input type="button" name="toggleLicenseeTarget" id="toggleLicenseeTarget_${idSuffix}" class="${Btn.SIMPLE} la-full-width" value="${message(code:'financials.newCosts.toggleLicenseeTarget')}">
                                 <g:select name="newLicenseeTarget" id="newLicenseeTarget_${idSuffix}" class="ui dropdown multiple search"
                                           from="${validSubChilds}" multiple="multiple"
-                                          optionValue="${{it.name ? it.getSubscriber().dropdownNamingConvention(institution) : it.label}}"
-                                          optionKey="${{Subscription.class.name + ':' + it.id}}"
+                                          optionValue="${{it.name ? it.getSubscriberRespConsortia().dropdownNamingConvention(institution) : it.label}}"
+                                          optionKey="id"
                                           noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                          value="${Subscription.class.name + ':forParent'}"
+                                          value="forParent"
                                 />
                             </g:elseif>
                             <g:else>
-                                <input type="button" name="toggleLicenseeTarget" id="toggleLicenseeTarget_${idSuffix}" class="ui blue button la-full-width" value="${message(code:'financials.newCosts.toggleLicenseeTarget')}">
+                                <input type="button" name="toggleLicenseeTarget" id="toggleLicenseeTarget_${idSuffix}" class="${Btn.SIMPLE} la-full-width" value="${message(code:'financials.newCosts.toggleLicenseeTarget')}">
                                 <g:select name="newLicenseeTarget" id="newLicenseeTarget_${idSuffix}" class="ui dropdown multiple search"
                                           from="${validSubChilds}" multiple="multiple"
-                                          optionValue="${{it.name ? it.getSubscriber().dropdownNamingConvention(institution) : it.label}}"
-                                          optionKey="${{Subscription.class.name + ':' + it.id}}"
+                                          optionValue="${{it.name ? it.getSubscriberRespConsortia().dropdownNamingConvention(institution) : it.label}}"
+                                          optionKey="id"
                                           noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                          value="${Subscription.class.name + ':' + costItem?.sub?.id}"
+                                          value="${costItem?.sub?.id}"
                                 />
                             </g:else>
                         </g:if>
@@ -287,16 +287,16 @@
                             <label>${message(code:'financials.newCosts.package')}</label>
                             <g:if test="${costItem?.sub}">
                                 <g:select name="newPackage" id="newPackage_${idSuffix}" class="ui dropdown search"
-                                          from="${[{}] + costItem?.sub?.packages}"
-                                          optionValue="${{it?.pkg?.name ?: message(code:'financials.newCosts.noPackageLink')}}"
-                                          optionKey="${{SubscriptionPackage.class.name + ':' + it?.id}}"
+                                          from="${costItem?.sub?.packages?.pkg}"
+                                          optionValue="${{it?.name ?: message(code:'financials.newCosts.noPackageLink')}}"
+                                          optionKey="id"
                                           noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                          value="${SubscriptionPackage.class.name + ':' + costItem?.subPkg?.id}" />
+                                          value="${costItem?.pkg?.id}" />
                             </g:if>
                             <g:else>
                             <%--<input name="newPackage" class="ui" disabled="disabled" data-subFilter="" data-disableReset="true" />--%>
                                 <div class="ui search selection dropdown newCISelect" id="newPackage_${idSuffix}">
-                                    <input type="hidden" name="newPackage" value="${costItem?.subPkg ? "${SubscriptionPackage.class.name}:${costItem.subPkg.id}" : params.newPackage}">
+                                    <input type="hidden" name="newPackage" value="${costItem?.pkg ? "${costItem.pkg.id}" : params.newPackage}">
                                     <i class="dropdown icon"></i>
                                     <input type="text" class="search">
                                     <div class="default text"></div>
@@ -307,7 +307,7 @@
                             <%-- the distinction between subMode (= sub) and general view is done already in the controller! --%>
                             <label>${message(code:'financials.newCosts.singleEntitlement')}</label>
                             <div class="ui search selection dropdown newCISelect" id="newIE_${idSuffix}">
-                                <input type="hidden" name="newIE" value="${costItem?.issueEntitlement ? "${IssueEntitlement.class.name}:${costItem.issueEntitlement.id}" : params.newIE}">
+                                <input type="hidden" name="newIE" value="${costItem?.issueEntitlement ? "${costItem.issueEntitlement.id}" : params.newIE}">
                                 <i class="dropdown icon"></i>
                                 <input type="text" class="search">
                                 <div class="default text"></div>
@@ -317,7 +317,7 @@
                         <div class="field">
                             <label>${message(code:'financials.newCosts.titleGroup')}</label>
                             <div class="ui search selection dropdown newCISelect" id="newTitleGroup_${idSuffix}" >
-                                <input type="hidden" name="newTitleGroup" value="${costItem?.issueEntitlementGroup ? "${IssueEntitlementGroup.class.name}:${costItem.issueEntitlementGroup.id}" : params.newTitleGroup}">
+                                <input type="hidden" name="newTitleGroup" value="${costItem?.issueEntitlementGroup ? "${costItem.issueEntitlementGroup.id}" : params.newTitleGroup}">
                                 <i class="dropdown icon"></i>
                                 <input type="text" class="search">
                                 <div class="default text"></div>
@@ -412,9 +412,9 @@
     <%
         String contextSub = ""
         if(costItem && costItem.sub)
-            contextSub = genericOIDService.getOID(costItem.sub)
+            contextSub = costItem.sub.id
         else if(subscription)
-            contextSub = genericOIDService.getOID(subscription)
+            contextSub = subscription.id
     %>
     JSPC.app.ajaxDropdown = function(selector, url, valuesString) {
         let values = [];
@@ -505,13 +505,13 @@
                 JSPC.app.ajaxDropdown($(this), JSPC.app.finance${idSuffix}.selLinks[$(this).attr("id")], '')
             });
         <% if(costItem?.issueEntitlement) {
-            String ieTitleName = costItem.issueEntitlement.name
+            String ieTitleName = costItem.issueEntitlement.tipp.name
             String ieTitleTypeString = costItem.issueEntitlement.tipp.titleType %>
-        JSPC.app.finance${idSuffix}.newIE.dropdown('set text',"${ieTitleName} (${ieTitleTypeString}) (${costItem.sub.dropdownNamingConvention(contextService.getOrg())})");
+        JSPC.app.finance${idSuffix}.newIE.dropdown('set text',"${ieTitleName} (${ieTitleTypeString}) (${costItem.sub.dropdownNamingConvention()})");
         <%  }
         if(costItem?.issueEntitlementGroup) {
             String issueEntitlementGroupName = costItem.issueEntitlementGroup.name %>
-        JSPC.app.finance${idSuffix}.newTitleGroup.dropdown('set text',"${issueEntitlementGroupName} (${costItem.sub.dropdownNamingConvention(contextService.getOrg())})");
+        JSPC.app.finance${idSuffix}.newTitleGroup.dropdown('set text',"${issueEntitlementGroupName} (${costItem.sub.dropdownNamingConvention()})");
         <%  }  %>
         },
         collect: function (fields) {
@@ -525,7 +525,11 @@
         },
         preselectMembers: function () {
         <g:if test="${pickedSubscriptions}">
-            JSPC.app.finance${idSuffix}.newLicenseeTarget.dropdown("set selected",[${raw(pickedSubscriptions.join(','))}]);
+            let licenseeTargets = [];
+            <g:each in="${pickedSubscriptions}" var="pickedSub">
+                licenseeTargets.push(${pickedSub});
+            </g:each>
+            JSPC.app.finance${idSuffix}.newLicenseeTarget.dropdown("set selected",licenseeTargets);
             <g:if test="${pickedSubscriptions.size() > 9}">
                 JSPC.app.finance${idSuffix}.newLicenseeTarget.parent('div').toggle();
             </g:if>
@@ -540,7 +544,7 @@
                 if(!values[0].match(/:null|:for/)) {
                      context = values[0];
                 }
-                else context = "${contextSub}";
+                else context = ${contextSub};
             }
             else if(JSPC.app.finance${idSuffix}.newLicenseeTarget.length === 0)
                 context = JSPC.app.finance${idSuffix}.newSubscription.dropdown('get value');
@@ -566,7 +570,7 @@
                         JSPC.app.finance${idSuffix}.newSubscription.addClass("error");
                     else
                         JSPC.app.finance${idSuffix}.newSubscription.removeClass("error");
-                    if(!response.subPkg)
+                    if(!response.pkg)
                         JSPC.app.finance${idSuffix}.newPackage.addClass("error");
                     else
                         JSPC.app.finance${idSuffix}.newPackage.removeClass("error");
@@ -580,10 +584,16 @@
             }
         },
         checkValues: function () {
-            if ( (JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val()) * JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costCurrencyRate.val(), true)).toFixed(2) !== JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val()).toFixed(2) ) {
-                //console.log("inserted values are: "+JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val())+" * "+JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costCurrencyRate.val(), true)+" = "+JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val()).toFixed(2)+", correct would be: "+(JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val()) * JSPC.app.finance${idSuffix}.costCurrencyRate.val(), true).toFixed(2));
-                JSPC.app.finance${idSuffix}.costElems.parent('.field').addClass('error');
-                return false;
+            if(JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costCurrencyRate.val()) > 0) {
+                if ( (JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val()) * JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costCurrencyRate.val(), true)).toFixed(2) !== JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val()).toFixed(2) ) {
+                    //console.log("inserted values are: "+JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val())+" * "+JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costCurrencyRate.val(), true)+" = "+JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val()).toFixed(2)+", correct would be: "+(JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val()) * JSPC.app.finance${idSuffix}.costCurrencyRate.val(), true).toFixed(2));
+                    JSPC.app.finance${idSuffix}.costElems.parent('.field').addClass('error');
+                    return false;
+                }
+                else {
+                    JSPC.app.finance${idSuffix}.costElems.parent('.field').removeClass('error');
+                    return true;
+                }
             }
             else {
                 JSPC.app.finance${idSuffix}.costElems.parent('.field').removeClass('error');
@@ -606,15 +616,19 @@
             let billingCurrencyAfterRounding = roundB ? Math.round(parsedBillingCurrency) : parsedBillingCurrency
             let localCurrencyAfterRounding = roundB ? Math.round(parsedLocalCurrency) : parsedLocalCurrency
             JSPC.app.finance${idSuffix}.costBillingCurrency.val(JSPC.app.finance${idSuffix}.doubleToString(billingCurrencyAfterRounding));
-            JSPC.app.finance${idSuffix}.costLocalCurrency.val(JSPC.app.finance${idSuffix}.doubleToString(localCurrencyAfterRounding));
+            if(parsedCurrencyRate > 0) {
+                JSPC.app.finance${idSuffix}.costLocalCurrency.val(JSPC.app.finance${idSuffix}.doubleToString(localCurrencyAfterRounding));
+            }
             let billingAfterTax = roundF ? Math.round(billingCurrencyAfterRounding * taxF) : billingCurrencyAfterRounding * taxF;
-            let localAfterTax = roundF ? Math.round(localCurrencyAfterRounding * taxF ) : localCurrencyAfterRounding * taxF;
             JSPC.app.finance${idSuffix}.costBillingCurrencyAfterTax.val(
                  JSPC.app.finance${idSuffix}.doubleToString(billingAfterTax)
             );
-            JSPC.app.finance${idSuffix}.costLocalCurrencyAfterTax.val(
-                 JSPC.app.finance${idSuffix}.doubleToString(localAfterTax)
-            );
+            if(parsedCurrencyRate > 0) {
+                let localAfterTax = roundF ? Math.round(localCurrencyAfterRounding * taxF ) : localCurrencyAfterRounding * taxF;
+                JSPC.app.finance${idSuffix}.costLocalCurrencyAfterTax.val(
+                    JSPC.app.finance${idSuffix}.doubleToString(localAfterTax)
+                );
+            }
         },
         stringToDouble: function (input, currencyRate = false) {
             let output = 0.0;
@@ -685,7 +699,9 @@
                 if (! JSPC.app.finance${idSuffix}.isError(JSPC.app.finance${idSuffix}.costLocalCurrency) && ! JSPC.app.finance${idSuffix}.isError(JSPC.app.finance${idSuffix}.costCurrencyRate)) {
                     let parsedLocalCurrency = JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val().trim());
                     let parsedCurrencyRate = JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costCurrencyRate.val().trim(), true);
-                    JSPC.app.finance${idSuffix}.costBillingCurrency.val(JSPC.app.finance${idSuffix}.doubleToString((parsedLocalCurrency / parsedCurrencyRate)));
+                    if (parsedCurrencyRate > 0) {
+                        JSPC.app.finance${idSuffix}.costBillingCurrency.val(JSPC.app.finance${idSuffix}.doubleToString((parsedLocalCurrency / parsedCurrencyRate)));
+                    }
                     $(".la-account-currency").find(".field").removeClass("error");
                     JSPC.app.finance${idSuffix}.calcTaxResults();
                 }
@@ -703,7 +719,12 @@
                 if (! JSPC.app.finance${idSuffix}.isError(JSPC.app.finance${idSuffix}.costBillingCurrency) && ! JSPC.app.finance${idSuffix}.isError(JSPC.app.finance${idSuffix}.costCurrencyRate)) {
                     let parsedBillingCurrency = JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val().trim());
                     let parsedCurrencyRate = JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costCurrencyRate.val().trim(), true);
-                    JSPC.app.finance${idSuffix}.costLocalCurrency.val((parsedBillingCurrency * parsedCurrencyRate));
+                    if (parsedCurrencyRate === 0) {
+                        JSPC.app.finance${idSuffix}.costLocalCurrency.val("");
+                    }
+                    else {
+                        JSPC.app.finance${idSuffix}.costLocalCurrency.val((parsedBillingCurrency * parsedCurrencyRate));
+                    }
                     $(".la-account-currency").find(".field").removeClass("error");
                     JSPC.app.finance${idSuffix}.calcTaxResults();
                 }
@@ -736,6 +757,9 @@
                     if(allSet) {
                         JSPC.app.finance${idSuffix}.calcTaxResults($(this).attr("id") === JSPC.app.finance${idSuffix}.costLocalCurrency.attr("id")); //will set boolean localHandInput
                     }
+                    else if(parsedCurrencyRate == 0) {
+                        JSPC.app.finance${idSuffix}.calcTaxResults()
+                    }
                     else {
                         if(JSPC.app.finance${idSuffix}.costLocalCurrency.val().length > 0 && JSPC.app.finance${idSuffix}.costCurrencyRate.val().length > 0 && parsedCurrencyRate > 0) {
                             JSPC.app.finance${idSuffix}.calculateBillingCurrency.click();
@@ -743,7 +767,7 @@
                         if(JSPC.app.finance${idSuffix}.costBillingCurrency.val().length > 0 && JSPC.app.finance${idSuffix}.costLocalCurrency.val().length > 0 && parsedBillingCurrency > 0 && parsedLocalCurrency > 0) {
                             JSPC.app.finance${idSuffix}.calculateCurrencyRate.click();
                         }
-                        if(JSPC.app.finance${idSuffix}.costBillingCurrency.val().length > 0 && JSPC.app.finance${idSuffix}.costCurrencyRate.val().length > 0) {
+                        if(JSPC.app.finance${idSuffix}.costBillingCurrency.val().length > 0 && JSPC.app.finance${idSuffix}.costCurrencyRate.val().length > 0 && parsedCurrencyRate > 0) {
                             JSPC.app.finance${idSuffix}.calculateLocalCurrency.click();
                         }
                     }

@@ -2,24 +2,27 @@
 
 <g:if test="${status == WorkflowService.OP_STATUS_DONE}">
     <g:if test="${cmd == 'delete'}">
-        <ui:msg class="positive" message="workflow.delete.ok" />
+        <ui:msg class="success" message="workflow.delete.ok" />
     </g:if>
     <g:elseif test="${cmd == 'create' || cmd == 'instantiate'}">
-        <ui:msg class="positive" message="workflow.create.ok" />
+        <ui:msg class="success" message="workflow.create.ok" />
     </g:elseif>
     <g:else>
-        <ui:msg class="positive" message="workflow.edit.ok" />
+        <ui:msg class="success" message="workflow.edit.ok" />
     </g:else>
 </g:if>
 <g:elseif test="${status == WorkflowService.OP_STATUS_ERROR}">
     <g:if test="${cmd == 'delete'}">
-        <ui:msg class="negative" message="workflow.delete.error" />
+        <ui:msg class="error" message="workflow.delete.error" />
     </g:if>
     <g:elseif test="${cmd == 'create' || cmd == 'instantiate'}">
-        <ui:msg class="negative" message="workflow.create.error" />
+        <ui:msg class="error" message="workflow.create.error" />
     </g:elseif>
     <g:else>
-        <ui:msg class="negative" message="workflow.edit.error" />
+        <ui:msg class="error" message="workflow.edit.error" />
     </g:else>
+</g:elseif>
+<g:elseif test="${status == WorkflowService.OP_STATUS_FORBIDDEN}">
+    <ui:msg class="error" message="default.noPermissions" />
 </g:elseif>
 

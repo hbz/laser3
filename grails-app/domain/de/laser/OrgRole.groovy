@@ -3,6 +3,8 @@ package de.laser
 import de.laser.annotations.RefdataInfo
 import de.laser.storage.RDConstants
 import de.laser.traits.ShareableTrait
+import de.laser.wekb.Package
+import de.laser.wekb.TitleInstancePackagePlatform
 import org.grails.datastore.mapping.engine.event.PostUpdateEvent
 
 import javax.persistence.Transient
@@ -10,8 +12,8 @@ import javax.persistence.Transient
 /**
  * This domain links organisations (institutions and other ones) to other objects. The objects may be one of:
  * <ul>
- *     <li>{@link Package}</li>
- *     <li>{@link TitleInstancePackagePlatform}</li>
+ *     <li>{@link de.laser.wekb.Package}</li>
+ *     <li>{@link de.laser.wekb.TitleInstancePackagePlatform}</li>
  *     <li>{@link License}</li>
  *     <li>{@link Subscription}</li>
  * </ul>
@@ -25,15 +27,14 @@ import javax.persistence.Transient
  * and for licenses:
  * <ul>
  *     <li>Licensee (for local licenses; used mainly by single users)</li>
- *     <li>Licensee_Consortial (consortial membershipt)</li>
+ *     <li>Licensee_Consortial (consortial membership)</li>
  *     <li>Licensing Consortium (consortial parenthood)</li>
  * </ul>
- * The role types listed above will never be taken by providers, agencies or similar; the linking of an {@link Org} to other objects permits thus determination of the organisation type itself. This is useful if the
- * organisation type ({@link Org#orgType}) set is empty because no one assigned a type.
+ * The role types listed above will never be taken by providers, agencies or similar.
  * Moreover, an organisation link may be inherited from a consortial parent object to its member children
  * @see Org
- * @see Package
- * @see TitleInstancePackagePlatform
+ * @see de.laser.wekb.Package
+ * @see de.laser.wekb.TitleInstancePackagePlatform
  * @see License
  * @see Subscription
  */
@@ -78,7 +79,7 @@ class OrgRole implements ShareableTrait {
    startDate column:'or_start_date'
      endDate column:'or_end_date'
     isShared column:'or_is_shared'
-  sharedFrom column:'or_shared_from_fk'
+  sharedFrom column:'or_shared_from_fk',index:'or_shared_from_idx'
          org sort: 'name', order: 'asc'
 
       dateCreated column: 'or_date_created'

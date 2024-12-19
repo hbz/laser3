@@ -1,7 +1,12 @@
 package de.laser
 
+import de.laser.addressbook.Person
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.survey.SurveyResult
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
+import de.laser.wekb.Vendor
 
 /**
  * This service updates timestamps of depending objects if an object update has been triggered. This is essential for
@@ -41,9 +46,6 @@ class CascadingUpdateService {
         if (obj.org) { update(obj.org, luc) }
         if (obj.pkg) { update(obj.pkg, luc) }
         if (obj.sub) { update(obj.sub, luc) }
-        //if (obj.ti)  { update(obj.ti,  luc) }
-
-        //        tipp:   TitleInstancePackagePlatform
     }
 
     /**
@@ -59,9 +61,6 @@ class CascadingUpdateService {
         ])
 
         if (obj.pkg) { update(obj.pkg, luc) }
-        //if (obj.ti)  { update(obj.ti,  luc) }
-
-        //        tipp:   TitleInstancePackagePlatform
     }
 
     /**
@@ -77,9 +76,6 @@ class CascadingUpdateService {
         ])
 
         if (obj.pkg) { update(obj.pkg, luc) }
-        //if (obj.ti)  { update(obj.ti,  luc) }
-
-        //        tipp:   TitleInstancePackagePlatform
     }
 
     /**
@@ -94,10 +90,11 @@ class CascadingUpdateService {
                 luc: luc, obj: obj
         ])
 
-        if (obj.pkg)      { update(obj.pkg, luc) }
-      //if (obj.tipp)     { update(obj.tipp, luc) }
-        if (obj.platform) { update(obj.platform, luc) }
-        if (obj.org)      { update(obj.org, luc) }
+        if (obj.license)       { update(obj.license, luc) }
+        if (obj.pkg)           { update(obj.pkg, luc) }
+        if (obj.platform)      { update(obj.platform, luc) }
+        if (obj.org)           { update(obj.org, luc) }
+        if (obj.subscription)  { update(obj.subscription, luc) }
     }
 
     /**
@@ -206,12 +203,31 @@ class CascadingUpdateService {
         ])
     }
 
-    /*void update(TitleInstancePackagePlatform obj, Date luc) {
-        log(obj, luc)
-        TitleInstancePackagePlatform.executeUpdate("update TitleInstancePackagePlatform tipp set tipp.lastUpdatedCascading = :luc where tipp = :obj", [
+    /**
+     * Updates the given vendor timestamp
+     * @param obj the updated vendor
+     * @param luc the timestamp of update
+     */
+    void update(Vendor obj, Date luc) {
+        _log(obj, luc)
+
+        Vendor.executeUpdate("update Vendor v set v.lastUpdatedCascading = :luc where v = :obj", [
                 luc: luc, obj: obj
         ])
-    }*/
+    }
+
+    /**
+     * Updates the given provider timestamp
+     * @param obj the updated provider
+     * @param luc the timestamp of update
+     */
+    void update(Provider obj, Date luc) {
+        _log(obj, luc)
+
+        Provider.executeUpdate("update Provider p set p.lastUpdatedCascading = :luc where p = :obj", [
+                luc: luc, obj: obj
+        ])
+    }
 
     /**
      * Logs the timestamp update

@@ -8,22 +8,22 @@ import de.laser.auth.*
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
 import de.laser.properties.PropertyDefinition
+import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
+import de.laser.storage.RDStore
 import de.laser.system.SystemEvent
 import de.laser.system.SystemSetting
 import de.laser.utils.AppUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.PasswordUtils
+import de.laser.wekb.Package
 import grails.converters.JSON
 import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
 import grails.util.Environment
-import groovy.sql.Sql
 import org.hibernate.SessionFactory
 import org.hibernate.query.NativeQuery
 import org.hibernate.type.TextType
-
-import javax.sql.DataSource
 
 /**
  * This service encapsulates methods called upon system startup; it defines system-wide constants, updates hard-coded translations and sets other globally relevant parameters
@@ -32,7 +32,6 @@ import javax.sql.DataSource
 class BootStrapService {
 
     CacheService cacheService
-    DataSource dataSource
     GrailsApplication grailsApplication
     RefdataReorderService refdataReorderService
     SessionFactory sessionFactory
@@ -112,9 +111,6 @@ class BootStrapService {
 
             log.debug("setIdentifierNamespace ..")
             setIdentifierNamespace()
-
-            log.debug("adjustDatabasePermissions ..")
-            adjustDatabasePermissions()
         }
 
         log.debug("JSON.registerObjectMarshaller(Date) ..")
@@ -125,7 +121,7 @@ class BootStrapService {
         }
 
         log.debug(".__                                .________ ")
-        log.debug("|  |   _____    ______ ___________  \\_____  \\ ~ Grails_6")
+        log.debug("|  |   _____    ______ ___________  \\_____  \\ ~ Grails_" + AppUtils.getMeta('info.app.grailsVersion'))
         log.debug("|  |   \\__  \\  /  ___// __ \\_  __ \\   _(__  < ")
         log.debug("|  |___ / __ \\_\\___ \\\\  ___/|  | \\/  /       \\ ")
         log.debug("|_____ (____  /____  >\\___  >__|    /______  / ")
@@ -228,7 +224,7 @@ class BootStrapService {
         Role orgInstProRole         = updateRole(CustomerTypeService.ORG_INST_PRO,          'org', [en: 'LAS:eR (Pro)', de: 'LAS:eR (Pro)'])
         Role orgConsortiumRole      = updateRole(CustomerTypeService.ORG_CONSORTIUM_BASIC,  'org', [en: 'Consortium Manager (Basic)', de: 'Konsortialmanager (Basic)'])
         Role orgConsortiumProRole   = updateRole(CustomerTypeService.ORG_CONSORTIUM_PRO,    'org', [en: 'Consortium Manager (Pro)',   de: 'Konsortialmanager (Pro)'])
-        Role orgSupportRole         = updateRole(CustomerTypeService.ORG_SUPPORT,           'org', [en: 'Interne Verwaltung (HBZ)', de: 'Interne Verwaltung (HBZ)'])
+        Role orgSupportRole         = updateRole(CustomerTypeService.ORG_SUPPORT,           'org', [en: 'Verwaltung', de: 'Verwaltung'])
 
         updateRolePerms(fakeRole,                ['FAKE'])
         updateRolePerms(orgInstRole,             [CustomerTypeService.ORG_INST_BASIC])
@@ -338,7 +334,8 @@ class BootStrapService {
                                     nsType        : line[5].trim() ?: null,
                                     urlPrefix     : line[6].trim() ?: null,
                                     isUnique      : Boolean.parseBoolean(line[7].trim()),
-                                    isHidden      : Boolean.parseBoolean(line[8].trim())
+                                    isHidden      : Boolean.parseBoolean(line[8].trim()),
+                                    validationRegex: line[9].trim() ?: null
                             ]
                             result.add(map)
                         }
@@ -390,15 +387,6 @@ class BootStrapService {
         catch (Exception e) {
             log.warn('.. failed: ' + e.getMessage())
         }
-    }
-
-    /**
-     * Ensures database permissions for the backup and readonly users
-     */
-    void adjustDatabasePermissions() {
-
-        Sql sql = new Sql(dataSource)
-        sql.rows("SELECT * FROM grants_for_maintenance()")
     }
 
     /**
@@ -468,6 +456,8 @@ class BootStrapService {
         rdvList.each { map ->
             RefdataValue.construct(map)
         }
+
+        RDStore.getDeclaredFields() // init
     }
 
     /**
@@ -480,6 +470,8 @@ class BootStrapService {
         pdList.each { map ->
             PropertyDefinition.construct(map)
         }
+
+        PropertyStore.getDeclaredFields() // init
     }
 
     /**

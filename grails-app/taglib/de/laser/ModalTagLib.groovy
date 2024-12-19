@@ -3,6 +3,8 @@ package de.laser
 import de.laser.ContextService
 import de.laser.SystemService
 import de.laser.YodaService
+import de.laser.ui.Btn
+import de.laser.ui.Icon
 import de.laser.utils.SwissKnife
 
 class ModalTagLib {
@@ -17,7 +19,7 @@ class ModalTagLib {
 
         if (yodaService.showDebugInfo()) {
 
-            out << '<a href="#debugInfo" id="showDebugInfo" role="dialog" aria-label="Debug Info" class="ui secondary button icon la-debugInfos" data-ui="modal">'
+            out << '<a href="#debugInfo" id="showDebugInfo" role="button" aria-label="Debug Info" class="' + Btn.ICON.SECONDARY + ' la-debugInfos" data-ui="modal">'
             out << '<i aria-hidden="true" class="bug icon"></i>'
             out << '</a>'
 
@@ -28,10 +30,59 @@ class ModalTagLib {
             out << '<br />'
             out << '</div>'
             out << '<div class="actions">'
-            out << '<a href="#" class="ui button" onclick="$(\'#debugInfo\').modal(\'hide\')">Schließen</a>'
+            out << '<a href="#" class="' + Btn.SIMPLE + '" onclick="$(\'#debugInfo\').modal(\'hide\')">Schließen</a>'
             out << '</div>'
             out << '</div>'
         }
+    }
+    //<ui:modalContact id="myModalDialog" text="${text}" message="local.string" hideSubmitButton="true" modalSize="large/small/tiny/mini" >
+    // CONTENT
+    // </ui:modalContact>
+
+    def modalAddress = { attrs, body ->
+
+        def (text, message) = SwissKnife.getTextAndMessage(attrs)
+        String id           = attrs.id ? ' id="' + attrs.id + '" ' : ''
+        String modalSize    = attrs.modalSize ? attrs.modalSize  : ''
+        String refreshModal    = attrs.refreshModal ? 'longer'  : ''
+        String title        = (text && message) ? text + " - " + message : text + message
+        String isEditModal  = attrs.isEditModal
+
+        String msgClose    = attrs.msgClose  ?: "${g.message(code:'default.button.close.label')}"
+        String msgSave     = attrs.msgSave   ?: (isEditModal ? "${g.message(code:'default.button.save_changes')}" : "${g.message(code:'default.button.create.label')}")
+        String msgDelete   = attrs.msgDelete ?: "${g.message(code:'default.button.delete.label')}"
+
+        out << '<div role="dialog" class="ui ' + refreshModal + ' modal ' + modalSize + '"' + id + ' aria-label="Modal">'
+        out << '<div class="header">' + title + '</div>'
+
+        if (attrs.contentClass) {
+            out << '<div class="content ' + attrs.contentClass + '">'
+        } else {
+            out << '<div class="content">'
+        }
+
+        out << body()
+        out << '</div>'
+        out << '<div class="actions">'
+        out << '<button class="' + Btn.SIMPLE + ' deny" >' + msgClose + '</button>'
+
+        if (attrs.showDeleteButton) {
+
+            out << '<input type="submit" class="' + Btn.NEGATIVE + '" name="delete" value="' + msgDelete + '" onclick="'
+            out << "return confirm('${g.message(code:'default.button.delete.confirmDeletion.message')}')?"
+            out << '$(\'#' + attrs.id + '\').find(\'#' + attrs.deleteFormID + '\').submit():null'
+            out << '"/>'
+        }
+
+        if (attrs.hideSubmitButton == true || attrs.hideSubmitButton == 'true') {
+        }
+        else {
+            // todo: Btn.POSITIVE = JS-Trigger
+            out << '<input type="submit" class="ui button green"" name="save" form="' + attrs.form + '" value="' + msgSave + '" />'
+        }
+
+        out << '</div>'
+        out << '</div>'
     }
 
     //<ui:modal id="myModalDialog" text="${text}" message="local.string" hideSubmitButton="true" modalSize="large/small/tiny/mini" >
@@ -63,11 +114,11 @@ class ModalTagLib {
         out << body()
         out << '</div>'
         out << '<div class="actions">'
-        out << '<button class="ui button deny" >' + msgClose + '</button>'
+        out << '<button class="' + Btn.SIMPLE + ' deny" >' + msgClose + '</button>'
 
         if (attrs.showDeleteButton) {
 
-            out << '<input type="submit" class="ui negative button" name="delete" value="' + msgDelete + '" onclick="'
+            out << '<input type="submit" class="' + Btn.NEGATIVE + '" name="delete" value="' + msgDelete + '" onclick="'
             out << "return confirm('${g.message(code:'default.button.delete.confirmDeletion.message')}')?"
             out << '$(\'#' + attrs.id + '\').find(\'#' + attrs.deleteFormID + '\').submit():null'
             out << '"/>'
@@ -77,8 +128,10 @@ class ModalTagLib {
         }
         else {
             if (attrs.formID) {
+                // todo: Btn.POSITIVE = JS-Trigger
                 out << '<input type="submit" class="ui button green" name="save" value="' + msgSave + '" onclick="event.preventDefault(); $(\'#' + attrs.id + '\').find(\'#' + attrs.formID + '\').submit()"/>'
             } else {
+                // todo: Btn.POSITIVE = JS-Trigger
                 out << '<input type="submit" class="ui button green" name="save" value="' + msgSave + '" onclick="event.preventDefault(); $(\'#' + attrs.id + '\').find(\'form\').submit()"/>'
             }
         }
@@ -98,14 +151,14 @@ class ModalTagLib {
         out << '<div role="dialog" class="ui modal ' + modalSize + '"' + id + ' aria-label="Modal">'
         out <<    '<div class="content ui items">'
         out <<       '<div class="item">'
-        out <<          '<div class="image"><i class="ui icon huge circular question"></i></div>'
+        out <<          '<div class="image"><i class="' + Icon.UI.HELP + ' circular huge"></i></div>'
         out <<          '<div class="content">'
         out << body()
         out <<          '</div>'
         out <<       '</div>'
         out <<    '</div>'
         out <<    '<div class="actions">'
-        out <<       '<button class="ui button ' + attrs.id + '" onclick="$(\'#' + attrs.id + '\').modal(\'hide\')">' + msgClose + '</button>'
+        out <<       '<button class="' + Btn.SIMPLE + ' ' + attrs.id + '" onclick="$(\'#' + attrs.id + '\').modal(\'hide\')">' + msgClose + '</button>'
         out <<    '</div>'
         out << '</div>'
     }
@@ -132,9 +185,9 @@ class ModalTagLib {
         out << '</div>'
 
         out << '<div class="actions">'
-        out << '<button class="ui deny button">' + msgCancel + '</button>'
+        out << '<button class="' + Btn.SIMPLE + ' deny">' + msgCancel + '</button>'
         out << '<button id="js-confirmation-button" class="ui positive right labeled icon button">' + msgDelete
-        out << '    <i aria-hidden="true" class="trash alternate outline icon"></i>'
+        out << '    <i aria-hidden="true" class="' + Icon.CMD.DELETE + '"></i>'
         out << '</button>'
         out << '</div>'
         out << '</div>'

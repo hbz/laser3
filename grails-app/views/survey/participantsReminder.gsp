@@ -1,6 +1,6 @@
-<%@ page import="de.laser.survey.SurveyConfig; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.Org" %>
+<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyConfig; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.Org" %>
 
-<laser:htmlStart text="${message(code: 'survey.label')}  ${message(code: 'openParticipantsAgain.reminder')}" serviceInjection="true" />
+<laser:htmlStart text="${message(code: 'survey.label')}  ${message(code: 'openParticipantsAgain.reminder')}" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
@@ -13,13 +13,17 @@
 </ui:breadcrumbs>
 
 <ui:controlButtons>
+    <laser:render template="exports"/>
     <laser:render template="actions"/>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon type="Survey">
-    <ui:xEditable owner="${surveyInfo}" field="name"/>
-    <uiSurvey:status object="${surveyInfo}"/>
-</ui:h1HeaderWithIcon>
+<ui:h1HeaderWithIcon text="${surveyInfo.name}" type="Survey"/>
+
+<uiSurvey:status object="${surveyInfo}"/>
+
+<g:if test="${surveyConfig.subscription}">
+ <ui:buttonWithIcon style="vertical-align: super;" message="${message(code: 'button.message.showLicense')}" variation="tiny" icon="${Icon.SUBSCRIPTION}" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+</g:if>
 
 <laser:render template="nav"/>
 
@@ -30,8 +34,8 @@
 <br />
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">
-    <g:if test="${surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]}">
-        <i class="icon clipboard outline la-list-icon"></i>
+    <g:if test="${surveyConfig.subscription}">
+        <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
         <g:link controller="subscription" action="show" id="${surveyConfig.subscription.id}">
             ${surveyConfig.getConfigNameShort()}
         </g:link>
@@ -40,7 +44,7 @@
         ${surveyConfig.getConfigNameShort()}
     </g:else>:
 
-        ${message(code: "openParticipantsAgain.reminder")} <div class="ui blue circular label">${participantsNotFinishTotal}</div>
+        ${message(code: "openParticipantsAgain.reminder")} <ui:bubble count="${participantsNotFinishTotal}" />
 </h2>
 <br />
 
@@ -49,12 +53,19 @@
     <div class="sixteen wide stretched column">
 
         <ui:greySegment>
+            <g:if test="${surveyConfig.pickAndChoose}">
+                <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'finishedDate', 'surveyTitlesCount', 'surveyProperties', 'commentOnlyForOwner', 'reminderMailDate']}"/>
+            </g:if>
+            <g:else>
+                <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyProperties', 'commentOnlyForOwner', 'reminderMailDate']}"/>
+            </g:else>
 
-                <laser:render template="evaluationParticipantsView" model="[showCheckbox: true,
+                <laser:render template="evaluationParticipantsView" model="[showCheckboxForParticipantsHasAccess: true,
+                                                                            showCheckboxForParticipantsHasNoAccess: false,
                                                                         showOpenParticipantsAgainButtons: true,
                                                                         processAction: 'createOwnMail',
                                                                         processController: 'mail',
-                                                                        tmplConfigShow   : ['lineNumber', 'name', (surveyConfig.pickAndChoose ? 'finishedDate' : ''), (surveyConfig.pickAndChoose ? 'surveyTitlesCount' : ''), 'surveyProperties', 'commentOnlyForOwner', 'reminderMailDate']]"/>
+                                                                        tmplConfigShow   : tmplConfigShowList]"/>
 
         </ui:greySegment>
 

@@ -58,7 +58,7 @@
 
     <g:if test="${surveyInfo.provider}">
         <h3>
-            <g:message code="default.provider.label"/>
+            <g:message code="provider.label"/>
         </h3>
 
         <g:link absolute="true" controller="organisation" action="show" id="${surveyInfo.provider.id}">
@@ -118,8 +118,9 @@
                         <g:set var="refdataValues" value="${[]}"/>
                         <g:each in="${RefdataCategory.getAllRefdataValues(surveyResult.type.refdataCategory)}"
                                 var="refdataValue">
-                            <g:set var="refdataValues"
-                                   value="${refdataValues + refdataValue.getI10n('value')}"/>
+                            <g:if test="${refdataValue.getI10n('value')}">
+                                <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
+                            </g:if>
                         </g:each>
                         <br/>
                         (${refdataValues.join('/')})

@@ -77,7 +77,7 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
         stringValue column: 'surre_string_value', type: 'text'
         intValue    column: 'surre_int_value'
         decValue    column: 'surre_dec_value'
-        refValue    column: 'surre_ref_value_rv_fk'
+        refValue    column: 'surre_ref_value_rv_fk', index: 'surre_ref_value_idx'
         urlValue    column: 'surre_url_value'
         note        column: 'surre_note', type: 'text'
         dateValue   column: 'surre_date_value'
@@ -123,12 +123,13 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
         }
     }
 
+
     /**
-     * Gets a {@link CostItem} belonging to the participant and the survey ({@link SurveyOrg} retrieved by the {@link SurveyConfig} and the participant {@link Org}) of this property
+     * Gets a {@link List} of {@link CostItem}s belonging to the participant and the survey ({@link SurveyOrg} retrieved by the {@link SurveyConfig} and the participant {@link Org}) of this property
      * @return
      */
-    CostItem getCostItem(){
-        return CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant), RDStore.COST_ITEM_DELETED)
+    List<CostItem> getCostItems(){
+        return CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant), RDStore.COST_ITEM_DELETED)
     }
 
     /**

@@ -1,10 +1,10 @@
-<%@page import="de.laser.FormService" %>
+<%@page import="de.laser.ui.Btn; de.laser.FormService" %>
 
-<laser:htmlStart message="menu.institutions.add_consortia_members" serviceInjection="true" />
+<laser:htmlStart message="menu.institutions.add_consortia_members" />
     <g:set var="entityName" value="${message(code: 'org.label')}" />
 
     <ui:breadcrumbs>
-        <ui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+        <ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}" />
         <ui:crumb message="menu.institutions.manage_consortia" controller="myInstitution" action="manageMembers"/>
         <ui:crumb message="menu.institutions.add_consortia_members" class="active" />
     </ui:breadcrumbs>
@@ -17,7 +17,7 @@
         <g:form action="addMembers" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow: [['name'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup']],
+                              tmplConfigShow: [['name'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'], ['discoverySystemsFrontend', 'discoverySystemsIndex']],
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>
@@ -34,7 +34,7 @@
 
         <br />
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
-        <input type="submit" class="ui button" value="${message(code:'default.button.add.label')}" />
+        <input type="submit" class="${Btn.SIMPLE}" value="${message(code:'default.button.add.label')}" />
     </g:form>
     </g:if>
     <g:else>

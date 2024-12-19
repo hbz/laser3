@@ -165,6 +165,7 @@ class ApiLicense {
         result.globalUID        = lic.globalUID
         result.isPublicForApi   = lic.isPublicForApi ? "Yes" : "No" //implemented for eventual later internal purposes
         result.dateCreated      = ApiToolkit.formatInternalDate(lic.dateCreated)
+        result.altnames         = ApiCollectionReader.getAlternativeNameCollection(lic.altnames)
         result.endDate          = ApiToolkit.formatInternalDate(lic.endDate)
         result.openEnded        = lic.openEnded?.value
         result.lastUpdated      = ApiToolkit.formatInternalDate(lic._getCalculatedLastUpdated())
@@ -237,15 +238,17 @@ class ApiLicense {
                 allOrgRoles = allOrgRoles.unique()
 
                 result.organisations = ApiCollectionReader.getOrgLinkCollection(allOrgRoles, ApiReader.IGNORE_LICENSE, context) // de.laser.OrgRole
+                result.providers	 = ApiCollectionReader.getProviderCollection(lic.getProviders())
+                result.vendors		 = ApiCollectionReader.getVendorCollection(lic.getVendors())
             }
         }
 
         // Ignored
 
-        //result.packages         = exportHelperService.getStubCollection(lic.pkgs, exportHelperService.PACKAGE_STUB) // de.laser.Package
+        //result.packages         = exportHelperService.getStubCollection(lic.pkgs, exportHelperService.PACKAGE_STUB) // de.laser.wekb.Package
         /*result.persons          = exportHelperService.resolvePrsLinks(
                 lic.prsLinks, exportHelperService.NO_CONSTRAINT, exportHelperService.NO_CONSTRAINT, context
-        ) // de.laser.PersonRole
+        ) // de.laser.addressbook.PersonRole
         */
         ApiToolkit.cleanUp(result, true, true)
     }

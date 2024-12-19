@@ -1,12 +1,12 @@
 package de.laser.properties
 
 import de.laser.Org
-import de.laser.Person
+import de.laser.addressbook.Person
 import de.laser.RefdataValue
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 
 /**
- * The class's name is what it does: a property (implicitly private) to a {@link de.laser.Person}.
+ * The class's name is what it does: a property (implicitly private) to a {@link Person}.
  * Unlike other properties, they are only visible by the owner organisation itself.
  */
 class PersonProperty extends AbstractPropertyWithCalculatedLastUpdated {
@@ -35,13 +35,13 @@ class PersonProperty extends AbstractPropertyWithCalculatedLastUpdated {
         stringValue          column: 'pp_string_value', type: 'text'
         intValue             column: 'pp_int_value'
         decValue             column: 'pp_dec_value'
-        refValue             column: 'pp_ref_value_rv_fk'
+        refValue             column: 'pp_ref_value_rv_fk', index: 'pp_ref_value_idx'
         urlValue             column: 'pp_url_value'
         note                 column: 'pp_note', type: 'text'
         dateValue            column: 'pp_date_value'
         type                 column: 'pp_type_fk', index: 'pp_type_idx'
         owner                column: 'pp_owner_fk', index:'pp_owner_idx'
-        tenant               column: 'pp_tenant_fk', index: 'pp_tenant_fk'
+        tenant               column: 'pp_tenant_fk', index: 'pp_tenant_idx'
         isPublic             column: 'pp_is_public'
         dateCreated          column: 'pp_date_created'
         lastUpdated          column: 'pp_last_updated'

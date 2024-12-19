@@ -1,6 +1,7 @@
 package de.laser.jobs
 
 import de.laser.base.AbstractJob
+import de.laser.system.SystemEvent
 import groovy.util.logging.Slf4j
 
 /**
@@ -27,17 +28,21 @@ class RemovedTitleJob extends AbstractJob {
     }
 
     def execute() {
-        if (! start('REMOVE_TITLE_JOB_START')) {
+        SystemEvent sysEvent = start('REMOVE_TITLE_JOB_START')
+        def crt = null
+
+        if (! sysEvent) {
             return false
         }
         try {
-            if (!packageService.clearRemovedTitles() ) {
+            crt = packageService.clearRemovedTitles()
+            if (!crt ) {
                 log.warn( 'RemoveTitleJob failed. Maybe ignored due blocked removedTitleJob' )
             }
         }
         catch (Exception e) {
-            log.error( e.toString() )
+            log.error e.getMessage()
         }
-        stop('REMOVE_TITLE_JOB_COMPLETE')
+        stopAndComplete(sysEvent, [returns: crt])
     }
 }

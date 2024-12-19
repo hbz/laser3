@@ -1,6 +1,6 @@
-<%@ page import="de.laser.Org; de.laser.OrgSetting; de.laser.RefdataCategory; groovy.json.JsonOutput; de.laser.api.v0.ApiToolkit; de.laser.api.v0.ApiManager; de.laser.auth.Role; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Contact; de.laser.OrgRole; de.laser.RefdataValue" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Org; de.laser.OrgSetting; de.laser.RefdataCategory; groovy.json.JsonOutput; de.laser.api.v0.ApiToolkit; de.laser.api.v0.ApiManager; de.laser.auth.Role; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.addressbook.PersonRole; de.laser.addressbook.Contact; de.laser.OrgRole; de.laser.RefdataValue" %>
 
-<laser:htmlStart message="menu.admin.manageOrganisations" serviceInjection="true"/>
+<laser:htmlStart message="menu.admin.manageOrganisations" />
 
     <ui:breadcrumbs>
         <ui:crumb message="menu.admin" controller="admin" action="index" />
@@ -13,8 +13,9 @@
         <g:form action="manageOrganisations" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow: [['name', 'identifier', 'type', 'customerType'],
-                                               ['country&region', 'libraryNetwork', 'sector', 'libraryType']],
+                              tmplConfigShow: [['name', 'identifier', 'customerType'],
+                                               ['discoverySystemsFrontend', 'discoverySystemsIndex', 'apiLevel', 'serverAccess'],
+                                               ['country&region', 'libraryNetwork', 'libraryType']],
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>
@@ -28,23 +29,22 @@
                 <th>${message(code:'sidewide.number')}</th>
                 <th>${message(code: 'org.sortname.label')}</th>
                 <th>${message(code: 'org.fullName.label')}</th>
-                <th>${message(code: 'default.type.label')}</th>
                 <th>${message(code:'org.customerType.label')}</th>
                 <th>
                     ${message(code:'org.apiLevel.label')}
-                    <span class="la-popup-tooltip la-delay la-no-uppercase" data-position="right center" data-content="${message(code:'org.apiLevel.tooltip')}">
-                        <i class="question circle icon popup"></i>
+                    <span class="la-popup-tooltip la-no-uppercase" data-position="right center" data-content="${message(code:'org.apiLevel.tooltip')}">
+                        <i class="${Icon.TOOLTIP.HELP} icon popup"></i>
                     </span>
                 </th>
                 <th>
-                    ${message(code:'org.specialApiPermission.label')}
-                    <span class="la-popup-tooltip la-delay la-no-uppercase" data-position="right center" data-content="${message(code:'org.specialApiPermission.tooltip')}">
-                        <i class="question circle icon popup"></i>
+                    ${message(code:'org.serverAccess.label')}
+                    <span class="la-popup-tooltip la-no-uppercase" data-position="right center" data-content="${message(code:'org.serverAccess.tooltip')}">
+                        <i class="${Icon.TOOLTIP.HELP} icon popup"></i>
                     </span>
                 </th>
                 <th class="la-no-uppercase">
-                    <span class="la-popup-tooltip la-delay" data-position="left center" data-content="${message(code:'org.legalInformation.tooltip')}">
-                        <i class="handshake outline icon"></i>
+                    <span class="la-popup-tooltip" data-position="left center" data-content="${message(code:'org.legalInformation.tooltip')}">
+                        <i class="${Icon.ATTR.ORG_LEGAL_INFORMATION}"></i>
                     </span>
                 </th>
                 <th>${message(code:'org.hasAccessOrg')}</th>
@@ -62,7 +62,7 @@
                         ${org.sortname}
 
                         <g:if test="${org.status?.value == 'Deleted'}">
-                            <span class="la-popup-tooltip la-delay" data-content="Diese Organisation wurde als 'gelöscht' markiert." data-position="top left">
+                            <span class="la-popup-tooltip" data-content="Diese Organisation wurde als 'gelöscht' markiert." data-position="top left">
                                 <i class="icon minus circle red"></i>
                             </span>
                         </g:if>
@@ -75,15 +75,23 @@
                                 (${fieldValue(bean: org, field: "sortname")})
                             </g:if>
                         </g:link>
+
+                        <%
+                            def gascoEntry = OrgSetting.get(org, OrgSetting.KEYS.GASCO_ENTRY)
+                            if (gascoEntry != OrgSetting.SETTING_NOT_FOUND && gascoEntry.getValue()?.value == 'Yes') {
+                                println ' <span class="la-popup-tooltip" data-position="top right" data-content="' + message(code:'org.gascoEntry.label') + '">'
+                                println ' <i class="' + Icon.GASCO + ' blue"></i>'
+                                println ' </span>'
+                                gascoEntry = gascoEntry.getValue()
+                            } else {
+                                gascoEntry = RDStore.YN_NO
+                            }
+                        %>
                     </td>
 
                     <td>
-                        <g:each in="${org.orgType?.sort{it?.getI10n("value")}}" var="type">
-                            ${type.getI10n("value")}
-                        </g:each>
-                    </td>
+%{--                        <ui:customerTypeIcon org="${org}" />--}%
 
-                    <td>
                         <%
                             def customerType = OrgSetting.get(org, OrgSetting.KEYS.CUSTOMER_TYPE)
                             if (customerType != OrgSetting.SETTING_NOT_FOUND) {
@@ -92,14 +100,6 @@
                             }
                             else {
                                 customerType = null
-                            }
-
-                            def gascoEntry = OrgSetting.get(org, OrgSetting.KEYS.GASCO_ENTRY)
-                            if (gascoEntry != OrgSetting.SETTING_NOT_FOUND && gascoEntry.getValue()?.value == 'Yes') {
-                                println '<i class="icon green globe"></i>'
-                                gascoEntry = gascoEntry.getValue()
-                            } else {
-                                gascoEntry = RDStore.YN_NO
                             }
                         %>
                     </td>
@@ -120,38 +120,38 @@
                         <%
                             def accessStatistics = OrgSetting.get(org, OrgSetting.KEYS.NATSTAT_SERVER_ACCESS)
                             if (accessStatistics != OrgSetting.SETTING_NOT_FOUND && accessStatistics.getValue()?.value == 'Yes') {
-                                println '<div><i class="ui icon lock open"></i> Statistikserver</div>'
+                                println '<div><i class="' + Icon.SYM.IS_PUBLIC + '"></i> Statistikserver</div>'
                             }
 
                             def accessOA = OrgSetting.get(org, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS)
                             if (accessOA!= OrgSetting.SETTING_NOT_FOUND && accessOA.getValue()?.value == 'Yes') {
-                                println '<div><i class="ui icon lock open"></i> OAMontior</div>'
+                                println '<div><i class="' + Icon.SYM.IS_PUBLIC + '"></i> OAMonitor</div>'
                             }
 
                             def accessEZB = OrgSetting.get(org, OrgSetting.KEYS.EZB_SERVER_ACCESS)
                             if (accessEZB!= OrgSetting.SETTING_NOT_FOUND && accessEZB.getValue()?.value == 'Yes') {
-                                println '<div><i class="ui icon lock open"></i> EZB</div>'
+                                println '<div><i class="' + Icon.SYM.IS_PUBLIC + '"></i> EZB</div>'
                             }
                         %>
                     </td>
 
                     <td>
                         <g:if test="${org.createdBy && org.legallyObligedBy}">
-                            <span class="la-popup-tooltip la-delay" data-position="top right"
-                                  data-content="${message(code:'org.legalInformation.1.tooltip', args:[org.createdBy, org.legallyObligedBy])}" >
-                                <i class="ui icon green check circle"></i>
+                            <span class="la-popup-tooltip" data-position="top right"
+                                  data-content="${message(code:'org.legalInformation.11.tooltip', args:[org.createdBy, org.legallyObligedBy])}" >
+                                <i class="${Icon.ATTR.ORG_LEGAL_INFORMATION_11}"></i>
                             </span>
                         </g:if>
                         <g:elseif test="${org.createdBy}">
-                            <span class="la-popup-tooltip la-delay" data-position="top right"
-                                  data-content="${message(code:'org.legalInformation.2.tooltip', args:[org.createdBy])}" >
-                                <i class="ui icon grey outline circle"></i>
+                            <span class="la-popup-tooltip" data-position="top right"
+                                  data-content="${message(code:'org.legalInformation.10.tooltip', args:[org.createdBy])}" >
+                                <i class="${Icon.ATTR.ORG_LEGAL_INFORMATION_10}"></i>
                             </span>
                         </g:elseif>
                         <g:elseif test="${org.legallyObligedBy}">
-                            <span class="la-popup-tooltip la-delay" data-position="top right"
-                                  data-content="${message(code:'org.legalInformation.3.tooltip', args:[org.legallyObligedBy])}" >
-                                <i class="ui icon red question mark"></i>
+                            <span class="la-popup-tooltip" data-position="top right"
+                                  data-content="${message(code:'org.legalInformation.01.tooltip', args:[org.legallyObligedBy])}" >
+                                <i class="${Icon.ATTR.ORG_LEGAL_INFORMATION_01}"></i>
                             </span>
                         </g:elseif>
                     </td>
@@ -175,41 +175,41 @@
 
                     <td class="x">
                         <g:if test="${org.isCustomerType_Consortium() || org.isCustomerType_Support()}">
-                            <button type="button" class="ui icon button la-modern-button la-popup-tooltip la-delay"
-                                    data-gascoTarget="${Org.class.name}:${org.id}"
+                            <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}"
+                                    data-gascoTarget="${org.id}"
                                     data-gascoEntry="${gascoEntry.class.name}:${gascoEntry.id}"
                                     data-orgName="${org.name}"
                                     data-ui="modal"
                                     data-href="#gascoEntryModal"
-                                    data-content="GASCO-Eintrag ändern" data-position="top left"><i class="globe icon"></i></button>
+                                    data-content="GASCO-Eintrag ändern" data-position="top left"><i class="${Icon.GASCO}"></i></button>
                         </g:if>
 
                         <g:if test="${org.isCustomerType_Inst()}">
-                            <button type="button" class="ui icon button la-modern-button la-popup-tooltip la-delay"
-                                    data-liTarget="${Org.class.name}:${org.id}"
+                            <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}"
+                                    data-liTarget="${org.id}"
                                     data-createdBy="${org.createdBy?.id}"
                                     data-legallyObligedBy="${org.legallyObligedBy?.id}"
                                     data-orgName="${org.name}"
                                     data-ui="modal"
                                     data-href="#legalInformationModal"
-                                    data-content="Rechtl. Informationen ändern" data-position="top left"><i class="handshake outline icon"></i></button>
+                                    data-content="Rechtl. Informationen ändern" data-position="top left"><i class="${Icon.ATTR.ORG_LEGAL_INFORMATION}"></i></button>
                         </g:if>
 
-                        <button type="button" class="ui icon button la-modern-button la-popup-tooltip la-delay"
-                                data-ctTarget="${Org.class.name}:${org.id}"
+                        <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}"
+                                data-ctTarget="${org.id}"
                                 data-customerType="${customerType}"
                                 data-orgName="${org.name}"
                                 data-ui="modal"
                                 data-href="#customerTypeModal"
-                                data-content="Kundentyp ändern" data-position="top left"><i class="user icon"></i></button>
+                                data-content="Kundentyp ändern" data-position="top left"><i class="user tie icon"></i></button>
 
-                        <button type="button" class="ui icon button la-modern-button la-popup-tooltip la-delay"
-                                data-alTarget="${Org.class.name}:${org.id}"
+                        <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}"
+                                data-alTarget="${org.id}"
                                 data-apiLevel="${apiLevel}"
                                 data-orgName="${org.name}"
                                 data-ui="modal"
                                 data-href="#apiLevelModal"
-                                data-content="API-Zugriff ändern" data-position="top left"><i class="key icon"></i></button>
+                                data-content="API-Zugriff ändern" data-position="top left"><i class="${Icon.SYM.IS_PUBLIC}"></i></button>
                     </td>
                 </tr>
             </g:each>
@@ -235,7 +235,7 @@
                 <label for="gascoEntry">${message(code:'org.gascoEntry.label')}</label>
                 <ui:select id="gascoEntry" name="gascoEntry"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
-                              optionKey="${{ RefdataValue.class.name + ':' + it.id }}"
+                              optionKey="id"
                               optionValue="value"
                               class="ui dropdown"
                 />
@@ -314,7 +314,7 @@
     <ui:modal id="customerTypeModal" message="org.customerType.label" isEditModal="isEditModal" formID="customerTypeChangeForm"
                  showDeleteButton="showDeleteButton" deleteFormID="customerTypeDeleteForm" msgDelete="Kundentyp löschen">
 
-        <g:form id="customerTypeChangeForm" class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
+        <g:form id="customerTypeChangeForm" class="ui form" url="[controller: 'admin', action: 'manageOrganisations', params: filterParams]">
             <input type="hidden" name="cmd" value="changeCustomerType"/>
             <input type="hidden" name="target" value="" />
 
@@ -334,7 +334,7 @@
             </div>
         </g:form>
 
-        <g:form id="customerTypeDeleteForm" class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
+        <g:form id="customerTypeDeleteForm" class="ui form" url="[controller: 'admin', action: 'manageOrganisations', params: filterParams]">
             <input type="hidden" name="cmd" value="deleteCustomerType"/>
             <input type="hidden" name="target" value=""/>
         </g:form>
@@ -359,7 +359,7 @@
 
     <ui:modal id="apiLevelModal" message="org.apiLevel.label" isEditModal="isEditModal">
 
-        <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
+        <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations', params: filterParams]">
             <input type="hidden" name="cmd" value="changeApiLevel"/>
             <input type="hidden" name="target" value=""/>
 

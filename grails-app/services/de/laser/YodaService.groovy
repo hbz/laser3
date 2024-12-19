@@ -1,14 +1,20 @@
 package de.laser
 
+import de.laser.addressbook.Address
+import de.laser.addressbook.Contact
+import de.laser.addressbook.PersonRole
 import de.laser.config.ConfigMapper
 import de.laser.exceptions.SyncException
 import de.laser.http.BasicHttpClient
 import de.laser.properties.OrgProperty
 import de.laser.remote.GlobalRecordSource
 import de.laser.storage.Constants
-import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.TitleInstancePackagePlatform
+import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import groovy.sql.GroovyRowResult
@@ -28,6 +34,7 @@ import java.util.concurrent.ExecutorService
 //@Transactional
 class YodaService {
 
+    BatchQueryService batchQueryService
     ContextService contextService
     DeletionService deletionService
     GlobalSourceSyncService globalSourceSyncService
@@ -291,7 +298,7 @@ class YodaService {
                 deletedLaserTIPPs.each { Map row ->
                     Map<String, Object> titleRow = row
                     titleRow.wekbStatus = wekbUuids.get(row.wekbId)
-                    List issueEntitlements = IssueEntitlement.executeQuery("select new map(ie.id as id, concat(s.name, ' (', s.startDate, '-', s.endDate, ') (', oo.org.sortname, ')') as subscriptionName) from IssueEntitlement ie join ie.tipp tipp join ie.subscription s join s.orgRelations oo where oo.roleType in (:roleTypes) and tipp.gokbId = :wekbId and ie.status != :removed", [roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER], wekbId: row.wekbId, removed: RDStore.TIPP_STATUS_REMOVED])
+                    List issueEntitlements = IssueEntitlement.executeQuery("select new map(ie.id as id, concat(s.name, ' (', s.startDate, '-', s.endDate, ') (', oo.org.sortname, ')') as subscriptionName) from IssueEntitlement ie join ie.tipp tipp join ie.subscription s join s.orgRelations oo where oo.roleType in (:roleTypes) and tipp.gokbId = :wekbId and ie.status != :removed", [roleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER], wekbId: row.wekbId, removed: RDStore.TIPP_STATUS_REMOVED])
                     titleRow.issueEntitlements = issueEntitlements
                     if(!issueEntitlements) {
                         keysToDelete << row.wekbId
@@ -334,7 +341,7 @@ class YodaService {
                 subIds.each { Long subId ->
                     log.debug("now processing package ${subId}:${pkgId}")
                     if(entire)
-                        packageService.bulkAddHolding(sql, subId, pkgId, perpetualAccess)
+                        batchQueryService.bulkAddHolding(sql, subId, pkgId, perpetualAccess)
                     log.debug("${sql.executeUpdate('update issue_entitlement set ie_status_rv_fk = tipp_status_rv_fk from title_instance_package_platform where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk != tipp_status_rv_fk and ie_status_rv_fk != :removed', [subId: subId, removed: RDStore.TIPP_STATUS_REMOVED.id])} rows updated")
                 }
             }
@@ -349,13 +356,13 @@ class YodaService {
         String componentType
         Set objects = []
         switch(className) {
-            case GlobalSourceSyncService.ORG_TYPE_PROVIDER: rectype = GlobalSourceSyncService.RECTYPE_ORG
+            case Org.class.name: rectype = GlobalSourceSyncService.RECTYPE_PROVIDER
                 componentType = 'Org'
                 objects.addAll(Org.findAllByStatusNotEqualAndGokbIdIsNotNull(RDStore.ORG_STATUS_REMOVED))
                 break
-            case GlobalSourceSyncService.ORG_TYPE_VENDOR: rectype = GlobalSourceSyncService.RECTYPE_VENDOR
+            case Vendor.class.name: rectype = GlobalSourceSyncService.RECTYPE_VENDOR
                 componentType = 'Vendor'
-                objects.addAll(Org.findAllByStatusNotEqualAndGokbIdIsNotNull(RDStore.ORG_STATUS_REMOVED))
+                objects.addAll(Vendor.findAllByStatusNotEqualAndGokbIdIsNotNull(RDStore.VENDOR_STATUS_REMOVED))
                 break
             case Platform.class.name: rectype = GlobalSourceSyncService.RECTYPE_PLATFORM
                 componentType = 'Platform'

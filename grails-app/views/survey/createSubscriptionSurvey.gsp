@@ -1,5 +1,5 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.Subscription;de.laser.RefdataCategory; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.finance.CostItem" %>
-<laser:htmlStart message="myinst.currentSubscriptions.label" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.Subscription;de.laser.RefdataCategory; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.finance.CostItem" %>
+<laser:htmlStart message="myinst.currentSubscriptions.label" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}"/>
@@ -11,11 +11,7 @@
 
 <ui:messages data="${flash}"/>
 
-
-<div class="ui icon message">
-    <i class="info icon"></i>
-    ${message(code: 'allSubscriptions.info')}
-</div>
+<ui:msg class="info" showIcon="true" hideClose="true" message="allSubscriptions.info" />
 
 <ui:h1HeaderWithIcon message="myinst.currentSubscriptions.label" total="${num_sub_rows}" floated="true" />
 
@@ -29,9 +25,9 @@
             <div class="field">
                 <label for="q">${message(code: 'default.search.text')}
                     <span data-position="right center" data-variation="tiny"
-                          class="la-popup-tooltip la-delay"
+                          class="la-popup-tooltip"
                           data-content="${message(code: 'default.search.tooltip.subscription')}">
-                        <i class="question circle icon"></i>
+                        <i class="${Icon.TOOLTIP.HELP}"></i>
                     </span>
                 </label>
 
@@ -98,10 +94,8 @@
             </div>
 
             <div class="field la-field-right-aligned">
-                        <a href="${request.forwardURI}"
-                           class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-                        <input type="submit" class="ui primary button"
-                               value="${message(code: 'default.button.filter.label')}">
+                <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+                <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}">
             </div>
         </div>
     </g:form>
@@ -124,21 +118,21 @@
                 </th>
 
                 <g:sortableColumn params="${params}" property="orgRole§provider"
-                                  title="${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}"
+                                  title="${message(code: 'provider.label')} / ${message(code: 'vendor.label')}"
                                   rowspan="2"/>
 
                 <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.startDate"
-                                  title="${message(code: 'default.startDate.label')}"/>
+                                  title="${message(code: 'default.startDate.label.shy')}"/>
 
 
                 <th scope="col" rowspan="2">
-                    <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top center">
-                        <i class="users large icon"></i>
+                    <a href="#" class="la-popup-tooltip" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top center">
+                        <i class="${Icon.ATTR.SURVEY_PARTICIPANTS} large"></i>
                     </a>
                 </th>
                 <th scope="col" rowspan="2">
-                    <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.numberOfCostItems.label')}" data-position="top center">
-                        <i class="money bill large icon"></i>
+                    <a href="#" class="la-popup-tooltip" data-content="${message(code: 'subscription.numberOfCostItems.label')}" data-position="top center">
+                        <i class="${Icon.FNC.COST} large"></i>
                     </a>
                 </th>
 
@@ -147,7 +141,7 @@
 
             <tr>
                 <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.endDate"
-                                  title="${message(code: 'default.endDate.label')}"/>
+                                  title="${message(code: 'default.endDate.label.shy')}"/>
             </tr>
             </thead>
             <g:each in="${subscriptions}" var="s" status="i">
@@ -166,14 +160,14 @@
                                     -- ${message(code: 'myinst.currentSubscriptions.name_not_set')}  --
                                 </g:else>
                                 <g:if test="${s.instanceOf}">
-                                    <g:if test="${s.consortia && s.consortia == institution}">
-                                        ( ${s.subscriber.name} )
+                                    <g:if test="${s.getConsortium() && s.getConsortium() == institution}">
+                                        ( ${s.getSubscriberRespConsortia().name} )
                                     </g:if>
                                 </g:if>
                             </g:link>
                             <g:each in="${allLinkedLicenses.get(s)}" var="license">
                                 <div class="la-flexbox">
-                                    <i class="icon balance scale la-list-icon"></i>
+                                    <i class="${Icon.LICENSE} la-list-icon"></i>
                                     <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br />
                                 </div>
                             </g:each>
@@ -183,10 +177,10 @@
                             <g:each in="${s.packages.sort { it.pkg.name }}" var="sp" status="ind">
                                 <g:if test="${ind < 10}">
                                     <div class="la-flexbox">
-                                        <i class="icon gift la-list-icon"></i>
+                                        <i class="${Icon.PACKAGE} la-list-icon"></i>
                                         <g:link controller="subscription" action="index" id="${s.id}"
                                                 params="[pkgfilter: sp.pkg.id]"
-                                                title="${sp.pkg.contentProvider?.name}">
+                                                title="${sp.pkg.provider?.name}">
                                             ${sp.pkg.name}
                                         </g:link>
                                     </div>
@@ -208,14 +202,14 @@
                             <g:each in="${s.providers}" var="org">
                                 <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link><br />
                             </g:each>
-                            <g:each in="${s.agencies}" var="org">
-                                <g:link controller="organisation" action="show"
-                                        id="${org.id}">${org.name} (${message(code: 'default.agency.label')})</g:link><br />
+                            <g:each in="${s.vendors}" var="vendor">
+                                <g:link controller="vendor" action="show"
+                                        id="${vendor.id}">${vendor.name} (${message(code: 'vendor.label')})</g:link><br />
                             </g:each>
                         </td>
                         <td>
                             <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/><br />
-                            <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label')}:">
+                            <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label.shy')}:">
                                 <g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/>
                             </span>
                         </td>
@@ -227,18 +221,18 @@
                             <td>
                                 <g:link mapping="subfinance" controller="finance" action="index"
                                         params="${[sub: s.id]}">
-                                    ${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:institution, deleted:RDStore.COST_ITEM_DELETED])[0]}
+                                    ${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(*) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:institution, deleted:RDStore.COST_ITEM_DELETED])[0]}
                                 </g:link>
                             </td>
 
 
                         <td class="x">
-                            <g:if test="${editable && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )}">
-                                    <g:link class="ui icon blue la-modern-button button la-popup-tooltip la-delay"
-                                            data-content="${message(code: 'survey.toggleSurveySub.add.label', args:[SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNotNull(s).size(), SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNull(s).size()])}"
+                            <g:if test="${editable && contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_PRO )}">
+                                    <g:link class="${Btn.MODERN.SIMPLE_TOOLTIP}"
+                                            data-content="${message(code: 'survey.toggleSurveySub.add.label', args:[SurveyConfig.countBySubscriptionAndSubSurveyUseForTransfer(s, true), SurveyConfig.countBySubscriptionAndSubSurveyUseForTransfer(s, false)])}"
                                             controller="survey" action="addSubtoSubscriptionSurvey"
                                             params="[sub: s.id]">
-                                        <i class="icon pencil"></i>
+                                        <i class="${Icon.CMD.EDIT}"></i>
                                     </g:link>
 
                             </g:if>

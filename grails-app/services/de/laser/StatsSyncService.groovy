@@ -6,6 +6,7 @@ import de.laser.http.BasicHttpClient
 import de.laser.config.ConfigMapper
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
+import de.laser.stats.SushiCallError
 import de.laser.utils.DateUtils
 import de.laser.remote.ApiSource
 import de.laser.stats.Fact
@@ -15,7 +16,10 @@ import de.laser.storage.RDStore
 import de.laser.system.SystemEvent
 import de.laser.usage.StatsSyncServiceOptions
 import de.laser.usage.SushiClient
+import de.laser.wekb.Platform
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.gorm.transactions.Transactional
+import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.json.JsonOutput
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
@@ -115,7 +119,7 @@ class StatsSyncService {
             "where titleIdentifier.ns.ns in ('zdb','doi') "+
             "and ie.status.value <> '${RDStore.TIPP_STATUS_REMOVED}' " +
             "and po.roleType.value in ('Provider','Content Provider') "+
-            "and exists (select cp from pf.propertySet as cp where cp.type.name = 'NatStat Supplier ID')" +
+            "and pf.natstatSupplierID != null" +
             "and (orgrel.roleType.value = 'Subscriber_Consortial' or orgrel.roleType.value = 'Subscriber') " +
             "and exists (select 1 from OrgSetting as os where os.org=orgrel.org and os.key='${OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID}' and os.strValue<>'') "
         if (queryParams['supplier'] != null){
@@ -131,7 +135,7 @@ class StatsSyncService {
      * Adds the platform and reporting institution IDs to the query parameter map
      * @param params the request parameter map
      */
-    void addFilters(params) {
+    void addFilters(GrailsParameterMap params) {
         queryParams = [:]
         if (params.supplier != 'null'){
             queryParams['supplier'] = params.supplier as long
@@ -153,7 +157,7 @@ class StatsSyncService {
      * Starts the internal statistics synchronisation process, i.e. loading usage data directly from the providers
      * and puts the process on a new thread
      * @param incremental should only new data being loaded or a full data reload done?
-     * @params platformUUID fetch usage data for the given {@link Platform} UUID
+     * @params platformUUID fetch usage data for the given {@link de.laser.wekb.Platform} UUID
      * @params the SUSHI API URL of the platform
      * @params which COUNTER version is being offered by the API - counter4 or counter5?
      * @deprecated disused because usage data is not persisted in LAS:eR any more
@@ -211,14 +215,13 @@ class StatsSyncService {
      * Performs the loading of the SUSHI sources from the we:kb instance and loads the data from the SUSHI endpoints defined there.
      * Both COUNTER 4 and COUNTER 5 are being processed here
      * @param incremental should only newest data being fetched or a full data reload done?
-     * @params platformUUID fetch usage data for the given {@link Platform} UUID
+     * @params platformUUID fetch usage data for the given {@link de.laser.wekb.Platform} UUID
      * @params the SUSHI API URL of the platform
      * @params which COUNTER version is being offered by the API - counter4 or counter5?
      * @deprecated disused because usage data is not persisted in LAS:eR any more
      */
     @Deprecated
     void internalDoFetch(boolean incremental, String platformUUID = '', String source = '', String revision = '') {
-        ApiSource apiSource = ApiSource.findByActive(true)
         List<List> c4SushiSources = [], c5SushiSources = []
         //process each platform with a SUSHI API
         BasicHttpClient http
@@ -232,7 +235,7 @@ class StatsSyncService {
                 }
             }
             else {
-                http = new BasicHttpClient(apiSource.baseUrl+apiSource.fixToken+'/sushiSources')
+                http = new BasicHttpClient(ApiSource.getCurrent().getSushiSourcesURL())
                 Closure success = { resp, json ->
                     if(resp.code() == 200) {
                         if(incremental) {
@@ -478,7 +481,7 @@ class StatsSyncService {
                                         String params = "?customer_id=${keyPair.value}"
                                         if(keyPair.requestorKey || apiKey)
                                             params += "&requestor_id=${keyPair.requestorKey}&api_key=${apiKey}"
-                                        Map<String, Object> availableReports = fetchJSONData(statsUrl + params, true)
+                                        Map<String, Object> availableReports = fetchJSONData(statsUrl + params, keyPair, true)
                                         if (availableReports && availableReports.list) {
                                             List<String> reportList = availableReports.list.collect { listEntry -> listEntry["Report_ID"].toLowerCase() }
                                             //List<String> reportList = ['tr'] //debug only
@@ -1102,7 +1105,7 @@ class StatsSyncService {
      * @param requestList is the list of available reports fetched?
      * @return the JSON response map
      */
-    Map<String, Object> fetchJSONData(String url, boolean requestList = false) {
+    Map<String, Object> fetchJSONData(String url, CustomerIdentifier ci, boolean requestList = false) {
         Map<String, Object> result = [:]
         try {
             Closure success = { resp, json ->
@@ -1163,6 +1166,11 @@ class StatsSyncService {
             log.error("stack trace: ", e)
         }
         if(result.containsKey('error')) {
+            if(result.error.hasProperty('code') && result.error in ([2000 ,2010, 2020])) {
+                SushiCallError sce = new SushiCallError(platform: ci.platform, org: ci.customer, customerId: ci.value, requestorId: ci.requestorKey, errMess: 'key pair error')
+                if(!sce.save())
+                    log.error(sce.getErrors().getAllErrors().toListString())
+            }
             Map sysEventPayload = result.clone()
             sysEventPayload.url = url
             SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
@@ -1177,7 +1185,7 @@ class StatsSyncService {
      * @param requestBody is the list of available reports fetched?
      * @return the response body or an error map upon failure
      */
-    Map<String, Object> fetchXMLData(String url, requestBody) {
+    Map<String, Object> fetchXMLData(String url, CustomerIdentifier ci, requestBody) {
         Map<String, Object> result = [:]
 
         BasicHttpClient http
@@ -1192,15 +1200,22 @@ class StatsSyncService {
                                           ns1       : "http://www.niso.org/schemas/sushi",
                                           ns2       : "http://www.niso.org/schemas/counter",
                                           ns3       : "http://www.niso.org/schemas/sushi/counter"])
-                    if (['3000', '3020'].any { String errorCode -> errorCode == xml.'SOAP-ENV:Body'.'ReportResponse'?.'ns1:Exception'?.'ns1:Number'?.text() }) {
-                        log.warn(xml.'SOAP-ENV:Body'.'ReportResponse'.'ns1:Exception'.'ns1:Message'.text())
-                        log.debug(requestBody.toString())
-                        [error: xml.'SOAP-ENV:Body'.'ReportResponse'?.'ns1:Exception'?.'ns1:Number'?.text()]
+                    if (xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text() == '2010') {
+                        log.warn("wrong key pair")
+                        SushiCallError sce = new SushiCallError(platform: ci.platform, org: ci.customer, customerId: ci.value, requestorId: ci.requestorKey, errMess: xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Message'?.text())
+                        if(!sce.save())
+                            log.error(sce.getErrors().getAllErrors().toListString())
+                        result = [error: xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text(), code: 401]
                     }
-                    else if (xml.'SOAP-ENV:Body'.'ReportResponse'?.'ns1:Exception'?.'ns1:Number'?.text() == '3030') {
+                    else if (['3000', '3020'].any { String errorCode -> errorCode == xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text() }) {
+                        log.warn(xml.'SOAP-ENV:Body'.'ReportResponse'.'Exception'.'Message'.text())
+                        log.debug(requestBody.toString())
+                        result = [error: xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text(), code: resp.code()]
+                    }
+                    else if (xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text() == '3030') {
                         log.info("no data for given period")
                         //StatsMissingPeriod.construct([from: startTime.getTime(), to: currentYearEnd.getTime(), cursor: lsc])
-                        [error: xml.'SOAP-ENV:Body'.'ReportResponse'?.'ns1:Exception'?.'ns1:Number'?.text()]
+                        result = [error: xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text(), code: resp.code()]
                     }
                     else {
                         GPathResult reportData = xml.'SOAP-ENV:Body'.'ns3:ReportResponse'.'ns3:Report'
@@ -1208,22 +1223,22 @@ class StatsSyncService {
                         //if(wasMissing)
                         //lsc.missingPeriods.remove(wasMissing)
                         GPathResult reportItems = reportData.'ns2:Report'.'ns2:Customer'.'ns2:ReportItems'
-                        result = [reports: reportItems, reportName: reportData.'ns2:Report'.'@Name'.text()]
+                        result = [reports: reportItems, reportName: reportData.'ns2:Report'.'@Name'.text(), code: resp.code()]
                     }
                 }
                 else {
                     log.error("server response: ${resp.status()}")
-                    result = [error: resp.status()]
+                    result = [error: resp.status(), code: resp.code()]
                 }
             }
             Closure failure = { resp, reader ->
                 if(resp) {
                     log.error("server response: ${resp.status()} - ${reader}")
-                    result = [error: resp.status()]
+                    result = [error: resp.status(), code: resp.code()]
                 }
                 else {
                     log.error("unknown error or server not reachable: ${resp}")
-                    result = [error: 'unknownError']
+                    result = [error: 'unknownError', code: 0]
                 }
             }
             http.post(["Accept": "application/soap+xml; charset=utf-8"], BasicHttpClient.ResponseType.XML, BasicHttpClient.PostType.SOAP, requestBody.toString(), success, failure)

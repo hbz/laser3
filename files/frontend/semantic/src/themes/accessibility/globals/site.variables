@@ -225,12 +225,13 @@
      Breakpoints
 --------------------*/
 
-@mobileBreakpoint            : 320px;
-@tabletBreakpoint            : 768px;
-@computerBreakpoint          : 992px;
-@largeMonitorBreakpoint      : 1200px;
-@laser-breakpoint            : 1496px;
-@widescreenMonitorBreakpoint : 1920px;
+@mobileBreakpoint                   : 320px;
+@tabletBreakpoint                   : 768px;
+@computerBreakpoint                 : 992px;
+@largeMonitorBreakpoint             : 1200px;
+@laser-breakpoint                   : 1496px;
+@widescreenMonitorBreakpoint        : 1920px;
+@extraWidescreenMonitorBreakpoint   : 2600px;
 
 /*-------------------
       Site Colors
@@ -265,15 +266,18 @@
 @o-lila: #582BA0;
 @o-light-turquoise: #4192B0;
 @o-dark-turquoise: #0D5363;
+@o-brown: #b54800;
+@o-grey-green: #5d7c62;
 
-@subscription     :    @orange; /* hbz-orange */
-@package          :    @violet; /*@violet */
-@title            :    @purple; /* light-blue -  mismatch because semantic ui definition*/
-@license          :    #008C25; /* Dark Green */
-@organisation      :   @teal; /* bluegreen */
-@platform      :    @o-yellow;
-@workflow      :    @brown;
-
+@subscription       :   @orange; /* hbz-orange */
+@package            :   @violet; /*@violet */
+@title              :   @purple; /* light-blue -  mismatch because semantic ui definition */
+@license            :   #008C25; /* Dark Green */
+@organisation       :   @teal; /* bluegreen */
+@platform           :   @o-yellow;
+@vendor             :   @o-brown;
+@provider           :   @o-grey-green;
+@workflow           :   @brown;
 
 /*---  Colors for Site Elements---*/
 

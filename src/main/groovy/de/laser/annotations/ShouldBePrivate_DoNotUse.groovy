@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy
 import java.lang.annotation.Target
 
 @Documented
-@Target([ElementType.METHOD, ElementType.TYPE])
+@Target([ElementType.FIELD, ElementType.METHOD])
 @Retention(RetentionPolicy.RUNTIME)
 
 @interface ShouldBePrivate_DoNotUse {

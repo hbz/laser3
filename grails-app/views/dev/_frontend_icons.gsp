@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Icon" %>
 <h2 class="ui dividing header">Icons<a class="anchor" id="icons"></a></h2>
 <h4 class="ui header">Zusätzliche Icons</h4>
 <div class="html ui top attached segment example">
@@ -5,7 +6,7 @@
     <div class="ui doubling five column grid">
         <div class="column"><i aria-hidden="true" class="hand pointer outline slash icon"></i>hand pointer outline slash</div>
 
-        <div class="column"><i aria-hidden="true" class="pencil alternate slash icon"></i>pencil alternate slash</div>
+        <div class="column"><i aria-hidden="true" class="${Icon.CMD.EDIT} slash"></i>write slash</div>
 
         <div class="column"><i aria-hidden="true" class="la-thumbtack slash icon"></i>la-thumbtack slash</div>
 
@@ -15,9 +16,9 @@
 
         <div class="column"><i aria-hidden="true" class="la-chain icon"></i>la-chain</div>
 
-        <div class="column"><i aria-hidden="true" class="la-share icon"></i>la-share</div>
+        <div class="column"><i aria-hidden="true" class="${Icon.SIG.SHARED_OBJECT_ON}"></i>la-share</div>
 
-        <div class="column"><i aria-hidden="true" class="la-share slash icon"></i>la-share slash</div>
+        <div class="column"><i aria-hidden="true" class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>la-share slash</div>
 
         <div class="column"><i aria-hidden="true" class="la-copySend icon"></i>la-copySend</div>
 
@@ -59,8 +60,8 @@
 <i class="la-object-extended bordered la-database icon"></i>
 <i class="la-object-extended bordered la-ebook icon"></i>
 <i class="la-object-extended bordered la-book icon"></i>
-<i aria-hidden="true" class="la-object-extended bordered icon inverted brown icon tasks"></i>
-<i aria-hidden="true" class="la-object-extended bordered icon inverted pink chart pie"></i>
+<i aria-hidden="true" class="${Icon.WORKFLOW} la-object-extended bordered inverted brown"></i>
+<i aria-hidden="true" class="${Icon.SURVEY} la-object-extended bordered inverted pink"></i>
 <div class="html ui top attached segment example">
 
     <div class="ui doubling five column grid">
@@ -82,9 +83,9 @@
 
         <div class="column"><i class="la-object-extended bordered la-book icon"></i>la-object-extended bordered la-book icon</div>
 
-        <div class="column"><i aria-hidden="true" class="la-object-extended bordered icon inverted brown icon tasks"></i>la-object-extended bordered icon inverted brown icon tasks</div>
+        <div class="column"><i aria-hidden="true" class="${Icon.WORKFLOW} la-object-extended bordered inverted brown"></i>${Icon.SURVEY} la-object-extended bordered inverted brown</div>
 
-        <div class="column"><i aria-hidden="true" class="la-object-extended bordered icon inverted pink chart pie"></i>la-object-extended bordered icon inverted pink chart pie</div>
+        <div class="column"><i aria-hidden="true" class="${Icon.SURVEY} la-object-extended bordered inverted pink"></i>${Icon.SURVEY} la-object-extended bordered inverted pink</div>
 
     </div>
 

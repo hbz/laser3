@@ -4,10 +4,10 @@ package de.laser.reporting.report.myInstitution
 import de.laser.ContextService
 import de.laser.IssueEntitlement
 import de.laser.Org
-import de.laser.Package
-import de.laser.Platform
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
 import de.laser.Subscription
-import de.laser.annotations.UnderDevelopment
+import de.laser.annotations.UnstableFeature
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
 import de.laser.reporting.report.myInstitution.base.BaseFilter
@@ -17,10 +17,8 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 
 // not ready for use
-@UnderDevelopment
+@UnstableFeature
 class IssueEntitlementQuery extends BaseQuery {
-
-    static List<String> PROPERTY_QUERY = [ 'select p.id, p.value_de, count(*) ', ' group by p.id, p.value_de order by p.value_de' ]
 
     static Map<String, Object> query(GrailsParameterMap params) {
 
@@ -179,8 +177,8 @@ class IssueEntitlementQuery extends BaseQuery {
 
         handleGenericRefdataQuery(
                 query,
-                PROPERTY_QUERY[0] + 'from IssueEntitlement ie join ie.' + refdata + ' p where ie.id in (:idList)' + PROPERTY_QUERY[1],
-                'select ie.id from IssueEntitlement ie join ie.' + refdata + ' p where ie.id in (:idList) and p.id = :d order by ie.tipp.name',
+                REFDATA_QUERY[0] + 'from IssueEntitlement ie join ie.' + refdata + ' ref where ie.id in (:idList)' + REFDATA_QUERY[1],
+                'select ie.id from IssueEntitlement ie join ie.' + refdata + ' ref where ie.id in (:idList) and ref.id = :d order by ie.tipp.name',
                 'select distinct ie.id from IssueEntitlement ie where ie.id in (:idList) and ie.'+ refdata + ' is null',
                 idList,
                 result

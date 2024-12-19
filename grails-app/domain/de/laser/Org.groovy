@@ -1,10 +1,16 @@
 package de.laser
 
+import de.laser.addressbook.Address
+import de.laser.addressbook.Person
+import de.laser.addressbook.PersonRole
 import de.laser.annotations.RefdataInfo
-import de.laser.auth.*
+import de.laser.annotations.UnstableFeature
+import de.laser.auth.Role
+import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.convenience.Marker
 import de.laser.finance.CostItem
+import de.laser.ui.Icon
 import de.laser.interfaces.DeleteFlag
 import de.laser.interfaces.MarkerSupport
 import de.laser.oap.OrgAccessPoint
@@ -12,35 +18,21 @@ import de.laser.properties.OrgProperty
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.wekb.Platform
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.StringUtils
 
 /**
  * An organisation record.
- * Organisations may represent in LAS:eR:
- * <ol>
- *     <li>academic institutions</li>
- *     <li>commercial organisations: editors or publishing houses</li>
- * </ol>
- * Institutions may be: university or public libraries, research organisations, or other academic institutions.
- * Above that, organisations may be editors, providers, publishers, agencies. They are called by the super term "organisations".
- * The main difference between organisations and institutions is that institutions may have user accounts linked to them whereas publishers, agencies etc. are not supposed to have such.
- * There are above that several ways to distinguish technically an organisation from an institution:
- * <ul>
- *     <li>institutions have a customer type</li>
- *     <li>the organisational types are different, see {@link RDConstants#ORG_TYPE}</li>
- *     <li>a well maintained institution record has the sector set to 'Academic' while (other) organisations are usually set to 'Commercial'</li>
- *     <li>institutions are linked with different org role types to other objects than other organisations are (see the controlled list under {@link RDConstants#ORGANISATIONAL_ROLE} for the role types)</li>
- *     <li>institution metadata is maintained in LAS:eR directly whereas providers should curate themselves in we:kb; organisations thus have a we:kb-ID (stored as {@link #gokbId}, naming is legacy) which serves as synchronisation
- *     key between the data in the two webapps</li>
- * </ul>
+ * Organisations represent in LAS:eR academic institutions.
+ * Institutions may be: university or public libraries, research organisations, or other academic institutions. Their customer status is being represented by a setting called CustomerType (see {@link de.laser.OrgSetting.KEYS#CUSTOMER_TYPE})
  * @see OrgRole
  * @see OrgSetting
  */
 @Slf4j
 class Org extends AbstractBaseWithCalculatedLastUpdated
-        implements DeleteFlag, MarkerSupport {
+        implements DeleteFlag, MarkerSupport, Comparable<Org> {
 
     String name
     String shortcode            // Used to generate friendly semantic URLs
@@ -50,10 +42,13 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     String urlGov
     String linkResolverBaseURL
     SortedSet subjectGroup
+    SortedSet discoverySystemFrontends
+    SortedSet discoverySystemIndices
 
     String importSource         // "nationallizenzen.de", "edb des hbz"
     Date lastImportDate
 
+    @Deprecated
     String gokbId
     String comment
     String ipRange
@@ -69,9 +64,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     Date dateCreated
     Date lastUpdated
     Date lastUpdatedCascading
-
-    @RefdataInfo(cat = RDConstants.ORG_SECTOR)
-    RefdataValue sector
 
     @RefdataInfo(cat = RDConstants.ORG_STATUS)
     RefdataValue status
@@ -115,7 +107,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         incomingCombos:     'toOrg',
         links:              'org',
         prsLinks:           'org',
-        contacts:           'org',
         addresses:          'org',
         propertySet:        'owner',
         altnames:           'org',
@@ -131,11 +122,11 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         incomingCombos:     Combo,
         links:              OrgRole,
         prsLinks:           PersonRole,
-        contacts:           Contact,
         addresses:          Address,
         propertySet:        OrgProperty,
         altnames:           AlternativeName,
-        orgType:            RefdataValue,
+        discoverySystemFrontends: DiscoverySystemFrontend,
+        discoverySystemIndices: DiscoverySystemIndex,
         documents:          DocContext,
         platforms:          Platform,
         hasCreated:         Org,
@@ -163,7 +154,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         eInvoice            column:'org_e_invoice'
         eInvoicePortal      column:'org_e_invoice_portal_fk', lazy: false
         gokbId              column:'org_gokb_id', type:'text'
-            sector          column:'org_sector_rv_fk', lazy: false
             status          column:'org_status_rv_fk'
     retirementDate          column:'org_retirement_date'
            country          column:'org_country_rv_fk'
@@ -180,13 +170,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         legallyObligedBy    column:'org_legally_obliged_by_fk'
     costConfigurationPreset column:'org_config_preset_rv_fk'
        lastUpdatedCascading column:'org_last_updated_cascading'
-
-        orgType             joinTable: [
-                name:   'org_type',
-                key:    'org_id',
-                column: 'refdata_value_id', type:   'BIGINT'
-        ], lazy: false
-
         ids                 sort: 'ns', batchSize: 10
         outgoingCombos      batchSize: 10
         incomingCombos      batchSize: 10
@@ -210,19 +193,12 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
       retirementDate(nullable:true)
              comment(nullable:true, blank:true, maxSize:2048)
              ipRange(nullable:true, blank:true, maxSize:1024)
-              sector(nullable:true)
            shortcode(nullable:true, blank:true, maxSize:128)
                scope(nullable:true, blank:true, maxSize:128)
           categoryId(nullable:true, blank:true, maxSize:128)
              country(nullable:true)
               region(nullable:true)
             eInvoicePortal(nullable:true)
-//        , validator: {RefdataValue val, Org obj, errors ->
-//                  if ( ! val.owner.desc.endsWith(obj.country.toString().toLowerCase())){
-//                      errors.rejectValue('region', 'regionDoesNotBelongToSelectedCountry')
-//                      return false
-//                  }
-//              })
       libraryNetwork(nullable:true)
           funderType(nullable:true)
        funderHskType(nullable:true)
@@ -232,12 +208,9 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
            createdBy(nullable:true)
     legallyObligedBy(nullable:true)
       costConfigurationPreset(nullable:true)
-             orgType(nullable:true)
              gokbId (nullable:true, blank:true)
         lastUpdatedCascading (nullable: true)
     }
-
-    static final Set<String> WEKB_PROPERTIES = ['homepage', 'metadataDownloaderURL', 'kbartDownloaderURL', 'roles']
 
     /**
      * Checks if the organisation is marked as deleted
@@ -287,6 +260,17 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         super.afterUpdateHandler()
     }
 
+    // TODO: ERMS-6009
+    @Deprecated
+    RefdataValue getOrgType() {
+        if (isCustomerType_Inst()) {
+            RDStore.OT_INSTITUTION
+        }
+        else if (isCustomerType_Consortium()) {
+            RDStore.OT_CONSORTIUM
+        }
+    }
+
     /**
      * Sets for an institution the default customer type, that is ORG_INST_BASIC for consortium members with a basic set of permissions
      * @return true if the setup was successful, false otherwise
@@ -300,6 +284,25 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
             return true
         }
         false
+    }
+
+    Map<String, String> getCustomerTypeInfo() {
+        Map<String, String> result = [ id: '', text: '', icon: '' ]
+
+        def oss  = OrgSetting.get(this, OrgSetting.KEYS.CUSTOMER_TYPE)
+        if (oss != OrgSetting.SETTING_NOT_FOUND) {
+            result.id   = oss.roleValue?.authority
+            result.text = oss.roleValue?.getI10n('authority')
+        }
+
+             if (result.id == CustomerTypeService.ORG_INST_BASIC)       { result.icon = Icon.AUTH.ORG_INST_BASIC }
+        else if (result.id == CustomerTypeService.ORG_INST_PRO)         { result.icon = Icon.AUTH.ORG_INST_PRO }
+        else if (result.id == CustomerTypeService.ORG_CONSORTIUM_BASIC) { result.icon = Icon.AUTH.ORG_CONSORTIUM_BASIC }
+        else if (result.id == CustomerTypeService.ORG_CONSORTIUM_PRO)   { result.icon = Icon.AUTH.ORG_CONSORTIUM_PRO }
+        else if (result.id == CustomerTypeService.ORG_SUPPORT)          { result.icon = Icon.AUTH.ORG_SUPPORT }
+
+//        println result
+        result
     }
 
     /**
@@ -365,10 +368,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     boolean isCustomerType_Consortium() {
         this.getCustomerType() in [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO ]
     }
-
-//    boolean isCustomerType_Consortium_or_Support() {
-//        this.getCustomerType() in [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO, CustomerTypeService.ORG_SUPPORT ] // hasPerm(ORG_CONSORTIUM_BASIC)
-//    }
 
     boolean isCustomerType_Support() {
         this.getCustomerType() == CustomerTypeService.ORG_SUPPORT
@@ -544,16 +543,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
-     * Creates a new organisation record with the given name
-     * @param value the name of the new organisation
-     * @return the new organisation instance
-     */
-    // called from AjaxController.resolveOID2()
-  static Org refdataCreate(String value) {
-    return new Org(name:value)
-  }
-
-    /**
      * Gets the display string for this organisation; the following cascade is being checked. If one field is not set, the following is being returned:
      * <ol>
      *     <li>sortname</li>
@@ -599,7 +588,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     /**
      * Retrieves the general contact persons of this organisation
      * @param onlyPublic should only the public contacts being retieved?
-     * @return a {@link List} of {@link Person}s marked as general contacts of this organisation
+     * @return a {@link List} of {@link de.laser.addressbook.Person}s marked as general contacts of this organisation
      */
     List<Person> getGeneralContactPersons(boolean onlyPublic) {
         if (onlyPublic) {
@@ -657,26 +646,14 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @param functionType the function type of the contacts to be requested
      * @return a {@link List} of {@link Person}s matching to the function type
      */
-    List<Person> getContactPersonsByFunctionType(boolean onlyPublic, RefdataValue functionType = null, boolean exWekb = false) {
-        Map<String, Object> queryParams = [org: this]
-        String functionTypeFilter = ''
-        if(functionType) {
-            functionTypeFilter = 'and pr.functionType = :functionType'
-            queryParams.functionType = functionType
-        }
+    List<Person> getContactPersonsByFunctionType(boolean onlyPublic, RefdataValue functionType) {
+        Map<String, Object> queryParams = [org: this, functionType: functionType]
+        String functionTypeFilter = 'and pr.functionType = :functionType'
         if (onlyPublic) {
-            if(exWekb) {
-                Person.executeQuery(
-                        'select distinct p from Person as p inner join p.roleLinks pr where pr.org = :org '+functionTypeFilter+' and p.tenant = :org',
-                        queryParams
-                )
-            }
-            else {
-                Person.executeQuery(
-                        'select distinct p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = :org '+functionTypeFilter,
-                        queryParams
-                )
-            }
+            Person.executeQuery(
+                    'select distinct p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = :org '+functionTypeFilter,
+                    queryParams
+            )
         }
         else {
             queryParams.ctx = BeanStore.getContextService().getOrg()
@@ -686,22 +663,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
                     queryParams
             )
         }
-    }
-
-    /**
-     * Gets all type reference values attributed to this organisation
-     * @return a {@link List} of {@link RefdataValue}s assigned to this organisation
-     */
-    List<RefdataValue> getAllOrgTypes() {
-        RefdataValue.executeQuery("select ot from Org org join org.orgType ot where org = :org", [org: this])
-    }
-
-    /**
-     * Gets all type reference value ids attributed to this organisation
-     * @return a {@link List} of reference data IDs assigned to this organisation
-     */
-    List getAllOrgTypeIds() {
-        RefdataValue.executeQuery("select ot.id from Org org join org.orgType ot where org = :org", [org: this])
     }
 
     /**
@@ -729,17 +690,14 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * The namespaces of those core identifiers are defined at {@link IdentifierNamespace#CORE_ORG_NS}
      */
     void createCoreIdentifiersIfNotExist(){
-        if(!(RDStore.OT_PROVIDER.id in this.getAllOrgTypeIds())){
-
-            boolean isChanged = false
-            IdentifierNamespace.CORE_ORG_NS.each{ coreNs ->
-                if ( ! ids.find {it.ns.ns == coreNs}){
-                    addOnlySpecialIdentifiers(coreNs, IdentifierNamespace.UNKNOWN)
-                    isChanged = true
-                }
+        boolean isChanged = false
+        IdentifierNamespace.CORE_ORG_NS.each{ coreNs ->
+            if ( ! ids.find {it.ns.ns == coreNs}){
+                addOnlySpecialIdentifiers(coreNs, IdentifierNamespace.UNKNOWN)
+                isChanged = true
             }
-            if (isChanged) refresh()
         }
+        if (isChanged) refresh()
     }
 
     /**
@@ -842,6 +800,22 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
+     * Gets the Leitkriterium for this institution; the Leitkriterium is necessary for the North-Rhine Westphalia billing system.
+     * See <a href="https://www.land.nrw/de/e-rechnung-nrw">the pages of the NRW billing system (page in German)</a>
+     * @return the {@link Identifier} of the {@link IdentifierNamespace#LEIT_KR}
+     */
+    Identifier getLeitkriterium() {
+        return Identifier.findByOrgAndNs(this, IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR))
+    }
+
+    boolean isInfoAccessibleFor(Org ctx) {
+        if (this.isCustomerType_Inst() && ctx.isCustomerType_Pro()) {
+            return (this.id == ctx.id) || (ctx.isCustomerType_Consortium() && Combo.findByToOrgAndFromOrgAndType(ctx, this, RDStore.COMBO_TYPE_CONSORTIUM))
+        }
+        return false
+    }
+
+    /**
      * Checks if the organisation is being marked for the given user with the given marker type
      * @param user the {@link User} whose watchlist should be checked
      * @param type the {@link Marker.TYPE} of the marker to check
@@ -875,5 +849,21 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         withTransaction {
             Marker.findByOrgAndUserAndType(this, user, type).delete(flush:true)
         }
+    }
+
+    /**
+     * Compares the given organisation with another. Compared are name and id; id because otherwise, SortedSet would eliminate organisation
+     * duplicates
+     * @param o the object to be compared
+     * @return the comparison result (-1, 0 or 1)
+     */
+    @Override
+    int compareTo(Org o) {
+        int result = sortname <=> o.sortname
+        if(!result)
+            name <=> o.name
+        if(!result)
+            id <=> o.id
+        result
     }
 }

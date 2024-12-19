@@ -1,6 +1,6 @@
-<%@ page import="grails.converters.JSON; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.Subscription; de.laser.Platform; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report; de.laser.interfaces.CalculatedType; de.laser.base.AbstractReport" %>
-<laser:htmlStart message="subscription.details.stats.label" serviceInjection="true"/>
-
+<%@ page import="de.laser.FormService; de.laser.storage.PropertyStore; de.laser.properties.SubscriptionProperty; de.laser.ui.Btn; de.laser.ui.Icon; java.text.SimpleDateFormat; grails.converters.JSON; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.Subscription; de.laser.wekb.Platform; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report; de.laser.interfaces.CalculatedType; de.laser.base.AbstractReport; de.laser.finance.CostItem; de.laser.base.AbstractReport; de.laser.finance.CostItem" %>
+<laser:htmlStart message="subscription.details.stats.label" />
+    <laser:javascript src="echarts.js"/>
         <ui:debugInfo>
             <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
         </ui:debugInfo>
@@ -9,7 +9,7 @@
             <laser:render template="actions" />
         </ui:controlButtons>
 
-        <ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" visibleOrgRelations="${visibleOrgRelations}">
+        <ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" visibleProviders="${providerRoles}">
             <laser:render template="iconSubscriptionIsChild"/>
             ${subscription.name}
         </ui:h1HeaderWithIcon>
@@ -21,308 +21,97 @@
         <laser:render template="message" />
         <ui:messages data="${flash}" />
 
-        <g:if test="${wekbServerUnavailable}">
-            <div class="ui icon error message">
-                <i class="exclamation icon"></i>
-                ${wekbServerUnavailable}
-            </div>
-        </g:if>
-        <g:else>
-            <g:each in="${platformInstanceRecords.values()}" var="platformInstanceRecord">
-                <div class="ui two doubling stackable cards">
-                    <div class="ui card">
-                        <div class="content">
-                            <dl>
-                                <dt><g:message code="platform.name"/></dt>
-                                <dd>${platformInstanceRecord.name} <g:link url="${platformInstanceRecord.wekbUrl}" target="_blank" class="la-popup-tooltip la-delay" data-content="we:kb Link"><i class="ui icon la-gokb"></i></g:link></dd>
-                            </dl>
-                            <g:if test="${platformInstanceRecord.statisticsFormat}">
-                                <dl>
-                                    <dt><g:message code="platform.stats.format"/></dt>
-                                    <dd>${RefdataValue.getByValueAndCategory(platformInstanceRecord.statisticsFormat, RDConstants.PLATFORM_STATISTICS_FORMAT).getI10n("value")}</dd>
-                                </dl>
-                            </g:if>
-                            <g:if test="${platformInstanceRecord.statisticsUpdate}">
-                                <dl>
-                                    <dt><g:message code="platform.stats.update"/></dt>
-                                    <dd>${RefdataValue.getByValueAndCategory(platformInstanceRecord.statisticsUpdate, RDConstants.PLATFORM_STATISTICS_FREQUENCY).getI10n("value")}</dd>
-                                </dl>
-                            </g:if>
-                            <g:if test="${platformInstanceRecord.statisticsAdminPortalUrl}">
-                                <dl>
-                                    <dt><g:message code="platform.stats.adminURL"/></dt>
-                                    <dd>
-                                        <g:if test="${platformInstanceRecord.statisticsAdminPortalUrl.startsWith('http')}">
-                                            ${platformInstanceRecord.statisticsAdminPortalUrl} <ui:linkWithIcon href="${platformInstanceRecord.statisticsAdminPortalUrl}"/>
-                                        </g:if>
-                                        <g:else>
-                                            <g:message code="default.url.invalid"/>
-                                        </g:else>
-                                    </dd>
-                                </dl>
-                            </g:if>
-                            <g:if test="${platformInstanceRecord.counterCertified}">
-                                <dl>
-                                    <dt><g:message code="platform.stats.counter.certified"/></dt>
-                                    <dd>${RefdataValue.getByValueAndCategory(platformInstanceRecord.counterCertified, RDConstants.Y_N).getI10n("value")}</dd>
-                                </dl>
-                            </g:if>
-                            <g:if test="${platformInstanceRecord.lastAuditDate}">
-                                <dl>
-                                    <dt><g:message code="platform.stats.counter.lastAudit"/></dt>
-                                    <dd>${formatDate(date: DateUtils.parseDateGeneric(platformInstanceRecord.lastAuditDate), format: message(code: 'default.date.format.notime'))}</dd>
-                                </dl>
-                            </g:if>
-                            <g:if test="${platformInstanceRecord.counterRegistryUrl}">
-                                <dl>
-                                    <dt><g:message code="platform.stats.counter.registryURL"/></dt>
-                                    <dd>
-                                        <g:if test="${platformInstanceRecord.counterRegistryUrl.startsWith('http')}">
-                                            ${platformInstanceRecord.counterRegistryUrl} <ui:linkWithIcon href="${platformInstanceRecord.counterRegistryUrl}"/>
-                                        </g:if>
-                                        <g:else>
-                                            <g:message code="default.url.invalid"/>
-                                        </g:else>
-                                    </dd>
-                                </dl>
-                            </g:if>
-                        </div>
-                    </div>
-                    <div class="ui card">
-                        <div class="content">
-                            <g:if test="${platformInstanceRecord.counterR4Supported}">
-                                <dl>
-                                    <dt><g:message code="platform.stats.counter.r4supported"/></dt>
-                                    <dd>${RefdataValue.getByValueAndCategory(platformInstanceRecord.counterR4Supported, RDConstants.Y_N).getI10n("value")}</dd>
-                                </dl>
-                            </g:if>
-                            <g:if test="${platformInstanceRecord.counterR5Supported}">
-                                <dl>
-                                    <dt><g:message code="platform.stats.counter.r5supported"/></dt>
-                                    <dd>${RefdataValue.getByValueAndCategory(platformInstanceRecord.counterR5Supported, RDConstants.Y_N).getI10n("value")}</dd>
-                                </dl>
-                            </g:if>
-                            <g:if test="${platformInstanceRecord.counterR4SushiApiSupported}">
-                                <dl>
-                                    <dt><g:message code="platform.stats.counter.r4sushi"/></dt>
-                                    <dd>${RefdataValue.getByValueAndCategory(platformInstanceRecord.counterR4SushiApiSupported, RDConstants.Y_N).getI10n("value")}</dd>
-                                </dl>
-                            </g:if>
-                            <g:if test="${platformInstanceRecord.counterR5SushiApiSupported}">
-                                <dl>
-                                    <dt><g:message code="platform.stats.counter.r5sushi"/></dt>
-                                    <dd>${RefdataValue.getByValueAndCategory(platformInstanceRecord.counterR5SushiApiSupported, RDConstants.Y_N).getI10n("value")}</dd>
-                                </dl>
-                            </g:if>
-                            <g:if test="${platformInstanceRecord.counterR4SushiServerUrl}">
-                                <dl>
-                                    <dt><g:message code="platform.stats.counter.r4serverURL"/></dt>
-                                    <dd>
-                                        <g:if test="${platformInstanceRecord.counterR4SushiServerUrl.startsWith('http')}">
-                                            ${platformInstanceRecord.counterR4SushiServerUrl} <ui:linkWithIcon href="${platformInstanceRecord.counterR4SushiServerUrl}"/>
-                                        </g:if>
-                                        <g:else>
-                                            ${platformInstanceRecord.counterR4SushiServerUrl}
-                                        </g:else>
-                                    </dd>
-                                </dl>
-                            </g:if>
-                            <g:if test="${platformInstanceRecord.counterR5SushiServerUrl}">
-                                <dl>
-                                    <dt><g:message code="platform.stats.counter.r5serverURL"/></dt>
-                                    <dd>
-                                        <g:if test="${platformInstanceRecord.counterR5SushiServerUrl.startsWith('http')}">
-                                            ${platformInstanceRecord.counterR5SushiServerUrl} <ui:linkWithIcon href="${platformInstanceRecord.counterR5SushiServerUrl}"/>
-                                        </g:if>
-                                        <g:else>
-                                            ${platformInstanceRecord.counterR5SushiServerUrl}
-                                        </g:else>
-                                    </dd>
-                                </dl>
-                            </g:if>
-                        </div>
-                    </div>
+        <g:if test="${showConsortiaFunctions && !subscription.instanceOf}">
+            <g:each in="${platformInstanceRecords.values()}" var="platform">
+                <div class="ui segment">
+                    <laser:render template="/platform/platformStatsDetails" model="[wekbServerUnavailable: wekbServerUnavailable, platformInstanceRecord: platform]"/>
+                    <g:set var="statsInfo" value="${SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp where sp.owner = :subscription and sp.type = :statsAccess', [statsAccess: PropertyStore.SUB_PROP_STATS_ACCESS, subscription: subscription])}"/>
+                    <g:if test="${statsInfo}">
+                        <ui:msg showIcon="true" class="info" noClose="true" header="${message(code: 'default.stats.info.header')}">
+                            ${statsInfo[0]}<br>
+                            <g:message code="default.stats.wekbContact"/><ui:wekbIconLink type="org" gokbId="${platform.providerUuid}"/>
+                        </ui:msg>
+                    </g:if>
+                    <g:if test="${platform.statisticsFormat.contains('COUNTER')}">
+                        <g:form action="uploadRequestorIDs" params="${[id: params.id, platform: platform.id]}" controller="subscription" method="post" enctype="multipart/form-data" class="ui form">
+                            <div class="ui message">
+                                <div class="header">${message(code: 'default.usage.addRequestorIDs.info', args: [platform.name])}</div>
+
+                                <br>
+                                ${message(code: 'default.usage.addRequestorIDs.text')}
+
+                                <br>
+                                <g:link class="item" controller="profile" action="importManuel" target="_blank">${message(code: 'help.technicalHelp.uploadFile.manuel')}</g:link>
+                                <br>
+
+                                <g:link controller="subscription" action="templateForRequestorIDUpload" params="[id: params.id, platform: platform.id]">
+                                    <p>${message(code:'myinst.financeImport.template')}</p>
+                                </g:link>
+
+                                <div class="ui action input">
+                                    <input type="text" readonly="readonly"
+                                           placeholder="${message(code: 'template.addDocument.selectFile')}">
+                                    <input type="file" name="requestorIDFile" accept="text/tab-separated-values,.txt,.csv"
+                                           style="display: none;">
+                                    <div class="${Btn.ICON.SIMPLE}">
+                                        <i class="${Icon.CMD.ATTACHMENT}"></i>
+                                    </div>
+                                </div>
+                            </div><!-- .message -->
+                            <div class="field la-field-right-aligned">
+                                <input type="submit" class="${Btn.SIMPLE_CLICKCONTROL}" value="${message(code: 'default.button.add.label')}"/>
+                            </div>
+                            <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
+                        </g:form>
+                        <%
+                            Map<String, Object> platformSushiConfig = exportService.prepareSushiCall(platform, 'stats')
+                        %>
+                        <table class="ui celled table">
+                            <tr>
+                                <th><g:message code="default.number"/></th>
+                                <th><g:message code="default.institution"/></th>
+                                <th>Customer ID</th>
+                                <th>Requestor ID/API-Key</th>
+                                <th><g:message code="default.usage.sushiCallCheck.header"/></th>
+                                <th><g:message code="default.actions.label"/></th>
+                            </tr>
+                            <g:each in="${Subscription.executeQuery('select new map(sub.id as memberSubId, org.sortname as memberName, org.id as memberId, ci as customerIdentifier) from CustomerIdentifier ci, OrgRole oo join oo.org org join oo.sub sub where ci.customer = org and sub.instanceOf = :parent and oo.roleType in (:subscrRoles) and ci.platform.gokbId = :platform order by ci.customer.sortname asc', [parent: subscription, platform: platform.uuid, subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])}" var="row" status="i">
+                                <tr>
+                                    <td>${i+1}</td>
+                                    <td>
+                                        <g:link controller="organisation" action="show" id="${row.memberId}">${row.memberName}</g:link>
+                                    </td>
+                                    <td>
+                                        <ui:xEditable owner="${row.customerIdentifier}" field="value"/>
+                                    </td>
+                                    <td>
+                                        <ui:xEditable owner="${row.customerIdentifier}" field="requestorKey"/>
+                                    </td>
+                                    <td id="${genericOIDService.getHtmlOID(row.customerIdentifier)}" class="sushiConnectionCheck" data-org="${row.memberId}" data-platform="${platform.id}" data-customerId="${row.customerIdentifier.value}" data-requestorId="${row.customerIdentifier.requestorKey}">
+
+                                    </td>
+                                    <td>
+                                        <g:link class="${Btn.ICON.SIMPLE}" action="stats" id="${row.memberSubId}" role="button" aria-label="${message(code: 'default.usage.consortiaTableHeader')}"><i class="${Icon.STATS}"></i></g:link>
+                                    </td>
+                                </tr>
+                            </g:each>
+                        </table>
+                    </g:if>
                 </div>
             </g:each>
-        </g:else>
-        <g:if test="${showConsortiaFunctions && !subscription.instanceOf}">
-            <g:if test="${platformInstanceRecords.values().statisticsFormat.contains('COUNTER')}">
-                <div class="ui segment">
-                    <table class="ui celled table">
-                        <tr>
-                            <th><g:message code="default.usage.consortiaTableHeader"/></th>
-                        </tr>
-                        <g:each in="${Subscription.executeQuery('select new map(sub.id as memberSubId, org.sortname as memberName, org.id as memberId) from OrgRole oo join oo.org org join oo.sub sub where sub.instanceOf = :parent and oo.roleType in (:subscrRoles) and exists (select sp.id from SubscriptionPackage sp where sp.subscription = sub) order by org.sortname asc', [parent: subscription, subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])}" var="row">
-                            <tr>
-                                <td>
-                                    <g:link action="stats" id="${row.memberSubId}">${row.memberName}</g:link>
-                                </td>
-                            </tr>
-                        </g:each>
-                    </table>
-                </div>
-            </g:if>
         </g:if>
         <g:else>
-            <div class="ui segment">
-                <ui:tabs>
-                    <g:each in="${platformInstanceRecords.values()}" var="platform">
-                        <ui:tabsItem controller="subscription" action="stats" tab="${platform.id.toString()}" params="${params + [tab: platform.id.toString()]}" text="${platform.name}"/>
-                    </g:each>
-                </ui:tabs>
-                <div class="ui bottom attached tab active" id="customerIdWrapper">
-                    <table class="ui la-js-responsive-table la-table table">
-                        <thead>
-                        <tr>
-                            <th class="three wide">${message(code: 'consortium.member')}</th>
-                            <th class="four wide">${message(code: 'default.provider.label')} : ${message(code: 'platform.label')}</th>
-                            <th class="three wide">${message(code: 'org.customerIdentifier')}</th>
-                            <th class="three wide">${message(code: 'org.requestorKey')}</th>
-                            <th class="two wide">${message(code: 'default.note.label')}</th>
-                            <th class="one wide">${message(code: 'default.actions')}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <g:each in="${keyPairs}" var="pair" status="rowno">
-                            <tr>
-                                <td>${pair.customer.sortname ?: pair.customer.name}</td>
-                                <td>${pair.getProvider()} : ${pair.platform.name}</td>
-                                <td><ui:xEditable owner="${pair}" field="value"/></td>
-                                <td><ui:xEditable owner="${pair}" field="requestorKey"/></td>
-                                <td><ui:xEditable owner="${pair}" field="note"/></td>
-                                <td>
-                                    <g:if test="${editable}">
-                                        <g:link controller="subscription"
-                                                action="deleteCustomerIdentifier"
-                                                id="${subscription.id}"
-                                                params="${[deleteCI: pair.id]}"
-                                                class="ui button icon red js-open-confirm-modal"
-                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.customeridentifier", args: ["" + pair.getProvider() + " : " + pair.platform + " " + pair.value])}"
-                                                data-confirm-term-how="delete"
-                                                role="button"
-                                                aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                            <i class="trash alternate outline icon"></i>
-                                        </g:link>
-                                    </g:if>
-                                </td>
-                            </tr>
-                        </g:each>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <g:if test="${reportTypes}">
-                <g:if test="${revision == AbstractReport.COUNTER_4}">
-                    <ui:msg icon="ui info icon" class="info" header="${message(code: 'default.usage.counter4reportInfo.header')}" message="default.usage.counter4reportInfo.text" noClose="true"/>
-                </g:if>
-                <g:form action="generateReport" name="stats" class="ui form" method="get">
-                    <g:hiddenField name="id" value="${subscription.id}"/>
-                    <g:hiddenField name="revision" value="${revision}"/>
-                    <div class="five fields" id="filterDropdownWrapper">
-                        <g:if test="${platformInstanceRecords.size() > 1}">
-                            <div class="field">
-                                <label for="platform"><g:message code="platform"/></label>
-                                <ui:select class="ui search selection dropdown" from="${platformInstanceRecords}" name="platform"/>
-                            </div>
-                        </g:if>
-                        <g:elseif test="${platformInstanceRecords.size() == 1}">
-                            <g:hiddenField name="platform" value="${platformInstanceRecords.values()[0].id}"/>
-                        </g:elseif>
-                        <div class="field">
-                            <label for="reportType"><g:message code="default.usage.reportType"/></label>
-                            <select name="reportType" id="reportType" class="ui search selection dropdown">
-                                <option value=""><g:message code="default.select.choose.label"/></option>
-                                <g:each in="${reportTypes}" var="reportType">
-                                    <option <%=(params.reportType == reportType) ? 'selected="selected"' : ''%>
-                                            value="${reportType}">
-                                        <g:message code="default.usage.${reportType}"/>
-                                    </option>
-                                </g:each>
-                                <g:if test="${reportTypes.size() == 0}">
-                                    <option value="<g:message code="default.stats.noReport" />"><g:message code="default.stats.noReport" /></option>
-                                </g:if>
-                            </select>
-                        </div>
-                        <g:if test="${params.reportType}">
-                            <laser:render template="/templates/filter/statsFilter"/>
-                        </g:if>
-                        <%-- reports filters in COUNTER 5 count only for master reports (tr, pr, dr, ir)! COUNTER 4 has no restriction on filter usage afaik --%>
-                    </div>
-                    <div class="four fields">
-                        <div class="field"></div>
-                        <div class="field"></div>
-                        <div class="field la-field-right-aligned">
-                            <%-- deactivated as of ERMS-3996; concept needs to be clarified
-                            <input id="generateCostPerUse" type="button" class="ui secondary button" value="${message(code: 'default.stats.generateCostPerUse')}"/>--%>
-                            <g:link action="stats" id="${subscription.id}" class="ui button secondary">${message(code:'default.button.reset.label')}</g:link>
-                        </div>
-                        <div class="field la-field-right-aligned">
-                            <input id="generateReport" type="button" class="ui primary button" disabled="disabled" value="${message(code: 'default.stats.generateReport')}"/>
-                        </div>
-                    </div>
-                </g:form>
-            </g:if>
-            <g:elseif test="${error}">
-                <ui:msg icon="ui times icon" class="error" noClose="true">
-                    <g:message code="default.stats.error.${error}" args="${errorArgs}"/>
-                    <g:if test="${error == 'noCustomerId'}">
-                        <%-- proxies are coming!!! --%>
-                        <g:if test="${contextOrg.id == subscription.getConsortia()?.id}">
-                            <g:link controller="subscription" action="membersSubscriptionsManagement" id="${subscription.instanceOf.id}" params="[tab: 'customerIdentifiers', isSiteReloaded: false]"><g:message code="org.customerIdentifier"/></g:link>
-                        </g:if>
-                    </g:if>
-                </ui:msg>
-            </g:elseif>
-            <div id="reportWrapper"></div>
+            <g:render template="/templates/stats/stats"/>
         </g:else>
-        <laser:script file="${this.getGroovyPageFileName()}">
-            $("#reportType").on('change', function() {
-                <g:applyCodec encodeAs="none">
-                    let platforms = ${platformsJSON};
-                </g:applyCodec>
-                $.ajax({
-                    url: "<g:createLink controller="ajaxHtml" action="loadFilterList"/>",
-                    data: {
-                        reportType: $(this).val(),
-                        platforms: platforms,
-                        customer: '${subscription.getSubscriber().globalUID}',
-                        subscription: ${subscription.id}
-                    }
-                }).done(function(response) {
-                    $('.dynFilter').remove();
-                    $('#filterDropdownWrapper').append(response);
-                    $('#generateReport').removeAttr('disabled');
-                    r2d2.initDynamicUiStuff('#filterDropdownWrapper');
-                });
-            });
-            $("#generateCostPerUse").on('click', function() {
-                $('#globalLoadingIndicator').show();
-                let fd = new FormData($('#stats')[0]);
-                //console.log($('#stats')[0]);
-                $.ajax({
-                    url: "<g:createLink controller="ajax" action="generateCostPerUse"/>",
-                    data: fd,
-                    type: 'POST',
-                    processData: false,
-                    contentType: false
-                }).done(function(response){
-                    $("#reportWrapper").html(response);
-                    $('#globalLoadingIndicator').hide();
-                });
-            });
-            $("#generateReport").on('click', function() {
-                $('#globalLoadingIndicator').show();
-                let fd = new FormData($('#stats')[0]);
-                $.ajax({
-                    url: "<g:createLink action="generateReport"/>",
-                    data: fd,
-                    type: 'POST',
-                    processData: false,
-                    contentType: false
-                }).done(function(response){
-                    $("#reportWrapper").html(response);
-                    $('#globalLoadingIndicator').hide();
-                });
-            });
-        </laser:script>
+    <laser:script file="${this.getGroovyPageFileName()}">
+    $('.action .icon.button').click(function () {
+         $(this).parent('.action').find('input:file').click();
+     });
+
+     $('input:file', '.ui.action.input').on('change', function (e) {
+         var name = e.target.files[0].name;
+         $('input:text', $(e.target).parent()).val(name);
+     });
+    </laser:script>
+
 <laser:htmlEnd />

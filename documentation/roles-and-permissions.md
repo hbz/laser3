@@ -1,7 +1,7 @@
 
 ## Roles and Permissions and more ..
 
-2023-08-07
+2024-10-30
 
 ### Customer Types
 
@@ -38,19 +38,26 @@
 
 #### de.laser.ContextService
 
-    boolean isInstUser_or_ROLEADMIN (String orgPerms)
+    boolean isInstUser (String orgPerms)
+    boolean isInstEditor (String orgPerms)
+    boolean isInstAdm (String orgPerms)
+
+    boolean isInstUser_denySupport (String orgPerms)
+    boolean isInstEditor_denySupport (String orgPerms)
+    boolean isInstAdm_denySupport (String orgPerms)
+
     boolean isInstEditor_or_ROLEADMIN (String orgPerms)
     boolean isInstAdm_or_ROLEADMIN (String orgPerms)
+
+    boolean isInstAdm_denySupport_or_ROLEADMIN(String orgPerms = null)
 
 
 ### Affiliation Checks
 
 #### de.laser.UserService
 
-    boolean hasAffiliation_or_ROLEADMIN (User userToCheck, Org orgToCheck, String instUserRole)
-
-    boolean hasFormalAffiliation (User userToCheck, Org orgToCheck, String instUserRole)
-    boolean hasFormalAffiliation_or_ROLEADMIN (User userToCheck, Org orgToCheck, String instUserRole)
+    boolean hasAffiliation (Org orgToCheck, String instUserRole)
+    boolean hasFormalAffiliation (Org orgToCheck, String instUserRole)
 
 
 ### Various

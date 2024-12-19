@@ -3,6 +3,7 @@ package de.laser
 import de.laser.annotations.RefdataInfo
 import de.laser.utils.CodeUtils
 import grails.gorm.transactions.Transactional
+import groovyx.gpars.GParsPool
 
 /**
  * This service delivers generic reference data related information
@@ -43,17 +44,37 @@ class RefdataService {
         allDcs.each { dcName, dcFields ->
             Map dfMap = [:]
 
-            dcFields.each { df ->
-                Set<RefdataValue> rdvs = RefdataValue.executeQuery( "SELECT DISTINCT " + df.name + " FROM " + dcName )
+            GParsPool.withPool(6) {
+                dcFields.eachParallel { df ->
+                    RefdataValue.withTransaction {
+                        long ts = System.currentTimeMillis()
 
-                dfMap << ["${df.name}": rdvs.collect { it -> "${it.id}:${it.value}" }.sort()]
+                        List<Long> rdvIds = RefdataValue.executeQuery( "SELECT DISTINCT " + df.name + ".id FROM " + dcName )
+                        Set<RefdataValue> rdvs = RefdataValue.findAllByIdInList(rdvIds)
+                        dfMap << ["${df.name}": rdvs.collect { rdv -> "${rdv.id}:${rdv.value}" }.sort()]
 
-                // ids of used refdata values
-                rdvs.each { it ->
-                    usedRdvList << it.id
+                        // ids of used refdata values
+                        rdvs.each { rdv ->
+                            usedRdvList << rdv.id
+                        }
+
+                        long diff = System.currentTimeMillis() - ts
+                        if (diff > 1000) {
+                            log.debug 'getUsageDetails() : ' + dcName + '.' + df.name + ' -> ' + (System.currentTimeMillis() - ts) + 'ms'
+                        }
+                    }
                 }
             }
-
+//            dcFields.each { df ->
+//                List<Long> rdvIds = RefdataValue.executeQuery( "SELECT DISTINCT " + df.name + ".id FROM " + dcName )
+//                Set<RefdataValue> rdvs = RefdataValue.findAllByIdInList(rdvIds)
+//                dfMap << ["${df.name}": rdvs.collect { it -> "${it.id}:${it.value}" }.sort()]
+//
+//                // ids of used refdata values
+//                rdvs.each { it ->
+//                    usedRdvList << it.id
+//                }
+//            }
             if (! dfMap.isEmpty()) {
                 detailsMap.putAt( dcName, dfMap )
             }

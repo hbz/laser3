@@ -1,5 +1,5 @@
 <%@ page import="de.laser.storage.RDStore;" %>
-<laser:htmlStart message="license.nav.notes" serviceInjection="true"/>
+<laser:htmlStart message="license.nav.notes" />
 
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
@@ -7,7 +7,7 @@
         <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
     </ui:controlButtons>
 
-    <ui:h1HeaderWithIcon visibleOrgRelations="${visibleOrgRelations}">
+    <ui:h1HeaderWithIcon visibleProviders="${visibleProviders}">
         <ui:xEditable owner="${license}" field="reference" id="reference"/>
     </ui:h1HeaderWithIcon>
 

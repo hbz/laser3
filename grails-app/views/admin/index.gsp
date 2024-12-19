@@ -11,7 +11,6 @@
     <div class="ui equal width grid">
         <div class="row">
             <div class="column">
-                %{--<h3 class="ui header">${message(code:'menu.yoda.system')}</h3>--}%
                 <div class="ui divided relaxed list">
                     <div class="item">
                         <g:link controller="admin" action="systemEvents" target="_blank">${message(code:'menu.admin.systemEvents')}</g:link>
@@ -22,7 +21,6 @@
                 </div>
             </div>
             <div class="column">
-                %{--<h3 class="ui header">${message(code:'menu.yoda.others')}</h3>--}%
                 <div class="ui divided relaxed list">
                     <div class="item">
                         <g:link controller="admin" action="systemMessages" target="_blank">${message(code: 'menu.admin.systemMessage')}</g:link>
@@ -33,11 +31,13 @@
                 </div>
             </div>
             <div class="column">
-                %{--<h3 class="ui header">${message(code:'menu.yoda.database')}</h3>--}%
                 <div class="ui divided relaxed list">
                     <div class="item">
                         <g:link controller="admin" action="databaseInfo" target="_blank">${message(code: "menu.admin.databaseInfo")}</g:link>
                     </div>
+                %{--                    <div class="item">--}%
+                %{--                        <g:link controller="admin" action="databaseIndices" target="_blank">${message(code: "menu.admin.databaseIndices")}</g:link>--}%
+                %{--                    </div>--}%
                     <div class="item">
                         <g:link controller="admin" action="databaseCollations" target="_blank">${message(code: "menu.admin.databaseCollations")}</g:link>
                     </div>
@@ -92,12 +92,12 @@
     <table class="ui sortable celled la-js-responsive-table la-table la-hover-table compact table">
         <thead>
         <tr>
+            <th scope="col" class="two wide">${message(code:'default.date.label')}</th>
             <th scope="col" class="two wide">${message(code:'default.category.label')}</th>
             <th scope="col" class="two wide">${message(code:'default.relevance.label')}</th>
             <th scope="col" class="two wide">${message(code:'default.source.label')}</th>
             <th scope="col" class="three wide">${message(code:'default.event.label')}</th>
             <th scope="col" class="five wide">Payload</th>
-            <th scope="col" class="two wide">${message(code:'default.date.label')}</th>
         </tr>
         </thead>
         <tbody>
@@ -110,19 +110,19 @@
                     case 'warning'  : tdClass = 'warning'; break
                     case 'error'    : tdClass = 'error'; break
                 }
-                if (el.hasChanged) {
-                    tdClass += ' sf_underline'
+                if (! el.hasChanged) {
+                    tdClass += ' sf_simple'
                 }
             %>
             <tr>
+                <td class="${tdClass}">
+                    <g:formatDate date="${el.created}" format="${message(code:'default.date.format.noZ')}" />
+                </td>
                 <td class="${tdClass}"> ${el.category} </td>
                 <td class="${tdClass}"> ${el.relevance} </td>
                 <td class="${tdClass}"> ${el.source} </td>
                 <td class="${tdClass}"> ${el.event} </td>
                 <td class="${tdClass}"> ${el.payload?.replaceAll(',', ', ')} </td>
-                <td class="${tdClass}">
-                    <g:formatDate date="${el.created}" format="${message(code:'default.date.format.noZ')}" />
-                </td>
             </tr>
         </g:each>
         </tbody>

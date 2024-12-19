@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn" %>
 <g:form class="ui form" id="create_task" url="[controller: 'dev', action: 'index']" method="post">
     <div class="field required">
         <label for="title">
@@ -108,7 +109,7 @@
 
 
 
-    <a href="#" class="ui button modalCreateTask" onclick="$('#modalCreateTask').modal('hide')">Schließen</a>
+    <a href="#" class="${Btn.SIMPLE} modalCreateTask" onclick="$('#modalCreateTask').modal('hide')">Schließen</a>
     <input type="submit" class="ui button green" name="save" value="Anlegen" onclick="event.preventDefault(); $('#modalCreateTask').find('form').submit()">
 </g:form>
 

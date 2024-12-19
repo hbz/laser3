@@ -75,7 +75,7 @@ class ApiSubscription {
 		if (! sub.isPublicForApi) {
 			hasAccess = false
 		}
-		else if (OrgRole.findBySubAndRoleTypeAndOrg(sub, RDStore.OR_SUBSCRIPTION_CONSORTIA, context)) {
+		else if (OrgRole.findBySubAndRoleTypeAndOrg(sub, RDStore.OR_SUBSCRIPTION_CONSORTIUM, context)) {
 			hasAccess = true
 		}
 		else if (OrgRole.findBySubAndRoleTypeAndOrg(sub, RDStore.OR_SUBSCRIBER, context)) {
@@ -122,7 +122,7 @@ class ApiSubscription {
                 'SELECT DISTINCT(sub) FROM Subscription sub JOIN sub.orgRelations oo WHERE oo.org = :owner AND oo.roleType in (:roles )' ,
                 [
                         owner: owner,
-                        roles: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]
+                        roles: [RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]
                 ]
         )
 
@@ -170,6 +170,7 @@ class ApiSubscription {
 		result.lastUpdated          	= ApiToolkit.formatInternalDate(sub._getCalculatedLastUpdated())
 		result.manualCancellationDate 	= ApiToolkit.formatInternalDate(sub.manualCancellationDate)
 		result.name                 	= sub.name
+		result.altnames         		= ApiCollectionReader.getAlternativeNameCollection(sub.altnames)
 		result.startDate            	= ApiToolkit.formatInternalDate(sub.startDate)
 		result.calculatedType       	= sub._getCalculatedType()
 
@@ -225,6 +226,8 @@ class ApiSubscription {
 		allOrgRoles.addAll(sub.orgRelations)
 
 		result.organisations = ApiCollectionReader.getOrgLinkCollection(allOrgRoles, ApiReader.IGNORE_SUBSCRIPTION, context) // de.laser.OrgRole
+		result.providers	 = ApiCollectionReader.getProviderCollection(sub.getProviders())
+		result.vendors		 = ApiCollectionReader.getVendorCollection(sub.getVendors())
 
 		// TODO refactoring with issueEntitlementService
 		result.packages = ApiCollectionReader.getPackageWithIssueEntitlementsCollection(sub.packages, context, sql) // de.laser.SubscriptionPackage
@@ -237,7 +240,7 @@ class ApiSubscription {
 		/*
 		result.persons      = exportHelperService.resolvePrsLinks(
 				sub.prsLinks,  true, true, context
-		) // de.laser.PersonRole
+		) // de.laser.addressbook.PersonRole
 		*/
 
 		//result.license = ApiStubReader.requestLicenseStub(sub.owner, context) // de.laser.License

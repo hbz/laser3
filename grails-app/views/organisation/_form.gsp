@@ -14,22 +14,12 @@
     <g:textField name="sortname" maxlength="255" value="${orgInstance?.sortname}"/>
 </div>
 
-<div class="fields two">
-<div class="field ${hasErrors(bean: orgInstance, field: 'sector', 'error')}">
-	<label for="sector">
-		<g:message code="org.sector.label" />
-	</label>
-	<ui:select id="sector" name="sector.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.ORG_SECTOR)}"
-				  optionKey="id" optionValue="value" value="${orgInstance?.sector?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
-</div>
-
 <div class="field ${hasErrors(bean: orgInstance, field: 'libraryType', 'error')}">
 	<label for="libraryType">
 		<g:message code="org.libraryType.label" />
 	</label>
 	<ui:select id="libraryType" name="libraryType.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.LIBRARY_TYPE)}"
 				  optionKey="id" optionValue="value" value="${orgInstance?.libraryType?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
-</div>
 </div>
 
 <div class="field ${hasErrors(bean: orgInstance, field: 'url', 'error')}">
@@ -50,7 +40,7 @@
 	<label for="country">
 		<g:message code="org.country.label" />
 	</label>
-	<ui:select id="country" name="country.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.COUNTRY)}"
+	<ui:select id="country" name="country.id" from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.COUNTRY)}"
 			  optionKey="id" optionValue="value" value="${orgInstance?.country?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>
 

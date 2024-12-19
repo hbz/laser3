@@ -138,9 +138,10 @@ aside.ui.accordion .title:not(.ui) {
         }
     }
     .la-hero {
-        padding-top: 7rem !important;
+        padding-top: 2.5rem !important;
         .button {
-            background-color: #f1ebe5;
+            border: 2px solid @white!important;
+            line-height: 1.5;
         }
     }
     .masthead h1.ui.header{
@@ -184,6 +185,9 @@ aside.ui.accordion .title:not(.ui) {
         .masthead h2 {
             margin-top: 0.5em;
             font-size: 14px;
+        }
+        .masthead .ui.ui.ui.ui.massive.button{
+            font-size: 1.3rem;
         }
     }
 }
@@ -389,9 +393,6 @@ i.icon.la-list-icon{
     -webkit-hyphens: auto;
     -moz-hyphens: auto;
     hyphens: auto;
-}
-.la-hide-context-orgMenu {
-    padding-top: 60px;
 }
 .la-show-context-orgMenu {
     padding-top: 105px;
@@ -666,11 +667,31 @@ i.icon.la-list-icon{
 }
 
 /*********************************** Responsive Behavior *******************/
-// Light Grey Sub Menu
+// Light Grey Context Menu
 @media only screen and (max-width: @computerBreakpoint) {
-    .ui.menu.la-contextBar {
-        position: absolute !important;
+    #contextBar {
         top:0!important;
+    }
+}
+@media only screen and (max-width: @tabletBreakpoint) {
+    #contextBar {
+        position: relative !important;
+        flex-direction: column;
+        .la-context-org,
+        .la-advanced-view {
+            padding: 10px 0!important;
+        }
+        .la-context-org {
+            margin: 0!important;
+            border-top: @white 1px solid;
+            border-bottom: @white 1px solid;
+        }
+        .ui.container {
+            width: 100%;
+        }
+    }
+    main.ui.container.main {
+        margin-top: 10px!important;
     }
 }
 @media only screen and (max-width: @tabletBreakpoint  ) {
@@ -708,4 +729,18 @@ i.icon.la-list-icon{
 *****************************************/
 .js-copyTrigger:hover {
     cursor: pointer;
+}
+/****************************************
+        Accessibility
+*****************************************/
+.la-skipLink {
+    position: absolute;
+    height: 0px;
+}
+.la-screenReaderText {
+    clip: rect(1px, 1px, 1px, 1px);
+    position: absolute !important;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
 }

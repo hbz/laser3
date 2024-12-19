@@ -229,12 +229,18 @@ class ApiController {
                 respStruct = exportService.generateSeparatorTableString(result.titleRow, result.columnData, '\t')
                 status = HttpStatus.OK.value()
             }
-            else {
+            if(!result) {
+                respStruct = ""
+                status = HttpStatus.NOT_FOUND.value()
+            }
+            else if(!respStruct) {
                 respStruct = result
                 switch(result) {
                     case Constants.HTTP_FORBIDDEN: HttpStatus.FORBIDDEN.value()
                         break
                     case Constants.HTTP_INTERNAL_SERVER_ERROR: HttpStatus.INTERNAL_SERVER_ERROR.value()
+                        break
+                    case Constants.HTTP_SERVICE_UNAVAILABLE: HttpStatus.SERVICE_UNAVAILABLE.value()
                         break
                 }
             }

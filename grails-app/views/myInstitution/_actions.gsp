@@ -1,32 +1,29 @@
 <%@page import="de.laser.CustomerTypeService; de.laser.RefdataValue; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
-<g:set var="contextOrg" value="${contextService.getOrg()}" />
-
 <g:if test="${actionName == 'currentSubscriptions'}">
     <ui:actionsDropdown>
-        <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+        <g:if test="${contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
             <ui:actionsDropdownItem controller="subscription" action="emptySubscription" message="menu.institutions.emptySubscription" />
             <ui:actionsDropdownItem controller="myInstitution" action="subscriptionImport" message="menu.institutions.subscriptionImport" />
             <div class="divider"></div>
         </g:if>
-        <ui:actionsDropdownItem notActive="true" controller="myInstitution" action="currentSubscriptions" params="${[compare: true]+params}" message="menu.my.comp_sub" />
+        <ui:actionsDropdownItem notActive="true" controller="compare" action="compareSubscriptions" message="menu.my.comp_sub" />
     </ui:actionsDropdown>
 </g:if>
-
-<g:if test="${actionName == 'currentLicenses'}">
-    <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+<g:elseif test="${actionName == 'currentLicenses'}">
+    <g:if test="${contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
         <ui:actionsDropdown>
             <ui:actionsDropdownItem controller="myInstitution" action="emptyLicense" message="license.add.blank" />
 
             <div class="divider"></div>
-            <ui:actionsDropdownItem notActive="true" controller="myInstitution" action="currentLicenses" params="${[compare: true]+params}" message="menu.my.comp_lic" />
+            <ui:actionsDropdownItem notActive="true" controller="compare" action="compareLicenses" message="menu.my.comp_lic" />
         </ui:actionsDropdown>
     </g:if>
-</g:if>
+</g:elseif>
 %{-- todo - permissions --}%
-<g:if test="${actionName in ['manageMembers', 'addMembers']}">
-    <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+<g:elseif test="${actionName in ['manageMembers', 'addMembers']}">
+    <g:if test="${contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
         <ui:actionsDropdown>
             <g:if test="${comboType != null && comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
                 <ui:actionsDropdownItem controller="myInstitution" action="addMembers" message="menu.institutions.add_consortia_members" />
@@ -36,14 +33,14 @@
             </g:if>
         </ui:actionsDropdown>
     </g:if>
-    <g:elseif test="${contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+    <g:elseif test="${contextService.isInstUser(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
         <g:if test="${actionName == 'manageMembers'}">
             <ui:actionsDropdown>
                 <ui:actionsDropdownItem data-ui="modal" id="copyMailAddresses" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
             </ui:actionsDropdown>
         </g:if>
     </g:elseif>
-</g:if>
+</g:elseif>
 
 
 <g:if test="${editable}">
@@ -73,5 +70,5 @@
 </g:if>
 
 <g:if test="${actionName in ['documents']}">
-    <laser:render template="/templates/documents/modal" model="${[ownobj: contextOrg, owntp: 'org', inContextOrg: true]}"/>
+    <laser:render template="/templates/documents/modal" model="${[ownobj: contextService.getOrg(), owntp: 'org', inContextOrg: true]}"/>
 </g:if>

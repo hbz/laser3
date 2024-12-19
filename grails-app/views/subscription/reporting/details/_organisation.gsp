@@ -12,10 +12,8 @@
                 </th>
                 <th scope="col">${message(code:'org.sortname.label')}</th>
                 <th scope="col">${message(code:'default.name.label')}</th>
-                <th scope="col">${message(code:'org.customerType.label')}</th>
-                <th scope="col">${message(code:'org.orgType.label')}</th>
-                <th scope="col">${message(code:'org.libraryNetwork.label')}</th>
                 <th scope="col">${message(code:'org.libraryType.label')}</th>
+                <th scope="col">${message(code:'org.libraryNetwork.label')}</th>
 
                 <g:if test="${query == 'member-subjectGroup'}">
                     <th>${message(code:'org.subjectGroup.label')}</th>
@@ -37,6 +35,7 @@
                     <th>${message(code:'org.funderType.label')}</th>
                 </g:if>
                 --}%
+                <th scope="col">${message(code:'org.customerType.label')}</th>
         </tr>
         </thead>
         <tbody>
@@ -51,14 +50,8 @@
                     <td>
                         <g:link controller="organisation" action="show" id="${org.id}" target="_blank">${org.name}</g:link>
                     </td>
-                    <td>${org.getCustomerTypeI10n()}</td>
-                    <td>
-                        <g:each in="${org.orgType}" var="ot">
-                            ${ot.getI10n('value')} <br/>
-                        </g:each>
-                    </td>
-                    <td>${org.libraryNetwork?.getI10n('value')}</td>
                     <td>${org.libraryType?.getI10n('value')}</td>
+                    <td>${org.libraryNetwork?.getI10n('value')}</td>
                     <g:if test="${query == 'member-subjectGroup'}">
                         <td>
                             <g:each in="${org.subjectGroup}" var="sg">
@@ -85,6 +78,7 @@
                         <td>${org.funderType?.getI10n('value')}</td>
                     </g:if>
                     --}%
+                    <td>${org.getCustomerTypeI10n()}</td>
                 </tr>
             </g:each>
         </tbody>

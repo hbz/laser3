@@ -1,5 +1,5 @@
 <!-- _filter.gsp -->
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.I10nTranslation; java.text.SimpleDateFormat;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.properties.PropertyDefinition;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.FinanceController;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.I10nTranslation; java.text.SimpleDateFormat;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.properties.PropertyDefinition;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.FinanceController;de.laser.finance.CostItem" %>
 <laser:serviceInjection />
 
 <%
@@ -19,7 +19,7 @@
 
         <g:form url="${formUrl}" method="get" class="ui form">
 
-            <div class="three fields">
+            <div class="four fields">
                 <%-- this test includes the check if the filter is called for a subscription consortia --%>
                 <g:if test="${subMembers}">
                     <div class="field">
@@ -27,7 +27,7 @@
                             <g:message code="${subMemberLabel}"/>
                         </label>
                         <g:select id="filterSubMembers" name="filterSubMembers" multiple="" value="${filterPresets?.filterSubMembers?.collect{ sm -> sm.id }}"
-                                  class="ui fluid search dropdown" from="${subMembers}" optionKey="id" optionValue="${{it.getSubscriber().dropdownNamingConvention(institution)}}"
+                                  class="ui fluid search dropdown" from="${subMembers}" optionKey="id" optionValue="${{it.getSubscriberRespConsortia().dropdownNamingConvention(institution)}}"
                                   noSelection="${['':message(code:'default.select.all.label')]}"
                         />
                     </div>
@@ -44,9 +44,18 @@
                     </div>
                 </g:if>
                 <div class="field">
-                    <label>${message(code:'default.myProviderAgency.label')}</label>
+                    <label>${message(code:'menu.my.providers')}</label>
                     <div class="ui multiple search selection dropdown newFilter" id="filterSubProviders">
                         <input type="hidden" name="filterSubProviders">
+                        <i class="dropdown icon"></i>
+                        <input type="text" class="search">
+                        <div class="default text"><g:message code="default.select.all.label"/></div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>${message(code:'menu.my.vendors')}</label>
+                    <div class="ui multiple search selection dropdown newFilter" id="filterSubVendors">
+                        <input type="hidden" name="filterSubVendors">
                         <i class="dropdown icon"></i>
                         <input type="text" class="search">
                         <div class="default text"><g:message code="default.select.all.label"/></div>
@@ -62,7 +71,7 @@
                                       optionValue="value"
                                       value="${filterPresets?.filterSubStatus?.id}"
                                       noSelection="${['' : message(code:'default.select.all.label')]}"
-                            onchange="JSPC.app.setupDropdowns()"
+                            onchange="JSPC.app.updateSubscriptionDropdown()"
                         />
                     </div>
                 </g:if>
@@ -71,8 +80,8 @@
             <div class="three fields">
                 <div class="field">
                     <label for="filterCITitle">${message(code:'financials.newCosts.costTitle')}
-                        <span data-position="right center" class="la-popup-tooltip la-delay" data-content="${message(code:'financials.title.tooltip')}">
-                            <i class="question circle icon"></i>
+                        <span data-position="right center" class="la-popup-tooltip" data-content="${message(code:'financials.title.tooltip')}">
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </label>
                     <div class="ui search selection dropdown <g:if test="${ciTitles}">allowAdditions</g:if>" id="filterCITitle">
@@ -100,8 +109,8 @@
                 </g:if>
                 <div class="field"><!--NEW -->
                     <label>${message(code:'package.label')}</label>
-                    <div class="ui search selection multiple dropdown newFilter" id="filterCISPkg">
-                        <input type="hidden" name="filterCISPkg">
+                    <div class="ui search selection multiple dropdown newFilter" id="filterCIPkg">
+                        <input type="hidden" name="filterCIPkg">
                         <i class="dropdown icon"></i>
                         <input type="text" class="search">
                         <div class="default text"><g:message code="default.select.all.label"/></div>
@@ -264,9 +273,9 @@
                               noSelection="${['':message(code:'default.select.all.label')]}"/>
                 </div>
                 <div class="field la-field-right-aligned">
-                    <a href="${request.forwardURI}?reset=true" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
+                    <a href="${request.forwardURI}?reset=true" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
                     <g:hiddenField name="showView" value="${showView}"/>
-                    <input type="submit" name="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}">
+                    <input type="submit" name="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.filter.label')}">
                 </div>
             </div>
 
@@ -284,39 +293,32 @@
     $("#filterSubStatus, #filterCIStatus").dropdown({
         "clearable": true
     });
+    JSPC.app.links = {
+        "filterSubProviders": "${createLink([controller:"ajaxJson", action:"lookupProviders"])}?query={query}&forFinanceView=true",
+        "filterSubVendors": "${createLink([controller:"ajaxJson", action:"lookupVendors"])}?query={query}&forFinanceView=true",
+        "filterCISub": "${createLink([controller:"ajaxJson", action:"lookupSubscriptions"])}?query={query}",
+        "filterCIPkg": "${createLink([controller:"ajaxJson", action:"lookupSubscriptionPackages"])}?query={query}",
+        "filterCIInvoiceNumber": "${createLink([controller:"ajaxJson", action:"lookupInvoiceNumbers"])}?query={query}",
+        "filterCIOrderNumber": "${createLink([controller:"ajaxJson", action:"lookupOrderNumbers"])}?query={query}",
+        "filterCIReference": "${createLink([controller:"ajaxJson", action:"lookupReferences"])}?query={query}"
+    };
     JSPC.app.setupDropdowns = function () {
-        if($("#filterSubStatus").length > 0) {
-            var subStatus = $("#filterSubStatus").val();
-            if(subStatus.length === 0) {
-                subStatus = "FETCH_ALL";
-            }
-        }
-        else {
-            subStatus = "FETCH_ALL";
-        }
-        let fixedSubscriptionString = "";
-        <g:if test="${fixedSubscription}">
-            fixedSubscriptionString = "&ctx=${fixedSubscription.class.name}:${fixedSubscription.id}"
-        </g:if>
-        const links = {
-            "filterSubProviders": "${createLink([controller:"ajaxJson", action:"lookupProvidersAgencies"])}?query={query}&forFinanceView=true",
-            "filterCISub": "${createLink([controller:"ajaxJson", action:"lookupSubscriptions"])}?status="+subStatus+"&query={query}",
-            "filterCISPkg": "${createLink([controller:"ajaxJson", action:"lookupSubscriptionPackages"])}?status="+subStatus+fixedSubscriptionString+"&query={query}",
-            "filterCIInvoiceNumber": "${createLink([controller:"ajaxJson", action:"lookupInvoiceNumbers"])}?query={query}",
-            "filterCIOrderNumber": "${createLink([controller:"ajaxJson", action:"lookupOrderNumbers"])}?query={query}",
-            "filterCIReference": "${createLink([controller:"ajaxJson", action:"lookupReferences"])}?query={query}"
-        };
         $(".newFilter").each(function(k,v){
             let values = []
+            let minCharacters = 0;
             switch($(this).attr("id")) {
                 case 'filterCISub':
                     values = [<g:each in="${filterPresets?.filterCISub}" var="ciSub" status="i">'${genericOIDService.getOID(ciSub)}'<g:if test="${i < filterPresets.filterCISub.size()-1}">,</g:if></g:each>];
+                    minCharacters = 1; //due to high amount of data
                     break;
                 case 'filterCISPkg':
                     values = [<g:each in="${filterPresets?.filterCISPkg}" var="ciSPkg" status="i">'${genericOIDService.getOID(ciSPkg)}'<g:if test="${i < filterPresets.filterCISPkg.size()-1}">,</g:if></g:each>];
                     break;
                 case 'filterSubProviders':
                     values = [<g:each in="${filterPresets?.filterSubProviders}" var="subProvider" status="i">'${genericOIDService.getOID(subProvider)}'<g:if test="${i < filterPresets.filterSubProviders.size()-1}">,</g:if></g:each>];
+                    break;
+                case 'filterSubVendors':
+                    values = [<g:each in="${filterPresets?.filterSubVendors}" var="subVendor" status="i">'${genericOIDService.getOID(subVendor)}'<g:if test="${i < filterPresets.filterSubVendors.size()-1}">,</g:if></g:each>];
                     break;
                 case 'filterCIInvoiceNumber':
                     values = [<g:each in="${filterPresets?.filterCIInvoiceNumber}" var="invoiceNumber" status="i">'${invoiceNumber}'<g:if test="${i < filterPresets.filterCIInvoiceNumber.size()-1}">,</g:if></g:each>];
@@ -330,23 +332,59 @@
             }
             $(this).dropdown({
                 apiSettings: {
-                    url: links[$(this).attr("id")],
+                    url: JSPC.app.links[$(this).attr("id")],
                     cache: false
                 },
                 clearable: true,
-                minCharacters: 0,
-                message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage)},
+                minCharacters: minCharacters,
+                message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.config.language)},
                 onChange: function (value, text, $selectedItem) {
                     value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
+                    if($.inArray($(this).attr("id"), ["filterSubProviders", "filterSubVendors"]) > -1) {
+                        JSPC.app.updateSubscriptionDropdown();
+                    }
                 }
             });
             $(this).dropdown('queryRemote', '', () => {
                 $(this).dropdown('set selected', values);
+                //if($.inArray($(this).attr("id"), ["filterSubProviders", "filterSubVendors"]) > -1) {
+                    //JSPC.app.updateSubscriptionDropdown();
+                //}
             });
         });
         $(".newFilter").keypress(function(e){
             if(e.keyCode == 8)
                 console.log("backspace event!");
+        });
+    }
+    JSPC.app.updateSubscriptionDropdown = function () {
+        if($("#filterSubStatus").length > 0) {
+            var subStatus = $("#filterSubStatus").val();
+            if(subStatus.length === 0) {
+                subStatus = "FETCH_ALL";
+            }
+        }
+        else {
+            subStatus = "FETCH_ALL";
+        }
+        let fixedSubscriptionString = "";
+        <g:if test="${fixedSubscription}">
+            fixedSubscriptionString = "${fixedSubscription.class.name}:${fixedSubscription.id}"
+        </g:if>
+        console.log($("#filterSubProviders").dropdown("get values"));
+        console.log($("#filterSubVendors").dropdown("get values"));
+        $("#filterCISub").dropdown({
+            minCharacters: 1,
+            apiSettings: {
+                url: JSPC.app.links["filterCISub"],
+                data: {
+                    providerFilter: $("#filterSubProviders").dropdown("get values"),
+                    vendorFilter: $("#filterSubVendors").dropdown("get values"),
+                    ctx: fixedSubscriptionString,
+                    status: subStatus
+                },
+                cache: false
+            }
         });
     }
 

@@ -1,6 +1,7 @@
-<%@ page import="de.laser.utils.DateUtils;de.laser.Links;de.laser.storage.RDStore;de.laser.Person;de.laser.RefdataValue;de.laser.storage.RDConstants;de.laser.Contact;de.laser.Identifier;de.laser.interfaces.CalculatedType;de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.addressbook.Person; de.laser.addressbook.Contact;de.laser.utils.DateUtils;de.laser.Links;de.laser.storage.RDStore;de.laser.RefdataValue;de.laser.storage.RDConstants;de.laser.Identifier;de.laser.interfaces.CalculatedType;de.laser.remote.ApiSource" %>
 <laser:serviceInjection/>
-<g:set var="apiSource" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
+<g:set var="wekbResourceUrl" value="${ApiSource.getCurrent().getResourceShowURL()}"/>
+<g:set var="linkCtrlAction" value="${(contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" />
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
     <head>
@@ -60,7 +61,7 @@
         </header>
         <article>
             <h2><g:message code="default.identifiers.label"/></h2>
-            <g:set var="objectIds" value="${identifierService.prepareIDsForTable(subscription, institution).objectIds}" />
+            <g:set var="objectIds" value="${identifierService.prepareIDsForTable(subscription, contextService.getOrg()).objectIds}" />
             <table>
                 <g:each in="${objectIds}" var="row">
                     <g:set var="namespace" value="${row.getKey()}"/>
@@ -147,7 +148,7 @@
                     <li>
                         <strong><g:message code="subscription.resource.label"/>: </strong>${subscription.resource?.getI10n("value")}
                     </li>
-                    <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia().id}">
+                    <g:if test="${subscription.instanceOf && contextService.getOrg().id == subscription.getConsortium().id}">
                         <li>
                             <strong><g:message code="subscription.isInstanceOfSub.label"/>: </strong><g:link controller="subscription" action="show" id="${subscription.instanceOf.id}" absolute="true">${subscription.instanceOf.name}</g:link>
                         </li>
@@ -176,8 +177,8 @@
                     <%-- possible bottleneck!!!! --%>
                     <g:each in="${subscription.packages}" var="sp">
                         <tr>
-                            <td><a href="${apiSource.baseUrl}/resource/show/${sp.pkg.gokbId}">${sp.pkg.name}</a></td>
-                            <td>(<g:message code="platform"/>: <a href="${apiSource.baseUrl}/resource/show/${sp.pkg.nominalPlatform.gokbId}">${sp.pkg.nominalPlatform.name}</a>)</td>
+                            <td><a href="${wekbResourceUrl}/${sp.pkg.gokbId}">${sp.pkg.name}</a></td>
+                            <td>(<g:message code="platform"/>: <a href="${wekbResourceUrl}/${sp.pkg.nominalPlatform.gokbId}">${sp.pkg.nominalPlatform.name}</a>)</td>
                         </tr>
                     </g:each>
                 </table>
@@ -225,7 +226,7 @@
                                     memberRunningTimes += " ${formatDate(date: member.endDate, format: message(code: 'default.date.format.notime'))})"
                                 else memberRunningTimes += ")"
                             %>
-                            <td><g:link controller="subscription" action="show" id="${member.id}" absolute="true">${member.getSubscriber().sortname} ${memberRunningTimes}</g:link></td>
+                            <td><g:link controller="subscription" action="show" id="${member.id}" absolute="true">${member.getSubscriberRespConsortia().sortname} ${memberRunningTimes}</g:link></td>
                         </tr>
                     </g:each>
                 </table>
@@ -364,45 +365,36 @@
         </g:if>
         <article>
             <header>
-                <h2><g:message code="default.ProviderAgency.singular"/></h2>
+                <h2><g:message code="provider.label"/></h2>
                 <table>
-                    <g:each in="${visibleOrgRelations}" var="role">
-                        <g:if test="${role.org}">
+                    <g:each in="${providerRoles}" var="role">
+                        <g:if test="${role.provider}">
                             <%
-                                Set<Person> techSupports = [], serviceSupports = [], metadataContacts = [], privateTechSupports = [], privateServiceSupports = [], privateMetadataContacts = []
+                                Set<Person> techSupports = [], serviceSupports = [], metadataContacts = []
                                 boolean contactsExWekb = false
-                                if(role.org.gokbId) {
+                                if(role.provider.gokbId) {
                                     contactsExWekb = true
-                                    techSupports.addAll(Person.getPublicByOrgAndFunc(role.org, 'Technical Support', role.org))
-                                    serviceSupports.addAll(Person.getPublicByOrgAndFunc(role.org, 'Service Support', role.org))
-                                    metadataContacts.addAll(Person.getPublicByOrgAndFunc(role.org, 'Metadata Contact', role.org))
                                 }
-                                else {
-                                    techSupports.addAll(Person.getPublicByOrgAndFunc(role.org, 'Technical Support'))
-                                    serviceSupports.addAll(Person.getPublicByOrgAndFunc(role.org, 'Service Support'))
-                                    metadataContacts.addAll(Person.getPublicByOrgAndFunc(role.org, 'Metadata Contact'))
-                                }
-                                privateTechSupports.addAll(Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Technical Support', institution))
-                                privateServiceSupports.addAll(Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Service Support', institution))
-                                privateMetadataContacts.addAll(Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Metadata Contact', institution))
+                                techSupports.addAll(Person.getPublicByOrgAndFunc(role.provider, 'Technical Support'))
+                                serviceSupports.addAll(Person.getPublicByOrgAndFunc(role.provider, 'Service Support'))
+                                metadataContacts.addAll(Person.getPublicByOrgAndFunc(role.provider, 'Metadata Contact'))
                             %>
                             <tr>
                                 <td>
-                                    <g:link controller="organisation" action="show" id="${role.org.id}" absolute="true">${role.org.name}</g:link> <i>${role.roleType.getI10n("value")}</i>
+                                    <g:link controller="provider" action="show" id="${role.provider.id}" absolute="true">${role.provider.name}</g:link>
                                 </td>
                             </tr>
-                            <g:if test="${(Person.getPublicByOrgAndFunc(role.org, 'General contact person') || techSupports || serviceSupports || metadataContacts ||
-                                    Person.getPublicByOrgAndObjectResp(role.org, subscription, 'Specific subscription editor') ||
-                                    Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', institution) ||
-                                    privateTechSupports || privateServiceSupports || privateMetadataContacts ||
-                                    Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, subscription, 'Specific subscription editor', institution))}">
+                            <g:if test="${(Person.getPublicByOrgAndFunc(role.provider, 'General contact person') || techSupports || serviceSupports || metadataContacts ||
+                                    Person.getPublicByOrgAndObjectResp(role.provider, subscription, 'Specific subscription editor') ||
+                                    Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person') ||
+                                    Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, subscription, 'Specific subscription editor'))}">
                                 <%-- public --%>
                                 <g:each in="${techSupports}" var="func">
                                     <tr>
                                         <td>
                                             <i>
                                                 <g:if test="${contactsExWekb}">
-                                                    <a href="${apiSource.baseUrl}/resource/show/${role.org.gokbId}"><g:message code="org.isWekbCurated.header.label"/> (we:kb Link)</a>
+                                                    <a href="${wekbResourceUrl}/${role.provider.gokbId}"><g:message code="org.isWekbCurated.header.label"/> (we:kb Link)</a>
                                                 </g:if>
                                                 <g:else>
                                                     <g:message code="address.public"/>
@@ -413,7 +405,7 @@
                                             ${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}
                                         </td>
                                         <td>
-                                            <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${func}</g:link>
+                                            <g:link controller="provider" action="${linkCtrlAction}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
                                         </td>
                                         <td>
                                             <ul>
@@ -429,7 +421,7 @@
                                         <td>
                                             <i>
                                                 <g:if test="${contactsExWekb}">
-                                                    <a href="${apiSource.baseUrl}/resource/show/${role.org.gokbId}"><g:message code="org.isWekbCurated.header.label"/> (we:kb Link)</a>
+                                                    <a href="${wekbResourceUrl}/${role.provider.gokbId}"><g:message code="org.isWekbCurated.header.label"/> (we:kb Link)</a>
                                                 </g:if>
                                                 <g:else>
                                                     <g:message code="address.public"/>
@@ -440,7 +432,7 @@
                                             ${RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value')}
                                         </td>
                                         <td>
-                                            <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${func}</g:link>
+                                            <g:link controller="provider" action="${linkCtrlAction}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
                                         </td>
                                         <td>
                                             <ul>
@@ -456,7 +448,7 @@
                                         <td>
                                             <i>
                                                 <g:if test="${contactsExWekb}">
-                                                    <a href="${apiSource.baseUrl}/resource/show/${role.org.gokbId}"><g:message code="org.isWekbCurated.header.label"/> (we:kb Link)</a>
+                                                    <a href="${wekbResourceUrl}/${role.provider.gokbId}"><g:message code="org.isWekbCurated.header.label"/> (we:kb Link)</a>
                                                 </g:if>
                                                 <g:else>
                                                     <g:message code="address.public"/>
@@ -467,7 +459,7 @@
                                             ${RDStore.PRS_FUNC_METADATA.getI10n('value')}
                                         </td>
                                         <td>
-                                            <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${func}</g:link>
+                                            <g:link controller="provider" action="${linkCtrlAction}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
                                         </td>
                                         <td>
                                             <ul>
@@ -478,10 +470,10 @@
                                         </td>
                                     </tr>
                                 </g:each>
-                                <g:if test="${ Person.getPublicByOrgAndFunc(role.org, 'General contact person') ||
-                                        Person.getPublicByOrgAndObjectResp(role.org, subscription, 'Specific subscription editor')  }">
+                                <g:if test="${ Person.getPublicByOrgAndFunc(role.provider, 'General contact person') ||
+                                        Person.getPublicByOrgAndObjectResp(role.provider, subscription, 'Specific subscription editor')  }">
 
-                                    <g:each in="${Person.getPublicByOrgAndFunc(role.org, 'General contact person')}" var="func">
+                                    <g:each in="${Person.getPublicByOrgAndFunc(role.provider, 'General contact person')}" var="func">
                                         <tr>
                                             <td>
                                                 <i>${message(code:'address.public')}</i>
@@ -490,7 +482,7 @@
                                                 ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                             </td>
                                             <td>
-                                                <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${func}</g:link>
+                                                <g:link controller="provider" action="${linkCtrlAction}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
                                             </td>
                                             <td>
                                                 <ul>
@@ -501,7 +493,7 @@
                                             </td>
                                         </tr>
                                     </g:each>
-                                    <g:each in="${Person.getPublicByOrgAndObjectResp(role.org, subscription, 'Specific subscription editor')}" var="resp">
+                                    <g:each in="${Person.getPublicByOrgAndObjectResp(role.provider, subscription, 'Specific subscription editor')}" var="resp">
                                         <tr>
                                             <td>
                                                 <i>${message(code:'address.public')}</i>
@@ -510,7 +502,7 @@
                                                 ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                             </td>
                                             <td>
-                                                <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${resp}</g:link>
+                                                <g:link controller="provider" action="${linkCtrlAction}" params="[id: role.provider.id]" absolute="true">${resp}</g:link>
                                             </td>
                                             <td>
                                                 <ul>
@@ -523,19 +515,171 @@
                                     </g:each>
                                 </g:if>
                                 <%-- public --%>
+                            </g:if>
+                                <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person') ||
+                                        Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'Technical Support') ||
+                                        Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'Service Support') ||
+                                        Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'Metadata Contact') ||
+                                        Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, roleObject, roleRespValue)}">
                                 <%-- private --%>
-                                <g:each in="${privateTechSupports}" var="func">
+                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'Technical Support')}" var="func">
+                                        <tr>
+                                            <td>
+                                                <i>
+                                                    <g:message code="address.private"/>
+                                                </i>
+                                            </td>
+                                            <td>
+                                                ${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}
+                                            </td>
+                                            <td>
+                                                <g:link controller="provider" action="${linkCtrlAction}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
+                                            </td>
+                                            <td>
+                                                <ul>
+                                                    <g:each in="${Contact.findAllByPrsAndContentTypeInList(func, [RDStore.CCT_EMAIL, RDStore.CCT_URL])}" var="email">
+                                                        <li>${email.contentType.value} ${email.content} <g:if test="${email.language}">(${email.language.getI10n("value")})</g:if></li>
+                                                    </g:each>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </g:each>
+                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'Service Support')}" var="func">
+                                        <tr>
+                                            <td>
+                                                <i>
+                                                    <g:message code="address.private"/>
+                                                </i>
+                                            </td>
+                                            <td>
+                                                ${RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value')}
+                                            </td>
+                                            <td>
+                                                <g:link controller="provider" action="${linkCtrlAction}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
+                                            </td>
+                                            <td>
+                                                <ul>
+                                                    <g:each in="${Contact.findAllByPrsAndContentTypeInList(func, [RDStore.CCT_EMAIL, RDStore.CCT_URL])}" var="email">
+                                                        <li>${email.contentType.value} ${email.content} <g:if test="${email.language}">(${email.language.getI10n("value")})</g:if></li>
+                                                    </g:each>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </g:each>
+                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'Metadata Contact')}" var="func">
+                                        <tr>
+                                            <td>
+                                                <i>
+                                                    <g:message code="address.private"/>
+                                                </i>
+                                            </td>
+                                            <td>
+                                                ${RDStore.PRS_FUNC_METADATA.getI10n('value')}
+                                            </td>
+                                            <td>
+                                                <g:link controller="provider" action="${linkCtrlAction}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
+                                            </td>
+                                            <td>
+                                                <ul>
+                                                    <g:each in="${Contact.findAllByPrsAndContentTypeInList(func, [RDStore.CCT_EMAIL, RDStore.CCT_URL])}" var="email">
+                                                        <li>${email.contentType.value} ${email.content} <g:if test="${email.language}">(${email.language.getI10n("value")})</g:if></li>
+                                                    </g:each>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </g:each>
+                                    <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person') || Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, subscription, 'Specific subscription editor')}">
+                                        <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.provider, 'General contact person')}" var="func">
+                                            <tr>
+                                                <td>
+                                                    <i>${message(code:'address.private')}</i>
+                                                </td>
+                                                <td>
+                                                    ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
+                                                </td>
+                                                <td>
+                                                    <g:link controller="provider" action="${linkCtrlAction}" params="[id: role.provider.id]" absolute="true">${func}</g:link>
+                                                </td>
+                                                <td>
+                                                    <ul>
+                                                        <g:each in="${Contact.findAllByPrsAndContentTypeInList(func, [RDStore.CCT_EMAIL, RDStore.CCT_URL])}" var="email">
+                                                            <li>${email.contentType.'value'} ${email.content} <g:if test="${email.language}">(${email.language.getI10n("value")})</g:if></li>
+                                                        </g:each>
+                                                    </ul>
+                                                </td>
+                                            </tr>
+                                        </g:each>
+                                        <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.provider, subscription, 'Specific subscription editor')}" var="resp">
+                                            <tr>
+                                                <td>
+                                                    <i>${message(code:'address.private')}</i>
+                                                </td>
+                                                <td>
+                                                    ${RDStore.PRS_RESP_SPEC_LIC_EDITOR.getI10n('value')}
+                                                </td>
+                                                <td>
+                                                    <g:link controller="provider" action="${linkCtrlAction}" params="[id: role.provider.id]" absolute="true">${resp}</g:link>
+                                                </td>
+                                                <td>
+                                                    <ul>
+                                                        <g:each in="${Contact.findAllByPrsAndContentTypeInList(resp, [RDStore.CCT_EMAIL, RDStore.CCT_URL])}" var="email">
+                                                            <li>${email.contentType.'value'} ${email.content} <g:if test="${email.language}">(${email.language.getI10n("value")})</g:if></li>
+                                                        </g:each>
+                                                    </ul>
+                                                </td>
+                                            </tr>
+                                        </g:each>
+                                    </g:if>
+                                </g:if>
+                            <%-- private --%>
+                        </g:if>
+                    </g:each>
+                </table>
+            </header>
+        </article>
+        <article>
+            <header>
+                <h2><g:message code="vendor.label"/></h2>
+                <table>
+                    <g:each in="${vendorRoles}" var="role">
+                        <g:if test="${role.vendor}">
+                            <%
+                                Set<Person> vendorTechSupports = [], vendorServiceSupports = [], vendorMetadataContacts = []
+                                contactsExWekb = false
+                                if(role.vendor.gokbId) {
+                                    contactsExWekb = true
+                                }
+                                vendorTechSupports.addAll(Person.getPublicByOrgAndFunc(role.vendor, 'Technical Support'))
+                                vendorServiceSupports.addAll(Person.getPublicByOrgAndFunc(role.vendor, 'Service Support'))
+                                vendorMetadataContacts.addAll(Person.getPublicByOrgAndFunc(role.vendor, 'Metadata Contact'))
+                            %>
+                            <tr>
+                                <td>
+                                    <g:link controller="vendor" action="show" id="${role.vendor.id}" absolute="true">${role.vendor.name}</g:link>
+                                </td>
+                            </tr>
+                            <g:if test="${(Person.getPublicByOrgAndFunc(role.vendor, 'General contact person') || techSupports || serviceSupports || metadataContacts ||
+                                    Person.getPublicByOrgAndObjectResp(role.vendor, subscription, 'Specific subscription editor') ||
+                                    Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person') ||
+                                    Person.getPrivateByOrgAndObjectRespFromAddressbook(role.vendor, subscription, 'Specific subscription editor'))}">
+                                <%-- public --%>
+                                <g:each in="${vendorTechSupports}" var="func">
                                     <tr>
                                         <td>
                                             <i>
-                                                <g:message code="address.private"/>
+                                                <g:if test="${contactsExWekb}">
+                                                    <a href="${wekbResourceUrl}/${role.vendor.gokbId}"><g:message code="org.isWekbCurated.header.label"/> (we:kb Link)</a>
+                                                </g:if>
+                                                <g:else>
+                                                    <g:message code="address.public"/>
+                                                </g:else>
                                             </i>
                                         </td>
                                         <td>
                                             ${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}
                                         </td>
                                         <td>
-                                            <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${func}</g:link>
+                                            <g:link controller="vendor" action="${linkCtrlAction}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
                                         </td>
                                         <td>
                                             <ul>
@@ -546,18 +690,23 @@
                                         </td>
                                     </tr>
                                 </g:each>
-                                <g:each in="${privateServiceSupports}" var="func">
+                                <g:each in="${vendorServiceSupports}" var="func">
                                     <tr>
                                         <td>
                                             <i>
-                                                <g:message code="address.private"/>
+                                                <g:if test="${contactsExWekb}">
+                                                    <a href="${wekbResourceUrl}/${role.vendor.gokbId}"><g:message code="org.isWekbCurated.header.label"/> (we:kb Link)</a>
+                                                </g:if>
+                                                <g:else>
+                                                    <g:message code="address.public"/>
+                                                </g:else>
                                             </i>
                                         </td>
                                         <td>
                                             ${RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value')}
                                         </td>
                                         <td>
-                                            <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${func}</g:link>
+                                            <g:link controller="vendor" action="${linkCtrlAction}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
                                         </td>
                                         <td>
                                             <ul>
@@ -568,18 +717,23 @@
                                         </td>
                                     </tr>
                                 </g:each>
-                                <g:each in="${privateMetadataContacts}" var="func">
+                                <g:each in="${vendorMetadataContacts}" var="func">
                                     <tr>
                                         <td>
                                             <i>
-                                                <g:message code="address.private"/>
+                                                <g:if test="${contactsExWekb}">
+                                                    <a href="${wekbResourceUrl}/${role.vendor.gokbId}"><g:message code="org.isWekbCurated.header.label"/> (we:kb Link)</a>
+                                                </g:if>
+                                                <g:else>
+                                                    <g:message code="address.public"/>
+                                                </g:else>
                                             </i>
                                         </td>
                                         <td>
                                             ${RDStore.PRS_FUNC_METADATA.getI10n('value')}
                                         </td>
                                         <td>
-                                            <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${func}</g:link>
+                                            <g:link controller="vendor" action="${linkCtrlAction}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
                                         </td>
                                         <td>
                                             <ul>
@@ -590,37 +744,39 @@
                                         </td>
                                     </tr>
                                 </g:each>
-                                <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', institution) || Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, subscription, 'Specific subscription editor', institution)}">
-                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextOrg)}" var="func">
+                                <g:if test="${ Person.getPublicByOrgAndFunc(role.vendor, 'General contact person') ||
+                                        Person.getPublicByOrgAndObjectResp(role.vendor, subscription, 'Specific subscription editor')  }">
+
+                                    <g:each in="${Person.getPublicByOrgAndFunc(role.vendor, 'General contact person')}" var="func">
                                         <tr>
                                             <td>
-                                                <i>${message(code:'address.private')}</i>
+                                                <i>${message(code:'address.public')}</i>
                                             </td>
                                             <td>
                                                 ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                             </td>
                                             <td>
-                                                <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${func}</g:link>
+                                                <g:link controller="vendor" action="${linkCtrlAction}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
                                             </td>
                                             <td>
                                                 <ul>
                                                     <g:each in="${Contact.findAllByPrsAndContentTypeInList(func, [RDStore.CCT_EMAIL, RDStore.CCT_URL])}" var="email">
-                                                        <li>${email.contentType.'value'} ${email.content} <g:if test="${email.language}">(${email.language.getI10n("value")})</g:if></li>
+                                                        <li>${email.contentType.value} ${email.content} <g:if test="${email.language}">(${email.language.getI10n("value")})</g:if></li>
                                                     </g:each>
                                                 </ul>
                                             </td>
                                         </tr>
                                     </g:each>
-                                    <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, subscription, 'Specific subscription editor', institution)}" var="resp">
+                                    <g:each in="${Person.getPublicByOrgAndObjectResp(role.vendor, subscription, 'Specific subscription editor')}" var="resp">
                                         <tr>
                                             <td>
-                                                <i>${message(code:'address.private')}</i>
+                                                <i>${message(code:'address.public')}</i>
                                             </td>
                                             <td>
-                                                ${RefdataValue.getByValue('Specific license editor').getI10n('value')}
+                                                ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                             </td>
                                             <td>
-                                                <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${resp}</g:link>
+                                                <g:link controller="vendor" action="${linkCtrlAction}" params="[id: role.vendor.id]" absolute="true">${resp}</g:link>
                                             </td>
                                             <td>
                                                 <ul>
@@ -632,8 +788,124 @@
                                         </tr>
                                     </g:each>
                                 </g:if>
-                                <%-- private --%>
+                                <%-- public --%>
                             </g:if>
+                                <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person') ||
+                                        Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Technical Support') ||
+                                        Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Service Support') ||
+                                        Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Metadata Contact') ||
+                                        Person.getPrivateByOrgAndObjectRespFromAddressbook(role.vendor, roleObject, roleRespValue)}">
+                                <%-- private --%>
+                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Technical Support')}" var="func">
+                                        <tr>
+                                            <td>
+                                                <i>
+                                                    <g:message code="address.private"/>
+                                                </i>
+                                            </td>
+                                            <td>
+                                                ${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}
+                                            </td>
+                                            <td>
+                                                <g:link controller="vendor" action="${linkCtrlAction}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
+                                            </td>
+                                            <td>
+                                                <ul>
+                                                    <g:each in="${Contact.findAllByPrsAndContentTypeInList(func, [RDStore.CCT_EMAIL, RDStore.CCT_URL])}" var="email">
+                                                        <li>${email.contentType.value} ${email.content} <g:if test="${email.language}">(${email.language.getI10n("value")})</g:if></li>
+                                                    </g:each>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </g:each>
+                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Service Support')}" var="func">
+                                        <tr>
+                                            <td>
+                                                <i>
+                                                    <g:message code="address.private"/>
+                                                </i>
+                                            </td>
+                                            <td>
+                                                ${RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value')}
+                                            </td>
+                                            <td>
+                                                <g:link controller="vendor" action="${linkCtrlAction}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
+                                            </td>
+                                            <td>
+                                                <ul>
+                                                    <g:each in="${Contact.findAllByPrsAndContentTypeInList(func, [RDStore.CCT_EMAIL, RDStore.CCT_URL])}" var="email">
+                                                        <li>${email.contentType.value} ${email.content} <g:if test="${email.language}">(${email.language.getI10n("value")})</g:if></li>
+                                                    </g:each>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </g:each>
+                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'Metadata Contact')}" var="func">
+                                        <tr>
+                                            <td>
+                                                <i>
+                                                    <g:message code="address.private"/>
+                                                </i>
+                                            </td>
+                                            <td>
+                                                ${RDStore.PRS_FUNC_METADATA.getI10n('value')}
+                                            </td>
+                                            <td>
+                                                <g:link controller="vendor" action="${linkCtrlAction}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
+                                            </td>
+                                            <td>
+                                                <ul>
+                                                    <g:each in="${Contact.findAllByPrsAndContentTypeInList(func, [RDStore.CCT_EMAIL, RDStore.CCT_URL])}" var="email">
+                                                        <li>${email.contentType.value} ${email.content} <g:if test="${email.language}">(${email.language.getI10n("value")})</g:if></li>
+                                                    </g:each>
+                                                </ul>
+                                            </td>
+                                        </tr>
+                                    </g:each>
+                                    <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person') || Person.getPrivateByOrgAndObjectRespFromAddressbook(role.vendor, subscription, 'Specific subscription editor')}">
+                                        <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.vendor, 'General contact person')}" var="func">
+                                            <tr>
+                                                <td>
+                                                    <i>${message(code:'address.private')}</i>
+                                                </td>
+                                                <td>
+                                                    ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
+                                                </td>
+                                                <td>
+                                                    <g:link controller="vendor" action="${linkCtrlAction}" params="[id: role.vendor.id]" absolute="true">${func}</g:link>
+                                                </td>
+                                                <td>
+                                                    <ul>
+                                                        <g:each in="${Contact.findAllByPrsAndContentTypeInList(func, [RDStore.CCT_EMAIL, RDStore.CCT_URL])}" var="email">
+                                                            <li>${email.contentType.'value'} ${email.content} <g:if test="${email.language}">(${email.language.getI10n("value")})</g:if></li>
+                                                        </g:each>
+                                                    </ul>
+                                                </td>
+                                            </tr>
+                                        </g:each>
+                                        <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.vendor, subscription, 'Specific subscription editor')}" var="resp">
+                                            <tr>
+                                                <td>
+                                                    <i>${message(code:'address.private')}</i>
+                                                </td>
+                                                <td>
+                                                    ${RDStore.PRS_RESP_SPEC_LIC_EDITOR.getI10n('value')}
+                                                </td>
+                                                <td>
+                                                    <g:link controller="vendor" action="${linkCtrlAction}" params="[id: role.vendor.id]" absolute="true">${resp}</g:link>
+                                                </td>
+                                                <td>
+                                                    <ul>
+                                                        <g:each in="${Contact.findAllByPrsAndContentTypeInList(resp, [RDStore.CCT_EMAIL, RDStore.CCT_URL])}" var="email">
+                                                            <li>${email.contentType.'value'} ${email.content} <g:if test="${email.language}">(${email.language.getI10n("value")})</g:if></li>
+                                                        </g:each>
+                                                    </ul>
+                                                </td>
+                                            </tr>
+                                        </g:each>
+                                    </g:if>
+                                </g:if>
+                            <%-- private --%>
                         </g:if>
                     </g:each>
                 </table>
@@ -642,7 +914,7 @@
         <g:if test="${costItemSums.ownCosts || costItemSums.consCosts || costItemSums.subscrCosts}">
             <article>
                 <g:if test="${costItemSums.ownCosts}">
-                    <g:if test="${(institution.id != subscription.getConsortia()?.id && subscription.instanceOf) || !subscription.instanceOf}">
+                    <g:if test="${(contextService.getOrg().id != subscription.getConsortium()?.id && subscription.instanceOf) || !subscription.instanceOf}">
                         <h2>${message(code: 'financials.label')}: ${message(code: 'financials.tab.ownCosts')}</h2>
                         <g:render template="financialsPdf" model="[data: costItemSums.ownCosts]"/>
                     </g:if>

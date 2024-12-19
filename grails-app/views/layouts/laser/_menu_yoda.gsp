@@ -1,4 +1,4 @@
-<%@ page import="de.laser.GlobalSourceSyncService; de.laser.FormService" %>
+<%@ page import="de.laser.ui.Icon; de.laser.GlobalSourceSyncService; de.laser.FormService" %>
 <laser:serviceInjection />
 
 <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
@@ -12,7 +12,7 @@
 
         <div class="item " role="menuitem" aria-haspopup="true">
             <div class="title">
-                <i class="ui icon keyboard outline"></i> ${message(code:'menu.yoda.engine')} <i class="dropdown icon"></i>
+                <i class="icon keyboard outline"></i> ${message(code:'menu.yoda.engine')} <i class="dropdown icon"></i>
             </div>
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="yoda" action="systemSettings"><i class="icon toggle on"></i>${message(code:'menu.yoda.systemSettings')}</ui:link>
@@ -30,47 +30,13 @@
 
         <div class="item" role="menuitem" aria-haspopup="true">
             <div class="title">
-                <i class="tachometer alternate icon"></i> Profiler <i class="dropdown icon"></i>
+                <i class="memory icon"></i> Profiler <i class="dropdown icon"></i>
             </div>
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="yoda" action="profilerLoadtime">${message(code:'menu.yoda.profilerLoadtime')}</ui:link>
                 <ui:link addItemAttributes="true" controller="yoda" action="profilerActivity">${message(code:'menu.yoda.profilerActivity')}</ui:link>
                 <ui:link addItemAttributes="true" controller="yoda" action="profilerTimeline">${message(code:'menu.yoda.profilerTimeline')}</ui:link>
-            </div>
-        </div>
-
-        <div class="item" role="menuitem" aria-haspopup="true">
-            <div class="title">
-                <i class="paper plane icon"></i> ${message(code:'menu.yoda.mail.label')} <i class="dropdown icon"></i>
-            </div>
-            <div class="menu" role="menu">
-                <ui:link addItemAttributes="true" controller="mailAsync" action="index">${message(code:'menu.yoda.mailAysnc.list')}</ui:link>
-            </div>
-        </div>
-
-        <div class="divider"></div>
-
-        <div class="item" role="menuitem" aria-haspopup="true">
-            <div class="title">
-                ${message(code:'myinst.dash.due_dates.label')} <i class="dropdown icon"></i>
-            </div>
-            <div class="menu" role="menu">
-                <ui:link addItemAttributes="true" controller="yoda" action="dueDates_updateDashboardDB">${message(code:'menu.admin.updateDashboardTable')}</ui:link>
-                <ui:link addItemAttributes="true" controller="yoda" action="dueDates_sendAllEmails">${message(code:'menu.admin.sendEmailsForDueDates')}</ui:link>
-            </div>
-        </div>
-
-        <div class="divider"></div>
-
-        <div class="item" role="menuitem" aria-haspopup="true">
-            <div class="title">
-                Statistik <i class="dropdown icon"></i>
-            </div>
-            <div class="menu" role="menu">
-                <ui:link addItemAttributes="true" controller="yoda" action="statsSync">${message(code:'menu.admin.stats.sync')}</ui:link>
-                <ui:link addItemAttributes="true" controller="yoda" action="manageStatsSources">Übersicht der Statistik-Cursor</ui:link>
-                <%--<ui:link addItemAttributes="true" controller="yoda" action="fetchStats" params="[(FormService.FORM_SERVICE_TOKEN): formService.getNewToken(), incremental: true]">${message(code:'menu.admin.stats.fetch.incremental')}</ui:link>--%>
-                <%--<ui:link addItemAttributes="true" controller="yoda" action="fetchStats" params="[(FormService.FORM_SERVICE_TOKEN): formService.getNewToken(), incremental: false]">${message(code:'menu.admin.stats.fetch')}</ui:link>--%>
+                <ui:link addItemAttributes="true" controller="yoda" action="profilerCurrent">${message(code:'menu.yoda.profilerCurrent')}</ui:link>
             </div>
         </div>
 
@@ -90,8 +56,8 @@
 %{--                        ${message(code:'menu.admin.syncManagement.reload')} <i class="dropdown icon"></i>--}%
 %{--                    </div>--}%
 %{--                    <div class="menu" role="menu">--}%
-                        <ui:link addItemAttributes="true" controller="yoda" action="reloadWekbOrg" params="[componentType:GlobalSourceSyncService.ORG_TYPE_PROVIDER]" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.reloadProvider')}</ui:link>
-                        <ui:link addItemAttributes="true" controller="yoda" action="reloadWekbOrg" params="[componentType:GlobalSourceSyncService.ORG_TYPE_VENDOR]" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.reloadAgencies')}</ui:link>
+                        <ui:link addItemAttributes="true" controller="yoda" action="reloadWekbProvider" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.reloadProvider')}</ui:link>
+                        <ui:link addItemAttributes="true" controller="yoda" action="reloadWekbVendor" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.reloadAgencies')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="reloadWekbPlatform" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.reloadPlatform')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'globalUID', objType:'issueEntitlement']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateGlobalUID')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'identifier']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateIdentifiers')}</ui:link>
@@ -104,7 +70,8 @@
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'accessType']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateAccessType')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'openAccess']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateOpenAccess')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'titleNamespace']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateTitleNamespace')}</ui:link>
-                        <ui:link addItemAttributes="true" controller="yoda" action="reloadWekbChanges" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateWekbChanges')}</ui:link>
+                        <ui:link addItemAttributes="true" controller="yoda" action="manageWekbNews" params="[cmd:'update']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateWekbNews')}</ui:link>
+                        <ui:link addItemAttributes="true" controller="yoda" action="manageWekbNews" params="[cmd:'clear']" onclick="return confirm('${message(code:'confirm.start.clear')}')">${message(code:'menu.yoda.clearWekbNews')}</ui:link>
 %{--                    </div>--}%
 %{--                </div>--}%
 
@@ -113,21 +80,54 @@
             </div>
         </div>
 
-        <div class="divider"></div>
-
         <div class="item" role="menuitem" aria-haspopup="true">
             <div class="title">
                 ${message(code:'elasticsearch.label')} <i class="dropdown icon"></i>
             </div>
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="yoda" action="esIndexUpdate" onclick="return confirm('${message(code:'confirm.start.ESUpdateIndex')}')">${message(code:'menu.yoda.updateESIndex')}</ui:link>
-                <ui:link addItemAttributes="true" controller="yoda" action="manageESSources">Manage ES Source</ui:link>
                 <ui:link addItemAttributes="true" controller="yoda" action="manageFTControl">Manage FTControl</ui:link>
                 <div class="divider"></div>
                 <ui:link addItemAttributes="true" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">${message(code:'menu.yoda.resetESIndex')}</ui:link>
                 <ui:link addItemAttributes="true" controller="yoda" action="killDataloadService">Kill ES Update Index</ui:link>
                 <div class="divider"></div>
                 <ui:link addItemAttributes="true" controller="yoda" action="createESIndices">Create ES Indices</ui:link>
+            </div>
+        </div>
+
+        <div class="item" role="menuitem" aria-haspopup="true">
+            <div class="title">
+                ${message(code:'menu.yoda.stats')} <i class="dropdown icon"></i>
+            </div>
+            <div class="menu" role="menu">
+                <ui:link addItemAttributes="true" controller="yoda" action="statsSync">${message(code:'menu.yoda.stats.sync')}</ui:link>
+                <ui:link addItemAttributes="true" controller="yoda" action="manageTempUsageFiles">${message(code:'menu.yoda.stats.cache')}</ui:link>
+                <%--<ui:link addItemAttributes="true" controller="yoda" action="fetchStats" params="[(FormService.FORM_SERVICE_TOKEN): formService.getNewToken(), incremental: true]">${message(code:'menu.yoda.stats.fetch.incremental')}</ui:link>--%>
+                <%--<ui:link addItemAttributes="true" controller="yoda" action="fetchStats" params="[(FormService.FORM_SERVICE_TOKEN): formService.getNewToken(), incremental: false]">${message(code:'menu.yoda.stats.fetch')}</ui:link>--%>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="item" role="menuitem" aria-haspopup="true">
+            <div class="title">
+                <i class="${Icon.SYM.EMAIL}"></i> ${message(code:'menu.yoda.mail.label')} <i class="dropdown icon"></i>
+            </div>
+            <div class="menu" role="menu">
+                <ui:link addItemAttributes="true" controller="mailAsync" action="index">${message(code:'menu.yoda.mailAysnc.list')}</ui:link>
+                <ui:link addItemAttributes="true" controller="admin" action="sendMail">${message(code:'menu.yoda.sendMail')}</ui:link>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="item" role="menuitem" aria-haspopup="true">
+            <div class="title">
+                <i class="${Icon.DUE_DATE}"></i> ${message(code:'myinst.dash.due_dates.label')} <i class="dropdown icon"></i>
+            </div>
+            <div class="menu" role="menu">
+                <ui:link addItemAttributes="true" controller="yoda" action="dueDates_updateDashboardDB">${message(code:'menu.admin.updateDashboardTable')}</ui:link>
+                <ui:link addItemAttributes="true" controller="yoda" action="dueDates_sendAllEmails">${message(code:'menu.admin.sendEmailsForDueDates')}</ui:link>
             </div>
         </div>
 
@@ -146,7 +146,7 @@
 
         <div class="item" role="menuitem" aria-haspopup="true">
             <div class="title">
-                <i class="icon database"></i> ${message(code:'menu.admin.dataManagement')} <i class="dropdown icon"></i>
+                <icon:database /> ${message(code:'menu.admin.dataManagement')} <i class="dropdown icon"></i>
             </div>
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="package" action="getDuplicatePackages">List Package Duplicates</ui:link>
@@ -154,13 +154,12 @@
                 <div class="divider"></div>
 
                 <ui:link addItemAttributes="true" controller="admin" action="databaseInfo">${message(code: "menu.admin.databaseInfo")}</ui:link>
+                <ui:link addItemAttributes="true" controller="admin" action="databaseIndices">${message(code: "menu.admin.databaseIndices")}</ui:link>
                 <ui:link addItemAttributes="true" controller="admin" action="databaseCollations">${message(code: "menu.admin.databaseCollations")}</ui:link>
                 <div class="divider"></div>
 
-                <ui:link addItemAttributes="true" controller="stats" action="statsHome">${message(code:'menu.admin.statistics')}</ui:link>
-                <div class="divider"></div>
-
                 <ui:link addItemAttributes="true" controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</ui:link>
+                <ui:link addItemAttributes="true" controller="admin" action="identifierValidation">${message(code: "menu.admin.identifierValidation")}</ui:link>
                 <ui:link addItemAttributes="true" controller="admin" action="fileConsistency">${message(code: "menu.admin.fileConsistency")}</ui:link>
                 <ui:link addItemAttributes="true" controller="admin" action="manageDeletedObjects">${message(code: "menu.admin.deletedObjects")}</ui:link>
             </div>

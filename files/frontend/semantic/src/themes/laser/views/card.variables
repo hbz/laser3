@@ -10,3 +10,4 @@
 
 @headerFontSize: 1rem;
 @headerColor: @grey;
+@stackableMargin: 100%;

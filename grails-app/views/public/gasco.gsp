@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.storage.PropertyStore; de.laser.Org; de.laser.PersonRole; de.laser.OrgRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Contact; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
+<%@ page import="de.laser.addressbook.PersonRole; de.laser.addressbook.Contact; de.laser.wekb.ProviderRole; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.Subscription; de.laser.storage.PropertyStore; de.laser.Org; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
 
 <laser:htmlStart message="menu.public.gasco_monitor">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
@@ -41,11 +41,10 @@
                                         <g:else>
                                             <div class="inline field">
                                         </g:else>
-
                                             <div class="ui checkbox">
                                                 <label for="checkSubType-${subKind.id}">${subKind.getI10n('value')}</label>
                                                 <input id="checkSubType-${subKind.id}" name="subKinds" type="checkbox" value="${subKind.id}"
-                                                    <g:if test="${params.list('subKinds').contains(subKind.id.toString())}"> checked="" </g:if>
+                                                    <g:if test="${Params.getLongList(params, 'subKinds').contains(subKind.id)}"> checked="" </g:if>
                                                     <g:if test="${initQuery}"> checked="" </g:if>
                                                        tabindex="0">
                                             </div>
@@ -68,15 +67,15 @@
                     </div>
 
                     <div class="field la-field-right-aligned">
-                        <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
-                        <input type="submit" class="ui primary button" value="${message(code:'default.button.search.label')}">
+                        <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
+                        <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.search.label')}">
                     </div>
 
                 </g:form>
             </div>
         </div>
         <div class="five wide column">
-            <img class="ui fluid image" alt="Logo GASCO" src="${resource(dir: 'images', file: 'gasco/logo-small.jpg')}"/>
+            <img class="ui fluid image" alt="Logo GASCO" src="${resource(dir: 'images', file: 'gasco-logo.jpg')}"/>
         </div>
     </div>
     <laser:script file="${this.getGroovyPageFileName()}">
@@ -141,7 +140,7 @@
                     </td>
                     <td>
                         <g:if test="${gasco_infolink}">
-                            <span class="la-popup-tooltip la-delay" data-position="right center" data-content="Diese URL aufrufen:  ${gasco_infolink}">
+                            <span class="la-popup-tooltip" data-position="right center" data-content="Diese URL aufrufen:  ${gasco_infolink}">
                                 <a class="la-break-all" href="${gasco_infolink}" target="_blank">${gasco_anzeigename ?: sub}</a>
                             </span>
                         </g:if>
@@ -151,20 +150,20 @@
 
                         <g:each in="${sub.packages}" var="subPkg" status="j">
                             <div class="la-flexbox">
-                                <i class="icon gift la-list-icon"></i>
-                                <g:link controller="public" action="gascoDetailsIssueEntitlements" id="${subPkg.id}">${subPkg.pkg}</g:link>
+                                <i class="${Icon.PACKAGE} la-list-icon"></i>
+                                <g:link controller="gasco" action="details" id="${subPkg.id}">${subPkg.pkg}</g:link>
                             </div>
                         </g:each>
                     </td>
                     <td>
-                        <g:each in="${OrgRole.findAllBySubAndRoleType(sub, RDStore.OR_PROVIDER)}" var="role">
-                            ${role.org?.name}<br />
+                        <g:each in="${ProviderRole.findAllBySubscription(sub)}" var="role">
+                            ${role.provider.name}<br />
                         </g:each>
                     </td>
                     <td>
-                        ${gasco_verhandlername ?: sub.getConsortia()?.name}
+                        ${gasco_verhandlername ?: sub.getConsortium()?.name}
                         <br />
-                        <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GASCO_CONTACT, sub.getConsortia())}" var="personRole">
+                        <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GASCO_CONTACT, sub.getConsortium())}" var="personRole">
                             <g:set var="person" value="${personRole.getPrs()}" />
                             <g:if test="${person.isPublic}">
                             <div class="ui list">
@@ -175,16 +174,16 @@
                                         </div>
                                         <g:each in="${Contact.findAllByPrsAndContentType( person, RDStore.CCT_URL )}" var="prsContact">
                                             <div class="description">
-                                                <i class="icon globe la-list-icon"></i>
-                                                <span class="la-popup-tooltip la-delay " data-position="right center" data-content="Diese URL aufrufen:  ${prsContact?.content}">
+                                                <i class="${Icon.SYM.URL} la-list-icon"></i>
+                                                <span class="la-popup-tooltip" data-position="right center" data-content="Diese URL aufrufen:  ${prsContact?.content}">
                                                     <a class="la-break-all" href="${prsContact?.content}" target="_blank">Webseite</a>
                                                 </span>
                                             </div>
                                         </g:each>
                                         <g:each in="${Contact.findAllByPrsAndContentType( person, RDStore.CCT_EMAIL )}" var="prsContact">
                                             <div class="description js-copyTriggerParent">
-                                                <i class="ui icon envelope outline la-list-icon js-copyTrigger"></i>
-                                                <span class="la-popup-tooltip la-delay" data-position="right center" data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
+                                                <i class="${Icon.SYM.EMAIL} la-list-icon js-copyTrigger la-js-copyTriggerIcon la-popup-tooltip" data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}"></i>
+                                                <span class="la-popup-tooltip" data-position="right center" data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
                                                     <a class="la-break-all js-copyTopic" href="mailto:${prsContact?.content}" >${prsContact?.content}</a>
                                                 </span>
                                             </div>
@@ -197,12 +196,12 @@
                     </td>
                     <td class="center aligned">
                         <g:if test="${flyoutCheckList.contains(sub.id)}">
-                            <g:link class="flyoutLink ui icon button blue la-modern-button" controller="public" action="gascoFlyout" data-key="${sub.id}">
-                                <i class="icon info"></i>
+                            <g:link class="${Btn.MODERN.SIMPLE} flyoutLink" controller="gasco" action="json" data-key="${sub.id}">
+                                <i class="${Icon.UI.INFO}"></i>
                             </g:link>
                         </g:if>
                         <g:else>
-                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Leider stehen keine Informationen zur Verfügung. Bitte wenden Sie sich an die Konsortialstelle.">
+                            <span data-position="top right" class="la-popup-tooltip" data-content="Leider stehen keine Informationen zur Verfügung. Bitte wenden Sie sich an die Konsortialstelle.">
                                 <i class="icon grey minus circle"></i>
                             </span>
                         </g:else>
@@ -212,18 +211,18 @@
         </tbody>
     </table>
 
-    <div id="gascoFlyout" class="ui eight wide flyout" style="padding:50px 0 10px 0;overflow:scroll">
+    <div id="gascoFlyout" class="ui eight wide flyout">
         <div class="ui header">
-            <i class="info icon"></i>
+            <i class="${Icon.UI.INFO}"></i>
             <div class="content"></div>
         </div>
         <div class="content">
             <div class="filter" style="margin:0 0 1em 0; text-align:right;">
                 <div class="ui buttons mini">
-                    <span class="ui button la-popup-tooltip la-delay" data-content="Vergrößern" onclick="JSPC.app.gasco.ui.zoomIn()">+</span>
-                    <span class="ui button la-popup-tooltip la-delay" data-content="Verkleinern" onclick="JSPC.app.gasco.ui.zoomOut()">-</span>
-                    <span class="ui button la-popup-tooltip la-delay" data-content="Labels ein-/ausblenden" data-filter="label" onclick="JSPC.app.gasco.ui.toggleLabel()">Labels</span>
-                    <span class="ui button la-popup-tooltip la-delay" data-content="Legende ein-/ausblenden" data-filter="legend" onclick="JSPC.app.gasco.ui.toggleLegend()">Legende</span>
+                    <span class="${Btn.SIMPLE_TOOLTIP}" data-content="Vergrößern" onclick="JSPC.app.gasco.ui.zoomIn()">+</span>
+                    <span class="${Btn.SIMPLE_TOOLTIP}" data-content="Verkleinern" onclick="JSPC.app.gasco.ui.zoomOut()">-</span>
+                    <span class="${Btn.SIMPLE_TOOLTIP}" data-content="Labels ein-/ausblenden" data-filter="label" onclick="JSPC.app.gasco.ui.toggleLabel()">Labels</span>
+                    <span class="${Btn.SIMPLE_TOOLTIP}" data-content="Legende ein-/ausblenden" data-filter="legend" onclick="JSPC.app.gasco.ui.toggleLegend()">Legende</span>
                 </div>
             </div>
             <div class="charts"></div>

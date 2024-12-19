@@ -1,5 +1,5 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.License; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.RefdataCategory" %>
-<laser:htmlStart message="menu.my.comp_lic" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Btn; de.laser.helper.Params; de.laser.CustomerTypeService; de.laser.License; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.RefdataCategory" %>
+<laser:htmlStart message="menu.my.comp_lic" />
 
 <ui:breadcrumbs>
     <ui:crumb text="${message(code: 'menu.my.licenses')}" controller="myInstitution" action="currentLicenses"/>
@@ -14,16 +14,15 @@
         <select id="status" name="status" multiple="" class="ui search selection fluid dropdown" onchange="JSPC.app.adjustDropdown()">
             <option value=""><g:message code="default.select.choose.label"/></option>
             <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS) }" var="status">
-                <option <%=(status.id.toString() in params.list('status')) ? 'selected="selected"' : ''%> value="${status.id}">${status.getI10n('value')}</option>
+                <option <%=Params.getLongList(params, 'status').contains(status.id) ? 'selected="selected"' : ''%> value="${status.id}">${status.getI10n('value')}</option>
             </g:each>
         </select>
         </div>
             <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                 <div class="ui field">
                 <div class="ui checkbox">
-                    <g:checkBox name="show.subscriber" value="true" checked="false"
-                                onchange="JSPC.app.adjustDropdown()"/>
-                    <label for="show.subscriber">${message(code: 'default.compare.show.subscriber.name')}</label>
+                    <g:checkBox name="show.subscriber" value="true" checked="false" onchange="JSPC.app.adjustDropdown()"/>
+                    <label for="show.subscriber">${message(code: 'default.compare.show.licensee.name')}</label>
                 </div>
                 </div>
             </g:if>
@@ -39,12 +38,11 @@
         </div>
 
         <div class="field">
-            <g:link controller="compare" action="${actionName}"
-                    class="ui secondary button">${message(code: 'default.button.comparereset.label')}</g:link>
+            <g:link controller="compare" action="${actionName}" class="${Btn.SECONDARY}">${message(code: 'default.button.comparereset.label')}</g:link>
             &nbsp;
             <input ${params.selectedObjects ? 'disabled' : ''} type="submit"
                                                                value="${message(code: 'default.button.compare.label')}"
-                                                               name="Compare" class="ui button"/>
+                                                               name="Compare" class="${Btn.SIMPLE}"/>
         </div>
 
 </ui:form>
@@ -77,11 +75,12 @@
         }
 
         var dropdownSelectedObjects = $('#selectedObjects');
-        var selectedObjects = ${raw(objects?.id as String)};
+        var selectedObjects = [];
+        <g:each in="${objects.id}" var="objId">
+            selectedObjects.push(${objId})
+        </g:each>
 
         dropdownSelectedObjects.empty();
-        dropdownSelectedObjects.append('<option selected="true"disabled>${message(code: 'default.select.choose.label')}</option>');
-        dropdownSelectedObjects.prop('selectedIndex', 0);
 
         $.ajax({
                 url: url,

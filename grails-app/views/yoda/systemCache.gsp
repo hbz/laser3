@@ -1,6 +1,6 @@
-<%@ page import="de.laser.CacheService; groovy.json.JsonBuilder; de.laser.utils.DateUtils" %>
+<%@ page import="de.laser.ui.Btn; de.laser.CacheService; groovy.json.JsonBuilder; de.laser.utils.DateUtils" %>
 
-<laser:htmlStart message="menu.yoda.systemCache" serviceInjection="true"/>
+<laser:htmlStart message="menu.yoda.systemCache" />
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
@@ -15,14 +15,13 @@
 <div class="ui segment">
     <p>ID: ${sessionCache.getSession().id}</p>
 
-    <g:link class="ui button small"
-            controller="yoda" action="systemCache" params="[cmd: 'clearCache', type: 'session']">Cache leeren</g:link>
+    <g:link class="${Btn.SIMPLE} small" controller="yoda" action="systemCache" params="[cmd:'clearCache', type:'session']">Cache leeren</g:link>
 
     <g:if test="${sessionCache.list().size() > 0}">
         <dl>
             <g:each in="${contextService.getSessionCache().list()}" var="entry">
                 <dt style="margin-top:0.5em">
-                    <g:link controller="yoda" action="systemCache" params="${[key: entry.key]}" target="_blank"><i class="icon database"></i> ${entry.key}</g:link>
+                    <g:link controller="yoda" action="systemCache" params="${[cmd:'get', type:'session', key:entry.key]}" target="_blank"><icon:database /> ${entry.key}</g:link>
                 </dt>
                 <dd>
                      ${entry.value} <em>(${entry.value.class?.name})</em>
@@ -52,22 +51,6 @@
         <g:set var="cacheStats" value="${cache.getStatistics()}" />
 
         <h3 class="ui icon header">
-%{--            <g:if test="${cacheName == CacheService.TTL_300_CACHE}">--}%
-%{--                <i class="grey stopwatch icon bordered inverted la-object-extended"></i>--}%
-%{--            </g:if>--}%
-%{--            <g:elseif test="${cacheName == CacheService.TTL_1800_CACHE}">--}%
-%{--                <i class="grey clock outline icon bordered inverted la-object-extended"></i>--}%
-%{--            </g:elseif>--}%
-%{--            <g:elseif test="${cacheName == CacheService.TTL_3600_CACHE}">--}%
-%{--                <i class="grey clock outline icon bordered inverted la-object-extended"></i>--}%
-%{--            </g:elseif>--}%
-%{--            <g:elseif test="${cacheName == CacheService.SHARED_USER_CACHE}">--}%
-%{--                <i class="purple user icon bordered inverted la-object-extended"></i>--}%
-%{--            </g:elseif>--}%
-%{--            <g:elseif test="${cacheName == CacheService.SHARED_ORG_CACHE}">--}%
-%{--                <i class="purple university icon bordered inverted la-object-extended"></i>--}%
-%{--            </g:elseif>--}%
-
             ${cacheName}
 
             <span class="ui label">
@@ -88,12 +71,12 @@
 
             <div class="ui segment">
 
-                <g:link class="ui button small" controller="yoda" action="systemCache" params="[cmd: 'clearCache', cache: cacheName, type: 'ehcache']">Cache leeren</g:link>
+                <g:link class="${Btn.SIMPLE} small" controller="yoda" action="systemCache" params="[cmd:'clearCache', type: 'ehcache', cache:cacheName]">Cache leeren</g:link>
 
-                <button class="ui button small" onclick="$(this).parent('.segment').next('.cacheConfig').toggleClass('hidden')">Konfiguration</button>
+                <button class="${Btn.SIMPLE} small" onclick="$(this).parent('.segment').next('.cacheConfig').toggleClass('hidden')">Konfiguration</button>
 
                 <g:if test="${cache.getKeysWithExpiryCheck().size() > 0}">
-                    <button class="ui button small positive" onclick="$(this).parent('.segment').find('.cacheContent').toggleClass('hidden')">Elemente: ${cache.getKeys().size()}</button>
+                    <button class="${Btn.POSITIVE} small" onclick="$(this).parent('.segment').find('.cacheContent').toggleClass('hidden')">Elemente: ${cache.getKeys().size()}</button>
 
                     <div class="cacheContent hidden">
                         <dl>

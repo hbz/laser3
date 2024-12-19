@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.utils.SqlDateUtils; de.laser.survey.SurveyInfo; de.laser.Person; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DueDateObject; de.laser.*; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.addressbook.Person; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.utils.LocaleUtils; de.laser.utils.SqlDateUtils; de.laser.survey.SurveyInfo; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DueDateObject; de.laser.*; de.laser.DashboardDueDate" %>
 <laser:serviceInjection />
 <table class="ui celled table la-js-responsive-table la-table">
     <thead>
@@ -24,28 +24,28 @@
                 <td>
                     <g:formatDate format="${message(code:'default.date.format.notime')}" date="${dashDueDate.dueDateObject.date}"/>
                     <g:if test="${SqlDateUtils.isToday(dashDueDate.dueDateObject.date)}">
-                        <span class="la-popup-tooltip la-delay" data-content="${message(code:'myinst.dash.due_date.enddate.isDueToday.label')}" data-position="top right">
-                            <i class="icon yellow exclamation"></i>
+                        <span class="la-popup-tooltip" data-content="${message(code:'myinst.dash.due_date.enddate.isDueToday.label')}" data-position="top right">
+                            <i class="${Icon.TOOLTIP.IMPORTANT} yellow"></i>
                         </span>
                     </g:if>
                     <g:elseif test="${SqlDateUtils.isBeforeToday(dashDueDate.dueDateObject.date)}">
-                        <span class="la-popup-tooltip la-delay" data-content="${message(code:'myinst.dash.due_date.enddate.isOverdue.label')}" data-position="top right">
-                            <i class="icon red exclamation"></i>
+                        <span class="la-popup-tooltip" data-content="${message(code:'myinst.dash.due_date.enddate.isOverdue.label')}" data-position="top right">
+                            <i class="${Icon.TOOLTIP.IMPORTANT} red"></i>
                         </span>
                     </g:elseif>
                 </td>
                 <td>
                     <div class="la-flexbox">
                         <g:if test="${obj instanceof Subscription}">
-                            <i class="icon clipboard outline la-list-icon"></i>
+                            <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                             <g:link controller="subscription" action="show" id="${obj.id}">${obj.name}</g:link>
                         </g:if>
                         <g:elseif test="${obj instanceof License}">
-                            <i class="icon balance scale la-list-icon"></i>
+                            <i class="${Icon.LICENSE} la-list-icon"></i>
                             <g:link controller="license" action="show" id="${obj.id}">${obj.name}</g:link>
                         </g:elseif>
                         <g:elseif test="${obj instanceof SurveyInfo}">
-                            <i class="icon chart pie la-list-icon"></i>
+                            <i class="${Icon.SURVEY} la-list-icon"></i>
                             <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                                 <g:link controller="survey" action="show" params="[surveyConfigID: obj.surveyConfigs[0].id]"
                                         id="${obj.id}">${obj.surveyConfigs[0].getSurveyName()}
@@ -57,26 +57,52 @@
                             </g:else>
                         </g:elseif>
                         <g:elseif test="${obj instanceof Task}">
-                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Aufgabe">
-                                <i class="calendar check outline icon la-list-icon"></i>
+                            <span data-position="top right" class="la-popup-tooltip" data-content="Aufgabe">
+                                <i class="${Icon.TASK} la-list-icon"></i>
                             </span>
-                            <a href="#" class="header" onclick="JSPC.app.editTask(${obj?.id});">${obj?.title}</a>
+                            <g:if test="${obj.subscription}">
+                                <g:link controller="subscription" action="show" id="${obj.subscription.id}">${obj.title}</g:link>
+                            </g:if>
+                            <g:elseif test="${obj.license}">
+                                <g:link controller="license" action="show" id="${obj.license.id}">${obj.title}</g:link>
+                            </g:elseif>
+                            <g:elseif test="${obj.org}">
+                                <g:link controller="organisation" action="show" id="${obj.org.id}">${obj.title}</g:link>
+                            </g:elseif>
+                            <g:elseif test="${obj.vendor}">
+                                <g:link controller="vendor" action="show" id="${obj.vendor.id}">${obj.title}</g:link>
+                            </g:elseif>
+                            <g:elseif test="${obj.provider}">
+                                <g:link controller="provider" action="show" id="${obj.provider.id}">${obj.title}</g:link>
+                            </g:elseif>
+                            <g:elseif test="${obj.tipp}">
+                                <g:link controller="tipp" action="show" id="${obj.tipp.id}">${obj.tipp}</g:link>
+                            </g:elseif>
+                            <g:else>
+                                <g:if test="${obj.status == RDStore.TASK_STATUS_OPEN}">
+                                    <g:link controller="myInstitution" action="tasks" params="${[taskName:obj.title]}">${obj.title}</g:link>
+                                </g:if>
+                                <g:else>
+                                    <g:link controller="myInstitution" action="tasks" params="${[taskName:obj.title, taskStatus:obj.status.id, ctrlFilterSend:true]}">${obj.title}</g:link>
+                                    &nbsp; (${obj.status.getI10n('value')})
+                                </g:else>
+                            </g:else>
                         </g:elseif>
                         <g:elseif test="${obj instanceof AbstractPropertyWithCalculatedLastUpdated}">
                             <g:if test="${obj.owner instanceof Person}">
-                                <i class="icon address book la-list-icon"></i>
-                                <${obj.owner.first_name}&nbsp;${obj.owner.last_name}
+                                <i class="${Icon.ACP_PUBLIC} la-list-icon"></i>
+                                ${obj.owner.first_name}&nbsp;${obj.owner.last_name}
                             </g:if>
                             <g:elseif test="${obj.owner instanceof Subscription}">
-                                <i class="icon clipboard outline la-list-icon"></i>
+                                <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                 <g:link controller="subscription" action="show" id="${obj.owner?.id}">${obj.owner?.name}</g:link>
                             </g:elseif>
                             <g:elseif test="${obj.owner instanceof License}">
-                                <i class="icon balance scale la-list-icon"></i>
+                                <i class="${Icon.LICENSE} la-list-icon"></i>
                                 <g:link controller="license" action="show" id="${obj.owner?.id}">${obj.owner?.reference}</g:link>
                             </g:elseif>
                             <g:elseif test="${obj.owner instanceof Org}">
-                                <i class="icon university la-list-icon"></i>
+                                <i class="${Icon.ORG} la-list-icon"></i>
                                 <g:link controller="organisation" action="show" id="${obj.owner?.id}">${obj.owner?.name}</g:link>
                             </g:elseif>
                             <g:else>
@@ -88,9 +114,9 @@
                         </g:else>
                     </div>
                 </td>
-                <td class="x">
+                <td class="center aligned">
                     <g:if test="${false}">
-                        <ui:remoteLink class="ui icon  negative button la-modern-button js-open-confirm-modal"
+                        <ui:remoteLink class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                           controller="ajax"
                                           action="deleteDashboardDueDate_does_not_exist_yet"
                                           params=''
@@ -103,11 +129,11 @@
                                           role="button"
                                           ariaLabel="${message(code:'ariaLabel.delete.universal')}"
                         >
-                            <i class="trash alternate outline icon"></i>
+                            <i class="${Icon.CMD.DELETE}"></i>
                         </ui:remoteLink>
                     </g:if>
                     <g:if test="${dashDueDate?.isHidden}">
-                        <ui:remoteLink class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
+                        <ui:remoteLink class="${Btn.MODERN.SIMPLE_TOOLTIP}"
                                           data-content="${message(code:'myinst.dash.due_dates.visibility.off.tooltip')}"
                                           controller="ajax"
                                           action="showDashboardDueDate"
@@ -120,11 +146,11 @@
                                           role="button"
                                           ariaLabel="Termin wieder auf Ihrem Dashboard anzeigen lassen"
                         >
-                            <i class="icon bell slash la-js-editmode-icon "></i>
+                            <i class="${Icon.DUE_DATE} slash"></i>
                         </ui:remoteLink>
                     </g:if>
                     <g:else>
-                        <ui:remoteLink class="ui icon green button la-modern-button la-popup-tooltip la-delay"
+                        <ui:remoteLink class="${Btn.MODERN.POSITIVE_TOOLTIP}"
                                           data-content="${message(code:'myinst.dash.due_dates.visibility.on.tooltip')}"
                                           controller="ajax"
                                           action="hideDashboardDueDate"
@@ -135,13 +161,13 @@
                                           role="button"
                                           ariaLabel="Termin nicht auf Ihrem Dashboard anzeigen lassen"
                         >
-                            <i class="icon bell la-js-editmode-icon"></i>
+                            <i class="${Icon.DUE_DATE}"></i>
                         </ui:remoteLink>
                     </g:else>
                 </td>
-                <td class="x">
+                <td class="center aligned">
                 <g:if test="${dashDueDate?.dueDateObject.isDone}">
-                    <ui:remoteLink class="ui green button la-modern-button la-popup-tooltip la-delay"
+                    <ui:remoteLink class="${Btn.MODERN.POSITIVE_TOOLTIP}"
                                       data-content="${message(code:'myinst.dash.due_dates.status.pending.tooltip')}"
                                       controller="ajax"
                                       action="dashboardDueDateSetIsUndone"
@@ -154,11 +180,11 @@
                                       role="button"
                                       ariaLabel="fälligen Termin auf NICHT erledigt sezten"
                     >
-                        <i class="icon check la-js-editmode-icon"></i>
+                        <i class="${Icon.SYM.YES}"></i>
                     </ui:remoteLink>
                 </g:if>
                 <g:else>
-                    <ui:remoteLink class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
+                    <ui:remoteLink class="${Btn.MODERN.SIMPLE_TOOLTIP}"
                                       data-content="${message(code:'myinst.dash.due_dates.status.done.tooltip')}"
                                       controller="ajax"
                                       action="dashboardDueDateSetIsDone"
@@ -169,7 +195,7 @@
                                       role="button"
                                       ariaLabel="${message(code:'ariaLabel.check.universal')}"
                     >
-                        <i class="icon check la-js-editmode-icon"></i>
+                        <i class="${Icon.SYM.YES}"></i>
                     </ui:remoteLink>
                 </g:else>
                 </td>

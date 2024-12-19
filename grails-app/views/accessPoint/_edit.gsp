@@ -2,7 +2,7 @@
 <laser:serviceInjection/>
 
 <g:set var="entityName" value="${message(code: 'accessPoint.label')}"/>
-<laser:htmlStart text="${message(code: "default.edit.label", args: [entityName])}" serviceInjection="true"/>
+<laser:htmlStart text="${message(code: "default.edit.label", args: [entityName])}" />
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('body').attr('class', 'organisation_accessPoint_edit_${accessPoint.accessMethod}');
@@ -10,7 +10,7 @@
 
 <laser:render template="breadcrumb" model="${[accessPoint: accessPoint, params: params]}"/>
 
-<g:if test="${contextService.is_INST_EDITOR_or_ROLEADMIN_with_PERMS_BASIC(inContextOrg)}">
+<g:if test="${contextService.is_INST_EDITOR_with_PERMS_BASIC(inContextOrg)}">
     <ui:controlButtons>
         <ui:exportDropdown>
             <ui:exportDropdownItem>

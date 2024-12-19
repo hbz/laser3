@@ -1,5 +1,5 @@
-<%@ page import="de.laser.reporting.report.ReportingCache; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.storage.RDStore;" %>
-<laser:htmlStart message="myinst.reporting" serviceInjection="true">
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.reporting.report.ReportingCache; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.storage.RDStore;" %>
+<laser:htmlStart message="myinst.reporting">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
 
@@ -9,7 +9,7 @@
             <laser:render template="actions" />
         </ui:controlButtons>
 
-        <ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" visibleOrgRelations="${visibleOrgRelations}">
+        <ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" visibleProviders="${providerRoles}">
             <laser:render template="iconSubscriptionIsChild"/>
             <ui:xEditable owner="${subscription}" field="name" />
         </ui:h1HeaderWithIcon>
@@ -23,10 +23,10 @@
         <laser:render template="/subscription/reporting/query/query" />
 
         %{-- <sec:ifAnyGranted roles="ROLE_YODA">
-            <g:link controller="yoda" action="systemCache" params="${[key: ReportingCache.CTX_SUBSCRIPTION + 'static#' + params.id]}" target="_blank" class="ui button small"><i class="icon bug"></i> YODA only CACHE</g:link>
+            <g:link controller="yoda" action="systemCache" params="${[key: ReportingCache.CTX_SUBSCRIPTION + 'static#' + params.id]}" target="_blank" class="${Btn.SIMPLE} small"><icon:bug /> YODA only CACHE</g:link>
         </sec:ifAnyGranted> --}%
 
-        <div id="reporting-chart-nodata" class="ui message negative">${message(code:'reporting.modal.nodata')}</div>
+        <div id="reporting-chart-nodata" class="ui error message">${message(code:'reporting.modal.nodata')}</div>
 
         <div id="chart-wrapper"></div>
         <div id="chart-details"></div>
@@ -38,7 +38,7 @@
 
         <laser:script file="${this.getGroovyPageFileName()}">
             $('*[id^=query-chooser-1]').on ('change', function (e) {
-                var value = $(e.target).dropdown('get value');
+                let value = $(e.target).dropdown('get value');
                 if (value) {
                     $('#chart-chooser').removeAttr('disabled').parent().removeClass('disabled');
 
@@ -55,7 +55,7 @@
             })
 
             $('*[id^=query-chooser-2]').on ('change', function (e) {
-                var value = $(e.target).dropdown('get value');
+                let value = $(e.target).dropdown('get value');
                 if (value) {
                     $('#chart-chooser').attr('disabled', 'disabled').parent().addClass('disabled')
                     $('#chart-chooser').dropdown('set selected', 'bar');
@@ -139,10 +139,12 @@
 
                             JSPC.app.reporting.current.chart.echart = echart;
 
-                            $('#query-export-button').removeAttr('disabled');
-                            if (JSPC.app.reporting.current.request.query.indexOf('timeline-') == 0) {
+                            let escQuery = JSPC.app.reporting.current.request.query.replaceAll('*', '\\*')
+                            let $dhs = $('#queryHelpModal .help-section[data-help-section=' + escQuery + ']');
+                            if ($dhs.length) {
                                 $('#query-help-button').removeAttr('disabled');
                             }
+                            $('#query-export-button').removeAttr('disabled');
                         }
                     })
                     .fail (function (data) {
@@ -159,6 +161,6 @@
         </laser:script>
 
         <ui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">
-            <p><i class="icon exclamation triangle large orange"></i> ${message(code:'reporting.modal.error')}</p>
+            <p><i class="${Icon.UI.ERROR} large orange"></i> ${message(code:'reporting.modal.error')}</p>
         </ui:modal>
 <laser:htmlEnd />

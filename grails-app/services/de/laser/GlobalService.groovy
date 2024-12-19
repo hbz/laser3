@@ -1,9 +1,13 @@
 package de.laser
 
+import de.laser.annotations.UnstableFeature
+import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigMapper
+import de.laser.exceptions.NativeSqlException
 import de.laser.storage.BeanStore
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import org.hibernate.Session
 import org.hibernate.SessionFactory
@@ -16,6 +20,9 @@ import javax.sql.DataSource
 @Transactional
 class GlobalService {
 
+    static final long LONG_PROCESS_LIMBO = 30 //30 seconds, other values are for debug only, do not commit!
+
+    CacheService cacheService
     SessionFactory sessionFactory
 
     /**
@@ -69,9 +76,15 @@ class GlobalService {
      * Implemented static because of usage in static context
      * @return a connection to the database
      */
-    static Sql obtainSqlConnection() {
+    static Sql obtainSqlConnection() throws NativeSqlException {
         DataSource dataSource = BeanStore.getDataSource()
-        new Sql(dataSource)
+        Sql sql = new Sql(dataSource)
+        List<GroovyRowResult> activeConnections = sql.rows("select count(*) from pg_stat_activity where datname = current_database() and state != 'idle' and usename ilike '%laser%'")
+        if(activeConnections[0]['count'] < 40)
+            sql
+        else {
+            throw new NativeSqlException("too many active connections, please wait until connections are free!")
+        }
     }
 
     /**
@@ -83,5 +96,18 @@ class GlobalService {
     static Sql obtainStorageSqlConnection() {
         DataSource dataSource = BeanStore.getStorageDataSource()
         new Sql(dataSource)
+    }
+
+    /**
+     * Currently disused, method and procedure flow under development
+     * Notifies a user that a background process (e.g. linking of a large package to many subscriptions) has been terminated
+     * @param userId the user who triggered the process and is now going to be notified
+     * @param cacheKey the cache entry under which the finish message is going to be saved
+     * @param mess the message string being displayed
+     */
+    @UnstableFeature
+    void notifyBackgroundProcessFinish(long userId, String cacheKey, String mess) {
+        EhcacheWrapper cache = cacheService.getTTL1800Cache("finish_${userId}")
+        cache.put(cacheKey, mess)
     }
 }

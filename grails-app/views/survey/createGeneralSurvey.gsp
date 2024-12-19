@@ -1,5 +1,5 @@
-<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory;" %>
-<laser:htmlStart message="createGeneralSurvey.label" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Btn; de.laser.RefdataValue; de.laser.RefdataCategory;" %>
+<laser:htmlStart message="createGeneralSurvey.label" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" message="currentSurveys.label"/>
@@ -31,6 +31,27 @@
             </div>
         </div>
 
+        <div class="field">
+            <label>${message(code: 'surveyconfig.packageSurvey.label')}</label>
+            <div class="ui checkbox">
+                <input type="checkbox" id="packageSurvey" name="packageSurvey" ${params.packageSurvey? 'checked':''}>
+            </div>
+        </div>
+
+    <div class="field">
+        <label>${message(code: 'surveyconfig.vendorSurvey.label')}</label>
+        <div class="ui checkbox">
+            <input type="checkbox" id="vendorSurvey" name="vendorSurvey" ${params.vendorSurvey? 'checked':''}>
+        </div>
+    </div>
+
+    <div class="field">
+        <label>${message(code: 'surveyconfig.invoicingInformation.label')}</label>
+        <div class="ui checkbox">
+            <input type="checkbox" id="invoicingInformation" name="invoicingInformation" ${params.invoicingInformation? 'checked':''}>
+        </div>
+    </div>
+
         <div class="field ">
             <label>${message(code: 'surveyInfo.comment.label')}</label>
 
@@ -39,7 +60,7 @@
 
         <br />
 
-        <input type="submit" class="ui button" value="${message(code: 'createGeneralSurvey.create')}"/>
+        <input type="submit" class="${Btn.SIMPLE}" value="${message(code: 'createGeneralSurvey.create')}"/>
 </ui:form>
 
 <laser:htmlEnd />

@@ -3,6 +3,7 @@ package de.laser.survey
 import de.laser.CustomerTypeService
 import de.laser.License
 import de.laser.Org
+import de.laser.wekb.Provider
 import de.laser.RefdataValue
 import de.laser.annotations.RefdataInfo
 import de.laser.storage.BeanStore
@@ -44,7 +45,9 @@ class SurveyInfo {
 
     License license
 
-    Org provider
+    @Deprecated
+    Org providerOld
+    Provider provider
 
     static hasMany = [
             surveyConfigs: SurveyConfig
@@ -57,6 +60,7 @@ class SurveyInfo {
         comment (nullable:true, blank:true)
         license (nullable:true)
         provider (nullable:true)
+        providerOld (nullable:true)
     }
 
     static transients = ['editable', 'completedforOwner'] // mark read-only accessor methods
@@ -73,16 +77,17 @@ class SurveyInfo {
         dateCreated column: 'surin_date_created'
         lastUpdated column: 'surin_last_updated'
 
-        owner column: 'surin_owner_org_fk'
-        type column: 'surin_type_rv_fk'
-        status column: 'surin_status_rv_fk'
+        owner column: 'surin_owner_org_fk',     index: 'surin_owner_org_idx'
+        type column: 'surin_type_rv_fk',        index: 'surin_type_idx'
+        status column: 'surin_status_rv_fk',    index: 'surin_status_idx'
 
         isSubscriptionSurvey column: 'surin_is_subscription_survey'
         isMandatory column: 'surin_is_mandatory'
         isRenewalSent column: 'surin_is_renewal_sent'
 
         license column: 'surin_license'
-        provider column: 'surin_provider'
+        providerOld column: 'surin_provider'
+        provider column: 'surin_provider_fk'
     }
 
     /**
@@ -159,7 +164,7 @@ class SurveyInfo {
      * @return true if the user belongs to the institution which created (= owns) this survey and if it is at least an editor or general admin, false otherwise
      */
     boolean isEditable() {
-        if(BeanStore.getContextService().isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO ) && this.owner?.id == BeanStore.getContextService().getOrg().id)
+        if(BeanStore.getContextService().isInstEditor( CustomerTypeService.ORG_CONSORTIUM_PRO ) && this.owner?.id == BeanStore.getContextService().getOrg().id)
         {
             return true
         }

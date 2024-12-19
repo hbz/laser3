@@ -1,5 +1,5 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.AuditConfig;de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore;" %>
-<laser:htmlStart message="myinst.renewals" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Btn; de.laser.CustomerTypeService; de.laser.AuditConfig;de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore;" %>
+<laser:htmlStart message="myinst.renewals" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label"/>
@@ -28,7 +28,7 @@
                     <th>${message(code: 'myinst.emptySubscription.name')}</th>
                     <td>
                         <div class="ui form field">
-                            <input type="text" name="subscription.name" value="${permissionInfo?.sub_name}">
+                            <input type="text" name="subscription.name" value="${permissionInfo.sub_name}">
                         </div>
                     </td>
                     <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
@@ -42,9 +42,9 @@
 
                 </tr>
                 <tr>
-                    <th>${message(code: 'default.startDate.label')}</th>
+                    <th>${message(code: 'default.startDate.label.shy')}</th>
                     <td><ui:datepicker class="wide eight" id="subscription.start_date" name="subscription.start_date"
-                                          placeholder="default.date.label" value="${permissionInfo?.sub_startDate}"
+                                          placeholder="default.date.label" value="${permissionInfo.sub_startDate}"
                                           required=""/></td>
                     <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                         <td class="center aligned">
@@ -56,9 +56,9 @@
                     </g:if>
                 </tr>
                 <tr>
-                    <th>${message(code: 'default.endDate.label')}</th>
+                    <th>${message(code: 'default.endDate.label.shy')}</th>
                     <td><ui:datepicker class="wide eight" id="subscription.end_date" name="subscription.end_date"
-                                          placeholder="default.date.label" value="${permissionInfo?.sub_endDate}"/></td>
+                                          placeholder="default.date.label" value="${permissionInfo.sub_endDate}"/></td>
                     <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                         <td class="center aligned">
                             <div class="ui checkbox">
@@ -69,9 +69,9 @@
                     </g:if>
                 </tr>
                 <tr>
-                    <th>${message(code: 'subscription.referenceYear.label')}</th>
+                    <th>${message(code: 'subscription.referenceYear.label.shy')}</th>
                     <td><ui:datepicker type="year" class="wide eight" id="subscription.reference_year" name="subscription.reference_year"
-                                       placeholder="default.date.format.yyyy" value="${permissionInfo?.sub_referenceYear}"/></td>
+                                       placeholder="default.date.format.yyyy" value="${permissionInfo.sub_referenceYear}"/></td>
                     <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                         <td class="center aligned">
                             <div class="ui checkbox">
@@ -110,7 +110,7 @@
                                 optionKey="id"
                                 optionValue="${{ it.getI10n('value') }}"
                                 name="subStatus"
-                                value="${permissionInfo?.sub_status}"/>
+                                value="${permissionInfo.sub_status}"/>
                     </td>
                     <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                         <td class="center aligned">
@@ -125,8 +125,7 @@
             </table>
 
             <div class="la-float-right">
-                <button type="submit"
-                        class="ui button">${message(code: 'myinst.renewalUpload.renew')}</button>
+                <button type="submit" class="${Btn.SIMPLE}">${message(code: 'myinst.renewalUpload.renew')}</button>
             </div>
             <br />
 

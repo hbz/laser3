@@ -7,6 +7,7 @@ import de.laser.api.v0.*
 import de.laser.storage.Constants
 import de.laser.storage.RDStore
 import de.laser.traces.DeletedObject
+import de.laser.SubscriptionPackage
 import grails.converters.JSON
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -199,7 +200,7 @@ class ApiCostItem {
 
         result.owner    = ApiUnsecuredMapReader.getOrganisationStubMap(costItem.owner) // de.laser.Org
         result.sub      = ApiStubReader.requestSubscriptionStub(costItem.sub, context, isInvoiceTool) // de.laser.Subscription // RECURSION ???
-        result.subPkg   = ApiStubReader.requestSubscriptionPackageStubMixed(costItem.subPkg, ApiReader.IGNORE_SUBSCRIPTION, context) // de.laser.SubscriptionPackage
+        result.pkg      = ApiUnsecuredMapReader.getPackageStubMap(costItem.pkg) //de.laser.wekb.Package
         result.issueEntitlement = ApiIssueEntitlement.getIssueEntitlementMap(costItem.issueEntitlement, ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE, context) // de.laser.IssueEntitlement
         if(costItem.issueEntitlementGroup)
             result.titleGroup = ApiIssueEntitlement.getTitleGroupMap(costItem.issueEntitlementGroup, context) //de.laser.IssueEntitlementGroup

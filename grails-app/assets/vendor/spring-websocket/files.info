@@ -1,3 +1,5 @@
 * sock.js         1.6.1 - https://github.com/sockjs/sockjs-client
 * stomp.js              - https://github.com/jmesnil/stomp-websocket
 * webstomp.js           - https://github.com/JSteunou/webstomp-client
+
+* stomp.umd.js          - https://github.com/stomp-js/stompjs

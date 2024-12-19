@@ -2,8 +2,8 @@ package de.laser.reporting.report
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import de.laser.remote.ApiSource
-import de.laser.Package
-import de.laser.Platform
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
 import de.laser.RefdataValue
 import de.laser.http.BasicHttpClient
 import de.laser.config.ConfigMapper
@@ -15,13 +15,25 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.util.logging.Slf4j
 import org.grails.web.json.JSONObject
 
+/**
+ * This helper class is responsible for data retrieval from we:kb ElasticSearch API
+ */
 @Slf4j
 class ElasticSearchHelper {
 
-    public static final int ELASTICSEARCH_CHUNKSIZE = 500
+    public static final int ELASTICSEARCH_CHUNKSIZE = 1000
     public static final String ELASTICSEARCH_IS_NOT_REACHABLE = 'elasticSearchIsNotReachable'
     public static final String IGNORE_FILTER = 'ignoreFilter'
 
+    /**
+     * Manages the querying of data from we:kb ElasticSearch index.
+     * Records are being grouped in IDs with matching local record, IDs without such and the records themselves
+     * @param cfgKey the object type being queried
+     * @param cmbKey the filter being queried
+     * @param idList a list of LAS:eR database IDs
+     * @param filterResult the filter result map being filled
+     * @param params the request parameter map
+     */
     static void handleEsRecords(String cfgKey, String cmbKey, List<Long> idList, Map<String, Object> filterResult, GrailsParameterMap params) {
 
         Map<String, Object> esRecords = [:]
@@ -83,6 +95,11 @@ class ElasticSearchHelper {
         filterResult.data.put( cfgKey + 'OrphanedIdList', orphanedIdList)
     }
 
+    /**
+     * Gets the full {@link de.laser.wekb.Package} objects for the given IDs
+     * @param idList the list of database IDs to be fetched
+     * @return a {@link Map} containing the records and the orphaned IDs, i.e. such remote records to which there is no local record counterpart yet
+     */
     static Map<String, Object> getEsPackageRecords(List<Long> idList) {
         Map<String, Object> result = [records: [:], orphanedIds: [] ] as Map<String, Object>
 
@@ -138,6 +155,11 @@ class ElasticSearchHelper {
         result
     }
 
+    /**
+     * Gets the full {@link Platform} objects for the given IDs
+     * @param idList the list of database IDs to be fetched
+     * @return a {@link Map} containing the records and the orphaned IDs, i.e. such remote records to which there is no local record counterpart yet
+     */
     static Map<String, Object> getEsPlatformRecords(List<Long> idList) {
         Map<String, Object> result = [records: [:], orphanedIds: [] ] as Map<String, Object>
 
@@ -194,6 +216,10 @@ class ElasticSearchHelper {
         result
     }
 
+    /**
+     * Checks whether the we:kb API is available, aborting the test after 7 seconds
+     * @return true if the API responds within 7 seconds, false otherwise
+     */
     static boolean isReachable() {
         boolean reachable = false
 
@@ -208,13 +234,21 @@ class ElasticSearchHelper {
         reachable
     }
 
+    /**
+     * Sorts the result data, putting the wildcards to the back
+     * @param list the resorted result list
+     */
     static void sortResultDataList(List<List> list) {
         list.sort{ a, b ->
             if (a[1].startsWith('*')) { return 1 } else if (b[1].startsWith('*')) { return -1 } else { (a[1] as String).toLowerCase() <=> (b[1] as String).toLowerCase() }
         }
     }
 
+    /**
+     * Returns the current active we:kb ElasticSearch API source
+     * @return the active {@link ApiSource}
+     */
     static getCurrentApiSource() {
-        ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        ApiSource.getCurrent()
     }
 }

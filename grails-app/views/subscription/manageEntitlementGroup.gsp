@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Subscription; de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Subscription; de.laser.finance.CostItem" %>
 <laser:htmlStart message="subscription.details.manageEntitlementGroup.label" />
 
 <ui:breadcrumbs>
@@ -24,7 +24,7 @@
 <ui:messages data="${flash}"/>
 
 <g:if test="${editable}">
-    <input class="ui button" value="${message(code: 'subscription.details.createEntitlementGroup.label')}"
+    <input class="${Btn.SIMPLE}" value="${message(code: 'subscription.details.createEntitlementGroup.label')}"
            data-ui="modal" data-href="#createEntitlementGroupModal" type="submit">
 </g:if>
 
@@ -42,7 +42,23 @@
         <g:each in="${titleGroups.sort{it.name}}" var="titleGroup" status="i">
             <tr>
                 <td>${i + 1}</td>
-                <td><ui:xEditable owner="${titleGroup}" field="name"/></td>
+                <td><ui:xEditable owner="${titleGroup}" field="name"/>
+                    <g:if test="${titleGroup.surveyConfig}">
+                        <br>
+                        <g:if test="${(contextService.getOrg().isCustomerType_Consortium())}">
+                                <g:link controller="survey" action="evaluationParticipant"
+                                        params="[id: titleGroup.surveyConfig.surveyInfo.id, surveyConfigID: titleGroup.surveyConfig.id, participant: institution.id]">
+                                    (<g:message code="survey.label"/>: ${titleGroup.surveyConfig.surveyInfo.name})
+                                </g:link>
+                        </g:if>
+                        <g:else>
+                                <g:link controller="myInstitution" action="surveyInfos" id="${titleGroup.surveyConfig.surveyInfo.id}"
+                                        params="[surveyConfigID: titleGroup.surveyConfig.id]">
+                                    (<g:message code="survey.label"/>: ${titleGroup.surveyConfig.surveyInfo.name})
+                                </g:link>
+                        </g:else>
+                    </g:if>
+                </td>
                 <td><ui:xEditable owner="${titleGroup}" field="description"/></td>
                 <td>
                     <g:link action="index" id="${params.id}" params="[titleGroup: titleGroup.id]">
@@ -51,28 +67,28 @@
                 </td>
                 <td class="x">
 
-                    <g:link action="index" class="ui icon blue button la-modern-button" id="${params.id}"
+                    <g:link action="index" class="${Btn.MODERN.SIMPLE}" id="${params.id}"
                             params="[titleGroup: titleGroup.id]"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.change.universal')}">
-                        <i class="pencil icon"></i>
+                        <i class="${Icon.CMD.EDIT}"></i>
                     </g:link>
                     <g:if test="${editable}">
                         <g:set var="hasCostItems" value="${CostItem.executeQuery('select ci from CostItem ci where ci.issueEntitlementGroup = :titleGroup',[titleGroup:titleGroup])}"/>
                         <g:if test="${!hasCostItems}">
-                            <g:link action="removeEntitlementGroup" class="ui icon negative button"
+                            <g:link action="removeEntitlementGroup" class="${Btn.ICON.NEGATIVE}"
                                     params="${[titleGroup: titleGroup.id, sub: subscription.id]}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="trash alternate outline icon"></i>
+                                <i class="${Icon.CMD.DELETE}"></i>
                             </g:link>
                         </g:if>
                         <g:else>
-                            <div class="ui icon negative buttons la-popup-tooltip" data-content="${message(code:'issueEntitlementGroup.delete.existingCostItems')}">
-                                <button class="ui disabled button la-modern-button  la-selectable-button"
+                            <div class="la-popup-tooltip" data-content="${message(code:'issueEntitlementGroup.delete.existingCostItems')}">
+                                <button class="${Btn.MODERN.NEGATIVE} disabled la-selectable-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="trash alternate outline icon"></i>
+                                    <i class="${Icon.CMD.DELETE}"></i>
                                 </button>
                             </div>
                         </g:else>

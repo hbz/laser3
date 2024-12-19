@@ -1,10 +1,9 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 
-<g:if test="${contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
+<g:if test="${contextService.isInstEditor( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
     <ui:actionsDropdown>
-        <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
-
+        <laser:render template="/templates/sidebar/actions" />
 %{--                <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />--}% %{-- erms-4798 --}%
 
         <g:if test="${editable}">
@@ -39,36 +38,34 @@
             <g:elseif test="${actionName == 'addressbook'}">
                 <div class="divider"></div>
                 <g:if test="${editable}">
-                    <g:if test="${(institution.isCustomerType_Consortium()) && !isProviderOrAgency}">
-                        <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForInstitution', ${orgInstance.id});"><g:message code="person.create_new.contactPersonForInstitution.label"/></a>
-                        <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForInstitution', ${orgInstance.id});"><g:message code="address.add.addressForInstitution.label"/></a>
-                    </g:if>
-                    <g:if test="${isProviderOrAgency}">
-                        <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForProviderAgency', ${orgInstance.id});"><g:message code="person.create_new.contactPersonForProviderAgency.label"/></a>
-                        <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForProviderAgency', ${orgInstance.id});"><g:message code="address.add.addressForProviderAgency.label"/></a>
-                    </g:if>
+                    <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForInstitution', ${orgInstance.id});"><g:message code="person.create_new.contactPersonForInstitution.label"/></a>
+                    <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForInstitution', ${orgInstance.id});"><g:message code="address.add.addressForInstitution.label"/></a>
                 </g:if>
                 <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
             </g:elseif>
-            <g:elseif test="${actionName == 'myPublicContacts'}">
+            <g:elseif test="${actionName == 'contacts'}">
                 <div class="divider"></div>
                 <g:if test="${editable}">
                     <a href="#createPersonModal" class="item" onclick="JSPC.app.personCreate('contactPersonForPublic');"><g:message code="person.create_new.contactPerson.label"/></a>
-                    <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForPublic');"><g:message code="address.add.addressForPublic.label"/></a>
+                    <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForPublic');"><g:message code="address.add.address.label"/></a>
                 </g:if>
                 <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
             </g:elseif>
         </g:if>
 
-        <g:if test="${actionName == 'show'}">
-            <sec:ifAnyGranted roles="ROLE_ADMIN">
+        <sec:ifAnyGranted roles="ROLE_ADMIN">
+            <g:if test="${actionName in ['show']}">
                 <div class="divider"></div>
-                <g:link class="item" action="delete" id="${params.id}"><i class="trash alternate outline icon"></i> ${message(code:'deletion.org')}</g:link>
-            </sec:ifAnyGranted>
-        </g:if>
+                <g:link class="item js-open-confirm-modal la-popup-tooltip" action="disableAllUsers" id="${params.id}"
+                        data-confirm-tokenMsg="${message(code: "confirm.dialog.disable.allInstUsers")}" data-confirm-term-how="ok">
+                    <i class="user lock icon"></i> ${message(code:'org.disableAllUsers.label')}
+                </g:link>
+                <g:link class="item" action="delete" id="${params.id}"><i class="${Icon.CMD.DELETE}"></i> ${message(code:'deletion.org')}</g:link>
+            </g:if>
+        </sec:ifAnyGranted>
     </ui:actionsDropdown>
 </g:if>
-<g:elseif test="${contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )}">
+<g:elseif test="${contextService.isInstEditor( CustomerTypeService.ORG_INST_BASIC )}">
     <ui:actionsDropdown>
         <ui:actionsDropdownItem message="template.notes.add" data-ui="modal" href="#modalCreateNote"/>
 
@@ -102,18 +99,11 @@
         <g:elseif test="${actionName == 'addressbook'}">
             <div class="divider"></div>
             <g:if test="${editable}">
-                <g:if test="${(institution.isCustomerType_Consortium()) && !isProviderOrAgency}">
-                    <a href="#createPersonModal" class="item" data-ui="modal"
-                       onclick="JSPC.app.personCreate('contactPersonForInstitution', ${orgInstance.id});"><g:message code="person.create_new.contactPersonForInstitution.label"/></a>
-                </g:if>
-                <g:if test="${isProviderOrAgency}">
-                    <a href="#createPersonModal" class="item" data-ui="modal"
-                       onclick="JSPC.app.personCreate('contactPersonForProviderAgency', ${orgInstance.id});"><g:message code="person.create_new.contactPersonForProviderAgency.label"/></a>
-                </g:if>
+                <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForInstitution', ${orgInstance.id});"><g:message code="person.create_new.contactPersonForInstitution.label"/></a>
             </g:if>
             <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
         </g:elseif>
-        <g:elseif test="${actionName == 'myPublicContacts'}">
+        <g:elseif test="${actionName == 'contacts'}">
             <div class="divider"></div>
             <g:if test="${editable}">
                 <a href="#createPersonModal" class="item" onclick="JSPC.app.personCreate('contactPersonForPublic');"><g:message code="person.create_new.contactPerson.label"/></a>
@@ -123,15 +113,24 @@
             </g:if>
             <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
         </g:elseif>
+        <sec:ifAnyGranted roles="ROLE_ADMIN">
+            <g:if test="${actionName in ['show']}">
+                <div class="divider"></div>
+                <g:link class="item js-open-confirm-modal la-popup-tooltip" action="disableAllUsers" id="${params.id}"
+                        data-confirm-tokenMsg="${message(code: "confirm.dialog.disable.allInstUsers")}" data-confirm-term-how="ok">
+                    <i class="user lock icon"></i> ${message(code:'org.disableAllUsers.label')}
+                </g:link>
+            </g:if>
+        </sec:ifAnyGranted>
     </ui:actionsDropdown>
 </g:elseif>
 <g:else>
-    <g:if test="${actionName in ['addressbook', 'myPublicContacts']}">
+    <g:if test="${actionName in ['addressbook', 'contacts']}">
         <ui:actionsDropdown>
             <g:if test="${actionName == 'addressbook'}">
                 <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
             </g:if>
-            <g:elseif test="${actionName == 'myPublicContacts'}">
+            <g:elseif test="${actionName == 'contacts'}">
                 <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
             </g:elseif>
         </ui:actionsDropdown>
@@ -144,8 +143,8 @@
 %{--    institution (context org) : ${institution}--}%
 %{----!>--}%
 
-<g:if test="${contextService.isInstEditor_or_ROLEADMIN()}">
-    <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: orgInstance, owntp: 'org', institution: institution]]}" />
+<g:if test="${contextService.isInstEditor()}">
+    <laser:render template="/templates/sidebar/modals" model="${[tmplConfig: [ownobj: orgInstance, owntp: 'org']]}" />
 </g:if>
 
 

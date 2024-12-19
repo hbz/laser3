@@ -2,7 +2,7 @@ console.log('+ bundle: swagger.js');
 
 // bundle: assets/javascripts/swagger.js
 //
-//= require libs/jquery-3.6.3.js
+//= require libs/jquery-3.7.1.js
 //
 //= require /swagger-ui/swagger-ui-bundle.js                    //--> assets/vendor
 //= require /swagger-ui/swagger-ui-standalone-preset.js         //--> assets/vendor

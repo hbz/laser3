@@ -1,5 +1,5 @@
-<%@ page import="de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;" %>
-<laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyParticipants.label')})" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;" %>
+<laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyParticipants.label')})" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
@@ -11,13 +11,17 @@
 </ui:breadcrumbs>
 
 <ui:controlButtons>
+    <laser:render template="exports"/>
     <laser:render template="actions"/>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon type="Survey">
-<ui:xEditable owner="${surveyInfo}" field="name"/>
-</ui:h1HeaderWithIcon>
-<uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="surveyParticipants"/>
+<ui:h1HeaderWithIcon text="${surveyInfo.name}" type="Survey"/>
+
+<uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="${actionName}"/>
+
+<g:if test="${surveyConfig.subscription}">
+ <ui:buttonWithIcon style="vertical-align: super;" message="${message(code: 'button.message.showLicense')}" variation="tiny" icon="${Icon.SUBSCRIPTION}" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+</g:if>
 
 <laser:render template="nav"/>
 
@@ -28,8 +32,8 @@
 <br />
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">
-    <g:if test="${surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]}">
-        <i class="icon clipboard outline la-list-icon"></i>
+    <g:if test="${surveyConfig.subscription}">
+        <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
         <g:link controller="subscription" action="show" id="${surveyConfig.subscription.id}">
             ${surveyConfig.getConfigNameShort()}
         </g:link>
@@ -47,13 +51,13 @@
         <div class="sixteen wide stretched column">
             <div class="ui top attached stackable tabular la-tab-with-js menu">
 
-                <g:if test="${surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]}">
+                <g:if test="${surveyConfig.subscription}">
                     <g:link class="item ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"
                             controller="survey" action="surveyParticipants"
                             id="${surveyConfig.surveyInfo.id}"
                             params="[surveyConfigID: surveyConfig.id, tab: 'selectedSubParticipants']">
                         ${message(code: 'surveyParticipants.selectedSubParticipants')}
-                        <div class="ui floating blue circular label">${selectedSubParticipants.size() ?: 0}</div>
+                        <ui:bubble float="true" count="${selectedSubParticipantsCount}"/>
                     </g:link>
                 </g:if>
 
@@ -63,7 +67,8 @@
                             id="${surveyConfig.surveyInfo.id}"
                             params="[surveyConfigID: surveyConfig.id, tab: 'selectedParticipants']">
                         ${message(code: 'surveyParticipants.selectedParticipants')}
-                        <div class="ui floating blue circular label">${selectedParticipants.size() ?: 0}</div></g:link>
+                        <ui:bubble float="true" count="${selectedParticipantsCount}"/>
+                    </g:link>
 
 
                     <g:if test="${surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]}">
@@ -72,32 +77,27 @@
                                 id="${surveyConfig.surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id, tab: 'consortiaMembers']">
                             ${message(code: 'surveyParticipants.consortiaMembers')}
-                            <div class="ui floating blue circular label">${consortiaMembers.size() ?: 0}</div>
+                            <ui:bubble float="true" count="${consortiaMembersCount}"/>
                         </g:link>
                     </g:if>
                 </g:if>
             </div>
 
-            <g:if test="${params.tab == 'selectedSubParticipants'}">
-                <div class="ui bottom attached tab segment active">
+            <div class="ui bottom attached tab segment active">
+                <g:if test="${params.tab == 'selectedSubParticipants'}">
                     <laser:render template="selectedSubParticipants"/>
-                </div>
-            </g:if>
+                </g:if>
 
-
-            <g:if test="${params.tab == 'selectedParticipants'}">
-                <div class="ui bottom attached tab segment active">
+                <g:if test="${params.tab == 'selectedParticipants'}">
                     <laser:render template="selectedParticipants"/>
-                </div>
-            </g:if>
+                </g:if>
 
+                <g:if test="${params.tab == 'consortiaMembers'}">
 
-            <g:if test="${params.tab == 'consortiaMembers'}">
-                <div class="ui bottom attached tab segment active">
                     <laser:render template="consortiaMembers"/>
 
-                </div>
-            </g:if>
+                </g:if>
+            </div>
         </div>
     </div>
 </g:if>

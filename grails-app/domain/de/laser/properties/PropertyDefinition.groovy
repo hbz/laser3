@@ -5,6 +5,7 @@ import de.laser.License
 import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.Subscription
+import de.laser.ui.Icon
 import de.laser.survey.SurveyResult
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.base.AbstractI10n
@@ -52,8 +53,10 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     public static final String ORG_CONF    = 'Organisation Config'
     public static final String PRS_PROP    = 'Person Property'
     public static final String PLA_PROP    = 'Platform Property'
+    public static final String PRV_PROP    = 'Provider Property'
     public static final String SUB_PROP    = 'Subscription Property'
     public static final String SVY_PROP    = 'Survey Property'
+    public static final String VEN_PROP    = 'Vendor Property'
 
     //sorting is for German terms for the next three arrays; I10n is todo for later
 
@@ -62,13 +65,15 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             PRS_PROP,
             SUB_PROP,
             //ORG_PROP, // erms-4798
-            PLA_PROP,
+            //PLA_PROP, // erms-4837
             SVY_PROP,
             LIC_PROP
     ]
     @Transient
     public static final String[] AVAILABLE_PRIVATE_DESCR = [
             PRS_PROP,
+            PRV_PROP,
+            VEN_PROP,
             SUB_PROP,
             ORG_PROP,
             PLA_PROP,
@@ -80,7 +85,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     public static final String[] AVAILABLE_GROUPS_DESCR = [
             //ORG_PROP, // erms-4798
             SUB_PROP,
-            PLA_PROP,
+            //PLA_PROP, // erms-4837
             SVY_PROP,
             LIC_PROP
     ]
@@ -314,6 +319,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
      *     <li>{@link #PRS_PROP}</li>
      *     <li>{@link #SUB_PROP}</li>
      *     <li>{@link #SVY_PROP}</li>
+     *     <li>{@link #VEN_PROP}</li>
      * </ul>
      * @return a {@link List} of property definitions which have no tenant, i.e. are public, matching the given object type
      */
@@ -331,6 +337,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
      *     <li>{@link #PRS_PROP}</li>
      *     <li>{@link #SUB_PROP}</li>
      *     <li>{@link #SVY_PROP}</li>
+     *     <li>{@link #VEN_PROP}</li>
      * </ul>
      * @param tenant the institution ({@link Org}) whose property definitions should be retrieved
      * @return a {@link List} of property definitions which have the given tenant, matching the given object type
@@ -349,6 +356,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
      *     <li>{@link #PRS_PROP}</li>
      *     <li>{@link #SUB_PROP}</li>
      *     <li>{@link #SVY_PROP}</li>
+     *     <li>{@link #VEN_PROP}</li>
      * </ul>
      * @param mandatory should the mandatory properties set or the optional ones
      * @return a {@link List} of property definitions which have no tenant (i.e. are public), matching the given mandatory flag
@@ -367,6 +375,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
      *     <li>{@link #PRS_PROP}</li>
      *     <li>{@link #SUB_PROP}</li>
      *     <li>{@link #SVY_PROP}</li>
+     *     <li>{@link #VEN_PROP}</li>
      * </ul>
      * @param mandatory should the mandatory properties set or the optional ones
      * @return a {@link List} of property definitions which have the given tenant, matching the given mandatory flag
@@ -390,7 +399,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             boolean isPublic = false
             if(flag == CUSTOM_PROPERTY) {
                 if(owner instanceof Subscription)
-                    isPublic = owner._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE, CalculatedType.TYPE_PARTICIPATION] && owner.getConsortia()?.id == contextOrg.id
+                    isPublic = owner._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE, CalculatedType.TYPE_PARTICIPATION] && owner.getConsortium()?.id == contextOrg.id
                 else if(owner instanceof License)
                     isPublic = owner._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE, CalculatedType.TYPE_PARTICIPATION] && owner.getLicensingConsortium()?.id == contextOrg.id
             }
@@ -456,7 +465,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
         matches.each { it ->
             if (params.tenant.equals(it.getTenant()?.id?.toString())) {
-                result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
+                result.add([id: "${it.id}", text: "${it.getI10n('name')}", icon: it.multipleOccurrence ? Icon.PROP.MULTIPLE : ''])
             }
         }
 
@@ -553,23 +562,6 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         return 0
     }
 
-    @Deprecated
-    @Transient
-    void removeProperty() {
-        log.debug("removeProperty")
-
-        withTransaction {
-            PropertyDefinition.executeUpdate('delete from LicenseProperty c where c.type = :self', [self: this])
-            PropertyDefinition.executeUpdate('delete from OrgProperty c where c.type = :self', [self: this])
-            PropertyDefinition.executeUpdate('delete from PersonProperty c where c.type = :self', [self: this])
-            PropertyDefinition.executeUpdate('delete from PlatformProperty c where c.type = :self', [self: this])
-            PropertyDefinition.executeUpdate('delete from SubscriptionProperty c where c.type = :self', [self: this])
-            PropertyDefinition.executeUpdate('delete from SurveyResult c where c.type = :self', [self: this])
-
-            this.delete()
-        }
-    }
-
     /**
      * Gets the translated value type name for the given type key
      * @param key the value type to determine
@@ -589,11 +581,12 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     /**
      * Retrieves all property definitions defined for organisations; returned are all public ones and those defined by the context institution
      * @param contextOrg the context institution whose own property definitions should be returned
+     * @param ownerType the type of property definition, defaulting to {@link PropertyDefinition#ORG_PROP}
      * @return a {@link List} of matching property definitions
      */
     static List<PropertyDefinition> findAllPublicAndPrivateOrgProp(Org contextOrg){
-        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and (pd.tenant is null or pd.tenant = :tenant) order by pd.name_de asc", [
-                        defList: [PropertyDefinition.ORG_PROP],
+        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr = :ownerType and (pd.tenant is null or pd.tenant = :tenant) order by pd.name_de asc", [
+                        ownerType: PropertyDefinition.ORG_PROP,
                         tenant: contextOrg
                     ])
     }
@@ -604,7 +597,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
      * @return a {@link List} of matching property definitions
      */
     static List<PropertyDefinition> findAllPublicAndPrivateProp(List propertyDefinitionList, Org contextOrg){
-        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and (pd.tenant is null or pd.tenant = :tenant) order by pd.name_de asc", [
+        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in (:defList) and (pd.tenant is null or pd.tenant = :tenant) order by pd.name_de asc", [
                         defList: propertyDefinitionList,
                         tenant: contextOrg
                     ])

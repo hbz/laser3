@@ -62,7 +62,7 @@ data-confirm-term-how="concludeBinding":
         controller="costConfiguration" action="deleteCostConfiguration"
         params="${[ciec: ciec.id]}"
         role="button">
-    <i class="trash alternate outline icon"></i>
+    <i class="${Icons.CMD.DELETE}"></i>
 </g:link>
 
 ```
@@ -80,14 +80,14 @@ Mind the convention of data-confirm-id in form element and inner button element
 ```
 <g:form controller="person" action="delete" data-confirm-id="${person?.id?.toString()+ '_form'}">
     <g:hiddenField name="id" value="${person?.id}" />
-        <g:link class="ui icon button blue la-modern-button" controller="person" action="show" id="${person?.id}">
+        <g:link class="ui icon button la-modern-button" controller="person" action="show" id="${person?.id}">
             <i aria-hidden="true" class="write icon"></i>
         </g:link>
         <div class="ui icon negative button la-modern-button js-open-confirm-modal"
              data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.contact.addressbook", args: [person?.toString()])}"
              data-confirm-term-how="delete"
              data-confirm-id="${person?.id}" >
-            <i class="trash alternate outline icon"></i>
+            <i class="${Icons.CMD.DELETE}"></i>
         </div>
 </g:form>
 ```
@@ -138,35 +138,10 @@ Mind the convention of data-confirm-id in form element and inner button element
                   role="button"
                   ariaLabel="Löschen"
 >
-    <i class="trash alternate outline icon"></i>
+    <i class="${Icons.CMD.DELETE}"></i>
 </ui:remoteLink>
 
 ```
-
-### Function 'deckSaver'
-
-#### Functions
-
-Improve usability at special views while toggle the hide/show button in upper right corner
-
-##### Show Bottons
-- build a clone fom icons in icon button
-- delete button style hidden
-- 'turn on' x-editable
-
-##### Hide Buttons:
-- delete clone
-- delete tooltip popup from the clone
-- set buttons on hidden - add button style hidden
-- 'turn off' x-editable
-
-#### How to invoke it
-
-1.) the outer HML Element (around the button) need the class <b>la-js-editmode-container</b>
-
-2.) Icon in the button need to have the class <b>la-js-editmode-icon</b>
-
-3.) the whole area affected from show/hide the buttons need to have the class <b>la-show-context-orgMenu</b>
 
 ### Function 'tooltip'
 

@@ -1,8 +1,7 @@
-<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Org;de.laser.OrgRole;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Btn; de.laser.helper.Params; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Org;de.laser.OrgRole;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 <%--<laser:serviceInjection />--%>
 
 <ui:filter>
-    [DEBUG: Support-Filter]
     <g:form action="${actionName}" controller="${controllerName}" method="get" class="ui small form">
         <g:if test="${license}">
             <input type="hidden" name="id" value="${license.id}"/>
@@ -92,7 +91,7 @@
                 <select id="subKinds" name="subKinds" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND).sort{it.getI10n('value')}}" var="subKind">
-                        <option <%=(params.list('subKinds').contains(subKind.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'subKinds').contains(subKind.id) ? 'selected="selected"' : ''%>
                             value="${subKind.id}">
                             ${subKind.getI10n('value')}
                         </option>
@@ -130,9 +129,9 @@
             <g:else>
                 <g:set var="returnURL" value="${request.forwardURI}"/>
             </g:else>
-            <a href="${returnURL}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
+            <a href="${returnURL}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
             <g:hiddenField name="filterSet" value="true"/>
-            <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}">
+            <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.filter.label')}">
         </div>
     </g:form>
 </ui:filter>

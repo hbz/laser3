@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn" %>
 <g:set bean="surveyService" var="surveyService"/>
 
 <h2><g:message
@@ -8,7 +9,20 @@
 </dl>
 <dl>
     <dt class="control-label">${message(code: 'tipp.price.listPrice')}</dt>
-    <dd><g:formatNumber number="${sumListPriceSelectedIEs}" type="currency"/></dd>
+    <dd>
+        <g:if test="${sumListPriceSelectedIEsEUR > 0}">
+            <g:formatNumber
+                    number="${sumListPriceSelectedIEsEUR}" type="currency" currencyCode="EUR"/><br/>
+        </g:if>
+        <g:if test="${sumListPriceSelectedIEsUSD > 0}">
+            <g:formatNumber
+                    number="${sumListPriceSelectedIEsUSD}" type="currency" currencyCode="USD"/><br/>
+        </g:if>
+        <g:if test="${sumListPriceSelectedIEsGBP > 0}">
+            <g:formatNumber
+                    number="${sumListPriceSelectedIEsGBP}" type="currency" currencyCode="GBP"/><br/>
+        </g:if>
+    </dd>
 </dl>
 
 
@@ -17,7 +31,7 @@
         id="${subscription.id}"
         params="${[surveyConfigID: surveyConfig.id,
                    tab           : 'selectedIEs']}"
-        class="ui button">
+        class="${Btn.SIMPLE}">
     <g:message code="renewEntitlementsWithSurvey.currentTitlesSelect.button"/>
 </g:link>
 
@@ -32,7 +46,7 @@
         id="${subscription.id}"
         params="${[surveyConfigID: surveyConfig.id,
                    tab           : 'currentPerpetualAccessIEs']}"
-        class="ui button">
+        class="${Btn.SIMPLE}">
     <g:message code="renewEntitlementsWithSurvey.currentTitles.button"/>
 </g:link>
 
@@ -44,7 +58,7 @@
             id="${subscription.id}"
             params="${[surveyConfigID: surveyConfig.id,
                        tab           : 'topUsed']}"
-            class="ui button">
+            class="${Btn.SIMPLE}">
         <g:message code="renewEntitlementsWithSurvey.stats.button"/>
     </g:link>
 

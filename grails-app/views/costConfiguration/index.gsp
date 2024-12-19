@@ -1,8 +1,8 @@
-<%@ page import="de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue" %>
 <laser:htmlStart message="menu.institutions.costConfiguration" />
 
 <ui:breadcrumbs>
-    <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
+    <ui:crumb controller="org" action="show" id="${contextService.getOrg().id}" text="${contextService.getOrg().getDesignation()}"/>
     <ui:crumb message="menu.institutions.costConfiguration" class="active" />
 </ui:breadcrumbs>
 
@@ -18,7 +18,7 @@
 
         <ui:messages data="${flash}"/>
 
-        <ui:msg icon="ui info icon" class="warning" message="costConfiguration.preset" noClose="true" />
+        <ui:msg class="warning" showIcon="true" message="costConfiguration.preset" hideClose="true" />
 
         <div class="ui styled fluid">
             <table class="ui celled la-js-responsive-table la-table compact table">
@@ -43,7 +43,7 @@
                             <td><ui:xEditableBoolean owner="${ciec}" field="useForCostPerUse"/></td>
                             <g:if test="${editable}">
                                 <td>
-                                    <g:link class="button js-open-confirm-modal"
+                                    <g:link class="${Btn.SIMPLE_CONFIRM}"
                                             data-confirm-tokenMsg="${message(code:'confirmation.content.bulkCostConfiguration')}"
                                             data-confirm-term-how="ok"
                                             action="setAllCostItems" params="${[cie:ciec.costItemElement.class.name+":"+ciec.costItemElement.id]}">
@@ -51,14 +51,14 @@
                                     </g:link>
                                 </td>
                                 <td>
-                                    <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                    <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItemElementConfiguration", args: [ciec.costItemElement.getI10n("value")])}"
                                             data-confirm-term-how="delete"
                                             controller="costConfiguration" action="deleteCostConfiguration"
                                             params="${[ciec: ciec.id]}"
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="trash alternate outline icon"></i>
+                                        <i class="${Icon.CMD.DELETE}"></i>
                                     </g:link>
                                 </td>
                             </g:if>

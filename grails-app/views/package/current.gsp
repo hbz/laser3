@@ -1,13 +1,10 @@
-<%@ page import="de.laser.Package" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.wekb.Package" %>
 <laser:htmlStart message="package.show.nav.current" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="package" action="index" text="${message(code: 'package.show.all')}"/>
     <ui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
 </ui:breadcrumbs>
-
-<ui:modeSwitch controller="package" action="show" params="${params}"/>
-
 <ui:controlButtons>
     <ui:exportDropdown>
         <%--
@@ -27,7 +24,7 @@
         --%>
         <g:if test="${num_tipp_rows < 1000000}">
             <ui:exportDropdownItem>
-                <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Export</a>
+                <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.TIPPS]"/>
             </ui:exportDropdownItem>
         </g:if>
         <g:else>
@@ -82,66 +79,44 @@
 
 <laser:render template="nav"/>
 
-
-<%--<sec:ifAnyGranted roles="ROLE_ADMIN">
-    <laser:render template="/templates/pendingChanges"
-              model="${['pendingChanges': pendingChanges, 'flash': flash, 'model': packageInstance]}"/>
-</sec:ifAnyGranted>--%>
-
-
 <ui:messages data="${flash}"/>
 
 <ui:errors bean="${packageInstance}"/>
-<div class="ui grid">
-    <div class="row">
-        <div class="column">
-            <laser:render template="/templates/filter/tipp_ieFilter"/>
-        </div>
-    </div>
 
-    <div class="row">
-        <div class="eight wide column">
-            <h3 class="ui icon header la-clear-before la-noMargin-top"><span
-                    class="ui circular  label">${num_tipp_rows}</span> <g:message code="title.filter.result"/></h3>
-        </div>
+<laser:render template="/templates/filter/tipp_ieFilter"/>
 
-    </div>
-</div>
+<h3 class="ui icon header la-clear-before la-noMargin-top">
+    <ui:bubble count="${num_tipp_rows}" grey="true"/> <g:message code="title.filter.result"/>
+</h3>
+
 <div id="downloadWrapper"></div>
-<%
-    Map<String, String>
-    sortFieldMap = ['sortname': message(code: 'title.label')]
-    if (journalsOnly) {
-        sortFieldMap['startDate'] = message(code: 'default.from')
-        sortFieldMap['endDate'] = message(code: 'default.to')
-    } else {
-        sortFieldMap['dateFirstInPrint'] = message(code: 'tipp.dateFirstInPrint')
-        sortFieldMap['dateFirstOnline'] = message(code: 'tipp.dateFirstOnline')
-    }
-%>
-<div class="ui form">
-    <div class="three wide fields">
-        <div class="field">
-            <ui:sortingDropdown noSelection="${message(code:'default.select.choose.label')}" from="${sortFieldMap}" sort="${params.sort}" order="${params.order}"/>
-        </div>
-    </div>
-</div>
-<div class="ui grid">
-    <div class="row">
-        <div class="column">
-            <laser:render template="/templates/tipps/table_accordion"
-                          model="[tipps: titlesList, showPackage: false, showPlattform: true]"/>
-        </div>
-    </div>
-</div>
-
 <g:if test="${titlesList}">
-    <ui:paginate action="current" controller="package" params="${params}"
-                    max="${max}" total="${num_tipp_rows}"/>
+    <div class="ui form">
+        <div class="two wide fields">
+            <div class="field">
+                <laser:render template="/templates/titles/sorting_dropdown" model="${[sd_type: 2, sd_journalsOnly: journalsOnly, sd_sort: params.sort, sd_order: params.order]}" />
+            </div>
+            <div class="field la-field-noLabel">
+                <ui:showMoreCloseButton />
+            </div>
+        </div>
+    </div>
+
+    <div class="ui grid">
+        <div class="row">
+            <div class="column">
+                <laser:render template="/templates/tipps/table_accordion" model="[tipps: titlesList, showPackage: false, showPlattform: true]"/>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui clearing segment la-segmentNotVisable">
+        <ui:showMoreCloseButton />
+    </div>
+
+    <ui:paginate action="current" controller="package" params="${params}" max="${max}" total="${num_tipp_rows}"/>
 </g:if>
 
-
-<laser:render template="/templates/export/individuallyExportTippsModal" model="[modalID: 'individuallyExportTippsModal']" />
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.selectAll = function () {
@@ -149,16 +124,6 @@
 
      //$('#select-all').is( ':checked' )? $('.bulkcheck').attr('checked', false) : $('.bulkcheck').attr('checked', true);
    }
-
-   JSPC.app.confirmSubmit = function () {
-     if ( $('#bulkOperationSelect').val() === 'remove' ) {
-       var agree=confirm("${message(code: 'default.continue.confirm')}");
-          if (agree)
-            return true ;
-          else
-            return false ;
-        }
-      }
 
     $('.kbartExport').click(function(e) {
         e.preventDefault();
@@ -173,5 +138,7 @@
         });
     });
 </laser:script>
+
+<g:render template="/clickMe/export/js"/>
 
 <laser:htmlEnd />

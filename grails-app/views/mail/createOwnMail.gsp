@@ -1,5 +1,5 @@
-<%@ page import="de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.storage.RDStore" %>
-<laser:htmlStart message="mail.sendMail.label" serviceInjection="true"/>
+<%@ page import="de.laser.addressbook.PersonRole; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
+<laser:htmlStart message="mail.sendMail.label" />
 
 <ui:breadcrumbs>
     <g:if test="${surveyInfo}">
@@ -35,6 +35,10 @@
             <g:hiddenField name="selectedOrgs" value="${org.id}"/>
         </g:each>
 
+        <g:each in="${surveyList}" var="survey">
+            <g:hiddenField name="selectedSurveys" value="${survey.id}"/>
+        </g:each>
+
         <g:if test="${userSurveyNotificationMails}">
             <div class="ui segment">
                 <h3 class="ui header">${message(code: 'mail.sendMail.standard')}</h3>
@@ -55,9 +59,9 @@
                         <div class="ui fluid segment  title">
                             <div class="ui stackable equal width grid">
                                 <div class="sixteen wide right aligned  column">
-                                    <div class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                    <div class="${Btn.MODERN.SIMPLE_TOOLTIP}"
                                          data-content="${message(code: 'mail.sendMail.additional')}">
-                                        <i class="ui angle double down icon"></i>
+                                        <i class="${Icon.CMD.SHOW_MORE}"></i>
                                     </div>
                                 </div>
                             </div>
@@ -132,9 +136,21 @@
         <div class="ui form">
 
             <div class="field">
+                <label for="mailFrom">${message(code: 'mail.sendMail.from')}</label>
+
+                <g:field type="text" name="mailFrom" id="mailFrom" readonly="true" value="${mailFrom}"/>
+            </div>
+
+            <div class="field">
+                <label for="mailReplyTo">${message(code: 'mail.sendMail.mailReplyTo')}</label>
+
+                <g:field type="text" name="mailReplyTo" id="mailReplyTo" readonly="true" value="${mailReplyTo}"/>
+            </div>
+
+            <div class="field">
                 <label for="mailSubject">${message(code: 'mail.sendMail.mailSubject')}</label>
 
-                <g:field type="text" name="mailSubject" id="mailSubject" readonly="true" value="${mailSubject}"/>
+                <g:field type="text" name="mailSubject" id="mailSubject" value="${mailSubject}"/>
             </div>
 
             <div class="field">
@@ -157,26 +173,30 @@
 
             <g:if test="${surveyInfo}">
                 <g:if test="${reminderMail}">
-                    <g:link class="ui button left floated" controller="survey" action="participantsReminder"
-                            id="${surveyInfo.id}">
+                    <g:link class="${Btn.SIMPLE} left floated" controller="survey" action="participantsReminder" id="${surveyInfo.id}">
                         <g:message code="default.button.back"/>
                     </g:link>
                 </g:if>
                 <g:else>
-                    <g:link class="ui button left floated" controller="survey" action="openParticipantsAgain"
-                            id="${surveyInfo.id}">
+                    <g:link class="${Btn.SIMPLE} left floated" controller="survey" action="openParticipantsAgain" id="${surveyInfo.id}">
                         <g:message code="default.button.back"/>
                     </g:link>
                 </g:else>
             </g:if>
 
-            <button class="ui icon button right floated" type="submit">
+            <g:if test="${org}">
+                    <g:link class="${Btn.SIMPLE} left floated" controller="myInstitution" action="manageParticipantSurveys" id="${org.id}">
+                        <g:message code="default.button.back"/>
+                    </g:link>
+            </g:if>
+
+            <button class="${Btn.SIMPLE} right floated" type="submit">
                 ${message(code: 'mail.sendMail.sendButton')}
             </button>
         </div>
     </g:form>
 
-%{-- <button class="ui icon button right floated" onclick="JSPC.app.copyToEmailProgram()">
+%{-- <button class="${Btn.SIMPLE} right floated" onclick="JSPC.app.copyToEmailProgram()">
      ${message(code: 'menu.institutions.copy_emailaddresses_to_emailclient')}
  </button>--}%
     <br/>
@@ -212,7 +232,11 @@
                 url: '<g:createLink controller="ajaxJson" action="getEmailAddresses"/>'
                 + '?isPrivate=' + isPrivate + '&isPublic=' + isPublic + '&selectedRoleTypIds=' + selectedRoleTypIds + '&orgIdList=' + JSPC.app.jsonOrgIdList,
                 success: function (data) {
-                    $("#emailAddressesTextArea").val(data.join('; '));
+                    let addresses = [];
+                    $.each(data, function (i, e) {
+                        addresses.push(e.join('; ')); //join multiple addresses within an org - inner row
+                    });
+                    $("#emailAddressesTextArea").val(addresses.join('; ')); //join addresses of all orgs - outer row
                 }
             });
         }

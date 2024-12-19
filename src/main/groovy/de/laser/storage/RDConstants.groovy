@@ -2,6 +2,10 @@ package de.laser.storage
 
 import groovy.transform.CompileStatic
 
+/**
+ * Container class for reference data category names
+ * @see de.laser.RefdataCategory
+ */
 @CompileStatic
 class RDConstants {
 
@@ -13,13 +17,19 @@ class RDConstants {
 
     public static final String CATEGORY_A_F           = 'category.a.f'
     public static final String CATEGORY_BAUTABELLEN   = 'category.bautabellen'
+    public static final String CATEGORY_DETAIL        = 'category.detail.inspiration'
     public static final String CATEGORY_EUROMONITOR   = 'category.euromonitor'
+    public static final String CATEGORY_INSIDE_DIN      = 'category.inside.din'
     public static final String CATEGORY_IGI           = 'category.igi'
     public static final String CATEGORY_JURIS         = 'category.juris'
+    public static final String CATEGORY_MEINUNTERRICHT  = 'category.meinUnterricht'
+    public static final String CATEGORY_PNAS          = 'category.pnas'
+    public static final String CATEGORY_SCIENTIFIC    = 'category.scientific.net.rup'
+    public static final String CATEGORY_SCOPUS        = 'category.scopus'
+    public static final String CATEGORY_TOTAL_MATERIA = 'category.total.materia'
+    public static final String CATEGORY_ULLMANNS      = 'category.ullmans'
     public static final String CATEGORY_UNWTO         = 'category.unwto'
     public static final String CATEGORY_WORLD_BANK    = 'category.world.bank'
-    public static final String CLUSTER_ROLE           = 'cluster.role'
-    public static final String CLUSTER_TYPE           = 'cluster.type'
     public static final String COMBO_STATUS           = 'combo.status'
     public static final String COMBO_TYPE             = 'combo.type'
     public static final String CONCURRENT_ACCESS      = 'concurrent.access'
@@ -34,11 +44,14 @@ class RDConstants {
     public static final String COUNTRY                = 'country'
     public static final String COVERAGE_DEPTH         = 'coverage.depth'
     public static final String CREATOR_TYPE           = 'creator.type'
+    public static final String CURATORY_GROUP_TYPE    = 'curatory.group.type'
     public static final String CURRENCY               = 'currency'
     public static final String CUSTOMER_IDENTIFIER_TYPE = 'customer.identifier.type'
 
     public static final String DBS_SUBJECT_GROUP        = 'dbs.subject.group'
     public static final String DDC                      = 'ddc'
+    public static final String DISCOVERY_SYSTEM_FRONTEND = 'discovery.group.frontend'
+    public static final String DISCOVERY_SYSTEM_INDEX   = 'discovery.group.index'
     public static final String DOCUMENT_CONFIDENTIALITY = 'document.confidentiality'
     public static final String DOCUMENT_CONTEXT_STATUS  = 'document.context.status'
     public static final String DOCUMENT_TYPE            = 'document.type'
@@ -53,7 +66,6 @@ class RDConstants {
 
     public static final String GENDER                 = 'gender'
 
-
     public static final String IE_ACCESS_STATUS       = 'ie.access.status'
     public static final String IE_MEDIUM              = 'ie.medium'
     public static final String ILL_CODE               = 'ill.code'
@@ -62,6 +74,7 @@ class RDConstants {
     public static final String IP_AUTHENTICATION      = 'ip.authentication'
     public static final String IPV4_ADDRESS_FORMAT    = 'ipv4.address.format'
     public static final String IPV6_ADDRESS_FORMAT    = 'ipv6.address.format'
+    public static final String INVOICE_PROCESSING      = 'invoice.processing'
 
     public static final String MAIL_STATUS            = 'mail.status'
     public static final String MAIL_TYPE              = 'mail.type'
@@ -104,7 +117,6 @@ class RDConstants {
     public static final String NUMBER_TYPE            = 'number.type'
 
     public static final String ORGANISATIONAL_ROLE    = 'organisational.role'
-    public static final String ORG_SECTOR             = 'org.sector'
     public static final String ORG_STATUS             = 'org.status'
     public static final String ORG_TYPE               = 'org.type'
 
@@ -126,6 +138,8 @@ class RDConstants {
     public static final String PLATFORM_STATISTICS_FORMAT     = 'platform.statistics.format'
     public static final String PLATFORM_STATISTICS_FREQUENCY  = 'platform.statistics.frequency'
     public static final String PLATFORM_STATUS                = 'platform.status'
+    public static final String PROVIDER_STATUS                = 'provider.status'
+    public static final String PROVIDER_LINK_TYPE             = 'provider.link.type'
 
     public static final String REGIONS_DE             = 'regions.de'
     public static final String REGIONS_AT             = 'regions.at'
@@ -172,23 +186,22 @@ class RDConstants {
 
     public static final String TITLE_MEDIUM           = 'title.medium'
     public static final String TITLE_STATUS           = 'title.status'
-    public static final String TRANSFORM_FORMAT       = 'transform.format'
-    public static final String TRANSFORM_TYPE         = 'transform.type'
 
     public static final String USER_SETTING_DASHBOARD_TAB = 'user.setting.dashboard.tab'
     public static final String USER_SETTING_THEME         = 'user.setting.theme'
 
+    public static final String VENDOR_STATUS                    = 'vendor.status'
+    public static final String VENDOR_SUPPORTED_LIBRARY_SYSTEM  = 'vendor.ordering.supported.library.system'
+    public static final String VENDOR_ELECTRONIC_DELIVERY_DELAY = 'vendor.ordering.electronic.delivery.delay'
+    public static final String VENDOR_INVOICING_FORMAT          = 'vendor.invoicing.format'
+    public static final String VENDOR_INVOICING_DISPATCH        = 'vendor.invoicing.dispatch'
+
     public static final String WF_WORKFLOW_TARGET_ROLE  = 'workflow.workflow.target.role'
     public static final String WF_WORKFLOW_TARGET_TYPE  = 'workflow.workflow.target.type'
-    public static final String WF_WORKFLOW_STATE        = 'workflow.workflow.state'
     public static final String WF_WORKFLOW_STATUS       = 'workflow.workflow.status'
 
-    public static final String WF_CONDITION_TYPE    = 'workflow.condition.type'
-    public static final String WF_TASK_PRIORITY     = 'workflow.task.priority'
-    public static final String WF_TASK_STATUS       = 'workflow.task.status'
-
-    //public static final String WF_CONDITION_STATUS  = 'workflow.condition.status'
-    //public static final String WF_CONDITION_TYPE    = 'workflow.condition.type'
+    public static final String WF_TASK_PRIORITY         = 'workflow.task.priority'
+    public static final String WF_TASK_STATUS           = 'workflow.task.status'
 
     public static final String Y_N                    = 'y.n'
     public static final String Y_N_O                  = 'y.n.o'

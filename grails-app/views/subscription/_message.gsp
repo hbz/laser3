@@ -1,9 +1,10 @@
-<%@ page import="de.laser.interfaces.CalculatedType;" %>
-<g:set var="checkCons" value="${contextOrg.id == subscription.getConsortia()?.id && subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION}" />
+<%@ page import="de.laser.ui.Icon; de.laser.interfaces.CalculatedType;" %>
+<laser:serviceInjection/>
+<g:set var="checkCons" value="${contextService.getOrg().id == subscription.getConsortium()?.id && subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION}" />%{-- ERMS-6070 subFinancialData --}%
 
 <g:if test="${checkCons}">
 
-<div class="ui negative message">
+<div class="ui error message">
     <div class="header">
         <g:message code="myinst.message.attention" />
         <g:message code="myinst.subscriptionDetails.message.ChildView" />
@@ -31,5 +32,13 @@
         </g:link>.
     </p>
 </div>
+
+    <g:if test="${subscription.comment}">
+
+        <ui:msg class="info" showIcon="true" hideClose="true" header="${message(code: 'subscription.details.internalComment')}">
+            ${subscription.comment}
+        </ui:msg>
+
+    </g:if>
 
 </g:if>

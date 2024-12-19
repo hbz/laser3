@@ -1,4 +1,4 @@
-<%@ page import="de.laser.config.ConfigMapper; de.laser.properties.PropertyDefinition; de.laser.UserSetting; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated;" %>
+<%@ page import="de.laser.survey.SurveyResult; de.laser.survey.SurveyConfigProperties; de.laser.storage.PropertyStore; de.laser.storage.RDStore; de.laser.config.ConfigMapper; de.laser.properties.PropertyDefinition; de.laser.UserSetting; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated;" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -13,9 +13,9 @@
 </head>
 <body>
 
-<g:set var="userName" value="${raw(user.getDisplayName())}"/>
+<g:set var="userName" value="${user ? raw(user.getDisplayName()) : 'User'}"/>
 <g:set var="orgName" value="${raw(org.name)}"/>
-<g:set var="language" value="${user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.storage.RDConstants.LANGUAGE)).value}"/>
+<g:set var="language" value="${user ? user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.storage.RDConstants.LANGUAGE)).value : 'de'}"/>
 <g:set var="grailsApplication" bean="grailsApplication"/>
 <g:set var="surveyUrl" value="${"/survey/evaluationParticipant/${survey.id}?surveyConfigID=${survey.surveyConfigs[0].id}&participant=${org.id}"}"/>
 
@@ -34,9 +34,30 @@ ${message(code: 'surveyconfig.orgs.label', locale: language)}: ${orgName}
 <br />
 
 <g:if test="${survey.surveyConfigs[0].pickAndChoose}">
-    ${message(code: 'email.survey.finish.selection.text', locale: language)} ${surveyService.countIssueEntitlementsByIEGroup(survey.surveyConfigs[0].subscription.getDerivedSubscriptionBySubscribers(org), survey.surveyConfigs[0])}
+    <g:set var="subscriberSub" value="${survey.surveyConfigs[0].subscription.getDerivedSubscriptionForNonHiddenSubscriber(org)}"/>
+    <g:set var="sumListPriceSelectedIEsEUR" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subscriberSub, survey.surveyConfigs[0], RDStore.CURRENCY_EUR)}"/>
+    <g:set var="sumListPriceSelectedIEsUSD" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subscriberSub, survey.surveyConfigs[0], RDStore.CURRENCY_USD)}"/>
+    <g:set var="sumListPriceSelectedIEsGBP" value="${surveyService.sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(subscriberSub, survey.surveyConfigs[0], RDStore.CURRENCY_GBP)}"/>
+
+    ${message(code: 'email.survey.finish.selection.text', locale: language)} ${surveyService.countIssueEntitlementsByIEGroup(subscriberSub, survey.surveyConfigs[0])}
     <br />
     <br />
+    ${message(code: 'tipp.price.listPrice')}:
+    <g:if test="${sumListPriceSelectedIEsEUR > 0}">
+        <br>
+        <g:formatNumber
+                number="${sumListPriceSelectedIEsEUR}" type="currency" currencyCode="EUR"/>
+    </g:if>
+    <g:if test="${sumListPriceSelectedIEsUSD > 0}">
+        <br>
+        <g:formatNumber
+                number="${sumListPriceSelectedIEsUSD}" type="currency" currencyCode="USD"/>
+    </g:if>
+    <g:if test="${sumListPriceSelectedIEsGBP > 0}">
+        <br>
+        <g:formatNumber
+                number="${sumListPriceSelectedIEsGBP}" type="currency" currencyCode="GBP"/>
+    </g:if>
 </g:if>
 
 <g:if test="${surveyResults}">
@@ -97,7 +118,11 @@ ${message(code: 'email.survey.finish.url', locale: language)}
 ${ConfigMapper.getConfig('grails.serverURL', String) + surveyUrl}
 <br />
 <br />
+<g:set var="mailInfos" value="${"/organisation/mailInfos/${org.id}?subscription=${survey.surveyConfigs[0].subscription?.id}&surveyConfigID=${survey.surveyConfigs[0].id}"}"/>
+${message(code: 'mail.org.mailInfos', locale: language)}: ${ConfigMapper.getConfig('grails.serverURL', String) + mailInfos}
+
+<br />
 ${message(code: 'email.profile.settings', locale: language)}
-<laser:render template="/mailTemplates/html/signature" />
+<g:render template="/mailTemplates/html/signature" />
 </body>
 </html>

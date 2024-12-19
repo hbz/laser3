@@ -1,15 +1,18 @@
 package de.laser
 
+import de.laser.annotations.DebugInfo
+import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigDefaults
+import de.laser.mail.MailTemplate
+import de.laser.storage.RDConstants
 import de.laser.utils.AppUtils
 import de.laser.helper.DatabaseInfo
+import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
-import de.laser.cache.EhcacheWrapper
 import de.laser.utils.SwissKnife
 import de.laser.remote.FTControl
 import de.laser.auth.Role
-import de.laser.auth.User
 import de.laser.properties.PropertyDefinition
 import de.laser.api.v0.ApiToolkit
 
@@ -48,11 +51,15 @@ class AdminController  {
     FilterService filterService
     GenericOIDService genericOIDService
     GlobalSourceSyncService globalSourceSyncService
+    GokbService gokbService
     MailService mailService
+    PackageService packageService
     PropertyService propertyService
+    ProviderService providerService
     RefdataService refdataService
     SessionFactory sessionFactory
     StatsSyncService statsSyncService
+    VendorService vendorService
 
     /**
      * Empty call, loads empty admin dashboard
@@ -143,7 +150,7 @@ class AdminController  {
      */
     @Secured(['ROLE_ADMIN'])
     @Transactional
-    def testMailSending() {
+    def sendMail() {
         Map<String, Object> result = [:]
 
         result.mailDisabled = ConfigMapper.getConfig('grails.mail.disabled', Boolean)
@@ -223,7 +230,6 @@ class AdminController  {
                 ['Package', 'packageStatus'],
                 'Platform',
                 'Subscription',
-                'TitleInstance',
                 'TitleInstancePackagePlatform',
                 'Combo'
                 //'Doc'
@@ -273,7 +279,7 @@ class AdminController  {
      * @see SystemEvent
      */
     @Secured(['ROLE_ADMIN'])
-    def systemEventsLW() {
+    def systemEventsX() {
         Map<String, Object> result = [:]
 
         result.limit = params.long('limit') ?: 30
@@ -308,7 +314,6 @@ class AdminController  {
     def databaseCollations() {
 
         Map<String, Object> result = [:]
-
         Sql sql = GlobalService.obtainSqlConnection()
 
         result.allTables = DatabaseInfo.getAllTablesWithCollations()
@@ -327,7 +332,7 @@ class AdminController  {
         String query2en = "select rdv.rdv_value_en from refdata_value rdv, refdata_category rdc where rdv.rdv_owner = rdc.rdc_id and rdc.rdc_description = 'ddc'"
 
         String query3 = "select org_name from org"
-        String query4 = "select ti_title from title_instance"
+        String query4 = "select tipp_name from title_instance_package_platform"
 
         result.examples = [
                 country : [
@@ -349,10 +354,10 @@ class AdminController  {
                         'current_en'  : RefdataValue.executeQuery( "select name from Org order by name", [max: limit] )
                 ],
                 title : [
-                        'de_DE.UTF-8' : sql.rows( query4 + ' order by ti_title COLLATE "de_DE" limit ' + limit ).collect{ it.ti_title },
-                        'en_US.UTF-8' : sql.rows( query4 + ' order by ti_title COLLATE "en_US" limit ' + limit ).collect{ it.ti_title },
-                        'current_de'  : RefdataValue.executeQuery( "select title from TitleInstance order by title", [max: limit] ),
-                        'current_en'  : RefdataValue.executeQuery( "select title from TitleInstance order by title", [max: limit] )
+                        'de_DE.UTF-8' : sql.rows( query4 + ' order by tipp_name COLLATE "de_DE" limit ' + limit ).collect{ it.tipp_name },
+                        'en_US.UTF-8' : sql.rows( query4 + ' order by tipp_name COLLATE "en_US" limit ' + limit ).collect{ it.tipp_name },
+                        'current_de'  : RefdataValue.executeQuery( "select name from TitleInstancePackagePlatform order by name", [max: limit] ),
+                        'current_en'  : RefdataValue.executeQuery( "select name from TitleInstancePackagePlatform order by name", [max: limit] )
                 ]
         ]
 
@@ -360,13 +365,13 @@ class AdminController  {
         result.examples['country'][de_x_icu] = sql.rows(query1de + ' order by rdv.rdv_value_de COLLATE "' + de_x_icu + '" limit ' + limit).collect { it.rdv_value_de }
         result.examples['ddc'    ][de_x_icu] = sql.rows(query2de + ' order by rdv.rdv_value_de COLLATE "' + de_x_icu + '" limit ' + limit).collect { it.rdv_value_de }
         result.examples['org'    ][de_x_icu] = sql.rows(query3 + ' order by org_name COLLATE "' + de_x_icu + '" limit ' + limit).collect { it.org_name }
-        result.examples['title'  ][de_x_icu] = sql.rows(query4 + ' order by ti_title COLLATE "' + de_x_icu + '" limit ' + limit).collect { it.ti_title }
+        result.examples['title'  ][de_x_icu] = sql.rows(query4 + ' order by tipp_name COLLATE "' + de_x_icu + '" limit ' + limit).collect { it.tipp_name }
 
         String en_x_icu = DatabaseInfo.EN_US_U_VA_POSIX_X_ICU
         result.examples['country'][en_x_icu] = sql.rows(query1en + ' order by rdv.rdv_value_en COLLATE "' + en_x_icu + '" limit ' + limit).collect { it.rdv_value_en }
         result.examples['ddc'    ][en_x_icu] = sql.rows(query2en + ' order by rdv.rdv_value_en COLLATE "' + en_x_icu + '" limit ' + limit).collect { it.rdv_value_en }
         result.examples['org'    ][en_x_icu] = sql.rows(query3 + ' order by org_name COLLATE "' + en_x_icu + '" limit ' + limit).collect { it.org_name }
-        result.examples['title'  ][en_x_icu] = sql.rows(query4 + ' order by ti_title COLLATE "' + en_x_icu + '" limit ' + limit).collect { it.ti_title }
+        result.examples['title'  ][en_x_icu] = sql.rows(query4 + ' order by tipp_name COLLATE "' + en_x_icu + '" limit ' + limit).collect { it.tipp_name }
 
         result
     }
@@ -385,6 +390,7 @@ class AdminController  {
                     dbmDbCreate      : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT + '.dbCreate', String),
                     defaultCollate   : DatabaseInfo.getDatabaseCollate(),
                     dbConflicts      : DatabaseInfo.getDatabaseConflicts(),
+                    dbStmtTimeout    : DatabaseInfo.getStatementTimeout(),
                     dbSize           : DatabaseInfo.getDatabaseSize(),
                     dbStatistics     : DatabaseInfo.getDatabaseStatistics(),
                     dbActivity       : DatabaseInfo.getDatabaseActivity(),
@@ -397,6 +403,7 @@ class AdminController  {
                     dbmDbCreate      : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.dbCreate', String), // TODO
                     defaultCollate   : DatabaseInfo.getDatabaseCollate( DatabaseInfo.DS_STORAGE ),
                     dbConflicts      : DatabaseInfo.getDatabaseConflicts( DatabaseInfo.DS_STORAGE ),
+                    dbStmtTimeout    : DatabaseInfo.getStatementTimeout( DatabaseInfo.DS_STORAGE ),
                     dbSize           : DatabaseInfo.getDatabaseSize( DatabaseInfo.DS_STORAGE ),
                     dbStatistics     : DatabaseInfo.getDatabaseStatistics( DatabaseInfo.DS_STORAGE ),
                     dbActivity       : DatabaseInfo.getDatabaseActivity( DatabaseInfo.DS_STORAGE ),
@@ -407,6 +414,25 @@ class AdminController  {
         ]
 
         [dbInfo: result]
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def databaseIndices() {
+
+        Map<String, Object> result = [
+                indices: DatabaseInfo.getAllTablesWithGORMIndices(),
+                counts: [:]
+                ]
+
+        CodeUtils.getAllDomainClasses().each { cls ->
+            String css = cls.getName()
+            try {
+                result.counts.putAt(css, Org.executeQuery('select count(*) from ' + cls.simpleName)[0])
+            } catch (Exception e) {
+                result.counts.putAt(css, '?')
+            }
+        }
+        result
     }
 
     /**
@@ -444,6 +470,44 @@ class AdminController  {
 
         result.duplicates = dataConsistencyService.checkDuplicates()
 
+        result
+    }
+
+    /**
+     * Runs a check through all {@link Identifier}s whose namespaces have a validation regex defined and checks whether the values match the defined validation patterns
+     * @return a {@link Map} containing for each concerned {@link IdentifierNamespace} the
+     * <ul>
+     *     <li>total count of identifiers</li>
+     *     <li>count of valid identifiers</li>
+     *     <li>count of invalid identifiers</li>
+     * </ul>
+     */
+    @Secured(['ROLE_ADMIN'])
+    def identifierValidation() {
+        Map<String, Object> result = [
+                nsList          : IdentifierNamespace.executeQuery('select ns from IdentifierNamespace ns where ns.validationRegex is not null order by ns.ns, ns.nsType'),
+                iMap            : [:],
+                currentLang     : LocaleUtils.getCurrentLang()
+        ]
+
+        result.nsList.each { ns ->
+                List<Identifier> iList = Identifier.executeQuery('select i from Identifier i where i.ns = :ns', [ns: ns])
+                result.iMap[ns.id] = [
+                        count   : iList.size(),
+                        valid   : [],
+                        invalid : []
+                ]
+
+                iList.each { obj ->
+                    def pattern = ~/${ns.validationRegex}/
+                    if (pattern.matcher(obj.value).matches()) {
+                        result.iMap[ns.id].valid << obj
+                    }
+                    else {
+                        result.iMap[ns.id].invalid << obj
+                    }
+                }
+        }
         result
     }
 
@@ -568,7 +632,7 @@ class AdminController  {
             }
         }
 
-        Doc doc = Doc.get(Long.parseLong(params.docID))
+        Doc doc = Doc.findByIdAndContentType( params.long('docID'), Doc.CONTENT_TYPE_FILE )
 
         if (!fileCheck(doc)) {
             result.doc = doc
@@ -581,7 +645,6 @@ class AdminController  {
                     title: doc.title,
                     filename: doc.filename,
                     mimeType: doc.mimeType,
-                    migrated: doc.migrated,
                     owner: doc.owner
             )
             result.docsToRecovery = docs
@@ -611,8 +674,8 @@ class AdminController  {
             }
         }
 
-        Doc docWithoutFile = Doc.get(Long.parseLong(params.sourceDoc))
-        Doc docWithFile = Doc.get(Long.parseLong(params.targetDoc))
+        Doc docWithoutFile = Doc.findByIdAndContentType( params.long('sourceDoc'), Doc.CONTENT_TYPE_FILE )
+        Doc docWithFile = Doc.findByIdAndContentType( params.long('targetDoc'), Doc.CONTENT_TYPE_FILE )
 
         if (!fileCheck(docWithoutFile) && fileCheck(docWithFile)) {
 
@@ -639,11 +702,21 @@ class AdminController  {
     @Transactional
     def manageOrganisations() {
         Map<String, Object> result = [:]
+        EhcacheWrapper cache = cacheService.getTTL300Cache("/admin/manageOrganisations/")
+
+        if(!params.containsKey('cmd')) {
+            result.filterParams = params.clone()
+            cache.put('orgFilterCache', result.filterParams)
+        }
+        else {
+            if(cache && cache.get('orgFilterCache')) {
+                result.filterParams = cache.get('orgFilterCache')
+            }
+        }
         SwissKnife.setPaginationParams(result, params, contextService.getUser())
 
+        Org target = params.target ? Org.get(params.long('target')) : null
         if (params.cmd == 'changeApiLevel') {
-            Org target = (Org) genericOIDService.resolveOID(params.target)
-
             if (ApiToolkit.getAllApiLevels().contains(params.apiLevel)) {
                 ApiToolkit.setApiLevel(target, params.apiLevel)
             }
@@ -654,7 +727,6 @@ class AdminController  {
             target.save()
         }
         else if (params.cmd == 'deleteCustomerType') {
-            Org target = (Org) genericOIDService.resolveOID(params.target)
             def oss = OrgSetting.get(target, OrgSetting.KEYS.CUSTOMER_TYPE)
             if (oss != OrgSetting.SETTING_NOT_FOUND) {
                 oss.delete()
@@ -665,7 +737,6 @@ class AdminController  {
             ApiToolkit.removeApiLevel(target)
         }
         else if (params.cmd == 'changeCustomerType') {
-            Org target = (Org) genericOIDService.resolveOID(params.target)
             Role customerType = Role.get(params.customerType)
 
             def osObj = OrgSetting.get(target, OrgSetting.KEYS.CUSTOMER_TYPE)
@@ -691,8 +762,7 @@ class AdminController  {
             }
         }
         else if (params.cmd == 'changeGascoEntry') {
-            Org target = (Org) genericOIDService.resolveOID(params.target)
-            RefdataValue option = (RefdataValue) genericOIDService.resolveOID(params.gascoEntry)
+            RefdataValue option = RefdataValue.get(params.long('gascoEntry'))
 
             if (target && option) {
                 def oss = OrgSetting.get(target, OrgSetting.KEYS.GASCO_ENTRY)
@@ -708,8 +778,6 @@ class AdminController  {
             target.save()
         }
         else if (params.cmd == 'changeLegalInformation') {
-            Org target = (Org) genericOIDService.resolveOID(params.target)
-
             if (target) {
                 target.createdBy = Org.get(params.createdBy)
                 target.legallyObligedBy = Org.get(params.legallyObligedBy)
@@ -718,14 +786,40 @@ class AdminController  {
             target.save()
         }
 
-        Map<String, Object> fsq = filterService.getOrgQuery(params)
-        List<Org> orgList = Org.executeQuery(fsq.query, fsq.queryParams)
+        FilterService.Result fsr = filterService.getOrgQuery(params)
+        List<Org> orgList = Org.executeQuery(fsr.query, fsr.queryParams)
         result.orgList = orgList.drop(result.offset).take(result.max)
         result.orgListTotal = orgList.size()
 
         result.allConsortia = Org.executeQuery(
                 "select o from OrgSetting os join os.org o where os.key = 'CUSTOMER_TYPE' and (os.roleValue.authority  = 'ORG_CONSORTIUM_BASIC' or os.roleValue.authority  = 'ORG_CONSORTIUM_PRO') order by o.sortname, o.name"
         )
+        result
+    }
+
+    /**
+     * Call to view a list of providers which may be merged
+     * because of possible conflicts with the user data registered to institutions
+     */
+    @Secured(['ROLE_ADMIN'])
+    def mergeProviders() {
+        Map<String, Object> result = [:]
+        if(params.containsKey('source') && params.containsKey('target')) {
+            result = providerService.mergeProviders(genericOIDService.resolveOID(params.source), genericOIDService.resolveOID(params.target), false)
+        }
+        result
+    }
+
+    /**
+     * Call to view a list of providers which may be merged
+     * because of possible conflicts with the user data registered to institutions
+     */
+    @Secured(['ROLE_ADMIN'])
+    def mergeVendors() {
+        Map<String, Object> result = [:]
+        if(params.containsKey('source') && params.containsKey('target')) {
+            result = vendorService.mergeVendors(genericOIDService.resolveOID(params.source), genericOIDService.resolveOID(params.target), false)
+        }
         result
     }
 
@@ -836,14 +930,14 @@ SELECT * FROM (
      *     <li>replace a property definition by another</li>
      * </ul>
      * @return a list of property definitions with commands
-     * @see de.laser.ajax.AjaxController#addCustomPropertyType()
      */
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def managePropertyDefinitions() {
 
         if (params.cmd){
-            PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.pd)
+            PropertyDefinition pd = PropertyDefinition.get(params.long('pd'))
+
             switch(params.cmd) {
                 case 'toggleMandatory':
                     if(pd) {
@@ -878,8 +972,25 @@ SELECT * FROM (
                         String newName = pdTo.tenant ? "${pdTo.getI10n("name")} (priv.)" : pdTo.getI10n("name")
                         if (pdFrom && pdTo) {
                             try {
-                                int count = propertyService.replacePropertyDefinitions(pdFrom, pdTo, params.overwrite == 'on', true)
-                                flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [count, oldName, newName]) as String
+                                Map<String, Integer> counts = propertyService.replacePropertyDefinitions(pdFrom, pdTo, params.overwrite == 'on', true)
+                                if(counts.success == 0 && counts.failures == 0) {
+                                    String instanceType
+                                    switch(pdFrom.descr) {
+                                        case PropertyDefinition.LIC_PROP: instanceType = message(code: 'menu.institutions.replace_prop.licenses')
+                                            break
+                                        case PropertyDefinition.PRS_PROP: instanceType = message(code: 'menu.institutions.replace_prop.persons')
+                                            break
+                                        case PropertyDefinition.SUB_PROP: instanceType = message(code: 'menu.institutions.replace_prop.subscriptions')
+                                            break
+                                        case PropertyDefinition.SVY_PROP: instanceType = message(code: 'menu.institutions.replace_prop.surveys')
+                                            break
+                                        default: instanceType = message(code: 'menu.institutions.replace_prop.default')
+                                            break
+                                    }
+                                    flash.message = message(code: 'menu.institutions.replace_prop.noChanges', args: [instanceType]) as String
+                                }
+                                else
+                                    flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [counts.success, counts.failures, oldName, newName]) as String
                             }
                             catch (Exception e) {
                                 e.printStackTrace()
@@ -892,8 +1003,10 @@ SELECT * FROM (
         }
 
         Map<String,Object> propDefs = [:]
+        String sort = params.containsKey('sort') ? params.sort : 'name_de',
+        order = params.containsKey('order') ? params.order : 'asc'
         PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { String it ->
-            Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name_de']) // NO private properties!
+            Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: sort, order: order]) // NO private properties!
             propDefs.putAt( it, itResult )
         }
 
@@ -975,25 +1088,13 @@ SELECT * FROM (
                 else if (rdvTo && rdvTo.owner == rdvFrom.owner) {
                     check = true
                 }
-//                else if (! rdvTo && params.xcgRdvGlobalTo) {
-//
-//                    List<String> pParts = params.xcgRdvGlobalTo.split(':')
-//                    if (pParts.size() == 2) {
-//                        RefdataCategory rdvToCat = RefdataCategory.getByDesc(pParts[0].trim())
-//                        RefdataValue rdvToRdv = RefdataValue.getByValueAndCategory(pParts[1].trim(), pParts[0].trim())
-//
-//                        if (rdvToRdv && rdvToRdv.owner == rdvToCat ) {
-//                            rdvTo = rdvToRdv
-//                            check = true
-//                        }
-//                    }
-//                }
-
                 if (check) {
                     try {
                         int count = refdataService.replaceRefdataValues(rdvFrom, rdvTo)
-
-                        flash.message = "${count} Vorkommen von ${params.xcgRdvFrom} wurden durch ${params.xcgRdvTo} ersetzt."
+                        if(count == 0)
+                            flash.message = "Es mussten keine Referenzwerte ausgetauscht werden."
+                        else
+                            flash.message = "${count} Vorkommen von ${params.xcgRdvFrom} wurden durch ${params.xcgRdvTo} ersetzt."
                     }
                     catch (Exception e) {
                         log.error( e.toString() )
@@ -1009,9 +1110,11 @@ SELECT * FROM (
 
         def (usedRdvList, attrMap) = refdataService.getUsageDetails()
 
+        String sort = params.containsKey('sort') ? params.sort : 'desc_' + LocaleUtils.getCurrentLang()
+
         [
             editable    : true,
-            rdCategories: RefdataCategory.where{}.sort('desc_' + LocaleUtils.getCurrentLang()),
+            rdCategories: RefdataCategory.findAll(sort: sort),
             attrMap     : attrMap,
             usedRdvList : usedRdvList
         ]
@@ -1178,6 +1281,11 @@ SELECT * FROM (
         redirect(action: 'listMailTemplates')
     }
 
+    /**
+     * Loads every {@link Subscription} where {@link PermanentTitle} records are supposed to be by definition but have not been generated
+     * @see Subscription#hasPerpetualAccess
+     * @see IssueEntitlement
+     */
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def missingPermantTitlesInSubs() {
@@ -1192,6 +1300,27 @@ SELECT * FROM (
         group by s order by s.name''', [orgRole: RDStore.OR_SUBSCRIBER, removed: RDStore.TIPP_STATUS_REMOVED])
 
         result.editable = true
+        result
+    }
+
+    /**
+     * Lists current packages in the we:kb ElasticSearch index.
+     * @return Data from we:kb ES
+     */
+    @Secured(['ROLE_ADMIN'])
+    def packageLaserVsWekb() {
+        Map<String, Object> result = [:]
+        result.user = contextService.getUser()
+        SwissKnife.setPaginationParams(result, params, result.user)
+        result.filterConfig = [['q', 'pkgStatus'],
+                               ['provider', 'ddc', 'curatoryGroup'],
+                               ['curatoryGroupType', 'automaticUpdates']]
+        result.tableConfig = ['lineNumber', 'name', 'status', 'counts', 'curatoryGroup', 'automaticUpdates', 'lastUpdatedDisplay']
+        if(SpringSecurityUtils.ifAnyGranted('ROLE_YODA'))
+            result.tableConfig << 'yodaActions'
+        result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
+        result.languages = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)
+        result.putAll(packageService.getWekbPackages(params.clone()))
         result
     }
 }

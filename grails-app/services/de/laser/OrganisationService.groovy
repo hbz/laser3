@@ -1,11 +1,12 @@
 package de.laser
 
+import de.laser.addressbook.Contact
 import de.laser.properties.PropertyDefinition
 import de.laser.remote.ApiSource
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Platform
 import grails.gorm.transactions.Transactional
-import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 
 /**
@@ -44,6 +45,18 @@ class OrganisationService {
             OrgSetting.add(org, OrgSetting.KEYS.EZB_SERVER_ACCESS, RDStore.YN_NO)
         }
 
+        if (org.isCustomerType_Consortium_Pro() && OrgSetting.get(org, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY) == OrgSetting.SETTING_NOT_FOUND) {
+            OrgSetting.add(org, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY, '')
+        }
+
+        if (org.isCustomerType_Consortium_Pro() && OrgSetting.get(org, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT) == OrgSetting.SETTING_NOT_FOUND) {
+            OrgSetting.add(org, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT, '')
+        }
+
+        if (org.isCustomerType_Consortium_Pro() && OrgSetting.get(org, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT_ONLY_BY_MANDATORY) == OrgSetting.SETTING_NOT_FOUND) {
+            OrgSetting.add(org, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT_ONLY_BY_MANDATORY, RDStore.YN_NO)
+        }
+
         // called after
         // new Org.save()
         // does not work unless session is not flushed what causes crashes in sync
@@ -73,7 +86,7 @@ class OrganisationService {
         }
         RefdataValue generalContact     = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
         RefdataValue responsibleAdmin   = RDStore.PRS_FUNC_RESPONSIBLE_ADMIN
-        RefdataValue billingContact     = RDStore.PRS_FUNC_FC_BILLING_ADDRESS
+        RefdataValue billingContact     = RDStore.PRS_FUNC_INVOICING_CONTACT
         titles.addAll(['ISIL','WIB-ID','EZB-ID',generalContact.getI10n('value')])
         if(addHigherEducationTitles)
             titles.add(responsibleAdmin.getI10n('value'))
@@ -217,38 +230,44 @@ class OrganisationService {
 
     /**
      * Gets all platforms where a provider {@link Org} is assigned to, ordered by name, sortname and platform name
-     * @return the ordered {@link List} of {@link Platform}s
+     * @return the ordered {@link List} of {@link de.laser.wekb.Platform}s
      */
     List<Platform> getAllPlatforms() {
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         Set<String> uuids = []
-        Map<String, Object> result = gokbService.doQuery([user: contextService.getUser(), editUrl: apiSource.editUrl], [max: '1000', offset: '0'], [componentType: 'Platform', status: 'Current'])
+        Map<String, Object> result = gokbService.doQuery([user: contextService.getUser(), baseUrl: ApiSource.getCurrent().baseUrl], [max: '1000', offset: '0'], [componentType: 'Platform', status: 'Current'])
         uuids.addAll(result.records.collect { Map platRecord -> platRecord.uuid })
         Platform.executeQuery('select p from Platform p join p.org o where p.gokbId in (:uuids) and p.org is not null order by o.name, o.sortname, p.name', [uuids: uuids])
     }
 
     /**
-     * Gets a (filtered) map of provider records from the we:kb
-     * @param params the request parameters
-     * @param result a result generics map, containing also configuration params for the request
-     * @return a {@link Map} of structure [providerUUID: providerRecord] containing the request results
+     * Gets all platforms where a provider {@link Org} is assigned to, ordered by name, sortname and platform name, to which the context org is subscribed
+     * @return the ordered {@link List} of {@link Platform}s
      */
-    Map<String, Map> getWekbOrgRecords(GrailsParameterMap params, Map result) {
-        Map<String, Map> records = [:]
-        Set<String> componentTypes = ['Org', 'Vendor']
-        componentTypes.each { String componentType ->
-            Map<String, Object> queryParams = [componentType: componentType]
-            if (params.curatoryGroup || params.providerRole) {
-                if(params.curatoryGroup)
-                    queryParams.curatoryGroupExact = params.curatoryGroup.replaceAll('&','ampersand').replaceAll('\\+','%2B').replaceAll(' ','%20')
-                if(params.providerRole)
-                    queryParams.role = RefdataValue.get(params.providerRole).value.replaceAll(' ','%20')
-            }
-            Map<String, Object> wekbResult = gokbService.doQuery(result, [max: 10000, offset: 0], queryParams)
-            if(wekbResult.recordsCount > 0)
-                records.putAll(wekbResult.records.collectEntries { Map wekbRecord -> [wekbRecord.uuid, wekbRecord] })
-        }
-        records
+    List<Platform> getAllPlatformsForContextOrg() {
+        Set<String> uuids = []
+        Map<String, Object> result = gokbService.doQuery([user: contextService.getUser(), baseUrl: ApiSource.getCurrent().baseUrl], [max: '10000', offset: '0'], [componentType: 'Platform', status: 'Current'])
+        uuids.addAll(result.records.collect { Map platRecord -> platRecord.uuid })
+        Platform.executeQuery(
+                'select plat from Platform plat join plat.provider p where plat.gokbId in (:uuids) and p is not null and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription in (select oo.sub from OrgRole oo where oo.org = :context)) order by p.name, p.sortname, plat.name',
+                [uuids: uuids, context: contextService.getOrg()]
+        )
     }
 
+    /**
+     * Gets all namespaces which have a validation pattern defined
+     * @return a {@link Map} containing namespaces with validations in structure:
+     * {
+     *     pattern: validationRegex,
+     *     prompt: error message token,
+     *     placeholder: help message token
+     * }
+     */
+    Map<String, Object> getNamespacesWithValidations() {
+        Map<String, Object> result = [:]
+        Locale locale = LocaleUtils.getCurrentLocale()
+        IdentifierNamespace.findAllByValidationRegexIsNotNull().each { IdentifierNamespace idns ->
+            result[idns.id] = [pattern: idns.validationRegex, prompt: messageSource.getMessage("validation.${idns.ns.replaceAll(' ','_')}Match", null, locale), placeholder: messageSource.getMessage("identifier.${idns.ns.replaceAll(' ','_')}.info", null, locale)]
+        }
+        result
+    }
 }

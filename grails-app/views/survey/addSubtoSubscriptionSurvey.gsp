@@ -1,6 +1,6 @@
-<%@ page import="de.laser.survey.SurveyConfig; de.laser.RefdataValue; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyConfig; de.laser.RefdataValue; de.laser.RefdataCategory" %>
 
-<laser:htmlStart message="createSubscriptionSurvey.label" serviceInjection="true" />
+<laser:htmlStart message="createSubscriptionSurvey.label" />
 
 <ui:breadcrumbs>
 
@@ -30,15 +30,15 @@
         <g:if test="${!(SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(subscription, true))}">
             <div class="field">
                 <label>${message(code: 'surveyconfig.subSurveyUseForTransfer.label.info')}</label>
-                <div>
+                <div class="ui checkbox subSurveyUseForTransferCheckbox">
                     <input type="checkbox" id="subSurveyUseForTransfer" name="subSurveyUseForTransfer"  ${params.subSurveyUseForTransfer? 'checked':''}>
                 </div>
             </div>
         </g:if><g:else>
 
         <div class="field">
-            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: 'surveyconfig.subSurveyUseForTransfer.label.info3')}">
-            <label>${message(code: 'surveyconfig.subSurveyUseForTransfer.label.info')} <i class="question circle icon"></i></label>
+            <span class="la-long-tooltip la-popup-tooltip" data-position="right center" data-content="${message(code: 'surveyconfig.subSurveyUseForTransfer.label.info3')}">
+            <label>${message(code: 'surveyconfig.subSurveyUseForTransfer.label.info')} <i class="${Icon.TOOLTIP.HELP}"></i></label>
             </span>
             <div class="field disabled">
                 <input type="checkbox" name="subSurveyUseForTransfer">
@@ -48,8 +48,29 @@
 
         <div class="field">
             <label>${message(code: 'surveyInfo.isMandatory.label.info')}</label>
-            <div>
+            <div class="ui checkbox mandatoryCheckbox">
                 <input type="checkbox" id="mandatory" name="mandatory" ${params.mandatory? 'checked':''}>
+            </div>
+        </div>
+
+        <div class="field">
+            <label>${message(code: 'surveyconfig.packageSurvey.label')}</label>
+            <div class="ui checkbox">
+                <input type="checkbox" id="packageSurvey" name="packageSurvey" ${params.packageSurvey? 'checked':''}>
+            </div>
+        </div>
+
+        <div class="field">
+            <label>${message(code: 'surveyconfig.vendorSurvey.label')}</label>
+            <div class="ui checkbox">
+                <input type="checkbox" id="vendorSurvey" name="vendorSurvey" ${params.vendorSurvey? 'checked':''}>
+            </div>
+        </div>
+
+        <div class="field">
+            <label>${message(code: 'surveyconfig.invoicingInformation.label')}</label>
+            <div class="ui checkbox">
+                <input type="checkbox" id="invoicingInformation" name="invoicingInformation" ${params.invoicingInformation? 'checked':''}>
             </div>
         </div>
 
@@ -59,17 +80,20 @@
             <textarea class="la-textarea-resize-vertical" name="comment">${params.comment}</textarea>
         </div>
 
-        <input type="submit" class="ui button"
+        <input type="submit" class="${Btn.SIMPLE}"
                value="${message(code: 'createSubscriptionSurvey.create')}"/>
 
     </ui:form>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-        $('#subSurveyUseForTransfer').click(function () {
-            if ($(this).prop('checked')) {
-                $('#mandatory').prop('checked', true)
-            }
-        })
+    $('.subSurveyUseForTransferCheckbox').checkbox({
+     onChecked: function() {
+             $('.mandatoryCheckbox').checkbox('check');
+        },
+        onUnchecked: function() {
+          $('.mandatoryCheckbox').checkbox('uncheck');
+        }
+ });
 </laser:script>
 
 <laser:htmlEnd />

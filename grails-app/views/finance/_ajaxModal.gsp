@@ -4,27 +4,34 @@
 
 <ui:modal modalSize="large" id="costItem_ajaxModal" formID="editCost_${idSuffix}" text="${modalText}" msgSave="${submitButtonLabel}">
     <g:if test="${costItem}">
-        <g:if test="${showVisibilitySettings && costItem.isVisibleForSubscriber}">
-            <div class="ui orange ribbon label">
-                <strong>${costItem.sub.getSubscriber()}</strong>
-            </div>
-        </g:if>
-        <g:elseif test="${copyCostsFromConsortia}">
+        <g:if test="${copyCostsFromConsortia}">
             <div class="ui orange ribbon label">
                 <strong><g:message code="financials.transferConsortialCosts"/>: </strong>
             </div>
-        </g:elseif>
-        <g:elseif test="${subscription}">
-            <div class="ui orange ribbon label">
-                <strong>${subscription.getSubscriber().name}</strong>
+        </g:if>
+        <g:elseif test="${costItem.sub}">
+            <div class="ui orange label">
+                <strong>${costItem.sub.getSubscriberRespConsortia()}</strong>
             </div>
         </g:elseif>
+        <g:elseif test="${costItem.surveyOrg}">
+            <div class="ui orange label">
+                <strong>${costItem.surveyOrg.org.name}</strong>
+            </div>
+        </g:elseif>
+        <g:else>
+            <div class="ui orange label">
+                <strong>${costItem.owner.name}</strong>
+            </div>
+        </g:else>
         <div class="ui blue right right floated mini button la-js-clickButton" data-position="top center" data-title="${costItem.globalUID}"><g:message code="globalUID.label"/></div>
         <laser:script file="${this.getGroovyPageFileName()}">
             $('.la-js-clickButton').popup({
                 on: 'click'
             });
         </laser:script>
+
+        <g:link class="ui blue right right floated mini button" controller="finance" action="showCostItem" id="${costItem.id}" params="[sub: costItem.sub?.id]" target="_blank"><g:message code="default.show.label" args="[g.message(code: 'costItem.label')]"/></g:link>
     </g:if>
 
         <g:form class="ui small form clearing segment la-form" name="editCost_${idSuffix}" url="${formUrl}">

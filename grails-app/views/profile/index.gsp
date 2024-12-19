@@ -1,6 +1,6 @@
-<%@ page import="de.laser.UserSetting; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.auth.Role; de.laser.UserSetting.KEYS; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.UserSetting; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.auth.Role; de.laser.UserSetting.KEYS; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 
-<laser:htmlStart message="profile.user" serviceInjection="true" />
+<laser:htmlStart message="profile.user" />
 
 <ui:breadcrumbs>
     <ui:crumb message="profile.user" class="active"/>
@@ -9,7 +9,7 @@
 <ui:controlButtons>
     <ui:actionsDropdown>
         <g:link class="ui item" controller="profile" action="delete">
-            ${message(code:'profile.account.delete.button')}
+            <i class="${Icon.CMD.DELETE}"></i>${message(code:'profile.account.delete.button')}
         </g:link>
     </ui:actionsDropdown>
 </ui:controlButtons>
@@ -34,7 +34,7 @@
                             <label for="profile_username">${message(code: 'profile.username')}</label>
                             <input type="text" readonly="readonly" id="profile_username" value="${user.username}"/>
                         </div>
-                        <div class="field ">
+                        <div class="field">
                             <label for="profile_display">${message(code: 'profile.display')}</label>
                             <input type="text" name="profile_display" id="profile_display" value="${user.display}"/>
                         </div>
@@ -44,7 +44,7 @@
                         </div>
 
                         <div class="field">
-                            <button type="submit" class="ui button">${message(code: 'profile.update.button')}</button>
+                            <button type="submit" class="${Btn.SIMPLE}">${message(code: 'profile.update.button')}</button>
                         </div>
                     </ui:form><!-- updateProfile -->
 
@@ -73,7 +73,7 @@
                                 <label for="isNotificationCCByEmail">${message(code: 'profile.isNotificationCCByEmail')}</label>
                             </div>
                             <g:set var="notificationCCEmailaddress" value="${user.getSettingsValue(KEYS.NOTIFICATION_CC_EMAILADDRESS)}"/>
-                            <input type="text" id="emailCC" name="notificationCCEmailaddress" value="${notificationCCEmailaddress}"/>
+                            <input type="text" id="notificationCCEmailaddress" name="notificationCCEmailaddress" value="${notificationCCEmailaddress}"/>
                         </div>
 
                         <table class="ui celled la-js-responsive-table la-table compact table">
@@ -120,7 +120,7 @@
                         </table>
 
                         <div class="inline field">
-                            <button type="submit" class="ui button" id="notificationSubmit">${message(code: 'profile.notification.submit')}</button>
+                            <button type="submit" class="${Btn.SIMPLE}" id="notificationSubmit">${message(code: 'profile.notification.submit')}</button>
                         </div>
                     </ui:form><!-- updateNotificationSettings -->
 
@@ -151,7 +151,7 @@
                                 <label for="isRemindCCByEmail">${message(code: 'profile.isRemindCCByEmail')}</label>
                             </div>
                             <g:set var="remindCCEmailaddress" value="${user.getSettingsValue(KEYS.REMIND_CC_EMAILADDRESS)}"/>
-                            <input type="text" id="emailCC" name="remindCCEmailaddress" value="${remindCCEmailaddress}"/>
+                            <input type="text" id="remindCCEmailaddress" name="remindCCEmailaddress" value="${remindCCEmailaddress}"/>
                         </div>
 
                         <table class="ui celled la-js-responsive-table la-table compact table">
@@ -314,7 +314,7 @@
                         </table>
 
                         <div class="inline field">
-                            <button type="submit" class="ui button" id="reminderSubmit">${message(code: 'profile.reminder.submit')}</button>
+                            <button type="submit" class="${Btn.SIMPLE}" id="reminderSubmit">${message(code: 'profile.reminder.submit')}</button>
                         </div>
                     </ui:form><!-- updateReminderSettings -->
                 </div><!-- .content -->
@@ -383,7 +383,7 @@
                         </div>
                         <div class="field">
                             <label></label>
-                            <button type="submit" class="ui button" id="password_submit">${message(code: 'profile.password.update.button')}</button>
+                            <button type="submit" class="${Btn.SIMPLE}" id="password_submit">${message(code: 'profile.password.update.button')}</button>
                         </div>
                     </ui:form><!-- updatePassword -->
 
@@ -401,13 +401,9 @@
                                 <div class="content">
                                     <h2 class="ui dividing header">${message(code: 'profile.membership.existing')}</h2>
 
-                                    <ui:msg class="info" icon="exclamation" noClose="true">
-                                        Diese Funktion ist nur für Administratoren verfügbar.
-                                    </ui:msg>
+                                    <ui:msg class="info" showIcon="true" hideClose="true" text="Diese Funktion ist nur für Administratoren verfügbar." />
 
-                                    <ui:msg class="warning" icon="exclamation" noClose="true">
-                                        Dieser Nutzer ist noch keiner Einrichtung zugewiesen.
-                                    </ui:msg>
+                                    <ui:msg class="warning" showIcon="true" hideClose="true" text="Dieser Nutzer ist noch keiner Einrichtung zugewiesen." />
 
                                     <ui:form controller="profile" action="setAffiliation" hideWrapper="true">
 
@@ -431,7 +427,7 @@
                                         </div>
 
                                         <div class="field">
-                                            <button id="submitARForm" data-complete-text="Request Membership" type="submit" class="ui button">${message(code: 'profile.membership.add.button')}</button>
+                                            <button id="submitARForm" data-complete-text="Request Membership" type="submit" class="${Btn.SIMPLE}">${message(code: 'profile.membership.add.button')}</button>
                                         </div>
                                     </ui:form>
                                 </div><!-- .content -->
@@ -465,18 +461,12 @@
                             <g:set var="US_LANGUAGE" value="${user.getSetting(KEYS.LANGUAGE, RDStore.LANGUAGE_DE)}" />
                             <ui:xEditableRefData owner="${US_LANGUAGE}" field="rdValue" config="${US_LANGUAGE.key.rdc}" />
                             &nbsp;
-                            <g:link controller="profile" action="index" class="ui button icon" style="float:right"><i class="icon sync"></i></g:link>
+                            <g:link controller="profile" action="index" class="${Btn.ICON.SIMPLE}" style="float:right"><i class="icon sync"></i></g:link>
                         </div>
                         <div class="field">
                             <label>${message(code: 'profile.emailLanguage')}</label>
                             <g:set var="US_EMAIL_LANGUAGE" value="${user.getSetting(KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE)}" />
                             <ui:xEditableRefData owner="${US_EMAIL_LANGUAGE}" field="rdValue" config="${US_EMAIL_LANGUAGE.key.rdc}" />
-                        </div>
-
-                        <div class="field">
-                            <label>${message(code: 'profile.editMode')}</label>
-                            <g:set var="US_SHOW_EDIT_MODE" value="${user.getSetting(KEYS.SHOW_EDIT_MODE, RDStore.YN_YES)}" />
-                            <ui:xEditableRefData owner="${US_SHOW_EDIT_MODE}" field="rdValue" config="${US_SHOW_EDIT_MODE.key.rdc}" />
                         </div>
 
                         <div class="field">
@@ -573,21 +563,6 @@
                             }
                         }
                     });
-                    $('.updateReminderSettings').form({
-                        on: 'blur',
-                        inline: true,
-                        fields: {
-                            dashboardReminderPeriod: {
-                                identifier  : 'dashboardReminderPeriod',
-                                rules: [
-                                    {
-                                        type   : 'regExp[/^[0-9]/]',
-                                        prompt : '{name} <g:message code="validation.onlyInteger" />'
-                                    }
-                                ]
-                            }
-                        }
-                    });
 
         $('#password_show_toggler').on('change', function(e) {
             $('input.pw').attr('type', ($(this).is(":checked") ? 'text' : 'password'))
@@ -607,35 +582,14 @@
             }
         })
 
-        $("#unit").on('change', function (e) {
-            var unit = this.options[e.target.selectedIndex].text;
-            var val = $(this).next();
-            if (unit) {
-                switch (unit) {
-                    case 'Day':
-                        JSPC.app.setupUnitAmount(val,7)
-                        break;
-                    case 'Week':
-                        JSPC.app.setupUnitAmount(val,4)
-                        break;
-                    case 'Month':
-                        JSPC.app.setupUnitAmount(val,12)
-                        break
-                    default :
-                        console.log('Impossible selection made!');
-                        break
-                }
-            }
+        $('#isNotificationByEmail').change( function (e) {
+            $('#isNotificationCCByEmail').attr("disabled", !this.checked);
         });
-
         $('#isRemindByEmail').change( function (e) {
-            if (this.checked) {
-                $('#isRemindCCByEmail').attr("disabled", false);
-            } else {
-                $('#isRemindCCByEmail').attr("disabled", true);
-            }
+            $('#isRemindCCByEmail').attr("disabled", !this.checked)
         });
 
+        $('#isNotificationByEmail').trigger('change');
         $('#isRemindByEmail').trigger('change');
 
 </laser:script>

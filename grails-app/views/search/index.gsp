@@ -1,6 +1,6 @@
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.survey.SurveyConfig; de.laser.I10nTranslation; de.laser.RefdataValue; de.laser.DocContext;de.laser.storage.RDStore; java.text.SimpleDateFormat;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.survey.SurveyConfig; de.laser.I10nTranslation; de.laser.RefdataValue; de.laser.DocContext;de.laser.storage.RDStore; java.text.SimpleDateFormat;" %>
 
-<laser:htmlStart message="search.advancedSearch" serviceInjection="true"/>
+<laser:htmlStart message="search.advancedSearch" />
 
 <%
     SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMddTHHmmssZ()
@@ -54,7 +54,7 @@
 <div class="ui la-search segment">
     <g:form action="index" controller="search" method="post" class="ui form" >
 
-        <g:each in="${['rectype', 'endYear', 'startYear', 'consortiaName', 'providerName', 'status']}" var="facet">
+        <g:each in="${['rectype', 'endYear', 'startYear', 'consortiaName', 'altnames', 'providerName', 'status']}" var="facet">
             <g:each in="${params.list(facet)}" var="selected_facet_value">
                 <input type="hidden" name="${facet}" value="${selected_facet_value}"/>
             </g:each>
@@ -112,7 +112,7 @@
         </div>
 
         <div class="field">
-            <g:if test="${contextOrg.isCustomerType_Consortium()}">
+            <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                 <div class="ui checkbox">
                     <input type="checkbox" name="showMembersObjects" tabindex="0" ${params.showMembersObjects ? 'checked' : ''}>
                     <label><g:message code="search.advancedSearch.showMembersObjects"/></label>
@@ -155,8 +155,8 @@
 
             <div class="field la-field-right-aligned">
                 <a href="${request.forwardURI}"
-                   class="ui reset secondary button">${message(code: 'default.button.searchreset.label')}</a>
-                <button name="search" type="submit" value="true" class="ui primary button">
+                   class="${Btn.SECONDARY} reset">${message(code: 'default.button.searchreset.label')}</a>
+                <button name="search" type="submit" value="true" class="${Btn.PRIMARY}">
                     <g:message code="search.button" />
                 </button>
             </div>
@@ -176,8 +176,7 @@
                     <g:each in="${facets}" var="facet">
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                                <h4 class="ui header"><g:message code="facet.so.${facet.key}"
-                                                                 default="${facet.key}"/></h4>
+                                <h4 class="ui header"><g:message code="facet.so.${facet.key}" default="${facet.key}"/></h4>
                             </div>
 
                             <div class="panel-body">
@@ -224,7 +223,7 @@
             <div class="twelve wide column">
                 <h3 class="ui header">${message(code: 'search.search.filter')} <ui:totalNumber total="${resultsTotal}"/></h3>
                 <p>
-                    <g:each in="${['rectype', 'endYear', 'startYear', 'consortiaName', 'providerName', 'status']}" var="facet">
+                    <g:each in="${['rectype', 'altnames', 'endYear', 'startYear', 'consortiaName', 'providerName', 'status']}" var="facet">
                         <g:each in="${params.list(facet)}" var="fv">
 
                             <span class="ui label la-advanced-label"><g:message code="facet.so.${facet}"/>:
@@ -240,7 +239,7 @@
                                 </g:else>
 
                                 <g:link controller="search" action="index" params="${removeFacet(params, facet, fv)}">
-                                    <i class="delete icon"></i>
+                                    <i class="${Icon.SYM.NO}"></i>
                                 </g:link>
                             </span>
                         </g:each>
@@ -250,7 +249,7 @@
                     <thead>
                         <tr>
                             <th class="six wide">Title/Name</th>
-                            <th class="ten wide ">${message(code: 'search.additionalinfo')}</th>
+                            <th class="ten wide">${message(code: 'search.additionalinfo')}</th>
                         </tr>
                     </thead>
                     <g:each in="${hits}" var="hit">
@@ -267,16 +266,13 @@
                         %>
                         <tr>
                             <g:if test="${object.rectype == 'Org'}">
-                                <g:set var="providerAgency" value="${RDStore.OT_PROVIDER.value in object.type?.value || RDStore.OT_AGENCY.value in object.type?.value }"/>
                                 <td>
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
-                                          data-content="${(providerAgency) ? message(code: 'spotlight.provideragency') : message(code: 'spotlight.'+object.rectype.toLowerCase())}">
+                                    <span data-position="top right" class="la-popup-tooltip"
+                                          data-content="${message(code: 'spotlight.'+object.rectype.toLowerCase())}">
                                         <i class="circular icon la-organisation"></i>
                                     </span>
 
-                                    <g:link controller="organisation" action="show"
-                                            id="${object.dbId}">${object.name}</g:link>
-
+                                    <g:link controller="organisation" action="show" id="${object.dbId}">${object.name}</g:link>
                                 </td>
                                 <td>
                                     <strong><g:message code="org.orgType.label"/></strong>:
@@ -299,97 +295,7 @@
                                     <div class="ui bulleted list">
                                         <g:each in="${object.platforms?.sort { it.name }}" var="platform">
                                             <div class="item">
-                                            <g:link controller="platform" action="show"
-                                                    id="${platform.id}">${platform.name}</g:link>
-                                            </div>
-                                        </g:each>
-                                    </div>
-                                </td>
-                            </g:if>
-
-                            <g:if test="${object.rectype == 'TitleInstance'}">
-                                <td>
-
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: "facet.so.rectype.${object.typTitle?.toLowerCase()}")}">
-                                        <i class="circular icon la-${object.typTitle?.toLowerCase()}"></i>
-                                    </span>
-
-                                    <g:link controller="title" action="show"
-                                            id="${object.dbId}">${object.name}</g:link>
-                                </td>
-                                <td>
-                                    <strong><g:message code="default.identifiers.label"/></strong>:
-                                    <div class="ui bulleted list">
-                                        <g:each in="${object.identifiers?.sort { it.type }}" var="id">
-                                            <div class="item">
-                                                ${id.type}: ${id.value} &nbsp;
-                                            </div>
-                                        </g:each>
-                                    </div>
-                                </td>
-                            </g:if>
-
-                            <g:if test="${object.rectype == 'BookInstance'}">
-                                <td>
-
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: "facet.so.rectype.${object.typTitle?.toLowerCase()}")}">
-                                        <i class="circular icon la-${object.typTitle?.toLowerCase()}"></i>
-                                    </span>
-
-                                    <g:link controller="title" action="show" id="${object.dbId}">${object.name}</g:link>
-                                </td>
-                                <td>
-                                    <strong><g:message code="default.identifiers.label"/></strong>:
-                                    <div class="ui bulleted list">
-                                        <g:each in="${object.identifiers?.sort { it.type }}" var="id">
-                                            <div class="item">
-                                                ${id.type}: ${id.value} &nbsp;
-                                            </div>
-                                        </g:each>
-                                    </div>
-                                </td>
-                            </g:if>
-
-                            <g:if test="${object.rectype == 'DatabaseInstance'}">
-                                <td>
-
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: "facet.so.rectype.${object.typTitle?.toLowerCase()}")}">
-                                        <i class="circular icon la-${object.typTitle?.toLowerCase()}"></i>
-                                    </span>
-
-                                    <g:link controller="title" action="show" id="${object.dbId}">${object.name}</g:link>
-                                </td>
-                                <td>
-                                    <strong><g:message code="default.identifiers.label"/></strong>:
-                                    <div class="ui bulleted list">
-                                        <g:each in="${object.identifiers?.sort { it.type }}" var="id">
-                                            <div class="item">
-                                                ${id.type}: ${id.value} &nbsp;
-                                            </div>
-                                        </g:each>
-                                    </div>
-                                </td>
-                            </g:if>
-
-                            <g:if test="${object.rectype == 'JournalInstance'}">
-                                <td>
-
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: "facet.so.rectype.${object.typTitle?.toLowerCase()}")}">
-                                        <i class="circular icon la-${object.typTitle?.toLowerCase()}"></i>
-                                    </span>
-
-                                    <g:link controller="title" action="show" id="${object.dbId}">${object.name}</g:link>
-                                </td>
-                                <td>
-                                    <strong><g:message code="default.identifiers.label"/></strong>:
-                                    <div class="ui bulleted list">
-                                        <g:each in="${object.identifiers?.sort { it.type }}" var="id">
-                                            <div class="item">
-                                                ${id.type}: ${id.value} &nbsp;
+                                            <g:link controller="platform" action="show" id="${platform.dbId}">${platform.name}</g:link>
                                             </div>
                                         </g:each>
                                     </div>
@@ -399,13 +305,12 @@
                             <g:if test="${object.rectype == 'Package'}">
                                 <td>
 
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
                                         <i class="circular icon la-${object.rectype.toLowerCase()}"></i>
                                     </span>
 
-                                    <g:link controller="package" action="show"
-                                            id="${object.dbId}">${object.name}</g:link>
+                                    <g:link controller="package" action="show" id="${object.dbId}">${object.name}</g:link>
                                 </td>
                                 <td>
                                     <strong><g:message code="default.identifiers.label"/></strong>:
@@ -419,20 +324,22 @@
                                     <strong>${message(code: 'package.compare.overview.tipps')}</strong>:
                                     <g:link controller="package" action="index"
                                         id="${object.dbId}">${object.titleCountCurrent}</g:link>
-
+                                    <br />
+                                    <strong>${message(code: 'provider.label')}</strong>:
+                                        <g:link controller="provider" action="show"
+                                        id="${object.providerId}">${object.providerName}</g:link>
                                 </td>
                             </g:if>
 
                             <g:if test="${object.rectype == 'Platform'}">
                                 <td>
 
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
                                         <i class="circular icon la-${object.rectype.toLowerCase()}"></i>
                                     </span>
 
-                                    <g:link controller="platform" action="show"
-                                            id="${object.dbId}">${object.name}</g:link>
+                                    <g:link controller="platform" action="show" id="${object.dbId}">${object.name}</g:link>
                                 </td>
                                 <td>
                                     <strong>${message(code: 'package.compare.overview.tipps')}</strong>:
@@ -446,28 +353,63 @@
                                         </g:if>
                                     <br />
                                     <strong>${message(code: 'platform.provider')}</strong>:
-                                <g:link controller="organisation" action="show"
-                                        id="${object.orgId}">${object.orgName}</g:link>
+                                <g:link controller="provider" action="show" id="${object.providerId}">${object.providerName}</g:link>
 
+                                </td>
+                            </g:if>
+
+                            <g:if test="${object.rectype == 'Provider'}">
+                                <td>
+                                    <span data-position="top right" class="la-popup-tooltip"
+                                          data-content="${message(code: 'spotlight.provider')}">
+                                        <i class="circular icon la-${object.rectype.toLowerCase()}"></i>
+                                    </span>
+
+                                    <g:link controller="provider" action="show" id="${object.dbId}">${object.name}</g:link>
+                                </td>
+                                <td>
+                                    <strong><g:message code="default.identifiers.label"/></strong>:
+                                    <div class="ui bulleted list">
+                                        <g:each in="${object.identifiers?.sort { it.type }}" var="id">
+                                            <div class="item">
+                                                ${id.type}: ${id.value} &nbsp;
+                                            </div>
+                                        </g:each>
+                                    </div>
+                                    <strong><g:message code="package.plural"/></strong>:
+                                    <div class="ui bulleted list">
+                                        <g:each in="${object.packages?.sort { it.name }}" var="pkg">
+                                            <div class="item">
+                                                <g:link controller="package" action="show" id="${pkg.dbId}">${pkg.name}</g:link>
+                                            </div>
+                                        </g:each>
+                                    </div>
+                                    <strong><g:message code="org.platforms.label"/></strong>:
+                                    <div class="ui bulleted list">
+                                        <g:each in="${object.platforms?.sort { it.name }}" var="platform">
+                                            <div class="item">
+                                                <g:link controller="platform" action="show" id="${platform.dbId}">${platform.name}</g:link>
+                                            </div>
+                                        </g:each>
+                                    </div>
                                 </td>
                             </g:if>
 
                             <g:if test="${object.rectype == 'Subscription'}">
                                 <td>
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
                                         <i class="circular icon la-${object.rectype.toLowerCase()}"></i>
                                     </span>
 
-                                    <g:link controller="subscription" action="show"
-                                            id="${object.dbId}">${object.name}</g:link>
+                                    <g:link controller="subscription" action="show" id="${object.dbId}">${object.name}</g:link>
 
                                     <div class="ui grid">
                                         <div class="right aligned wide column">
                                             <g:if test="${object.visible == 'Private'}">
-                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                <span data-position="top right" class="la-popup-tooltip"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="shield alternate grey large icon"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -494,22 +436,21 @@
                                     <br />
                                     <strong>${message(code: 'subscription.periodOfValidity.label')}</strong>: ${period}
                                     <br />
-                                    <g:if test="${object.membersCount && contextOrg.isCustomerType_Consortium()}">
+                                    <g:if test="${object.membersCount && contextService.getOrg().isCustomerType_Consortium()}">
                                         <strong>${message(code: 'subscription.details.consortiaMembers.label')}</strong>:
                                         <g:link controller="subscription" action="members"
                                                 id="${object.dbId}">${object.membersCount}</g:link>
                                     </g:if>
-                                    <g:if test="${object.members && contextOrg.isCustomerType_Consortium()}">
+                                    <g:if test="${object.members && contextService.getOrg().isCustomerType_Consortium()}">
                                         <strong>${message(code: 'subscription.details.consortiaMembers.label')}</strong>:
                                         <article class="la-readmore">
                                         <g:each in="${object.members}" var="member">
-                                        <g:link controller="subscription" action="members"
-                                                id="${object.dbId}">${member.name}</g:link>
+                                            <g:link controller="subscription" action="members" id="${object.dbId}">${member.name}</g:link>
                                         </g:each>
                                         </article>
                                     </g:if>
                                     <br />
-                                    <g:if test="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.value in object.type?.value && !(contextOrg.isCustomerType_Consortium())}">
+                                    <g:if test="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.value in object.type?.value && !(contextService.getOrg().isCustomerType_Consortium())}">
                                     <strong>${message(code: 'facet.so.consortiaName')}</strong>: ${object.consortiaName}
                                     </g:if>
 
@@ -526,20 +467,19 @@
                             </g:if>
                             <g:if test="${object.rectype == 'License'}">
                                 <td>
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
                                         <i class="circular icon la-${object.rectype.toLowerCase()}"></i>
                                     </span>
 
-                                    <g:link controller="license" action="show"
-                                            id="${object.dbId}">${object.name}</g:link>
+                                    <g:link controller="license" action="show" id="${object.dbId}">${object.name}</g:link>
 
                                     <div class="ui grid">
                                         <div class="right aligned wide column">
                                             <g:if test="${object.visible == 'Private'}">
-                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                <span data-position="top right" class="la-popup-tooltip"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="shield alternate grey large icon"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -566,12 +506,11 @@
                                     <br />
                                     <strong>${message(code: 'subscription.periodOfValidity.label')}</strong>: ${period}
                                     <br />
-                                    <g:if test="${object.membersCount && contextOrg.isCustomerType_Consortium()}">
+                                    <g:if test="${object.membersCount && contextService.getOrg().isCustomerType_Consortium()}">
                                         <strong>${message(code: 'subscription.details.consortiaMembers.label')}</strong>:
-                                        <g:link controller="license" action="members"
-                                                id="${object.dbId}">${object.membersCount}</g:link>
+                                        <g:link controller="license" action="members" id="${object.dbId}">${object.membersCount}</g:link>
                                     </g:if>
-                                    <g:if test="${object.members && contextOrg.isCustomerType_Consortium()}">
+                                    <g:if test="${object.members && contextService.getOrg().isCustomerType_Consortium()}">
                                         <strong>${message(code: 'subscription.details.consortiaMembers.label')}</strong>:
                                         <g:link controller="subscription" action="members" id="${object.dbId}"> ${object.members.size()}</g:link>
                                         <article class="la-readmore">
@@ -581,7 +520,7 @@
                                         </article>
                                     </g:if>
                                     <br />
-                                    <g:if test="${!(contextOrg.isCustomerType_Consortium())}">
+                                    <g:if test="${!(contextService.getOrg().isCustomerType_Consortium())}">
                                         <strong>${message(code: 'facet.so.consortiaName')}</strong>: ${object.consortiaName}
                                     </g:if>
                                 </td>
@@ -590,9 +529,9 @@
                             <g:if test="${object.rectype == 'SurveyConfig'}">
                                 <td>
 
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
-                                        <i class="circular icon inverted pink chart pie"></i>
+                                        <i class="${Icon.SURVEY} circular inverted pink"></i>
                                     </span>
 
                                     <g:link controller="survey" action="show"
@@ -602,9 +541,9 @@
                                     <div class="ui grid">
                                         <div class="right aligned wide column">
                                             <g:if test="${object.visible == 'Private'}">
-                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                <span data-position="top right" class="la-popup-tooltip"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="shield alternate grey large icon"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -622,7 +561,7 @@
                                     <br />
                                     <strong>${message(code: 'renewalEvaluation.period')}</strong>: ${period}
                                     <br />
-                                    <g:if test="${contextOrg.isCustomerType_Consortium()}">
+                                    <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                                         <strong>${message(code: 'surveyParticipants.label')}</strong>: ${object.membersCount}
                                     </g:if>
                                 </td>
@@ -631,9 +570,9 @@
                             <g:if test="${object.rectype == 'SurveyOrg'}">
                                 <td>
 
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
-                                        <i class="circular icon inverted pink chart pie"></i>
+                                        <i class="${Icon.SURVEY} circular inverted pink"></i>
                                     </span>
 
                                     <g:link controller="myInstitution" action="currentSurveys"
@@ -642,9 +581,9 @@
                                     <div class="ui grid">
                                         <div class="right aligned wide column">
                                             <g:if test="${object.visible == 'Private'}">
-                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                <span data-position="top right" class="la-popup-tooltip"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="shield alternate grey large icon"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -665,20 +604,19 @@
 
                             <g:if test="${object.rectype == 'Task'}">
                                 <td>
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
-                                        <i class="circular icon inverted green calendar check outline"></i>
+                                        <i class="${Icon.TASK} circular inverted green"></i>
                                     </span>
 
-                                    <g:link controller="myInstitution" action="tasks"
-                                            params="[taskName: object.name]">${object.name}</g:link>
+                                    <g:link controller="myInstitution" action="tasks" params="[taskName: object.name]">${object.name}</g:link>
 
                                     <div class="ui grid">
                                         <div class="right aligned wide column">
                                             <g:if test="${object.visible == 'Private'}">
-                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                <span data-position="top right" class="la-popup-tooltip"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="shield alternate grey large icon"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -703,10 +641,39 @@
                                     <strong>${message(code: 'default.description.label')}</strong>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
                                 </td>
                             </g:if>
+
+                            <g:if test="${object.rectype == 'Vendor'}">
+                                <td>
+                                    <span data-position="top right" class="la-popup-tooltip"
+                                          data-content="${message(code: 'spotlight.vendor')}">
+                                        <i class="circular icon la-${object.rectype.toLowerCase()}"></i>
+                                    </span>
+
+                                    <g:link controller="vendor" action="show" id="${object.dbId}">${object.name}</g:link>
+
+                                </td>
+                                <td>
+                                    <strong><g:message code="default.identifiers.label"/></strong>:
+                                    <div class="ui bulleted list">
+                                        <g:each in="${object.identifiers?.sort { it.type }}" var="id">
+                                            <div class="item">
+                                                ${id.type}: ${id.value} &nbsp;
+                                            </div>
+                                        </g:each>
+                                    </div>
+                                    <strong><g:message code="package.plural"/></strong>:
+                                    <div class="ui bulleted list">
+                                        <g:each in="${object.packages?.sort { it.pkg.name }}" var="pv">
+                                            <div class="item">
+                                                <g:link controller="package" action="show" id="${pv.pkg.dbId}">${pv.pkg.name}</g:link>
+                                            </div>
+                                        </g:each>
+                                    </div>
+                                </td>
+                            </g:if>
                             <g:if test="${object.rectype == 'Note'}">
                                 <td>
-
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
                                             <i class="circular icon inverted grey sticky note"></i>
                                     </span>
@@ -716,9 +683,9 @@
                                     <div class="ui grid">
                                         <div class="right aligned wide column">
                                             <g:if test="${object.visible == 'Private'}">
-                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                <span data-position="top right" class="la-popup-tooltip"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="shield alternate grey large icon"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -734,22 +701,20 @@
 
                             <g:if test="${object.rectype == 'Document'}">
                                 <td>
-
                                     <g:set var="docContext" value="${DocContext.get(object.dbId)}"/>
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
-                                        <i class="circular icon inverted grey file alternate outline"></i>
+                                        <i class="${Icon.DOCUMENT} circular inverted grey"></i>
                                     </span>
-
 
                                     <g:link controller="${object.objectClassName}" action="documents" id="${object.objectId}">${object.name}</g:link>
 
                                     <div class="ui grid">
                                         <div class="right aligned wide column">
                                             <g:if test="${object.visible == 'Private'}">
-                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                <span data-position="top right" class="la-popup-tooltip"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="shield alternate grey large icon"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -760,12 +725,11 @@
                                     <g:link controller="${object.objectClassName}" action="show" id="${object.objectId}">${object.objectName}</g:link>
                                     <br />
                                     <strong>${message(code: 'license.docs.table.type')}</strong>: ${docContext ? docContext.owner?.type?.getI10n('value'): ""}
-
                                 </td>
                             </g:if>
                             <g:if test="${object.rectype == 'IssueEntitlement'}">
                                 <td>
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
                                         <i class="circular la-book icon"></i>
                                     </span>
@@ -775,9 +739,9 @@
                                     <div class="ui grid">
                                         <div class="right aligned wide column">
                                             <g:if test="${object.visible == 'Private'}">
-                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                <span data-position="top right" class="la-popup-tooltip"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="shield alternate grey large icon"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -792,7 +756,7 @@
                             </g:if>
                             <g:if test="${object.rectype == 'SubscriptionProperty'}">
                                 <td>
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
                                         Subscription<i class="circular la-subscription icon"></i>
                                     </span>
@@ -802,9 +766,9 @@
                                     <div class="ui grid">
                                         <div class="right aligned wide column">
                                             <g:if test="${object.visible == 'Private'}">
-                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                <span data-position="top right" class="la-popup-tooltip"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="shield alternate grey large icon"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -819,7 +783,7 @@
                             </g:if>
                             <g:if test="${object.rectype == 'LicenseProperty'}">
                                 <td>
-                                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                                    <span data-position="top right" class="la-popup-tooltip"
                                           data-content="${message(code: "facet.so.rectype.${object.rectype.toLowerCase()}")}">
                                             <i class="circular la-license icon" ></i>
                                     </span>
@@ -829,9 +793,9 @@
                                     <div class="ui grid">
                                         <div class="right aligned wide column">
                                             <g:if test="${object.visible == 'Private'}">
-                                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                                <span data-position="top right" class="la-popup-tooltip"
                                                       data-content="${message(code: 'search.myObject')}">
-                                                    <i class="shield alternate grey large icon"></i>
+                                                    <i class="${Icon.PROP.IS_PRIVATE} grey large"></i>
                                                 </span>
                                             </g:if>
                                         </div>
@@ -848,9 +812,7 @@
                     </g:each>
                 </table>
 
-                <ui:paginate action="index" controller="search" params="${params}"
-                                max="${max}" total="${resultsTotal}"/>
-
+                <ui:paginate action="index" controller="search" params="${params}" max="${max}" total="${resultsTotal}"/>
             </div>
         </div>
 

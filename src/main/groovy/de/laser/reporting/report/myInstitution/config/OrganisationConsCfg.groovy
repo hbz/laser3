@@ -15,17 +15,12 @@ class OrganisationConsCfg extends BaseConfig {
                     source : [
                             'all-org',
                             'all-inst',
-                            'all-provider',
-                            'all-agency',
-                            'all-providerAndAgency',
                             'my-inst',
-                            'my-provider',
-                            'my-agency',
-                            'my-providerAndAgency'
                     ],
                     fields : [
+                            'apiLevel'          : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'country'           : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
-                            'region'            : [type: BaseConfig.FIELD_TYPE_REFDATA, spec: BaseConfig.FIELD_IS_VIRTUAL ],
+                            'region'            : [ type: BaseConfig.FIELD_TYPE_REFDATA, spec: BaseConfig.FIELD_IS_VIRTUAL ],
                             'customerType'      : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'eInvoice'          : [ type: BaseConfig.FIELD_TYPE_PROPERTY ],
                             'funderHskType'     : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
@@ -33,7 +28,6 @@ class OrganisationConsCfg extends BaseConfig {
                             'legalInfo'         : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'libraryNetwork'    : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
                             'libraryType'       : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
-                            'orgType'           : [ type: BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE ],
                             'propertyKey'       : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'propertyValue'     : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'subjectGroup'      : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ]    // TODO custom_impl
@@ -41,42 +35,24 @@ class OrganisationConsCfg extends BaseConfig {
                     filter : [
                             default : [
                                     [ 'country', 'region', 'subjectGroup', 'libraryType' ],
-                                    [ 'libraryNetwork', 'funderType', 'funderHskType' ] ,
-                                    [ 'orgType', 'eInvoice' ],
-                                    [ 'customerType', 'legalInfo' ],
+                                    [ 'libraryNetwork', 'funderType', 'funderHskType' ],
+                                    [ 'customerType', 'legalInfo', 'eInvoice' ],
                                     [ 'propertyKey', 'propertyValue' ]
-                            ],
-                            provider : [ // TODO : provider != agency
-                                    // all disabled
                             ]
                     ],
                     query : [
                             default : [
                                     org : [
-                                            'org-orgType' :         [ 'generic.org.orgType' ],
                                             'org-customerType' :    [ 'generic.org.customerType' ],
                                             'org-libraryType' :     [ 'generic.org.libraryType' ],
+                                            'org-apiLevel' :        [ 'generic.org.apiLevel' ],
+                                            'org-country' :         [ 'generic.org.country' ],
                                             'org-region' :          [ 'generic.org.region' ],
                                             'org-subjectGroup' :    [ 'generic.org.subjectGroup' ],
                                             'org-libraryNetwork' :  [ 'generic.org.libraryNetwork' ],
                                             'org-funderType' :      [ 'generic.org.funderType' ],
                                             'org-funderHskType' :   [ 'generic.org.funderHskType' ],
                                             'org-*' :               [ 'generic.all' ]
-                                    ]
-                            ],
-                            providerAndAgency : [
-                                    org : [
-                                            'org-orgType': [ 'generic.org.orgType' ]
-                                    ]
-                            ],
-                            provider : [
-                                    org : [
-                                            'org-orgType': [ 'generic.org.orgType' ]
-                                    ]
-                            ],
-                            agency : [
-                                    org : [
-                                            'org-orgType': [ 'generic.org.orgType' ]
                                     ]
                             ]
                     ],
@@ -91,7 +67,7 @@ class OrganisationConsCfg extends BaseConfig {
                                             detailsTemplate     : 'organisation',
                                             chartTemplate       : '2axis3values',
                                             chartLabels         : [ 'base', 'x.properties.2', 'x.properties.3' ]
-                                   ]
+                                   ],
                                     //'org-x-serverAccess' : 'Organisation nach Datenweitergabe',
                             ]
                     ]

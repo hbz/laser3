@@ -1,15 +1,17 @@
 
-## Details: Upgrade from [Grails 5.3.3](./grails5/details.md) to Grails 6.0.0
+## Details: Upgrade from [Grails 6.1.2](./grails6/details.md) to Grails 6.2.1
+
+### Database Migration Plugin
+
+Dependency *org.grails:grails-shell:6.1.2* added -> TODO: remove workaround
+
+### Asset Pipeline Plugin
+
+Splitted dependencies: gradle:4.4.0, core:4.4.0, grails:4.5.1 -> TODO: upgrade & remove workaround
 
 ### ExecutorGrailsPlugin
 
-*org.grails.plugins:grails-executor* is deprecated as Grails already has similar functionality build in. Replacement should take place.
-
-### ~~Fallbacks~~
-
-~~The following fallbacks have been set for faster migration. They can be treated later.~~
-
-* ~~hibernate.allow_update_outside_transaction: true~~
+*org.grails.plugins:grails-executor* is deprecated as Grails already has similar functionality build in -> TODO: replacement
 
 ### HTTP Status Codes
 
@@ -57,15 +59,15 @@ Todo: Websocket communication is broken after upgrading from Grails 4 to Grails 
 
 * #### Apache Commons IO
 
-    *org.apache.commons.io* is only used in one file.
+    *org.apache.commons.io* is only used in one file (Api).
 
 * #### GPars
 
-    *org.codehaus.gpars:gpars* is outdated and only used in ~~one file~~ two files.
+    *org.codehaus.gpars:gpars* is outdated and only used in ~~one file~~ two files (StatsSync, Yoda)
 
 * #### Juniversalchardet
 
-    *com.github.albfernandez:juniversalchardet* is ~~only used in one file.~~ used in two files.
+    *com.github.albfernandez:juniversalchardet* is ~~only used in one file.~~ used in three files  (AjaxHtml, MyInstitution, Survey).
 
 
 

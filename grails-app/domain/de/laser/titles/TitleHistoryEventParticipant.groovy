@@ -1,6 +1,6 @@
 package de.laser.titles
 
-import de.laser.TitleInstancePackagePlatform
+import de.laser.wekb.TitleInstancePackagePlatform
 
 /**
  * This class represents a participant {@link TitleInstancePackagePlatform} of a {@link TitleHistoryEvent}
@@ -19,8 +19,8 @@ class TitleHistoryEventParticipant {
     static mapping = {
         id          column: 'thep_id'
         version     column: 'thep_version'
-        event       column: 'thep_event_fk'
-        participant column: 'thep_participant_fk'
+        event       column: 'thep_event_fk',         index: 'thep_event_idx'
+        participant column: 'thep_participant_fk',   index: 'thep_participant_idx'
     participantRole column: 'thep_participant_role'
 
         dateCreated column: 'thep_date_created'

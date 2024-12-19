@@ -149,9 +149,11 @@
   width: 100%;
 }
 #container-tasks,
+#container-consortium,
 #container-documents,
 #container-notes,
 #container-provider,
+#container-vendor,
 #container-contacts,
 #container-billing,
 #container-links,
@@ -173,4 +175,22 @@
 .la-padding-left-07em {
   padding-top:1em;
   padding-left:.7em;
+}
+
+#login {
+    .card {
+      &.la-local {
+        box-shadow: 0px 4px 0px 0px @yellow;
+      }
+      &.la-dev {
+        box-shadow: 0px 4px 0px 0px @green;
+      }
+      &.la-qa {
+        box-shadow: 0px 4px 0px 0px @red;
+
+      }
+      &.la-test{
+        box-shadow: 0px 4px 0px 0px @blue;
+      }
+    }
 }

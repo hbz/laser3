@@ -34,6 +34,12 @@
         view:  '/path/pdf',
         model: []
     )
+    // or
+    byte[] pdf = PdfUtils.getPdf (
+        model,
+        PdfUtils.<FORMAT>,
+        view
+    )
     response.setHeader( 'Content-disposition', 'attachment; filename="test.pdf"' )
     response.setContentType( 'application/pdf' )
     response.outputStream.withStream{ it << pdf }

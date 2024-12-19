@@ -27,7 +27,7 @@
         else if (object.rectype == 'Org') {
             result << objMap + [
                 "url":   g.createLink(controller:"organisation", action:"show", id:"${object.dbId}"),
-                "category": (RDStore.OT_PROVIDER.value in object.type?.value || RDStore.OT_AGENCY.value in object.type?.value ) ? "${message(code: 'spotlight.provideragency')}" : "${message(code: "spotlight.${object.rectype.toLowerCase()}")}",
+                "category": "${message(code: "spotlight.${object.rectype.toLowerCase()}")}",
                 "description": ""
             ]
         }
@@ -45,41 +45,18 @@
                 "description": ""
             ]
         }
+        else if (object.rectype == 'Provider') {
+            result << objMap + [
+                    "url":   g.createLink(controller:"provider", action:"show", id:"${object.dbId}"),
+                    "category": "${message(code: "spotlight.${object.rectype.toLowerCase()}")}",
+                    "description": ""
+            ]
+        }
         else if (object.rectype == 'Subscription') {
             result << objMap + [
                 "url":   g.createLink(controller:"subscription", action:"show", id:"${object.dbId}"),
                 "category": "${message(code: "spotlight.${object.rectype.toLowerCase()}")}",
                 "description": "${statusString + ' ' +period}"
-            ]
-        }
-        else if (object.rectype == 'TitleInstance') {
-            result << objMap + [
-                "url":   g.createLink(controller:"title", action:"show", id:"${object.dbId}"),
-                "category": (object.typTitle == 'Journal') ? "${message(code: 'spotlight.journaltitle')}" :
-                                (object.typTitle == 'Database') ? "${message(code: 'spotlight.databasetitle')}" :
-                                        (object.typTitle == 'EBook') ? "${message(code: 'spotlight.ebooktitle')}" : "${message(code: 'spotlight.title')}",
-                "description": ""
-            ]
-        }
-        else if (object.rectype == 'BookInstance') {
-            result << objMap + [
-                    "url":   g.createLink(controller:"title", action:"show", id:"${object.dbId}"),
-                    "category": "${message(code: 'spotlight.ebooktitle')}",
-                    "description": ""
-            ]
-        }
-        else if (object.rectype == 'DatabaseInstance') {
-            result << objMap + [
-                    "url":   g.createLink(controller:"title", action:"show", id:"${object.dbId}"),
-                    "category": "${message(code: 'spotlight.databasetitle')}",
-                    "description": ""
-            ]
-        }
-        else if (object.rectype == 'JournalInstance') {
-            result << objMap + [
-                    "url":   g.createLink(controller:"title", action:"show", id:"${object.dbId}"),
-                    "category":  "${message(code: 'spotlight.journaltitle')}",
-                    "description": ""
             ]
         }
         else if (object.rectype == 'SurveyOrg') {
@@ -97,7 +74,15 @@
                     "category": "${message(code: "spotlight.${object.rectype.toLowerCase()}")}",
                     "description": "${statusString + ' ' +period}"
             ]
-        }else if (object.rectype == 'Note') {
+        }
+        else if (object.rectype == 'Vendor') {
+            result << objMap + [
+                    "url":   g.createLink(controller:"vendor", action:"show", id:"${object.dbId}"),
+                    "category": "${message(code: "spotlight.${object.rectype.toLowerCase()}")}",
+                    "description": ""
+            ]
+        }
+        else if (object.rectype == 'Note') {
             result << objMap + [
                     "url":   g.createLink(controller:"${object.objectClassName}", action:"notes", id:"${object.objectId}"),
                     "category": "${message(code: "spotlight.${object.rectype.toLowerCase()}")}",

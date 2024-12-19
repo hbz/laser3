@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.api.v0.ApiToolkit; de.laser.helper.Params; de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore" %>
 
 <%
     String lang = LocaleUtils.getCurrentLang()
@@ -20,13 +20,7 @@
             <g:if test="${field.equalsIgnoreCase('name')}">
                 <div class="field">
                     <label for="orgNameContains">
-                        <g:if test="${actionName in ['listProvider', 'currentProviders']}">
-                            <g:message code="org.search.provider.contains"/>
-                            <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'org.search.provider.contains.tooltip')}">
-                                <i class="question circle icon"></i>
-                            </span>
-                        </g:if>
-                        <g:else><g:message code="org.search.contains"/></g:else>
+                        <g:message code="org.search.contains"/>
                     </label>
                     <input type="text" id="orgNameContains" name="orgNameContains"
                            placeholder="${message(code:'default.search.ph')}"
@@ -68,7 +62,7 @@
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:set var="identifierNamespaces" value="${IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS, [sort: 'name_de'])}" scope="request"/>
                         <g:each in="${identifierNamespaces}" var="idns">
-                            <option <%=(params.list('identifierNamespace').contains(idns.id.toString())) ? 'selected="selected"' : '' %> value="${idns.id}">${idns.getI10n("name") ?: idns.ns}</option>
+                            <option <%=Params.getLongList(params, 'identifierNamespace').contains(idns.id) ? 'selected="selected"' : '' %> value="${idns.id}">${idns.getI10n("name") ?: idns.ns}</option>
                         </g:each>
                     </select>
                 </div>
@@ -83,6 +77,38 @@
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:each in="${[[id: 'value', value: message(code: 'org.customerIdentifier')], [id: 'requestorKey', value: message(code: 'org.requestorKey')]]}" var="cust">
                             <option <%=(params.list('customerIDNamespace').contains(cust.id)) ? 'selected="selected"' : '' %> value="${cust.id}">${cust.value}</option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:if>
+
+            <g:if test="${field.equalsIgnoreCase('apiLevel')}">
+                <div class="field">
+                    <label for="osApiLevel">
+                        <g:message code="org.apiLevel.label"/>
+                    </label>
+                    <select id="osApiLevel" name="osApiLevel" multiple="multiple" class="ui dropdown multiple">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:each in="${ApiToolkit.getAllApiLevels()}" var="alf">
+                            <option <%=(params.list('osApiLevel').contains(alf)) ? 'selected="selected"' : '' %> value="${alf}">
+                                ${alf}
+                            </option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:if>
+
+            <g:if test="${field.equalsIgnoreCase('serverAccess')}">
+                <div class="field">
+                    <label for="osServerAccess">
+                        <g:message code="org.serverAccess.label"/>
+                    </label>
+                    <select id="osServerAccess" name="osServerAccess" multiple="multiple" class="ui dropdown multiple">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:each in="${[OrgSetting.KEYS.NATSTAT_SERVER_ACCESS, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS, OrgSetting.KEYS.EZB_SERVER_ACCESS]}" var="saf">
+                            <option <%=(params.list('osServerAccess').contains(saf.toString())) ? 'selected="selected"' : '' %> value="${saf}">
+                                ${message(code:'org.setting.' + saf)}
+                            </option>
                         </g:each>
                     </select>
                 </div>
@@ -104,16 +130,6 @@
                             isMyXOptions.add([ id: 'ismyx_exclusive',   value: "${message(code:'filter.isMyX.exclusive', args:["${message(code:'menu.my.consortia')}"])}" ])
                             isMyXOptions.add([ id: 'ismyx_not',         value: "${message(code:'filter.isMyX.not')}" ])
                         }
-                        else if (actionName == 'listProvider') {
-                            isMyXOptions.add([ id: 'wekb_exclusive',    value: "${message(code:'filter.wekb.exclusive')}" ])
-                            isMyXOptions.add([ id: 'wekb_not',          value: "${message(code:'filter.wekb.not')}" ])
-                            isMyXOptions.add([ id: 'ismyx_exclusive',   value: "${message(code:'filter.isMyX.exclusive', args:["${message(code:'menu.my.providers')}"])}" ])
-                            isMyXOptions.add([ id: 'ismyx_not',         value: "${message(code:'filter.isMyX.not')}" ])
-                        }
-                        else if (actionName == 'currentProviders') {
-                            isMyXOptions.add([ id: 'wekb_exclusive',    value: "${message(code:'filter.wekb.exclusive')}" ])
-                            isMyXOptions.add([ id: 'wekb_not',          value: "${message(code:'filter.wekb.not')}" ])
-                        }
                     %>
                     <select id="isMyX" name="isMyX" class="ui selection fluid dropdown" multiple="">
                         <option value="">${message(code:'default.select.choose.label')}</option>
@@ -132,26 +148,11 @@
                 <div class="field">
                     <label for="privateContact">
                         <g:message code="contact.name"/>
-                        <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'org.search.contact.tooltip')}">
-                            <i class="question circle icon"></i>
+                        <span data-position="right center" data-variation="tiny" class="la-popup-tooltip" data-content="${message(code:'org.search.contact.tooltip')}">
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </label>
                     <input id="privateContact" name="privateContact" type="text" placeholder="${message(code: 'default.search.ph')}" value="${params.privateContact}"/>
-                </div>
-            </g:if>
-
-            <g:if test="${field.equalsIgnoreCase('type')}">
-                <div class="field">
-                    <label for="orgType">${message(code: 'org.orgType.label')}</label>
-                    <g:if test="${orgTypes == null || orgTypes.isEmpty()}">
-                        <g:set var="orgTypes" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.ORG_TYPE])}" scope="request"/>
-                    </g:if>
-                    <ui:select class="ui dropdown search" id="orgType" name="orgType"
-                                  from="${orgTypes}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  value="${params.orgType}"
-                                  noSelection="${['':message(code:'default.select.choose.label')]}"/>
                 </div>
             </g:if>
 
@@ -161,8 +162,12 @@
                     <g:if test="${orgStatusSet == null || orgStatusSet.isEmpty()}">
                         <g:set var="orgStatusSet" value="${RefdataCategory.getAllRefdataValues([RDConstants.ORG_STATUS])-RDStore.ORG_STATUS_REMOVED}" scope="request"/>
                     </g:if>
-                    <ui:select class="ui dropdown multiple search selection" id="orgStatus" name="orgStatus"
-                               from="${orgStatusSet}" optionKey="id" optionValue="value" value="${params.orgStatus}" />
+                    <select id="orgStatus" name="orgStatus" multiple="" class="ui selection fluid dropdown">
+                        <option value=""><g:message code="default.select.choose.label"/></option>
+                        <g:each in="${orgStatusSet}" var="orgStatus">
+                            <option <%=Params.getLongList(params, 'orgStatus').contains(orgStatus.id) ? 'selected="selected"' : ''%> value="${orgStatus.id}">${orgStatus.getI10n('value')}</option>
+                        </g:each>
+                    </select>
                 </div>
             </g:if>
 
@@ -182,37 +187,6 @@
                 </div>
             </g:if>
 
-            <g:if test="${field.equalsIgnoreCase('providerRole')}">
-                <div class="field">
-                    <label for="providerRole">${message(code: 'org.orgRole.label')}</label>
-                    <%
-                        Set<RefdataValue> providerRoles = [
-                                RDStore.OT_BROKER, RDStore.OT_CONTENT_PROVIDER, RDStore.OT_IMPRINT, RDStore.OT_ISSUING_BODY,
-                                RDStore.OT_LICENSEE, RDStore.OT_LICENSOR, RDStore.OT_PLATFORM_PROVIDER, RDStore.OT_PUBLISHER, RDStore.OT_VENDOR
-                        ]
-                    %>
-                    <select name="providerRole" id="providerRole" multiple="" class="ui fluid select dropdown search">
-                        <option value="">${message(code:'default.select.choose.label')}</option>
-                        <g:each in="${providerRoles}" var="providerRole">
-                            <option <%= (params.list('providerRole').contains(providerRole.id.toString())) ? 'selected="selected"' : '' %> value="${providerRole.id}">${providerRole.value}</option>
-                        </g:each>
-                    </select>
-                </div>
-            </g:if>
-
-            <g:if test="${field.equalsIgnoreCase('sector')}">
-                <div class="field">
-                    <label for="orgSector">${message(code: 'org.sector.label')}</label>
-                    <g:set var="orgSectors" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.ORG_SECTOR])}" scope="request"/>
-                    <ui:select class="ui dropdown search" id="orgSector" name="orgSector"
-                                  from="${orgSectors}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  value="${params.orgSector}"
-                                  noSelection="${['':message(code:'default.select.choose.label')]}"/>
-                </div>
-            </g:if>
-
             <g:if test="${field.equalsIgnoreCase('country&region')}">
                 <laser:render template="/templates/filter/orgRegionsFilter" />
             </g:if>
@@ -224,7 +198,7 @@
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:set var="libraryNetworks" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.LIBRARY_NETWORK])}" scope="request"/>
                         <g:each in="${libraryNetworks}" var="rdv">
-                            <option <%=(params.list('libraryNetwork').contains(rdv.id.toString())) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
+                            <option <%=Params.getLongList(params, 'libraryNetwork').contains(rdv.id) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
                         </g:each>
                     </select>
                 </div>
@@ -237,7 +211,7 @@
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:set var="libraryTypes" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.LIBRARY_TYPE])}" scope="request"/>
                         <g:each in="${libraryTypes}" var="rdv">
-                            <option <%=(params.list('libraryType').contains(rdv.id.toString())) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
+                            <option <%=Params.getLongList(params, 'libraryType').contains(rdv.id) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
                         </g:each>
                     </select>
                 </div>
@@ -274,7 +248,7 @@
                     <select id="legallyObligedBy" name="legallyObligedBy" multiple="" class="ui search select dropdown">
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:each in="${legalObligations}" var="legalObligation">
-                            <option <%=(params.list('legallyObligedBy').contains(legalObligation.id.toString())) ? 'selected="selected"' : '' %> value="${legalObligation.id}">${legalObligation.sortname}</option>
+                            <option <%=Params.getLongList(params, 'legallyObligedBy').contains(legalObligation.id) ? 'selected="selected"' : '' %> value="${legalObligation.id}">${legalObligation.sortname}</option>
                         </g:each>
                     </select>
                 </div>
@@ -282,14 +256,12 @@
             <g:if test="${field.equalsIgnoreCase('customerType')}">
                 <div class="field">
                     <label for="customerType">${message(code:'org.customerType.label')}</label>
-                    <ui:select id="customerType" name="customerType"
-                                  from="${[Role.findByAuthority('FAKE')] + Role.findAllByRoleType('org')}"
-                                  optionKey="id"
-                                  optionValue="authority"
-                                  value="${params.customerType}"
-                                  class="ui dropdown"
-                                  noSelection="${['':message(code:'default.select.choose.label')]}"
-                    />
+                    <select id="customerType" name="customerType" multiple="" class="ui dropdown search">
+                        <option value=""><g:message code="default.select.choose.label"/></option>
+                        <g:each in="${[Role.findByAuthority('FAKE')] + Role.findAllByRoleType('org')}" var="rr">
+                            <option <%=Params.getLongList(params, 'customerType').contains(rr.id) ? 'selected="selected"' : ''%> value="${rr.id}">${rr.getI10n('authority')}</option>
+                        </g:each>
+                    </select>
                 </div>
             </g:if>
             <g:if test="${field.equalsIgnoreCase('providers')}">
@@ -299,23 +271,12 @@
                         <option value="">${message(code: 'default.select.choose.label')}</option>
 
                         <g:each in="${providers.sort { it.name }}" var="provider">
-                            <option <%=(params.list('filterPvd').contains(provider.id.toString())) ? 'selected="selected"' : ''%>
+                            <option <%=Params.getLongList(params, 'filterPvd').contains(provider.id) ? 'selected="selected"' : ''%>
                                     value="${provider.id}">
                                 ${provider.name}
                             </option>
                         </g:each>
                     </select>
-                </div>
-            </g:if>
-            <g:if test="${field.equalsIgnoreCase('curatoryGroup')}">
-                <div class="field">
-                    <label for="curatoryGroup">${message(code: 'package.curatoryGroup.label')}</label>
-                    <g:select class="ui fluid search select dropdown" name="curatoryGroup"
-                              from="${curatoryGroups.sort{it.name.toLowerCase()}}"
-                              optionKey="name"
-                              optionValue="name"
-                              value="${params.curatoryGroup}"
-                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
                 </div>
             </g:if>
             <g:if test="${field.equalsIgnoreCase('subscription')}">
@@ -324,7 +285,7 @@
                     <select id="subscription" name="subscription" multiple="" class="ui selection fluid dropdown">
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:each in="${subscriptions}" var="sub">
-                            <option <%=(params.list('subscription').contains(sub.id.toString())) ? 'selected="selected"' : '' %> value="${sub.id}">${sub.dropdownNamingConvention()}</option>
+                            <option <%=Params.getLongList(params, 'subscription').contains(sub.id) ? 'selected="selected"' : '' %> value="${sub.id}">${sub.dropdownNamingConvention()}</option>
                         </g:each>
                     </select>
                 </div>
@@ -332,20 +293,13 @@
             <g:if test="${field.equalsIgnoreCase('subStatus')}">
                 <div class="field">
                     <label for="subStatus">${message(code:'subscription.status.label')}</label>
-                    <ui:select id="subStatus" name="subStatus"
-                                  from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  value="${params.subStatus}"
-                                  class="ui dropdown"
-                                  noSelection="${['':message(code:'default.select.choose.label')]}"
-                    />
-                    <%--<select id="subscriptionStatus" name="subscription" multiple="" class="ui selection fluid dropdown">
+                    <select id="subStatus" name="subStatus" multiple="" class="ui selection fluid dropdown">
                         <option value="">${message(code:'default.select.choose.label')}</option>
-                        <g:each in="${subscriptions}" var="sub">
-                            <option <%=(params.list('subscription').contains(sub.id.toString())) ? 'selected="selected"' : '' %> value="${sub.id}">${sub.dropdownNamingConvention()}</option>
+                        <option value="${RDStore.GENERIC_NULL_VALUE.id}" <%=Params.getLongList(params, 'subStatus').contains(RDStore.GENERIC_NULL_VALUE.id) ? 'selected="selected"' : '' %>>${message(code:'subscription.status.noSubscription')}</option>
+                        <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" var="subStatus">
+                            <option <%=Params.getLongList(params, 'subStatus').contains(subStatus.id) ? 'selected="selected"' : '' %> value="${subStatus.id}">${subStatus.getI10n('value')}</option>
                         </g:each>
-                    </select>--%>
+                    </select>
                 </div>
             </g:if>
             <g:if test="${field.equalsIgnoreCase('subValidOn')}">
@@ -402,7 +356,33 @@
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:set var="subjectGroups" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.SUBJECT_GROUP])}" scope="request"/>
                         <g:each in="${subjectGroups}" var="rdv">
-                            <option <%=(params.list('subjectGroup').contains(rdv.id.toString())) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
+                            <option <%=Params.getLongList(params, 'subjectGroup').contains(rdv.id) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:if>
+
+            <g:if test="${field.equalsIgnoreCase('discoverySystemsFrontend')}">
+                <div class="field">
+                    <label for="discoverySystemsFrontend">${message(code: 'org.discoverySystems.frontend.label')}</label>
+                    <select id="discoverySystemsFrontend" name="discoverySystemsFrontend" multiple="" class="ui selection fluid dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:set var="frontends" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.DISCOVERY_SYSTEM_FRONTEND])}" scope="request"/>
+                        <g:each in="${frontends}" var="rdv">
+                            <option <%=Params.getLongList(params, 'discoverySystemsFrontend').contains(rdv.id) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:if>
+
+            <g:if test="${field.equalsIgnoreCase('discoverySystemsIndex')}">
+                <div class="field">
+                    <label for="discoverySystemsIndex">${message(code: 'org.discoverySystems.index.label')}</label>
+                    <select id="discoverySystemsIndex" name="discoverySystemsIndex" multiple="" class="ui selection fluid dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:set var="indices" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.DISCOVERY_SYSTEM_INDEX])}" scope="request"/>
+                        <g:each in="${indices}" var="rdv">
+                            <option <%=Params.getLongList(params, 'discoverySystemsIndex').contains(rdv.id) ? 'selected="selected"' : '' %> value="${rdv.id}">${rdv.getI10n("value")}</option>
                         </g:each>
                     </select>
                 </div>
@@ -439,11 +419,11 @@
 
 <div class="field la-field-right-aligned">
 
-        <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
+        <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
 
         <input name="filterSet" type="hidden" value="true">
         <g:if test="${tmplConfigFormFilter}">
-            <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui primary button" onclick="JSPC.app.formFilter(event)" />
+            <input type="submit" value="${message(code:'default.button.filter.label')}" class="${Btn.PRIMARY}" onclick="JSPC.app.formFilter(event)" />
             <laser:script file="${this.getGroovyPageFileName()}">
                 JSPC.app.formFilter = function (e) {
                     e.preventDefault()
@@ -458,7 +438,7 @@
             </laser:script>
         </g:if>
         <g:else>
-            <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui primary button"/>
+            <input type="submit" value="${message(code:'default.button.filter.label')}" class="${Btn.PRIMARY}"/>
         </g:else>
 
 </div>

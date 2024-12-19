@@ -28,8 +28,9 @@ class Counter4Report extends AbstractReport {
     /**
      * ex Counter4ApiSource; these are the report types supported by COUNTER Revision 4
      */
-    static List<String> COUNTER_4_TITLE_REPORTS = [JOURNAL_REPORT_1, JOURNAL_REPORT_1_GOA, JOURNAL_REPORT_2, JOURNAL_REPORT_5,
-                                                   BOOK_REPORT_1, BOOK_REPORT_2, BOOK_REPORT_3, BOOK_REPORT_4, BOOK_REPORT_5]
+    static List<String> COUNTER_4_BOOK_REPORTS = [BOOK_REPORT_1, BOOK_REPORT_2, BOOK_REPORT_3, BOOK_REPORT_4, BOOK_REPORT_5]
+    static List<String> COUNTER_4_JOURNAL_REPORTS = [JOURNAL_REPORT_1, JOURNAL_REPORT_1_GOA, JOURNAL_REPORT_2, JOURNAL_REPORT_5]
+    static List<String> COUNTER_4_TITLE_REPORTS = COUNTER_4_BOOK_REPORTS+COUNTER_4_JOURNAL_REPORTS
     static List<String> COUNTER_4_DATABASE_REPORTS = [DATABASE_REPORT_1, DATABASE_REPORT_2]
     static List<String> COUNTER_4_PLATFORM_REPORTS = [PLATFORM_REPORT_1]
     static List<String> COUNTER_4_REPORTS       = COUNTER_4_TITLE_REPORTS+COUNTER_4_PLATFORM_REPORTS+COUNTER_4_DATABASE_REPORTS
@@ -93,9 +94,9 @@ class Counter4Report extends AbstractReport {
         JR3 (['ft_ps', 'ft_pdf', 'ft_html', 'ft_epub', 'ft_total', 'toc', 'abstract', 'reference', 'data_set', 'audio', 'video', 'image', 'podcast', 'multimedia', 'record_view', 'result_click', 'turnaway', 'no_license'] as LinkedHashSet<String>),
         JR4 (['search_reg', 'search_fed', 'turnaway', 'no_license'] as LinkedHashSet<String>),
         JR5 (['ft_ps', 'ft_pdf', 'ft_html', 'ft_total', 'toc', 'abstract', 'reference', 'data_set', 'audio', 'video', 'image', 'podcast', 'multimedia', 'record_view', 'result_click', 'turnaway', 'no_license'] as LinkedHashSet<String>),
-        DB1 (['search_reg', 'search_fed', 'turnaway', 'no_license', 'ft_html', 'ft_total'] as LinkedHashSet<String>), //ft_html and ft_total are non-standard convenience metrics for VDE
-        DB2 (['search_reg', 'search_fed', 'turnaway', 'no_license', 'ft_html', 'ft_total'] as LinkedHashSet<String>), //ft_html and ft_total are non-standard convenience metrics for VDE
-        PR1 (['search_reg', 'search_fed', 'turnaway', 'no_license', 'ft_html', 'ft_total'] as LinkedHashSet<String>), //ft_html and ft_total are non-standard convenience metrics for VDE
+        DB1 (['ft_html', 'ft_total', 'search_reg', 'search_fed', 'turnaway', 'no_license'] as LinkedHashSet<String>), //ft_html and ft_total are non-standard convenience metrics for VDE
+        DB2 (['ft_html', 'ft_total', 'search_reg', 'search_fed', 'turnaway', 'no_license'] as LinkedHashSet<String>), //ft_html and ft_total are non-standard convenience metrics for VDE
+        PR1 (['ft_html', 'ft_total', 'search_reg', 'search_fed', 'turnaway', 'no_license'] as LinkedHashSet<String>), //ft_html and ft_total are non-standard convenience metrics for VDE
         BR1 (['ft_ps', 'ft_pdf', 'ft_html', 'ft_total', 'toc', 'abstract', 'reference', 'data_set', 'audio', 'video', 'image', 'podcast', 'multimedia', 'record_view', 'result_click', 'turnaway', 'no_license'] as LinkedHashSet<String>),
         BR2 (['ft_ps', 'ft_pdf', 'ft_html', 'ft_total', 'sectioned_html', 'toc', 'abstract', 'reference', 'data_set', 'audio', 'video', 'image', 'podcast', 'multimedia', 'record_view', 'result_click', 'turnaway', 'no_license'] as LinkedHashSet<String>),
         BR3 (['ft_ps', 'ft_pdf', 'ft_html', 'ft_total', 'toc', 'abstract', 'reference', 'data_set', 'audio', 'video', 'image', 'podcast', 'multimedia', 'record_view', 'result_click', 'turnaway', 'no_license'] as LinkedHashSet<String>),

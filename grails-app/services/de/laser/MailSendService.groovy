@@ -5,6 +5,7 @@ import de.laser.config.ConfigMapper
 import de.laser.properties.PropertyDefinition
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
@@ -26,6 +27,7 @@ import javax.servlet.http.HttpServletRequest
 @Transactional
 class MailSendService {
 
+    ContextService contextService
     EscapeService escapeService
     MessageSource messageSource
     SurveyService surveyService
@@ -52,23 +54,40 @@ class MailSendService {
      * @return a {@link Map} containing the details of the mail to be sent
      */
     Map mailSendConfigBySurvey(SurveyInfo surveyInfo, boolean reminderMail) {
+        Map<String, Object> result =  mailSendConfigBySurveys([surveyInfo], reminderMail)
+        result
+    }
+
+    /**
+     * Identical to {@link #mailSendConfigBySurvey(de.laser.survey.SurveyInfo, boolean)}, but expecting a list whose first element is being processed
+     * @param surveys the survey and its members to be notified
+     * @param reminderMail is the mail a reminder mail?
+     * @return a {@link Map} containing the details of the mail to be sent
+     */
+    Map mailSendConfigBySurveys(List<SurveyInfo> surveys, boolean reminderMail) {
         Map<String, Object> result = [:]
+
+        String ownerReplyTo
+        if(OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
+            ownerReplyTo = OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
+        }
+
+        result.replyTo = ownerReplyTo ?: ''
         result.mailFrom = fromMail
         result.mailSubject = ""
         result.mailText = ""
 
         Locale language = new Locale("de")
-
+        Object[] args
         result.mailSubject = subjectSystemPraefix
         if(reminderMail) {
-            Object[] args
-            result.mailSubject = result.mailSubject + ' ' + messageSource.getMessage('email.subject.surveysReminder', args, language)
+            result.mailSubject = result.mailSubject + ' ' + messageSource.getMessage('email.subject.surveysReminder', args, language) + ' ' + surveys[0].name
         }
 
-        result.mailSubject = result.mailSubject + ' ' + surveyInfo.name + ' ('+surveyInfo.type.getI10n('value', language)+')'
+        result.mailSubject = result.mailSubject + ' ' + messageSource.getMessage('survey.plural', args, language) + ' ' + surveys[0].name
         result.mailSubject = escapeService.replaceUmlaute(result.mailSubject)
 
-        result.mailText = surveyService.surveyMailTextAsString(surveyInfo, reminderMail)
+        result.mailText = surveyService.surveysMailTextAsString(surveys, reminderMail)
 
 
         result
@@ -88,6 +107,12 @@ class MailSendService {
         Map<String, Object> result = [:]
 
         FlashScope flash = getCurrentFlashScope()
+
+        String ownerReplyTo
+        if(OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
+            ownerReplyTo = OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
+        }
+
         result.mailFrom = fromMail
         result.mailSubject = parameterMap.mailSubject
 
@@ -98,6 +123,23 @@ class MailSendService {
 
         if (parameterMap.selectedOrgs && result.editable) {
             result.surveyConfig = surveyInfo.surveyConfigs[0]
+            String replyToMail
+
+            if(ownerReplyTo){
+                replyToMail = ownerReplyTo
+            }else {
+                List generalContactsEMails = []
+
+                surveyInfo.owner.getGeneralContactPersons(true)?.each { person ->
+                    person.contacts.each { contact ->
+                        if (RDStore.CCT_EMAIL == contact.contentType) {
+                            generalContactsEMails << contact.content
+                        }
+                    }
+                }
+
+                replyToMail = (generalContactsEMails.size() > 0) ? generalContactsEMails[0].toString() : null
+            }
 
             parameterMap.list('selectedOrgs').each { soId ->
 
@@ -160,21 +202,12 @@ class MailSendService {
 //                    }
 //                }
 
-                List<User> formalUserList = result.orgList ? User.findAllByFormalOrgInList(result.orgList) : []
-                List<String> userSurveyNotification = []
-
-                formalUserList.each { fu ->
-                    if (fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
-                            fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES) {
-                        userSurveyNotification << fu.email
-                    }
-                }
-
 
                 AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
                     multipart true
                     to email
                     from result.mailFrom
+                    replyTo replyToMail
                     subject result.mailSubject
                     text parameterMap.mailText
                 }
@@ -221,6 +254,106 @@ class MailSendService {
     }
 
     /**
+     * Identical to {@link #mailSendProcessBySurvey(de.laser.survey.SurveyInfo, boolean, grails.web.servlet.mvc.GrailsParameterMap)} but expecting a list whose first element is being processed
+     * @param surveys the survey whose participants should be notified
+     * @param reminderMail is this a reminder mail?
+     * @param parameterMap the request parameter map, containing also the mail header and body which are being submitted via form
+     * @return a ${link Map} containing the details of and about the mail to be send
+     * @see #mailSendConfigBySurveys(java.util.List, boolean)
+     * @see SurveyInfo
+     */
+    Map mailSendProcessBySurveys(List<SurveyInfo> surveys, boolean reminderMail, Org org, GrailsParameterMap parameterMap) {
+        Map<String, Object> result = [:]
+
+        FlashScope flash = getCurrentFlashScope()
+
+        String ownerReplyTo
+        if(OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
+            ownerReplyTo = OrgSetting.get(surveys[0].owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
+        }
+
+        result.mailFrom = fromMail
+        result.mailSubject = parameterMap.mailSubject
+
+        result.editable = contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_PRO )
+
+        if (result.editable) {
+            String replyToMail
+            if(ownerReplyTo){
+                replyToMail = ownerReplyTo
+            }else{
+                List generalContactsEMails = []
+
+                surveys[0].owner.getGeneralContactPersons(true)?.each { person ->
+                    person.contacts.each { contact ->
+                        if (RDStore.CCT_EMAIL == contact.contentType) {
+                            generalContactsEMails << contact.content
+                        }
+                    }
+                }
+
+                replyToMail = (generalContactsEMails.size() > 0) ? generalContactsEMails[0].toString() : null
+            }
+
+
+            surveys.each { surveyInfo ->
+                SurveyConfig surveyConfig = surveyInfo.surveyConfigs[0]
+
+                if (reminderMail) {
+                    SurveyOrg.withTransaction { TransactionStatus ts ->
+                        SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(org, surveyConfig)
+
+                        surveyOrg.reminderMailDate = new Date()
+                        surveyOrg.save()
+
+                        if (surveyConfig.subSurveyUseForTransfer) {
+                            surveyConfig.subscription.reminderSent = true
+                            surveyConfig.subscription.reminderSentDate = new Date()
+                        }
+                    }
+                }
+
+            }
+
+            List emailAddressesToSend = []
+
+            if (parameterMap.emailAddresses) {
+                parameterMap.emailAddresses.split('; ').each {
+                    emailAddressesToSend << it.trim()
+                }
+            }
+
+            if (parameterMap.userSurveyNotificationMails) {
+                parameterMap.userSurveyNotificationMails.split('; ').each {
+                    emailAddressesToSend << it.trim()
+                }
+            }
+
+            emailAddressesToSend = emailAddressesToSend.unique()
+
+            emailAddressesToSend.each { String email ->
+
+                AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
+                    multipart true
+                    to email
+                    from result.mailFrom
+                    replyTo replyToMail
+                    subject result.mailSubject
+                    text parameterMap.mailText
+                }
+            }
+        }
+        Locale language = new Locale("de")
+        Object[] args
+
+
+        flash.message = messageSource.getMessage('mail.send.success', args, language)
+
+
+        result
+    }
+
+    /**
      * Sends a mail about the survey to the given user of the given institution about the given surveys
      * @param user the user to be notified
      * @param org the institution of the user
@@ -248,17 +381,29 @@ class MailSendService {
                             ccAddress = user.getSetting(UserSetting.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
                         }
 
-                        List generalContactsEMails = []
-
-                        survey.owner.getGeneralContactPersons(true)?.each { person ->
-                            person.contacts.each { contact ->
-                                if (['Mail', 'E-Mail'].contains(contact.contentType?.value)) {
-                                    generalContactsEMails << contact.content
-                                }
-                            }
+                        String ownerReplyTo
+                        if(OrgSetting.get(survey.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
+                            ownerReplyTo = OrgSetting.get(survey.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
                         }
 
-                        replyToMail = (generalContactsEMails.size() > 0) ? generalContactsEMails[0].toString() : null
+                        String mailFrom = fromMail
+
+                        if(ownerReplyTo){
+                            replyToMail = ownerReplyTo
+                        }else {
+
+                            List generalContactsEMails = []
+
+                            survey.owner.getGeneralContactPersons(true)?.each { person ->
+                                person.contacts.each { contact ->
+                                    if (RDStore.CCT_EMAIL == contact.contentType) {
+                                        generalContactsEMails << contact.content
+                                    }
+                                }
+                            }
+                            replyToMail = (generalContactsEMails.size() > 0) ? generalContactsEMails[0].toString() : null
+                        }
+
                         Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value.toString())
                         String mailSubject = subjectSystemPraefix
                         if(reminderMail) {
@@ -273,7 +418,7 @@ class MailSendService {
                             AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
                                 multipart true
                                 to emailReceiver
-                                from fromMail
+                                from mailFrom
                                 cc ccAddress
                                 replyTo replyToMail
                                 subject mailSubject
@@ -284,7 +429,7 @@ class MailSendService {
                             AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
                                 multipart true
                                 to emailReceiver
-                                from fromMail
+                                from mailFrom
                                 replyTo replyToMail
                                 subject mailSubject
                                 text view: "/mailTemplates/text/notificationSurvey", model: [language: language, survey: survey, reminder: reminderMail]
@@ -345,7 +490,7 @@ class MailSendService {
 
                     surveyInfo.owner.getGeneralContactPersons(true)?.each { person ->
                         person.contacts.each { contact ->
-                            if (['Mail', 'E-Mail'].contains(contact.contentType?.value)) {
+                            if (RDStore.CCT_EMAIL == contact.contentType) {
                                 generalContactsEMails << contact.content
                             }
                         }
@@ -363,7 +508,7 @@ class MailSendService {
 
                             List surveyResults = []
 
-                            surveyInfo.surveyConfigs[0].getSortedSurveyProperties().each { PropertyDefinition propertyDefinition ->
+                            surveyInfo.surveyConfigs[0].getSortedProperties().each { PropertyDefinition propertyDefinition ->
                                 surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participationFinish, surveyInfo.surveyConfigs[0], propertyDefinition)
                             }
 
@@ -373,14 +518,14 @@ class MailSendService {
                                     from fromMail
                                     cc ccAddress
                                     subject mailSubject
-                                    html(view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, survey: surveyInfo, surveyResults: surveyResults, generalContactsEMails: generalContactsEMails])
+                                    html(view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, org: participationFinish, survey: surveyInfo, surveyResults: surveyResults, generalContactsEMails: generalContactsEMails])
                                 }
                             } else {
                                 AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
                                     to emailReceiver
                                     from fromMail
                                     subject mailSubject
-                                    html(view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, survey: surveyInfo, surveyResults: surveyResults, generalContactsEMails: generalContactsEMails])
+                                    html(view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, org: participationFinish, survey: surveyInfo, surveyResults: surveyResults, generalContactsEMails: generalContactsEMails])
                                 }
                             }
 
@@ -410,6 +555,41 @@ class MailSendService {
         }
 
         if (surveyInfo.owner) {
+            List surveyResults = []
+
+            surveyInfo.surveyConfigs[0].getSortedProperties().each { PropertyDefinition propertyDefinition ->
+                surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participationFinish, surveyInfo.surveyConfigs[0], propertyDefinition)
+            }
+
+            String mailFinishResult
+            if(OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT) != OrgSetting.SETTING_NOT_FOUND){
+                mailFinishResult = OrgSetting.get(surveyInfo.owner, OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT).strValue
+            }
+
+            if(mailFinishResult){
+                Locale language = new Locale('de')
+                String mailSubject = subjectSystemPraefix
+
+                SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(surveyInfo.surveyConfigs[0], participationFinish)
+                if(surveyOrg && surveyOrg.orgInsertedItself) {
+                    Object[] args
+                    mailSubject = mailSubject + messageSource.getMessage('default.new', args, language) + ' '
+                }
+
+                mailSubject = mailSubject + surveyInfo.name +  ' (' + surveyInfo.type.getI10n('value', language) + ') ['
+                mailSubject = mailSubject + participationFinish.sortname + ']'
+
+                mailSubject = escapeService.replaceUmlaute(mailSubject)
+
+                AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
+                    to mailFinishResult
+                    from fromMail
+                    subject mailSubject
+                    html(view: "/mailTemplates/html/notificationSurveyParticipationFinishForOwner", model: [org: participationFinish, survey: surveyInfo, surveyResults: surveyResults])
+                }
+            }
+
+
             //Only User that approved
             List<User> formalUserList = surveyInfo.owner ? User.findAllByFormalOrg(surveyInfo.owner) : []
 
@@ -442,12 +622,6 @@ class MailSendService {
                             String ccAddress = null
                             if (isNotificationCCbyEmail) {
                                 ccAddress = user.getSetting(UserSetting.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
-                            }
-
-                            List surveyResults = []
-
-                            surveyInfo.surveyConfigs[0].getSortedSurveyProperties().each { PropertyDefinition propertyDefinition ->
-                                surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participationFinish, surveyInfo.surveyConfigs[0], propertyDefinition)
                             }
 
                             if (isNotificationCCbyEmail && ccAddress) {

@@ -5,7 +5,7 @@
         <a role="button"
            class="ui button la-modern-button"
            data-ui="modal" href="#${tmplModalID}"
-           class="la-popup-tooltip la-delay">
+           class="la-popup-tooltip">
             <g:if test="${tmplButtonText}">
                 ${tmplButtonText}
             </g:if>
@@ -22,7 +22,7 @@
             break
         case 'provider':
             lookupName = "lookupProvidersAgencies"
-            instanceType = message(code:"default.provider.label")
+            instanceType = message(code:"provider.label")
             break
     }
 %>
@@ -52,7 +52,7 @@
     <laser:script file="${this.getGroovyPageFileName()}">
         $("#${linkField}").dropdown({
             apiSettings: {
-                url: "<g:createLink controller="ajaxJson" action="${lookupName}"/>?status=FETCH_ALL&query={query}",
+                url: "<g:createLink controller="ajaxJson" action="${lookupName}"/>?query={query}",
                 cache: false
             },
             clearable: true,

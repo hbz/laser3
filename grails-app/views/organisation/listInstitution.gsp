@@ -1,5 +1,5 @@
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService" %>
-<laser:htmlStart message="menu.public.all_insts" serviceInjection="true"/>
+<%@ page import="de.laser.ExportClickMeService; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService" %>
+<laser:htmlStart message="menu.public.all_insts" />
         <g:set var="entityName" value="${message(code: 'org.label')}" />
 
     <ui:breadcrumbs>
@@ -9,7 +9,7 @@
     <ui:controlButtons>
         <ui:exportDropdown>
             <ui:exportDropdownItem>
-                <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
+                <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.INSTITUTIONS, exportFileName: message(code: 'menu.institutions')]"/>
             </ui:exportDropdownItem>
         </ui:exportDropdown>
 
@@ -34,7 +34,8 @@
                               tmplConfigShow: [
                                       ['name', 'orgStatus', 'isLegallyObliged'],
                                       ['identifier', 'identifierNamespace', 'customerIDNamespace', 'isMyX'],
-                                      ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup']
+                                      ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'],
+                                      ['discoverySystemsFrontend', 'discoverySystemsIndex']
                               ],
                               tmplConfigFormFilter: true
                       ]"/>
@@ -63,6 +64,7 @@
 
     <ui:paginate action="listInstitution" params="${params}" max="${max}" total="${consortiaMemberTotal}" />
 
-    <laser:render template="/myInstitution/export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'institution', contactSwitch: true]" />
+
+<g:render template="/clickMe/export/js"/>
 
 <laser:htmlEnd />

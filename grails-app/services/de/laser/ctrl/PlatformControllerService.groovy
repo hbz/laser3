@@ -1,7 +1,7 @@
 package de.laser.ctrl
 
 import de.laser.ContextService
-import de.laser.Platform
+import de.laser.wekb.Platform
 import de.laser.SubscriptionPackage
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
@@ -132,18 +132,6 @@ class PlatformControllerService {
         [result:result,status:STATUS_OK]
     }
 
-    /**
-     * Deactivates the given access point link
-     * @param params the access point link to deactivate
-     * @return OK if the updating was successful, ERROR otherwise
-     */
-    Map<String,Object> removeAccessPoint(GrailsParameterMap params) {
-        Map<String,Object> result = [:]
-        OrgAccessPointLink aoplInstance = OrgAccessPointLink.get(params.oapl_id)
-        aoplInstance.delete()
-        [result:result,status:STATUS_OK]
-    }
-
     //--------------------------------------------- helper section -------------------------------------------------
 
     /**
@@ -157,10 +145,11 @@ class PlatformControllerService {
 
         result.user = contextService.getUser()
         result.institution = contextService.getOrg()
-        result.contextOrg = result.institution //temp fixPlatform platformInstance = Platform.get(params.id)
 
         result.platformInstance = Platform.get(params.id)
-        int relationCheck = Platform.executeQuery('select count(sp) from SubscriptionPackage sp join sp.pkg pkg where pkg.nominalPlatform = :plat and sp.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true)))',[plat: result.platformInstance, context: result.institution, current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED])[0]
+        int relationCheck = Platform.executeQuery(
+                'select count(sp) from SubscriptionPackage sp join sp.pkg pkg where pkg.nominalPlatform = :plat and sp.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :context and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true)))',
+                [plat: result.platformInstance, context: contextService.getOrg(), current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED])[0]
         result.isMyPlatform = relationCheck > 0
         result
     }

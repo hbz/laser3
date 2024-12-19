@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.storage.RDConstants; de.laser.RefdataValue;de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.helper.Params; de.laser.utils.LocaleUtils; de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.storage.RDConstants; de.laser.RefdataValue;de.laser.storage.RDStore;" %>
 
 <g:set var="languageSuffix" value="${LocaleUtils.getCurrentLang()}"/>
 
@@ -6,8 +6,8 @@
     <label for="filterCountry">${message(code: 'org.country.label')}</label>
     <select id="filterCountry" name="country" multiple="" class="ui search selection fluid dropdown">
         <option value="">${message(code: 'default.select.choose.label')}</option>
-        <g:each in="${RefdataCategory.getAllRefdataValues([RDConstants.COUNTRY])}" var="rdv">
-            <option <%=(params.list('country').contains(rdv.id.toString())) ? 'selected="selected"' : ''%>
+        <g:each in="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.COUNTRY)}" var="rdv">
+            <option <%=Params.getLongList(params, 'country').contains(rdv.id) ? 'selected="selected"' : ''%>
                     value="${rdv.id}">${rdv.getI10n("value")}</option>
         </g:each>
     </select>
@@ -26,11 +26,14 @@
         JSPC.app.updateDropdown = function () {
             var dropdownRegion = $('#filterRegion');
             var selectedCountry = $("#filterCountry").val();
-            var selectedRegions = ${raw(params.list('region') as String)};
+            var selectedRegions = [];
+            <g:each in="${params.list('region')}" var="region">
+                selectedRegions.push(${region});
+            </g:each>
 
             dropdownRegion.empty();
-            dropdownRegion.append('<option selected="true" disabled>${message(code: 'default.select.choose.label')}</option>');
-            dropdownRegion.prop('selectedIndex', 0);
+            //dropdownRegion.append('<option selected="true" disabled>${message(code: 'default.select.choose.label')}</option>');
+            //dropdownRegion.prop('selectedIndex', 0);
 
             $.ajax({
                 url: '<g:createLink controller="ajaxJson" action="getRegions"/>' + '?country=' + selectedCountry + '&format=json',

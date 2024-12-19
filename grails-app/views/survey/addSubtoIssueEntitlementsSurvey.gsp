@@ -1,6 +1,6 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.IssueEntitlementGroup;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.IssueEntitlementGroup;" %>
 
-<laser:htmlStart message="createIssueEntitlementsSurvey.label" serviceInjection="true" />
+<laser:htmlStart message="createIssueEntitlementsSurvey.label" />
 
 <ui:breadcrumbs>
 
@@ -54,7 +54,7 @@
             <textarea class="la-textarea-resize-vertical" name="comment">${params.comment}</textarea>
         </div>
 
-        <input type="submit" class="ui button"
+        <input type="submit" class="${Btn.SIMPLE}"
                value="${message(code: 'createIssueEntitlementsSurvey.create')}"/>
 
 </ui:form>

@@ -1,10 +1,9 @@
-<%@ page import="de.laser.I10nTranslation; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory" %>
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.ui.Icon; de.laser.I10nTranslation; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory; grails.plugin.springsecurity.SpringSecurityUtils" %>
 
 <laser:htmlStart message="menu.institutions.prop_defs" />
-    <g:set var="entityName" value="${message(code: 'org.label')}" />
 
     <ui:breadcrumbs>
+        <ui:crumb controller="org" action="show" id="${contextService.getOrg().id}" text="${contextService.getOrg().getDesignation()}"/>
         <ui:crumb message="menu.institutions.manage_props" class="active" />
     </ui:breadcrumbs>
 
@@ -27,7 +26,7 @@
 			<g:each in="${propertyDefinitions}" var="entry">
                 <div class="title">
                     <i class="dropdown icon"></i>
-                    <g:message code="propertyDefinition.${entry.key}.label" default="${entry.key}" />
+                    <g:message code="propertyDefinition.${entry.key}.label" default="${entry.key}" /> (${entry.value.size()})
                 </div>
                 <div class="content">
                     <table class="ui celled la-js-responsive-table la-table compact table">
@@ -37,26 +36,31 @@
                             <th>${message(code:'default.name.label')}</th>
                             <th>${message(code:'propertyDefinition.expl.label')}</th>
                             <th>${message(code:'default.type.label')}</th>
+                            <th></th>
                         </tr>
                         </thead>
                         <tbody>
                             <g:each in="${entry.value}" var="pd">
                                 <tr>
                                     <td>
-                                        <g:if test="${pd.isHardData}">
-                                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
-                                                <i class="check circle icon green"></i>
+                                        <g:if test="${!pd.isHardData}">
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.not.tooltip')}">
+                                                <i class="${Icon.PROP.HARDDATA_NOT}"></i>
+                                            </span>
+                                        </g:if>
+                                        <g:if test="${pd.mandatory}">
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.mandatory.tooltip')}">
+                                                <i class="${Icon.PROP.MANDATORY}"></i>
                                             </span>
                                         </g:if>
                                         <g:if test="${pd.multipleOccurrence}">
-                                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
-                                                <i class="redo icon orange"></i>
+                                            <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
+                                                <i class="${Icon.PROP.MULTIPLE}"></i>
                                             </span>
                                         </g:if>
-
                                         <g:if test="${pd.isUsedForLogic}">
-                                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
-                                                <i class="ui icon red cube"></i>
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
+                                                <i class="${Icon.PROP.LOGIC}"></i>
                                             </span>
                                         </g:if>
                                     </td>

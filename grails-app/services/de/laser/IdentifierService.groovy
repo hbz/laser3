@@ -3,7 +3,8 @@ package de.laser
 
 import de.laser.ctrl.LicenseControllerService
 import de.laser.utils.LocaleUtils
-import de.laser.storage.RDStore
+import de.laser.wekb.Provider
+import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
 import org.springframework.context.MessageSource
 
@@ -29,7 +30,7 @@ class IdentifierService {
         def owner = genericOIDService.resolveOID(ownerKey)
         def target = genericOIDService.resolveOID(targetKey)
         if (owner && target) {
-            if (target.ns.ns in IdentifierNamespace.CORE_ORG_NS) {
+            if (target.ns.ns in IdentifierNamespace.CORE_ORG_NS && owner instanceof Org) {
                 Org org = (Org) owner
                 if(Identifier.countByNsAndOrg(target.ns, org) == 1) {
                     target.value = IdentifierNamespace.UNKNOWN
@@ -57,10 +58,11 @@ class IdentifierService {
      * @return a parameter map for the object ID table
      */
     Map<String, Object> prepareIDsForTable(object, Org contextOrg = contextService.getOrg()) {
-        boolean objIsOrgAndInst = object instanceof Org && object.getAllOrgTypeIds().contains(RDStore.OT_INSTITUTION.id)
+        boolean objIsOrgAndInst = object instanceof Org
         Locale locale = LocaleUtils.getCurrentLocale()
         String lang = LocaleUtils.decodeLocale(locale)
-        List<IdentifierNamespace> nsList = IdentifierNamespace.executeQuery('select idns from IdentifierNamespace idns where (idns.nsType = :objectType or idns.nsType = null) and idns.isFromLaser = true order by idns.name_'+lang+' asc',[objectType:object.class.name])
+        String objectType = (object instanceof Provider || object instanceof Vendor) ? Org.class.name : object.class.name
+        List<IdentifierNamespace> nsList = IdentifierNamespace.executeQuery('select idns from IdentifierNamespace idns where (idns.nsType = :objectType or idns.nsType = null) and idns.isFromLaser = true order by idns.name_'+lang+' asc',[objectType:objectType])
         Map<String, SortedSet> objectIds = [:]
         if(!objIsOrgAndInst && object.hasProperty("gokbId") && object.gokbId) {
             SortedSet idSet = new TreeSet()

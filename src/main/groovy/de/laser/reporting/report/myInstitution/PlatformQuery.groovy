@@ -9,12 +9,12 @@ import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 
 class PlatformQuery extends BaseQuery {
-
-    static List<String> PROPERTY_QUERY = [ 'select p.id, p.value_de, count(*) ', ' group by p.id, p.value_de order by p.value_de' ]
 
     static Map<String, Object> query(GrailsParameterMap params) {
 
@@ -32,17 +32,17 @@ class PlatformQuery extends BaseQuery {
 
         //println 'PlatformQuery.query() -> ' + params.query + ' : ' + suffix
 
-        Closure sharedQuery_platform_org = {
-            // println 'sharedQuery_platform_org()'
-            handleGenericAllQuery(
-                    params.query,
-                    'select org.name, org.name, count(*) from Platform plt join plt.org org where plt.id in (:idList) group by org.name order by org.name',
-                    'select plt.id from Platform plt where plt.id in (:idList) and plt.org.name = :d order by plt.name',
-                    idList,
-                    result
-            )
-            handleGenericNonMatchingData(params.query, 'select plt.id from Platform plt where plt.id in (:idList) and plt.org is null order by plt.name', idList, result)
-        }
+//        Closure sharedQuery_platform_org = {
+//            // println 'sharedQuery_platform_org()'
+//            handleGenericAllQuery(
+//                    params.query,
+//                    'select org.name, org.name, count(*) from Platform plt join plt.org org where plt.id in (:idList) group by org.name order by org.name',
+//                    'select plt.id from Platform plt where plt.id in (:idList) and plt.org.name = :d order by plt.name',
+//                    idList,
+//                    result
+//            )
+//            handleGenericNonMatchingData(params.query, 'select plt.id from Platform plt where plt.id in (:idList) and plt.org is null order by plt.name', idList, result)
+//        }
         Closure sharedQuery_platform_primaryUrl = {
             // println 'sharedQuery_platform_primaryUrl()'
             handleGenericAllQuery(
@@ -92,9 +92,9 @@ class PlatformQuery extends BaseQuery {
 
             _processSimpleRefdataQuery(params.query, suffix, idList, result)
         }
-        else if ( suffix in ['org']) {
-            sharedQuery_platform_org()
-        }
+//        else if ( suffix in ['org']) {
+//            sharedQuery_platform_org()
+//        }
         else if ( suffix in ['primaryUrl']) {
             sharedQuery_platform_primaryUrl()
         }
@@ -152,8 +152,32 @@ class PlatformQuery extends BaseQuery {
                 handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_DATA_LABEL, (idList - orphanedIdList - positiveIdSet.toList()), result)
                 _handleGenericNoCounterpartData_TMP(params.query, orphanedIdList, result)
             }
-            else if (params.query in ['platform-x-org']) {
-                sharedQuery_platform_org()
+//            else if (params.query in ['platform-x-org']) {
+//                sharedQuery_platform_org()
+//            }
+            else if (params.query in ['platform-x-provider']) {
+
+                result.data = idList ? Provider.executeQuery(
+                        'select pro.id, pro.name, count(*) from Platform plt join plt.provider pro where pro.id in (:providerIdList) and plt.id in (:idList) group by pro.id order by pro.name',
+                        [providerIdList: BaseFilter.getCachedFilterIdList('provider', params), idList: idList]
+                ) : []
+
+                result.data.each { d ->
+                    result.dataDetails.add([
+                            query : params.query,
+                            id    : d[0],
+                            label : d[1],
+                            idList: Platform.executeQuery(
+                                    'select plt.id from Platform plt join plt.provider pro where plt.id in (:idList) and pro.id = :d order by plt.name',
+                                    [idList: idList, d: d[0]]
+                            )
+                    ])
+                }
+
+                List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
+                List<Long> noDataList = nonMatchingIdList ? Platform.executeQuery('select plt.id from Platform plt where plt.id in (:idList)', [idList: nonMatchingIdList]) : []
+
+                handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_PROVIDER_LABEL, noDataList, result)
             }
             else if (params.query in ['platform-x-primaryUrl']) {
                 sharedQuery_platform_primaryUrl()
@@ -166,8 +190,8 @@ class PlatformQuery extends BaseQuery {
 
         handleGenericRefdataQuery(
                 query,
-                PROPERTY_QUERY[0] + 'from Platform plt join plt.' + refdata + ' p where plt.id in (:idList)' + PROPERTY_QUERY[1],
-                'select plt.id from Platform plt join plt.' + refdata + ' p where plt.id in (:idList) and p.id = :d order by plt.name',
+                REFDATA_QUERY[0] + 'from Platform plt join plt.' + refdata + ' ref where plt.id in (:idList)' + REFDATA_QUERY[1],
+                'select plt.id from Platform plt join plt.' + refdata + ' ref where plt.id in (:idList) and ref.id = :d order by plt.name',
                 'select distinct plt.id from Platform plt where plt.id in (:idList) and plt.'+ refdata + ' is null',
                 idList,
                 result
@@ -187,7 +211,7 @@ class PlatformQuery extends BaseQuery {
             struct.get(key).add( Long.parseLong(it.key) )
         }
         struct.eachWithIndex { it, idx ->
-            List d = [BaseQuery.NO_DATA_ID, getChartLabel(BaseQuery.NO_DATA_LABEL), it.value.size()]
+            List d = [BaseQuery.FAKE_DATA_ID_1, getChartLabel(BaseQuery.NO_DATA_LABEL), it.value.size()]
             if (it.key) {
                 RefdataValue rdv = RefdataValue.getByValueAndCategory(it.key, rdCategory)
                 if (rdv) {

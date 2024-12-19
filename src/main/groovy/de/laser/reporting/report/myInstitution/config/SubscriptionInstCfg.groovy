@@ -1,7 +1,9 @@
 package de.laser.reporting.report.myInstitution.config
 
 import de.laser.Org
+import de.laser.wekb.Provider
 import de.laser.Subscription
+import de.laser.wekb.Vendor
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 
 class SubscriptionInstCfg extends BaseConfig {
@@ -19,7 +21,7 @@ class SubscriptionInstCfg extends BaseConfig {
                             'inst-sub-local'
                     ],
                     fields : [
-                            'annual'                : [type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, spec: BaseConfig.FIELD_IS_MULTIPLE ],    // TODO custom_impl
+                            'annual'                : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, spec: BaseConfig.FIELD_IS_MULTIPLE ],    // TODO custom_impl
                             'endDateLimit'          : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'form'                  : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
                             'hasPerpetualAccess'    : [ type: BaseConfig.FIELD_TYPE_PROPERTY ],
@@ -29,18 +31,17 @@ class SubscriptionInstCfg extends BaseConfig {
                             'kind'                  : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
                             'propertyKey'           : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'propertyValue'         : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                            'referenceYear'         : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'resource'              : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
                             'startDateLimit'        : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'status'                : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
                             //'type'                : [ type: FIELD_TYPE_REFDATA ],
-                            //'manualRenewalDate'       : [ type: FIELD_TYPE_PROPERTY ],
-                            //'manualCancellationDate'  : FIELD_TYPE_PROPERTY
                     ],
                     filter : [
                             default : [
                                     [ 'form', 'kind', 'status' ],
                                     [ 'resource', 'hasPublishComponent', 'hasPerpetualAccess' ],
-                                    [ 'isPublicForApi', 'isMultiYear' ],
+                                    [ 'isPublicForApi', 'isMultiYear', 'referenceYear' ],
                                     [ 'startDateLimit', 'endDateLimit', 'annual' ],
                                     [ 'propertyKey', 'propertyValue' ]
                             ]
@@ -52,6 +53,7 @@ class SubscriptionInstCfg extends BaseConfig {
                                              'subscription-kind' :                   [ 'generic.sub.kind' ],
                                              'subscription-resource' :               [ 'generic.sub.resource' ],
                                              'subscription-status' :                 [ 'generic.sub.status' ],
+                                             'subscription-referenceYear' :          [ 'generic.sub.referenceYear' ],
                                              'subscription-isMultiYear' :            [ 'generic.sub.isMultiYear' ],
                                              'subscription-manualCancellationDate' : [ 'generic.sub.manualCancellationDate' ],
                                              'subscription-*' :                      [ 'generic.all' ]
@@ -75,16 +77,31 @@ class SubscriptionInstCfg extends BaseConfig {
                                              chartTemplate      : 'annual',
                                              chartLabels        : []
                                      ],
+                                     'subscription-x-license' : [
+                                             detailsTemplate     : 'subscription',
+                                             chartTemplate       : 'generic',
+                                             chartLabels         : []
+                                     ],
+                                     'subscription-x-licenseCategory' : [
+                                             detailsTemplate     : 'subscription',
+                                             chartTemplate       : 'generic',
+                                             chartLabels         : []
+                                     ],
                                      'subscription-x-provider' : [
                                              detailsTemplate    : 'subscription',
-                                             chartTemplate      : 'generic',
-                                             chartLabels        : []
+                                             chartTemplate      : '2axis2values_nonMatches', // generic
+                                             chartLabels        : [ 'x.providers.1', 'x.providers.2' ] // []
                                      ],
-                                     'subscription-x-platform' : [
-                                             detailsTemplate    : 'subscription',
-                                             chartTemplate      : '2axis2values_nonMatches',
-                                             chartLabels        : [ 'x.platforms.1', 'x.platforms.2' ]
-                                     ]
+                                     'subscription-x-vendor' : [
+                                            detailsTemplate     : 'subscription',
+                                            chartTemplate       : '2axis2values_nonMatches', // generic
+                                            chartLabels         : [ 'x.vendors.1', 'x.vendors.2' ] // []
+                                    ],
+//                                     'subscription-x-platform' : [ // TODO
+//                                             detailsTemplate    : 'subscription',
+//                                             chartTemplate      : '2axis2values_nonMatches',
+//                                             chartLabels        : [ 'x.platforms.1', 'x.platforms.2' ]
+//                                     ]
                             ]
                     ]
             ],
@@ -107,7 +124,6 @@ class SubscriptionInstCfg extends BaseConfig {
                             'legalInfo'         : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                             'libraryNetwork'    : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
                             'libraryType'       : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
-                            //'orgType'           : [ type: FIELD_TYPE_REFDATA_JOINTABLE ],
                             'subjectGroup'      : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL ]    // TODO custom_impl
                     ],
                     filter : [
@@ -120,7 +136,6 @@ class SubscriptionInstCfg extends BaseConfig {
                     query : [
                             default : [
                                     consortium : [
-                                             //'consortium-orgType :        [ 'generic.org.orgType' ],
                                              //'consortium-customerType' :  [ 'generic.org.customerType' ],
                                              'consortium-libraryType' :     [ 'generic.org.libraryType' ],
                                              'consortium-region' :          [ 'generic.org.region' ],
@@ -136,55 +151,43 @@ class SubscriptionInstCfg extends BaseConfig {
 
             provider : [
                     meta : [
-                            class:  Org,
+                            class:  Provider,
                             cfgKey: BaseConfig.KEY_SUBSCRIPTION
                     ],
                     source : [
                             'depending-provider'
                     ],
                     fields : [
-                            'country'   : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
-                            'region'    : [type: BaseConfig.FIELD_TYPE_REFDATA, spec: BaseConfig.FIELD_IS_VIRTUAL ],
-                            'orgType'   : [ type: BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE ]
+                            'status' : [ type: BaseConfig.FIELD_TYPE_REFDATA ]
                     ],
                     filter : [
-                            default : []
+                            default : [
+                                    [ 'status' ],
+                            ]
                     ],
                     query : [
-                            default : [
-                                    provider : [
-                                               'provider-orgType' : [ 'generic.org.orgType'],
-                                               'provider-*' :       [ 'generic.all']
-                                              // 'provider-country'
-                                              // 'provider-region'
-                                    ]
-                            ]
+                            default : BaseConfig.GENERIC_PROVIDER_QUERY_DEFAULT
                     ]
             ],
 
-            agency : [
+            vendor : [
                     meta : [
-                            class:  Org,
+                            class:  Vendor,
                             cfgKey: BaseConfig.KEY_SUBSCRIPTION
                     ],
                     source : [
-                            'depending-agency'
+                            'depending-vendor'
                     ],
                     fields : [
-                            'country'   : [ type: BaseConfig.FIELD_TYPE_REFDATA ],
-                            'region'    : [type: BaseConfig.FIELD_TYPE_REFDATA, spec: BaseConfig.FIELD_IS_VIRTUAL ],
-                            'orgType'   : [ type: BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE ]
+                            'status' : [ type: BaseConfig.FIELD_TYPE_REFDATA ]
                     ],
                     filter : [
-                            default : []
+                            default : [
+                                    [ 'status' ],
+                            ]
                     ],
                     query : [
-                            default : [
-                                    agency : [
-                                           'agency-orgType' : [ 'generic.org.orgType' ],
-                                           'agency-*' :       [ 'generic.all' ]
-                                    ]
-                            ]
+                            default : BaseConfig.GENERIC_VENDOR_QUERY_DEFAULT
                     ]
             ]
     ]

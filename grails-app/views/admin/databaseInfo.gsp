@@ -76,6 +76,11 @@
                 </td>
             </tr>
             <tr>
+                <td>Statement Timeout</td>
+                <td>${dbInfo.default.dbStmtTimeout}</td>
+                <td>${dbInfo.storage.dbStmtTimeout}</td>
+            </tr>
+            <tr>
                 <td>Conflicts</td>
                 <td>${dbInfo.default.dbConflicts}</td>
                 <td>${dbInfo.storage.dbConflicts}</td>

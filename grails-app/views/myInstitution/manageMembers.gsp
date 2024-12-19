@@ -1,10 +1,10 @@
-<%@ page import="de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ExportClickMeService; de.laser.storage.RDStore" %>
 
     <g:set var="entityName" value="${message(code: 'org.label')}"/>
     <g:set var="title" value="${message(code: 'menu.my.insts')}"/>
     <g:set var="memberPlural" value="${message(code: 'consortium.member.plural')}"/>
 
-<laser:htmlStart text="${title}" serviceInjection="true" />
+<laser:htmlStart text="${title}" />
 
 <ui:breadcrumbs>
     <ui:crumb text="${title}" class="active"/>
@@ -13,7 +13,7 @@
 <ui:controlButtons>
     <ui:exportDropdown>
         <ui:exportDropdownItem>
-            <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
+            <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.INSTITUTIONS]"/>
         </ui:exportDropdownItem>
         <%--
         <g:if test="${filterSet}">
@@ -53,8 +53,8 @@
 
 <ui:messages data="${flash}"/>
     <%
-        List configShowFilter = [['name', 'identifier'], ['identifierNamespace', 'customerIDNamespace'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'], ['property&value', 'subStatus', 'subValidOn'], ['subPerpetualAccess'], ['providers']]
-        List configShowTable = ['sortname', 'name', 'mainContact', 'libraryType', 'status', 'legalInformation', 'numberOfSubscriptions', 'numberOfSurveys']
+        List configShowFilter = [['name', 'identifier'], ['identifierNamespace', 'customerIDNamespace'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'], ['discoverySystemsFrontend', 'discoverySystemsIndex'], ['property&value', 'subStatus', 'subValidOn'], ['subPerpetualAccess'], ['providers']]
+        List configShowTable = ['sortname', 'name', 'mainContact', 'libraryType', 'status', 'legalInformation', 'numberOfSubscriptions', 'numberOfSurveys', 'mailInfos']
 
         if (contextService.getOrg().isCustomerType_Support()) {
             configShowFilter = [['name', 'identifier'], ['identifierNamespace', 'customerIDNamespace'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'], ['property&value', 'subStatus', 'subValidOn']]
@@ -73,7 +73,6 @@
     </ui:filter>
 <div class="la-clear-before">
     <g:if test="${members}">
-        <laser:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'institution', contactSwitch: true]" />
         <g:form action="manageMembers" controller="myInstitution" method="post" class="ui form la-clear-before" data-confirm-id="manageMembers_form">
             <g:if test="${params.filterSet}">
                 <g:hiddenField name="filterSet" value="true"/>
@@ -87,7 +86,7 @@
 
 
         <g:if test="${members && editable}">
-            <input type="submit" class="ui button js-open-confirm-modal" data-confirm-id="manageMembers"
+            <input type="submit" class="${Btn.NEGATIVE_CONFIRM}" data-confirm-id="manageMembers"
                    data-confirm-tokenMsg="${message(code:'members.confirmDelete')}"
                    data-confirm-term-how="unlink" value="${message(code: 'default.button.revoke.label')}"/>
         </g:if>
@@ -108,5 +107,7 @@
     <ui:debugInfo>
         <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
     </ui:debugInfo>
+
+<g:render template="/clickMe/export/js"/>
 
 <laser:htmlEnd />

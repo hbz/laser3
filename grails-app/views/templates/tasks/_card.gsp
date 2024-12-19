@@ -1,11 +1,8 @@
-<%@page import="de.laser.storage.RDStore" %>
+<%@page import="de.laser.AccessService; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
-<%--OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${userService.hasFormalAffiliation(user, institution, 'INST_EDITOR')} @ ${institution}--%>
-<g:set var="overwriteEditable" value="${editable || userService.hasFormalAffiliation(user, institution, 'INST_EDITOR')}" />
-
-<ui:card message="task.plural" class="notes la-js-hideable ${css_class}" href="#modalCreateTask" editable="${overwriteEditable}">
-    <div class="ui relaxed divided list  la-js-dont-hide-this-card">
+<ui:card message="task.plural" class="tasks ${css_class}" href="#modalCreateTask" editable="${editable}">
+    <div class="ui relaxed divided list">
     <g:each in="${tasks}" var="tsk">
         <g:if test="${tsk.status == RDStore.TASK_STATUS_DONE}">
             <g:set var="icon" value="check circle outline"/>
@@ -20,71 +17,43 @@
             <g:set var="tooltip" value="${message(code: 'tooltip.pausedTask')}"/>
         </g:elseif>
 
+        <g:set var="overwriteEditable" value="${accessService.hasAccessToTask(tsk, AccessService.WRITE)}" />
+
             <div class="item">
-                <g:if test="${overwriteEditable}">
+                <g:if test="${overwriteEditable}"> %{-- TODO: responsibleOrg == contextService.getOrg() + INST_ADM ? --}%
                     <div class="right floated content">
-                        <g:link action="deleteTask" controller="ajax"
-                                class="ui icon negative button la-modern-button la-modern-button js-open-confirm-modal"
+                        <g:link action="deleteTask" controller="task"
+                                class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
                                 data-confirm-term-how="delete"
                                 params='[deleteId:tsk.id, id: params.id, returnToShow: controllerName]'
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="trash alternate outline icon"></i>
+                            <i class="${Icon.CMD.DELETE}"></i>
                         </g:link>
                     </div>
                 </g:if>
-                <i class="large la-list-icon la-popup-tooltip la-delay icon ${icon}" data-content="${tooltip}"></i>
+                <i class="large la-list-icon la-popup-tooltip icon ${icon}" data-content="${tooltip}"></i>
                 <div class="content">
-                    <a class="header la-js-toggle-showThis" onclick="JSPC.app.editTask(${tsk.id});">${tsk.title}</a>
-                    <g:if test="${controllerName != 'organisation' && controllerName != 'survey'}">
-                        <a class="header la-js-toggle-hideThis" onclick="JSPC.app.readTask(${tsk.id});">${tsk.title}</a>
+                    <g:if test="${overwriteEditable}">
+                        <a class="header" onclick="JSPC.app.editTask(${tsk.id});">${tsk.title}</a>
                     </g:if>
+                    <g:else>
+                        <a class="header" onclick="JSPC.app.readTask(${tsk.id});">${tsk.title}</a>
+                    </g:else>
                     <div class="description">${message(code:'task.endDate.label')}
                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk.endDate}"/>
                     </div>
                 </div>
+
             </div>
-
-
-        %{--<div class="ui grid la-js-dont-hide-this-card">
-            <div class="twelve wide column summary">
-
-                    <g:if test="${tsk.status == RDStore.TASK_STATUS_DONE}">
-                        <i class="large la-list-icon la-popup-tooltip la-delay icon check circle outline"></i>
-                    </g:if>
-                    <g:elseif test="${tsk.status == RDStore.TASK_STATUS_OPEN}">
-                        <i class="large la-list-icon la-popup-tooltip la-delay icon la-open"></i>
-                    </g:elseif>
-                    <g:elseif test="${tsk.status == RDStore.TASK_STATUS_DEFERRED}">
-                        <i class="large la-list-icon la-popup-tooltip la-delay icon pause circle outline"></i>
-                    </g:elseif>
-                    <a onclick="JSPC.app.editTask(${tsk.id});">${tsk.title}</a>
-
-                <div class="content">
-                    ${message(code:'task.endDate.label')}
-                    <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk.endDate}"/>
-                </div>
-            </div>
-            <div class="right aligned four wide column la-column-left-lessPadding">
-                <g:link action="deleteTask" controller="ajax"
-                        class="ui icon negative button la-modern-button la-modern-button js-open-confirm-modal"
-                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
-                        data-confirm-term-how="delete"
-                        params='[deleteId:tsk.id, id: params.id, returnToShow: controllerName]'
-                        role="button"
-                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                    <i class="trash alternate outline icon"></i>
-                </g:link>
-            </div>
-        </div>--}%
     </g:each>
     </div>
 </ui:card>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.editTask = function (id) {
-        var func = bb8.ajax4SimpleModalFunction("#modalEditTask", "<g:createLink controller="ajaxHtml" action="editTask"/>?id=" + id, true);
+        var func = bb8.ajax4SimpleModalFunction("#modalEditTask", "<g:createLink controller="ajaxHtml" action="editTask"/>?id=" + id);
         func();
     }
     JSPC.app.readTask = function (id) {

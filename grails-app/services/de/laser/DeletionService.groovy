@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.addressbook.Person
 import de.laser.api.v0.ApiToolkit
 import de.laser.auth.User
 import de.laser.finance.*
@@ -12,10 +13,17 @@ import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
+import de.laser.system.SystemAnnouncement
 import de.laser.system.SystemProfiler
 import de.laser.titles.TitleHistoryEvent
 import de.laser.titles.TitleHistoryEventParticipant
 import de.laser.traces.DeletedObject
+import de.laser.convenience.Marker
+import de.laser.wekb.Package
+import de.laser.wekb.TIPPCoverage
+import de.laser.wekb.TitleInstancePackagePlatform
+import de.laser.workflow.WfChecklist
+import de.laser.workflow.WfCheckpoint
 import groovy.util.logging.Slf4j
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.client.RequestOptions
@@ -62,6 +70,7 @@ class DeletionService {
         List ref_instanceOf         = License.findAllByInstanceOf(lic)
 
         List tasks                  = Task.findAllByLicense(lic)
+        List workflows              = WfChecklist.findAllByLicense(lic)
         List propDefGroupBindings   = PropertyDefinitionGroupBinding.findAllByLic(lic)
         AuditConfig ac              = AuditConfig.getConfig(lic)
 
@@ -81,6 +90,7 @@ class DeletionService {
 
         result.info << ['Links: Verträge bzw. Lizenzen', links]
         result.info << ['Aufgaben', tasks]
+        result.info << ['Workflows', workflows]
         result.info << ['Merkmalsgruppen', propDefGroupBindings]
         //result.info << ['Lizenzen', links.findAll { row -> row.linkType == RDStore.LINKTYPE_LICENSE }]
         result.info << ['Vererbungskonfigurationen', ac ? [ac] : []]
@@ -161,6 +171,12 @@ class DeletionService {
 
                     // tasks
                     tasks.each{ tmp -> tmp.delete() }
+
+                    // workflows
+                    workflows.each { tmp ->
+                        WfCheckpoint.executeUpdate('delete from WfCheckpoint cp where cp.checklist = :tmp', [tmp: tmp])
+                        tmp.delete()
+                    }
 
                     // property groups and bindings
                     propDefGroupBindings.each{ tmp -> tmp.delete() }
@@ -248,6 +264,7 @@ class DeletionService {
         List links = Links.where { sourceSubscription == sub || destinationSubscription == sub }.findAll()
 
         List tasks                  = Task.findAllBySubscription(sub)
+        List workflows              = WfChecklist.findAllBySubscription(sub)
         List propDefGroupBindings   = PropertyDefinitionGroupBinding.findAllBySub(sub)
         AuditConfig ac              = AuditConfig.getConfig(sub)
 
@@ -260,6 +277,8 @@ class DeletionService {
 
         List ies = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription = :sub order by ie.id', [sub: sub])
 
+        List ieGroups = IssueEntitlementGroup.executeQuery('select ig.id from IssueEntitlementGroup ig where ig.sub = :sub order by ig.id', [sub: sub])
+
         Org contextOrg = contextService.getOrg()
         List nonDeletedCosts = new ArrayList(sub.costItems.findAll { CostItem ci -> ci.costItemStatus != RDStore.COST_ITEM_DELETED && ci.owner == contextOrg })
         List deletedCosts   = new ArrayList(sub.costItems.findAll { CostItem ci -> ci.costItemStatus == RDStore.COST_ITEM_DELETED || ci.owner != contextOrg })
@@ -267,7 +286,7 @@ class DeletionService {
         List privateProps   = new ArrayList(sub.propertySet.findAll { it.type.tenant != null })
         List customProps    = new ArrayList(sub.propertySet.findAll { it.type.tenant == null })
 
-        List surveys        = sub.instanceOf ? SurveyOrg.findAllByOrgAndSurveyConfig(sub.getSubscriber(), SurveyConfig.findAllBySubscription(sub.instanceOf)) : SurveyConfig.findAllBySubscription(sub)
+        List surveys        = sub.instanceOf ? SurveyOrg.findAllByOrgAndSurveyConfig(sub.getSubscriberRespConsortia(), SurveyConfig.findAllBySubscription(sub.instanceOf)) : SurveyConfig.findAllBySubscription(sub)
 
         SurveyInfo surveyInfo
         // collecting informations
@@ -279,6 +298,7 @@ class DeletionService {
 
         result.info << ['Links: Lizenzen', links.findAll { it.linkType == RDStore.LINKTYPE_LICENSE }]
         result.info << ['Aufgaben', tasks]
+        result.info << ['Workflows', workflows]
         result.info << ['Merkmalsgruppen', propDefGroupBindings]
         result.info << ['Vererbungskonfigurationen', ac ? [ac] : []]
 
@@ -289,6 +309,7 @@ class DeletionService {
         result.info << ['Pakete', subPkgs]
         result.info << ['Anstehende Änderungen', pendingChanges]
         result.info << ['IssueEntitlements', ies]
+        result.info << ['Titel-Gruppen', ieGroups]
         //TODO is a temporary solution for ERMS-2535 and is subject of refactoring!
         result.info << ['nicht gelöschte Kosten', nonDeletedCosts, FLAG_BLOCKER]
         result.info << ['gelöschte Kosten', deletedCosts]
@@ -356,6 +377,12 @@ class DeletionService {
                     // tasks
                     tasks.each{ tmp -> tmp.delete() }
 
+                    // workflows
+                    workflows.each { tmp ->
+                        WfCheckpoint.executeUpdate('delete from WfCheckpoint cp where cp.checklist = :tmp', [tmp: tmp])
+                        tmp.delete()
+                    }
+
                     // property groups and bindings
                     propDefGroupBindings.each{ tmp -> tmp.delete() }
 
@@ -415,14 +442,15 @@ class DeletionService {
                     PriceItem.executeUpdate('delete from PriceItem pi where pi.issueEntitlement in '+ieSubClause, [sub: sub])
                     IssueEntitlementChange.executeUpdate('delete from IssueEntitlementChange iec where iec.subscription = :sub', [sub: sub])
                     IssueEntitlementCoverage.executeUpdate('delete from IssueEntitlementCoverage iec where iec.issueEntitlement in '+ieSubClause, [sub: sub])
+                    IssueEntitlementGroupItem.executeUpdate('delete from IssueEntitlementGroupItem igi where igi.ie in '+ieSubClause, [sub: sub])
+                    IssueEntitlementGroup.executeUpdate('delete from IssueEntitlementGroup ig where ig.sub = :sub', [sub: sub])
                     PermanentTitle.executeUpdate('delete from PermanentTitle pt where pt.subscription = :sub', [sub: sub])
                     IssueEntitlement.executeUpdate('delete from IssueEntitlement ie where ie.subscription = :sub', [sub: sub])
 
                     //cost items
                     sub.costItems.clear()
                     deletedCosts.each { tmp ->
-                        tmp.sub = null
-                        tmp.save()
+                        deleteCostItem(tmp)
                     }
 
                     // private properties
@@ -444,6 +472,7 @@ class DeletionService {
                         tmp.costItemStatus = RDStore.COST_ITEM_DELETED
                         tmp.sub = null
                         tmp.subPkg = null
+                        tmp.pkg = null
                         tmp.issueEntitlement = null
                         tmp.save()
                     }
@@ -527,13 +556,13 @@ class DeletionService {
         List outgoingCombos = new ArrayList(org.outgoingCombos)
         List incomingCombos = new ArrayList(org.incomingCombos)
 
-        List orgTypes      = new ArrayList(org.orgType)
         List orgLinks      = new ArrayList(org.links)
         List orgSettings   = OrgSetting.findAllWhere(org: org)
         List userSettings  = UserSetting.findAllWhere(orgValue: org)
 
+        List altnames       = new ArrayList(org.altnames)
         List addresses      = new ArrayList(org.addresses)
-        List contacts       = new ArrayList(org.contacts)
+        //List contacts       = new ArrayList(org.contacts)
         List prsLinks       = new ArrayList(org.prsLinks)
         List persons        = Person.findAllByTenant(org)
         List affils         = User.findAllByFormalOrg(org)
@@ -554,11 +583,14 @@ class DeletionService {
         List invoices           = Invoice.findAllByOwner(org)
         List orderings          = Order.findAllByOwner(org)
 
-        List dashboardDueDates  = DashboardDueDate.findAllByResponsibleOrg(org)
+        List dashboardDueDates  = DashboardDueDate.executeQuery('select distinct d from DashboardDueDate d where d.responsibleUser.formalOrg = :org', [org: org])
         List documents          = Doc.findAllByOwner(org)
         List pendingChanges     = PendingChange.findAllByOwner(org)
         List tasks              = Task.findAllByOrg(org)
         List tasksResp          = Task.findAllByResponsibleOrg(org)
+        List workflows          = WfChecklist.findAllByOrg(org)
+        List workflowsByOwner   = WfChecklist.findAllByOwner(org)
+        List markers            = Marker.findAllByOrg(org)
         List systemProfilers    = SystemProfiler.findAllByContext(org)
 
         List facts              = Fact.findAllByInst(org)
@@ -580,13 +612,13 @@ class DeletionService {
         result.info << ['Combos (out)', outgoingCombos]
         result.info << ['Combos (in)', incomingCombos, FLAG_BLOCKER]
 
-        result.info << ['Typen', orgTypes]
         result.info << ['OrgRoles', orgLinks, FLAG_BLOCKER]
         result.info << ['Einstellungen', orgSettings]
         result.info << ['Nutzereinstellungen', userSettings, FLAG_BLOCKER]
 
+        result.info << ['Alternativnamen', altnames]
         result.info << ['Adressen', addresses]
-        result.info << ['Kontaktdaten', contacts]
+        //result.info << ['Kontaktdaten', contacts]
         result.info << ['Personen', prsLinks, FLAG_BLOCKER]
         result.info << ['Personen (tenant)', persons, FLAG_BLOCKER]
         result.info << ['Nutzerzugehörigkeiten', affils, FLAG_BLOCKER]
@@ -613,6 +645,9 @@ class DeletionService {
         result.info << ['Anstehende Änderungen', pendingChanges, FLAG_BLOCKER]
         result.info << ['Aufgaben (owner)', tasks, FLAG_BLOCKER]
         result.info << ['Aufgaben (responsibility)', tasksResp, FLAG_BLOCKER]
+        result.info << ['Workflows', workflows]
+        result.info << ['Workflows (owner)', workflowsByOwner, FLAG_BLOCKER]
+        result.info << ['Marker', markers]
         result.info << ['SystemProfilers', systemProfilers]
 
         result.info << ['Facts', facts, FLAG_BLOCKER]
@@ -667,10 +702,6 @@ class DeletionService {
                     org.outgoingCombos.clear()
                     outgoingCombos.each{ tmp -> tmp.delete() }
 
-                    // orgTypes
-                    //org.orgType.clear()
-                    //orgTypes.each{ tmp -> tmp.delete() }
-
                     // orgSettings
                     Set<String> specialAccess = []
                     Set<OrgSetting.KEYS> specGrants = [OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS, OrgSetting.KEYS.EZB_SERVER_ACCESS]
@@ -681,25 +712,38 @@ class DeletionService {
                     }
                     orgSettings.each { tmp -> tmp.delete() }
 
+                    // alternative names
+                    org.altnames.clear()
+                    altnames.each{ tmp -> tmp.delete() }
+
                     // addresses
                     org.addresses.clear()
                     addresses.each{ tmp -> tmp.delete() }
 
                     // contacts
+                    /*
                     org.contacts.clear()
                     contacts.each{ tmp -> tmp.delete() }
+                    */
 
                     // private properties
-                    //org.privateProperties.clear()
-                    //privateProperties.each { tmp -> tmp.delete() }
+                    org.propertySet.clear()
+                    privateProperties.each { tmp ->
+                        tmp.delete()
+                    }
 
                     // custom properties
-                    org.propertySet.clear()
                     customProperties.each { tmp -> // incomprehensible fix // ??
                         tmp.owner = null
                         tmp.save()
                     }
                     customProperties.each { tmp -> tmp.delete() }
+
+                    // workflows
+                    workflows.each { tmp ->
+                        WfCheckpoint.executeUpdate('delete from WfCheckpoint cp where cp.checklist = :tmp', [tmp: tmp])
+                        tmp.delete()
+                    }
 
                     // systemProfilers
                     systemProfilers.each { tmp -> tmp.delete() }
@@ -742,13 +786,18 @@ class DeletionService {
      * @return a map returning the information about the user
      */
     Map<String, Object> deleteUser(User user, User replacement, boolean dryRun) {
+        if (!dryRun) {
+            log.debug('deleteUser(' + user.id + ' -> ' + replacement?.id + ') .. called by #' + contextService.getUser().id)
+        }
 
         Map<String, Object> result = [:]
 
         // gathering references
 
-        List userRoles      = new ArrayList(user.roles)
-        List userSettings   = UserSetting.findAllWhere(user: user)
+        List userRoles          = new ArrayList(user.roles)
+        List userSettings       = UserSetting.findAllWhere(user: user)
+        List reportingFilter    = ReportingFilter.findAllByOwner(user)
+        List systemAnnouncements  = SystemAnnouncement.findAllByUser(user)
 
         List ddds = DashboardDueDate.findAllByResponsibleUser(user)
 
@@ -763,7 +812,9 @@ class DeletionService {
         result.info << ['Einstellungen', userSettings]
 
         result.info << ['DashboardDueDate', ddds]
+        result.info << ['Reporting Filter', reportingFilter]
         result.info << ['Aufgaben', tasks, FLAG_SUBSTITUTE]
+        result.info << ['Ankündigungen', systemAnnouncements, FLAG_SUBSTITUTE]
 
         // checking constraints and/or processing
 
@@ -801,6 +852,8 @@ class DeletionService {
 
                     ddds.each { tmp -> tmp.delete() }
 
+                    reportingFilter.each { tmp -> tmp.delete() }
+
                     tasks.each { tmp ->
                         if (tmp.creator.id == user.id) {
                             tmp.creator = replacement
@@ -808,6 +861,11 @@ class DeletionService {
                         if (tmp.responsibleUser?.id == user.id) {
                             tmp.responsibleUser = replacement
                         }
+                        tmp.save()
+                    }
+
+                    systemAnnouncements.each { tmp ->
+                        tmp.user = replacement
                         tmp.save()
                     }
 
@@ -858,6 +916,7 @@ class DeletionService {
                     List<Long> tippsConcerned = TitleInstancePackagePlatform.findAllByPkg(pkg).collect { tipp -> tipp.id }
                     TIPPCoverage.executeUpdate("delete from TIPPCoverage tc where tc.tipp.id in :toDelete",[toDelete:tippsConcerned])
                     Identifier.executeUpdate("delete from Identifier id where id.tipp.id in :toDelete",[toDelete:tippsConcerned])
+                    PermanentTitle.executeUpdate("delete from PermanentTitle pt where pt.tipp.id in :toDelete",[toDelete:tippsConcerned])
                     TitleInstancePackagePlatform.executeUpdate("delete from TitleInstancePackagePlatform tipp where tipp.id in :toDelete",[toDelete:tippsConcerned])
                     //deleting pending changes
                     PendingChange.findAllByPkg(pkg).each { tmp -> tmp.delete() }
@@ -865,7 +924,7 @@ class DeletionService {
                     OrgRole.findAllByPkg(pkg).each { tmp -> tmp.delete() }
                     //deleting (empty) subscription packages
                     SubscriptionPackage.findAllByPkg(pkg).each { tmp ->
-                        CostItem.executeUpdate("delete from CostItem ci where ci.subPkg = :sp",[sp:tmp])
+                        CostItem.executeUpdate("delete from CostItem ci where ci.pkg = :sp",[sp:tmp])
                         tmp.delete()
                     }
                     //deleting empty-running trackers
@@ -917,7 +976,7 @@ class DeletionService {
 
     /**
      * Use this method with VERY MUCH CARE!
-     * Deletes a {@link Collection} of {@link TitleInstancePackagePlatform} objects WITH their depending objects ({@link TIPPCoverage} and {@link Identifier})
+     * Deletes a {@link Collection} of {@link TitleInstancePackagePlatform} objects WITH their depending objects
      * @param tipp the {@link Collection} of {@link TitleInstancePackagePlatform} to delete
      * @return the success flag
      */
@@ -946,6 +1005,7 @@ class DeletionService {
                     log.info("${PriceItem.executeUpdate('delete from PriceItem pi where pi.issueEntitlement in (:toDelete)', delIssueEntitlements)} issue entitlement price items deleted")
                     log.info("${IssueEntitlement.executeUpdate('delete from IssueEntitlement ie where ie in (:toDelete)', delIssueEntitlements)} deleted issue entitlements cleared")
                 }
+                log.info("${PermanentTitle.executeUpdate('delete from PermanentTitle pt where pt.tipp in (:toDelete)',toDelete)} permanentTitles cleared")
                 log.info("${TitleInstancePackagePlatform.executeUpdate('delete from TitleInstancePackagePlatform tipp where tipp in (:toDelete)',toDelete)} tipps cleared")
                 return true
             }
@@ -994,7 +1054,7 @@ class DeletionService {
                 Order order = ci.order
                 Invoice invoice = ci.invoice
                 if(ci.sub && ci.isVisibleForSubscriber) {
-                    accessibleOrgs << ci.sub.getSubscriber().globalUID
+                    accessibleOrgs << ci.sub.getSubscriberRespConsortia().globalUID
                 }
                 ci.order = null
                 ci.invoice = null

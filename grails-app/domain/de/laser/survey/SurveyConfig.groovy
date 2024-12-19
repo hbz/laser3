@@ -1,8 +1,7 @@
 package de.laser.survey
 
-import de.laser.Doc
+
 import de.laser.DocContext
-import de.laser.IssueEntitlementGroup
 import de.laser.Org
 import de.laser.Subscription
 import de.laser.finance.CostItem
@@ -74,6 +73,10 @@ class SurveyConfig {
 
     boolean pickAndChoosePerpetualAccess = false
 
+    boolean packageSurvey = false
+    boolean invoicingInformation = false
+    boolean vendorSurvey = false
+
     String issueEntitlementGroupName
 
     String transferWorkflow
@@ -83,7 +86,9 @@ class SurveyConfig {
             surveyProperties: SurveyConfigProperties,
             orgs            : SurveyOrg,
             propertySet      : SurveyResult,
-            surveyUrls         : SurveyUrl
+            surveyUrls         : SurveyUrl,
+            surveyPackages      : SurveyConfigPackage,
+            surveyVendors      : SurveyConfigVendor,
     ]
 
     static constraints = {
@@ -125,6 +130,9 @@ class SurveyConfig {
         subSurveyUseForTransfer column: 'surconf_is_subscription_survey_fix'
 
         pickAndChoosePerpetualAccess column: 'surconf_pac_perpetualaccess'
+        packageSurvey column: 'surconf_package_survey'
+        invoicingInformation column: 'surconf_invoicing_information'
+        vendorSurvey column: 'surconf_vendor_survey'
 
         scheduledStartDate column: 'surconf_scheduled_startdate'
         scheduledEndDate column: 'surconf_scheduled_enddate'
@@ -132,9 +140,9 @@ class SurveyConfig {
         dateCreated column: 'surconf_date_created'
         lastUpdated column: 'surconf_last_updated'
 
-        surveyInfo column: 'surconf_surinfo_fk'
-        subscription column: 'surconf_sub_fk'
-        surveyProperty column: 'surconf_surprop_fk'
+        surveyInfo column: 'surconf_surinfo_fk',        index: 'surconf_surinfo_idx'
+        subscription column: 'surconf_sub_fk',          index: 'surconf_sub_idx'
+        surveyProperty column: 'surconf_surprop_fk',    index: 'surconf_surprop_idx'
 
         configOrder column: 'surconf_config_order'
 
@@ -244,9 +252,25 @@ class SurveyConfig {
     Map<String, Object> getSurveyOrgsIDs() {
         Map<String, Object> result = [:]
 
-        result.orgsWithoutSubIDs = this.orgs?.org?.id?.minus(this?.subscription?.getDerivedSubscribers()?.id) ?: null
+        if(this.orgs) {
 
-        result.orgsWithSubIDs = this.orgs.org.id.minus(result.orgsWithoutSubIDs) ?: null
+            if (this.subscription) {
+                result.orgsWithoutSubIDs = this.orgs.org.id.minus(this.subscription.getDerivedNonHiddenSubscribers()?.id) ?: null
+
+                if(result.orgsWithoutSubIDs){
+                    result.orgsWithSubIDs = this.orgs.org.id.minus(result.orgsWithoutSubIDs)
+                }else {
+                    result.orgsWithSubIDs = this.orgs.org.id
+                }
+            }else {
+                result.orgsWithoutSubIDs = this.orgs.org.id
+                result.orgsWithSubIDs = null
+            }
+        }else {
+            result.orgsWithoutSubIDs = null
+            result.orgsWithSubIDs = null
+        }
+
 
         return result
     }
@@ -338,7 +362,7 @@ class SurveyConfig {
     }
 
     /**
-     * Get the subscriptions which is target of this survey
+     * Gets the subscriptions which is target of this survey
      * @return list of subscription
      */
     List<Subscription> orgSubscriptions() {
@@ -437,7 +461,7 @@ class SurveyConfig {
      */
     List<CostItem> getSurveyConfigCostItems(){
 
-        return this.orgs ? CostItem.findAllBySurveyOrgInListAndCostItemStatusNotEqual(this.orgs, RDStore.COST_ITEM_DELETED) : []
+        return this.orgs ? CostItem.findAllBySurveyOrgInListAndCostItemStatusNotEqualAndPkgIsNull(this.orgs, RDStore.COST_ITEM_DELETED) : []
     }
 
     /**
@@ -498,47 +522,24 @@ class SurveyConfig {
     }
 
     /**
-     * Gets a sorted list of survey config properties. Sorting is done by the {@link #surveyProperty} ({@link PropertyDefinition}) name
-     * @return a sorted {@link List} of {@link SurveyConfigProperties}
+     * Gets a sorted list of properties. Sorting is done by the {@link SurveyConfigProperties#propertyOrder}
+     * @return the list of {@link PropertyDefinition} or an empty list, if none are available
      */
-    List<SurveyConfigProperties> getSortedSurveyConfigProperties() {
-       List<SurveyConfigProperties> surveyConfigPropertiesList = []
+    List<PropertyDefinition> getSortedProperties() {
 
-        LinkedHashSet<SurveyConfigProperties> propertiesParticipation = []
-        LinkedHashSet<SurveyConfigProperties> propertiesMandatory = []
-        LinkedHashSet<SurveyConfigProperties> propertiesNoMandatory = []
 
-        this.surveyProperties.each {
-            if(it.surveyProperty == PropertyStore.SURVEY_PROPERTY_PARTICIPATION){
-                propertiesParticipation << it
-            }
-            else if(it.mandatoryProperty == true && it.surveyProperty != PropertyStore.SURVEY_PROPERTY_PARTICIPATION){
-                propertiesMandatory << it
-            }
-            else if(it.mandatoryProperty == false && it.surveyProperty != PropertyStore.SURVEY_PROPERTY_PARTICIPATION){
-                propertiesNoMandatory << it
-            }
-        }
 
-        propertiesParticipation = propertiesParticipation.sort {it.surveyProperty.getI10n('name')}
-
-        propertiesMandatory = propertiesMandatory.sort {it.surveyProperty.getI10n('name')}
-
-        propertiesNoMandatory = propertiesNoMandatory.sort {it.surveyProperty.getI10n('name')}
-
-        surveyConfigPropertiesList = [propertiesParticipation, propertiesMandatory, propertiesNoMandatory]
-
-        return surveyConfigPropertiesList.flatten()
-
+        List<SurveyConfigProperties> surveyConfigPropertiesList = this.surveyProperties.sort{it.propertyOrder}
+        return surveyConfigPropertiesList.size() > 0 ? surveyConfigPropertiesList.surveyProperty : []
     }
 
-    /**
-     * Substitution call for {@link #getSortedSurveyConfigProperties()}
+   /**
+     * Gets a sorted list of survey config properties. Sorting is done by the {@link SurveyConfigProperties#propertyOrder}
      * @return the list of {@link SurveyConfigProperties} or an empty list, if none are available
      */
-    List<PropertyDefinition> getSortedSurveyProperties() {
-        List<SurveyConfigProperties> surveyConfigPropertiesList = this.getSortedSurveyConfigProperties()
-        return surveyConfigPropertiesList.size() > 0 ? surveyConfigPropertiesList.surveyProperty : []
+    List<SurveyConfigProperties> getSortedSurveyConfigProperties() {
+        List<SurveyConfigProperties> surveyConfigPropertiesList = this.surveyProperties.sort{it.propertyOrder}
+        return surveyConfigPropertiesList
     }
 
     /**
@@ -560,13 +561,13 @@ class SurveyConfig {
     LinkedHashSet<SurveyConfigProperties> getSurveyConfigPropertiesByPropDefGroup(PropertyDefinitionGroup propertyDefinitionGroup) {
         LinkedHashSet<SurveyConfigProperties> properties = []
 
-        this.surveyProperties.each {
+        this.getSortedSurveyConfigProperties().each {
             if(propertyDefinitionGroup && propertyDefinitionGroup.items  && it.surveyProperty.id in propertyDefinitionGroup.items.propDef.id){
                 properties << it
             }
         }
 
-        properties = properties.sort {it.surveyProperty.getI10n('name')}
+        //properties = properties.sort {it.surveyProperty.getI10n('name')}
 
         return properties
 
@@ -587,7 +588,7 @@ class SurveyConfig {
             }
         }
 
-        properties = properties.sort {it.getI10n('name')}
+        //properties = properties.sort { this.getSortedProperties().indexOf(it)}
 
         return properties
 
@@ -614,7 +615,7 @@ class SurveyConfig {
                 properties << it
         }
 
-        properties = properties.sort {it.getI10n('name')}
+        properties = properties.sort {this.getSortedProperties().indexOf(it)}
 
         return properties
 
@@ -639,7 +640,7 @@ class SurveyConfig {
             }
         }
 
-        props = props.sort {it.getI10n('name')}
+        props = props.sort {this.getSortedProperties().indexOf(it)}
 
         return props
 
@@ -664,7 +665,8 @@ class SurveyConfig {
             }
         }
 
-        properties = properties.sort {it.type.getI10n('name')}
+        //properties = properties.sort {it.type.getI10n('name')}
+        properties = properties.sort {this.getSortedProperties().indexOf(it.type)}
 
         return properties
 
@@ -681,20 +683,20 @@ class SurveyConfig {
         LinkedHashSet<SurveyConfigProperties> properties = []
 
         if(containedProperties.isEmpty()){
-            this.surveyProperties.each {
+            this.getSortedSurveyConfigProperties().each {
                 if ((!it.surveyProperty.tenant)) {
                     properties << it
                 }
             }
         }else {
-            this.surveyProperties.each {
+            this.getSortedSurveyConfigProperties().each {
                 if (!(it.id in containedProperties.id.flatten()) && (!it.surveyProperty.tenant)) {
                     properties << it
                 }
             }
         }
 
-        properties = properties.sort {it.surveyProperty.getI10n('name')}
+        //properties = properties.sort {it.surveyProperty.getI10n('name')}
 
         return properties
 
@@ -708,13 +710,13 @@ class SurveyConfig {
     LinkedHashSet<SurveyConfigProperties> getPrivateSurveyConfigProperties() {
         LinkedHashSet<SurveyConfigProperties> properties = []
 
-        this.surveyProperties.each {
+        this.getSortedSurveyConfigProperties().each {
             if ((it.surveyProperty.tenant)) {
                 properties << it
             }
         }
 
-        properties = properties.sort {it.surveyProperty.getI10n('name')}
+        properties = properties.sort{it.propertyOrder}
 
         return properties
 
@@ -737,7 +739,7 @@ class SurveyConfig {
             }
         }
 
-        props = props.sort {it.getI10n('name')}
+        props = props.sort {this.getSortedProperties().indexOf(it)}
 
         return props
 
@@ -756,13 +758,13 @@ class SurveyConfig {
         LinkedHashSet<SurveyResult> properties = []
 
         if(containedProperties.isEmpty()){
-            this.surveyProperties.each {
+            this.getSortedSurveyConfigProperties().each {
                 if ((!it.surveyProperty.tenant)) {
                     properties << SurveyResult.findByParticipantAndSurveyConfigAndType(org, this, it.surveyProperty)
                 }
             }
         }else {
-            this.surveyProperties.each {
+            this.getSortedSurveyConfigProperties().each {
                 if (!(it.surveyProperty.id in containedProperties.type.id.flatten()) && (!it.surveyProperty.tenant)){
                     SurveyResult surveyResult = SurveyResult.findByParticipantAndSurveyConfigAndType(org, this, it.surveyProperty)
                     if(surveyResult) {
@@ -772,7 +774,7 @@ class SurveyConfig {
             }
         }
 
-        properties = properties.sort {it.type.getI10n('name')}
+        //properties = properties.sort {it.type.getI10n('name')}
 
         return properties
 
@@ -788,13 +790,13 @@ class SurveyConfig {
 
         LinkedHashSet<SurveyResult> properties = []
 
-            this.surveyProperties.each {
+            this.getSortedSurveyConfigProperties().each {
                 if ((it.surveyProperty.tenant)) {
                     properties << SurveyResult.findByParticipantAndSurveyConfigAndType(org, this, it.surveyProperty)
                 }
             }
 
-        properties = properties.sort {it.type.getI10n('name')}
+        //properties = properties.sort {it.type.getI10n('name')}
 
         return properties
 
@@ -824,6 +826,10 @@ class SurveyConfig {
         countOrgsWithTermination = SurveyResult.executeQuery(queryOrgsWithTermination, queryMapOrgsWithTermination)[0]
 
         return countOrgsWithTermination
+    }
+
+    boolean isTypeSubscriptionOrIssueEntitlement() {
+        return type in [SURVEY_CONFIG_TYPE_SUBSCRIPTION, SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]
     }
 
 

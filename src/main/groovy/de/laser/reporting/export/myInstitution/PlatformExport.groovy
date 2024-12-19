@@ -2,7 +2,7 @@ package de.laser.reporting.export.myInstitution
 
 import de.laser.remote.ApiSource
 import de.laser.ContextService
-import de.laser.Platform
+import de.laser.wekb.Platform
 import de.laser.RefdataValue
 import de.laser.storage.BeanStore
 import de.laser.reporting.export.GlobalExportHelper
@@ -31,7 +31,7 @@ class PlatformExport extends BaseDetailsExport {
                                     'gokbId'                        : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'name'                          : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'altname'                       : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
-                                    'org+sortname+name'             : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ], // 'platform/org+sortname+name'
+                                    'provider+sortname+name'        : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ], // 'platform/provider+sortname+name' // todo
                                     'primaryUrl'                    : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     'serviceProvider'               : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'softwareProvider'              : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
@@ -202,9 +202,9 @@ class PlatformExport extends BaseDetailsExport {
                 }
             }
             // --> combined properties : TODO
-            else if (key in ['org+sortname', 'org+name']) {
+            else if (key in ['provider+sortname', 'provider+name']) {
                 String prop = key.split('\\+')[1]
-                content.add( plt.org?.getProperty(prop) ?: '' )
+                content.add( plt.provider?.getProperty(prop) ?: '' )
             }
             else {
                 content.add( '- ' + key + ' not implemented -' )

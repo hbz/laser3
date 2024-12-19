@@ -1,6 +1,7 @@
 package de.laser.reporting.report.myInstitution
 
 import de.laser.ContextService
+import de.laser.CustomerTypeService
 import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.RefdataValue
@@ -38,24 +39,15 @@ class OrganisationFilter extends BaseFilter {
                 break
             case 'all-consortium':
                 queryParams.orgIdList = Org.executeQuery(
-                        'select o.id from Org o where exists (select ot from o.orgType ot where ot = :orgType) and (o.status is null or o.status != :orgStatus)',
-                        [orgType: RDStore.OT_CONSORTIUM, orgStatus: RDStore.ORG_STATUS_DELETED]
+                        'select o.id from Org o, OrgSetting os where os.org = o and os.key = :ct and os.roleValue.authority in (:roles) and (o.status is null or o.status != :orgStatus)',
+                        [ct: OrgSetting.KEYS.CUSTOMER_TYPE, roles: [CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO], orgStatus: RDStore.ORG_STATUS_DELETED]
                 )
                 break
             case 'all-inst':
                 queryParams.orgIdList = Org.executeQuery(
-                        'select o.id from Org o where (o.status is null or o.status != :orgStatus) and exists (select ot from o.orgType ot where ot = :orgType)',
-                        [orgStatus: RDStore.ORG_STATUS_DELETED, orgType: RDStore.OT_INSTITUTION]
+                        'select o.id from Org o, OrgSetting os where os.org = o and os.key = :ct and os.roleValue.authority in (:roles) and (o.status is null or o.status != :orgStatus)',
+                        [ct: OrgSetting.KEYS.CUSTOMER_TYPE, roles: [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO], orgStatus: RDStore.ORG_STATUS_DELETED]
                 )
-                break
-            case 'all-provider':
-                queryParams.orgIdList = _getAllProviderAndAgencyIdList( [RDStore.OT_PROVIDER] )
-                break
-            case 'all-agency':
-                queryParams.orgIdList = _getAllProviderAndAgencyIdList( [RDStore.OT_AGENCY] )
-                break
-            case 'all-providerAndAgency':
-                queryParams.orgIdList = _getAllProviderAndAgencyIdList( [RDStore.OT_PROVIDER, RDStore.OT_AGENCY] )
                 break
             case 'my-inst':
                 queryParams.orgIdList = Org.executeQuery(
@@ -73,7 +65,7 @@ where (consOr.roleType = :consRoleType)
                         [
                                 org: contextService.getOrg(), orgStatus: RDStore.ORG_STATUS_DELETED,
                                 subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS],
-                                consRoleType: RDStore.OR_SUBSCRIPTION_CONSORTIA
+                                consRoleType: RDStore.OR_SUBSCRIPTION_CONSORTIUM
                         ]
                 )
 
@@ -90,15 +82,6 @@ where (consOr.roleType = :consRoleType)
                         ]
                 ) )
                 queryParams.orgIdList = queryParams.orgIdList.unique()
-                break
-            case 'my-provider':
-                queryParams.orgIdList = _getMyProviderAndAgencyIdList( [RDStore.OR_PROVIDER] )
-                break
-            case 'my-agency':
-                queryParams.orgIdList = _getMyProviderAndAgencyIdList( [RDStore.OR_AGENCY] )
-                break
-            case 'my-providerAndAgency':
-                queryParams.orgIdList = _getMyProviderAndAgencyIdList( [RDStore.OR_PROVIDER, RDStore.OR_AGENCY] )
                 break
         }
 
@@ -147,13 +130,6 @@ where (consOr.roleType = :consRoleType)
                 }
                 // --> refdata join tables
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
-
-                    if (p == BaseConfig.RDJT_GENERIC_ORG_TYPE) {
-                        whereParts.add('exists (select ot from org.orgType ot where ot = :p' + (++pCount) + ')')
-                        queryParams.put('p' + pCount, RefdataValue.get(params.long(key)))
-
-                        filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
-                    }
                 }
                 // --> custom filter implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
@@ -216,34 +192,5 @@ where (consOr.roleType = :consRoleType)
 //        println 'orgs >> ' + result.orgIdList.size()
 
         filterResult
-    }
-
-    static List<Long> _getAllProviderAndAgencyIdList(List orgTypes) {
-
-        List<Long> idList = Org.executeQuery(
-                'select o.id from Org o where (o.status is null or o.status != :orgStatus) and exists (select ot from o.orgType ot where ot in (:orgTypes))',
-                [orgStatus: RDStore.ORG_STATUS_DELETED, orgTypes: orgTypes]
-        )
-        idList
-    }
-
-    static List<Long> _getMyProviderAndAgencyIdList(List roleTypes) {
-
-        ContextService contextService = BeanStore.getContextService()
-
-        List<Long> idList = Org.executeQuery( '''
-            select distinct(prov.org.id) from OrgRole prov 
-                join prov.sub sub 
-                join sub.orgRelations subOr 
-            where (prov.roleType in (:provRoleTypes)) and (sub = subOr.sub and subOr.org = :org and subOr.roleType in (:subRoleTypes))
-                and (prov.org.status is null or prov.org.status != :orgStatus) 
-            ''',
-            [
-                    org: contextService.getOrg(), orgStatus: RDStore.ORG_STATUS_DELETED,
-                    subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA],
-                    provRoleTypes: roleTypes
-            ]
-        )
-        idList
     }
 }

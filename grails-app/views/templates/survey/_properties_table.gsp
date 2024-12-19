@@ -1,7 +1,7 @@
-<%@ page import="de.laser.RefdataValue; de.laser.survey.SurveyOrg; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition; de.laser.RefdataCategory; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.survey.SurveyOrg; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition; de.laser.RefdataCategory; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties;" %>
 <laser:serviceInjection/>
 
-<g:if test="${controllerName == 'survey' && actionName == 'show'}">
+<g:if test="${showSurveyPropertiesForOwer}">
 
     <table class="ui celled sortable table la-js-responsive-table la-table">
         <thead>
@@ -11,6 +11,7 @@
             <th>${message(code: 'surveyProperty.expl.label')}</th>
             <th>${message(code: 'default.type.label')}</th>
             <th>${message(code: 'surveyProperty.mandatoryProperty')}</th>
+            <th>${message(code: 'surveyProperty.propertyOrder')}</th>
             <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING && surveyProperties}">
                 <th>${message(code: 'default.actions.label')}</th>
             </g:if>
@@ -27,13 +28,13 @@
                     ${surveyPropertyConfig.surveyProperty.getI10n('name')}
 
                     <g:if test="${surveyPropertyConfig.surveyProperty.tenant?.id == contextService.getOrg().id}">
-                        <i class='shield alternate icon'></i>
+                        <i class='${Icon.PROP.IS_PRIVATE}'></i>
                     </g:if>
 
                     <g:if test="${surveyPropertyConfig.surveyProperty.getI10n('expl')}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                               data-content="${surveyPropertyConfig.surveyProperty.getI10n('expl')}">
-                            <i class="question circle icon"></i>
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </g:if>
 
@@ -48,10 +49,11 @@
                     ${PropertyDefinition.getLocalizedValue(surveyPropertyConfig.surveyProperty.type)}
                     <g:if test="${surveyPropertyConfig.surveyProperty.isRefdataValueType()}">
                         <g:set var="refdataValues" value="${[]}"/>
-                        <g:each in="${RefdataCategory.getAllRefdataValues(surveyPropertyConfig.surveyProperty.refdataCategory)}"
+                        <g:each in="${RefdataCategory.getAllRefdataValuesWithOrder(surveyPropertyConfig.surveyProperty.refdataCategory)}"
                                 var="refdataValue">
-                            <g:set var="refdataValues"
-                                   value="${refdataValues + refdataValue?.getI10n('value')}"/>
+                            <g:if test="${refdataValue.getI10n('value')}">
+                                <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
+                            </g:if>
                         </g:each>
                         <br/>
                         (${refdataValues.join('/')})
@@ -62,8 +64,8 @@
                     <g:set var="surveyPropertyMandatoryEditable"
                            value="${(editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
                                    (surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL || (surveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL && surveyPropertyConfig.surveyProperty != PropertyStore.SURVEY_PROPERTY_PARTICIPATION)))}"/>
-                    <g:form action="setSurveyPropertyMandatory" method="post" class="ui form"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, surveyConfigProperties: surveyPropertyConfig.id]">
+                    <g:form action="actionsForSurveyProperty" method="post" class="ui form"
+                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, surveyConfigProperties: surveyPropertyConfig.id, actionForSurveyProperty: 'setSurveyPropertyMandatory']">
 
                         <div class="ui checkbox">
                             <input type="checkbox"
@@ -72,51 +74,83 @@
                         </div>
                     </g:form>
                 </td>
+                <td>
+                    <g:if test="${editable}">
+                        <g:if test="${i == 1 && surveyProperties.size() == 2}">
+                            <ui:remoteLink class="${Btn.MODERN.SIMPLE} compact" action="actionsForSurveyProperty" id="${params.id}" data-update="${props_div}"
+                                    params="[actionForSurveyProperty: 'moveUp', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id]"><i class="${Icon.CMD.MOVE_UP}"></i>
+                            </ui:remoteLink>
+                        </g:if>
+                        <g:else>
+                            <g:if test="${i > 0}">
+                                <ui:remoteLink class="${Btn.MODERN.SIMPLE} compact" action="actionsForSurveyProperty" id="${params.id}" data-update="${props_div}"
+                                        params="[actionForSurveyProperty: 'moveUp', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id, props_div: props_div, pdg_id: pdg?.id]"><i class="${Icon.CMD.MOVE_UP}"></i>
+                                </ui:remoteLink>
+                            </g:if>
+                            <g:if test="${i < surveyProperties.size()-1}">
+                                <ui:remoteLink class="${Btn.MODERN.SIMPLE} compact" action="actionsForSurveyProperty" id="${params.id}" data-update="${props_div}"
+                                        params="[actionForSurveyProperty: 'moveDown', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id, props_div: props_div, pdg_id: pdg?.id]"><i class="${Icon.CMD.MOVE_DOWN}"></i>
+                                </ui:remoteLink>
+                            </g:if>
+                        </g:else>
+                    </g:if>
+
+                </td>
                 <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
                         SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyPropertyConfig.surveyProperty)
                         && ((PropertyStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyPropertyConfig.surveyProperty.id) || surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL)}">
                     <td>
-                        <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
+                        <ui:remoteLink class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyElements", args: [surveyPropertyConfig.surveyProperty.getI10n('name')])}"
                                 data-confirm-term-how="delete"
-                                controller="survey" action="deleteSurveyPropFromConfig"
-                                id="${surveyPropertyConfig.id}"
+                                data-update="${props_div}"
+                                controller="survey" action="actionsForSurveyProperty"
+                                id="${params.id}"
+                                params="[actionForSurveyProperty: 'deleteSurveyPropFromConfig', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, props_div: props_div, pdg_id: pdg?.id]"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="trash alternate outline icon"></i>
-                        </g:link>
+                            <i class="${Icon.CMD.DELETE}"></i>
+                        </ui:remoteLink>
                     </td>
                 </g:if>
             </tr>
         </g:each>
         </tbody>
-        <g:if test="${controllerName == 'survey' && actionName == 'show' && editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
+        <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
             <g:set var="selectableProperties"
                    value="${pdg ? surveyConfig.getSelectablePropertiesByPropDefGroup(pdg) : (selectablePrivateProperties ? surveyConfig.getPrivateSelectableProperties() : surveyConfig.getOrphanedSelectableProperties())}"/>
             <tfoot>
             <tr>
                 <td colspan="6">
-                    <g:form action="addSurveyPropToConfig" controller="survey" method="post" class="ui form">
-                        <g:hiddenField name="id" value="${surveyInfo.id}"/>
-                        <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
+                    <ui:remoteForm url="[controller: 'survey', action: 'actionsForSurveyProperty']"
+                                   name="survey_prop_add"
+                                   class="ui properties form"
+                                   data-update="${props_div}">
+
                         <div class="two fields" style="margin-bottom:0">
                             <div class="field" style="margin-bottom:0">
                                 <ui:dropdown name="selectedProperty"
                                              class="la-filterPropDef"
-                                             from="${selectableProperties}"
-                                             iconWhich="shield alternate"
+                                             from="${selectableProperties.sort{it.getI10n('name')}}"
+                                             iconWhich="${Icon.PROP.IS_PRIVATE}"
                                              optionKey="${{ "${it.id}" }}"
                                              optionValue="${{ it.getI10n('name') }}"
                                              noSelection="${message(code: 'default.search_for.label', args: [message(code: 'surveyProperty.label')])}"
                                              required=""/>
                             </div>
-
                             <div class="field" style="margin-bottom:0">
-                                <input type="submit" value="${message(code: 'default.button.add.label')}"
-                                       class="ui button js-wait-wheel"/>
+                                <input type="submit" value="${message(code:'default.button.add.label')}" class="${Btn.SIMPLE} js-wait-wheel"/>
                             </div>
                         </div>
-                    </g:form>
+
+                        <g:hiddenField name="id" value="${surveyInfo.id}"/>
+                        <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
+                        <g:hiddenField name="actionForSurveyProperty" value="addSurveyPropToConfig"/>
+                        <g:hiddenField name="props_div" value="${props_div}"/>
+                        <g:if test="${pdg}">
+                            <g:hiddenField name="pdg_id" value="${pdg.id}"/>
+                        </g:if>
+                    </ui:remoteForm>
 
                 </td>
             </tr>
@@ -133,30 +167,30 @@
                 <th>${message(code: 'default.type.label')}</th>
                 <th>${message(code: 'surveyResult.result')}</th>
                 <th>
-                    <g:if test="${contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
+                    <g:if test="${contextService.isInstUser(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
                         ${message(code: 'surveyResult.participantComment')}
                     </g:if>
                     <g:else>
                         ${message(code: 'surveyResult.commentParticipant')}
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                               data-content="${message(code: 'surveyResult.commentParticipant.info')}">
-                            <i class="question circle icon"></i>
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </g:else>
                 </th>
                 <th>
-                    <g:if test="${contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
+                    <g:if test="${contextService.isInstUser(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
                         ${message(code: 'surveyResult.commentOnlyForOwner')}
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                               data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
-                            <i class="question circle icon"></i>
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </g:if>
                     <g:else>
                         ${message(code: 'surveyResult.commentOnlyForParticipant')}
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                               data-content="${message(code: 'surveyResult.commentOnlyForParticipant.info')}">
-                            <i class="question circle icon"></i>
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </g:else>
                 </th>
@@ -172,18 +206,18 @@
                         ${surveyResult.type.getI10n('name')}
 
                         <g:if test="${surveyResult.type.getI10n('expl')}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                            <span class="la-long-tooltip la-popup-tooltip" data-position="bottom center"
                                   data-content="${surveyResult.type.getI10n('expl')}">
-                                <i class="question circle icon"></i>
+                                <i class="${Icon.TOOLTIP.HELP}"></i>
                             </span>
                         </g:if>
 
                         <g:set var="surveyConfigProperties"
                                value="${SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyResult.surveyConfig, surveyResult.type)}"/>
                         <g:if test="${surveyConfigProperties && surveyConfigProperties.mandatoryProperty}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                            <span class="la-long-tooltip la-popup-tooltip" data-position="bottom center"
                                   data-content="${message(code: 'default.mandatory.tooltip')}">
-                                <i class="info circle icon"></i>
+                                <i class="${Icon.TOOLTIP.INFO}"></i>
                             </span>
                         </g:if>
 
@@ -192,7 +226,7 @@
                         ${PropertyDefinition.getLocalizedValue(surveyResult.type.type)}
                         <g:if test="${surveyResult.type.isRefdataValueType()}">
                             <g:set var="refdataValues" value="${[]}"/>
-                            <g:each in="${RefdataCategory.getAllRefdataValues(surveyResult.type.refdataCategory)}"
+                            <g:each in="${RefdataCategory.getAllRefdataValuesWithOrder(surveyResult.type.refdataCategory)}"
                                     var="refdataValue">
                                 <g:if test="${refdataValue.getI10n('value')}">
                                     <g:set var="refdataValues"
@@ -262,7 +296,7 @@
                             <ui:xEditable owner="${surveyResult}" type="textarea" field="comment"/>
                         </td>
                         <td>
-                            <g:if test="${contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
+                            <g:if test="${contextService.isInstUser(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
                                 <ui:xEditable owner="${surveyResult}" type="textarea" field="ownerComment"/>
                             </g:if>
                             <g:else>

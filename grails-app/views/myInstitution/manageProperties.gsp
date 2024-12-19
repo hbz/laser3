@@ -1,14 +1,14 @@
-<%@ page import="de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.storage.RDStore; de.laser.RefdataCategory; grails.plugins.orm.auditable.Auditable; de.laser.AuditConfig" %>
-<laser:htmlStart message="menu.institutions.manage_props" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.addressbook.Person; de.laser.storage.RDStore; de.laser.RefdataCategory; grails.plugins.orm.auditable.Auditable; de.laser.AuditConfig" %>
+<laser:htmlStart message="menu.institutions.manage_props" />
 
 <ui:breadcrumbs>
+    <ui:crumb controller="org" action="show" id="${contextService.getOrg().id}" text="${contextService.getOrg().getDesignation()}"/>
     <ui:crumb message="menu.institutions.manage_props" class="active" />
 </ui:breadcrumbs>
 
 <ui:h1HeaderWithIcon message="menu.institutions.manage_props" />
 
 <laser:render template="nav"/>
-
 
 <ui:filter simple="true">
     <g:form action="manageProperties" method="get" class="ui form">
@@ -32,40 +32,24 @@
             </div>
         </g:if>
 
-        <a href="${request.forwardURI}"
-           class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-        <input type="submit" class="ui primary button" value="${message(code: 'default.button.filter.label')}"/>
+        <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+        <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}"/>
     </g:form>
 </ui:filter>
 
 
 <g:if test="${filterPropDef}">
 
-%{--<div class="ui segment">
-
-    <strong>${message(code: 'subscriptionsManagement.propertySelected')}: ${filterPropDef?.getI10n('name')}</strong>
-    <br />${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef?.type)}
-    <g:if test="${filterPropDef?.isRefdataValueType()}">
-        <g:set var="refdataValues" value="${[]}"/>
-        <g:each in="${RefdataCategory.getAllRefdataValues(filterPropDef.refdataCategory)}"
-                var="refdataValue">
-            <g:set var="refdataValues"
-                   value="${refdataValues + refdataValue?.getI10n('value')}"/>
-        </g:each>
-        <br />
-        (${refdataValues.join('/')})
-    </g:if>
-
-</div>--}%
-
     <g:set var="editableOld" value="${editable}"/>
 
     <div class="ui segment">
         <g:form action="processManageProperties" method="post" class="ui form">
             <div class="field">
-                <h2 class="ui header"><g:if test="${filterPropDef.tenant != null}"><i
-                        class="shield alternate icon"></i></g:if><g:message code="property.manageProperties.add"
-                                                                            args="[filterPropDef.getI10n('name')]"/>
+                <h2 class="ui header">
+                    <g:if test="${filterPropDef.tenant != null}">
+                        <i class="${Icon.PROP.IS_PRIVATE}"></i>
+                    </g:if>
+                    <g:message code="property.manageProperties.add" args="[filterPropDef.getI10n('name')]"/>
                 </h2>
 
                 ${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef.type)}
@@ -100,7 +84,7 @@
                     <input id="filterPropValue" type="number" step="0.01" name="filterPropValue">
                 </g:elseif>
                 <g:elseif test="${filterPropDef.isDateType()}">
-                    <g:datePicker name="filterPropValue"/>
+                    <ui:datepicker name="filterPropValue"/>
                 </g:elseif>
                 <g:else>
                     <input id="filterPropValue" type="text" name="filterPropValue" placeholder="${message(code: 'license.search.property.ph')}"/>
@@ -120,7 +104,7 @@
                         </th>
                         <g:if test="${showConsortiaFunctions && auditable}">
                             <th>
-                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.manageProperties.markForAudit')}"><i class="ui thumbtack icon"></i></span><br />
+                                <span class="la-popup-tooltip" data-content="${message(code:'property.manageProperties.markForAudit')}"><i class="${Icon.SIG.INHERITANCE}"></i></span><br />
                                 <g:checkBox name="membersAuditListToggler" id="membersAuditListToggler" checked="false"/>
                             </th>
                         </g:if>
@@ -130,7 +114,7 @@
                         </g:if>
                         <th><g:message code="default.name.label"/></th>
                         <th><g:message code="property.manageProperties.propertySelected"/>: ${filterPropDef.getI10n('name')}</th>
-                        <th class="x"><button class="ui button" type="submit">${message(code: 'default.button.save_changes')}</button></th>
+                        <th class="x"><button class="${Btn.SIMPLE}" type="submit">${message(code: 'default.button.save_changes')}</button></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -150,7 +134,7 @@
                                     <g:if test="${filterPropDef.tenant == null}">
                                         <div class="item">
 
-                                            <g:set var="customProperty" value="${objWithoutProp.propertySet.find { it.tenant?.id == institution.id && it.type == filterPropDef }}"/>
+                                            <g:set var="customProperty" value="${objWithoutProp.propertySet.find { it.tenant?.id == contextService.getOrg().id && it.type == filterPropDef }}"/>
                                             <g:if test="${customProperty}">
                                                 <div class="header">${message(code: 'subscriptionsManagement.CustomProperty')}: ${filterPropDef.getI10n('name')}</div>
 
@@ -193,9 +177,9 @@
                                                     <%
                                                         if (AuditConfig.getConfig(customProperty)) {
                                                             if (objWithoutProp.isSlaved) {
-                                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
+                                                                println '&nbsp;' + ui.auditIcon(type: 'auto')
                                                             } else {
-                                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                                                println '&nbsp;' + ui.auditIcon(type: 'default')
                                                             }
                                                         }
                                                     %>
@@ -215,7 +199,7 @@
 
                                             <g:set var="privateProperty" value="${objWithoutProp.propertySet.find { it.type == filterPropDef }}"/>
                                             <g:if test="${privateProperty}">
-                                                <div class="header">${message(code: 'subscriptionsManagement.PrivateProperty')} ${institution}: ${filterPropDef.getI10n('name')}</div>
+                                                <div class="header">${message(code: 'subscriptionsManagement.PrivateProperty')} ${contextService.getOrg()}: ${filterPropDef.getI10n('name')}</div>
 
                                                 <div class="content">
                                                     <p>
@@ -259,9 +243,9 @@
                                                     <%
                                                         if (AuditConfig.getConfig(privateProperty)) {
                                                             if (objWithoutProp.isSlaved) {
-                                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
+                                                                println '&nbsp;' + ui.auditIcon(type: 'auto')
                                                             } else {
-                                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                                                println '&nbsp;' + ui.auditIcon(type: 'default')
                                                             }
                                                         }
                                                     %>
@@ -278,10 +262,10 @@
                                 </div>
                             </td>
                             <td class="x">
-                                <g:link controller="${objWithoutProp.displayController}" action="show" id="${objWithoutProp.id}" class="ui icon button blue la-modern-button"
+                                <g:link controller="${objWithoutProp.displayController}" action="show" id="${objWithoutProp.id}" class="${Btn.MODERN.SIMPLE}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                    <i aria-hidden="true" class="write icon"></i>
+                                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                 </g:link>
                             </td>
                         </tr>
@@ -302,7 +286,7 @@
             <div class="field">
                 <h2 class="ui header">
                     <g:if test="${filterPropDef.tenant != null}">
-                        <i class="shield alternate icon"></i>
+                        <i class="${Icon.PROP.IS_PRIVATE}"></i>
                     </g:if>
                     <g:message code="property.manageProperties.edit" args="[filterPropDef.getI10n('name')]"/>
                 </h2>
@@ -338,7 +322,7 @@
                     <input id="filterPropValue" type="number" step="0.01" name="filterPropValue">
                 </g:elseif>
                 <g:elseif test="${filterPropDef.isDateType()}">
-                    <g:datePicker name="filterPropValue"/>
+                    <ui:datepicker name="filterPropValue"/>
                 </g:elseif>
                 <g:else>
                     <input id="filterPropValue" type="text" name="filterPropValue" placeholder="${message(code: 'license.search.property.ph')}">
@@ -363,8 +347,8 @@
                         <th>${message(code: 'default.name.label')}</th>
                         <th>${message(code: 'property.manageProperties.propertySelected')}: ${filterPropDef.getI10n('name')}</th>
                         <th class="x">
-                            <button class="ui button" type="submit" name="saveChanges" value="true">${message(code: 'default.button.save_changes')}</button>
-                            <button class="ui button negative" type="submit" name="deleteProperties" value="true">${message(code: 'property.manageProperties.deleteProperty.button', args: [filterPropDef.getI10n('name')])}</button>
+                            <button class="${Btn.SIMPLE}" type="submit" name="saveChanges" value="true">${message(code: 'default.button.save_changes')}</button>
+                            <button class="${Btn.NEGATIVE}" type="submit" name="deleteProperties" value="true">${message(code: 'property.manageProperties.deleteProperty.button', args: [filterPropDef.getI10n('name')])}</button>
                                 <%-- TODO ask Ingrid
                                     js-open-confirm-modal
                                     data-confirm-tokenMsg="${message(code: 'property.manageProperties.deleteProperty.button.confirm')}"
@@ -393,7 +377,7 @@
                                     <g:if test="${filterPropDef.tenant == null}">
                                         <div class="item">
 
-                                            <g:set var="customProperty" value="${row.propertySet.find { it.tenant?.id == institution.id && it.type.id == filterPropDef.id }}"/>
+                                            <g:set var="customProperty" value="${row.propertySet.find { it.tenant?.id == contextService.getOrg().id && it.type.id == filterPropDef.id }}"/>
                                             <g:if test="${customProperty}">
                                                 <div class="header">${message(code: 'subscriptionsManagement.CustomProperty')}: ${filterPropDef.getI10n('name')}</div>
 
@@ -438,9 +422,9 @@
                                                     <%
                                                         if ((customProperty.hasProperty('instanceOf') && customProperty.instanceOf && AuditConfig.getConfig(customProperty.instanceOf)) || AuditConfig.getConfig(customProperty)) {
                                                             if (row.isSlaved) {
-                                                                print '<span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
+                                                                print ui.auditIcon(type: 'auto')
                                                             } else {
-                                                                print '<span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                                                print ui.auditIcon(type: 'default')
                                                             }
                                                         }
                                                     %>
@@ -501,9 +485,9 @@
                                                     <%
                                                         if ((privateProperty.hasProperty('instanceOf') && privateProperty.instanceOf && AuditConfig.getConfig(privateProperty.instanceOf)) || AuditConfig.getConfig(privateProperty)) {
                                                             if (row.isSlaved) {
-                                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'
+                                                                println '&nbsp;' + ui.auditIcon(type: 'auto')
                                                             } else {
-                                                                println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                                                println '&nbsp;' + ui.auditIcon(type: 'default')
                                                             }
                                                         }
                                                     %>
@@ -523,13 +507,13 @@
                             </td>
 
                             <td class="x">
-                                <g:link controller="${row.displayController}" action="${row.displayAction}" id="${row.id}" class="ui icon button blue la-modern-button"
+                                <g:link controller="${row.displayController}" action="${row.displayAction}" id="${row.id}" class="${Btn.MODERN.SIMPLE}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                    <i aria-hidden="true" class="write icon"></i>
+                                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                                 </g:link>
                                 <g:if test="${row.manageChildren}">
-                                    <g:link controller="${row.displayController}" action="${row.manageChildren}" params="${row.manageChildrenParams}" class="ui icon button"><i class="users icon"></i></g:link>
+                                    <g:link controller="${row.displayController}" action="${row.manageChildren}" params="${row.manageChildrenParams}" class="${Btn.ICON.SIMPLE}"><i class="users icon"></i></g:link>
                                 </g:if>
                             </td>
                         </tr>

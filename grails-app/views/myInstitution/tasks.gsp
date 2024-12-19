@@ -1,5 +1,5 @@
-<%@ page import="de.laser.RefdataCategory;de.laser.storage.RDConstants"%>
-<laser:htmlStart message="menu.my.tasks" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Btn; de.laser.RefdataCategory;de.laser.storage.RDConstants"%>
+<laser:htmlStart message="menu.my.tasks" />
 
     <ui:breadcrumbs>
         <ui:crumb message="menu.my.tasks" class="active"/>
@@ -10,10 +10,6 @@
         </ui:controlButtons>
 
         <ui:h1HeaderWithIcon message="menu.my.tasks" type="task" floated="true" total="${taskCount}/${myTaskCount}" />
-
-        <%--<g:if test="${editable}">
-            <input type="submit" class="ui left floated  button la-clear-before" value="${message(code:'task.create.new')}" data-ui="modal" data-href="#modalCreateTask" />
-        </g:if>--%>
 
         <ui:filter>
             <form class="ui form">
@@ -41,8 +37,8 @@
                     </div>
                 </div>
                 <div class="field la-field-right-aligned">
-                    <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.filterreset.label')}</a>
-                    <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}"/>
+                    <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code:'default.button.filterreset.label')}</a>
+                    <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.filter.label')}"/>
                 </div>
                 <input type="hidden" name="ctrlFilterSend" value="true" />
             </form>

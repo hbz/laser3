@@ -5,6 +5,7 @@ import de.laser.ctrl.UsageControllerService
 import de.laser.utils.SwissKnife
 import de.laser.stats.Fact
 import de.laser.stats.StatsTripleCursor
+import de.laser.wekb.Platform
 import grails.plugin.springsecurity.annotation.Secured
 import grails.gorm.transactions.Transactional
 import org.hibernate.criterion.CriteriaSpecification
@@ -101,8 +102,7 @@ class UsageController  {
     }
 
     /**
-     * Fetches for the given institution and provider the usage data from the Nationaler Statistikserver
-     * SUSHI server
+     * Fetches for the given institution and provider the usage data from the Nationaler Statistikserver SUSHI server
      */
     @Secured(['ROLE_ADMIN'])
     def fetchSelection()
@@ -162,10 +162,7 @@ class UsageController  {
 
         if (params.supplier != 'null'){
             platform = Platform.get(params.supplier)
-            def cp = platform.propertySet.find(){
-                it.type.name = "NatStat Supplier ID"
-            }
-            supplier = cp.stringValue
+            supplier = platform.natstatSupplierID
         }
         if (params.institution != 'null'){
             instOrg = Org.get(params.institution)

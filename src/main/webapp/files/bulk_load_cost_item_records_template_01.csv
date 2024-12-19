@@ -1,2 +1,0 @@
-SubscriptionId	InvoiceNumber	PoNumber	IssuedDate	DueDate	InstitutionId	InvoicePeriodStart	InvoicePeriodEnd	Price	CostInBillingCurrency	CostInLocalCurrency	CurrencyRate	DatePaid	InvoiceNotes	InvoiceStatus	Currency
-4711	565	65	04/11/2018 00:00:00	05/12/2018 00:00:00	2017	02/05/2018 00:00:00	17/06/2018 00:00:00	53919.59	53919.59	53919.59		13/04/2018 00:00:00	Invoice Bulk Import reduced 02	Actual	EUR - Euro Member Countries

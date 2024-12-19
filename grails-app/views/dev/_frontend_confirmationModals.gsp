@@ -1,3 +1,4 @@
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <h2 class="ui dividing header">Confimation Modal<a class="anchor" id="icons"></a></h2>
 <h4 class="ui header">Einfacher Link</h4>
 <div class="html ui top attached segment example">
@@ -8,9 +9,9 @@
             data-content="Hier kommt der Tooltip rein"
             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: ['Button auf der YODA/FRONTENDSEITE'])}"
             data-confirm-term-how="delete"
-            class="ui icon negative button la-modern-button js-open-confirm-modal la-popup-tooltip la-delay"
+            class="${Btn.MODERN.NEGATIVE_CONFIRM_TOOLTIP}"
             role="button">
-        <i aria-hidden="true" class="trash alternate outline icon"></i>
+        <i aria-hidden="true" class="${Icon.CMD.DELETE}"></i>
     </g:link>
     <ul>
         <li>Damit aus dem Tabellen-Header ein Label wird, wenn Tabelle zusammengeschoben
@@ -30,7 +31,7 @@
             &lt;td&gt;
             01.01.2022
             &lt;br&gt;
-            <strong>&lt;span&gt; class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label')}:">&lt;/span&gt;</strong>
+            <strong>&lt;span&gt; class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label.shy')}:">&lt;/span&gt;</strong>
             &lt;/td&gt;
             .
             .
@@ -52,9 +53,9 @@
             data-confirm-messageUrl="${createLink(controller:'ajax', action:'genericDialogMessage', params:[template:'abc'])}"
             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: ['Button auf der YODA/FRONTENDSEITE'])}"
             data-confirm-term-how="delete"
-            class="ui icon negative button la-modern-button js-open-confirm-modal la-popup-tooltip la-delay"
+            class="${Btn.MODERN.NEGATIVE_CONFIRM_TOOLTIP}"
             role="button">
-        <i aria-hidden="true" class="trash alternate outline icon"></i>
+        <i aria-hidden="true" class="${Icon.CMD.DELETE}"></i>
     </g:link>
 </div>
 
@@ -62,7 +63,7 @@
 <h4 class="ui header">Link (Button), der den AJAX-Contoler aufruft</h4>
 <div class="html ui top attached segment example">
     <div class="ui top attached label"></div>
-    <ui:remoteLink class="ui icon negative button la-modern-button js-open-confirm-modal la-popup-tooltip la-delay"
+    <ui:remoteLink class="${Btn.MODERN.NEGATIVE_CONFIRM_TOOLTIP}"
                       controller="dev"
                       action="frontend"
                       params=""
@@ -72,7 +73,7 @@
                       data-confirm-term-how="delete"
                       role="button">
 
-        <i aria-hidden="true" class="trash alternate outline icon"></i>
+        <i aria-hidden="true" class="${Icon.CMD.DELETE}"></i>
     </ui:remoteLink>
 </div>
 

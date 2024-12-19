@@ -35,7 +35,10 @@ class OrgSetting {
         NATSTAT_SERVER_ACCESS       (RefdataValue, RDConstants.Y_N),
         NATSTAT_SERVER_API_KEY      (String),
         NATSTAT_SERVER_REQUESTOR_ID (String),
-        LASERSTAT_SERVER_KEY        (String)
+        LASERSTAT_SERVER_KEY        (String),
+        MAIL_REPLYTO_FOR_SURVEY        (String),
+        MAIL_SURVEY_FINISH_RESULT        (String),
+        MAIL_SURVEY_FINISH_RESULT_ONLY_BY_MANDATORY        (RefdataValue, RDConstants.Y_N)
 
         KEYS(type, rdc) {
             this.type = type
@@ -67,7 +70,7 @@ class OrgSetting {
         version    column:'os_version'
         org        column:'os_org_fk', index: 'os_org_idx'
         key        column:'os_key_enum'
-        rdValue    column:'os_rv_fk'
+        rdValue    column:'os_rv_fk',  index: 'os_rv_idx'
         strValue   column:'os_string_value'
         roleValue  column:'os_role_fk'
 
@@ -95,7 +98,10 @@ class OrgSetting {
                 OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS,
                 OrgSetting.KEYS.NATSTAT_SERVER_ACCESS,
                 OrgSetting.KEYS.NATSTAT_SERVER_API_KEY,
-                OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID
+                OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID,
+                OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY,
+                OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT,
+                OrgSetting.KEYS.MAIL_SURVEY_FINISH_RESULT_ONLY_BY_MANDATORY
         ]
     }
 

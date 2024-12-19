@@ -1,6 +1,6 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.I10nTranslation; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.I10nTranslation; grails.plugin.springsecurity.SpringSecurityUtils" %>
 
-<laser:htmlStart message="menu.admin.managePropertyDefinitions" serviceInjection="true"/>
+<laser:htmlStart message="menu.admin.managePropertyDefinitions" />
 
 		<ui:breadcrumbs>
 			<ui:crumb message="menu.admin" controller="admin" action="index" />
@@ -10,7 +10,7 @@
 %{--
         <ui:controlButtons>
             <laser:render template="actions"/>
-            <button class="ui button" value="" data-href="#addPropertyDefinitionModal" data-ui="modal" >${message(code:'propertyDefinition.create_new.label')}</button>
+            <button class="${Btn.SIMPLE}" value="" data-href="#addPropertyDefinitionModal" data-ui="modal" >${message(code:'propertyDefinition.create_new.label')}</button>
             <%-- included in case someone of the admins wishes this export
             <ui:exportDropdown>
                 <ui:exportDropdownItem>
@@ -33,40 +33,45 @@
                 <div class="content">
                     <table class="ui celled la-js-responsive-table la-table compact table">
                         <thead>
-                        <tr>
-                            <th></th>
-                            <th>${message(code:'propertyDefinition.key.label')}</th>
-                            <th>${message(code:'propertyDefinition.name.de.label')}</th>
-                            <th>${message(code:'propertyDefinition.name.en.label')}</th>
-                            <th>${message(code:'propertyDefinition.expl.de.label')}</th>
-                            <th>${message(code:'propertyDefinition.expl.en.label')}</th>
-                            <th></th>
-                            <th class="la-action-info">${message(code:'default.actions.label')}</th>
-                        </tr>
+                            <tr>
+                                <th></th>
+                                <g:sortableColumn property="name" title="${message(code:'propertyDefinition.key.label')}"/>
+                                <g:sortableColumn property="name_de" title="${message(code:'propertyDefinition.name.de.label')}"/>
+                                <g:sortableColumn property="name_en" title="${message(code:'propertyDefinition.name.en.label')}"/>
+                                <th>${message(code:'propertyDefinition.expl.de.label')}</th>
+                                <th>${message(code:'propertyDefinition.expl.en.label')}</th>
+                                <th></th>
+                                <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                            </tr>
                         </thead>
                         <tbody>
                             <g:each in="${entry.value}" var="pd">
                                 <tr>
                                     <td>
-                                        <g:if test="${pd.isHardData}">
-                                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
-                                                <i class="check circle icon green"></i>
+                                        <g:if test="${!pd.isHardData}">
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.not.tooltip')}">
+                                                <i class="${Icon.PROP.HARDDATA_NOT}"></i>
+                                            </span>
+                                        </g:if>
+                                        <g:if test="${pd.mandatory}">
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.mandatory.tooltip')}">
+                                                <i class="${Icon.PROP.MANDATORY}"></i>
                                             </span>
                                         </g:if>
                                         <g:if test="${pd.multipleOccurrence}">
-                                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
-                                                <i class="redo icon orange"></i>
+                                            <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
+                                                <i class="${Icon.PROP.MULTIPLE}"></i>
                                             </span>
                                         </g:if>
 
                                         <g:if test="${usedPdList?.contains(pd.id)}">
-                                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.dataIsUsed.tooltip', args:[pd.id])}">
-                                                <i class="info circle icon blue"></i>
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.dataIsUsed.tooltip', args:[pd.id])}">
+                                                <i class="${Icon.PROP.IN_USE}"></i>
                                             </span>
                                         </g:if>
                                         <g:if test="${pd.isUsedForLogic}">
-                                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
-                                                <i class="ui icon red cube"></i>
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
+                                                <i class="${Icon.PROP.LOGIC}"></i>
                                             </span>
                                         </g:if>
                                     </td>
@@ -113,7 +118,7 @@
                                     <td>
                                         <g:set var="pdRdc" value="${pd.type?.split('\\.').last()}"/>
                                         <g:if test="${'RefdataValue'.equals(pdRdc)}">
-                                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${pd.refdataCategory}">
+                                            <span data-position="top right" class="la-popup-tooltip" data-content="${pd.refdataCategory}">
                                                 <small>${pd.type?.split('\\.').last()}</small>
                                             </span>
                                         </g:if>
@@ -125,58 +130,57 @@
 
                                         <g:if test="${pd.mandatory}">
                                             <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMandatory.label')}" data-position="top left"
-                                                    params="${[cmd: 'toggleMandatory', pd: genericOIDService.getOID(pd)]}" class="ui icon yellow button la-modern-button la-popup-tooltip la-delay">
-                                                <i class="star icon"></i>
+                                                    params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP} yellow">
+                                                <i class="${Icon.PROP.MANDATORY} blue"></i>
                                             </g:link>
                                         </g:if>
                                         <g:else>
                                             <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMandatory.label')}" data-position="top left"
-                                                    params="${[cmd: 'toggleMandatory', pd: genericOIDService.getOID(pd)]}" class="ui icon button blue la-modern-button la-popup-tooltip la-delay">
+                                                    params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">
                                                 <i class="la-star slash icon"></i>
                                             </g:link>
                                         </g:else>
                                         <g:if test="${!multiplePdList?.contains(pd.id)}">
                                             <g:if test="${pd.multipleOccurrence}">
                                                 <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="top left"
-                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: genericOIDService.getOID(pd)]}" class="ui icon orange la-modern-button button la-popup-tooltip la-delay">
-                                                    <i class="redo slash icon"></i>
+                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP} teal">
+                                                    <i class="${Icon.PROP.MULTIPLE} blue"></i>
                                                 </g:link>
                                             </g:if>
                                             <g:else>
                                                 <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMultiple.label')}" data-position="top left"
-                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: genericOIDService.getOID(pd)]}" class="ui icon blue button la-modern-button la-popup-tooltip la-delay">
-                                                    <i class="la-redo slash icon"></i>
+                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP} ">
+                                                    <i class="${Icon.PROP.MULTIPLE_NOT} blue"></i>
                                                 </g:link>
                                             </g:else>
                                         </g:if>
 
                                         <g:if test="${(pd.descr == PropertyDefinition.SUB_PROP) && !PropertyDefinition.findByNameAndDescrAndTenant(pd.name, PropertyDefinition.SVY_PROP, null)}">
-                                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.copySubPropToSurProp.label')}">
-                                                <g:link class="ui icon button blue la-modern-button" action="transferSubPropToSurProp" params="[propertyDefinition: pd.id]">
-                                                    <i class="copy icon"></i>
+                                                <g:link action="transferSubPropToSurProp" data-content="${message(code:'propertyDefinition.copySubPropToSurProp.label')}" data-position="top left"
+                                                        params="[propertyDefinition: pd.id]" class="${Btn.MODERN.SIMPLE_TOOLTIP}" >
+                                                    <i class="${Icon.CMD.COPY}"></i>
                                                 </g:link>
-                                            </span>
                                         </g:if>
 
                                         <sec:ifAnyGranted roles="ROLE_YODA">
                                             <g:if test="${usedPdList?.contains(pd.id)}">
-                                                <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.exchange.label')}">
-                                                    <button class="ui icon blue button la-modern-button" data-href="#replacePropertyDefinitionModal" data-ui="modal"
+                                                <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'propertyDefinition.exchange.label')}">
+                                                    <button class="${Btn.MODERN.SIMPLE}" data-href="#replacePropertyDefinitionModal" data-ui="modal"
                                                             data-xcg-pd="${pd.class.name}:${pd.id}"
                                                             data-xcg-type="${pd.type}"
                                                             data-xcg-rdc="${pd.refdataCategory}"
                                                             data-xcg-debug="${pd.getI10n('name')} (${pd.name})"
-                                                    ><i class="exchange icon"></i></button>
+                                                    ><i class="${Icon.CMD.REPLACE}"></i></button>
                                                 </span>
                                             </g:if>
                                         </sec:ifAnyGranted>
 
                                         <g:if test="${! pd.isHardData && ! usedPdList?.contains(pd.id)}">
                                             <g:link controller="admin" action="managePropertyDefinitions"
-                                                    params="${[cmd: 'deletePropertyDefinition', pd: genericOIDService.getOID(pd)]}" class="ui icon negative button la-modern-button"
+                                                    params="${[cmd: 'deletePropertyDefinition', pd: pd.id]}" class="${Btn.MODERN.NEGATIVE}"
                                                     role="button"
                                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                <i class="trash alternate outline icon"></i>
+                                                <i class="${Icon.CMD.DELETE}"></i>
                                             </g:link>
                                         </g:if>
                                     </td>
@@ -192,74 +196,4 @@
 
         <laser:render template="/myInstitution/replacePropertyDefinition" model="[action: actionName]"/>
 
-%{--
-        <ui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
-
-            <g:form class="ui form" id="create_cust_prop" url="[controller: 'ajax', action: 'addCustomPropertyType']" >
-                <input type="hidden" name="reloadReferer" value="/admin/managePropertyDefinitions"/>
-                <input type="hidden" name="ownerClass" value="${this.class}"/>
-
-				<div class="field">
-                	<label class="property-label">Name</label>
-                	<input type="text" name="cust_prop_name"/>
-                </div>
-
-                <div class="fields">
-                    <div class="field five wide">
-                        <label for="cust_prop_desc" class="property-label">Context:</label>
-                        <select name="cust_prop_desc" id="cust_prop_desc" class="ui dropdown">
-                            <g:each in="${PropertyDefinition.AVAILABLE_CUSTOM_DESCR}" var="pd">
-                                <option value="${pd}"><g:message code="propertyDefinition.${pd}.label" /></option>
-                            </g:each>
-                        </select>
-                    </div>
-                    <div class="field five wide">
-                        <label class="property-label"><g:message code="default.type.label" /></label>
-                        <g:select class="ui dropdown"
-                            from="${PropertyDefinition.validTypes.entrySet()}"
-                            optionKey="key" optionValue="${{PropertyDefinition.getLocalizedValue(it.key)}}"
-                            name="cust_prop_type"
-                            id="pd_type" />
-                    </div>
-                    <div class="field five wide">
-                        <label class="property-label">${message(code:'propertyDefinition.expl.label')}</label>
-                        <textarea name="cust_prop_expl" id="eust_prop_expl" class="ui textarea"></textarea>
-                    </div>
-
-                    <div class="field six wide hide" id="remoteRefdataSearchWrapper">
-                        <label class="property-label"><g:message code="refdataCategory.label" /></label>
-                        <select class="ui search selection dropdown remoteRefdataSearch" name="refdatacategory"></select>
-                    </div>
-                </div>
-
-                <div class="fields">
-                    <div class="field five wide">
-                        <label class="property-label">${message(code:'default.multipleOccurrence.tooltip')}</label>
-                        <g:checkBox type="text" name="cust_prop_multiple_occurence" />
-                    </div>
-                </div>
-
-            </g:form>
-
-        </ui:modal>
-
-		<laser:script file="${this.getGroovyPageFileName()}">
-            if( $( "#pd_type option:selected" ).val() == "${RefdataValue.class.name}") {
-                $("#remoteRefdataSearchWrapper").show();
-            } else {
-                 $("#remoteRefdataSearchWrapper").hide();
-            }
-
-			$('#pd_type').change(function() {
-				var selectedText = $( "#pd_type option:selected" ).val();
-				if( selectedText == "${RefdataValue.class.name}") {
-					$("#remoteRefdataSearchWrapper").show();
-				}else{
-					$("#remoteRefdataSearchWrapper").hide();
-				}
-			});
-
-            c3po.remoteRefdataSearch('${createLink(controller:'ajaxJson', action:'lookup')}', '#remoteRefdataSearchWrapper');
-		</laser:script>
---}%
 <laser:htmlEnd />

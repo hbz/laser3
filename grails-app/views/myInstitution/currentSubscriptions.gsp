@@ -1,6 +1,6 @@
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils;de.laser.CustomerTypeService; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.ui.Icon; de.laser.ExportClickMeService; grails.plugin.springsecurity.SpringSecurityUtils;de.laser.CustomerTypeService; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 
-<laser:htmlStart message="myinst.currentSubscriptions.label" serviceInjection="true" />
+<laser:htmlStart message="myinst.currentSubscriptions.label" />
 
         <ui:breadcrumbs>
             <ui:crumb message="myinst.currentSubscriptions.label" class="active" />
@@ -9,7 +9,7 @@
         <ui:controlButtons>
             <ui:exportDropdown>
                 <ui:exportDropdownItem>
-                    <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
+                    <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.SUBSCRIPTIONS]"/>
                 </ui:exportDropdownItem>
                 <%--
                 <g:if test="${filterSet || defaultSet}">
@@ -58,6 +58,6 @@
         <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
     </ui:debugInfo>
 
-    <laser:render template="export/individuallyExportModalSubs" model="[modalID: 'individuallyExportModal']" />
+<g:render template="/clickMe/export/js"/>
 
 <laser:htmlEnd />

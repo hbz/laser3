@@ -1,5 +1,5 @@
-<%@ page import="java.sql.Timestamp; de.laser.Org; de.laser.License; de.laser.Subscription; de.laser.Task; de.laser.storage.RDStore;de.laser.storage.RDConstants" %>
-<laser:htmlStart text="Komponenten zur Überprüfung der Barrierefreiheit" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Icon; java.sql.Timestamp; de.laser.Org; de.laser.License; de.laser.Subscription; de.laser.Task; de.laser.storage.RDStore;de.laser.storage.RDConstants" %>
+<laser:htmlStart text="Komponenten zur Überprüfung der Barrierefreiheit" />
 
     <div id="modalCreateTask">
         <h1 class="ui dividing  header">Komponenten zur Überprüfung der Barrierefreiheit</h1>
@@ -24,12 +24,11 @@
         <h2 class="ui dividing  header">6. Formulare</h2>
         <laser:render template="templatesWCAGTest/form" />
 
-
 %{--        <h2 class="ui dividing header">7. Icons</h2>
         <h3 class="ui dividing header">7.1. Dekoratives Icon mit einer Dopplung der Semantik durch Text, der daneben steht.</h3>--}%
 %{--
         <div class="ui icon info message">
-            <i aria-hidden="true" class="exclamation triangle icon"></i>
+            <i aria-hidden="true" class="${Icon.UI.INFO}"></i>
             <div class="content">
                 <div class="header">
                     Achtung

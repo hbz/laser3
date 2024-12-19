@@ -4,7 +4,7 @@
 <%
     LinkedHashSet groupedProperties = []
 %>
-<!-- TODO div class="ui card la-dl-no-table la-js-hideable" -->
+<!-- TODO div class="ui card la-dl-no-table" -->
 <div class="ui card la-dl-no-table">
 
     <div class="content">
@@ -35,9 +35,9 @@
                     (${pdg.name})
                 </h2>
 
-                <div>
+                <div id="survey_grouped_custom_properties">
                     <laser:render template="/templates/survey/properties_table" model="${[
-                            surveyProperties: surveyProperties, pdg: pdg]}"/>
+                            surveyProperties: surveyProperties, pdg: pdg, props_div: 'survey_grouped_custom_properties']}"/>
                 </div>
             </div>
         </g:if>
@@ -65,7 +65,7 @@
 
 <%-- orphaned properties --%>
 
-<%--<div class="ui card la-dl-no-table la-js-hideable"> --%>
+<%--<div class="ui card la-dl-no-table"> --%>
     <div class="content">
         <g:if test="${controllerName == 'survey' && actionName == 'show'}">
             <g:set var="surveyProperties" value="${surveyConfig.getOrphanedSurveyConfigProperties(groupedProperties)}"/>
@@ -75,9 +75,9 @@
                 </g:if>
             </h2>
 
-            <div>
+            <div id="survey_orphaned_properties">
                 <laser:render template="/templates/survey/properties_table" model="${[
-                        surveyProperties: surveyProperties]}"/>
+                        surveyProperties: surveyProperties, props_div: 'survey_orphaned_properties']}"/>
             </div>
         </g:if><g:else>
         <g:set var="surveyProperties"
@@ -106,9 +106,9 @@
                         ${message(code: 'surveyConfigsInfo.properties.privat')}
                 </h2>
 
-                <div>
+                <div id="survey_private_properties">
                     <laser:render template="/templates/survey/properties_table" model="${[
-                            surveyProperties: surveyProperties, selectablePrivateProperties: true]}"/>
+                            surveyProperties: surveyProperties, selectablePrivateProperties: true, props_div: 'survey_private_properties']}"/>
                 </div>
         </g:if>
     <g:else>

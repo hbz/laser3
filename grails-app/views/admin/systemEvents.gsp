@@ -84,13 +84,12 @@
     <table class="ui sortable celled la-js-responsive-table la-table la-hover-table compact table">
         <thead>
         <tr>
-            <th scope="col" class="one wide">${message(code:'default.number')}</th>
+            <th scope="col" class="two wide">${message(code:'default.date.label')}</th>
             <th scope="col" class="two wide">${message(code:'default.category.label')}</th>
             <th scope="col" class="two wide">${message(code:'default.relevance.label')}</th>
             <th scope="col" class="two wide">${message(code:'default.source.label')}</th>
             <th scope="col" class="three wide">${message(code:'default.event.label')}</th>
-            <th scope="col" class="four wide">Payload</th>
-            <th scope="col" class="two wide">${message(code:'default.date.label')}</th>
+            <th scope="col" class="five wide">Payload</th>
         </tr>
         </thead>
         <tbody>
@@ -103,8 +102,8 @@
                     case 'warning'  : tdClass = 'warning'; break
                     case 'error'    : tdClass = 'error'; break
                 }
-                if (el.hasChanged) {
-                    tdClass += ' sf_underline'
+                if (! el.hasChanged) {
+                    tdClass += ' sf_simple'
                 }
             %>
             <tr
@@ -114,7 +113,7 @@
                     class="hidden"
             >
                 <td class="${tdClass}">
-                    ${i+1}
+                    <g:formatDate date="${el.created}" format="${message(code:'default.date.format.noZ')}" />
                 </td>
                 <td class="${tdClass}">
                     ${el.category}
@@ -133,9 +132,6 @@
                 </td>
                 <td class="${tdClass}">
                     ${el.payload?.replaceAll(',', ', ')}
-                </td>
-                <td class="${tdClass}">
-                    <g:formatDate date="${el.created}" format="${message(code:'default.date.format.noZ')}" />
                 </td>
             </tr>
         </g:each>

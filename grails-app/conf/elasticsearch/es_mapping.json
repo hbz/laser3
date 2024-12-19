@@ -156,6 +156,15 @@
         "index": false,
         "type": "text"
       },
+      "altnames": {
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          },
+          "type": "text"
+      },
       "platforms": {
         "properties": {
           "name": {

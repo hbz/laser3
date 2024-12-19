@@ -1,7 +1,7 @@
 <%@ page import="de.laser.Subscription; de.laser.reporting.report.myInstitution.base.BaseDetails; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.storage.RDStore; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.LicenseProperty;" %>
 <laser:serviceInjection />
 
-<laser:render template="/myInstitution/reporting/details/top" />
+<laser:render template="/myInstitution/reporting/details/details_top" />
 
 <div class="ui segment">
     <table class="ui table la-js-responsive-table la-table compact">
@@ -23,8 +23,8 @@
                     <g:if test="${query == 'license-x-property'}">
                         <th>${message(code:'reporting.details.property.value')}</th>
                     </g:if>
-                <th>${message(code:'default.startDate.label')}</th>
-                <th>${message(code:'default.endDate.label')}</th>
+                <th>${message(code:'default.startDate.label.shy')}</th>
+                <th>${message(code:'default.endDate.label.shy')}</th>
             </tr>
         </thead>
         <tbody>
@@ -57,7 +57,7 @@
                         <g:if test="${query != 'license-x-identifier' && query != 'license-x-property'}">
                             <td>
                                 <%
-                                    println License.executeQuery('select count(l) from License l where l.instanceOf = :parent group by l.reference', [parent: lic])[0]
+                                    println License.executeQuery('select count(*) from License l where l.instanceOf = :parent group by l.reference', [parent: lic])[0]
                                 %>
                             </td>
                             <td>

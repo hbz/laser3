@@ -1,4 +1,4 @@
-<%@ page import="de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.*; de.laser.AuditConfig;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.*; de.laser.AuditConfig;" %>
 <laser:serviceInjection/>
 
 <g:set var="overwriteEditable" value="${false}"/>
@@ -22,9 +22,9 @@
                         <td>
                             ${propKey.getI10n("name")}
                             <g:if test="${propKey.multipleOccurrence}">
-                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                <span data-position="top right" class="la-popup-tooltip"
                                       data-content="${message(code: 'default.multipleOccurrence.tooltip')}">
-                                    <i class="redo icon orange"></i>
+                                    <i class="${Icon.PROP.MULTIPLE}"></i>
                                 </span>
                             </g:if>
                         </td>
@@ -75,7 +75,7 @@
                                                     </div>
                                                 </g:else>
                                                 <g:if test="${subProperty?.note}">
-                                                    <div class="ui circular label la-long-tooltip la-popup-tooltip la-delay"
+                                                    <div class="ui circular label la-long-tooltip la-popup-tooltip"
                                                          data-content="${subProperty?.note}">${message(code: 'copyElementsIntoObject.note.short')}</div>
                                                 </g:if>
                                             </div>
@@ -87,9 +87,8 @@
                         </g:if>
                         <g:if test="${!(subscriptionParent && subscriptionParent.id in propValues.owner.id)}">
                             <td class="center aligned">
-                                <a class="ui circular label la-popup-tooltip la-delay"
-                                   data-content="<g:message
-                                           code="default.compare.propertyNotSet"/>"><strong>–</strong>
+                                <a class="ui circular label la-popup-tooltip"
+                                   data-content="<g:message code="default.compare.propertyNotSet"/>"><strong>–</strong>
                                 </a>
                             </td>
                         </g:if>
@@ -139,7 +138,7 @@
                                                     </div>
                                                 </g:else>
                                                 <g:if test="${subProperty?.note}">
-                                                    <div class="ui circular label la-long-tooltip la-popup-tooltip la-delay"
+                                                    <div class="ui circular label la-long-tooltip la-popup-tooltip"
                                                          data-content="${subProperty?.note}">${message(code: 'copyElementsIntoObject.note.short')}</div>
                                                 </g:if>
                                             </div>
@@ -151,9 +150,8 @@
                         </g:if>
                         <g:if test="${!(successorSubscriptionParent && successorSubscriptionParent.id in propValues.owner.id)}">
                             <td class="center aligned">
-                                <a class="ui circular label la-popup-tooltip la-delay"
-                                   data-content="<g:message
-                                           code="default.compare.propertyNotSet"/>"><strong>–</strong>
+                                <a class="ui circular label la-popup-tooltip"
+                                   data-content="<g:message code="default.compare.propertyNotSet"/>"><strong>–</strong>
                                 </a>
                             </td>
                         </g:if>

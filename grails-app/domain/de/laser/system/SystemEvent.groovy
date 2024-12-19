@@ -17,6 +17,8 @@ class SystemEvent {
 
     @Transient
     private String i18n
+    @Transient
+    private long startTime
 
     String    token                 // i18n and more
     String    payload               // json for object ids, etx
@@ -38,12 +40,12 @@ class SystemEvent {
             'DBDD_JOB_START'                : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'DBDD_JOB_COMPLETE'             : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'DBDD_JOB_IGNORE'               : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.WARNING],
-            'DBDD_SERVICE_START_1'          : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
-            'DBDD_SERVICE_COMPLETE_1'       : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'DBDD_SERVICE_ERROR_1'          : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
             'DBDD_SERVICE_START_2'          : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
+            'DBDD_SERVICE_COMPLETE_2'       : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'DBDD_SERVICE_ERROR_2'          : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
             'DBDD_SERVICE_START_3'          : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
+            'DBDD_SERVICE_COMPLETE_3'       : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'DBDD_SERVICE_ERROR_3'          : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
             'DBM_SCRIPT_INFO'               : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'DBM_SCRIPT_ERROR'              : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
@@ -89,6 +91,10 @@ class SystemEvent {
             'SYSTEM_INSIGHT_MAILS_START'    : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'SYSTEM_INSIGHT_MAILS_COMPLETE' : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'SYSTEM_INSIGHT_MAILS_ERROR'    : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
+            'SYSTEM_UA_FLAG_DISABLED'       : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
+            'SYSTEM_UA_FLAG_EXPIRED'        : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
+            'SYSTEM_UA_FLAG_LOCKED'         : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
+            'SYSTEM_UA_FLAG_UNLOCKED'       : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'YODA_ES_RESET_START'           : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
             'YODA_ES_RESET_DELETED'         : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
             'YODA_ES_RESET_CREATED'         : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO]
@@ -176,6 +182,8 @@ class SystemEvent {
             }
 
             if (result) {
+                result.startTime = System.currentTimeMillis()
+
                 result.token = token
                 result.payload = payload ? (new JSON(payload)).toString(false) : null
 
@@ -237,7 +245,7 @@ class SystemEvent {
      * @param token the new token for this record
      * @param payload the new JSON payload
      */
-    void changeTo(String token, def payload) {
+    void changeTo(String token, Map<String, Object> payload = [:]) {
         withTransaction {
             if (DEFINED_EVENTS.containsKey(token)) {
                 log.info '> changed given SystemEvent (ID:' + this.id + ') from ' + this.token + ' to ' + token
@@ -247,10 +255,9 @@ class SystemEvent {
                 this.relevance = DEFINED_EVENTS.get(token).relevance
 
                 this.hasChanged = true
+                payload.s = this.startTime ? ((System.currentTimeMillis() - this.startTime) / 1000).round(2) : 0
 
-                if (payload) {
-                    this.payload = (new JSON(payload)).toString(false)
-                }
+                this.payload = (new JSON(payload)).toString(false)
                 this.save()
             }
         }

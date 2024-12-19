@@ -3,11 +3,13 @@ package de.laser.ctrl
 import de.laser.*
 import de.laser.auth.User
 import de.laser.storage.RDStore
-import de.laser.utils.LocaleUtils
+import de.laser.utils.DateUtils
 import de.laser.utils.SwissKnife
 import de.laser.interfaces.CalculatedType
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+
+import java.text.SimpleDateFormat
 
 /**
  * This class is a service mirror for {@link LicenseController} to capsule the complex data manipulation
@@ -23,6 +25,8 @@ class LicenseControllerService {
     ContextService contextService
     DocstoreService docstoreService
     LinksGenerationService linksGenerationService
+    LicenseService licenseService
+    SubscriptionsQueryService subscriptionsQueryService
     TaskService taskService
     WorkflowService workflowService
 
@@ -58,7 +62,7 @@ class LicenseControllerService {
         }
         else {
             SwissKnife.setPaginationParams(result, params, result.user as User)
-            result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (Org) result.institution, (License) result.license)['cmbTaskInstanceList']
+            result.cmbTaskInstanceList = taskService.getTasks((User) result.user, (License) result.license)['cmbTaskInstanceList']
             [result:result,status:STATUS_OK]
         }
     }
@@ -78,10 +82,10 @@ class LicenseControllerService {
 
         result.user            = contextService.getUser()
         result.institution     = contextService.getOrg()
-        result.contextOrg      = result.institution
-        result.contextCustomerType = result.institution.getCustomerType()
+        result.contextCustomerType = contextService.getOrg().getCustomerType()
         result.license         = License.get(params.id)
         result.licenseInstance = result.license
+        result.inContextOrg = (contextService.getOrg().id in result.license.getAllLicensee().id || (!result.license.instanceOf && contextService.getOrg().id == result.license.getLicensingConsortium()?.id))
 
         if(result.license.instanceOf)
             result.auditConfigs = auditService.getAllAuditConfigs(result.license.instanceOf)
@@ -90,28 +94,61 @@ class LicenseControllerService {
         LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(result.license)
         result.navPrevLicense = links.prevLink
         result.navNextLicense = links.nextLink
-        // restrict visible for templates/links/orgLinksAsList - done by Andreas Gálffy
-        String i10value = LocaleUtils.getLocalizedAttributeName('value')
-        result.visibleOrgRelations = OrgRole.executeQuery(
-                "select oo from OrgRole oo where oo.lic = :license and oo.org != :context and oo.roleType not in (:roleTypes) order by oo.roleType." + i10value + " asc, oo.org.sortname asc, oo.org.name asc",
-                [license:result.license,context:result.institution,roleTypes:[RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS]]
-        )
 
         result.showConsortiaFunctions = showConsortiaFunctions(result.license)
 
-        int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.license).size()
+        int tc1 = taskService.getTasksByResponsibilityAndObject(result.user, result.license).size()
         int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.license).size()
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
-        result.notesCount       = docstoreService.getNotes(result.license, result.contextOrg).size()
-        result.checklistCount   = workflowService.getWorkflowCount(result.license, result.contextOrg)
+        result.notesCount       = docstoreService.getNotesCount(result.license, contextService.getOrg())
+        result.docsCount        = docstoreService.getDocsCount(result.license, contextService.getOrg())
+        result.checklistCount   = workflowService.getWorkflowCount(result.license, contextService.getOrg())
+
+        GrailsParameterMap clone = params.clone() as GrailsParameterMap
+        if(!clone.license){
+            clone.license = result.license.id
+        }
+
+        Map notNeededOnlySetCloneParams = setSubscriptionFilterData(clone)
+        if(result.license._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.license.getLicensingConsortium().id == contextService.getOrg().id) {
+            Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
+            Map<String,Object> queryParams = [lic:result.license, subscriberRoleTypes:subscriberRoleTypes, linkType:RDStore.LINKTYPE_LICENSE]
+            String whereClause = ""
+            if (clone.status) {
+                whereClause += " and s.status.id = :status"
+                queryParams.status = clone.long('status')
+            }
+            String query = "select count(*) from Links l join l.destinationSubscription s join s.orgRelations oo where l.sourceLicense = :lic and l.linkType = :linkType and oo.roleType in :subscriberRoleTypes ${whereClause} "
+            result.subsCount = Subscription.executeQuery(query.split('order by')[0], queryParams)[0]
+        }else {
+            List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(clone)
+            result.subsCount   = Subscription.executeQuery( "select count(*) " + tmpQ[0].split('order by')[0] , tmpQ[1] )[0]
+        }
+
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
             if (! result.license.isVisibleBy(result.user)) {
                 log.debug( "--- NOT VISIBLE ---")
-                return null
+                //perform further check because it may be linked to a subscription and the linking is missing ...
+                List<Links> subLinks = Links.executeQuery('select li from Links li where li.sourceLicense = :lic and li.destinationSubscription in (select oo.sub from OrgRole oo where oo.org = :ctx)', [ctx: contextService.getOrg(), lic: result.license])
+                if(subLinks) {
+                    //substitute missing link upon call
+                    log.debug("--- SUBSTITUTING ---")
+                    OrgRole substitute = new OrgRole(org: contextService.getOrg(), lic: result.license)
+                    if(contextService.getOrg().isCustomerType_Consortium()) {
+                        substitute.roleType = RDStore.OR_LICENSING_CONSORTIUM
+                    }
+                    else {
+                        if(result.license._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
+                            substitute.roleType = RDStore.OR_LICENSEE_CONS
+                        else substitute.roleType = RDStore.OR_LICENSEE
+                    }
+                    substitute.save()
+                }
+                else return null
             }
         }
         result.editable = result.license.isEditableBy(result.user)
@@ -122,6 +159,9 @@ class LicenseControllerService {
                 return null
             }
         }
+
+        result.visibleProviders = licenseService.getVisibleProviders(result.license)
+        result.visibleVendors = licenseService.getVisibleVendors(result.license)
 
         result
     }
@@ -144,5 +184,31 @@ class LicenseControllerService {
      */
     boolean showConsortiaFunctions(Org contextOrg, License license) {
         return license.getLicensingConsortium()?.id == contextOrg.id && license._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL
+    }
+
+    /**
+     * this is very ugly and should be subject of refactor - - but unfortunately, the
+     * {@link SubscriptionsQueryService#myInstitutionCurrentSubscriptionsBaseQuery(java.util.Map)}
+     * requires the {@link GrailsParameterMap} as parameter.
+     * @return validOn and defaultSet-parameters of the filter
+     */
+    Map<String,Object> setSubscriptionFilterData(GrailsParameterMap params) {
+        Map<String, Object> result = [:]
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+        Date dateRestriction = null
+        if (params.validOn == null || params.validOn.trim() == '') {
+            result.validOn = ""
+        } else {
+            result.validOn = params.validOn
+            dateRestriction = sdf.parse(params.validOn)
+        }
+        result.dateRestriction = dateRestriction
+        if (! params.status) {
+            if (!params.filterSet) {
+                params.status = RDStore.SUBSCRIPTION_CURRENT.id
+                result.defaultSet = true
+            }
+        }
+        result
     }
 }

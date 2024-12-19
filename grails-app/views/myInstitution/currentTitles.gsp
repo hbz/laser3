@@ -1,5 +1,5 @@
-<%@ page import="de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.IssueEntitlement;de.laser.Platform; de.laser.remote.ApiSource; de.laser.PermanentTitle; de.laser.Subscription" %>
-<laser:htmlStart message="myinst.currentTitles.label"/>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.helper.Params; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.IssueEntitlement; de.laser.wekb.Platform; de.laser.PermanentTitle; de.laser.Subscription" %>
+<laser:htmlStart message="myinst.currentTitles.label" />
 
 <ui:breadcrumbs>
     <ui:crumb message="myinst.currentTitles.label" class="active"/>
@@ -39,7 +39,7 @@
     --%>
         <g:if test="${num_ti_rows < 1000000}">
             <ui:exportDropdownItem>
-                <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Export</a>
+                <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.TIPPS]"/>
             </ui:exportDropdownItem>
         </g:if>
         <g:else>
@@ -76,8 +76,6 @@
 
 <ui:filter>
     <g:form action="currentTitles" controller="myInstitution" class="ui form">
-
-
         <div class="two fields">
             <div class="field">
                 <label>${message(code: 'default.search.text')}</label>
@@ -92,9 +90,6 @@
             <ui:datepicker label="myinst.currentTitles.subs_valid_on" id="validOn" name="validOn"
                            value="${validOn}"/>
             --%>
-        </div>
-
-        <div class="two fields">
             <div class="field">
                 <label for="filterSub">${message(code: 'subscription.plural')}</label>
                 <div class="ui search selection fluid multiple dropdown" id="filterSub">
@@ -108,17 +103,20 @@
                             value="">${message(code: 'default.select.all.label')}</option>
                     <g:each in="${subscriptions}" var="s">
                         <option <%=(filterSub.contains(s.id.toString())) ? 'selected="selected"' : ''%> value="${s.id}"
-                                                                                                        title="${s.dropdownNamingConvention(institution)}">
-                            ${s.dropdownNamingConvention(institution)}
+                                                                                                        title="${s.dropdownNamingConvention()}">
+                            ${s.dropdownNamingConvention()}
                         </option>
                     </g:each>
                 </select>
                 --}%
 
             </div>
+        </div>
+
+        <div class="two fields">
 
             <div class="field">
-                <label for="filterPvd">${message(code: 'default.agency.provider.plural.label')}</label>
+                <label for="filterPvd">${message(code: 'provider.label')}</label>
                 <div class="ui search selection fluid multiple dropdown" id="filterPvd">
                     <input type="hidden" name="filterPvd"/>
                     <div class="default text"><g:message code="default.select.all.label"/></div>
@@ -139,6 +137,15 @@
                     </g:each>
                 </select>
                 --}%
+            </div>
+
+            <div class="field">
+                <label for="filterVen">${message(code: 'vendor.label')}</label>
+                <div class="ui search selection fluid multiple dropdown" id="filterVen">
+                    <input type="hidden" name="filterVen"/>
+                    <div class="default text"><g:message code="default.select.all.label"/></div>
+                    <i class="dropdown icon"></i>
+                </div>
             </div>
         </div>
 
@@ -177,7 +184,7 @@
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${availableStatus}" var="status">
-                        <option <%=(params.list('status')?.contains(status.id.toString())) ? 'selected="selected"' : ''%>
+                        <option <%=Params.getLongList(params, 'status').contains(status.id) ? 'selected="selected"' : ''%>
                                 value="${status.id}">
                             ${status.getI10n('value')}
                         </option>
@@ -221,11 +228,9 @@
     </div>--%>
 
         <div class="field la-field-right-aligned">
-            <a href="${request.forwardURI}"
-               class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
+            <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
             <input type="hidden" name="filterSet" value="true"/>
-            <input type="submit" class="ui primary button"
-                   value="${message(code: 'default.button.filter.label')}"/>
+            <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}"/>
         </div>
 
     </g:form>
@@ -233,63 +238,33 @@
 
 <div id="downloadWrapper"></div>
 
-<ui:tabs actionName="${actionName}">
-    <ui:tabsItem controller="${controllerName}" action="${actionName}"
-                 params="[tab: 'currentIEs']"
-                 text="${message(code: "package.show.nav.current")}" tab="currentIEs"
-                 counts="${currentIECounts}"/>
-    <ui:tabsItem controller="${controllerName}" action="${actionName}"
-                 params="[tab: 'plannedIEs']"
-                 text="${message(code: "package.show.nav.planned")}" tab="plannedIEs"
-                 counts="${plannedIECounts}"/>
-    <ui:tabsItem controller="${controllerName}" action="${actionName}"
-                 params="[tab: 'expiredIEs']"
-                 text="${message(code: "package.show.nav.expired")}" tab="expiredIEs"
-                 counts="${expiredIECounts}"/>
-    <ui:tabsItem controller="${controllerName}" action="${actionName}"
-                 params="[tab: 'deletedIEs']"
-                 text="${message(code: "package.show.nav.deleted")}" tab="deletedIEs"
-                 counts="${deletedIECounts}"/>
-    <ui:tabsItem controller="${controllerName}" action="${actionName}"
-                 params="[tab: 'allIEs']"
-                 text="${message(code: "menu.public.all_titles")}" tab="allIEs"
-                 counts="${allIECounts}"/>
-</ui:tabs>
+<laser:render template="/templates/titles/top_attached_title_tabs"
+              model="${[
+                      tt_controller:    controllerName,
+                      tt_action:        actionName,
+                      tt_tabs:          ['currentIEs', 'plannedIEs', 'expiredIEs', 'deletedIEs', 'allIEs'],
+                      tt_counts:        [currentIECounts, plannedIECounts, expiredIECounts, deletedIECounts, allIECounts]
+              ]}" />
 
 <% params.remove('tab') %>
 
-<%
-    Map<String, String>
-    sortFieldMap = ['tipp.sortname': message(code: 'title.label')]
-    if (journalsOnly) {
-        sortFieldMap['startDate'] = message(code: 'default.from')
-        sortFieldMap['endDate'] = message(code: 'default.to')
-    } else {
-        sortFieldMap['tipp.dateFirstInPrint'] = message(code: 'tipp.dateFirstInPrint')
-        sortFieldMap['tipp.dateFirstOnline'] = message(code: 'tipp.dateFirstOnline')
-    }
-    sortFieldMap['tipp.accessStartDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.from')}"
-    sortFieldMap['tipp.accessEndDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.to')}"
-%>
-
-
 <div class="ui bottom attached tab active segment">
-
-    <div class="ui form">
-        <div class="three wide fields">
-            <div class="field">
-                <ui:sortingDropdown noSelection="${message(code: 'default.select.choose.label')}"
-                                    from="${sortFieldMap}" sort="${params.sort}" order="${params.order}"/>
+    <g:if test="${titles}">
+        <div class="ui form">
+            <div class="two wide fields">
+                <div class="field">
+                    <laser:render template="/templates/titles/sorting_dropdown" model="${[sd_type: 1, sd_journalsOnly: journalsOnly, sd_sort: params.sort, sd_order: params.order]}" />
+                </div>
+                <div class="field la-field-noLabel">
+                    <ui:showMoreCloseButton />
+                </div>
             </div>
         </div>
-    </div>
+    </g:if>
 
 
-    <div>
-        <div>
-            <g:if test="${titles}">
+    <g:if test="${titles}">
                 <g:set var="counter" value="${offset + 1}"/>
-
 
                     <g:if test="${titles}">
                         <div class="ui fluid card">
@@ -299,18 +274,18 @@
                                         <div class="ui raised segments la-accordion-segments">
                                             <%
                                                 String instanceFilter = ''
-                                                if (institution.isCustomerType_Consortium())
+                                                if (contextService.getOrg().isCustomerType_Consortium())
                                                     instanceFilter += ' and sub.instanceOf = null'
-                                                Set<IssueEntitlement> ie_infos = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.org = :context and ie.tipp = :tipp and (sub.status = :current or sub.hasPerpetualAccess = true) and ie.status != :ieStatus' + instanceFilter, [ieStatus: RDStore.TIPP_STATUS_REMOVED, context: institution, tipp: tipp, current: RDStore.SUBSCRIPTION_CURRENT])
+                                                Set<IssueEntitlement> ie_infos = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.org = :context and ie.tipp = :tipp and (sub.status = :current or sub.hasPerpetualAccess = true) and ie.status != :ieStatus' + instanceFilter, [ieStatus: RDStore.TIPP_STATUS_REMOVED, context: contextService.getOrg(), tipp: tipp, current: RDStore.SUBSCRIPTION_CURRENT])
                                             %>
 
-                                        <g:render template="/templates/title_segment_accordion"
-                                                  model="[ie: null, tipp: tipp, permanentTitle: PermanentTitle.findByOwnerAndTipp(institution, tipp)]"/>
+                                        <g:render template="/templates/titles/title_segment_accordion"
+                                                  model="[ie: null, tipp: tipp, permanentTitle: PermanentTitle.findByOwnerAndTipp(contextService.getOrg(), tipp)]"/>
 
                                         <div class="ui fluid segment content" data-ajaxTargetWrap="true">
                                             <div class="ui stackable grid" data-ajaxTarget="true">
 
-                                                <laser:render template="/templates/title_long_accordion"
+                                                <laser:render template="/templates/titles/title_long_accordion"
                                                               model="${[ie         : null, tipp: tipp,
                                                                         showPackage: true, showPlattform: true, showEmptyFields: false]}"/>
 
@@ -349,7 +324,7 @@
                                                             </g:if>
                                                             <g:if test="${covStmt.coverageNote}">
                                                                 <div class="item">
-                                                                    <i class="grey icon quote right la-popup-tooltip la-delay"
+                                                                    <i class="grey icon quote right la-popup-tooltip"
                                                                        data-content="${message(code: 'default.note.label')}"></i>
 
                                                                     <div class="content">
@@ -365,7 +340,7 @@
                                                             </g:if>
                                                             <g:if test="${covStmt.coverageDepth}">
                                                                 <div class="item">
-                                                                    <i class="grey icon file alternate right la-popup-tooltip la-delay"
+                                                                    <i class="grey ${Icon.ATTR.TIPP_COVERAGE_DEPTH} right la-popup-tooltip"
                                                                        data-content="${message(code: 'tipp.coverageDepth')}"></i>
 
                                                                     <div class="content">
@@ -381,7 +356,7 @@
                                                             </g:if>
                                                             <g:if test="${covStmt.embargo}">
                                                                 <div class="item">
-                                                                    <i class="grey icon hand paper right la-popup-tooltip la-delay"
+                                                                    <i class="grey icon hand paper right la-popup-tooltip"
                                                                        data-content="${message(code: 'tipp.embargo')}"></i>
 
                                                                     <div class="content">
@@ -401,24 +376,24 @@
                                                 </div>
                                                 <%-- My Area START--%>
                                                 <div class="seven wide column">
-                                                    <i class="grey icon circular inverted fingerprint la-icon-absolute la-popup-tooltip la-delay"
+                                                    <i class="grey icon circular inverted fingerprint la-icon-absolute la-popup-tooltip"
                                                        data-content="${message(code: 'menu.my.subscriptions')}"></i>
 
                                                     <div class="ui la-segment-with-icon">
                                                         <div class="ui list">
                                                             <g:each in="${ie_infos}" var="ie">
                                                                 <div class="item">
-                                                                    <i class="icon clipboard outline la-list-icon"></i>
+                                                                    <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                                                     <div class="content">
                                                                         <div class="header">
                                                                             <g:link controller="subscription"
                                                                                     action="index"
-                                                                                    id="${ie.subscription.id}">${ie.subscription.dropdownNamingConvention(institution)}</g:link>
+                                                                                    id="${ie.subscription.id}">${ie.subscription.dropdownNamingConvention()}</g:link>
                                                                         </div>
                                                                         <div class="description">
                                                                             <g:link controller="issueEntitlement"
                                                                                 action="show"
-                                                                                class="ui tiny button la-margin-top-05em"
+                                                                                class="${Btn.SIMPLE} tiny la-margin-top-05em"
                                                                                 id="${ie.id}">${message(code: 'myinst.currentTitles.full_ie')}</g:link>
                                                                         </div>
                                                                     </div>
@@ -434,25 +409,23 @@
                             </div><%-- .accordions --%>
                         </div><%-- .content --%>
                     </div><%-- .card --%>
+                    <div class="ui clearing segment la-segmentNotVisable">
+                            <ui:showMoreCloseButton />
+                    </div>
                 </g:if>
-            </g:if>
-            <g:else>
-                <g:if test="${filterSet}">
-                    <br/><strong><g:message code="filter.result.empty.object"
-                                            args="${[message(code: "title.plural")]}"/></strong>
-                </g:if>
-                <g:else>
-                    <br/><strong><g:message code="result.empty.object"
-                                            args="${[message(code: "title.plural")]}"/></strong>
-                </g:else>
-            </g:else>
-        </div>
-    </div>
+    </g:if>
+    <g:else>
+        <g:if test="${filterSet}">
+            <br/><strong><g:message code="filter.result.empty.object" args="${[message(code: "title.plural")]}"/></strong>
+        </g:if>
+        <g:else>
+            <br/><strong><g:message code="result.empty.object" args="${[message(code: "title.plural")]}"/></strong>
+        </g:else>
+    </g:else>
 
 </div>
 <g:if test="${titles}">
-    <ui:paginate action="currentTitles" controller="myInstitution" params="${params}"
-                 max="${max}" total="${num_ti_rows}"/>
+    <ui:paginate action="currentTitles" controller="myInstitution" params="${params}" max="${max}" total="${num_ti_rows}"/>
 </g:if>
 
 
@@ -460,23 +433,27 @@
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
 </ui:debugInfo>
 
-<laser:render template="/templates/export/individuallyExportTippsModal"
-              model="[modalID: 'individuallyExportTippsModal']"/>
-
-<laser:script>
+<laser:script file="${this.getGroovyPageFileName()}">
     $('.export').click(function(e) {
         e.preventDefault();
-        $('#individuallyExportTippsModal').modal('hide');
+        $('#exportClickMeModal').modal('hide');
         $('#globalLoadingIndicator').show();
         //the shorthand ?: is not supported???
         let fileformat = $(this).attr('data-fileformat') ? $(this).attr('data-fileformat') : $('#fileformat-query').val();
         let fd;
         if(fileformat === 'kbart')
             fd = { fileformat: fileformat };
-        else
-            fd = new FormData($('#individuallyExportTippsModal').find('form')[0]);
+        else {
+            let nativeForm = new FormData($('#exportClickMeModal').find('form')[0]);
+            nativeForm.forEach((value, key) => fd[key] = value);
+        }
         <g:each in="${params.keySet()}" var="param">
-            fd.${param} = '${params[param]}';
+            <g:if test="${params[param] instanceof ArrayList}">
+                fd.${param} = ['${params[param].join("','")}']
+            </g:if>
+            <g:else>
+                fd.${param} = '${params[param]}';
+            </g:else>
         </g:each>
         $.ajax({
             url: "<g:createLink action="currentTitles"/>",
@@ -513,7 +490,10 @@
 
     JSPC.app.ajaxDropdown($('#filterSub'), '<g:createLink controller="ajaxJson" action="lookupSubscriptions"/>?query={query}&restrictLevel=true', '${params.filterSub}');
     JSPC.app.ajaxDropdown($('#filterPvd'), '<g:createLink controller="ajaxJson" action="lookupProviders"/>?query={query}', '${params.filterPvd}');
+    JSPC.app.ajaxDropdown($('#filterVen'), '<g:createLink controller="ajaxJson" action="lookupVendors"/>?query={query}', '${params.filterPvd}');
     JSPC.app.ajaxDropdown($('#filterHostPlat'), '<g:createLink controller="ajaxJson" action="lookupPlatforms"/>?query={query}', '${params.filterHostPlat}');
 </laser:script>
+
+<g:render template="/clickMe/export/js"/>
 
 <laser:htmlEnd/>

@@ -5,11 +5,21 @@ access.point.type,Access Point Type,Access Point Type
 address.type,Art der Adresse,Address Type
 archiving.agency,Archivierungsplattform,Archiving Agency
 authority,Autorität,Authority
+billingTime, Rechnungzeitpunkt, Time of billing
+calendar.quarter,Kalender Quartal,Calendar Quarter
 category.a.f,Preiskategorie Beck,Price category Beck
 category.bautabellen,Preiskategorie Bautabellen,Price category Bautabellen
+category.detail.inspiration,Preiskategorie DETAIL inspiration,Price category DETAIL inspiration
 category.euromonitor,Preiskategorie Euromonitor,Price category Euromonitor
 category.igi,Preiskategorie IGI InfoSci Journals,Price category IGI InfoSci Journals
+category.meinUnterricht,Preiskategorie meinUnterricht,Price meinUnterricht
+category.inside.din,Preiskategorie Inside DIN,Price Inside DIN
 category.juris,Preiskategorie juris,Price category juris
+category.pnas,Preiskategorie PNAS,Price category PNAS
+category.scientific.net.rup,Preiskategorie Scientific.Net RuP,Price category Scientific.Net RuP
+category.scopus,Preiskategorie Scopus,Price category Scopus
+category.total.materia,Preiskategorie Total Materia,Price category Total Materia
+category.ullmans,Preiskategorie Ullmann's,Price category Ullmann's
 category.unwto,Preiskategorie UNWTO,Price category UNWTO
 category.world.bank,Preiskategorie World Bank,Price category World Bank
 choice.option.letter,Auswahloption (Buchstabe),Choice option (letter)
@@ -20,6 +30,9 @@ concurrent.access,SimUser,Concurrent Access
 confidentiality,Vertraulichkeit Auswahl,Confidentiality Choice
 contact.content.type,Kontakttyp,Type of Contact
 contact.type,Art des Kontaktes,Contact Type
+content.option.asme,Gewählte Inhaltsoption ASME DC,Chosen content option ASME DC
+content.option.asme.addition,Gewählte Inhaltsoption ASME DC Zuwahl,Chosen content option ASME DC Archive
+content.option.london.journals,Gewählte Inhaltsoption RS London Journals,Chosen content option RS London Journals
 cost.configuration,Kostenkonfiguration,Cost configuration
 cost.item.category,CostItemCategory,CostItemCategory
 cost.item.element,CostItemElement,CostItemElement
@@ -27,15 +40,18 @@ cost.item.status,CostItemStatus,CostItemStatus
 cost.item.type,Typ,Type
 country,Land,Country
 coverage.depth,Umfang,Coverage depth
+curatory.group.type,Kuratorengruppentyp,CuratoryGroup Type
 currency,Währung,Currency
 customer.identifier.type,Kategorie der Kundennummer,Customer Identifier Type
+dbs.subject.group,DBS Fächergruppe,DBS Subject Group
+ddc,Dewey-Dezimalklassifikation,Dewey Decimal Classification
 delivery.edit.status,Status Bearbeitung,Delivery edit status
 delivery.status,Status Lieferungen,Delivery status
+discovery.group.frontend,Discovery-Systeme: Frontend,Discovery systems: frontend
+discovery.group.index,Discovery-Systeme: Index,Discovery systems: index
 document.confidentiality,Vertraulichkeit,Confidentiality
 document.context.status,Document Context Status,Document Context Status
 document.type,Dokumenttyp,Document Type
-dbs.subject.group,DBS Fächergruppe,DBS Subject Group
-ddc,Dewey-Dezimalklassifikation,Dewey Decimal Classification
 e.invoice.portal,eRechnungs Portal,eInvoice Portal
 existence,Vorliegen,Existence
 external.internal,Extern und intern,External and internal
@@ -50,6 +66,7 @@ ie.medium,IEMedium,IEMedium
 ill.code,Fernleihindikator,Ill code
 indemnification,Entschädigung Auswahl,Indemnification Choice
 invoicing,Rechnungsstellung,Invoicing
+invoice.processing,Rechnungsabwicklung,Invoice Processing
 ip.authentication,IP-Authentifizierung,IP Authentication
 ipv4.address.format,IPv4 Address Format,IPv4 Address Format
 ipv6.address.format,IPv6 Address Format,IPv6 Address Format
@@ -98,7 +115,6 @@ oa.publishing.timespan,OA Publikation Zeitspanne,OA publishing timespan
 oa.publishing.report.delivery,OA Publikations-Report Lieferweg,OA publishing report delivery
 oa.responsible.party,OA Zuständigkeit,OA responsible party
 oa.time.moment,OA relevanter Zeitpunkt,OA relevant time moment
-org.sector,Bereich,OrgSector
 org.status,Status,Status
 org.type,Organisationstyp,Organisation Type
 organisational.role,Organisational Role,Organisational Role
@@ -119,6 +135,8 @@ person.function,Funktion,Person Function
 person.position,Position,Person Position
 person.responsibility,Verantwortlich,Person Responsibility
 platform.status,Platform Status,Platform Status
+provider.status,Anbieter-Status,Provider Status
+provider.link.type,Verknüpfungstyp (Anbieter/Lieferant),Link type (provider/vendor)
 regions.at,Österreichische Länder,States of Austria
 regions.de,Bundesländer Deutschlands,Federal States of Germany
 regions.ch,Kantone der Schweiz,Cantons of Switzerland
@@ -153,6 +171,7 @@ platform.statistics.format,Statistik Auslieferungsformat (Plattform),Statistics 
 platform.statistics.frequency,Statistik Auslieferungsfrequenz (Plattform),Statistics Frequency (Platform)
 subjectgroup,Fächergruppe,Subject Group
 subscription.form,Lizenzform,Subscription Form
+subscription.form.ullmans,Lizenzmodell Ullmann's,Subscription Form Ullmann's
 subscription.holding,Paketzuschnitt,Holding Selection
 subscription.resource,Ressourcentyp,Resource type
 subscription.status,Lizenzstatus,Subscription Status
@@ -175,14 +194,15 @@ tipp.status.reason,Tipp.StatusReason,Tipp.StatusReason
 title.status,TitleInstanceStatus,TitleInstanceStatus
 title.medium,Title Medium,Title Medium
 title.type,Title Type,Title Type
-transform.format,Transform Format,Transform Format
-transform.type,Transform Type,Transform Type
 user.setting.dashboard.tab,Dashbord Tab,Dashboard Tab
 user.setting.theme,Theme,Theme
-workflow.condition.type,Typ,Type
+vendor.status,Lieferant-Status,Vendor Status
+vendor.ordering.supported.library.system,Unterstützte Bibliothekssysteme,Supported Library Systems
+vendor.ordering.electronic.delivery.delay,elektronischer Benachrichtigungskanal,Electronic notification channel
+vendor.invoicing.format,Elektronisches Rechnungsformat,Electronic invoice format
+vendor.invoicing.dispatch,Rechnungsübermittlungsweg,Invoice dispatch
 workflow.task.priority,Priorität,Priority
 workflow.task.status,Status,Status
-workflow.workflow.state,Verfügbarkeit,Availability
 workflow.workflow.status,Status,Status
 workflow.workflow.target.role,Verfügbar für folgende Nutzer,Usable by customer type
 workflow.workflow.target.type,Verfügbar für folgende Objekte,Usable for object type

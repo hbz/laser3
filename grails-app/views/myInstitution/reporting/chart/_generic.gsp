@@ -16,9 +16,7 @@
         tooltip: {
             trigger: 'item',
             formatter (params) {
-                var str = JSPC.app.reporting.current.chart.option.title.text
-                str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, params.name, params.data[2])
-                return str
+                return '${labels.tooltip}' + JSPC.app.reporting.helper.tooltip.getEntry(params.marker, params.name, params.data[2])
            }
         },
 %{--        legend: {--}%
@@ -49,7 +47,7 @@
                 },
                 itemStyle: {
                     color: function(params) {
-                        if (JSPC.helper.contains(['${BaseQuery.getChartLabel(BaseQuery.NO_DATA_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_MATCH_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PROVIDER_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PLATFORM_PROVIDER_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PLATFORM_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_STARTDATE_LABEL)}'], params.name)) {
+                        if (JSPC.helper.contains(['${BaseQuery.getChartLabel(BaseQuery.NO_DATA_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_LICENSE_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_MATCH_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PROVIDER_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PLATFORM_PROVIDER_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PLATFORM_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_STARTDATE_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_VENDOR_LABEL)}'], params.name)) {
                             return JSPC.app.reporting.helper.series._color.redInactiveSolid
                         }
                         else if (JSPC.helper.contains(['${BaseQuery.getChartLabel(BaseQuery.NO_ENDDATE_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_COUNTERPART_LABEL)}'], params.name)) {
@@ -80,9 +78,7 @@
         tooltip: {
             trigger: 'item',
             formatter (params) {
-                var str = JSPC.app.reporting.current.chart.option.title.text
-                str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, params.name, params.data[2])
-                return str
+                return '${labels.tooltip}' + JSPC.app.reporting.helper.tooltip.getEntry(params.marker, params.name, params.data[2])
            }
         },
         grid:  {
@@ -119,7 +115,7 @@
                 },
                 itemStyle: {
                     color: function(params) {
-                        if (JSPC.helper.contains(['${BaseQuery.getChartLabel(BaseQuery.NO_DATA_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_MATCH_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PROVIDER_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PLATFORM_PROVIDER_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PLATFORM_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_STARTDATE_LABEL)}'], params.name)) {
+                        if (JSPC.helper.contains(['${BaseQuery.getChartLabel(BaseQuery.NO_DATA_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_LICENSE_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_MATCH_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PROVIDER_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PLATFORM_PROVIDER_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PLATFORM_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_STARTDATE_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_VENDOR_LABEL)}'], params.name)) {
                             return JSPC.app.reporting.helper.series._color.redInactive
                         }
                         else if (JSPC.helper.contains(['${BaseQuery.getChartLabel(BaseQuery.NO_ENDDATE_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_COUNTERPART_LABEL)}'], params.name)) {

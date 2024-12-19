@@ -1,5 +1,5 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.Subscription; de.laser.RefdataCategory; de.laser.Doc; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.survey.SurveyConfig" %>
-<laser:htmlStart message="copySurvey.label" serviceInjection="true" />
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.Subscription; de.laser.RefdataCategory; de.laser.Doc; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.survey.SurveyConfig" %>
+<laser:htmlStart message="copySurvey.label" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
@@ -11,6 +11,7 @@
 </ui:breadcrumbs>
 
 <ui:h1HeaderWithIcon text="${surveyConfig.getConfigNameShort()}" type="Survey" />
+<uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="${actionName}"/>
 
 <h2 class="ui header">
     ${message(code: 'copySurvey.label')}:
@@ -60,7 +61,7 @@
                     <td>
                         ${message(code: 'copySurvey.copyDates.startDate')}:&nbsp;<g:if
                                 test="${!surveyInfo.startDate}">-</g:if><g:formatDate date="${surveyInfo.startDate}"
-                                                                                      format="${message(code: 'default.date.format.notime')}"/> &nbsp
+                                                                                      format="${message(code: 'default.date.format.notime')}"/> &nbsp;
                         ${message(code: 'copySurvey.copyDates.endDate')}:&nbsp;<g:if
                                 test="${!surveyInfo.endDate}">-</g:if><g:formatDate date="${surveyInfo.endDate}"
                                                                                     format="${message(code: 'default.date.format.notime')}"/>
@@ -71,6 +72,73 @@
                     <td>${message(code: 'copySurvey.copyMandatory')}</td>
                     <td>
                         ${surveyInfo.isMandatory ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
+                    </td>
+                </tr>
+                <tr>
+                    <td><g:checkBox name="copySurvey.copyPackageSurvey" value="${true}"/></td>
+                    <td>${message(code: 'copySurvey.copyPackageSurvey')}</td>
+                    <td>
+                        ${surveyConfig.packageSurvey ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
+                    </td>
+                </tr>
+                <tr>
+                    <td><g:checkBox name="copySurvey.copyVendorSurvey" value="${true}"/></td>
+                    <td>${message(code: 'copySurvey.copyVendorSurvey')}</td>
+                    <td>
+                        ${surveyConfig.vendorSurvey ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
+                    </td>
+                </tr>
+                <tr>
+                    <td><g:checkBox name="copySurvey.copyInvoicingInformation" value="${true}"/></td>
+                    <td>${message(code: 'copySurvey.copyInvoicingInformation')}</td>
+                    <td>
+                        ${surveyConfig.invoicingInformation ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
+                    </td>
+                </tr>
+                <tr>
+                    <td><g:checkBox name="copySurvey.copyPackages" value="${true}"/></td>
+                    <td>${message(code: 'copySurvey.copyPackages')}</td>
+                    <td>
+                        <table class="ui sortable celled la-js-responsive-table la-table table">
+
+                            <thead>
+                            <tr>
+                                <th>${message(code: 'sidewide.number')}</th>
+                                <th>${message(code: 'default.name.label')}</th>
+                                <th>${message(code: 'default.status.label')}</th>
+                            </tr></thead><tbody>
+                        <g:each in="${surveyConfig.surveyPackages.sort { it.pkg.name }}" var="surveyPkg" status="i">
+                            <tr>
+                                <td class="center aligned">${i + 1}</td>
+                                <td>${surveyPkg.pkg.name}</td>
+                                <td>${surveyPkg.pkg.packageStatus?.getI10n('value')}</td>
+                            </tr>
+                        </g:each>
+                        </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td><g:checkBox name="copySurvey.copyVendors" value="${true}"/></td>
+                    <td>${message(code: 'copySurvey.copyVendors')}</td>
+                    <td>
+                        <table class="ui sortable celled la-js-responsive-table la-table table">
+
+                            <thead>
+                            <tr>
+                                <th>${message(code: 'sidewide.number')}</th>
+                                <th>${message(code: 'default.name.label')}</th>
+                                <th>${message(code: 'default.status.label')}</th>
+                            </tr></thead><tbody>
+                        <g:each in="${surveyConfig.surveyVendors.sort { it.vendor.name }}" var="surveyVendor" status="i">
+                            <tr>
+                                <td class="center aligned">${i + 1}</td>
+                                <td>${surveyVendor.vendor.name}</td>
+                                <td>${surveyVendor.vendor.status?.getI10n('value')}</td>
+                            </tr>
+                        </g:each>
+                        </tbody>
+                        </table>
                     </td>
                 </tr>
                 <tr>
@@ -89,6 +157,56 @@
                         </g:if>
                     </td>
                 </tr>
+
+                <tr>
+                    <td><g:checkBox name="copySurvey.copySurveyConfigCommentForNewParticipants" value="${true}"/></td>
+                    <td><g:message code="copySurvey.copySurveyConfigCommentForNewParticipants"/></td>
+                    <td>
+                        <g:if test="${surveyConfig.commentForNewParticipants}">
+                            <textarea class="la-textarea-resize-vertical" readonly="readonly" rows="15">${surveyConfig.commentForNewParticipants}</textarea>
+                        </g:if>
+                    </td>
+                </tr>
+                <g:if test="${surveyInfo.type in [RDStore.SURVEY_TYPE_SUBSCRIPTION, RDStore.SURVEY_TYPE_RENEWAL, RDStore.SURVEY_TYPE_TITLE_SELECTION]}">
+                <tr>
+                    <td><g:checkBox name="copySurvey.copyScheduledDates" value="${true}"/></td>
+                    <td>${message(code: 'copySurvey.copyScheduledDates')}</td>
+                    <td>
+                        ${message(code: 'copySurvey.copyScheduledDates.startDate')}:&nbsp;<g:if
+                                test="${!surveyConfig.scheduledStartDate}">-</g:if><g:formatDate date="${surveyConfig.scheduledStartDate}"
+                                                                                      format="${message(code: 'default.date.format.notime')}"/> &nbsp
+                        ${message(code: 'copySurvey.copyScheduledDates.endDate')}:&nbsp;<g:if
+                                test="${!surveyConfig.scheduledEndDate}">-</g:if><g:formatDate date="${surveyConfig.scheduledEndDate}"
+                                                                                    format="${message(code: 'default.date.format.notime')}"/>
+                    </td>
+                </tr>
+                </g:if>
+
+                <g:if test="${surveyInfo.type == RDStore.SURVEY_TYPE_INTEREST}">
+                <tr>
+                    <td><g:checkBox name="copySurvey.copyLicense" value="${true}"/></td>
+                    <td><g:message code="copySurvey.copyLicense"/></td>
+                    <td>
+                        <g:if test="${surveyInfo.license}">
+                            <g:link controller="license" action="show" id="${surveyInfo.license.id}">
+                                ${surveyInfo.license.reference} (${surveyInfo.license.status?.getI10n("value")})
+                            </g:link>
+                        </g:if>
+                    </td>
+                </tr>
+
+                    <tr>
+                        <td><g:checkBox name="copySurvey.copyProvider" value="${true}"/></td>
+                        <td><g:message code="copySurvey.copyProvider"/></td>
+                        <td>
+                            <g:if test="${surveyInfo.provider}">
+                                <g:link controller="provider" action="show" id="${surveyInfo.provider.id}">
+                                    ${surveyInfo.provider.name}
+                                </g:link>
+                            </g:if>
+                        </td>
+                    </tr>
+                </g:if>
 
                 <tr>
                     <td><g:checkBox name="copySurvey.copySurveyConfigCommentForNewParticipants" value="${true}"/></td>
@@ -126,14 +244,14 @@
                                         ${surveyProperty.surveyProperty.getI10n('name')}
 
                                         <g:if test="${surveyProperty.surveyProperty.tenant?.id == institution.id}">
-                                            <i class='shield alternate icon'></i>
+                                            <i class='${Icon.PROP.IS_PRIVATE}'></i>
                                         </g:if>
 
                                         <g:if test="${surveyProperty.surveyProperty.getI10n('expl')}">
-                                            <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                            <span class="la-long-tooltip la-popup-tooltip"
                                                   data-position="right center"
                                                   data-content="${surveyProperty.surveyProperty.getI10n('expl')}">
-                                                <i class="question circle icon"></i>
+                                                <i class="${Icon.TOOLTIP.HELP}"></i>
                                             </span>
                                         </g:if>
 
@@ -173,7 +291,7 @@
                     <td>
                         <g:each in="${surveyConfig.documents.sort { it.owner.title }}" var="docctx">
                             <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
-                                <g:link controller="docstore" id="${docctx.owner.uuid}" target="_blank">
+                                <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}" target="_blank">
                                     <g:if test="${docctx.owner.title}">
                                         ${docctx.owner.title}
                                     </g:if>
@@ -186,7 +304,7 @@
                                         </g:else>
                                     </g:else>
 
-                                </g:link>(${docctx.getDocType().getI10n("value")}) <br />
+                                </g:link>(${docctx.getDocType()?.getI10n("value")}) <br />
                             </g:if>
                         </g:each>
                     </td>
@@ -196,7 +314,7 @@
                     <td>${message(code: 'copySurvey.copyAnnouncements')}</td>
                     <td>
                         <g:each in="${surveyConfig.documents.sort { it.owner.title }}" var="docctx">
-                            <g:if test="${docctx.isDocANote() && !(docctx.domain) && (docctx.status?.value != 'Deleted')}">
+                            <g:if test="${docctx.isDocANote() && (docctx.status?.value != 'Deleted')}">
                                 <g:if test="${docctx.owner.title}">
                                     <strong>${docctx.owner.title}</strong>
                                 </g:if>
@@ -254,7 +372,7 @@
 
                 </tbody>
             </table>
-            <input type="submit" class="ui button js-click-control"
+            <input type="submit" class="${Btn.SIMPLE_CLICKCONTROL}"
                    value="${message(code: 'default.button.copy.label')}"/>
 
         </ui:greySegment>
@@ -262,10 +380,8 @@
 </g:if>
 
 <g:if test="${workFlow == "1"}">
-    <div class="ui icon message">
-        <i class="info icon"></i>
-        ${message(code: 'copySurvey.subscription.info')}
-    </div>
+
+    <ui:msg class="info" showIcon="true" hideClose="true" message="copySurvey.subscription.info" />
 
     <ui:h1HeaderWithIcon message="myinst.currentSubscriptions.label" total="${num_sub_rows}" floated="true" />
 
@@ -279,9 +395,9 @@
                 <div class="field">
                     <label for="q">${message(code: 'default.search.text')}
                         <span data-position="right center" data-variation="tiny"
-                              class="la-popup-tooltip la-delay"
+                              class="la-popup-tooltip"
                               data-content="${message(code: 'default.search.tooltip.subscription')}">
-                            <i class="question circle icon"></i>
+                            <i class="${Icon.TOOLTIP.HELP}"></i>
                         </span>
                     </label>
 
@@ -348,10 +464,8 @@
                 </div>
 
                 <div class="field la-field-right-aligned">
-                    <a href="${request.forwardURI}"
-                       class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-                    <input type="submit" class="ui primary button"
-                           value="${message(code: 'default.button.filter.label')}">
+                    <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+                    <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}">
                 </div>
             </div>
         </g:form>
@@ -376,25 +490,25 @@
                         </th>
 
                         <g:sortableColumn params="${params}" property="orgRole§provider"
-                                          title="${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}"
+                                          title="${message(code: 'provider.label')} / ${message(code: 'vendor.label')}"
                                           rowspan="2"/>
 
                         <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.startDate"
-                                          title="${message(code: 'default.startDate.label')}"/>
+                                          title="${message(code: 'default.startDate.label.shy')}"/>
 
 
                         <th scope="col" rowspan="2">
-                            <a href="#" class="la-popup-tooltip la-delay"
+                            <a href="#" class="la-popup-tooltip"
                                data-content="${message(code: 'subscription.numberOfLicenses.label')}"
                                data-position="top center">
-                                <i class="users large icon"></i>
+                                <i class="${Icon.ATTR.SURVEY_PARTICIPANTS} large"></i>
                             </a>
                         </th>
                         <th scope="col" rowspan="2">
-                            <a href="#" class="la-popup-tooltip la-delay"
+                            <a href="#" class="la-popup-tooltip"
                                data-content="${message(code: 'subscription.numberOfCostItems.label')}"
                                data-position="top center">
-                                <i class="money bill large icon"></i>
+                                <i class="${Icon.FNC.COST} large"></i>
                             </a>
                         </th>
                         <th rowspan="2" class="two wide"></th>
@@ -402,15 +516,19 @@
 
                     <tr>
                         <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.endDate"
-                                          title="${message(code: 'default.endDate.label')}"/>
+                                          title="${message(code: 'default.endDate.label.shy')}"/>
                     </tr>
                     </thead>
                     <g:each in="${subscriptions}" var="s" status="i">
                         <g:if test="${!s.instanceOf}">
                             <g:set var="childSubIds" value="${Subscription.executeQuery('select s.id from Subscription s where s.instanceOf = :parent',[parent:s])}"/>
+
+                            <g:set var="editableAll" value="${editable && contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_PRO ) && (surveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL && SurveyConfig.executeQuery('select count(*) from SurveyConfig sc where sc.subscription = :sub and sc.subSurveyUseForTransfer = true', [sub: s])[0] == 0 || surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL)}"/>
                             <tr>
                                 <td>
-                                    <g:checkBox name="targetSubs" value="${s.id}" checked="false"/>
+                                    <g:if test="${editableAll}">
+                                        <g:checkBox name="targetSubs" value="${s.id}" checked="false"/>
+                                    </g:if>
                                 </td>
                                 <td class="center aligned">
                                     ${(params.int('offset') ?: 0) + i + 1}
@@ -424,8 +542,8 @@
                                             -- ${message(code: 'myinst.currentSubscriptions.name_not_set')}  --
                                         </g:else>
                                         <g:if test="${s.instanceOf}">
-                                            <g:if test="${s.consortia && s.consortia == institution}">
-                                                ( ${s.subscriber.name} )
+                                            <g:if test="${s.getConsortium() && s.getConsortium() == institution}">
+                                                ( ${s.getSubscriberRespConsortia().name} )
                                             </g:if>
                                         </g:if>
                                     </g:link>
@@ -449,10 +567,10 @@
                                     <g:each in="${s.packages.sort { it.pkg.name }}" var="sp" status="ind">
                                         <g:if test="${ind < 10}">
                                             <div class="la-flexbox">
-                                                <i class="icon gift la-list-icon"></i>
+                                                <i class="${Icon.PACKAGE} la-list-icon"></i>
                                                 <g:link controller="subscription" action="index" id="${s.id}"
                                                         params="[pkgfilter: sp.pkg.id]"
-                                                        title="${sp.pkg.contentProvider?.name}">
+                                                        title="${sp.pkg.provider?.name}">
                                                     ${sp.pkg.name}
                                                 </g:link>
                                             </div>
@@ -475,9 +593,9 @@
                                         <g:link controller="organisation" action="show"
                                                 id="${org.id}">${org.name}</g:link><br />
                                     </g:each>
-                                    <g:each in="${s.agencies}" var="org">
-                                        <g:link controller="organisation" action="show"
-                                                id="${org.id}">${org.name} (${message(code: 'default.agency.label')})</g:link><br />
+                                    <g:each in="${s.vendors}" var="vendor">
+                                        <g:link controller="vendor" action="show"
+                                                id="${vendor.id}">${vendor.name} (${message(code: 'vendor.label')})</g:link><br />
                                     </g:each>
                                 </td>
                                 <td>
@@ -493,14 +611,14 @@
                                 <td>
                                     <g:link mapping="subfinance" controller="finance" action="index"
                                             params="${[sub: s.id]}">
-                                        ${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:institution, deleted:RDStore.COST_ITEM_DELETED])[0]}
+                                        ${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(*) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:institution, deleted:RDStore.COST_ITEM_DELETED])[0]}
                                     </g:link>
                                 </td>
 
                                 <td class="x">
-                                    <g:if test="${editable && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )}">
-                                        <g:link class="ui icon positive button la-popup-tooltip la-delay"
-                                                data-content="${message(code: 'survey.toggleSurveySub.add.label', args: [SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNotNull(s).size(), SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNull(s).size()])}"
+                                    <g:if test="${editableAll}">
+                                        <g:link class="${Btn.POSITIVE_TOOLTIP}"
+                                                data-content="${message(code: 'survey.toggleSurveySub.add.label', args: [SurveyConfig.countBySubscriptionAndSubSurveyUseForTransfer(s, true), SurveyConfig.countBySubscriptionAndSubSurveyUseForTransfer(s, false)])}"
                                                 controller="survey" action="copySurvey"
                                                 params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubs: [s.id], workFlow: '2']">
                                             <g:message code="createSubscriptionSurvey.selectButton"/>
@@ -529,7 +647,7 @@
         <div class="paginateButtons" style="text-align:center">
             <input type="submit"
                    value="${message(code: 'copySurvey.copyInSelectedSubs')}"
-                   class="ui button"/>
+                   class="${Btn.SIMPLE}"/>
         </div>
 
         <g:if test="${num_sub_rows}">

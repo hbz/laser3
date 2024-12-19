@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.ui.Icon
 import de.laser.utils.SwissKnife
 
 class DropdownTagLib {
@@ -8,15 +9,15 @@ class DropdownTagLib {
 
     def controlButtons = { attrs, body ->
 
-        out << '<nav class="ui icon buttons la-ctrls la-js-dont-hide-button" aria-label="' + message(code: 'wcag.label.actionMenu') + '">'
+        out << '<nav class="ui icon buttons la-js-ctrls" aria-label="' + message(code: 'wcag.label.actionMenu') + '">'
         out <<   body()
         out << '</nav>'
     }
 
     def exportDropdown = { attrs, body ->
 
-        out << '<div class="ui simple dropdown button la-js-dont-hide-button">'
-        out <<     '<i class="download icon"></i>'
+        out << '<div class="ui simple dropdown button">'
+        out <<     '<i class="' + Icon.CMD.DOWNLOAD + '"></i>'
         out <<     '<div class="menu">'
         out <<         body()
         out <<     '</div>'
@@ -34,7 +35,7 @@ class DropdownTagLib {
 
     def actionsDropdown = { attrs, body ->
 
-        out << '<div class="ui simple dropdown button la-js-dont-hide-button">'
+        out << '<div class="ui simple dropdown button">'
         out <<     '<i class="magic icon"></i>'
         out <<     '<div class="menu" style="left:auto; right:0">'
         out <<         body()
@@ -50,7 +51,7 @@ class DropdownTagLib {
         String href      = attrs.href ? attrs.href : '#'
 
         if (attrs.tooltip && attrs.tooltip != '') {
-            linkBody = '<div class="la-popup-tooltip la-delay" data-content="' + attrs.tooltip + '">' + linkBody + '</div>'
+            linkBody = '<div class="la-popup-tooltip" data-content="' + attrs.tooltip + '">' + linkBody + '</div>'
         }
         if (this.pageScope.variables?.actionName == attrs.action && !attrs.notActive) {
             cssClass = cssClass + ' active'
@@ -86,7 +87,7 @@ class DropdownTagLib {
         def (text, message) = SwissKnife.getTextAndMessage(attrs)
         String tooltip = attrs.tooltip ?: "Die Funktion '${message}' ist zur Zeit nicht verfügbar!"
 
-        out << '<a href="#" class="item disabled la-popup-tooltip la-delay" data-content="' + tooltip + '">' + message + '</a>'
+        out << '<a href="#" class="item disabled la-popup-tooltip" data-content="' + tooltip + '">' + message + '</a>'
     }
 
     def dropdownWithI18nExplanations = { attrs, body ->

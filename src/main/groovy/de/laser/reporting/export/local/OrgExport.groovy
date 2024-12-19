@@ -1,6 +1,8 @@
 package de.laser.reporting.export.local
 
 import de.laser.*
+import de.laser.addressbook.Address
+import de.laser.addressbook.Person
 import de.laser.utils.LocaleUtils
 import de.laser.storage.BeanStore
 import de.laser.utils.DateUtils
@@ -30,7 +32,6 @@ class OrgExport extends BaseDetailsExport {
                                     'globalUID'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     '+sortname+name'    : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
                                     'customerType'      : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
-                                    'orgType'           : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA_JOINTABLE ],
                                     'libraryType'       : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'libraryNetwork'    : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'funderHskType'     : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
@@ -47,7 +48,6 @@ class OrgExport extends BaseDetailsExport {
                             provider: [
                                     'globalUID'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     '+sortname+name'    : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
-                                    'orgType'           : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA_JOINTABLE ],
                                     'country'           : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     '@-org-contact'     : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                                     'x-identifier'      : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ]
@@ -55,7 +55,6 @@ class OrgExport extends BaseDetailsExport {
                             agency: [
                                     'globalUID'         : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     '+sortname+name'    : [ type: BaseDetailsExport.FIELD_TYPE_COMBINATION ],
-                                    'orgType'           : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA_JOINTABLE ],
                                     'country'           : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     '@-org-contact'     : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
                                     'x-identifier'      : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ]
@@ -176,7 +175,7 @@ class OrgExport extends BaseDetailsExport {
                                 "select distinct pr.functionType from Person p inner join p.roleLinks pr where p.isPublic = true and pr.org = :org", [org: org]
                         )
                         List personList = []
-                        // List<RefdataValue> funcTypes = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT]
+                        // List<RefdataValue> funcTypes = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_INVOICING_CONTACT, RDStore.PRS_FUNC_TECHNICAL_SUPPORT]
 
                         functionTypes.each{ ft ->
                             List<Person> persons = org.getContactPersonsByFunctionType(true, ft)

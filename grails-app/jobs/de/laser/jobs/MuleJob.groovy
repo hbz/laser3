@@ -1,7 +1,7 @@
 package de.laser.jobs
 
 import de.laser.SystemService
-import de.laser.WekbStatsService
+import de.laser.WekbNewsService
 import de.laser.base.AbstractJob
 import de.laser.config.ConfigMapper
 import de.laser.system.SystemEvent
@@ -16,7 +16,7 @@ import java.time.LocalTime
 class MuleJob extends AbstractJob {
 
     SystemService systemService
-    WekbStatsService wekbStatsService
+    WekbNewsService wekbNewsService
 
     static triggers = {
         cron name: 'muleTrigger', startDelay:10000, cronExpression: "0 0/15 6-21 * * ?"
@@ -34,28 +34,42 @@ class MuleJob extends AbstractJob {
     }
 
     def execute() {
-        if (! start()) {
+        SystemEvent sysEvent = start('MULE_START')
+
+        if (! sysEvent) {
             return false
         }
         try {
-            SystemEvent sysEvent = SystemEvent.createEvent('MULE_START')
-            long start_time = System.currentTimeMillis()
+            LocalTime now = LocalTime.now()
 
-            wekbStatsService.updateCache()
-
-            // only once per day ..
-
-            if (Math.abs(LocalTime.parse('06:30').toSecondOfDay() - LocalTime.now().toSecondOfDay()) < 300) {
+            systemService.maintainUnlockedUserAccounts()
+            // every (full) hour
+//            if (_checkTime(now, -1, 0)) {
+//                systemService.maintainUnlockedUserAccounts()
+//            }
+            // once per day .. 6:00
+//            if (_checkTime(now, 6, 0)) {
+//                wekbNewsService.clearCache()
+//            }
+            // once per day .. 6:45
+            if (_checkTime(now, 6, 45)) {
                 systemService.sendSystemInsightMails()
+//                systemService.maintainExpiredUserAccounts()
             }
-
-            double elapsed = ((System.currentTimeMillis() - start_time) / 1000).round(2)
-            sysEvent.changeTo('MULE_COMPLETE', [s: elapsed])
-
-        } catch (Exception e) {
+            wekbNewsService.updateCache()
+        }
+        catch (Exception e) {
             log.error e.getMessage()
         }
+        stopAndComplete(sysEvent)
+    }
 
-        stop()
+    private boolean _checkTime(LocalTime now, int hour, int minute) {
+        if (now.getHour() == hour || hour == -1 ) {
+            if (now.getMinute() == minute || minute == -1) {
+                true
+            }
+        }
+        false
     }
 }

@@ -1,6 +1,6 @@
-<%@ page import="de.laser.*;de.laser.auth.Role" %>
+<%@ page import="de.laser.ui.Btn; de.laser.*;de.laser.auth.Role" %>
 
-<laser:htmlStart message="user.create_new.label" serviceInjection="true" />
+<laser:htmlStart message="user.create_new.label" />
 
     %{--<g:if test="${controllerName == 'myInstitution'}">
         // myInstitution has no breadcrumb yet
@@ -17,7 +17,8 @@
 
         <ui:messages data="${flash}" />
 
-        <g:if test="${editable}">
+    <g:if test="${editable}">
+        <div class="ui grey segment">
             <g:form name="newUser" class="ui form" controller="${controllerName}" action="processCreateUser" method="post">
                 <fieldset>
                     <div class="field required">
@@ -62,13 +63,14 @@
                         <g:if test="${controllerName == 'organisation'}">
                             <input type="hidden" name="id" value="${orgInstance.id}" />
                         </g:if>
-                        <input id="userSubmit" type="submit" value="${message(code:'user.create_new.label')}" class="ui button" disabled/>
-                        <input type="button" class="ui button js-click-control" onclick="JSPC.helper.goBack();" value="${message(code:'default.button.cancel.label')}" />
+                        <input id="userSubmit" type="submit" value="${message(code:'user.create_new.label')}" class="${Btn.SIMPLE}" disabled/>
+                        <input type="button" class="${Btn.SIMPLE_CLICKCONTROL}" onclick="JSPC.helper.goBack();" value="${message(code:'default.button.cancel.label')}" />
                     </div>
 
                 </fieldset>
             </g:form>
-        </g:if>
+        </div>
+    </g:if>
 
 <laser:script file="${this.getGroovyPageFileName()}">
 
@@ -99,7 +101,7 @@
 
         $("#newUser").submit(function(e){
             e.preventDefault();
-            $(".validateNotEmpty").each(function(k) {
+            $(".validateNotEmpty, .validateMailAddress").each(function(k) {
                 if($(this).val().length === 0) {
                     JSPC.app.addError($(this),'<span id="'+$(this).attr('id')+'Error">'+$('[for="'+$(this).attr('id')+'"]').text()+' <g:message code="validation.needsToBeFilledOut"/></span>');
                 }
@@ -133,20 +135,12 @@
                 $("#userSubmit").attr("disabled",true);
             }
         }
-
         JSPC.app.removeError = function (element,errorSpan) {
             errorSpan.remove();
             element.parent("div").removeClass("error");
             if($(".error").length === 0)
                 $("#userSubmit").removeAttr("disabled");
         }
-        // dropdowns not wished to be clearable
-        $('.ui.search.dropdown.la-not-clearable').dropdown({
-            forceSelection: false,
-            selectOnKeydown: false,
-            fullTextSearch: 'exact',
-            clearable: false,
-        });
 </laser:script>
 
 <laser:htmlEnd />

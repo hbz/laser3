@@ -1,14 +1,12 @@
 package de.laser.base
 
 import de.laser.Org
-import de.laser.Platform
-import de.laser.TitleInstancePackagePlatform
-
-import java.time.Year
+import de.laser.wekb.Platform
 
 /**
  * Abstract class for central properties of every revision of COUNTER reports.
  */
+@Deprecated
 abstract class AbstractReport implements Comparable<AbstractReport> {
 
     Long id

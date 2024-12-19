@@ -3,7 +3,7 @@ package de.laser.traces
 import de.laser.IssueEntitlement
 import de.laser.License
 import de.laser.Subscription
-import de.laser.TitleInstancePackagePlatform
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.exceptions.CreationException
 
 /**

@@ -32,7 +32,6 @@ class SearchController  {
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         params.searchObjects = params.searchObjects ?: 'allObjects'
-        result.contextOrg = contextService.getOrg()
         result.flagContentElasticsearch = true // ESSearchService.search
 
         def query = params.q ?: null
@@ -59,8 +58,8 @@ class SearchController  {
                 params.q = "( ${params.q} )"
             }
 
-            if(params.showMembersObjects && result.contextOrg.isCustomerType_Consortium()){
-                params.consortiaID = result.contextOrg.id
+            if(params.showMembersObjects && contextService.getOrg().isCustomerType_Consortium()){
+                params.consortiaID = contextService.getOrg().id
             }
 
             params.actionName = actionName
@@ -71,7 +70,6 @@ class SearchController  {
 
             params.q = query
         }
-        result.contextOrg = contextService.getOrg()
 
         result
     }

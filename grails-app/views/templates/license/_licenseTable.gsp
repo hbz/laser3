@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.License;de.laser.RefdataCategory;de.laser.interfaces.CalculatedType;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.RefdataValue;de.laser.Links;de.laser.Org" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.License;de.laser.RefdataCategory;de.laser.interfaces.CalculatedType;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.RefdataValue;de.laser.Links;de.laser.Org" %>
 <laser:serviceInjection />
 
 <g:form action="compareLicenses" controller="compare" method="post">
@@ -17,15 +17,18 @@
                       <g:sortableColumn rowspan="2" params="${params}" property="reference" title="${message(code:'license.slash.name')}" />
                       <g:if test="${'memberLicenses' in licenseFilterTable}">
                           <th rowspan="2" class="center aligned">
-                              <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.incoming.childs')}" data-position="top right">
-                                  <i class="balance scale large icon"></i>
+                              <span class="la-popup-tooltip" data-content="${message(code:'license.details.incoming.childs')}" data-position="top right">
+                                  <i class="${Icon.LICENSE} large"></i>
                               </span>
                           </th>
                       </g:if>
 
-                        <g:if test="${'providerAgency' in licenseFilterTable}">
-                            <th rowspan="2"><g:message code="default.ProviderAgency.singular"/></th>
-                        </g:if>
+                      <g:if test="${'provider' in licenseFilterTable}">
+                          <th rowspan="2"><g:message code="provider.label"/></th>
+                      </g:if>
+                      <g:if test="${'vendor' in licenseFilterTable}">
+                          <th rowspan="2"><g:message code="vendor.label"/></th>
+                      </g:if>
                       <g:if test="${'licensingConsortium' in licenseFilterTable}">
                           <th rowspan="2"><g:message code="consortium"/></th>
                       </g:if>
@@ -50,13 +53,13 @@
                           <th scope="row" class="la-th-column">
                               <g:link action="show" class="la-main-object" controller="license" id="${l.id}">
                                   <g:if test="${l._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION}">
-                                      <i class="icon users la-list-icon la-popup-tooltip la-delay" data-content="${tooltip}"></i>
+                                      <i class="icon users la-list-icon la-popup-tooltip" data-content="${tooltip}"></i>
                                   </g:if>
                                   ${l.reference ?: message(code:'missingLicenseReference')}
                               </g:link>
                               <g:each in="${allLinkedSubscriptions.get(l)}" var="sub">
                                   <div class="la-flexbox la-minor-object">
-                                      <i class="icon clipboard outline la-list-icon"></i>
+                                      <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                       <g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link><br />
                                   </div>
                               </g:each>
@@ -65,19 +68,33 @@
                               <td>
                                   <g:each in="${l.derivedLicenses}" var="lChild">
                                       <g:link controller="license" action="show" id="${lChild.id}">
-                                          <p><i class="icon balance scale la-list-icon la-popup-tooltip la-delay" data-content="${message(code: 'license.member')}"></i> ${lChild}</p>
+                                          <p><i class="${Icon.LICENSE} la-list-icon la-popup-tooltip" data-content="${message(code: 'license.member')}"></i> ${lChild}</p>
                                       </g:link>
                                   </g:each>
                               </td>
                           </g:if>
-                        <g:if test="${'providerAgency' in licenseFilterTable}">
+                        <g:if test="${'provider' in licenseFilterTable}">
                           <td>
-                              <g:set var="licensors" value="${l.getProviderAgency()}"/>
-                              <g:each in="${licensors}" var="licensor">
-                                  <g:link controller="organisation" action="show" id="${licensor.id}">
-                                      ${fieldValue(bean: licensor, field: "name")}
-                                      <g:if test="${licensor.sortname}">
-                                          (${fieldValue(bean: licensor, field: "sortname")})
+                              <g:set var="providers" value="${l.getProviders()}"/>
+                              <g:each in="${providers}" var="provider">
+                                  <g:link controller="provider" action="show" id="${provider.id}">
+                                      ${fieldValue(bean: provider, field: "name")}
+                                      <g:if test="${provider.sortname}">
+                                          (${fieldValue(bean: provider, field: "sortname")})
+                                      </g:if>
+                                  </g:link>
+                                  <br>
+                              </g:each>
+                          </td>
+                        </g:if>
+                        <g:if test="${'vendor' in licenseFilterTable}">
+                          <td>
+                              <g:set var="vendors" value="${l.getVendors()}"/>
+                              <g:each in="${vendors}" var="vendor">
+                                  <g:link controller="vendor" action="show" id="${vendor.id}">
+                                      ${fieldValue(bean: vendor, field: "name")}
+                                      <g:if test="${vendor.sortname}">
+                                          (${fieldValue(bean: vendor, field: "sortname")})
                                       </g:if>
                                   </g:link>
                                   <br>
@@ -95,9 +112,9 @@
                           <g:if test="${'action' in licenseFilterTable}">
                               <td class="x">
                               <g:if test="${(contextCustomerType == CustomerTypeService.ORG_INST_PRO && l._getCalculatedType() == License.TYPE_LOCAL) || (customerTypeService.isConsortium( contextCustomerType ) && l._getCalculatedType() == License.TYPE_CONSORTIAL)}">
-                                  <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.copy.tooltip')}">
-                                      <g:link controller="license" action="copyLicense" params="${[sourceObjectId: genericOIDService.getOID(l), copyObject: true]}" class="ui icon button blue la-modern-button">
-                                          <i class="copy icon"></i>
+                                  <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'license.details.copy.tooltip')}">
+                                      <g:link controller="license" action="copyLicense" params="${[sourceObjectId: genericOIDService.getOID(l), copyObject: true]}" class="${Btn.MODERN.SIMPLE}">
+                                          <i class="${Icon.CMD.COPY}"></i>
                                       </g:link>
                                   </span>
                               </g:if>
@@ -119,7 +136,7 @@
     </div>
 
   <g:if test="${licenses && compare}">
-      <input type="submit" class="ui button" value="${message(code:'menu.my.comp_lic')}" />
+      <input type="submit" class="${Btn.SIMPLE}" value="${message(code:'menu.my.comp_lic')}" />
   </g:if>
 
 </g:form>

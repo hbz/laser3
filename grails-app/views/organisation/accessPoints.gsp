@@ -1,6 +1,6 @@
-<%@ page import="de.laser.Org; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.storage.RDConstants;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Org; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.storage.RDConstants;" %>
 
-<laser:htmlStart message="org.nav.accessPoints" serviceInjection="true" />
+<laser:htmlStart message="org.nav.accessPoints" />
         <g:set var="entityName" value="${message(code: 'org.label')}" />
 
     <ui:controlButtons>
@@ -12,7 +12,7 @@
         </ui:exportDropdown>
         </g:if>
 
-        <laser:render template="actions" />
+        <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
 
 %{--        <g:if test="${editable}">
 
@@ -35,7 +35,7 @@
         <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
     </ui:h1HeaderWithIcon>
 
-    <laser:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}" />
+    <laser:render template="${customerTypeService.getNavTemplatePath()}" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}" />
 
     <ui:messages data="${flash}" />
 
@@ -56,11 +56,13 @@
     <div class="ui bottom attached ${activeTab == accessPointType.value ? 'active' : ''} tab segment"
          data-tab="${accessPointType.value}">
 
-        <g:link action="create" controller="accessPoint" class="ui right floated icon button" params="[id: orgInstance.id, accessMethod: accessPointType.value]">
-            <i class="plus icon"></i>
+        <g:if test="${editable}">
+        <g:link action="create" controller="accessPoint" class="${Btn.ICON.SIMPLE} right floated" params="[id: orgInstance.id, accessMethod: accessPointType.value]">
+            <i class="${Icon.CMD.ADD}"></i>
         </g:link>
         <br>
         <br>
+        </g:if>
 
         <table class="ui celled la-js-responsive-table la-table table">
             <thead>
@@ -101,27 +103,37 @@
                         </g:else>
                     </td>
                     <g:if test="${accessPointType.value in ['ip', 'proxy']}">
+                        <g:set var="ipRanges" value="${accessPoint.getAccessPointIpRanges()}"/>
                         <td>
-                            <g:each in="${accessPoint.getIpRangeStrings('ipv4', 'ranges')}" var="ipv4Range">
-                                <div>${ipv4Range}</div>
-                            </g:each>
+                            <g:if test="${ipRanges.ipv4Ranges}">
+                                <g:each in="${ipRanges.ipv4Ranges.ipRange}" var="ipv4Range">
+                                    <div>${ipv4Range}</div>
+                                </g:each>
+                            </g:if>
                         </td>
                         <td>
-                            <g:each in="${accessPoint.getIpRangeStrings('ipv6', 'ranges')}" var="ipv6Range">
-                                <div>${ipv6Range}</div>
-                            </g:each>
+                            <g:if test="${ipRanges.ipv6Ranges}">
+                                <g:each in="${ipRanges.ipv6Ranges.ipRange}" var="ipv6Range">
+                                    <div>${ipv6Range}</div>
+                                </g:each>
+                            </g:if>
                         </td>
                     </g:if>
                     <g:elseif test="${accessPointType.value == 'ezproxy'}">
+                        <g:set var="ipRanges" value="${accessPoint.getAccessPointIpRanges()}"/>
                         <td>
-                            <g:each in="${accessPoint.getIpRangeStrings('ipv4', 'ranges')}" var="ipv4Range">
-                                <div>${ipv4Range}</div>
-                            </g:each>
+                            <g:if test="${ipRanges.ipv4Ranges}">
+                                <g:each in="${ipRanges.ipv4Ranges.ipRange}" var="ipv4Range">
+                                    <div>${ipv4Range}</div>
+                                </g:each>
+                            </g:if>
                         </td>
                         <td>
-                            <g:each in="${accessPoint.getIpRangeStrings('ipv6', 'ranges')}" var="ipv6Range">
-                                <div>${ipv6Range}</div>
-                            </g:each>
+                            <g:if test="${ipRanges.ipv6Ranges}">
+                                <g:each in="${ipRanges.ipv6Ranges.ipRange}" var="ipv6Range">
+                                    <div>${ipv6Range}</div>
+                                </g:each>
+                            </g:if>
                         </td>
                         <td>
                             <g:if test="${accessPoint.hasProperty('url')}">
@@ -154,27 +166,26 @@
 
                             <g:link controller="accessPoint"
                                     action="edit_${accessPoint.accessMethod.value.toLowerCase()}"
-                                    id="${accessPoint.id}" class="ui icon button blue la-modern-button"
+                                    id="${accessPoint.id}" class="${Btn.MODERN.SIMPLE}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="write icon"></i>
+                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
                             </g:link>
 
                             <g:if test="${accessPointItem['platformLinkCount'] == 0 && accessPointItem['subscriptionLinkCount'] == 0}">
                                 <g:link action="delete" controller="accessPoint" id="${accessPoint?.id}"
-                                        class="ui negative icon button la-modern-button js-open-confirm-modal"
+                                        class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                         data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.accessPoint', args: [accessPoint.name])}"
                                         data-confirm-term-how="delete"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="trash alternate outline icon"></i>
+                                    <i class="${Icon.CMD.DELETE}"></i>
                                 </g:link>
                             </g:if>
                             <g:else>
-                                <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                <span class="la-long-tooltip la-popup-tooltip"
                                       data-content="${message(code: 'accessPoint.list.deleteDisabledInfo', args: [accessPointItem['platformLinkCount'], accessPointItem['subscriptionLinkCount']])}">
-                                    <div class="ui negative icon button la-modern-button disabled"><i class="trash alternate outline icon"></i>
-                                    </div>
+                                    <span class="${Btn.MODERN.NEGATIVE} disabled"><i class="${Icon.CMD.DELETE}"></i></span>
                                 </span>
                             </g:else>
 
@@ -186,6 +197,5 @@
         </table>
     </div>
 </g:each>
-
 
 <laser:htmlEnd />

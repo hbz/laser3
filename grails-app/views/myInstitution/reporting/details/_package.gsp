@@ -1,7 +1,7 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.reporting.report.ElasticSearchHelper; de.laser.IdentifierNamespace; de.laser.reporting.report.GenericHelper; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.TitleInstancePackagePlatform; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.storage.RDStore; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
+<%@ page import="de.laser.wekb.TitleInstancePackagePlatform; de.laser.ui.Icon; de.laser.utils.DateUtils; de.laser.reporting.report.ElasticSearchHelper; de.laser.IdentifierNamespace; de.laser.reporting.report.GenericHelper; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.storage.RDStore; de.laser.reporting.report.myInstitution.base.BaseDetails;" %>
 <laser:serviceInjection />
 
-<laser:render template="/myInstitution/reporting/details/top" />
+<laser:render template="/myInstitution/reporting/details/details_top" />
 
 <g:set var="filterCache" value="${GlobalExportHelper.getFilterCache(token)}"/>
 <g:set var="esRecords" value="${filterCache.data.packageESRecords ?: [:]}"/>
@@ -58,7 +58,7 @@
                         <g:if test="${esRecordIds.contains(pkg.id)}">
                             <%
                                 print esRecords.get(pkg.id as String).identifiers.collect { identifier ->
-                                    IdentifierNamespace ns = IdentifierNamespace.findByNsAndNsType(identifier.namespace, 'de.laser.Package')
+                                    IdentifierNamespace ns = IdentifierNamespace.findByNsAndNsType(identifier.namespace, 'de.laser.wekb.Package')
                                     String namespace = ns ? (ns.getI10n('name') ?: ns.ns) : GenericHelper.flagUnmatched(identifier.namespaceName ?: identifier.namespace)
                                     return namespace + ':' + identifier.value
                                 }.join(',<br/>')
@@ -76,10 +76,17 @@
                         ${pkg.packageStatus?.getI10n('value')}
                     </uiReporting:detailsTableTD>
 
-                    <uiReporting:detailsTableTD config="${dtConfig}" field="orProvider">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="provider">
 
-                        <g:each in="${pkg.orgs.findAll{ it.roleType in [ RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER ]}}" var="ro">
-                            <g:link controller="org" action="show" id="${ro.org.id}" target="_blank">${ro.org.sortname ?: ro.org.name}</g:link><br />
+                        <g:if test="${pkg.provider}">
+                            <g:link controller="provider" action="show" id="${pkg.provider.id}" target="_blank">${pkg.provider.sortname ?: pkg.provider.sortname}</g:link>
+                        </g:if>
+                    </uiReporting:detailsTableTD>
+
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="vendor">
+
+                        <g:each in="${pkg.vendors}" var="pv">
+                            <g:link controller="vendor" action="show" id="${pv.vendor.id}" target="_blank">${pv.vendor.sortname ?: pv.vendor.name}</g:link><br />
                         </g:each>
                     </uiReporting:detailsTableTD>
 
@@ -95,11 +102,11 @@
                         ${pkg.file?.getI10n('value')}
                     </uiReporting:detailsTableTD>
 
-                    <uiReporting:detailsTableTD config="${dtConfig}" field="_+_currentTitles">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="_dtField_currentTitles">
 
                         <%
                             List tipps = TitleInstancePackagePlatform.executeQuery(
-                                    'select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status',
+                                    'select count(*) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status',
                                     [pkg: pkg, status: RDStore.TIPP_STATUS_CURRENT]
                             )
                             println tipps[0] > 0 ? tipps[0] : ''
@@ -189,7 +196,7 @@
                                 <%
                                     String cgType
                                     if (curatoryGroup.type) {
-                                        cgType = RefdataValue.getByValueAndCategory(curatoryGroup.type as String, RDConstants.ORG_TYPE)?.getI10n('value') ?: GenericHelper.flagUnmatched( curatoryGroup.type )
+                                        cgType = RefdataValue.getByValueAndCategory(curatoryGroup.type as String, RDConstants.CURATORY_GROUP_TYPE)?.getI10n('value') ?: GenericHelper.flagUnmatched( curatoryGroup.type )
                                         cgType = '(' + cgType + ')'
                                     }
                                 %>
@@ -207,7 +214,7 @@
                         </g:if>
                     </uiReporting:detailsTableTD>
 
-                    <uiReporting:detailsTableTD config="${dtConfig}" field="_+_lastUpdated">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="_dtField_lastUpdated">
 
                         <g:if test="${esRecordIds.contains(pkg.id)}">
                             <g:formatDate format="${message(code:'default.date.format.notime')}" date="${DateUtils.parseDateGeneric(esRecords.getAt(pkg.id.toString()).lastUpdatedDisplay)}" />
@@ -217,15 +224,15 @@
                         </g:else>
                     </uiReporting:detailsTableTD>
 
-                    <uiReporting:detailsTableTD config="${dtConfig}" field="_+_wekb">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="_dtField_wekb">
 
                         <g:if test="${pkg.gokbId}">
                             <g:if test="${esRecordIds.contains(pkg.id)}">
                                 <ui:wekbIconLink type="package" gokbId="${pkg.gokbId}"/>
                             </g:if>
                             <g:else>
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'reporting.chart.result.noCounterpart.label')}" data-position="top right">
-                                    <i class="icon times grey"></i>
+                                <span class="la-long-tooltip la-popup-tooltip" data-content="${message(code:'reporting.chart.result.noCounterpart.label')}" data-position="top right">
+                                    <i class="${Icon.SYM.NO} grey"></i>
                                 </span>
                             </g:else>
                         </g:if>

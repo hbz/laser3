@@ -1,11 +1,12 @@
-    <nav aria-label="Hauptmenü für WCAG-Testseite">
-        <div id="mainMenueTest" class="ui inverted stackable menu" role="menubar">
+<%@ page import="de.laser.ui.Icon" %>
+<nav aria-label="Hauptmenü für WCAG-Testseite">
+        <nav id="mainMenueTest" class="ui inverted stackable menu menubar-navigation" role="menubar" tabindex="0">
             <div class="ui container" role="none">
                 <a href="#" aria-label="Start" class="header item la-logo-item">
                     <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
                 </a>
-                <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
-                    Alle
+                <div class="ui dropdown item" role="none">
+                    <a role="menuitem" aria-haspopup="true" tabindex="0">Alle</a>
                     <i class="dropdown icon"></i>
                    <div class="menu" role="menu" aria-label="das Menu">
                         <a id="1" href="#" class="item"  role="menuitem" aria-label="Alle Pakete" >Alle Pakete</a>
@@ -13,8 +14,8 @@
                         <a id="3" href="#" class="item" role="menuitem" aria-label="Alle Organisationen" >Alle Organisationen</a>
                     </div>
                 </div>
-                <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
-                    Meine Objekte
+                <div class="ui dropdown item" role="none">
+                    <a role="menuitem" aria-haspopup="true" tabindex="0">Meine Objekte</a>
                     <i class="dropdown icon"></i>
                     <div class="menu" role="menu">
                         <a id="4" href="#" class="item" role="menuitem" >Meine Lizenzen</a>
@@ -26,8 +27,8 @@
                         <a id="10" href="#" class="item" role="menuitem" >Meine Dokumente</a>
                     </div>
                 </div>
-                <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
-                    Meine Einrichtung
+                <div class="ui dropdown item" role="none">
+                    <a role="menuitem" aria-haspopup="true" tabindex="0">Meine Einrichtung</a>
                     <i class="dropdown icon"></i>
                     <div class="menu" role="menu">
                         <a id="11" href="#" class="item" role="menuitem" >Dashboard</a>
@@ -50,22 +51,22 @@
                         <div class="ui icon input">
                             <input aria-label="Suche nach ..." type="search" id="spotlightSearch" class="prompt"
                                    placeholder="Suche nach ...">
-                            <i id="btn-search" class="search icon"></i>
+                            <i id="btn-search" class="${Icon.SYM.SEARCH}"></i>
                         </div>
                         <div class="results" style="overflow-y:scroll;max-height: 400px;"></div>
                     </div>
-                    <a href="#" class="la-search-advanced la-popup-tooltip la-delay"
+                    <a href="#" class="la-search-advanced la-popup-tooltip"
                        data-content="Erweiterte Suche">
                         <i class="large icons">
-                            <i class="search icon"></i>
-                            <i class="top right grey corner plus icon "></i>
+                            <i class="${Icon.SYM.SEARCH}"></i>
+                            <i class="top right grey corner plus icon"></i>
                         </i>
                     </a>
                     <div class="ui dropdown item la-noBorder" role="menuitem" aria-haspopup="true">
                         Ingrid Bluoss
                         <i class="dropdown icon"></i>
                         <div class="menu" role="menu">
-                            <a  id="23" href="#" class="item" role="menuitem" >DWI -
+                            <a id="23" href="#" class="item" role="menuitem" >DWI -
                             Leibniz-Institut f&uuml;r Interaktive Materialien (DWI)</a>
                             <a id="24" href="#" class="item active">hbz
                             Konsortialstelle Digitale Inhalte</a>
@@ -86,5 +87,5 @@
                     </div>
                 </div>
             </div><!-- container -->
-        </div><!-- main menu -->
+        </nav><!-- main menu -->
     </nav>

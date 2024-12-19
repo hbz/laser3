@@ -6,7 +6,7 @@ import de.laser.Links
 import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.Subscription
-import de.laser.TitleInstancePackagePlatform
+import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.ctrl.FinanceControllerService
 import de.laser.finance.CostItem
 import de.laser.storage.BeanStore
@@ -18,7 +18,11 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 
 import java.text.SimpleDateFormat
+import java.time.Year
 
+/**
+ * Report container for the data of a {@link Subscription}
+ */
 class SubscriptionReport {
 
     static String KEY = 'subscription'
@@ -28,6 +32,12 @@ class SubscriptionReport {
 
     static int NUMBER_OF_TIMELINE_ELEMENTS = 4
 
+    /**
+     * Gets the configuration for the current subscription, based on the calculated type
+     * @param sub the {@link Subscription} to be exported
+     * @return the {@link SubscriptionXCfg} holding for the current subscription
+     * @see de.laser.interfaces.CalculatedType
+     */
     static Map<String, Object> getCurrentConfig(Subscription sub) {
 
         String calcType = sub._getCalculatedType()
@@ -36,7 +46,7 @@ class SubscriptionReport {
             return SubscriptionXCfg.CONFIG_CONS_AT_CONS
         }
         else if (calcType in [Subscription.TYPE_PARTICIPATION]) {
-            if (sub.getConsortia().id == BeanStore.getContextService().getOrg().id) {
+            if (sub.getConsortium().id == BeanStore.getContextService().getOrg().id) {
                 return SubscriptionXCfg.CONFIG_CONS_AT_SUBSCR
             }
             else {
@@ -48,14 +58,29 @@ class SubscriptionReport {
         }
     }
 
+    /**
+     * Returns the default query configuration for the given subscription
+     * @param sub the {@link Subscription} to be exported
+     * @return the default query configuration
+     */
     static Map<String, Object> getCurrentQueryConfig(Subscription sub) {
         getCurrentConfig( sub ).base.query.default
     }
 
+    /**
+     * Returns the current timeline configuration for the given subscription
+     * @param sub the {@link Subscription} to be exported
+     * @return the current timeline
+     */
     static Map<String, Object> getCurrentTimelineConfig(Subscription sub) {
         getCurrentConfig( sub ).base.timeline
     }
 
+    /**
+     * Returns the timeline labels for the given request map
+     * @param params the request parameter map
+     * @return a list of labels matching the query
+     */
     static List<String> getTimelineQueryLabels(GrailsParameterMap params) {
         List<String> meta = []
 
@@ -72,6 +97,12 @@ class SubscriptionReport {
         }
         meta
     }
+
+    /**
+     * Returns the annual timeline labels for the given request map
+     * @param params the request parameter map
+     * @return a list of labels matching the query
+     */
     static List<String> getTimelineQueryLabelsForAnnual(GrailsParameterMap params) {
         List<String> meta = []
 
@@ -81,9 +112,27 @@ class SubscriptionReport {
                 meta = [ getMessage( 'timeline'), getMessage( 'timeline.' + params.query ), "${params.id}" ]
             }
         }
+
+        if (meta && params.query in ['timeline-annualMember-subscription', 'timeline-referenceYearMember-subscription']) { // TODO
+            MessageSource ms = BeanStore.getMessageSource()
+            if (params.int('id') == BaseQuery.FAKE_DATA_ID_1) {
+                meta[2] = ms.getMessage('reporting.chart.result.noData.label', null, LocaleUtils.getCurrentLocale())
+            }
+            else if (params.int('id') == BaseQuery.FAKE_DATA_ID_2) {
+                meta[2] = ms.getMessage('reporting.chart.result.noEndDate.label', null, LocaleUtils.getCurrentLocale())
+            }
+            else if (params.int('id') == BaseQuery.FAKE_DATA_ID_3) {
+                meta[2] = ms.getMessage('reporting.chart.result.noStartDate.label', null, LocaleUtils.getCurrentLocale())
+            }
+        }
         meta
     }
 
+    /**
+     * Performs the query: retrieves the data requested in the parameter map
+     * @param params the request parameter map
+     * @return a {@link Map} containing the retrieved data
+     */
     static Map<String, Object> query(GrailsParameterMap params) {
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
@@ -105,6 +154,8 @@ class SubscriptionReport {
             List<Subscription> timeline = getTimeline(sub)
 
             if (prefix == 'timeline') {
+
+                long timelineIsCurrentId = id
 
                 if (params.query == 'timeline-member') {
                     List<List<Long>> subIdLists = []
@@ -187,21 +238,68 @@ class SubscriptionReport {
                         ])
                     }
 
+//                    result.dataDetails.eachWithIndex { Map<String, Object> dd, i ->
+//                        List d = result.data.get(i)
+//
+//                        String tippHql = 'select tipp.id from IssueEntitlement ie join ie.tipp tipp where ie.id in (:idList)'
+//
+//                        if (i > 0) {
+//                            List<Long> currIdList = ieIdLists.get(i)
+//                            List<Long> prevIdList = ieIdLists.get(i - 1)
+//
+//                            List<Long> currTippIdList = currIdList ? TitleInstancePackagePlatform.executeQuery(tippHql, [idList: currIdList]) : []
+//                            List<Long> prevTippIdList = prevIdList ? TitleInstancePackagePlatform.executeQuery(tippHql, [idList: prevIdList]) : []
+//
+//                            dd.idList = currTippIdList
+//                            dd.plusIdList = currTippIdList.minus(prevTippIdList)
+//                            dd.minusIdList = prevTippIdList.minus(currTippIdList)
+//
+//                            d[indexPlusList] = dd.plusIdList.size()
+//                            d[indexMinusList] = dd.minusIdList.size()
+//                        }
+//                        else {
+//                            List<Long> currTippIdList = ieIdLists.get(i) ? TitleInstancePackagePlatform.executeQuery(tippHql, [idList: ieIdLists.get(i)]) : []
+//
+//                            dd.idList = currTippIdList
+//                            dd.plusIdList = currTippIdList
+//                            dd.minusIdList = []
+//
+//                            d[indexPlusList] = dd.plusIdList.size()
+//                            d[indexMinusList] = dd.minusIdList.size()
+//                        }
+//                    }
+
                     result.dataDetails.eachWithIndex { Map<String, Object> dd, i ->
                         List d = result.data.get(i)
 
-                        String tippHql = 'select tipp.id from IssueEntitlement ie join ie.tipp tipp where ie.id in (:idList)'
+                        String tippUrlHql = 'select tipp.id, tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.id in (:idList)'
+                        String tippHql    = 'select tipp.id from IssueEntitlement ie join ie.tipp tipp where ie.id in (:idList)'
 
                         if (i > 0) {
                             List<Long> currIdList = ieIdLists.get(i)
                             List<Long> prevIdList = ieIdLists.get(i - 1)
 
-                            List<Long> currTippIdList = currIdList ? TitleInstancePackagePlatform.executeQuery(tippHql, [idList: currIdList]) : []
-                            List<Long> prevTippIdList = prevIdList ? TitleInstancePackagePlatform.executeQuery(tippHql, [idList: prevIdList]) : []
+                            Map<Long, String> currTippUrlMap = (currIdList ? TitleInstancePackagePlatform.executeQuery(tippUrlHql, [idList: currIdList]).collectEntries {[it[0], it[1]]} : [:]) as Map<Long, String>
+                            Map<Long, String> prevTippUrlMap = (prevIdList ? TitleInstancePackagePlatform.executeQuery(tippUrlHql, [idList: prevIdList]).collectEntries {[it[0], it[1]]} : [:]) as Map<Long, String>
 
-                            dd.idList = currTippIdList
-                            dd.plusIdList = currTippIdList.minus(prevTippIdList)
-                            dd.minusIdList = prevTippIdList.minus(currTippIdList)
+                            dd.idList = currTippUrlMap.keySet() as List<Long>
+                            dd.plusIdList = []
+                            dd.minusIdList = []
+
+                            currTippUrlMap.each { curr ->
+                                if (curr.value) {
+                                    if (! prevTippUrlMap.values().contains(curr.value)) { dd.plusIdList << curr.key }
+                                } else {
+                                    if (! prevTippUrlMap.keySet().contains(curr.key)) { dd.plusIdList << curr.key }
+                                }
+                            }
+                            prevTippUrlMap.each { prev ->
+                                if (prev.value) {
+                                    if (! currTippUrlMap.values().contains(prev.value)) { dd.minusIdList << prev.key }
+                                } else {
+                                    if (! currTippUrlMap.keySet().contains(prev.key)) { dd.minusIdList << prev.key }
+                                }
+                            }
 
                             d[indexPlusList] = dd.plusIdList.size()
                             d[indexMinusList] = dd.minusIdList.size()
@@ -217,8 +315,57 @@ class SubscriptionReport {
                             d[indexMinusList] = dd.minusIdList.size()
                         }
                     }
+                }
+                else if (params.query == 'timeline-package') {
+                    List<List<Long>> pkgIdLists = []
 
-                    //println result.dataDetails
+                    timeline.eachWithIndex { s, i ->
+                        pkgIdLists.add(de.laser.wekb.Package.executeQuery(
+                                'select distinct ie.tipp.pkg.id from IssueEntitlement ie where ie.subscription = :sub and ie.status = :status',
+                                [sub: s, status: RDStore.TIPP_STATUS_CURRENT]
+                        ))
+                        List data = [
+                                s.id,
+                                s.name,
+                                pkgIdLists.get(i).size(),
+                                [],
+                                [],
+                                (s.startDate ? sdf.format(s.startDate) : NO_STARTDATE) + ' - ' + (s.endDate ? sdf.format(s.endDate) : NO_ENDDATE),
+                                sub == s
+                        ]
+                        result.data.add(data)
+                        result.dataDetails.add([
+                                query: params.query,
+                                id   : s.id,
+                                label: data[5]
+                        ])
+                    }
+
+                    result.dataDetails.eachWithIndex { Map<String, Object> dd, i ->
+                        List d = result.data.get(i)
+
+                        if (i > 0) {
+                            List<Long> currIdList = pkgIdLists.get(i)
+                            List<Long> prevIdList = pkgIdLists.get(i - 1)
+
+                            dd.idList = currIdList
+                            dd.plusIdList = currIdList.minus(prevIdList)
+                            dd.minusIdList = prevIdList.minus(currIdList)
+
+                            d[indexPlusList] = dd.plusIdList.size()
+                            d[indexMinusList] = dd.minusIdList.size()
+                        }
+                        else {
+                            List<Long> currPkgIdList = pkgIdLists.get(i)
+
+                            dd.idList = currPkgIdList
+                            dd.plusIdList = currPkgIdList
+                            dd.minusIdList = []
+
+                            d[indexPlusList] = dd.plusIdList.size()
+                            d[indexMinusList] = dd.minusIdList.size()
+                        }
+                    }
                 }
                 else if (params.query in ['timeline-member-cost', 'timeline-participant-cost']) {
                     GrailsParameterMap clone = params.clone() as GrailsParameterMap
@@ -276,20 +423,92 @@ class SubscriptionReport {
                     }
 
                     BaseQuery.handleGenericAnnualXQuery(params.query, 'Subscription', subIdLists, result)
+                    boolean isCurrentSet = false
 
                     List newData = []
                     result.data.each { d ->
+                        boolean isCurrent = (sub.startDate && sub.endDate) ? DateUtils.getYearAsInteger(sub.startDate) <= d[0] && DateUtils.getYearAsInteger(sub.endDate) >= d[0] : false
+                        if (isCurrent) {
+                            timelineIsCurrentId = Long.valueOf(d[0] as String)
+                            isCurrentSet = true
+                        }
                         newData.add([
-                            d[0], d[1], d[2],
-                            (sub.startDate && sub.endDate) ? DateUtils.getYearAsInteger(sub.startDate) <= d[0] && DateUtils.getYearAsInteger(sub.endDate) >= d[0] : false
+                            d[0], d[1], d[2], isCurrent
                         ])
+                    }
+                    if (!isCurrentSet) {
+                        timelineIsCurrentId = Long.valueOf(Year.now().toString()) // fallback - year as id
+                    }
+                    result.data = newData
+                }
+                else if (params.query == 'timeline-referenceYearMember-subscription') {
+                    List<Long> subIdLists = []
+
+                    if (timeline) {
+                        subIdLists = Subscription.executeQuery(
+                                'select distinct s.id from Subscription s join s.orgRelations oo where s.instanceOf in (:timeline) and oo.roleType in :subscriberRoleTypes',
+                                [timeline: timeline, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
+                        )
+                    }
+
+                    BaseQuery.handleSubscriptionReferenceYearXQuery(params.query,  subIdLists, result)
+                    boolean isCurrentSet = false
+
+                    List newData = []
+                    result.data.each { d ->
+                        boolean isCurrent = sub.referenceYear ? Integer.valueOf(sub.referenceYear.toString()) == d[0] : false
+                        if (isCurrent) {
+                            timelineIsCurrentId = Long.valueOf(d[0] as String)
+                            isCurrentSet = true
+                        }
+                        newData.add([
+                                d[0], d[1], d[2], isCurrent
+                        ])
+                    }
+                    if (!isCurrentSet) {
+                        timelineIsCurrentId = Long.valueOf(Year.now().toString()) // fallback - year as id
                     }
                     result.data = newData
                 }
 
                 // keep all data for correct processing and only then limit
-                result.data = (result.data as List).takeRight(NUMBER_OF_TIMELINE_ELEMENTS)
-                result.dataDetails = (result.dataDetails as List).takeRight(NUMBER_OF_TIMELINE_ELEMENTS)
+
+                List specIdx = []
+                result.data.eachWithIndex { List entry, int idx ->
+                    if (entry[0] == null || entry[0] < 0) {
+                        specIdx << entry[0]
+                    }
+                }
+                List specData = []
+                List specDataDetails = []
+                specIdx.each { idx ->
+                    def x = result.data.find{ it[0] == idx }
+                    def y = result.dataDetails.find{ it.id == idx }
+                    if (x && y) {
+                        specData << x
+                        specDataDetails << y
+                        result.data.remove(x)
+                        result.dataDetails.remove(y)
+                    }
+                }
+
+                int timelineFromIdx = 0
+                result.data.eachWithIndex { List entry, int idx ->
+                    if (entry[0] == timelineIsCurrentId) { timelineFromIdx = idx }
+                }
+                int timelineToIdx = (timelineFromIdx + NUMBER_OF_TIMELINE_ELEMENTS)
+
+                if ((result.data.size() <= NUMBER_OF_TIMELINE_ELEMENTS) || timelineToIdx > result.data.size()) {
+                    result.data = (result.data as List).takeRight(NUMBER_OF_TIMELINE_ELEMENTS)
+                    result.dataDetails = (result.dataDetails as List).takeRight(NUMBER_OF_TIMELINE_ELEMENTS)
+                }
+                else {
+                    result.data = (result.data as List).subList(timelineFromIdx, timelineToIdx)
+                    result.dataDetails = (result.dataDetails as List).subList(timelineFromIdx, timelineToIdx)
+                }
+
+                result.data.addAll(specData)
+                result.dataDetails.addAll(specDataDetails)
             }
 
             else if (prefix == 'tipp') {
@@ -467,17 +686,6 @@ class SubscriptionReport {
                 else if (params.query == 'member-libraryType') {
                     processSimpleMemberRefdataQuery(params.query, 'libraryType', idList, result)
                 }
-                else if (params.query == 'member-orgType') {
-
-                    BaseQuery.handleGenericRefdataQuery(
-                            params.query,
-                            'select p.id, p.value_de, count(*) from Org o join o.orgType p where o.id in (:idList) group by p.id, p.value_de order by p.value_de',
-                            'select o.id from Org o join o.orgType p where o.id in (:idList) and p.id = :d order by o.sortname, o.name',
-                            'select distinct o.id from Org o where o.id in (:idList) and not exists (select ot from o.orgType ot)',
-                            idList,
-                            result
-                    )
-                }
                 else if (params.query == 'member-region') {
                     processSimpleMemberRefdataQuery(params.query, 'region', idList, result)
                 }
@@ -498,7 +706,7 @@ class SubscriptionReport {
         result
     }
 
-    static void processSimpleMemberRefdataQuery(String query, String refdata, List idList, Map<String, Object> result) {
+    static void processSimpleMemberRefdataQuery(String query, String refdata, List<Long> idList, Map<String, Object> result) {
 
         List<String> PROPERTY_QUERY = [
                 'select p.id, p.value_de, count(*) ',
@@ -515,7 +723,7 @@ class SubscriptionReport {
         )
     }
 
-    static void processSimpleTippQuery(String query, String property, List idList, Map<String, Object> result) {
+    static void processSimpleTippQuery(String query, String property, List<Long> idList, Map<String, Object> result) {
 
         List<String> PROPERTY_QUERY = [
                 'select tipp.' + property + ', tipp.' + property + ', count(*) ',
@@ -532,7 +740,7 @@ class SubscriptionReport {
         )
     }
 
-    static void processSimpleTippRefdataQuery(String query, String refdata, List idList, Map<String, Object> result) {
+    static void processSimpleTippRefdataQuery(String query, String refdata, List<Long> idList, Map<String, Object> result) {
 
         List<String> PROPERTY_QUERY = [
                 'select p.id, p.value_de, count(*) ',
@@ -571,7 +779,7 @@ class SubscriptionReport {
         tmp = sub
         while (tmp) {
             tmp = getNext(tmp)
-            if (tmp) { result.push(tmp) }
+            if (tmp) { result.add(tmp) }
         }
         result
     }

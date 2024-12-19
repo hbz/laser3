@@ -1,5 +1,5 @@
-<%@ page import="de.laser.storage.PropertyStore; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg; de.laser.AuditConfig" %>
-<laser:htmlStart message="surveyInfo.copyProperties" serviceInjection="true" />
+<%@ page import="de.laser.finance.CostItem; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.PropertyStore; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg; de.laser.AuditConfig" %>
+<laser:htmlStart message="surveyInfo.copyProperties" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
@@ -16,6 +16,10 @@
     <uiSurvey:status object="${surveyInfo}"/>
 </ui:h1HeaderWithIcon>
 
+<g:if test="${surveyConfig.subscription}">
+ <ui:buttonWithIcon style="vertical-align: super;" message="${message(code: 'button.message.showLicense')}" variation="tiny" icon="${Icon.SUBSCRIPTION}" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+</g:if>
+
 <laser:render template="nav"/>
 
 <ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
@@ -24,199 +28,16 @@
 
 <br/>
 
-<g:if test="${!(surveyInfo.status in [RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED])}">
+<g:if test="${surveyConfig.subSurveyUseForTransfer && !(surveyInfo.status in [RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED])}">
     <div class="ui segment">
         <strong>${message(code: 'renewalEvaluation.notInEvaliation')}</strong>
     </div>
 </g:if>
 <g:else>
 
-    <div class="ui tablet stackable steps">
+    <g:render template="multiYearsSubs"/>
 
-        <div class="${(actionName == 'compareMembersOfTwoSubs') ? 'active' : ''} step">
-            <div class="content">
-                <div class="title">
-                    <g:link controller="survey" action="compareMembersOfTwoSubs"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]">
-                        ${message(code: 'surveyInfo.transferMembers')}
-                    </g:link>
-                </div>
-
-                <div class="description">
-                    <i class="exchange icon"></i>${message(code: 'surveyInfo.transferMembers')}
-                </div>
-            </div>
-
-            <g:if test="${transferWorkflow && transferWorkflow.transferMembers == 'true'}">
-                <g:link controller="survey" action="setSurveyTransferConfig"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferMembers: false]">
-                    <i class="check bordered large green icon"></i>
-                </g:link>
-            </g:if>
-            <g:else>
-                <g:link controller="survey" action="setSurveyTransferConfig"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferMembers: true]">
-                    <i class="close bordered large red icon"></i>
-                </g:link>
-            </g:else>
-
-        </div>
-
-        <g:if test="${surveyConfig.subSurveyUseForTransfer}">
-            <div class="${(actionName == 'copySubPackagesAndIes') ? 'active' : ''} step">
-
-                <div class="content">
-                    <div class="title">
-                        <g:link controller="survey" action="copySubPackagesAndIes"
-                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]">
-                            ${message(code: 'copySubPackagesAndIes.label')}
-                        </g:link>
-                    </div>
-
-                    <div class="description">
-                        <i class="gift icon"></i>${message(code: 'copySubPackagesAndIes.label')}
-                    </div>
-                </div>
-            &nbsp;&nbsp;
-                <g:if test="${transferWorkflow && transferWorkflow.transferSubPackagesAndIes == 'true'}">
-                    <g:link controller="survey" action="setSurveyTransferConfig"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferSubPackagesAndIes: false]">
-                        <i class="check bordered large green icon"></i>
-                    </g:link>
-                </g:if>
-                <g:else>
-                    <g:link controller="survey" action="setSurveyTransferConfig"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferSubPackagesAndIes: true]">
-                        <i class="close bordered large red icon"></i>
-                    </g:link>
-                </g:else>
-
-            </div>
-        </g:if>
-
-
-        <div class="${(actionName == 'copyProperties' && params.tab == 'surveyProperties') ? 'active' : ''} step">
-
-            <div class="content">
-                <div class="title">
-                    <g:link controller="survey" action="copyProperties"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: 'surveyProperties', targetSubscriptionId: targetSubscription?.id]">
-                        ${message(code: 'copyProperties.surveyProperties.short')}
-                    </g:link>
-                </div>
-
-                <div class="description">
-                    <i class="tags icon"></i>${message(code: 'properties')}
-                </div>
-            </div>
-
-            <g:if test="${transferWorkflow && transferWorkflow.transferSurveyProperties == 'true'}">
-                <g:link controller="survey" action="setSurveyTransferConfig"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferSurveyProperties: false]">
-                    <i class="check bordered large green icon"></i>
-                </g:link>
-            </g:if>
-            <g:else>
-                <g:link controller="survey" action="setSurveyTransferConfig"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferSurveyProperties: true]">
-                    <i class="close bordered large red icon"></i>
-                </g:link>
-            </g:else>
-        </div>
-
-        <div class="${(actionName == 'copyProperties' && params.tab == 'customProperties') ? 'active' : ''}  step">
-
-            <div class="content">
-                <div class="title">
-                    <g:link controller="survey" action="copyProperties"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: 'customProperties', targetSubscriptionId: targetSubscription?.id]">
-                        ${message(code: 'copyProperties.customProperties.short')}
-                    </g:link>
-                </div>
-
-                <div class="description">
-                    <i class="tags icon"></i>${message(code: 'properties')}
-                </div>
-            </div>
-
-            <g:if test="${transferWorkflow && transferWorkflow.transferCustomProperties == 'true'}">
-                <g:link controller="survey" action="setSurveyTransferConfig"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferCustomProperties: false]">
-                    <i class="check bordered large green icon"></i>
-                </g:link>
-            </g:if>
-            <g:else>
-                <g:link controller="survey" action="setSurveyTransferConfig"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferCustomProperties: true]">
-                    <i class="close bordered large red icon"></i>
-                </g:link>
-            </g:else>
-
-        </div>
-
-        <div class="${(actionName == 'copyProperties' && params.tab == 'privateProperties') ? 'active' : ''} step">
-
-            <div class="content">
-                <div class="title">
-                    <g:link controller="survey" action="copyProperties"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: 'privateProperties', targetSubscriptionId: targetSubscription?.id]">
-                        ${message(code: 'copyProperties.privateProperties.short')}
-                    </g:link>
-                </div>
-
-                <div class="description">
-                    <i class="tags icon"></i>${message(code: 'properties')}
-                </div>
-            </div>
-
-            <g:if test="${transferWorkflow && transferWorkflow.transferPrivateProperties == 'true'}">
-                <g:link controller="survey" action="setSurveyTransferConfig"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferPrivateProperties: false]">
-                    <i class="check bordered large green icon"></i>
-                </g:link>
-            </g:if>
-            <g:else>
-                <g:link controller="survey" action="setSurveyTransferConfig"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferPrivateProperties: true]">
-                    <i class="close bordered large red icon"></i>
-                </g:link>
-            </g:else>
-
-        </div>
-
-        <div class="${(actionName == 'copySurveyCostItems') ? 'active' : ''} step">
-
-            <div class="content">
-                <div class="title">
-                    <g:link controller="survey" action="copySurveyCostItems"
-                            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]">
-                        ${message(code: 'copySurveyCostItems.surveyCostItems')}
-                    </g:link>
-                </div>
-
-                <div class="description">
-                    <i class="money bill alternate outline icon"></i>${message(code: 'copySurveyCostItems.surveyCostItem')}
-                </div>
-            </div>
-
-            <g:if test="${transferWorkflow && transferWorkflow.transferSurveyCostItems == 'true'}">
-                <g:link controller="survey" action="setSurveyTransferConfig"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferSurveyCostItems: false]">
-                    <i class="check bordered large green icon"></i>
-                </g:link>
-            </g:if>
-            <g:else>
-                <g:link controller="survey" action="setSurveyTransferConfig"
-                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferSurveyCostItems: true]">
-                    <i class="close bordered large red icon"></i>
-                </g:link>
-            </g:else>
-
-        </div>
-
-
-
-    </div>
+    <g:render template="navCompareMembers"/>
 
     <ui:messages data="${flash}"/>
 
@@ -243,7 +64,7 @@
                             <br/>
                             <g:link controller="subscription" action="members"
                                     id="${parentSubscription.id}">${message(code: 'renewalEvaluation.orgsInSub')}</g:link>
-                            <ui:totalNumber total="${parentSubscription.getDerivedSubscribers().size()}"/>
+                            <ui:totalNumber total="${parentSubscription.getDerivedNonHiddenSubscribers().size()}"/>
                         </g:if>
                     </h3>
                 </div>
@@ -263,7 +84,7 @@
                             <g:link controller="subscription" action="members"
                                     id="${parentSuccessorSubscription.id}">${message(code: 'renewalEvaluation.orgsInSub')}</g:link>
                             <ui:totalNumber
-                                    total="${parentSuccessorSubscription.getDerivedSubscribers().size()}"/>
+                                    total="${parentSuccessorSubscription.getDerivedNonHiddenSubscribers().size()}"/>
 
                         </g:if>
                     </h3>
@@ -273,7 +94,7 @@
     </ui:greySegment>
 
 %{--<div class="ui icon positive message">
-    <i class="info icon"></i>
+    <i class="${Icon.UI.INFO}"></i>
 
     <div class="content">
         <div class="header"></div>
@@ -291,6 +112,62 @@
         </p>
     </div>
 </div>--}%
+
+    <g:if test="${properties}">
+        <div class="ui segment">
+            <h3>
+                <g:message code="propertyDefinition.plural"/>
+            </h3>
+            <table class="ui sortable celled la-js-responsive-table la-table table">
+                <thead>
+                <tr>
+                    <th>${message(code: 'sidewide.number')}</th>
+                    <th>${message(code: 'propertyDefinition.label')}</th>
+                    <g:if test="${params.tab == 'surveyProperties'}">
+                        <th><g:if test="${surveyConfig.subSurveyUseForTransfer}">
+                            ${message(code: 'default.count.label')} <g:message code="renewalEvaluation.parentSubscription"/>
+                        </g:if><g:else>
+                            ${message(code: 'default.count.label')} <g:message code="copyElementsIntoObject.sourceObject.name"
+                                                                               args="[message(code: 'subscription.label')]"/>
+                        </g:else></th>
+                        <th>${message(code: 'default.count.label')}</th>
+                    </g:if>
+                    <g:else>
+                        <th><g:if test="${surveyConfig.subSurveyUseForTransfer}">
+                        ${message(code: 'default.count.label')} <g:message code="renewalEvaluation.parentSubscription"/>
+                    </g:if><g:else>
+                        ${message(code: 'default.count.label')} <g:message code="copyElementsIntoObject.sourceObject.name"
+                                                                           args="[message(code: 'subscription.label')]"/>
+                    </g:else>
+                        ${message(code: 'default.count.label')}
+                    </g:else>
+                    <th><g:if test="${surveyConfig.subSurveyUseForTransfer}">
+                        ${message(code: 'default.count.label')} <g:message code="renewalEvaluation.parentSuccessorSubscription"/>
+                    </g:if><g:else>
+                        ${message(code: 'default.count.label')} <g:message code="copyElementsIntoObject.targetObject.name"
+                                                                           args="[message(code: 'subscription.label')]"/>
+                    </g:else></th>
+                </tr>
+                </thead>
+                <tbody>
+                <g:each in="${properties.sort { it.getI10n('name') }}" var="property" status="i">
+
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td><g:link controller="survey" action=" $actionName"
+                                    params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, selectedProperty: property.id]}">${property.getI10n('name')}</g:link></td>
+                        <td>${subscriptionService.countCustomSubscriptionPropertyOfMembersByParentSub(contextService.getOrg(), parentSubscription, property)}</td>
+                        <g:if test="${params.tab == 'surveyProperties'}">
+                            <td>${participantsList ? surveyService.countSurveyPropertyWithValueByMembers(surveyConfig, property, participantsList.org) : 0}</td>
+                        </g:if>
+                        <td>${subscriptionService.countCustomSubscriptionPropertyOfMembersByParentSub(contextService.getOrg(), parentSuccessorSubscription, property)}</td>
+                    </tr>
+                </g:each>
+                </tbody>
+            </table>
+        </div>
+    </g:if>
+
 
     <ui:greySegment>
         <g:if test="${properties}">
@@ -363,7 +240,7 @@
 
                         <tr class="">
                             <td>
-                                <g:if test="${params.tab == 'customProperties' && (participant.oldSub && ((!participant.newCustomProperty && participant.oldCustomProperty) || (participant.newPrivateProperty && participant.oldCustomProperty && participant.oldCustomProperty.type.multipleOccurrence)))}">
+                                <g:if test="${params.tab == 'customProperties' && (participant.oldSub && ((!participant.newCustomProperty && participant.oldCustomProperty) || (participant.newCustomProperty && participant.oldCustomProperty && participant.oldCustomProperty.type.multipleOccurrence)))}">
                                     <g:checkBox name="selectedSub" value="${participant.newSub.id}" checked="false"/>
                                 </g:if>
                                 <g:elseif
@@ -371,7 +248,7 @@
                                     <g:checkBox name="selectedSub" value="${participant.newSub.id}" checked="false"/>
                                 </g:elseif>
                                 <g:elseif
-                                        test="${params.tab == 'surveyProperties' && (participant.oldSub && (participant.surveyProperty && participant.surveyProperty.getValue() && (!participant.newCustomProperty && participant.surveyProperty) || (participant.newCustomProperty && participant.newCustomProperty.type.multipleOccurrence)))}">
+                                        test="${params.tab == 'surveyProperties' && ((participant.surveyProperty && participant.surveyProperty.getValue() && (!participant.newCustomProperty && participant.surveyProperty) || (participant.newCustomProperty && participant.newCustomProperty.type.multipleOccurrence)))}">
                                     <g:checkBox name="selectedSub" value="${participant.newSub.id}" checked="false"/>
                                 </g:elseif>
                             </td>
@@ -450,16 +327,10 @@
 
                                         <g:if test="${participant.oldCustomProperty.hasProperty('instanceOf') && participant.oldCustomProperty.instanceOf && AuditConfig.getConfig(participant.oldCustomProperty.instanceOf)}">
                                             <g:if test="${participant.oldSub.isSlaved}">
-                                                <span class="la-popup-tooltip la-delay"
-                                                      data-content="${message(code: 'property.audit.target.inherit.auto')}"
-                                                      data-position="top right"><i
-                                                        class="icon grey la-thumbtack-regular"></i></span>
+                                                <ui:auditIcon type="auto" />
                                             </g:if>
                                             <g:else>
-                                                <span class="la-popup-tooltip la-delay"
-                                                      data-content="${message(code: 'property.audit.target.inherit')}"
-                                                      data-position="top right"><i
-                                                        class="icon thumbtack grey"></i></span>
+                                                <ui:auditIcon type="default" />
                                             </g:else>
                                         </g:if>
 
@@ -618,16 +489,10 @@
 
                                         <g:if test="${participant.newCustomProperty.hasProperty('instanceOf') && participant.newCustomProperty.instanceOf && AuditConfig.getConfig(participant.newCustomProperty.instanceOf)}">
                                             <g:if test="${participant.newSub.isSlaved}">
-                                                <span class="la-popup-tooltip la-delay"
-                                                      data-content="${message(code: 'property.audit.target.inherit.auto')}"
-                                                      data-position="top right"><i
-                                                        class="icon grey la-thumbtack-regular"></i></span>
+                                                <ui:auditIcon type="auto" />
                                             </g:if>
                                             <g:else>
-                                                <span class="la-popup-tooltip la-delay"
-                                                      data-content="${message(code: 'property.audit.target.inherit')}"
-                                                      data-position="top right"><i
-                                                        class="icon thumbtack grey"></i></span>
+                                                <ui:auditIcon type="default" />
                                             </g:else>
                                         </g:if>
 
@@ -693,7 +558,29 @@
                             <td>
                                 <g:if test="${participant.newSub}">
                                     <g:link controller="subscription" action="show" id="${participant.newSub.id}"
-                                            class="ui button icon"><i class="icon clipboard"></i></g:link>
+                                            class="${Btn.ICON.SIMPLE}"><i class="${Icon.SUBSCRIPTION}"></i></g:link>
+                                </g:if>
+
+                                <g:if test="${surveyConfig.subSurveyUseForTransfer}">
+                                    <g:set var="multiYearResultProperties"
+                                           value="${surveyService.getMultiYearResultProperties(surveyConfig, Org.get(participant.id))}"/>
+                                    <g:if test="${multiYearResultProperties.size () > 0}">
+                                        <br>
+                                        <br>
+
+                                        <div data-tooltip="${message(code: 'surveyProperty.label') + ': ' + multiYearResultProperties.collect { it.getI10n('name') }.join(', ') + ' = ' + message(code: 'refdata.Yes')}">
+                                            <i class="bordered colored info icon"></i>
+                                        </div>
+                                    </g:if>
+                                </g:if>
+
+                                <g:if test="${SurveyOrg.findByOrgAndSurveyConfig(Org.get(participant.id), surveyConfig)}">
+                                    <br>
+                                    <br>
+
+                                    <div data-tooltip="${message(code: 'surveyParticipants.selectedParticipants')}">
+                                        <i class="${Icon.SURVEY} bordered colored"></i>
+                                    </div>
                                 </g:if>
                             </td>
                         </tr>
@@ -718,7 +605,7 @@
                             <br>
                         </g:if>
 
-                        <button class="ui button positive"
+                        <button class="${Btn.POSITIVE}"
                                 type="submit">${message(code: 'copyProperties.copyProperties', args: [message(code: 'copyProperties.' + params.tab)])}</button>
                     </div>
                 </div>
@@ -731,18 +618,23 @@
 
     <div class="sixteen wide field" style="text-align: center;">
         <g:if test="${params.tab != 'privateProperties'}">
-            <g:link class="ui button" controller="survey" action="copyProperties"
+            <g:link class="${Btn.SIMPLE}" controller="survey" action="copyProperties"
                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: ((params.tab == 'customProperties') ? 'privateProperties' : ((params.tab == 'surveyProperties') ? 'customProperties' : 'surveyProperties')), targetSubscriptionId: targetSubscription?.id]">
                 ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
             </g:link>
         </g:if>
-
-        <g:if test="${params.tab == 'privateProperties'}">
-            <g:link class="ui button" controller="survey" action="copySurveyCostItems"
-                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]">
+        <g:elseif test="${params.tab == 'privateProperties' && (CostItem.executeQuery('select count(*) from CostItem costItem join costItem.surveyOrg surOrg where surOrg.surveyConfig = :survConfig and costItem.costItemStatus != :status and costItem.pkg is null', [survConfig: surveyConfig, status: RDStore.COST_ITEM_DELETED])[0] > 0) }">
+            <g:link class="${Btn.SIMPLE}" controller="survey" action="copySurveyCostItems"
+                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription.id]">
                 ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
             </g:link>
-        </g:if>
+        </g:elseif>
+        <g:elseif test="${params.tab == 'privateProperties' && (CostItem.executeQuery('select count(*) from CostItem costItem join costItem.surveyOrg surOrg where surOrg.surveyConfig = :survConfig and costItem.costItemStatus != :status and costItem.pkg is not null', [survConfig: surveyConfig, status: RDStore.COST_ITEM_DELETED])[0] > 0) }">
+            <g:link class="ui button" controller="survey" action="copySurveyCostItemPackage"
+                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription.id]">
+                ${message(code: 'copySurveyCostItems.workFlowSteps.nextStep')}
+            </g:link>
+        </g:elseif>
     </div>
 
     <laser:script file="${this.getGroovyPageFileName()}">
@@ -755,8 +647,8 @@
         })
     </laser:script>
 
-    <g:form action="setSurveyCompleted" method="post" class="ui form"
-            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
+    <g:form action="setStatus" method="post" class="ui form"
+            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, newStatus: 'setSurveyCompleted']">
 
         <div class="ui right floated compact segment">
             <div class="ui checkbox">

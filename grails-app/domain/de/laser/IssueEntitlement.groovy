@@ -4,32 +4,31 @@ import de.laser.annotations.RefdataInfo
 import de.laser.base.AbstractBase
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.finance.PriceItem
-import de.laser.stats.Counter4Report
-import de.laser.stats.Counter5Report
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.wekb.TIPPCoverage
+import de.laser.wekb.TitleInstancePackagePlatform
 import groovy.util.logging.Slf4j
 
 import javax.persistence.Transient
-import java.text.Normalizer
 
 /**
- * A title record within a local holding. Technically a {@link TitleInstancePackagePlatform} record entry with a {@link Subscription} foreign key. But there are a few more things to note:
+ * A title record within a local holding. Technically a {@link de.laser.wekb.TitleInstancePackagePlatform} record entry with a {@link Subscription} foreign key. But there are a few more things to note:
  * The individually negotiated subscription holding may differ from what a provider offers usually. Those differences must be reflected in the issue entitlement record; that is why there are some
  * fields in both classes. In detail:
  * <ul>
  *     <li>access start/end may be different</li>
  *     <li>the subscribing institution may have a perpetual access negotiated to the title; this is of course no global property</li>
- *     <li>there may be locally negotiated prices in addition to the global list price (the {@link de.laser.finance.PriceItem}s linked to the owning {@link TitleInstancePackagePlatform}; that is why issue entitlements and TIPPs have an individual set of price items)</li>
- *     <li>there may be coverage entries differing from global level ({@link IssueEntitlementCoverage} vs {@link TIPPCoverage})</li>
+ *     <li>there may be locally negotiated prices in addition to the global list price (the {@link de.laser.finance.PriceItem}s linked to the owning {@link de.laser.wekb.TitleInstancePackagePlatform}; that is why issue entitlements and TIPPs have an individual set of price items)</li>
+ *     <li>there may be coverage entries differing from global level ({@link IssueEntitlementCoverage} vs {@link de.laser.wekb.TIPPCoverage})</li>
  * </ul>
  * Moreover, issue entitlements may be grouped for that the subscribing institution may organise them by certain criteria e.g. subscription phase, title group etc.
  * @see IssueEntitlementCoverage
  * @see IssueEntitlementGroup
  * @see IssueEntitlementGroupItem
  * @see de.laser.finance.PriceItem
- * @see TitleInstancePackagePlatform
+ * @see de.laser.wekb.TitleInstancePackagePlatform
  * @see Subscription
  */
 @Slf4j
@@ -38,10 +37,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     Date accessStartDate
     Date accessEndDate
 
-    //@Deprecated
-    //String name
-    //@Deprecated
-    //String sortname
     String notes
 
     Subscription perpetualAccessBySub
@@ -49,18 +44,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     //merged as the difference between an IssueEntitlement and a TIPP is mainly former's attachment to a subscription, otherwise, they are functionally identical, even dependent upon each other. So why keep different refdata categories?
     @RefdataInfo(cat = RDConstants.TIPP_STATUS)
     RefdataValue status
-
-    //@Deprecated
-    //@RefdataInfo(cat = RDConstants.TIPP_ACCESS_TYPE)
-    //RefdataValue accessType
-
-    //@Deprecated
-    //@RefdataInfo(cat = RDConstants.LICENSE_OA_TYPE)
-    //RefdataValue openAccess
-
-    //@Deprecated
-    //@RefdataInfo(cat = RDConstants.TITLE_MEDIUM)
-    //RefdataValue medium // legacy; was distinguished back then; I see no reason why I should still do so. Is legacy.
 
     Date dateCreated
     Date lastUpdated
@@ -94,16 +77,11 @@ class IssueEntitlement extends AbstractBase implements Comparable {
                 id column:'ie_id'
          globalUID column:'ie_guid'
            version column:'ie_version'
-            //name column:'ie_name', type: 'text'
-        //sortname column:'ie_sortname', type: 'text'
              notes column:'ie_notes', type: 'text'
             status column:'ie_status_rv_fk', index: 'ie_status_idx, ie_sub_tipp_status_idx, ie_status_accept_status_idx, ie_tipp_status_accept_status_idx'
-      //accessType column:'ie_access_type_rv_fk', index: 'ie_access_type_idx'
-      //openAccess column:'ie_open_access_rv_fk', index: 'ie_open_access_idx'
       subscription column:'ie_subscription_fk', index: 'ie_sub_idx, ie_sub_tipp_idx, ie_sub_tipp_status_idx, ie_status_accept_status_idx, ie_tipp_status_accept_status_idx'
               tipp column:'ie_tipp_fk',         index: 'ie_tipp_idx, ie_sub_tipp_idx, ie_sub_tipp_status_idx, ie_tipp_status_accept_status_idx'
         perpetualAccessBySub column:'ie_perpetual_access_by_sub_fk', index: 'ie_perpetual_access_by_sub_idx'
-          //medium column:'ie_medium_rv_fk', index: 'ie_medium_idx'
    accessStartDate column:'ie_access_start_date'
      accessEndDate column:'ie_access_end_date'
          coverages sort: 'startDate', order: 'asc'
@@ -115,13 +93,8 @@ class IssueEntitlement extends AbstractBase implements Comparable {
 
     static constraints = {
         globalUID      (nullable: true, blank: false, unique:true, maxSize:255)
-      //name           (nullable:true)
-      //sortname       (nullable:true)
+
         notes          (nullable:true)
-        status         (nullable:true)
-      //accessType     (nullable:true)
-      //openAccess     (nullable:true)
-      //medium         (nullable:true)
         accessStartDate(nullable:true)
         accessEndDate  (nullable:true)
 
@@ -141,7 +114,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
       Subscription subscription = (Subscription) configMap.subscription
       TitleInstancePackagePlatform tipp = (TitleInstancePackagePlatform) configMap.tipp
       IssueEntitlement ie = findBySubscriptionAndTippAndStatusNotEqual(subscription,tipp, RDStore.TIPP_STATUS_REMOVED)
-      if(!ie && !PermanentTitle.findByOwnerAndTipp(subscription.subscriber, tipp)) {
+      if(!ie && !PermanentTitle.findByOwnerAndTipp(subscription.getSubscriberRespConsortia(), tipp)) {
           ie = new IssueEntitlement(subscription: subscription, tipp: tipp, medium: tipp.medium, status:tipp.status, accessType: tipp.accessType, openAccess: tipp.openAccess, name: tipp.name)
           //ie.generateSortTitle()
       }
@@ -151,11 +124,11 @@ class IssueEntitlement extends AbstractBase implements Comparable {
                 if (subscription.hasPerpetualAccess && ie.status != RDStore.TIPP_STATUS_EXPECTED) {
                     ie.perpetualAccessBySub = subscription
 
-                    if (!PermanentTitle.findByOwnerAndTipp(subscription.subscriber, tipp)) {
+                    if (!PermanentTitle.findByOwnerAndTipp(subscription.getSubscriberRespConsortia(), tipp)) {
                         PermanentTitle permanentTitle = new PermanentTitle(subscription: subscription,
                                 issueEntitlement: ie,
                                 tipp: tipp,
-                                owner: subscription.subscriber).save()
+                                owner: subscription.getSubscriberRespConsortia()).save()
                     }
                 }
 

@@ -3,9 +3,14 @@ package de.laser.reporting.export
 import de.laser.IssueEntitlement
 import de.laser.License
 import de.laser.Org
-import de.laser.Platform
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
 import de.laser.Subscription
+import de.laser.wekb.Vendor
 import de.laser.finance.CostItem
+import de.laser.reporting.export.myInstitution.ProviderExport
+import de.laser.reporting.export.myInstitution.VendorExport
 import de.laser.storage.BeanStore
 import de.laser.utils.DateUtils
 import de.laser.reporting.export.base.BaseDetailsExport
@@ -94,7 +99,7 @@ class DetailsExportManager {
             if (options.hideEmptyResults) {
                 ici.each { i -> /* println 'Export CSV ignored: ' + cols[i]; */ cols.removeAt(i) }
             }
-            rows.add( cols.join( BaseDetailsExport.CSV_FIELD_SEPARATOR ) )
+            rows.add( buildRowAsCSV( cols ).join( BaseDetailsExport.CSV_FIELD_SEPARATOR ) )
 
             csv.each { row ->
                 if (options.hideEmptyResults) {
@@ -358,13 +363,19 @@ class DetailsExportManager {
             result = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
         }
         else if (export.KEY == PackageExport.KEY) {
-            result = de.laser.Package.executeQuery('select p from Package p where p.id in (:idList) order by p.sortname, p.name', [idList: idList])
+            result = de.laser.wekb.Package.executeQuery('select p from Package p where p.id in (:idList) order by p.sortname, p.name', [idList: idList])
         }
         else if (export.KEY == PlatformExport.KEY) {
             result = Platform.executeQuery('select p from Platform p where p.id in (:idList) order by p.name', [idList: idList])
         }
+        else if (export.KEY == ProviderExport.KEY) {
+            result = Provider.executeQuery('select p from Provider p where p.id in (:idList) order by p.name', [idList: idList])
+        }
         else if (export.KEY == SubscriptionExport.KEY) {
             result = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
+        }
+        else if (export.KEY == VendorExport.KEY) {
+            result = Vendor.executeQuery('select v from Vendor v where v.id in (:idList) order by v.name', [idList: idList])
         }
 
         result

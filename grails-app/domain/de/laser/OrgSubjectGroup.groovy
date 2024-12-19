@@ -33,8 +33,8 @@ class OrgSubjectGroup implements Comparable {
     }
 
     /**
-     * Compares two subject group assignals on the base of their internationalised value
-     * @param o the other assignal to compare with
+     * Compares two subject group assignments on the base of their internationalised value
+     * @param o the other assignment to compare with
      * @return the comparison result (-1, 0, 1)
      * @see I10nTranslation
      */

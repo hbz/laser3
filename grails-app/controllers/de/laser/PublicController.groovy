@@ -1,12 +1,15 @@
 package de.laser
 
-
+import de.laser.api.v0.ApiManager
 import de.laser.properties.SubscriptionProperty
 import de.laser.config.ConfigMapper
 import de.laser.storage.PropertyStore
 import de.laser.storage.RDStore
 import de.laser.utils.AppUtils
+import de.laser.wekb.Package
+import de.laser.wekb.TitleInstancePackagePlatform
 import grails.converters.JSON
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugins.mail.MailService
 
@@ -19,20 +22,31 @@ class PublicController {
     EscapeService escapeService
     GenericOIDService genericOIDService
     MailService mailService
+    SpringSecurityService springSecurityService
+
+    /**
+     * Displays the landing page
+     */
+    @Secured(['permitAll'])
+    def index() {
+    }
 
    /**
     * Displays the robots.txt preventing crawler access to instances other than the productive one
     */
     @Secured(['permitAll'])
     def robots() {
-        if (AppUtils.getCurrentServer() != AppUtils.PROD) {
-            def text = "User-agent: *\n" +
-                    "Disallow: / \n"
+        String text = "User-agent: *\n"
 
-            render(text: text, contentType: "text/plain", encoding: "UTF-8")
-        } else {
-            render(status: 404, text: 'Failed to load robots.txt')
+        if (AppUtils.getCurrentServer() == AppUtils.PROD) {
+            text += "Disallow: /tipp/ \n"                                   // TODO TMP
+            text += "Disallow: /public/gascoDetailsIssueEntitlements/ \n"   // TODO TMP
+            text += "Disallow: /gasco/details/ \n"
         }
+        else {
+            text += "Disallow: / \n"
+        }
+        render(text: text, contentType: "text/plain", encoding: "UTF-8")
     }
 
     /**
@@ -77,13 +91,6 @@ class PublicController {
     }
 
     /**
-     * Displays the landing page
-     */
-    @Secured(['permitAll'])
-    def index() {
-    }
-
-    /**
      * Test page for check compatibility
      */
     @Secured(['permitAll'])
@@ -102,6 +109,8 @@ class PublicController {
     def gasco() {
         Map<String, Object> result = [:]
 
+      try {
+
         result.allConsortia = Org.executeQuery(
                 """select o from Org o, OrgSetting os_gs, OrgSetting os_ct where 
                         os_gs.org = o and os_gs.key = 'GASCO_ENTRY' and os_gs.rdValue.value = 'Yes' and 
@@ -110,13 +119,11 @@ class PublicController {
                         order by lower(o.name)"""
         )
 
-
         if (! params.subKinds && ! params.consortia && ! params.q) {
             // init filter with checkboxes checked
             result.initQuery = 'true'
         }
         else {
-
             String q = params.q?.trim()
             Map<String, Object> queryParams = [:]
 
@@ -144,9 +151,7 @@ class PublicController {
                 query += "    ( genfunc_filter_matcher(s.name, :q) = true  "
 
                 query += " or exists ("
-                query += "    select ogr from s.orgRelations as ogr where ("
-                query += "          genfunc_filter_matcher(ogr.org.name, :q) = true or genfunc_filter_matcher(ogr.org.sortname, :q) = true "
-                query += "      ) and ogr.roleType.value = 'Provider'"
+                query += "    select pvr from s.providerRelations as pvr where genfunc_filter_matcher(pvr.provider.name, :q) = true or genfunc_filter_matcher(pvr.provider.sortname, :q) = true "
                 query += "    )"
                 query += " ))"
 
@@ -182,6 +187,11 @@ class PublicController {
             result.subscriptionsCount = result.subscriptions.size()
         }
 
+      } catch (Exception e) {
+          log.warn 'gasco: exception caused by ' + request.getRemoteAddr()
+          throw e
+      }
+
         result
     }
 
@@ -190,13 +200,18 @@ class PublicController {
      * @see IssueEntitlement
      */
     @Secured(['permitAll'])
-    def gascoDetailsIssueEntitlements() {
-        Map<String, Object> result = [:]
+    def gascoDetails() {
+        Map<String, Object> result = [
+                isPublic_gascoDetails : ! springSecurityService.isLoggedIn()
+        ]
 
         result.issueEntitlements = []
 
+        result.max    = params.max    ? Integer.parseInt(params.max.toString()) : 25
+        result.offset = params.offset ? Integer.parseInt(params.offset.toString()) : 0
+
         result.idnsPreset = IdentifierNamespace.findAll {
-            ns in ['eissn', 'issn', 'zdb', 'ezb']
+            ns in ['doi', 'eissn', 'issn', 'zdb', 'ezb', 'eisbn', 'isbn', 'title_id'] && nsType == TitleInstancePackagePlatform.class.name
         }
 
         if (params.id) {
@@ -208,11 +223,11 @@ class PublicController {
             if (scp) {
                 result.subscription = sub
 
-                String base_query = " FROM IssueEntitlement as ie WHERE ie.subscription = :sub and (ie.status.value != 'Deleted' and ie.status.value != 'Retired')"+
-                        " and exists (SELECT tipp FROM TitleInstancePackagePlatform as tipp WHERE ie.tipp = tipp and tipp.pkg = :pkg )"
-                Map<String, Object> queryParams = [sub: sub, pkg: pkg]
+                String base_query = " FROM IssueEntitlement as ie WHERE ie.subscription = :sub and (ie.status = :current or ie.status = :expected)"+
+                        " and ie.tipp.pkg = :pkg "
+                Map<String, Object> queryParams = [sub: sub, pkg: pkg, current: RDStore.TIPP_STATUS_CURRENT, expected: RDStore.TIPP_STATUS_EXPECTED]
 
-                result.issueEntitlementsCount = IssueEntitlement.executeQuery("select ie.id " + base_query, queryParams).size()
+                result.issueEntitlementsCount = IssueEntitlement.executeQuery("select count(*) " + base_query, queryParams)[0]
 
                 String query = "SELECT ie " + base_query
 
@@ -230,7 +245,7 @@ class PublicController {
                         " WHERE ident.tipp = ie.tipp AND ident.value LIKE :idv "
 
                     if (params.idns) {
-                        query += " AND io.identifier.ns = :idns "
+                        query += " AND ident.ns = :idns "
 
                         queryParams.put('idns', IdentifierNamespace.get(params.idns))
                     }
@@ -238,8 +253,10 @@ class PublicController {
 
                     queryParams.put('idv', '%' + idv.toLowerCase() + '%')
                 }
-                query += " order by LOWER(tipp.sortname)"
-                result.issueEntitlements = IssueEntitlement.executeQuery(query, queryParams)
+                query += " order by LOWER(ie.tipp.sortname)"
+
+                result.issueEntitlements = IssueEntitlement.executeQuery(query, queryParams, [max: result.max, offset: result.offset])
+                result.issueEntitlementsFilterCount = IssueEntitlement.executeQuery("select count(*) " + base_query, queryParams)[0]
             }
             else {
                 redirect controller: 'public', action: 'gasco'
@@ -256,7 +273,7 @@ class PublicController {
      * @see Org#region
      */
     @Secured(['permitAll'])
-    def gascoFlyout() {
+    def gascoJson() {
         Map<String, Object> result = [
             title: '?',
             data: []
@@ -291,5 +308,79 @@ class PublicController {
             }
         }
         render result as JSON
+    }
+
+    /**
+     * @return the frontend view with sample area for frontend developing and showcase
+     */
+    @Secured(['permitAll'])
+    def licensingModel() {
+        Map<String, Object> result = [:]
+        result.mappingColsBasic = ["asService", "accessRights", "community", "wekb"]
+        result.mappingColsPro = ["management", "organisation", "reporting", "api"]
+        result
+    }
+
+    @Secured(['permitAll'])
+    def help() {
+    }
+
+    @Secured(['permitAll'])
+    def api() {
+        Map<String, Object> result = [
+                history : [ 'legacy', '3.4' ], // todo
+                version   : ApiManager.VERSION
+        ]
+        if (params.id) {
+            result.version = params.id.toString()
+        }
+        result
+    }
+
+    @Secured(['permitAll'])
+    def manual() {
+        Map<String, Object> result = [
+                content : [
+                        'various'                   : ['Allgemein', 'General'],
+                        'licenceInformationSheet'   : ['Lizenzinformationsblatt', 'Licence Information Sheet'],
+                        'financeImport'             : ['Kosten hochladen', 'Upload Cost Items']
+                ], // todo
+                topic   : 'various'
+        ]
+        if (params.id) {
+            result.topic = params.id.toString()
+        }
+        result
+    }
+
+    @Secured(['permitAll'])
+    def faq() {
+        Map<String, Object> result = [
+                content : [
+                        'various'               : ['Allgemein', 'General'],
+                        'notifications'         : ['Benachrichtigungen', 'Notifications'],
+                        'propertyDefinitions'   : ['Merkmale', 'Properties'],
+                        'userManagement'        : ['Benutzer-Accounts', 'User accounts'],
+                ], // todo
+                topic   : 'various'
+        ]
+        if (params.id) {
+            result.topic = params.id.toString()
+        }
+        result
+    }
+
+    @Secured(['permitAll'])
+    def releases() {
+        Map<String, Object> result = [
+                history : ['3.2', '3.3', '3.4'] // todo
+        ]
+
+        String[] iap = AppUtils.getMeta('info.app.version').split('\\.')
+        if (params.id) {
+            iap = params.id.toString().split('\\.')
+        }
+        result.version = (iap.length >= 2) ? (iap[0] + '.' + iap[1]) : 'failed'
+        result
     }
 }

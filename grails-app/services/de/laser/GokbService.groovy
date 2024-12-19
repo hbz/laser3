@@ -5,7 +5,11 @@ import de.laser.http.BasicHttpClient
 import de.laser.remote.ApiSource
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
+import io.micronaut.http.client.DefaultHttpClientConfiguration
+import io.micronaut.http.client.HttpClientConfiguration
 import org.springframework.context.MessageSource
+
+import java.time.Duration
 
 /**
  * Is actually a we:kb service. It contains methods to communicate with the we:kb ElasticSearch index
@@ -25,20 +29,22 @@ class GokbService {
      */
     Map doQuery(Map ctrlResult, Map params, Map queryParams) {
         Map result = [:]
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         queryParams.putAll(setupPaginationParams(ctrlResult, params))
 
         Set records = []
 
-        Map queryResult = executeQuery(apiSource.baseUrl + apiSource.fixToken + '/searchApi', queryParams)
-        if (queryResult.warning && queryResult.warning.result) {
-            records.addAll(queryResult.warning.result)
-            result.recordsCount = queryResult.warning.result_count_total
+        Map queryResult = executeQuery(ApiSource.getCurrent().getSearchApiURL(), queryParams)
+        if (queryResult && queryResult.result) {
+            records.addAll(queryResult.result)
+            result.recordsCount = queryResult.result_count_total
             result.records = records
         }
         else {
-            if(queryResult.warning.code == "error")
-                result.error = messageSource.getMessage('wekb.error.500', [queryResult.warning.message] as Object[], LocaleUtils.getCurrentLocale())
+            if(queryResult) {
+                if(queryResult.code == "error")
+                    result.error = messageSource.getMessage('wekb.error.500', [queryResult.message] as Object[], LocaleUtils.getCurrentLocale())
+            }
+            else result.error = messageSource.getMessage('wekb.error.404', null, LocaleUtils.getCurrentLocale())
             result.recordsCount = 0
             result.records = records
         }
@@ -56,7 +62,12 @@ class GokbService {
         String order = params.order ?: "asc"
         String max = params.max ?: ctrlResult.max
         String offset = (params.offset != null) ? params.offset : ctrlResult.offset
-        [sort: sort, order: order, max: max, offset: offset]
+        Map<String, String> result = [sort: sort, order: order]
+        if(max)
+            result.max = max
+        if(offset)
+            result.offset = offset
+        result
     }
 
     /**
@@ -64,7 +75,7 @@ class GokbService {
      * the index directly but an API endpoint takes the query and generates more complex ElasticSearch
      * queries in order to limit external index access
      * @param url the query string to pass to the we:kb ElasticSearch API
-     * @return the result map (access either as result.warning or result.info), reflecting the ElasticSearch response
+     * @return the result map, reflecting the ElasticSearch response
      */
     Map executeQuery(String baseUrl, Map queryParams){
         Map result = [:]
@@ -74,13 +85,15 @@ class GokbService {
             //url = url.contains('?') ? url.replaceAll(" ", "+")+"&username=${ConfigMapper.getWekbApiUsername()}&password=${ConfigMapper.getWekbApiPassword()}" : url.replaceAll(" ", "+")+"?username=${ConfigMapper.getWekbApiUsername()}&password=${ConfigMapper.getWekbApiPassword()}"
             queryParams.username = ConfigMapper.getWekbApiUsername()
             queryParams.password = ConfigMapper.getWekbApiPassword()
-            http = new BasicHttpClient( baseUrl )
+            HttpClientConfiguration config = new DefaultHttpClientConfiguration()
+            config.readTimeout = Duration.ofMinutes(5)
+            http = new BasicHttpClient( baseUrl, config )
 
             Closure success = { resp, json ->
                 log.debug ("server response: ${resp.getStatus().getReason()}, server: ${resp.getHeaders().get('Server')}, content length: ${resp.getHeaders().get('Content-Length')}")
-
+                result = json
 //                if (resp.getStatus().getCode() < 400) {
-                    result = ['warning': json]      // warning <-> info ?
+//                    result = ['warning': json]      // warning <-> info ?
 //                } else {
 //                    result = ['info': json]         // ???
 //                }

@@ -5,6 +5,8 @@ import de.laser.config.ConfigMapper
 import de.laser.properties.LicenseProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.storage.RDStore
+import de.laser.wekb.ProviderRole
+import de.laser.wekb.VendorRole
 import grails.gorm.transactions.Transactional
 
 import java.nio.file.Files
@@ -103,7 +105,6 @@ class InstitutionsService {
                         new DocContext(
                                 owner: dctx.owner,
                                 license: licenseInstance,
-                                domain: dctx.domain,
                                 status: dctx.status,
                                 sharedFrom: dctx
                         ).save()
@@ -131,7 +132,6 @@ class InstitutionsService {
                             title: dctx.owner.title,
                             filename: dctx.owner.filename,
                             mimeType: dctx.owner.mimeType,
-                            migrated: dctx.owner.migrated,
                             server: dctx.owner.server
                     ).save()
 
@@ -144,26 +144,28 @@ class InstitutionsService {
                     new DocContext(
                             owner: clonedContents,
                             license: licenseInstance,
-                            domain: dctx.domain,
                             status: dctx.status
                     ).save()
                 }
             }
 
-            RefdataValue licensee_role = RDStore.OR_LICENSEE
-            RefdataValue lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM
-
             log.debug("adding org link to new license")
 
             if (contextService.getOrg().isCustomerType_Consortium()) {
-                new OrgRole(lic: licenseInstance, org: org, roleType: lic_cons_role).save()
+                new OrgRole(lic: licenseInstance, org: org, roleType: RDStore.OR_LICENSING_CONSORTIUM).save()
             }
             else {
-                new OrgRole(lic: licenseInstance, org: org, roleType: licensee_role).save()
+                new OrgRole(lic: licenseInstance, org: org, roleType: RDStore.OR_LICENSEE).save()
             }
-            OrgRole.findAllByLicAndRoleTypeAndIsShared(base,RDStore.OR_LICENSOR,true).each { OrgRole licRole ->
+            ProviderRole.findAllByLicenseAndIsShared(base, true).each { ProviderRole providerRole ->
+                new ProviderRole(license: licenseInstance, provider: providerRole.provider, isShared: true).save()
+            }
+            VendorRole.findAllByLicenseAndIsShared(base, true).each { VendorRole vendorRole ->
+                new VendorRole(license: licenseInstance, vendor: vendorRole.vendor, isShared: true).save()
+            }
+            /*OrgRole.findAllByLicAndRoleTypeAndIsShared(base,RDStore.OR_LICENSOR,true).each { OrgRole licRole ->
                 new OrgRole(lic: licenseInstance, org: licRole.org, roleType: RDStore.OR_LICENSOR, isShared: true).save()
-            }
+            }*/
 
             return licenseInstance
         }

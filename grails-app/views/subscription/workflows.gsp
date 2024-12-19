@@ -1,5 +1,5 @@
 <%@ page import="de.laser.storage.RDStore;" %>
-<laser:htmlStart message="workflow.plural" serviceInjection="true" />
+<laser:htmlStart message="workflow.plural" />
 
     <laser:render template="breadcrumb" model="${[ subscription:subscription, params:params ]}"/>
 
@@ -7,7 +7,7 @@
         <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
     </ui:controlButtons>
 
-    <ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" visibleOrgRelations="${visibleOrgRelations}">
+    <ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" visibleProviders="${providerRoles}">
         <laser:render template="iconSubscriptionIsChild"/>
         <ui:xEditable owner="${subscription}" field="name" />
     </ui:h1HeaderWithIcon>

@@ -1,13 +1,18 @@
-<%@ page import="de.laser.RefdataValue; de.laser.License" %>
-<g:set var="auditConfigProvidersAgencies" value="${parentSuccessorSubscription.orgRelations?.findAll {it.isShared}}" />
+<%@ page import="de.laser.wekb.ProviderRole; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.License; de.laser.wekb.VendorRole" %>
+<g:set var="auditConfigProviders" value="${ProviderRole.findAllBySubscriptionAndIsShared(parentSuccessorSubscription, true)}" />
+<g:set var="auditConfigVendors" value="${VendorRole.findAllBySubscriptionAndIsShared(parentSuccessorSubscription, true)}" />
 
 <ui:modal id="transferParticipantsModal" message="surveyInfo.transferParticipants"
              msgSave="${message(code: 'surveyInfo.transferParticipants.button')}">
 
+    <h1 class="ui header">
+        ${parentSuccessorSubscription.dropdownNamingConvention()}
+    </h1>
+
     <h3 class="ui header"><g:message code="surveyInfo.transferParticipants.option"/>:</h3>
 
     <g:form class="ui form"
-            url="[controller: 'survey', action: 'processTransferParticipantsByRenewal', params: [id: params.id, surveyConfigID: surveyConfig.id]]">
+            url="[controller: 'survey', action: 'processTransferParticipantsByRenewal', params: [id: params.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id]]">
         <div class="field">
             <g:set var="properties" value="${de.laser.AuditConfig.getConfigs(parentSuccessorSubscription)}"></g:set>
             <g:if test="${properties}">
@@ -37,17 +42,27 @@
                 <g:message code="copyElementsIntoObject.noAuditConfig"/>
             </g:else>
 
-            <g:if test="${auditConfigProvidersAgencies}">
+            <g:if test="${auditConfigProviders}">
                 <label><g:message code="property.share.tooltip.on" />:</label>
                 <div class="ui bulleted list">
-                    <g:each in="${auditConfigProvidersAgencies}" var="role" >
+                    <g:each in="${auditConfigProviders}" var="role" >
                         <div class="item">
-                            <strong> ${role.roleType.getI10n("value")}</strong>:
-                        ${role.org.name}
+                            <strong> <g:message code="provider.label"/></strong>:
+                        ${role.provider.name}
                         </div>
                     </g:each>
                 </div>
-
+            </g:if>
+            <g:if test="${auditConfigVendors}">
+                <label><g:message code="property.share.tooltip.on" />:</label>
+                <div class="ui bulleted list">
+                    <g:each in="${auditConfigVendors}" var="role" >
+                        <div class="item">
+                            <strong> <g:message code="vendor.label"/></strong>:
+                        ${role.vendor.name}
+                        </div>
+                    </g:each>
+                </div>
             </g:if>
 
         </div>
@@ -85,21 +100,20 @@
                 </g:else>
             </div>--}%
 
-            <g:if test="${!auditConfigProvidersAgencies}">
+            <g:if test="${!auditConfigProviders}">
                 <div class="field">
                     <g:set var="providers" value="${parentSuccessorSubscription.getProviders()?.sort { it.name }}"/>
-                    <g:set var="agencies" value="${parentSuccessorSubscription.getAgencies()?.sort { it.name }}"/>
 
-                    <g:if test="${(providers || agencies)}">
+                    <g:if test="${providers}">
                         <label><g:message code="surveyInfo.transferParticipants.moreOption"/></label>
 
                         <div class="ui checkbox">
-                            <input type="checkbox" id="transferProviderAgency" name="transferProviderAgency" checked>
-                            <label for="transferProviderAgency"><g:message
-                                    code="surveyInfo.transferParticipants.transferProviderAgency"
+                            <input type="checkbox" id="transferProvider" name="transferProvider" checked>
+                            <label for="transferProvider"><g:message
+                                    code="surveyInfo.transferParticipants.transferAllProviders"
                                     args="${superOrgType}"/>
-                            <g:set var="providerAgency" value="${providers + agencies}"/>
-                            (${providerAgency ? providerAgency.name.join(', ') : ''})
+                            <g:set var="provider" value="${providers}"/>
+                            (${provider ? provider.name.join(', ') : ''})
                             </label>
                         </div>
 
@@ -115,22 +129,47 @@
                             </g:if>
                         </div>
 
+                    </g:if>
+                    <g:else>
+                        <label><g:message code="provider.plural"/>:</label>
+                        <g:message code="surveyInfo.transferParticipants.noTransferProvider" args="${superOrgType}"/>
+                    </g:else>
+                </div>
+            </g:if>
+
+            <g:if test="${!auditConfigVendors}">
+                <div class="field">
+                    <g:set var="vendors" value="${parentSuccessorSubscription.getVendors()?.sort { it.name }}"/>
+
+                    <g:if test="${vendors}">
+                        <label><g:message code="surveyInfo.transferParticipants.moreOption"/></label>
+
+                        <div class="ui checkbox">
+                            <input type="checkbox" id="transferVendor" name="transferVendor" checked>
+                            <label for="transferVendor"><g:message
+                                    code="surveyInfo.transferParticipants.transferAllVendors"
+                                    args="${superOrgType}"/>
+                            <g:set var="vendor" value="${vendors}"/>
+                            (${vendor ? vendor.name.join(', ') : ''})
+                            </label>
+                        </div>
+
                         <div class="field">
-                            <g:set var="agencies"
-                                   value="${parentSuccessorSubscription.getAgencies()?.sort { it.name }}"/>
-                            <g:if test="${agencies}">
-                                <label><g:message code="surveyInfo.transferParticipants.transferAgency"
+                            <g:set var="vendors"
+                                   value="${parentSuccessorSubscription.getVendors()?.sort { it.name }}"/>
+                            <g:if test="${vendors}">
+                                <label><g:message code="surveyInfo.transferParticipants.transferVendor"
                                                   args="${superOrgType}"/>:</label>
                                 <g:select class="ui search multiple dropdown"
                                           optionKey="id" optionValue="name"
-                                          from="${agencies}" name="agenciesSelection" value=""
-                                          noSelection='["": "${message(code: 'surveyInfo.transferParticipants.noSelectionTransferAgency')}"]'/>
+                                          from="${vendors}" name="vendorsSelection" value=""
+                                          noSelection='["": "${message(code: 'surveyInfo.transferParticipants.noSelectionTransferVendor')}"]'/>
                             </g:if>
                         </div>
                     </g:if>
                     <g:else>
-                        <g:message code="surveyInfo.transferParticipants.noTransferProviderAgency"
-                                   args="${superOrgType}"/>
+                        <label><g:message code="vendor.plural"/>:</label>
+                        <g:message code="surveyInfo.transferParticipants.noTransferVendor" args="${superOrgType}"/>
                     </g:else>
                 </div>
             </g:if>
@@ -149,8 +188,8 @@
                         <input class="hidden" type="radio" id="generateSlavedLics1" name="generateSlavedLics" value="all" checked="checked">
                         <label for="generateSlavedLics1">${message(code: 'myinst.separate_lics_all')}</label>
                     </div>
-                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'myinst.separate_lics_all.expl')}">
-                        <i class="question circle icon la-popup"></i>
+                    <span class="la-long-tooltip la-popup-tooltip" data-content="${message(code:'myinst.separate_lics_all.expl')}">
+                        <i class="${Icon.TOOLTIP.HELP} la-popup"></i>
                     </span>
                     <br />
                     <div class="ui radio checkbox">

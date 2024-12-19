@@ -1,7 +1,6 @@
 package de.laser
 
 import de.laser.remote.FTControl
-import de.laser.storage.RDConstants
 import de.laser.properties.LicenseProperty
 import de.laser.properties.SubscriptionProperty
 import de.laser.survey.SurveyConfig
@@ -12,6 +11,13 @@ import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.interfaces.CalculatedType
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
+import de.laser.wekb.InvoicingVendor
+import de.laser.wekb.Package
+import de.laser.wekb.PackageVendor
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
+import de.laser.wekb.TitleInstancePackagePlatform
+import de.laser.wekb.Vendor
 import grails.converters.JSON
 import org.apache.commons.lang3.ClassUtils
 import org.elasticsearch.action.bulk.BulkItemResponse
@@ -137,9 +143,11 @@ class DataloadService {
      * Currently supported by this implementation are:
      * <ul>
      *     <li>{@link Org}</li>
-     *     <li>{@link TitleInstancePackagePlatform}</li>
-     *     <li>{@link de.laser.Package}</li>
-     *     <li>{@link Platform}</li>
+     *     <li>{@link de.laser.wekb.Provider}</li>
+     *     <li>{@link de.laser.wekb.Vendor}</li>
+     *     <li>{@link de.laser.wekb.TitleInstancePackagePlatform}</li>
+     *     <li>{@link de.laser.wekb.Package}</li>
+     *     <li>{@link de.laser.wekb.Platform}</li>
      *     <li>{@link License}</li>
      *     <li>{@link Subscription}</li>
      *     <li>{@link SurveyConfig}</li>
@@ -172,6 +180,10 @@ class DataloadService {
                 result.guid = org.globalUID ?: ''
 
                 result.name = org.name
+                result.altnames = []
+                org.altnames.each { AlternativeName altname ->
+                    result.altnames << altname.name
+                }
 
                 result.status = org.status?.getMapForES()
                 result.visible = 'Public'
@@ -179,14 +191,7 @@ class DataloadService {
 
                 result.sortname = org.sortname
 
-                result.type = []
-                org.orgType?.each { type ->
-                    try {
-                        result.type.add(type.getMapForES())
-                    } catch (Exception e) {
-                        log.error( e.toString() )
-                    }
-                }
+                result.type = org.getOrgType()?.getMapForES() // TODO: ERMS-6009
 
                 result.identifiers = []
                 org.ids?.each { ident ->
@@ -210,6 +215,92 @@ class DataloadService {
 
                 result.dateCreated = org.dateCreated
                 result.lastUpdated = org.lastUpdated
+
+                result
+            }
+        }
+
+        if (!domainClass || domainClass == Vendor.class) {
+
+            _updateES(Vendor.class, BULK_SIZE_MEDIUM) { Vendor vendor ->
+                Map result = [:]
+
+                result._id = vendor.globalUID
+                if (!result._id) {
+                    return result
+                }
+
+                result.priority = 30
+                result.dbId = vendor.id
+
+                result.gokbId = vendor.gokbId
+                result.guid = vendor.globalUID ?: ''
+
+                result.name = vendor.name
+                result.altnames = []
+                vendor.altnames.each { AlternativeName altname ->
+                    result.altnames << altname.name
+                }
+
+                result.status = vendor.status.getMapForES()
+                result.rectype = vendor.getClass().getSimpleName()
+
+                result.sortname = vendor.sortname
+
+                result.packages = []
+                vendor.packages.each { PackageVendor pv ->
+                    try {
+                        result.packages.add([dbId: pv.pkg.id, name: pv.pkg.name])
+                    } catch (Exception e) {
+                        log.error( e.toString() )
+                    }
+                }
+
+                result.dateCreated = vendor.dateCreated
+                result.lastUpdated = vendor.lastUpdated
+
+                result
+            }
+        }
+
+        if (!domainClass || domainClass == Provider.class) {
+
+            _updateES(Provider.class, BULK_SIZE_MEDIUM) { Provider provider ->
+                Map result = [:]
+
+                result._id = provider.globalUID
+                if (!result._id) {
+                    return result
+                }
+
+                result.priority = 30
+                result.dbId = provider.id
+
+                result.gokbId = provider.gokbId
+                result.guid = provider.globalUID ?: ''
+
+                result.name = provider.name
+                result.altnames = []
+                provider.altnames.each { AlternativeName altname ->
+                    result.altnames << altname.name
+                }
+
+                result.status = provider.status.getMapForES()
+                result.rectype = provider.getClass().getSimpleName()
+
+                result.sortname = provider.sortname
+
+                result.packages = []
+                provider.invoicingVendors.each { InvoicingVendor iv ->
+                    try {
+                        result.vendors.add([dbId: iv.vendor.id, name: iv.vendor.name])
+                    } catch (Exception e) {
+                        log.error( e.toString() )
+                    }
+                }
+
+                result.dateCreated = provider.dateCreated
+                result.lastUpdated = provider.lastUpdated
 
                 result
             }
@@ -241,6 +332,9 @@ class DataloadService {
                     result.gokbId = tipp.gokbId
                     result.guid = tipp.globalUID ?: ''
                     result.name = tipp.name
+                    tipp.altnames.each { AlternativeName altname ->
+                        result.altnames << altname.name
+                    }
                     result.status = tipp.status?.getMapForES()
                     result.visible = 'Public'
                     result.rectype = tipp.getClass().getSimpleName()
@@ -248,8 +342,10 @@ class DataloadService {
                     result.sortname = tipp.sortname
 
                     result.medium = tipp.medium?.getMapForES()
-                    RefdataValue titleType = RefdataValue.getByValueAndCategory(tipp.titleType, RDConstants.TITLE_MEDIUM)
-                    result.type = titleType ? titleType.getMapForES() : []
+                    result.type = ['id':    null,
+                                   'value':    tipp.titleType,
+                                   'value_de': tipp.titleType,
+                                   'value_en': tipp.titleType]
 
                     List<Org> publishers = tipp.getPublishers()
                     result.publishers = []
@@ -296,14 +392,15 @@ class DataloadService {
                 result.gokbId = pkg.gokbId
                 result.guid = pkg.globalUID ?: ''
                 result.name = "${pkg.name}"
+                pkg.altnames.each { AlternativeName altname ->
+                    result.altnames << altname.name
+                }
                 result.status = pkg.packageStatus?.getMapForES()
                 result.visible = 'Public'
                 result.rectype = pkg.getClass().getSimpleName()
 
-                //result.consortiaID = pkg.getConsortia()?.id
-                //result.consortiaName = pkg.getConsortia()?.name
-                result.providerId = pkg.getContentProvider()?.id
-                result.providerName = pkg.getContentProvider()?.name
+                result.providerId = pkg.provider?.id
+                result.providerName = pkg.provider?.name
 
                 result.isPublic = (pkg?.isPublic) ? 'Yes' : 'No'
 
@@ -349,13 +446,16 @@ class DataloadService {
                 result.gokbId = plat.gokbId
                 result.guid = plat.globalUID ?: ''
                 result.name = plat.name
+                plat.altnames.each { AlternativeName altname ->
+                    result.altnames << altname.name
+                }
                 result.status = plat.status?.getMapForES()
                 result.visible = 'Public'
                 result.rectype = plat.getClass().getSimpleName()
 
                 result.primaryUrl = plat.primaryUrl
-                result.orgId = plat.org?.id
-                result.orgName = plat.org?.name
+                result.providerId = plat.provider?.id
+                result.providerName = plat.provider?.name
 
                 //result.titleCountCurrent = plat.getCurrentTipps().size() ?: 0
                 result.titleCountCurrent = TitleInstancePackagePlatform.executeQuery(
@@ -384,6 +484,10 @@ class DataloadService {
                 result.dbId = lic.id
                 result.guid = lic.globalUID ?: ''
                 result.name = lic.reference
+                result.altnames = []
+                lic.altnames.each { AlternativeName altname ->
+                    result.altnames << altname.name
+                }
                 result.visible = 'Private'
                 result.rectype = lic.getClass().getSimpleName()
 
@@ -454,29 +558,30 @@ class DataloadService {
                 result.dbId = sub.id
                 result.guid = sub.globalUID ?: ''
                 result.name = sub.name
+                result.altnames = []
+                sub.altnames.each { AlternativeName altname ->
+                    result.altnames << altname.name
+                }
                 result.status = sub.status?.getMapForES()
                 result.visible = 'Private'
                 result.rectype = sub.getClass().getSimpleName()
 
                 switch (sub._getCalculatedType()) {
                     case CalculatedType.TYPE_CONSORTIAL:
-                        result.availableToOrgs = sub.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value] }?.org?.id
+                        result.availableToOrgs = sub.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIUM.value] }?.org?.id
                         result.membersCount = Subscription.findAllByInstanceOf(sub).size() ?: 0
                         break
                     case CalculatedType.TYPE_PARTICIPATION:
                         List orgs = sub.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value] }?.org
                         result.availableToOrgs = orgs?.id
-                        result.consortiaID = sub.getConsortia()?.id
-                        result.consortiaName = sub.getConsortia()?.name
+                        result.consortiaID = sub.getConsortium()?.id
+                        result.consortiaName = sub.getConsortium()?.name
 
                         result.members = []
                         orgs.each { org ->
                             result.members.add([dbId: org.id, name: org.name, sortname: org.sortname])
                         }
                         break
-                        /*              case CalculatedType.TYPE_ADMINISTRATIVE:
-                                  result.availableToOrgs = sub.orgRelations.findAll {it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
-                                  break*/
                     case CalculatedType.TYPE_LOCAL:
                         result.availableToOrgs = sub.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIBER.value] }?.org?.id
                         break
@@ -513,8 +618,8 @@ class DataloadService {
                         // Defensive - it appears that there can be a SP without a package.
                         pgkinfo.pkgname = sp.pkg.name
                         pgkinfo.pkgid = sp.pkg.id
-                        pgkinfo.providerName = sp.pkg.contentProvider?.name
-                        pgkinfo.providerId = sp.pkg.contentProvider?.id
+                        pgkinfo.providerName = sp.pkg.provider?.name
+                        pgkinfo.providerId = sp.pkg.provider?.id
                         result.packages.add(pgkinfo)
                     }
                 }
@@ -646,6 +751,19 @@ class DataloadService {
                     result.objectClassName = task.org.getClass().getSimpleName().toLowerCase()
                 }
 
+                if (task.provider) {
+                    result.objectId = task.provider.id
+                    result.objectName = task.provider.name
+                    result.objectClassName = task.provider.getClass().getSimpleName().toLowerCase()
+                }
+
+                if (task.vendor) {
+                    result.objectId = task.vendor.id
+                    result.objectName = task.vendor.name
+                    result.objectClassName = task.vendor.getClass().getSimpleName().toLowerCase()
+                }
+
+
                 if (task.license) {
                     result.objectId = task.license.id
                     result.objectName = task.license.reference
@@ -699,6 +817,18 @@ class DataloadService {
                     result.objectClassName = docCon.org.getClass().getSimpleName().toLowerCase()
                 }
 
+                if (docCon.provider) {
+                    result.objectId = docCon.provider.id
+                    result.objectName = docCon.provider.name
+                    result.objectClassName = docCon.provider.getClass().getSimpleName().toLowerCase()
+                }
+
+                if (docCon.vendor) {
+                    result.objectId = docCon.vendor.id
+                    result.objectName = docCon.vendor.name
+                    result.objectClassName = docCon.vendor.getClass().getSimpleName().toLowerCase()
+                }
+
                 if (docCon.license) {
                     result.objectId = docCon.license.id
                     result.objectName = docCon.license.reference
@@ -737,7 +867,7 @@ class DataloadService {
 
                 switch (ie.subscription._getCalculatedType()) {
                     case CalculatedType.TYPE_CONSORTIAL:
-                        result.availableToOrgs = ie.subscription.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value] }?.org?.id
+                        result.availableToOrgs = ie.subscription.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIUM.value] }?.org?.id
                         break
                     case CalculatedType.TYPE_PARTICIPATION:
                         result.availableToOrgs = ie.subscription.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value] }?.org?.id
@@ -811,7 +941,7 @@ class DataloadService {
                 if (subProp.isPublic) {
                     switch (subProp.owner._getCalculatedType()) {
                         case CalculatedType.TYPE_CONSORTIAL:
-                            result.availableToOrgs = subProp.owner.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value] }?.org?.id
+                            result.availableToOrgs = subProp.owner.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIUM.value] }?.org?.id
                             break
                         case CalculatedType.TYPE_PARTICIPATION:
                             result.availableToOrgs = subProp.owner.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value] }?.org?.id
@@ -901,8 +1031,9 @@ class DataloadService {
 
     /**
      * Updates the given domain index with the given record generating closure.
-     * This bulk operation is being flushed at every 100 records
+     * This bulk operation is being flushed after a given amount of records
      * @param domainClass the domain class whose index should be updated
+     * @param bulkSize the count of records to be processed in a batch
      * @param recgen_closure the closure to be used for record generation
      * @see ESWrapperService#ES_Indices
      */
@@ -1175,7 +1306,7 @@ class DataloadService {
                         }
                 }
                 else {
-                    log.debug("Element comparison ignored, because ftControl is not active")
+//                    log.debug("Element comparison ignored, because ftControl is not active")
                 }
             }
             finally {

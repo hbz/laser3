@@ -1,11 +1,9 @@
 package de.laser
 
+import de.laser.annotations.FixedFeature_DoNotModify
 import de.laser.auth.Role
-import de.laser.auth.User
+import de.laser.ui.Icon
 import de.laser.storage.RDStore
-import de.laser.titles.BookInstance
-import de.laser.titles.DatabaseInstance
-import de.laser.titles.JournalInstance
 
 class IconTagLib {
 
@@ -18,80 +16,80 @@ class IconTagLib {
     }
 
     def headerTitleIcon = { attrs, body ->
-        String icon = 'la-object'
+        String icon = 'icon la-object'
 
         if (attrs.type) {
         switch (attrs.type.toLowerCase()) {
             case 'addressbook':
-                icon = 'bordered inverted teal address book la-object-extended'
+                icon = Icon.ACP_PUBLIC + ' bordered inverted teal la-object-extended'
                 break
             case 'admin':
-                icon = 'la-object tools'
+                icon = Icon.AUTH.ROLE_ADMIN + ' la-object'
                 break
             case 'affiliation':
                 Role fr = contextService.getUser().formalRole
                 if (fr) {
-                    if (fr.authority == Role.INST_USER)   { icon = 'user bordered inverted grey la-object-extended' }
-                    if (fr.authority == Role.INST_EDITOR) { icon = 'user edit bordered inverted grey la-object-extended' }
-                    if (fr.authority == Role.INST_ADM)    { icon = 'user shield bordered inverted grey la-object-extended' }
+                    if (fr.authority == Role.INST_USER)   { icon = Icon.AUTH.INST_USER      + ' bordered inverted grey la-object-extended' }
+                    if (fr.authority == Role.INST_EDITOR) { icon = Icon.AUTH.INST_EDITOR    + ' bordered inverted grey la-object-extended' }
+                    if (fr.authority == Role.INST_ADM)    { icon = Icon.AUTH.INST_ADM       + ' bordered inverted grey la-object-extended' }
                 } else {
-                    icon = 'user slash bordered inverted grey la-object-extended'
+                    icon = 'icon user slash bordered inverted grey la-object-extended'
                 }
                 break
             case 'database':
-                icon = 'bordered la-object-database'
+                icon = 'icon bordered la-object-database'
                 break
-            case 'datamanager':
-                icon = 'la-object hdd'
-                break
-            case 'ebook':
-                icon = 'bordered la-object-ebook'
+            case [ 'ebook', 'monograph' ]:
+                icon = 'icon bordered la-object-ebook'
                 break
             case 'file':
-                icon = 'bordered inverted blue file alternate la-object-extended'
+                icon = Icon.DOCUMENT + ' bordered inverted blue la-object-extended'
                 break
             case 'finance':
-                icon = 'bordered inverted teal euro sign la-object-extended'
+                icon = Icon.FINANCE + ' bordered inverted teal la-object-extended'
                 break
             case 'help':
-                icon = 'question circle bordered inverted grey la-object-extended'
+                icon = Icon.UI.HELP + ' bordered inverted grey la-object-extended'
                 break
-            case 'journal':
-                icon = 'bordered la-object-journal'
+            case [ 'journal', 'serial' ]:
+                icon = 'icon bordered la-object-journal'
                 break
             case 'gasco':
-                icon = 'bordered inverted grey stream la-object-extended'
+                icon = Icon.GASCO +' bordered inverted grey la-object-extended'
                 break
             case 'marker':
-                icon = 'bordered inverted purple bookmark la-object-extended'
+                icon = Icon.MARKER + ' bordered inverted purple la-object-extended'
+                break
+            case 'package':
+                icon = 'icon bordered la-package la-object-extended'
                 break
             case 'search':
-                icon = 'search'
+                icon = Icon.SYM.SEARCH
                 break
             case 'reporting':
-                icon = 'bordered inverted teal chartline icon la-object-extended'
+                icon = Icon.REPORTING + ' bordered inverted teal la-object-extended'
                 break
             case 'subscription':
-                icon = 'bordered inverted orange clipboard la-object-extended'
+                icon = Icon.SUBSCRIPTION + ' bordered inverted orange la-object-extended'
                 break
             case 'survey':
-                icon = 'bordered inverted pink chart pie la-object-extended'
+                icon = Icon.SURVEY + ' bordered inverted pink la-object-extended'
                 break
             case 'task':
-                icon = 'bordered inverted green calendar check outline la-object-extended'
+                icon = Icon.TASK + ' bordered inverted green la-object-extended'
                 break
             case 'user':
-                icon = 'user bordered inverted grey la-object-extended'
+                icon = Icon.AUTH.ROLE_USER + ' bordered inverted grey la-object-extended'
                 break
             case 'workflow':
-                icon = 'bordered inverted brown tasks la-object-extended'
+                icon = Icon.WORKFLOW + ' bordered inverted brown la-object-extended'
                 break
             case 'yoda':
-                icon = 'la-object key'
+                icon = Icon.AUTH.ROLE_YODA + ' la-object'
                 break
         }
         }
-        out << '<i aria-hidden="true" class="icon ' + icon + '"></i> '
+        out << '<i aria-hidden="true" class="' + icon + '"></i> '
     }
 
     def propertyIcon = { attrs, body ->
@@ -103,13 +101,13 @@ class IconTagLib {
         boolean showToolTipp = attrs.showToolTipp ?: false
         String icon = ''
 
-        if(showToolTipp) {
-            out << '<span class="la-popup-tooltip la-delay" data-content="' + toolTippContent + '" data-position="left center" data-variation="tiny">'
+        if (showToolTipp) {
+            out << '<span class="la-popup-tooltip" data-content="' + toolTippContent + '" data-position="left center" data-variation="tiny">'
         }
 
         switch (attrs.propertyName) {
             case 'status':
-                icon = 'ellipsis vertical'
+                icon = Icon.SYM.STATUS
                 break
             case 'kind':
                 icon = 'image outline'
@@ -121,7 +119,7 @@ class IconTagLib {
                 icon = 'box'
                 break
             case 'isPublicForApi':
-                icon = 'shipping fast'
+                icon = Icon.SYM.IS_PUBLIC
                 break
             case 'hasPerpetualAccess':
                 icon = 'flag outline'
@@ -133,19 +131,19 @@ class IconTagLib {
                 icon = 'pizza slice'
                 break
             case 'startDate':
-                icon = 'calendar alternate outline'
+                icon = Icon.SYM.DATE
                 break
             case 'endDate':
-                icon = 'calendar alternate outline'
+                icon = Icon.SYM.DATE
                 break
             case 'type':
                 icon = 'image outline'
                 break
             case 'manualCancellationDate':
-                icon = 'calendar alternate outline'
+                icon = Icon.SYM.DATE
                 break
             case 'referenceYear':
-                icon = 'calendar alternate outline'
+                icon = Icon.SYM.DATE
                 break
             case 'licenseUrl':
                 icon = 'cloud'
@@ -158,9 +156,9 @@ class IconTagLib {
                 break
         }
 
-        out << '<i aria-hidden="true" class="' + cssClass + ' icon ' + icon + '"></i> '
+        out << '<i aria-hidden="true" class="' + cssClass + ' icon ' + icon + '"></i> ' // TODO erms-5784 doubles 'icon'
 
-        if(showToolTipp) {
+        if (showToolTipp) {
             out << '</span>'
         }
     }
@@ -174,31 +172,32 @@ class IconTagLib {
         String dc = message(code: 'default.title.label')
         String icon = 'question'
 
-        switch (attrs.type) {
-            case [ 'Journal', JournalInstance.class.name ]:
-                dc = message(code: 'spotlight.journaltitle')
-                icon = 'newspaper outline'
-                break
-            case [ 'Database', DatabaseInstance.class.name ]:
-                dc = message(code: 'spotlight.databasetitle')
-                icon = 'database'
-                break
-            case [ 'Book', 'EBook', BookInstance.class.name ]:
-                dc = message(code: 'spotlight.ebooktitle')
-                icon = 'tablet alternate'
-                break
-            case 'Other':
-                dc = message(code: 'spotlight.othertitle')
-                icon = 'film'
-                break
+        if (attrs.type) {
+
+            switch (attrs.type.toLowerCase()) {
+                case ['journal', 'serial']:
+                    dc = attrs.type
+                    icon = 'newspaper outline'
+                    break
+                case ['database']:
+                    dc = attrs.type
+                    icon = 'database'
+                    break
+                case ['book', 'ebook', 'monograph']:
+                    dc = attrs.type
+                    icon = 'tablet alternate'
+                    break
+                case 'other':
+                    dc = attrs.type
+                    icon = 'film'
+                    break
+            }
         }
         if (hideSurroundingMarkup) {
-            out << '<div class="la-inline-flexbox la-popup-tooltip la-delay"'
-        }
-        if ( (hideTooltip) &&  (hideSurroundingMarkup) ){
-            out << ' data-content="' + dc + '" data-position="left center" data-variation="tiny"'
-        }
-        if (hideSurroundingMarkup) {
+            out << '<div class="la-inline-flexbox la-popup-tooltip"'
+            if (hideTooltip){
+                out << ' data-content="' + dc + '" data-position="left center" data-variation="tiny"'
+            }
             out << '>'
         }
         out << '<i aria-hidden="true" class="icon ' + icon + ' la-list-icon"></i>'
@@ -210,16 +209,16 @@ class IconTagLib {
     def contactIcon = { attrs, body ->
 
         String msg = message(code: 'contact.icon.label.contactinfo')
-        String icon = 'icon address book la-list-icon'
+        String icon = Icon.ACP_PUBLIC + ' la-list-icon'
 
         switch (attrs.type) {
             case [ 'E-Mail', 'Mail' ]: // 'Mail' -> Deprecated
                 msg = message(code: 'contact.icon.label.email')
-                icon = 'ui icon envelope outline la-list-icon  la-js-copyTriggerIcon'
+                icon = Icon.SYM.EMAIL + ' la-list-icon la-js-copyTriggerIcon'
                 break
             case 'Fax':
                 msg = message(code: 'contact.icon.label.fax')
-                icon = 'ui icon tty la-list-icon'
+                icon = Icon.SYM.FAX + ' la-list-icon'
                 break
             case 'Phone':
                 msg = message(code: 'contact.icon.label.phone')
@@ -227,23 +226,45 @@ class IconTagLib {
                 break
             case 'Url':
                 msg = message(code: 'contact.icon.label.url')
-                icon = 'icon globe la-list-icon'
+                icon = Icon.SYM.URL + ' la-list-icon'
                 break
         }
 
-        out << '<span class="la-popup-tooltip la-delay" data-content="' + msg + '" data-position="left center" data-variation="tiny">'
+        out << '<span class="la-popup-tooltip" data-content="' + msg + '" data-position="left center" data-variation="tiny">'
         out << '<i aria-hidden="true" class="' + icon + '"></i>'
         out << '</span>'
     }
 
+    // <ui:customerTypeIcon org="${org}" showTooltip />
+
+    def customerTypeIcon = { attrs, body ->
+        if (attrs.org) {
+            Org org = attrs.org as Org
+            Map ctm = org.getCustomerTypeInfo()
+
+            if (ctm.text && ctm.icon) {
+                if (attrs.showTooltip) {
+                    out << '<span class="la-long-tooltip la-popup-tooltip" data-position="top right" data-content="' + ctm.text + '">'
+                    out << '<i class="' + ctm.icon + '"></i>'
+                    out << '</span>'
+                } else {
+                    out << '<span>'
+                    out << '<i class="' + ctm.icon + ' la-list-icon"></i>' + ctm.text
+                    out << '</span>'
+                }
+            }
+        }
+    }
+
+    // <ui:customerTypeProIcon org="${org}" cssClass="${css}" />
+
     def customerTypeProIcon = { attrs, body ->
         if (attrs.org) {
-            if (attrs.org.isCustomerType_Inst_Pro()) {
-//            if (attrs.org.isCustomerType_Pro()) {
-                out << '<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="' + attrs.org.getCustomerTypeI10n() + '">'
+//            if (attrs.org.isCustomerType_Inst_Pro()) {
+            if (attrs.org.isCustomerType_Pro()) {
+                out << '<span class="la-long-tooltip la-popup-tooltip" data-position="bottom center" data-content="' + attrs.org.getCustomerTypeI10n() + '">'
 
-//                String color = attrs.org.isCustomerType_Consortium_Pro() ? 'teal' : 'grey'
-                String color = 'grey'
+                String color = attrs.org.isCustomerType_Consortium() ? 'teal' : 'grey'
                 if (attrs.cssClass) {
                     out << '<i class="icon ' + color + ' trophy ' + attrs.cssClass + '"></i>'
                 } else {
@@ -265,19 +286,19 @@ class IconTagLib {
                 boolean showText = 'true'.equalsIgnoreCase(attrs.showText as String)
 
                 if (showTooltip) {
-                    markup = '<span class="la-popup-tooltip la-delay" data-content="' + message(code: 'template.addDocument.confidentiality') + ': ' + conf + '"'
+                    markup = '<span class="la-popup-tooltip" data-content="' + message(code: 'template.addDocument.confidentiality') + ': ' + conf + '"'
                     markup = markup + '>'
                 }
 
                 switch (doc.confidentiality) {
                     case RDStore.DOC_CONF_PUBLIC:
-                        markup = markup + '<i class="ui icon lock open olive" style="margin-right: 0px"></i> '
+                        markup = markup + '<i class="' + Icon.ATTR.DOCUMENT_CONFIDENTIALITY + ' olive" style="margin-right: 0px"></i> '
                         break;
                     case RDStore.DOC_CONF_INTERNAL:
-                        markup = markup + '<i class="ui icon lock yellow"  style="margin-right: 0px"></i> '
+                        markup = markup + '<i class="' + Icon.ATTR.DOCUMENT_CONFIDENTIALITY + ' yellow" style="margin-right: 0px"></i> '
                         break;
                     case RDStore.DOC_CONF_STRICTLY:
-                        markup = markup + '<i class="ui icon lock orange"  style="margin-right: 0px"></i> '
+                        markup = markup + '<i class="' + Icon.ATTR.DOCUMENT_CONFIDENTIALITY + ' orange" style="margin-right: 0px"></i> '
                         break;
                     default:
                         markup = markup + ''
@@ -291,25 +312,45 @@ class IconTagLib {
         }
     }
 
+    def documentShareConfigIcon = { attrs, body ->
+        if (attrs.docctx) {
+            DocContext docctx = attrs.docctx as DocContext
+
+            if (docctx.shareConf && !(docctx.sharedFrom && docctx.isShared)) {
+                String markup = ''
+
+                switch(docctx.shareConf) {
+                    case RDStore.SHARE_CONF_UPLOADER_ORG:
+                        markup = '<span class="la-popup-tooltip" data-content="' + message(code:'org.docs.table.shareConf') + ': ' + RDStore.SHARE_CONF_UPLOADER_ORG.getI10n('value') + '" style="margin-left:1em"> <i class="icon eye slash blue"></i></span>'
+                        break
+                    case RDStore.SHARE_CONF_UPLOADER_AND_TARGET:
+                        markup = '<span class="la-popup-tooltip" data-content="' + message(code:'org.docs.table.shareConf') + ': ' + RDStore.SHARE_CONF_UPLOADER_AND_TARGET.getI10n('value') + '" style="margin-left:1em"> <i class="icon eye slash red"></i></span>'
+                        break
+                    case RDStore.SHARE_CONF_ALL:
+                        markup = '<span class="la-popup-tooltip" data-content="' + message(code:'org.docs.table.shareConf') + ': ' + RDStore.SHARE_CONF_ALL.getI10n('value') + '" style="margin-left:1em"> <i class="icon eye blue"></i></span>'
+                        break
+                }
+
+                out << markup
+            }
+        }
+    }
+
     def multiYearIcon = { attrs, body ->
         String tt = (attrs.isConsortial && attrs.isConsortial == 'true') ? message(code: 'subscription.isMultiYear.consortial.label') : message(code: 'subscription.isMultiYear.label')
 //        String color = attrs.color ? ' ' + attrs.color : ''
-        String color = attrs.color ? ' grey' : '' // tmp override
+        String color = attrs.color ? 'grey' : '' // tmp override
 
-        out << '<span class="la-long-tooltip la-popup-tooltip la-delay"'
-        out << ' data-position="bottom center" data-content="' + tt +'">'
-        out << '<i class="forward icon' + color + '"></i>'
-//        out << '<i class="double angle right icon' + color + '"></i>'
+        out << '<span class="la-long-tooltip la-popup-tooltip" data-position="bottom center" data-content="' + tt +'">'
+        out << '<i class="' + Icon.ATTR.SUBSCRIPTION_IS_MULTIYEAR + ' ' + color + '"></i>'
         out << '</span>'
     }
-
-    // <ui:myIcon type="wekbchanges" color="optional" />
 
     def markerIcon = { attrs, body ->
         String tooltip = attrs.type ? message(code: 'marker.' + attrs.type ) : message(code: 'marker.label')
 
-        out << '<span class="la-popup-tooltip la-delay" data-content="' + tooltip + '">'
-        out << '<i class="icon ' + (attrs.color ? attrs.color + ' ' : '') + 'bookmark"></i>'
+        out << '<span class="la-popup-tooltip" data-content="' + tooltip + '">'
+        out << '<i class="' + Icon.MARKER + (attrs.color ? ' ' + attrs.color : '') + '"></i>'
         out << '</span>'
     }
 
@@ -318,11 +359,36 @@ class IconTagLib {
     def myXIcon = { attrs, body ->
 
         if (attrs.tooltip) {
-            out << '<span class="la-popup-tooltip la-delay" data-content="' + attrs.tooltip + '">'
+            out << '<span class="la-popup-tooltip" data-content="' + attrs.tooltip + '">'
         } else {
             out << '<span>'
         }
         out << '<i class="icon ' + (attrs.color ? attrs.color + ' ' : '') + 'star"></i>'
         out << '</span>'
+    }
+
+    def usageIcon = { attrs, body ->
+        String tt = message(code: 'default.usage.label')
+        String color = attrs.color ? ' grey' : '' // tmp override
+
+        out << '<span class="la-long-tooltip la-popup-tooltip" data-position="bottom center" data-content="' + tt +'">'
+        out << '<i class="' + Icon.STATS + ' ' + color + '"></i>'
+        out << '</span>'
+    }
+
+    @FixedFeature_DoNotModify
+    def booleanIcon = { attrs, body ->
+        String icon = Icon.SYM.UNKOWN
+
+        if (attrs.value === true) {
+            icon = Icon.SYM.CIRCLE + ' green'
+        }
+        else if(attrs.value === false) {
+            icon = Icon.SYM.CIRCLE + ' red'
+        }
+        else if (attrs.value === null) {
+            icon = Icon.SYM.CIRCLE + ' grey'
+        }
+        out << '<i class="' + icon + '"></i>'
     }
 }

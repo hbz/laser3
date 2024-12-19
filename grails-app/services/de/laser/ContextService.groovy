@@ -38,6 +38,9 @@ class ContextService {
      * @return the institution used for the session (the context org)
      */
     Org getOrg() {
+        return GrailsHibernateUtil.unwrapIfProxy(getUser()?.formalOrg) as Org
+
+        /*
         RequestAttributes ra = RequestContextHolder.currentRequestAttributes()
 
         Org context = ra.getAttribute(RCH_LASER_CONTEXT_ORG, RequestAttributes.SCOPE_REQUEST) as Org
@@ -60,6 +63,7 @@ class ContextService {
             }
         }
         context
+        */
     }
 
     /**
@@ -108,31 +112,49 @@ class ContextService {
         return new SessionCacheWrapper()
     }
 
+    /**
+     * Gets the cache key token for the given user
+     * @return the user's cache key in format [user.id:user.formalOrg.id:user.formalRole.id]
+     */
     String getFormalCacheKeyToken() {
         User user = getUser()
-        '[' + user.id + ':' + user.formalOrg.id + ':' + user.formalRole.id + ']'
+        Role customerType = OrgSetting.executeQuery(
+                'select oss.roleValue from OrgSetting oss where oss.org = :org and oss.key = :key',
+                [org: user.formalOrg, key: OrgSetting.KEYS.CUSTOMER_TYPE]
+        )?.first()
+
+        '[' + user.id + ':' + user.formalRole.id + ':' + user.formalOrg.id + ':' + (customerType ? customerType.id : '#') + ']'
     }
 
     // -- Formal checks @ user.formalOrg
 
     /**
-     * Checks if the context user belongs to an institution with the given customer types or is a superadmin
-     * @param orgPerms the customer types to verify
-     * @return true if the given permissions are granted, false otherwise
-     * @see CustomerTypeService
+     * Shortcut for {@link de.laser.UserService#hasFormalAffiliation(de.laser.Org, java.lang.String)}
+     * with {@link de.laser.ContextService#getUser()}, {@link de.laser.ContextService#getOrg()} and ROLE.INST_USER
      */
-    boolean isInstUser_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN('INST_USER', orgPerms, false)
+    boolean isInstUser(String orgPerms = null) {
+        _hasInstRoleAndPerm(Role.INST_USER, orgPerms, false)
     }
 
     /**
-     * Checks if the context user belongs as an editor to an institution with the given customer types or is a superadmin
-     * @param orgPerms the customer types to verify
-     * @return true if the given permissions are granted, false otherwise
-     * @see CustomerTypeService
+     * Shortcut for {@link de.laser.UserService#hasFormalAffiliation(de.laser.Org, java.lang.String)}
+     * with {@link de.laser.ContextService#getUser()}, {@link de.laser.ContextService#getOrg()} and ROLE.INST_EDITOR
      */
+    boolean isInstEditor(String orgPerms = null) {
+        _hasInstRoleAndPerm(Role.INST_EDITOR, orgPerms, false)
+    }
+
+    /**
+     * Shortcut for {@link de.laser.UserService#hasFormalAffiliation(de.laser.Org, java.lang.String)}
+     * with {@link de.laser.ContextService#getUser()}, {@link de.laser.ContextService#getOrg()} and ROLE.INST_ADM
+     */
+    boolean isInstAdm(String orgPerms = null) {
+        _hasInstRoleAndPerm(Role.INST_ADM, orgPerms, false)
+    }
+
+    @Deprecated
     boolean isInstEditor_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN('INST_EDITOR', orgPerms, false)
+        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_EDITOR, orgPerms, false)
     }
 
     /**
@@ -141,20 +163,44 @@ class ContextService {
      * @return true if the given permissions are granted, false otherwise
      * @see CustomerTypeService
      */
+    @Deprecated
     boolean isInstAdm_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN('INST_ADM', orgPerms, false)
+        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_ADM, orgPerms, false)
     }
 
-    boolean isInstUser_denySupport_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN('INST_USER', orgPerms, true)
+    /**
+     * Shortcut for {@link de.laser.UserService#hasFormalAffiliation(de.laser.Org, java.lang.String)}
+     * with {@link de.laser.ContextService#getUser()}, {@link de.laser.ContextService#getOrg()} and ROLE.INST_USER
+     * <br>
+     * Restriction: {@link de.laser.Org#isCustomerType_Support()} is FALSE
+     */
+    boolean isInstUser_denySupport(String orgPerms = null) {
+        _hasInstRoleAndPerm(Role.INST_USER, orgPerms, true)
     }
 
-    boolean isInstEditor_denySupport_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN('INST_EDITOR', orgPerms, true)
+    /**
+     * Shortcut for {@link de.laser.UserService#hasFormalAffiliation(de.laser.Org, java.lang.String)}
+     * with {@link de.laser.ContextService#getUser()}, {@link de.laser.ContextService#getOrg()} and ROLE.INST_EDITOR
+     * <br>
+     * Restriction: {@link de.laser.Org#isCustomerType_Support()} is FALSE
+     */
+    boolean isInstEditor_denySupport(String orgPerms = null) {
+        _hasInstRoleAndPerm(Role.INST_EDITOR, orgPerms, true)
     }
 
+    /**
+     * Shortcut for {@link de.laser.UserService#hasFormalAffiliation(de.laser.Org, java.lang.String)}
+     * with {@link de.laser.ContextService#getUser()}, {@link de.laser.ContextService#getOrg()} and ROLE.INST_ADM
+     * <br>
+     * Restriction: {@link de.laser.Org#isCustomerType_Support()} is FALSE
+     */
+    boolean isInstAdm_denySupport(String orgPerms = null) {
+        _hasInstRoleAndPerm(Role.INST_ADM, orgPerms, true)
+    }
+
+    @Deprecated
     boolean isInstAdm_denySupport_or_ROLEADMIN(String orgPerms = null) {
-        _hasInstRoleAndPerm_or_ROLEADMIN('INST_ADM', orgPerms, true)
+        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_ADM, orgPerms, true)
     }
 
     // -- private
@@ -171,7 +217,12 @@ class ContextService {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
-        boolean check = userService.hasAffiliation_or_ROLEADMIN(getUser(), getOrg(), instUserRole)
+
+        _hasInstRoleAndPerm(instUserRole, orgPerms, denyCustomerTypeSupport)
+    }
+
+    private boolean _hasInstRoleAndPerm(String instUserRole, String orgPerms, boolean denyCustomerTypeSupport) {
+        boolean check = userService.hasFormalAffiliation(getOrg(), instUserRole)
 
         if (check && denyCustomerTypeSupport) {
             check = !getOrg().isCustomerType_Support()
@@ -185,6 +236,7 @@ class ContextService {
     /**
      * Checks if the context organisation is an institution at all and if it is of the given customer type.
      * If no customer type is being submitted, this check returns true (= substitution call)
+     * Do not use this method directly!
      * @param orgPerms the customer type(s) to check
      * @return true if the context institution has the given customer type or no customer type has been submitted, false otherwise
      * @see OrgSetting
@@ -217,7 +269,7 @@ class ContextService {
      */
     // TODO
     boolean is_ORG_COM_EDITOR_or_ROLEADMIN() {
-        isInstEditor_or_ROLEADMIN() && _hasPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+        _hasInstRoleAndPerm_or_ROLEADMIN(Role.INST_EDITOR, null, false) && _hasPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     }
 
     /**
@@ -226,43 +278,24 @@ class ContextService {
      * @return true if the context organisation is a consortium or an institution looking at its own data, false otherwise
      */
     // TODO
-    boolean is_INST_EDITOR_or_ROLEADMIN_with_PERMS_BASIC(boolean inContextOrg) {
+    boolean is_INST_EDITOR_with_PERMS_BASIC(boolean inContextOrg) {
         boolean check = false
-        if (isInstEditor_or_ROLEADMIN()) {
+        if (isInstEditor()) {
             check = _hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) || (_hasPerm(CustomerTypeService.ORG_INST_BASIC) && inContextOrg)
         }
         check
     }
 
-    /**
-     * Checks if the context organisation is the given consortium type and the context user has the given role at that consortium
-     * @param orgPerms the customer types to check
-     * @param instUserRole the user role type to check
-     * @return true if the context user is a superadmin or if the context user belongs with the given rights to the context organisation and that is a consortium, false otherwise
-     * @see User
-     * @see Org
-     */
-    // TODO
-//    boolean hasPermAsInstRoleAsConsortium_or_ROLEADMIN(String orgPerms, String instUserRole) {
-//        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-//            return true
-//        }
-//        if (getUser() && getOrg() && instUserRole) {
-//            if (getOrg().getAllOrgTypeIds().contains( RDStore.OT_CONSORTIUM.id )) {
-//                if (userService.hasAffiliation_or_ROLEADMIN(getUser(), getOrg(), instUserRole)) {
-//                    return _hasPerm(orgPerms)
-//                }
-//            }
-//        }
-//        return false
-//    }
-
     // -----
 
+    /**
+     * Performs the navigation panel check against cached entries
+     * @param attrs the cached page call attributes
+     * @return true if access is granted, false otherwise
+     */
     boolean checkCachedNavPerms(GroovyPageAttributes attrs) {
 
         boolean check = false
-        User user = getUser()
         Org org = getOrg()
 
         EhcacheWrapper ttl1800 = cacheService.getTTL1800Cache('ContextService/checkCachedNavPerms')
@@ -283,14 +316,13 @@ class ContextService {
             check = SpringSecurityUtils.ifAnyGranted(attrs.specRole ?: [])
 
             if (!check) {
-                boolean instRoleCheck = attrs.instRole ? BeanStore.getUserService().hasAffiliation_or_ROLEADMIN(user, org, attrs.instRole) : true
+                boolean instRoleCheck = attrs.instRole ? BeanStore.getUserService().hasAffiliation(org, attrs.instRole) : true
                 boolean orgPermCheck  = attrs.orgPerm ? _hasPerm(attrs.orgPerm) : true
 
                 check = instRoleCheck && orgPermCheck
 
                 if (attrs.instRole && attrs.affiliationOrg && check) { // ???
-                    check = BeanStore.getUserService().hasAffiliation_or_ROLEADMIN(user, attrs.affiliationOrg, attrs.instRole)
-                    // check = user.hasOrgAffiliation_or_ROLEADMIN(attrs.affiliationOrg, attrs.instRole)
+                    check = BeanStore.getUserService().hasAffiliation(attrs.affiliationOrg, attrs.instRole)
                 }
             }
             permsMap.put(perm, check)
@@ -298,5 +330,41 @@ class ContextService {
         }
 
         check
+    }
+
+    // ----- DEPRECATED -----
+
+    // moved from AccessService ..
+    /**
+     * Checks if
+     * <ol>
+     *     <li>the target institution is of the given customer type and the user has the given permissions granted at the target institution</li>
+     *     <li>there is a combo relation to the given target institution</li>
+     *     <li>or if the user has the given permissions granted at the context institution</li>
+     * </ol>
+     * @param attributes a configuration map:
+     * [
+     *      orgToCheck: context institution,
+     *      orgPerms: customer type of the target institution
+     *      instUserRole: user's rights for the target institution
+     * ]
+     * @return true if clauses one and two or three succeed, false otherwise
+     */
+    @Deprecated
+    boolean otherOrgAndComboCheckPermAffiliation_or_ROLEADMIN(Org orgToCheck, String orgPerms, String instUserRole) {
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+            return true
+        }
+        Org ctx = getOrg()
+
+        // combo check @ contextUser/contextOrg
+        boolean check1 = userService.hasFormalAffiliation(ctx, instUserRole) && _hasPerm(orgPerms)
+        boolean check2 = (orgToCheck.id == ctx.id) || Combo.findByToOrgAndFromOrg(ctx, orgToCheck)
+
+        // orgToCheck check @ otherOrg
+        boolean check3 = (orgToCheck.id == ctx.id) && SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        // boolean check3 = (ctx.id == orgToCheck.id) && getUser()?.hasCtxAffiliation_or_ROLEADMIN(null) // legacy - no affiliation given
+
+        (check1 && check2) || check3
     }
 }

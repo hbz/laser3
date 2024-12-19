@@ -2,9 +2,9 @@
 <laser:serviceInjection />
 <ui:modal id="modalCreateTask" message="task.create.new">
 
-    <g:form class="ui form" id="create_task" url="[controller: 'task', action: 'create']" method="post">
+    <g:form class="ui form" id="create_task" url="[controller: 'task', action: 'createTask']" method="post">
         <g:if test="${controllerName != 'myInstitution' && controllerName != 'ajaxHtml'}">
-            <g:hiddenField name="${owntp}" value="${(owntp == 'surveyConfig') ? ownobj?.id : params.id}"/>
+            <g:hiddenField name="${owntp}" value="${(owntp in ['surveyConfig']) ? ownobj?.id : params.id}"/>
             <g:hiddenField name="linkto" value="${owntp}"/>
         </g:if>
 
@@ -40,13 +40,6 @@
                         </label>
                     </div>
                     &nbsp; &nbsp;
-                    %{--<div class="ui radio checkbox">
-                        <input id="pkgradio" type="radio" value="pkg" name="linkto" tabindex="0" class="hidden">
-                        <label for="pkgradio">
-                            <g:message code="package.label" />
-                        </label>
-                    </div>
-                    &nbsp; &nbsp;--}%
                     <div class="ui radio checkbox">
                         <input id="subscriptionradio" type="radio" value="subscription" name="linkto" tabindex="0" class="hidden">
                         <label for="subscriptionradio">
@@ -60,11 +53,24 @@
                             <g:message code="task.org.label" />
                         </label>
                     </div>
+                    &nbsp; &nbsp;
+                    <div class="ui radio checkbox">
+                        <input id="providerradio" type="radio" value="provider" name="linkto" tabindex="0" class="hidden">
+                        <label for="providerradio">
+                            <g:message code="task.provider.label" />
+                        </label>
+                    </div>
+                    &nbsp; &nbsp;
+                    <div class="ui radio checkbox">
+                        <input id="vendorradio" type="radio" value="vendor" name="linkto" tabindex="0" class="hidden">
+                        <label for="vendorradio">
+                            <g:message code="task.vendor.label" />
+                        </label>
+                    </div>
                 </fieldset>
             </div>
 
-            <div id="licensediv"
-                 class="field ${hasErrors(bean: taskInstance, field: 'license', 'error')} required">
+            <div id="licensediv" class="field ${hasErrors(bean: taskInstance, field: 'license', 'error')} required">
                 <label for="license">
                     <g:message code="task.linkto" /><g:message code="license.label" /> <g:message code="messageRequiredField" />
                 </label>
@@ -94,19 +100,37 @@
                 />
             </div>
 
-            <div id="pkgdiv" class="field ${hasErrors(bean: taskInstance, field: 'pkg', 'error')} required">
-                <label for="pkg">
-                    <g:message code="task.linkto" /><g:message code="package.label" /> <g:message code="messageRequiredField" />
-                </label>
-                <g:select id="pkg" name="pkg" from="${validPackages}" optionKey="id" value="${ownobj?.id}"
+            <div id="providerdiv" class="field ${hasErrors(bean: taskInstance, field: 'provider', 'error')} required">
+            <label for="provider">
+                <g:message code="task.linkto" /><g:message code="task.provider.label" /> <g:message code="messageRequiredField" />
+            </label>
+                <g:select id="provider"
+                          name="provider"
+                          from="${validProvidersDropdown}"
+                          optionKey="${{it.optionKey}}"
+                          optionValue="${{it.optionValue}}"
+                          value="${ownobj?.id}"
                           class="ui dropdown search many-to-one"
-                          required=""
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                 />
             </div>
 
-            <div id="subscriptiondiv"
-                 class="field ${hasErrors(bean: taskInstance, field: 'subscription', 'error')} required">
+            <div id="vendordiv" class="field ${hasErrors(bean: taskInstance, field: 'vendor', 'error')} required">
+            <label for="vendor">
+                <g:message code="task.linkto" /><g:message code="task.vendor.label" /> <g:message code="messageRequiredField" />
+            </label>
+                <g:select id="vendor"
+                          name="vendor"
+                          from="${validVendorsDropdown}"
+                          optionKey="${{it.optionKey}}"
+                          optionValue="${{it.optionValue}}"
+                          value="${ownobj?.id}"
+                          class="ui dropdown search many-to-one"
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"
+                />
+            </div>
+
+            <div id="subscriptiondiv" class="field ${hasErrors(bean: taskInstance, field: 'subscription', 'error')} required">
                 <label for="subscription">
                     <g:message code="task.linkto" /><g:message code="default.subscription.label" /> <g:message code="messageRequiredField" />
                 </label>
@@ -145,16 +169,16 @@
         </div>
 
         <div class="field" id="radioGroup">
-            <label for="radioGroup">
+            <span style="margin-bottom: 4px"><strong>
                 <g:message code="task.responsible.label" />
-            </label>
+            </strong></span>
             <div class="two fields">
                 <div class="field wide eight ${hasErrors(bean: taskInstance, field: 'responsible', 'error')} required">
                     <fieldset>
                         <div class="field">
                             <div class="ui radio checkbox">
                                 <input id="radioresponsibleOrg" type="radio" value="Org" name="responsible" tabindex="0" class="hidden">
-                                <label for="radioresponsibleOrg">${message(code: 'task.responsibleOrg.label')} <strong>${contextOrg.getDesignation()}</strong> </label>
+                                <label for="radioresponsibleOrg">${message(code: 'task.responsibleOrg.label')} <strong>${contextService.getOrg().getDesignation()}</strong> </label>
                             </div>
                         </div>
 
@@ -174,7 +198,7 @@
                     </label>
                     <g:select id="responsibleUserInput"
                               name="responsibleUser.id"
-                              from="${taskService.getUserDropdown(contextOrg)}"
+                              from="${taskService.getUserDropdown()}"
                               optionKey="id"
                               optionValue="display"
                               value="${taskInstance?.responsibleUser?.id}"
@@ -189,10 +213,10 @@
     <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajaxHtml'}">
         <laser:script file="${this.getGroovyPageFileName()}">
             $("#generalradio").prop( "checked", true );
-            $("#licensediv, #orgdiv, #pkgdiv, #subscriptiondiv").hide();
+            $("#licensediv, #orgdiv, #subscriptiondiv").hide();
 
             JSPC.app.showHideRequire = function (taskType) {
-                var arr = [ 'license', 'org', 'pkg', 'subscription' ];
+                var arr = [ 'license', 'org', 'provider', 'vendor', 'subscription' ];
                 $('#'+ taskType +'radio').change(function () {
 
                     var hideArray = arr.filter(function(val, index, arr) {
@@ -210,9 +234,10 @@
 
             JSPC.app.showHideRequire ( 'general' );
             JSPC.app.showHideRequire ( 'license' );
-            JSPC.app.showHideRequire ( 'pkg' );
             JSPC.app.showHideRequire ( 'subscription' );
             JSPC.app.showHideRequire ( 'org' );
+            JSPC.app.showHideRequire ( 'provider' );
+            JSPC.app.showHideRequire ( 'vendor' );
         </laser:script>
     </g:if>
 
@@ -226,7 +251,7 @@
 
             // myInstitution
             $('#generalradio').prop ('checked', true);
-            $("#licensediv, #orgdiv, #pkgdiv, #subscriptiondiv").hide();
+            $("#licensediv, #orgdiv, #subscriptiondiv, #providerdiv, #vendordiv").hide();
         };
 
         $("#radioresponsibleOrg").change(function () { JSPC.app.toggleResponsibleUser() });

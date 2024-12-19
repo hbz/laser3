@@ -1,17 +1,18 @@
+<%@ page import="de.laser.ui.Icon" %>
 <ui:modal id="replacePropertyDefinitionModal" message="propertyDefinition.exchange.label" isEditModal="isEditModal">
     <g:form class="ui form" url="[controller: controllerName, action: action]">
         <input type="hidden" name="cmd" value="replacePropertyDefinition"/>
         <input type="hidden" name="xcgPdFrom" value=""/>
 
-        <div class="ui icon negative message">
-            <i class="exclamation icon"></i>
+        <div class="ui icon error message">
+            <i class="${Icon.UI.ERROR}"></i>
             <div class="content">
                 <div class="header"><g:message code="default.warning.emph" /></div>
                 <p><g:message code="menu.institutions.replace_prop.header"/></p>
-            </div>
+            </div> 
         </div>
 
-        <ui:msg class="info" icon="info" header="${message(code:'default.notice')}" noClose="true">
+        <ui:msg class="info" showIcon="true" header="${message(code:'default.notice')}" hideClose="true">
             <g:message code="menu.institutions.replace_prop.refdata"/>
             <br />
             <g:message code="menu.institutions.replace_prop.setting"/>

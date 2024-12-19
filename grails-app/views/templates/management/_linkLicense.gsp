@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.License; de.laser.Person; de.laser.storage.RDStore; de.laser.FormService" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Subscription; de.laser.License; de.laser.addressbook.Person; de.laser.storage.RDStore; de.laser.FormService" %>
 <laser:serviceInjection/>
 
 <g:if test="${filteredSubscriptions}">
@@ -38,7 +38,8 @@
                               from="${validLicenses}" name="selectedLicense"
                               required=""
                               noSelection="['': message(code: 'subscriptionsManagement.noSelection.license')]"/>
-                </g:if><g:else>
+                </g:if>
+                <g:else>
                     <g:if test="${controllerName == 'subscription'}">
                         <g:message code="subscriptionsManagement.noValidLicenses" args="${args.superOrgType}"/>
                     </g:if>
@@ -48,25 +49,45 @@
                 </g:else>
             </div>
 
-            <div class="two fields">
-                <div class="eight wide field" style="text-align: left;">
-                    <div class="ui buttons">
-                        <button class="ui positive button" ${!editable ? 'disabled="disabled"' : ''} type="submit"
-                                name="processOption"
-                                value="linkLicense">${message(code: 'subscriptionsManagement.linkLicenses.button')}</button>
+            <g:if test="${validLicenses}">
+                <div class="two fields">
+                    <div class="eight wide field" style="text-align: left;">
+                        <div class="ui buttons">
+                            <button class="${Btn.POSITIVE}" ${!editable ? 'disabled="disabled"' : ''} type="submit"
+                                    name="processOption"
+                                    value="linkLicense">${message(code: 'subscriptionsManagement.linkLicenses.button')}</button>
+                        </div>
+                    </div>
+                    <div class="eight wide field" style="text-align: right;">
+                        <div class="ui buttons">
+                            <button class="${Btn.NEGATIVE_CONFIRM}" ${!editable ? 'disabled="disabled"' : ''}
+                                    data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.deleteLicenses.button.confirm')}"
+                                    data-confirm-term-how="ok"
+                                    name="processOption"
+                                    data-confirm-id="deleteLicenses"
+                                    value="unlinkLicense">${message(code: 'subscriptionsManagement.deleteLicenses.button')}</button>
+                        </div>
                     </div>
                 </div>
-                <div class="eight wide field" style="text-align: right;">
+            </g:if>
+            <g:else>
+                <div class="sixteen wide field" style="text-align: right;">
                     <div class="ui buttons">
-                        <button class="ui button negative js-open-confirm-modal" ${!editable ? 'disabled="disabled"' : ''}
-                                data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.deleteLicenses.button.confirm')}"
-                                data-confirm-term-how="ok"
-                                name="processOption"
-                                data-confirm-id="deleteLicenses"
-                                value="unlinkLicense">${message(code: 'subscriptionsManagement.deleteLicenses.button')}</button>
+                        <span class="la-popup-tooltip"
+                              data-content="${message(code: 'license.details.unlink')}">
+                            <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
+                                    data-confirm-tokenMsg="${message(code: "subscriptionsManagement.deleteLicenses.button.confirm")}"
+                                    data-confirm-term-how="unlink"
+                                    controller="subscription" action="unlinkAllLicenses"
+                                    params="${[id: params.id]}"
+                                    role="button"
+                                    aria-label="${message(code: 'ariaLabel.unlink.universal')}">
+                                ${message(code: 'subscriptionsManagement.deleteAllLicenses.button')}
+                            </g:link>
+                        </span>
                     </div>
                 </div>
-            </div>
+            </g:else>
         </div><!-- .segment -->
 
         <div class="ui segment">
@@ -91,16 +112,19 @@
                     <g:if test="${controllerName == "subscription"}">
                         <th>${message(code: 'default.sortname.label')}</th>
                         <th>${message(code: 'subscriptionDetails.members.members')}</th>
+                        <g:if test="${params.showMembersSubWithMultiYear}">
+                            <th>${message(code: 'subscription.referenceYear.label.shy')}</th>
+                        </g:if>
                     </g:if>
                     <g:if test="${controllerName == "myInstitution"}">
                         <th>${message(code: 'default.subscription.label')}</th>
                     </g:if>
-                    <th>${message(code: 'default.startDate.label')}</th>
-                    <th>${message(code: 'default.endDate.label')}</th>
+                    <th>${message(code: 'default.startDate.label.shy')}</th>
+                    <th>${message(code: 'default.endDate.label.shy')}</th>
                     <th>${message(code: 'default.status.label')}</th>
                     <th>${message(code: 'subscription.linktoLicense')}</th>
                     <th class="la-no-uppercase">
-                        <ui:multiYearIcon isConsortial="true" />
+                        <ui:multiYearIcon />
                     </th>
                     <th class="la-action-info">${message(code: 'default.actions.label')}</th>
                 </tr>
@@ -108,15 +132,15 @@
                 <tbody>
                 <g:each in="${filteredSubscriptions}" status="i" var="zeile">
                     <g:set var="sub" value="${zeile instanceof Subscription ? zeile : zeile.sub}"/>
-                    <g:set var="subscr" value="${zeile instanceof Subscription ? zeile.getSubscriber() : zeile.orgs}"/>
+                    <g:set var="subscr" value="${zeile instanceof Subscription ? zeile.getSubscriberRespConsortia() : zeile.orgs}"/>
                     <tr>
                         <g:if test="${editable}">
                             <td>
                                 <%-- This whole construct is necessary for that the form validation works!!! --%>
                                 <div class="field">
                                     <div class="ui checkbox">
-                                        <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}"
-                                                    checked="false"/>
+                                        <g:checkBox class="selectedSubs" id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}"
+                                                    checked="${selectionCache.containsKey('selectedSubs_'+sub.id)}"/>
                                     </div>
                                 </div>
                             </td>
@@ -130,15 +154,14 @@
                                 <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
 
                                 <g:if test="${sub.isSlaved}">
-                                    <span data-position="top right"
-                                          class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: 'license.details.isSlaved.tooltip')}">
-                                        <i class="grey la-thumbtack-regular icon"></i>
-                                    </span>
+                                    <ui:auditIcon type="auto2" />
                                 </g:if>
 
                                 <ui:customerTypeProIcon org="${subscr}" />
                             </td>
+                            <g:if test="${params.showMembersSubWithMultiYear}">
+                                ${sub.referenceYear}
+                            </g:if>
                         </g:if>
                         <g:if test="${controllerName == "myInstitution"}">
                             <td>${sub.name}</td>
@@ -161,10 +184,10 @@
                         </td>
                         <td class="x">
                             <g:link controller="subscription" action="show" id="${sub.id}"
-                                    class="ui icon button blue la-modern-button"
+                                    class="${Btn.MODERN.SIMPLE}"
                                     data-position="left center"
                                     role="button">
-                                <i aria-hidden="true" class="write icon"></i></g:link>
+                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i></g:link>
                         </td>
                     </tr>
                 </g:each>
@@ -191,6 +214,21 @@
         } else {
             $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', false)
         }
+    });
+
+    $(".selectedSubs").change(function() {
+        let selId = $(this).attr("id");
+        $.ajax({
+            url: "<g:createLink controller="ajaxJson" action="updatePaginationCache" />",
+            data: {
+                selId: selId,
+                cacheKeyReferer: "/myInstitution/subscriptionManagement/${params.tab}/${user.id}"
+            }
+        }).done(function(result){
+            console.log("updated cache for "+selId+": "+result.state);
+        }).fail(function(xhr,status,message){
+            console.log("error occurred, consult logs!");
+        });
     });
 
     $('.licenseForm').form({

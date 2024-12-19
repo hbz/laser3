@@ -1,7 +1,7 @@
-<%@ page import="de.laser.Combo; de.laser.CustomerIdentifier; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Combo; de.laser.CustomerIdentifier; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.addressbook.PersonRole; de.laser.Org; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 
-<laser:htmlStart message="${isProviderOrAgency ? 'org.nav.ids' : 'org.nav.idsCidsHyphen'}" serviceInjection="true" />
+<laser:htmlStart message="${isProviderOrAgency ? 'org.nav.ids' : 'org.nav.idsCids.shy'}" />
 
     <g:set var="isGrantedOrgRoleAdminOrOrgEditor" value="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}" />
 
@@ -100,19 +100,19 @@
                     </div>
                     <div class="two fields">
                         <div class="field">
-                            <label for="ciPlatform">${message(code:'default.provider.label')} : ${message(code:'platform.label')}</label>
+                            <label for="ciPlatform">${message(code:'provider.label')} : ${message(code:'platform.label')}</label>
                             <g:select id="ciPlatform" name="ciPlatform"
                                       from="${allPlatforms}"
                                       value="${params.ciPlatform}"
                                       class="ui search dropdown"
                                       optionKey="id"
-                                      optionValue="${{ it.org.name + (it.org.sortname ? " (${it.org.sortname})" : '') + ' : ' + it.name}}"
+                                      optionValue="${{ it.provider.name + (it.provider.sortname ? " (${it.provider.sortname})" : '') + ' : ' + it.name}}"
                                       noSelection="${['' : message(code:'default.select.choose.label')]}"
                             />
                         </div>
                         <div class="field la-field-right-aligned">
-                            <a href="${createLink(controller:controllerName,action:actionName,params:[id:orgInstance.id,tab:'customerIdentifiers'])}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
-                            <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}">
+                            <a href="${createLink(controller:controllerName,action:actionName,params:[id:orgInstance.id,tab:'customerIdentifiers'])}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
+                            <input type="submit" class="${Btn.PRIMARY}" value="${message(code:'default.button.filter.label')}">
                         </div>
                     </div>
                 </g:form>
@@ -121,7 +121,7 @@
                 <thead>
                     <tr>
                         <th class="one wide">${message(code:'default.number')}</th>
-                        <g:sortableColumn title="${message(code:'default.provider.label')}" property="platform.org.name" class="three wide" params="[tab: 'customerIdentifiers']"/>
+                        <g:sortableColumn title="${message(code:'provider.label')}" property="platform.org.name" class="three wide" params="[tab: 'customerIdentifiers']"/>
                         <g:sortableColumn title="${message(code:'platform.label')}" property="platform.name" class="two wide" params="[tab: 'customerIdentifiers']"/>
                         <th class="three wide">${message(code:'org.customerIdentifier')}</th>
                         <th class="three wide">${message(code:'org.requestorKey')}</th>
@@ -133,32 +133,33 @@
                 <tbody>
                     <g:each in="${customerIdentifier}" var="ci" status="rowno">
                         <g:if test="${ci.isPublic || (ci.owner.id == contextService.getOrg().id) || isGrantedOrgRoleAdminOrOrgEditor}">
+                            <%  boolean editable_this_ci = (ci.customer.id == institution.id || isComboRelated) %>
                             <tr>
                                 <td>${rowno+1}</td>
                                 <td>
                                     ${ci.getProvider()}
                                 </td>
                                 <td>${ci.platform}</td>
-                                <td>${ci.value}</td>
-                                <td>${ci.requestorKey}</td>
-                                <td>${ci.note}</td>
+                                <td><ui:xEditable owner="${ci}" field="value" overwriteEditable="${editable_customeridentifier && editable_this_ci}" /></td>
+                                <td><ui:xEditable owner="${ci}" field="requestorKey" overwriteEditable="${editable_customeridentifier && editable_this_ci}" /></td>
+                                <td><ui:xEditable owner="${ci}" field="note" overwriteEditable="${editable_customeridentifier && editable_this_ci}" /></td>
                                 <td>
-                                    <%  boolean editable_this_ci = (ci.customer.id == institution.id || isComboRelated) %>
+                                    %{-- TODO: erms-5495 --}%
                                     <g:if test="${editable_customeridentifier && editable_this_ci}">
-                                        <button class="ui icon button blue la-modern-button" onclick="JSPC.app.IdContoller.editCustomerIdentifier(${ci.id});"
+                                        %{--}<button class="${Btn.MODERN.SIMPLE}" onclick="JSPC.app.IdContoller.editCustomerIdentifier(${ci.id});"
                                                 aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                            <i aria-hidden="true" class="write icon"></i>
-                                        </button>
+                                            <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
+                                        </button>--}%
                                         <g:link controller="organisation"
                                                 action="deleteCustomerIdentifier"
                                                 id="${orgInstance.id}"
-                                                params="${[deleteCI:genericOIDService.getOID(ci)]}"
-                                                class="ui button icon red la-modern-button js-open-confirm-modal"
+                                                params="${[deleteCI:ci.id]}"
+                                                class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.customeridentifier", args: [""+ci.getProvider()+" : "+ci.platform+" "+ci.value])}"
                                                 data-confirm-term-how="delete"
                                                 role="button"
                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                            <i class="trash alternate outline icon"></i>
+                                            <i class="${Icon.CMD.DELETE}"></i>
                                         </g:link>
                                     </g:if>
                                 </td>

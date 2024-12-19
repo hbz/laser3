@@ -3,6 +3,8 @@ package de.laser
 
 import de.laser.annotations.RefdataInfo
 import de.laser.storage.RDConstants
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
 
 /**
  * Represents a key/value pair for a customer {@link Org} which enables to load statistic data from a SUSHI server
@@ -31,9 +33,9 @@ class CustomerIdentifier {
              value column:'cid_value'
       requestorKey column:'cid_requestor_key', type: 'text'
              note  column:'cid_note', type: 'text'
-          customer column:'cid_customer_fk'
-          platform column:'cid_platform_fk'
-             owner column:'cid_owner_fk'
+          customer column:'cid_customer_fk',    index: 'cid_customer_idx'
+          platform column:'cid_platform_fk',    index: 'cid_platform_idx'
+             owner column:'cid_owner_fk',       index: 'cid_owner_idx'
           isPublic column:'cid_is_public'
     }
 
@@ -47,7 +49,7 @@ class CustomerIdentifier {
      * Retrieves the provider associated to the platform (if the platform exists)
      * @return the {@link Org} linked to the {@link Platform}, null if not exists
      */
-    Org getProvider() {
-        return platform?.org
+    Provider getProvider() {
+        return platform?.provider
     }
 }

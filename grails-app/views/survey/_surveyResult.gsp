@@ -1,13 +1,13 @@
-<%@ page import="de.laser.storage.PropertyStore; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.storage.PropertyStore; de.laser.storage.RDStore;" %>
 <g:if test="${surResult.surveyConfig.subSurveyUseForTransfer && surveyOrg.existsMultiYearTerm()}">
 
     <g:message code="surveyOrg.perennialTerm.available"/>
 
     <g:if test="${surResult.comment}">
-        <span class="la-long-tooltip la-popup-tooltip la-delay"
+        <span class="la-long-tooltip la-popup-tooltip"
               data-position="right center"
               data-content="${surResult.comment}">
-            <i class="question circle icon"></i>
+            <i class="${Icon.TOOLTIP.HELP}"></i>
         </span>
     </g:if>
 </g:if>
@@ -39,15 +39,15 @@
                                 config="${surResult.type.refdataCategory}"/>
     </g:elseif>
     <g:if test="${surResult.comment}">
-        <span class="la-long-tooltip la-popup-tooltip la-delay"
+        <span class="la-long-tooltip la-popup-tooltip"
               data-position="right center"
               data-content="${surResult.comment}">
-            <i class="question circle icon"></i>
+            <i class="${Icon.TOOLTIP.HELP}"></i>
         </span>
     </g:if>
 
     <g:if test="${surResult.type.id == PropertyStore.SURVEY_PROPERTY_PARTICIPATION.id && surResult.getResult() == RDStore.YN_NO.getI10n('value')}">
-        <span class="la-long-tooltip la-popup-tooltip la-delay"
+        <span class="la-long-tooltip la-popup-tooltip"
               data-position="top right"
               data-variation="tiny"
               data-content="${message(code: 'surveyResult.particiption.terminated')}">

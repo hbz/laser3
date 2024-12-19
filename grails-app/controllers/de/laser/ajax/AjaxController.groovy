@@ -1,7 +1,7 @@
 package de.laser.ajax
 
-
-import de.laser.annotations.DebugInfo
+import de.laser.addressbook.Person
+import de.laser.addressbook.PersonRole
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserRole
@@ -29,22 +29,26 @@ import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
+import de.laser.wekb.Package
+import de.laser.wekb.Platform
+import de.laser.wekb.Provider
+import de.laser.wekb.ProviderRole
+import de.laser.wekb.TitleInstancePackagePlatform
+import de.laser.wekb.Vendor
+import de.laser.wekb.VendorRole
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
-import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.springframework.transaction.TransactionStatus
 import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.support.RequestContextUtils
-import de.laser.exceptions.ChangeAcceptException
 
 import javax.servlet.ServletOutputStream
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.Year
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 /**
  * This controller manages AJAX calls which result in object manipulation and / or do not deliver clearly either HTML or JSON.
@@ -54,41 +58,21 @@ import java.util.regex.Pattern
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxController {
 
-    GenericOIDService genericOIDService
     ContextService contextService
-    EscapeService escapeService
-    FormService formService
     DashboardDueDatesService dashboardDueDatesService
-    IdentifierService identifierService
+    EscapeService escapeService
     FilterService filterService
-    PendingChangeService pendingChangeService
+    FormService formService
+    GenericOIDService genericOIDService
+    IdentifierService identifierService
     PropertyService propertyService
     SubscriptionControllerService subscriptionControllerService
     SubscriptionService subscriptionService
-    UserService userService
 
     def refdata_config = [
-    "ContentProvider" : [
-      domain:'Org',
-      countQry:"select count(o) from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted')",
-      rowQry:"select o from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted') order by o.name asc",
-      qryParams:[
-              [
-                param:'sSearch',
-                onameClosure: { value ->
-                    String result = '%'
-                    if ( value && ( value.length() > 0 ) )
-                        result = "%${value.trim().toLowerCase()}%"
-                    result
-                }
-              ]
-      ],
-      cols:['name'],
-      format:'map'
-    ],
     "Licenses" : [
       domain:'License',
-      countQry:"select count(l) from License as l",
+      countQry:"select count(*) from License as l",
       rowQry:"select l from License as l",
       qryParams:[],
       cols:['reference'],
@@ -96,7 +80,7 @@ class AjaxController {
     ],
     'Currency' : [
       domain:'RefdataValue',
-      countQry:"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='" + RDConstants.CURRENCY + "'",
+      countQry:"select count(*) from RefdataValue as rdv where rdv.owner.desc='" + RDConstants.CURRENCY + "'",
       rowQry:"select rdv from RefdataValue as rdv where rdv.owner.desc='" + RDConstants.CURRENCY + "'",
       qryParams:[
                    [
@@ -109,26 +93,8 @@ class AjaxController {
     ],
     "allOrgs" : [
             domain:'Org',
-            countQry:"select count(o) from Org as o where lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted')",
+            countQry:"select count(*) from Org as o where lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted')",
             rowQry:"select o from Org as o where lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted') order by o.name asc",
-            qryParams:[
-                    [
-                            param:'sSearch',
-                            onameClosure: { value ->
-                                String result = '%'
-                                if ( value && ( value.length() > 0 ) )
-                                    result = "%${value.trim().toLowerCase()}%"
-                                result
-                            }
-                    ]
-            ],
-            cols:['name'],
-            format:'map'
-    ],
-    "CommercialOrgs" : [
-            domain:'Org',
-            countQry:"select count(o) from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted')",
-            rowQry:"select o from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted') order by o.name asc",
             qryParams:[
                     [
                             param:'sSearch',
@@ -315,7 +281,7 @@ class AjaxController {
             // If we werent able to locate a specific config override, assume the ID is just a refdata key
             config = [
                 domain      :'RefdataValue',
-                countQry    :"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='" + params.id + "'",
+                countQry    :"select count(*) from RefdataValue as rdv where rdv.owner.desc='" + params.id + "'",
                 rowQry      :"select rdv from RefdataValue as rdv where rdv.owner.desc='" + params.id + "' order by rdv.order asc, rdv.value_" + lang,
                 qryParams   :[],
                 cols        :['value'],
@@ -431,19 +397,38 @@ class AjaxController {
   @Secured(['ROLE_USER'])
   def updateChecked() {
       Map success = [success:false]
-      SessionCacheWrapper sessionCache = contextService.getSessionCache()
       String sub = params.sub ?: params.id
-      Map<String,Object> cache = sessionCache.get("/subscription/${params.referer}/${sub}")
+      EhcacheWrapper userCache = contextService.getUserCache("/subscription/${params.referer}/${sub}")
+      Map<String,Object> cache = userCache.get('selectedTitles')
 
       if(!cache) {
-          sessionCache.put("/subscription/${params.referer}/${sub}",["checked":[:]])
-          cache = sessionCache.get("/subscription/${params.referer}/${sub}")
+          cache = ["checked":[:]]
       }
 
       Map checked = cache.get('checked')
 
       if(params.index == 'all') {
-          Map<String, Object> filterParams = JSON.parse(params.filterParams) as Map<String, Object>
+          Map<String, Object> filterParams = [:]
+          if(params.filterParams){
+              JSON.parse(params.filterParams).each {
+                  if(it.key in ['series_names', 'subject_references', 'ddcs', 'languages', 'yearsFirstOnline', 'medium', 'title_types', 'publishers']){
+                      if(it.value != '[]') {
+                          filterParams[it.key] = []
+                          it.value = it.value.replace('[','').replace(']','')
+                          //Needed because of filterService -> Params.getLongList_forCommaSeparatedString()
+                          if(it.key in ['ddcs', 'languages', 'yearsFirstOnline', 'medium']){
+                              filterParams[it.key] = it.value
+                          }else {
+                              it.value.split(',').each { String paramsValue ->
+                                  filterParams[it.key] << paramsValue
+                              }
+                          }
+                      }
+                  }else{
+                      filterParams[it.key] = it.value
+                  }
+              }
+          }
 		  Map<String, String> newChecked = checked ?: [:]
           if(params.referer == 'renewEntitlementsWithSurvey'){
 
@@ -471,11 +456,12 @@ class AjaxController {
                   newChecked[ie.id.toString()] = params.checked == 'true' ? 'checked' : null
               }*/
 
+              newChecked = [:]
               Subscription baseSub = Subscription.get(params.baseSubID)
 
               if(params.tab == 'allTipps') {
-                  params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-                  Map<String, Object> query = filterService.getTippQuery(params, baseSub.packages.pkg)
+                  filterParams.status = [RDStore.TIPP_STATUS_CURRENT.id]
+                  Map<String, Object> query = filterService.getTippQuery(filterParams, baseSub.packages.pkg)
                   List<Long> titleIDList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
 
                   titleIDList.each { Long tippID ->
@@ -488,8 +474,24 @@ class AjaxController {
                   SurveyConfig surveyConfig = SurveyConfig.findById(params.surveyConfigID)
                   IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub)
                   if(issueEntitlementGroup) {
-                      params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-                      params.titleGroup = issueEntitlementGroup.id.toString()
+                      if(params.subTab){
+                          if(params.subTab == 'currentIEs'){
+                              params.status = [RDStore.TIPP_STATUS_CURRENT.id]
+                          }else if(params.subTab == 'plannedIEs'){
+                              params.status = [RDStore.TIPP_STATUS_EXPECTED.id]
+                          }else if(params.subTab == 'expiredIEs'){
+                              params.status = [RDStore.TIPP_STATUS_RETIRED.id]
+                          }else if(params.subTab == 'deletedIEs'){
+                              params.status = [RDStore.TIPP_STATUS_DELETED.id]
+                          }else if(params.subTab == 'allIEs'){
+                              params.status = [RDStore.TIPP_STATUS_CURRENT.id, RDStore.TIPP_STATUS_EXPECTED.id, RDStore.TIPP_STATUS_RETIRED.id, RDStore.TIPP_STATUS_DELETED.id]
+                          }
+                      } else{
+                          params.currentIEs = 'currentIEs'
+                          params.status = [RDStore.TIPP_STATUS_CURRENT.id]
+                      }
+
+                      params.titleGroup = issueEntitlementGroup.id
                       Map query = filterService.getIssueEntitlementQuery(params, subscriberSub)
                       List<Long> ieIDList = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
 
@@ -511,71 +513,25 @@ class AjaxController {
               query = query.replace("where ", "where not exists (select ie.id from IssueEntitlement ie join ie.tipp tipp2 where ie.subscription.id = :sub and tipp.id = tipp2.id and ie.status = tipp2.status) and ")
               Set<String> tippUUIDs = TitleInstancePackagePlatform.executeQuery(query, tippFilter.queryParams+[sub: params.long("sub")])
               tippUUIDs.each { String e ->
-                  newChecked[e] = params.checked == 'true' ? 'checked' : null
+                  if(params.checked == 'true')
+                    newChecked[e] = 'checked'
+                  else newChecked.remove(e)
               }
           }
           cache.put('checked',newChecked)
           success.checkedCount = params.checked == 'true' ? newChecked.size() : 0
+          success.success = success.checkedCount > 0
 	  }
 	  else {
           Map<String, String> newChecked = checked ?: [:]
-		  newChecked[params.index] = params.checked == 'true' ? 'checked' : null
-		  if(cache.put('checked',newChecked)){
-              success.success = true
-          }
-          success.checkedCount = newChecked.findAll {it.value == 'checked'}.size()
-
-	  }
-      render success as JSON
-  }
-
-    /**
-     * This method is used by the addEntitlements view and updates the cache for the entitlement candidates which should be added to the local subscription holding;
-     * when the entitlements are being processed, the data from the cache is being applied to the entitlements
-     * @return a {@link Map} reflecting the success status
-     */
-  @Secured(['ROLE_USER'])
-  def updateIssueEntitlementOverwrite() {
-      Map success = [success:false]
-      EhcacheWrapper cache = contextService.getUserCache("/subscription/${params.referer}/${params.sub}")
-      Map issueEntitlementCandidates = cache.get('issueEntitlementCandidates')
-      if(!issueEntitlementCandidates)
-          issueEntitlementCandidates = [:]
-      def ieCandidate = issueEntitlementCandidates.get(params.key)
-      if(!ieCandidate)
-          ieCandidate = [:]
-      if(params.coverage != 'false') {
-          def ieCoverage
-          Pattern pattern = Pattern.compile("(\\w+)(\\d+)")
-          Matcher matcher = pattern.matcher(params.prop)
-          if(matcher.find()) {
-              String prop = matcher.group(1)
-              int covStmtKey = Integer.parseInt(matcher.group(2))
-              if(!ieCandidate.coverages){
-                  ieCandidate.coverages = []
-                  ieCoverage = [:]
-              }
-              else
-                  ieCoverage = ieCandidate.coverages[covStmtKey]
-              if(prop in ['startDate','endDate']) {
-                  SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-                  ieCoverage[prop] = sdf.parse(params.propValue)
-              }
-              else {
-                  ieCoverage[prop] = params.propValue
-              }
-              ieCandidate.coverages[covStmtKey] = ieCoverage
-          }
-          else {
-              log.error("something wrong with the regex matching ...")
-          }
-      }
-      else {
-          ieCandidate[params.prop] = params.propValue
-      }
-      issueEntitlementCandidates.put(params.key,ieCandidate)
-      if(cache.put('issueEntitlementCandidates',issueEntitlementCandidates))
+          if(params.checked == 'true')
+              newChecked[params.index] = 'checked'
+          else newChecked.remove(params.index)
+          cache.put('checked', newChecked)
           success.success = true
+          success.checkedCount = newChecked.findAll {it.value == 'checked'}.size()
+	  }
+      userCache.put('selectedTitles', cache)
       render success as JSON
   }
 
@@ -648,59 +604,130 @@ class AjaxController {
     }
 
     /**
-     * Adds a relation link from a given object to a {@link Person}
+     * Adds a relation link from a given object to a {@link de.laser.wekb.Vendor}
      */
     @Secured(['ROLE_USER'])
     @Transactional
-    def addPrsRole() {
-        Org org             = (Org) genericOIDService.resolveOID(params.org)
-        def parent          = genericOIDService.resolveOID(params.parent)
-        Person person       = (Person) genericOIDService.resolveOID(params.person)
-        RefdataValue role   = (RefdataValue) genericOIDService.resolveOID(params.role)
+    def addVendorRole() {
+        def owner  = genericOIDService.resolveOID(params.parent)
 
-        PersonRole newPrsRole
-        PersonRole existingPrsRole
+        Set<Vendor> vendors = Vendor.findAllByIdInList(params.list('selectedVendors'))
+        vendors.each{ vendorToLink ->
+            boolean duplicateVendorRole = false
 
-        if (org && person && role) {
-            newPrsRole = new PersonRole(prs: person, org: org)
-            if (parent) {
-                newPrsRole.responsibilityType = role
-                newPrsRole.setReference(parent)
-
-                String[] ref = newPrsRole.getReference().split(":")
-                existingPrsRole = PersonRole.findWhere(prs:person, org: org, responsibilityType: role, "${ref[0]}": parent)
+            if(params.recip_prop == 'subscription') {
+                duplicateVendorRole = VendorRole.findAllBySubscriptionAndVendor(owner, vendorToLink) ? true : false
             }
-            else {
-                newPrsRole.functionType = role
-                existingPrsRole = PersonRole.findWhere(prs:person, org: org, functionType: role)
+            else if(params.recip_prop == 'license') {
+                duplicateVendorRole = VendorRole.findAllByLicenseAndVendor(owner, vendorToLink) ? true : false
+            }
+
+            if(! duplicateVendorRole) {
+                VendorRole new_link = new VendorRole(vendor: vendorToLink)
+                new_link[params.recip_prop] = owner
+
+                if (new_link.save()) {
+                    // log.debug("Org link added")
+                    if (owner.checkSharePreconditions(new_link)) {
+                        new_link.isShared = true
+                        new_link.save()
+
+                        owner.updateShare(new_link)
+                    }
+                } else {
+                    log.error("Problem saving new vendor link ..")
+                    new_link.errors.each { e ->
+                        log.error( e.toString() )
+                    }
+                }
             }
         }
+        redirect(url: request.getHeader('referer'))
+    }
 
-        if (! existingPrsRole && newPrsRole && newPrsRole.save()) {
-            //flash.message = message(code: 'default.success')
+    /**
+     * Deletes the given relation link between a {@link Vendor} and its target
+     */
+    @Secured(['ROLE_USER'])
+    @Transactional
+    def delVendorRole() {
+        VendorRole vr = VendorRole.get(params.id)
+
+        def owner
+        if(vr.subscription)
+            owner = vr.subscription
+        else if(vr.license)
+            owner = vr.license
+        if (owner instanceof ShareSupport && vr.isShared) {
+            vr.isShared = false
+            owner.updateShare(vr)
         }
-        else {
-            log.error("Problem saving new person role ..")
-            //flash.error = message(code: 'default.error')
-        }
+        vr.delete()
 
         redirect(url: request.getHeader('referer'))
     }
 
     /**
-     * Deletes the given relation link between a {@link Person} its target
+     * Adds a relation link from a given object to a {@link de.laser.wekb.Provider}
      */
     @Secured(['ROLE_USER'])
     @Transactional
-    def delPrsRole() {
-        PersonRole prsRole = PersonRole.get(params.id)
+    def addProviderRole() {
+        def owner  = genericOIDService.resolveOID(params.parent)
 
-        if (prsRole && prsRole.delete()) {
+        Set<Provider> providers = Provider.findAllByIdInList(params.list('selectedProviders'))
+        providers.each{ providerToLink ->
+            boolean duplicateProviderRole = false
+
+            if(params.recip_prop == 'subscription') {
+                duplicateProviderRole = ProviderRole.findAllBySubscriptionAndProvider(owner, providerToLink) ? true : false
+            }
+            else if(params.recip_prop == 'license') {
+                duplicateProviderRole = ProviderRole.findAllByLicenseAndProvider(owner, providerToLink) ? true : false
+            }
+
+            if(! duplicateProviderRole) {
+                ProviderRole new_link = new ProviderRole(provider: providerToLink)
+                new_link[params.recip_prop] = owner
+
+                if (new_link.save()) {
+                    // log.debug("Org link added")
+                    if (owner.checkSharePreconditions(new_link)) {
+                        new_link.isShared = true
+                        new_link.save()
+
+                        owner.updateShare(new_link)
+                    }
+                } else {
+                    log.error("Problem saving new provider link ..")
+                    new_link.errors.each { e ->
+                        log.error( e.toString() )
+                    }
+                }
+            }
         }
-        else {
-            log.error("Problem deleting person role ..")
-            //flash.error = message(code: 'default.error')
+        redirect(url: request.getHeader('referer'))
+    }
+
+    /**
+     * Deletes the given relation link between a {@link Provider} its target
+     */
+    @Secured(['ROLE_USER'])
+    @Transactional
+    def delProviderRole() {
+        ProviderRole pvr = ProviderRole.get(params.id)
+
+        def owner
+        if(pvr.subscription)
+            owner = pvr.subscription
+        else if(pvr.license)
+            owner = pvr.license
+        if (owner instanceof ShareSupport && pvr.isShared) {
+            pvr.isShared = false
+            owner.updateShare(pvr)
         }
+        pvr.delete()
+
         redirect(url: request.getHeader('referer'))
     }
 
@@ -795,112 +822,6 @@ class AjaxController {
     }
 
     /**
-     * Inserts a new custom property definition, i.e. a type of property which is usable by every institution.
-     * Beware: the inserted reference data category does not survive database resets nor is that available throughout the instances;
-     * this has to be considered when running this webapp on multiple instances!
-     * If you wish to insert a reference data category which persists and is available on different instances, enter the parameters in PropertyDefinition.csv. This resource file is
-     * (currently, as of August 14th, '23) located at /src/main/webapp/setup.
-     * Note the global usability of this property definition; see {@link MyInstitutionController#managePrivatePropertyDefinitions()} with params.cmd == add for property types which
-     * are for an institution's internal usage only
-     */
-    @Secured(['ROLE_USER'])
-    @Transactional
-    def addCustomPropertyType() {
-        def newProp
-        def error
-        def msg
-        def ownerClass = params.ownerClass // we might need this for addCustomPropertyValue
-        def owner      = CodeUtils.getDomainClass( ownerClass )?.get(params.ownerId)
-
-        // TODO ownerClass
-        if (PropertyDefinition.findByNameAndDescrAndTenantIsNull(params.cust_prop_name, params.cust_prop_desc)) {
-            error = message(code: 'propertyDefinition.name.unique')
-        }
-        else {
-            if (params.cust_prop_type.equals(RefdataValue.class.name)) {
-                if (params.refdatacategory) {
-
-                    Map<String, Object> map = [
-                            token       : params.cust_prop_name,
-                            category    : params.cust_prop_desc,
-                            type        : params.cust_prop_type,
-                            rdc         : RefdataCategory.get(params.refdatacategory)?.getDesc(),
-                            multiple    : (params.cust_prop_multiple_occurence == 'on'),
-                            i10n        : [
-                                    name_de: params.cust_prop_name?.trim(),
-                                    name_en: params.cust_prop_name?.trim(),
-                                    expl_de: params.cust_prop_expl?.trim(),
-                                    expl_en: params.cust_prop_expl?.trim()
-                            ]
-                    ]
-
-                    newProp = PropertyDefinition.construct(map)
-                }
-                else {
-                    error = message(code: 'ajax.addCustPropertyType.error')
-                }
-            }
-            else {
-                    Map<String, Object> map = [
-                            token       : params.cust_prop_name,
-                            category    : params.cust_prop_desc,
-                            type        : params.cust_prop_type,
-                            multiple    : (params.cust_prop_multiple_occurence == 'on'),
-                            i10n        : [
-                                    name_de: params.cust_prop_name?.trim(),
-                                    name_en: params.cust_prop_name?.trim(),
-                                    expl_de: params.cust_prop_expl?.trim(),
-                                    expl_en: params.cust_prop_expl?.trim()
-                            ]
-                    ]
-
-                    newProp = PropertyDefinition.construct(map)
-            }
-
-            if (newProp?.hasErrors()) {
-                log.error(newProp.errors.toString())
-                error = message(code: 'default.error')
-            }
-            else {
-                msg = message(code: 'ajax.addCustPropertyType.success')
-                newProp.save()
-
-                if (params.autoAdd == "on" && newProp) {
-                    params.propIdent = newProp.id.toString()
-                    chain(action: "addCustomPropertyValue", params: params)
-                }
-            }
-        }
-
-        request.setAttribute("editable", params.editable == "true")
-
-        if (params.reloadReferer) {
-            flash.newProp = newProp
-            flash.error = error
-            flash.message = msg
-            redirect(url: params.reloadReferer)
-        }
-        else if (params.redirect) {
-            flash.newProp = newProp
-            flash.error = error
-            flash.message = msg
-            redirect(controller:"propertyDefinition", action:"create")
-        }
-        else {
-            Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
-
-            render(template: "/templates/properties/custom", model: [
-                    ownobj: owner,
-                    customProperties: owner.propertySet,
-                    newProp: newProp,
-                    error: error,
-                    message: msg,
-                    orphanedProperties: allPropDefGroups.orphanedProperties
-            ])
-        }
-    }
-
-    /**
      * Adds a value to a custom property and updates the property enumeration fragment
      */
   @Secured(['ROLE_USER'])
@@ -909,13 +830,12 @@ class AjaxController {
       def error
       def newProp
       def owner = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
-        PropertyDefinition type = PropertyDefinition.get(params.propIdent.toLong())
-        Org contextOrg = contextService.getOrg()
-      def existingProp = owner.propertySet.find { it.type.name == type.name && it.tenant?.id == contextOrg.id }
+        PropertyDefinition type = PropertyDefinition.get(params.long('propIdent'))
+      def existingProp = owner.propertySet.find { it.type.name == type.name && it.tenant?.id == contextService.getOrg().id }
 
       if (existingProp == null || type.multipleOccurrence) {
         String propDefConst = type.tenant ? PropertyDefinition.PRIVATE_PROPERTY : PropertyDefinition.CUSTOM_PROPERTY
-        newProp = PropertyDefinition.createGenericProperty(propDefConst, owner, type, contextOrg )
+        newProp = PropertyDefinition.createGenericProperty(propDefConst, owner, type, contextService.getOrg() )
         if (newProp.hasErrors()) {
           log.error(newProp.errors.toString())
         } else {
@@ -941,7 +861,6 @@ class AjaxController {
               if (params.propDefGroup) {
                 render(template: "/templates/properties/group", model: [
                         ownobj          : owner,
-                        contextOrg      : contextOrg,
                         newProp         : newProp,
                         error           : error,
                         showConsortiaFunctions: showConsortiaFunctions,
@@ -956,7 +875,6 @@ class AjaxController {
 
                   Map<String, Object> modelMap =  [
                           ownobj                : owner,
-                          contextOrg            : contextOrg,
                           newProp               : newProp,
                           showConsortiaFunctions: showConsortiaFunctions,
                           error                 : error,
@@ -1049,7 +967,7 @@ class AjaxController {
         def newProp
         Org tenant = Org.get(params.tenantId)
           def owner  = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
-          PropertyDefinition type   = PropertyDefinition.get(params.propIdent.toLong())
+          PropertyDefinition type = PropertyDefinition.get(params.long('propIdent'))
 
         if (! type) { // new property via select2; tmp deactivated
           error = message(code:'propertyDefinition.private.deactivated')
@@ -1096,7 +1014,6 @@ class AjaxController {
                       tenant          : tenant,
                       newProp         : newProp,
                       error           : error,
-                      contextOrg      : contextService.getOrg(),
                       propertyWrapper: "private-property-wrapper-${tenant.id}", // JS markup id
                       prop_desc       : type.descr // form data
               ])
@@ -1138,27 +1055,27 @@ class AjaxController {
         }
     }
 
+    /**
+     * Toggles the state of a marker for a we:kb object, i.e. whether it is on the user's watchlist or not
+     */
     @Secured(['ROLE_USER'])
     @Transactional
     def toggleMarker() {
 
         MarkerSupport obj   = genericOIDService.resolveOID(params.oid) as MarkerSupport
         User user           = contextService.getUser()
-        Marker.TYPE type    = Marker.TYPE.WEKB_CHANGES // TODO
+        Marker.TYPE type    = params.type ? Marker.TYPE.get(params.type) : Marker.TYPE.UNKOWN
 
         Map attrs = [ type: type, ajax: true ]
 
         if (params.simple) { attrs.simple = true }
 
-        if (obj instanceof Org) {
-            attrs.org = obj
-        }
-        else if (obj instanceof Package) {
-            attrs.package = obj
-        }
-        else if (obj instanceof Platform) {
-            attrs.platform = obj
-        }
+             if (obj instanceof Org)        { attrs.org = obj }
+        else if (obj instanceof Package)    { attrs.package = obj }
+        else if (obj instanceof Platform)   { attrs.platform = obj }
+        else if (obj instanceof Provider)   { attrs.provider = obj }
+        else if (obj instanceof Vendor)     { attrs.vendor = obj }
+        else if (obj instanceof TitleInstancePackagePlatform) { attrs.tipp = obj }
 
         if (obj.isMarked(user, type)) {
             obj.removeMarker(user, type)
@@ -1261,6 +1178,36 @@ class AjaxController {
             redirect(url: request.getHeader('referer'))
     }
 
+    @Secured(['ROLE_USER'])
+    @Transactional
+    def switchPackageHoldingInheritance() {
+        if(formService.validateToken(params)) {
+            String prop = 'holdingSelection'
+            Subscription sub = Subscription.get(params.id)
+            RefdataValue value = RefdataValue.get(params.value)
+            sub.holdingSelection = value
+            sub.save()
+            if(value == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+                if(! AuditConfig.getConfig(sub, prop)) {
+                    AuditConfig.addConfig(sub, prop)
+
+                    Subscription.findAllByInstanceOf(sub).each { Subscription m ->
+                        m.setProperty(prop, sub.getProperty(prop))
+                        m.save()
+                    }
+                }
+            }
+            else if(!value) {
+                AuditConfig.removeConfig(sub, prop)
+                Subscription.findAllByInstanceOf(sub).each { Subscription m ->
+                    m.setProperty(prop, null)
+                    m.save()
+                }
+            }
+        }
+        render([success: true] as JSON)
+    }
+
     /**
      * Toggles inheritance of the given identifier object, i.e. passes or retires an identifier to or from member objects
      * This change is being reflected via a {@link PendingChange} because the inheritance means a change on the object itself and each consortium may decide
@@ -1274,6 +1221,19 @@ class AjaxController {
             subscriptionService.inheritIdentifier(owner, identifier)
         }
         render template: "/templates/meta/identifierList", model: identifierService.prepareIDsForTable(owner)
+    }
+
+    /**
+     * Toggles inheritance of the given alternative name, i.e. passes or retires an alternative name to or from member objects
+     */
+    @Secured(['ROLE_USER'])
+    def toggleAlternativeNameAuditConfig() {
+        def owner = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
+        if(formService.validateToken(params)) {
+            AlternativeName altName  = AlternativeName.get(params.id)
+            subscriptionService.inheritAlternativeName(owner, altName)
+        }
+        redirect(url: request.getHeader('referer'))
     }
 
     /**
@@ -1293,13 +1253,11 @@ class AjaxController {
             AbstractPropertyWithCalculatedLastUpdated property = genericOIDService.resolveOID(params.oid)
             property.isPublic = !property.isPublic
             property.save()
-            Org contextOrg = contextService.getOrg()
             request.setAttribute("editable", params.editable == "true")
             if(params.propDefGroup) {
                 render(template: "/templates/properties/group", model: [
                         ownobj          : property.owner,
                         newProp         : property,
-                        contextOrg      : contextOrg,
                         showConsortiaFunctions: params.showConsortiaFunctions == "true",
                         propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
                         custom_props_div: "${params.custom_props_div}", // JS markup id
@@ -1307,12 +1265,11 @@ class AjaxController {
                 ])
             }
             else {
-                Map<String, Object>  allPropDefGroups = property.owner.getCalculatedPropDefGroups(contextOrg)
+                Map<String, Object>  allPropDefGroups = property.owner.getCalculatedPropDefGroups(contextService.getOrg())
 
                 Map<String, Object> modelMap =  [
                         ownobj                : property.owner,
                         newProp               : property,
-                        contextOrg            : contextOrg,
                         showConsortiaFunctions: params.showConsortiaFunctions == "true",
                         custom_props_div      : "${params.custom_props_div}", // JS markup id
                         prop_desc             : property.type.descr, // form data
@@ -1344,7 +1301,6 @@ class AjaxController {
         def owner     = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
         def property  = propClass.get(params.id)
         def prop_desc = property.getType().getDescr()
-        Org contextOrg = contextService.getOrg()
 
         if (AuditConfig.getConfig(property, AuditConfig.COMPLETE_OBJECT)) {
             AuditConfig.removeAllConfigs(property)
@@ -1361,14 +1317,14 @@ class AjaxController {
 
                     // multi occurrence props; add one additional with backref
                     if (property.type.multipleOccurrence) {
-                        AbstractPropertyWithCalculatedLastUpdated additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type, contextOrg)
+                        AbstractPropertyWithCalculatedLastUpdated additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type, contextService.getOrg())
                         additionalProp = property.copyInto(additionalProp)
                         additionalProp.instanceOf = property
                         additionalProp.isPublic = true
                         additionalProp.save()
                     }
                     else {
-                        List<AbstractPropertyWithCalculatedLastUpdated> matchingProps = property.getClass().findAllByOwnerAndTypeAndTenant(member, property.type, contextOrg)
+                        List<AbstractPropertyWithCalculatedLastUpdated> matchingProps = property.getClass().findAllByOwnerAndTypeAndTenant(member, property.type, contextService.getOrg())
                         // unbound prop found with matching type, set backref
                         if (matchingProps) {
                             matchingProps.each { AbstractPropertyWithCalculatedLastUpdated memberProp ->
@@ -1379,7 +1335,7 @@ class AjaxController {
                         }
                         else {
                             // no match found, creating new prop with backref
-                            AbstractPropertyWithCalculatedLastUpdated newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type, contextOrg)
+                            AbstractPropertyWithCalculatedLastUpdated newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type, contextService.getOrg())
                             newProp = property.copyInto(newProp)
                             newProp.instanceOf = property
                             newProp.isPublic = true
@@ -1399,7 +1355,6 @@ class AjaxController {
                   newProp         : property,
                   showConsortiaFunctions: params.showConsortiaFunctions,
                   propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
-                  contextOrg      : contextOrg,
                   custom_props_div: "${params.custom_props_div}", // JS markup id
                   prop_desc       : prop_desc // form data
           ])
@@ -1413,7 +1368,6 @@ class AjaxController {
                     showConsortiaFunctions: params.showConsortiaFunctions,
                     custom_props_div      : "${params.custom_props_div}", // JS markup id
                     prop_desc             : prop_desc, // form data
-                    contextOrg            : contextOrg,
                     orphanedProperties    : allPropDefGroups.orphanedProperties
             ]
             render(template: "/templates/properties/custom", model: modelMap)
@@ -1424,59 +1378,61 @@ class AjaxController {
      * Removes the given custom property from the object
      */
     @Secured(['ROLE_USER'])
-    @Transactional
     def deleteCustomProperty() {
-        String className = params.propClass.split(" ")[1]
-        def propClass = Class.forName(className)
-        def owner     = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
-        def property  = propClass.get(params.id)
-        def prop_desc = property.getType().getDescr()
-        Org contextOrg = contextService.getOrg()
+        Subscription.withTransaction { TransactionStatus ts ->
+            String className = params.propClass.split(" ")[1]
+            def propClass = Class.forName(className)
+            def owner     = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
+            def property  = propClass.get(params.id)
+            def prop_desc = property.getType().getDescr()
 
-        AuditConfig.removeAllConfigs(property)
+            AuditConfig.removeAllConfigs(property)
 
-        owner.propertySet.remove(property)
+            owner.propertySet.remove(property)
 
-        try {
-            property.delete()
-        } catch (Exception e) {
-            log.error(" TODO: fix property.delete() when instanceOf ")
-        }
+            //try {
+            property.delete() //cf. ERMS-5889; execution of delete done only after template has been called - with wrong values!
+            ts.flush()
+            //} catch (Exception e) {
+            //log.error(" TODO: fix property.delete() when instanceOf ")
+            //}
 
 
-        if(property.hasErrors()) {
-            log.error(property.errors.toString())
-        }
-        else {
-            log.debug("Deleted custom property: " + property.type.name)
-        }
-        request.setAttribute("editable", params.editable == "true")
-        boolean showConsortiaFunctions = Boolean.parseBoolean(params.showConsortiaFunctions)
-        if(params.propDefGroup) {
-          render(template: "/templates/properties/group", model: [
-                  ownobj          : owner,
-                  newProp         : property,
-                  showConsortiaFunctions: showConsortiaFunctions,
-                  contextOrg      : contextOrg,
-                  propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
-                  propDefGroupBinding : genericOIDService.resolveOID(params.propDefGroupBinding),
-                  custom_props_div: "${params.custom_props_div}", // JS markup id
-                  prop_desc       : prop_desc // form data
-          ])
-        }
-        else {
-            Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextOrg)
-            Map<String, Object> modelMap =  [
-                    ownobj                : owner,
-                    newProp               : property,
-                    showConsortiaFunctions: showConsortiaFunctions,
-                    contextOrg            : contextOrg,
-                    custom_props_div      : "${params.custom_props_div}", // JS markup id
-                    prop_desc             : prop_desc, // form data
-                    orphanedProperties    : allPropDefGroups.orphanedProperties
-            ]
+            if(property.hasErrors()) {
+                log.error(property.errors.toString())
+            }
+            else {
+                log.debug("Deleted custom property: " + property.type.name)
+            }
+            request.setAttribute("editable", params.editable == "true")
+            boolean showConsortiaFunctions = Boolean.parseBoolean(params.showConsortiaFunctions)
+            if(params.propDefGroup) {
+                PropertyDefinitionGroup propDefGroup = genericOIDService.resolveOID(params.propDefGroup)
+                PropertyDefinitionGroupBinding propDefGroupBinding = genericOIDService.resolveOID(params.propDefGroupBinding)
+                Map<String, Object> modelMap = [
+                        ownobj          : owner,
+                        newProp         : property,
+                        showConsortiaFunctions: showConsortiaFunctions,
+                        propDefGroup    : propDefGroup,
+                        propDefGroupBinding : propDefGroupBinding,
+                        custom_props_div: "${params.custom_props_div}", // JS markup id
+                        prop_desc       : prop_desc // form data
+                ]
+                render(template: "/templates/properties/group", model: modelMap)
+            }
+            else {
+                Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
+                Map<String, Object> modelMap =  [
+                        ownobj                : owner,
+                        newProp               : property,
+                        showConsortiaFunctions: showConsortiaFunctions,
+                        custom_props_div      : "${params.custom_props_div}", // JS markup id
+                        prop_desc             : prop_desc, // form data
+                        orphanedProperties    : allPropDefGroups.orphanedProperties
+                ]
 
-            render(template: "/templates/properties/custom", model: modelMap)
+                render(template: "/templates/properties/custom", model: modelMap)
+            }
         }
     }
 
@@ -1506,7 +1462,6 @@ class AjaxController {
             ownobj: owner,
             tenant: tenant,
             newProp: property,
-            contextOrg: contextService.getOrg(),
             propertyWrapper: "private-property-wrapper-${tenant.id}",  // JS markup id
             prop_desc: prop_desc // form data
     ])
@@ -1542,8 +1497,8 @@ class AjaxController {
         result.institution = contextService.getOrg()
         flash.error = ''
 
-        if (! (result.user as User).isFormal(result.institution as Org)) {
-            flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
+        if (! (result.user as User).isFormal(contextService.getOrg())) {
+            flash.error = "You do not have permission to access. Please request access on the profile page"
             response.sendError(HttpStatus.SC_FORBIDDEN)
             return
         }
@@ -1562,14 +1517,13 @@ class AjaxController {
             else            flash.error += message(code:'dashboardDueDate.err.toShow.doesNotExist')
         }
 
-        result.is_inst_admin = userService.hasFormalAffiliation(result.user, result.institution, 'INST_ADM')
-        result.editable = userService.hasFormalAffiliation(result.user, result.institution, 'INST_EDITOR')
+        result.editable = contextService.isInstEditor()
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.dashboardDueDatesOffset = result.offset
 
-        result.dueDates = dashboardDueDatesService.getDashboardDueDates(contextService.getUser(), contextService.getOrg(), false, false, result.max, result.dashboardDueDatesOffset)
-        result.dueDatesCount = dashboardDueDatesService.getDashboardDueDates(contextService.getUser(), contextService.getOrg(), false, false).size()
+        result.dueDates = dashboardDueDatesService.getDashboardDueDates(contextService.getUser(), result.max, result.dashboardDueDatesOffset)
+        result.dueDatesCount = dashboardDueDatesService.countDashboardDueDates(contextService.getUser())
 
         render (template: "/user/tableDueDates", model: [dueDates: result.dueDates, dueDatesCount: result.dueDatesCount, max: result.max, offset: result.offset])
     }
@@ -1604,17 +1558,17 @@ class AjaxController {
         result.institution = contextService.getOrg()
         flash.error = ''
 
-        if (! (result.user as User).isFormal(result.institution as Org)) {
-            flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
+        if (! (result.user as User).isFormal(contextService.getOrg())) {
+            flash.error = "You do not have permission to access. Please request access on the profile page"
             response.sendError(HttpStatus.SC_FORBIDDEN)
             return
         }
-
 
         if (params.owner) {
             DueDateObject dueDateObject = (DueDateObject) genericOIDService.resolveOID(params.owner)
             if (dueDateObject){
                 Object obj = genericOIDService.resolveOID(dueDateObject.oid)
+//                Object obj = dueDateObject.getObject() // TODO - ERMS-5862
                 if (obj instanceof Task && isDone){
                     Task dueTask = (Task)obj
                     dueTask.setStatus(RDStore.TASK_STATUS_DONE)
@@ -1631,76 +1585,15 @@ class AjaxController {
             else          flash.error += message(code:'dashboardDueDate.err.toSetUndone.doesNotExist')
         }
 
-        result.is_inst_admin = userService.hasFormalAffiliation(result.user, result.institution, 'INST_ADM')
-        result.editable = userService.hasFormalAffiliation(result.user, result.institution, 'INST_EDITOR')
+        result.editable = contextService.isInstEditor()
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.dashboardDueDatesOffset = result.offset
 
-        result.dueDates = dashboardDueDatesService.getDashboardDueDates(contextService.getUser(), contextService.getOrg(), false, false, result.max, result.dashboardDueDatesOffset)
-        result.dueDatesCount = dashboardDueDatesService.getDashboardDueDates(contextService.getUser(), contextService.getOrg(), false, false).size()
+        result.dueDates = dashboardDueDatesService.getDashboardDueDates(contextService.getUser(), result.max, result.dashboardDueDatesOffset)
+        result.dueDatesCount = dashboardDueDatesService.countDashboardDueDates(contextService.getUser())
 
         render (template: "/user/tableDueDates", model: [dueDates: result.dueDates, dueDatesCount: result.dueDatesCount, max: result.max, offset: result.offset])
-    }
-
-    /**
-     * Deletes a person (contact)-object-relation. Is a substitution call for {@link #deletePersonRole()}
-     * @see Person
-     * @see PersonRole
-     */
-    @Secured(['ROLE_USER'])
-    @Transactional
-    def delete() {
-      switch(params.cmd) {
-        case 'deletePersonRole': deletePersonRole()
-        break
-        default: def obj = genericOIDService.resolveOID(params.oid)
-          if (obj) {
-            obj.delete()
-          }
-        break
-      }
-      redirect(url: request.getHeader('referer'))
-    }
-
-    /**
-     * Deletes a person (contact)-object-relation
-     * @see Person
-     * @see PersonRole
-     */
-    @Secured(['ROLE_ADMIN'])
-    @Transactional
-    def deletePersonRole(){
-        PersonRole personRole = genericOIDService.resolveOID(params.oid) as PersonRole
-        if (personRole) {
-            personRole.delete()
-        }
-    }
-
-    /**
-     * De-/activates the editing mode in certain views. Viewing mode prevents editing of values in those views despite
-     * the context user has editing rights to the object
-     * @return the changed view
-     */
-    @Transactional
-    @Secured(['ROLE_USER'])
-    def toggleEditMode() {
-        log.debug ('toggleEditMode()')
-
-        User user = contextService.getUser()
-        def show = params.showEditMode
-
-        if (show) {
-            def setting = user.getSetting(UserSetting.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES)
-
-            if (show == 'true') {
-                setting.setValue(RDStore.YN_YES)
-            }
-            else if (show == 'false') {
-                setting.setValue(RDStore.YN_NO)
-            }
-        }
-        render show
     }
 
     /**
@@ -1737,115 +1630,12 @@ class AjaxController {
     }
 
     /**
-     * Adds a new object to a given collection. Currently only used for UserController.edit()
-     */
-    @Transactional
-    @Secured(['ROLE_USER'])
-  def addToCollection() {
-    log.debug("AjaxController::addToCollection ${params}");
-
-    def contextObj = resolveOID2(params.__context)
-    Class dc = CodeUtils.getDomainClass( params.__newObjectClass )
-    if ( dc ) {
-
-        if ( contextObj ) {
-            log.debug("Create a new instance of ${params.__newObjectClass}")
-
-            def new_obj = dc.newInstance()
-            PersistentEntity new_obj_pe = CodeUtils.getPersistentEntity(dc.name)
-
-            new_obj_pe.persistentProperties.each { p ->
-                if ( params[p.name] ) {
-                    log.debug("set simple prop ${p.name} = ${params[p.name]}")
-                    new_obj[p.name] = params[p.name]
-                }
-            }
-            new_obj_pe.associations.each { p ->
-                if ( params[p.name] ) {
-                    if ( p.toString().startsWith('one-to-one:') || p.toString().startsWith('many-to-one:') ) { // TODO -- implementation
-                        // Set ref property
-                        log.debug("set assoc ${p.name} to lookup of OID ${params[p.name]}")
-                        // if ( key == __new__ then we need to create a new instance )
-                        def new_assoc = resolveOID2(params[p.name])
-                        if (new_assoc){
-                            new_obj[p.name] = new_assoc
-                        }
-                    }
-                    else {
-                        // Add to collection
-                        log.debug("add to collection ${p.name} for OID ${params[p.name]}")
-                        new_obj[p.name].add(resolveOID2(params[p.name]))
-                    }
-                }
-            }
-
-        if ( params.__recip ) {
-          // log.debug("Set reciprocal property ${params.__recip} to ${contextObj}");
-          new_obj[params.__recip] = contextObj
-        }
-
-        // log.debug("Saving ${new_obj}");
-        try{
-          if ( new_obj.save() ) {
-            log.debug("Saved OK")
-          }
-          else {
-            flash.domainError = new_obj
-            new_obj.errors.each { e ->
-              log.debug("Problem: ${e}")
-            }
-          }
-        }catch(Exception ex){
-
-            flash.domainError = new_obj
-            new_obj.errors.each { e ->
-            log.debug("Problem: ${e}")
-            }
-        }
-      }
-      else {
-        log.debug("Unable to locate instance of context class with oid ${params.__context}");
-      }
-    }
-    else {
-      log.error("Unable to lookup domain class ${params.__newObjectClass}");
-    }
-    redirect(url: request.getHeader('referer'))
-  }
-
-    /**
-     * Resolves the given oid and returns the object if found
-     * @param oid the oid key to resolve
-     * @return the object matching to the given oid, null otherwise
-     */
-    @Secured(['ROLE_USER'])
-  def resolveOID2(String oid) {
-    String[] oid_components = oid.split(':')
-    def result
-
-    Class dc = CodeUtils.getDomainClass(oid_components[0])
-    if (dc) {
-      if (oid_components[1] == '__new__') {
-        result = dc.refdataCreate(oid_components)
-        // log.debug("Result of create ${oid} is ${result?.id}");
-      }
-      else {
-        result = dc.get(oid_components[1])
-      }
-    }
-    else {
-      log.error("resolve OID failed to identify a domain class. Input was ${oid_components}");
-    }
-    result
-  }
-
-    /**
      * Revokes the given affiliation from the given user to the given institution.
      * Expected is a structure userId:orgId:roleId
      * @return redirects to the referer
      */
     @Transactional
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
     def unsetAffiliation() {
         String[] keys = params.key.split(':')
         if (keys.size() == 3) {
@@ -1877,7 +1667,7 @@ class AjaxController {
         log.debug("editableSetValue ${params}")
 
         def result = null
-        def target_object = resolveOID2(params.pk)
+        def target_object = genericOIDService.resolveOID(params.pk)
 
         try {
             if (target_object) {
@@ -1969,23 +1759,60 @@ class AjaxController {
                         if (target_object."${params.name}" instanceof Boolean) {
                             params.value = params.value?.equals("1")
                         }
+                        if (target_object instanceof AlternativeName) {
+                            if(!params.value)
+                                binding_properties[params.name] = 'Unknown'
+                            else binding_properties[params.name] = params.value
+                        }
                         if (params.value instanceof String) {
                             String value = params.value.startsWith('www.') ? ('http://' + params.value) : params.value
                             binding_properties[params.name] = value
                         } else {
                             binding_properties[params.name] = params.value
                         }
-                        bindData(target_object, binding_properties)
 
-                        target_object.save(failOnError: true)
+                        if(target_object instanceof Subscription && params.name == 'hasPerpetualAccess'){
+                            boolean packageProcess = false
+                            for(SubscriptionPackage sp: target_object.packages) {
+                                packageProcess = subscriptionService.checkThreadRunning('permanentTitlesProcess_' + sp.pkg.id + '_' + contextService.getOrg().id)
+                                if(packageProcess)
+                                    break
+                            }
+                            if(!subscriptionService.checkThreadRunning('permanentTitlesProcess_'+target_object.id) && !packageProcess) {
+                                if (params.value == true && target_object.hasPerpetualAccess != params.value) {
+                                    subscriptionService.setPermanentTitlesBySubscription(target_object)
+                                }
+                                if (params.value == false && target_object.hasPerpetualAccess != params.value) {
+                                    subscriptionService.removePermanentTitlesBySubscription(target_object)
+                                }
+                                bindData(target_object, binding_properties)
 
+                                target_object.save(failOnError: true)
 
-                        if (target_object."${params.name}" instanceof BigDecimal) {
-                            result = NumberFormat.getInstance( LocaleUtils.getCurrentLocale() ).format(target_object."${params.name}")
-                            //is for that German users do not cry about comma-dot-change
-                        } else {
-                            result = target_object."${params.name}"
+                                if (target_object."${params.name}" instanceof BigDecimal) {
+                                    result = NumberFormat.getInstance( LocaleUtils.getCurrentLocale() ).format(target_object."${params.name}")
+                                    //is for that German users do not cry about comma-dot-change
+                                } else {
+                                    result = target_object."${params.name}"
+                                }
+                            }else {
+                                result = [status: 'error', msg: "${message(code: 'subscription.details.permanentTitlesProcessRunning.info')}"]
+                                render result as JSON
+                                return
+                            }
+                        }else {
+                            bindData(target_object, binding_properties)
+
+                            target_object.save(failOnError: true)
+
+                            if (target_object."${params.name}" instanceof BigDecimal) {
+                                result = NumberFormat.getInstance( LocaleUtils.getCurrentLocale() ).format(target_object."${params.name}")
+                                //is for that German users do not cry about comma-dot-change
+                            } else {
+                                result = target_object."${params.name}"
+                            }
                         }
+
                         break
                 }
 
@@ -2023,13 +1850,27 @@ class AjaxController {
         outs.close()
     }
 
+    @Secured(['ROLE_ADMIN'])
+    def addUserRole() {
+        User user = User.get(params.long('user'))
+        Role role = Role.get(params.long('role'))
+        if (user && role) {
+            UserRole ur = UserRole.create(user, role)
+
+            if (ur.hasErrors()) {
+                flash.error = "${message(code: 'default.save.error.general.message')}"
+            }
+        }
+        redirect(url: request.getHeader('referer'))
+    }
+
     /**
      * Revokes the given role from the given user
      */
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
     def removeUserRole() {
-        User user = resolveOID2(params.user) as User
-        Role role = resolveOID2(params.role) as Role
+        User user = User.get(params.long('user'))
+        Role role = Role.get(params.long('role'))
         if (user && role) {
             UserRole.remove(user, role)
         }
@@ -2062,111 +1903,6 @@ class AjaxController {
   }
 
     /**
-     * Deletes the given task
-     */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
-    })
-    def deleteTask() {
-
-        if (params.deleteId) {
-            Task.withTransaction {
-                Task dTask = Task.get(params.deleteId)
-                boolean isCreator  = dTask.creator.id == contextService.getUser().id
-                boolean isRespUser = dTask.responsibleUser && dTask.responsibleUser.id == contextService.getUser().id
-                boolean isRespOrg  = dTask.responsibleOrg && dTask.responsibleOrg.id == contextService.getOrg().id
-                if (dTask && (isCreator || isRespUser || isRespOrg)) {
-                    try {
-                        flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title]) as String
-                        dTask.delete()
-                    }
-                    catch (Exception e) {
-                        log.error(e)
-                        flash.error = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), dTask.title]) as String
-                    }
-                } else {
-                    if (!dTask) {
-                        flash.error = message(code: 'default.not.found.message', args: [message(code: 'task.label'), params.deleteId]) as String
-                    } else {
-                        flash.error = message(code: 'default.noPermissions') as String
-                    }
-                }
-            }
-        }
-        if(params.returnToShow) {
-            redirect action: 'show', id: params.id, controller: params.returnToShow
-            return
-        }
-        else {
-            redirect(url: request.getHeader('referer'))
-            return
-        }
-    }
-
-    @Deprecated
-    @Secured(['ROLE_USER'])
-    def dashboardChangesSetAccept() {
-        _setDashboardChangesStatus(RDStore.PENDING_CHANGE_ACCEPTED)
-    }
-
-    @Deprecated
-    @Secured(['ROLE_USER'])
-    def dashboardChangesSetReject() {
-        _setDashboardChangesStatus(RDStore.PENDING_CHANGE_REJECTED)
-    }
-
-    @Deprecated
-    @Secured(['ROLE_USER'])
-    @Transactional
-    private _setDashboardChangesStatus(RefdataValue refdataValue){
-        log.debug("DsetDashboardChangesStatus - refdataValue="+refdataValue.value)
-
-        Map<String, Object> result = [:]
-        result.user = contextService.getUser()
-        result.institution = contextService.getOrg()
-        flash.error = ''
-
-        if (! (result.user as User).isFormal(result.institution as Org)) {
-            flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
-            response.sendError(HttpStatus.SC_FORBIDDEN)
-            return
-        }
-
-        if (params.id) {
-            PendingChange pc = PendingChange.get(params.long('id'))
-            if (pc){
-                pc.status = refdataValue
-                pc.actionDate = new Date()
-                if(!pc.save()) {
-                    throw new ChangeAcceptException("problems when submitting new pending change status: ${pc.errors}")
-                }
-            } else {
-                flash.error += message(code:'dashboardChanges.err.toChangeStatus.doesNotExist')
-            }
-        } else {
-            flash.error += message(code:'dashboardChanges.err.toChangeStatus.doesNotExist')
-        }
-
-        SwissKnife.setPaginationParams(result, params, (User) result.user)
-        result.acceptedOffset = params.acceptedOffset ? params.int("acceptedOffset") : result.offset
-        result.pendingOffset = params.pendingOffset ? params.int("pendingOffset") : result.offset
-        def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
-        Map<String, Object> pendingChangeConfigMap = [
-                contextOrg: result.institution,
-                consortialView: (result.institution as Org).isCustomerType_Consortium(),
-                periodInDays:periodInDays,
-                max:result.max,
-                acceptedOffset:result.acceptedOffset,
-                pendingOffset: result.pendingOffset
-        ]
-        Map<String, Object> changes = pendingChangeService.getChanges(pendingChangeConfigMap)
-        changes.max = result.max
-        changes.editable = result.editable
-        render template: '/myInstitution/changesWrapper', model: changes
-    }
-
-    /**
      * Method under development; concept of cost per use is not fully elaborated yet
      * Generates for the given subsciption and its holding a cost per use calculation, i.e. a cost analysis for the regarded COUNTER report
      * @return a table view of the cost analysis, depending on the given report(s)
@@ -2175,15 +1911,27 @@ class AjaxController {
     def generateCostPerUse() {
         Map<String, Object> ctrlResult = subscriptionControllerService.getStatsDataForCostPerUse(params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_OK) {
+            if(ctrlResult.result.containsKey('alternatePeriodStart') && ctrlResult.result.containsKey('alternatePeriodEnd')) {
+                SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+                ctrlResult.result.selectedPeriodNotCovered = message(code: 'default.stats.error.selectedPeriodNotCovered', args: [sdf.format(ctrlResult.result.alternatePeriodStart), sdf.format(ctrlResult.result.alternatePeriodEnd)] as Object[])
+            }
             ctrlResult.result.costPerUse = [:]
             if(ctrlResult.result.subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
-                ctrlResult.result.costPerUse.consortialData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "consortial")
-                if (ctrlResult.result.institution.isCustomerType_Inst_Pro()) {
-                    ctrlResult.result.costPerUse.ownData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
+                Map<String, Object> costPerUseConsortial = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "consortial")
+                ctrlResult.result.costPerUse.consortialData = costPerUseConsortial.costPerMetric
+                ctrlResult.result.consortialCosts = costPerUseConsortial.costsAllYears
+                if (ctrlResult.result.contextOrg.isCustomerType_Inst_Pro()) {
+                    Map<String, Object> costPerUseOwn = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
+                    ctrlResult.result.costPerUse.ownData = costPerUseOwn.costPerMetric
+                    ctrlResult.result.ownCosts = costPerUseOwn.costsAllYears
                 }
             }
-            else ctrlResult.result.costPerUse.ownData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
-            render template: "/subscription/costPerUse", model: ctrlResult.result
+            else {
+                Map<String, Object> costPerUseOwn = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
+                ctrlResult.result.costPerUse.ownData = costPerUseOwn.costPerMetric
+                ctrlResult.result.ownCosts = costPerUseOwn.costsAllYears
+            }
+            render template: "/templates/stats/costPerUse", model: ctrlResult.result
         }
         else [error: ctrlResult.error]
     }

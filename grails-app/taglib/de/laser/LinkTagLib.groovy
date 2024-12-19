@@ -1,5 +1,7 @@
 package de.laser
 
+import de.laser.ui.Btn
+import de.laser.ui.Icon
 import de.laser.remote.ApiSource
 
 class LinkTagLib {
@@ -9,83 +11,100 @@ class LinkTagLib {
     static namespace = 'ui'
 
     def linkWithIcon = { attrs, body ->
-        out << '<span class="la-popup-tooltip la-delay" data-position="top right" data-content="' + message(code: 'tooltip.callUrl') + '" style="bottom:-3px">&nbsp;'
-        out << '<a href="' + attrs.href + '" target="_blank" aria-label="' + attrs.href + '" class="la-js-dont-hide-button">'
-        out << '<i class="icon external alternate" aria-hidden="true"></i>'
+        out << '<span class="la-popup-tooltip" data-position="top right" data-content="' + message(code: 'tooltip.callUrl') + '" style="bottom:-3px">&nbsp;'
+        out << '<a href="' + attrs.href + '" target="_blank" aria-label="' + attrs.href + '">'
+        out << '<i class="' + (attrs.icon ?: Icon.LNK.EXTERNAL) + '" aria-hidden="true"></i>'
         out << '</a>'
         out << '</span>'
     }
-
-    // <externalIconLink href="${target}" tooltip="icon tooltip" />
-    def externalIconLink = {attrs, body ->
-        out << '<a href="' + attrs.href + '" target="_blank" aria-label="' + attrs.href + '">'
-        out << '<i class="icon external alternate" aria-hidden="true"' + (attrs.tooltip ? ' title="' + attrs.tooltip + '"' : '') + '></i>'
+    def buttonWithIcon = { attrs, body ->
+        out << '<a class="ui button icon la-modern-button la-popup-tooltip" data-position="top right" '
+        out <<        ' data-content="' + attrs.message + '" '
+        out <<        'href="' + attrs.href + '" '
+        out <<        'style="' +attrs.style + '" '
+        out <<        'target="_blank" '
+        out <<        'data-variation"' + attrs.variation + '" '
+        out <<        'aria-label="' + attrs.href + '">'
+        out << '<i class="' + attrs.icon  + '" aria-hidden="true"></i>'
         out << '</a>'
     }
 
     // <wekbIconLink href="${target}" />
     def wekbIconLink = { attrs, body ->
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        String href = ''
-        String label = ''
+        String resourceUrl  = ApiSource.getCurrent().getResourceShowURL() + '/' + attrs.gokbId
+        String href         = ''
+        String label        = 'Unbekannter Fehler'
 
         if (attrs.type == 'curatoryGroup') {
-            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
+            href  = resourceUrl
             label = message(code: 'package.curatoryGroup.label') + ' in der we:kb aufrufen'
         }
         else if (attrs.type == 'org') {
-            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
-            label = message(code: 'default.provider.label') + ' in der we:kb aufrufen'
-        }
-        else if (attrs.type == 'vendor') {
-            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
-            label = message(code: 'default.agency.label') + ' in der we:kb aufrufen'
+            href  = resourceUrl
+            label = message(code: 'provider.label') + ' in der we:kb aufrufen'
         }
         else if (attrs.type == 'package') {
-            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
+            href  = resourceUrl
             label = message(code: 'package.label') + ' in der we:kb aufrufen'
         }
         else if (attrs.type == 'platform') {
-            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
+            href  = resourceUrl
             label = message(code: 'platform.label') + ' in der we:kb aufrufen'
         }
+        else if (attrs.type == 'provider') {
+            href  = resourceUrl
+            label = message(code: 'provider.label') + ' in der we:kb aufrufen'
+        }
         else if (attrs.type == 'source') {
-            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
+            href  = resourceUrl
             label = message(code: 'package.source.label') + ' in der we:kb aufrufen'
         }
         else if (attrs.type == 'tipp') {
-            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
+            href  = resourceUrl
             label = message(code: 'title.label') + ' in der we:kb aufrufen'
         }
-        out << '<span class="la-popup-tooltip la-delay" data-position="top right" data-content="' + label + '" >&nbsp;'
+        else if (attrs.type == 'vendor') {
+            href  = resourceUrl
+            label = message(code: 'vendor.label') + ' in der we:kb aufrufen'
+        }
+        out << '<span class="la-popup-tooltip" data-position="top right" data-content="' + label + '" >&nbsp;'
         out << '<a href="' + href + '" target="_blank" aria-label="' + label + '">'
-        out << '<i class="icon small la-gokb" aria-hidden="true"></i>'
+        out << '<i class="' + Icon.WEKB + ' small" aria-hidden="true"></i>'
         out << '</a>'
         out << '</span>'
     }
 
     def wekbButtonLink = { attrs, body ->
-        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        String href = ''
-        String label = ''
+        String resourceUrl  = ApiSource.getCurrent().getResourceShowURL() + '/' + attrs.gokbId
+        String href         = ''
+        String label        = ''
 
         if (attrs.type == 'org') {
-            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
-            label = message(code: 'default.provider.label') + ' in der we:kb aufrufen'
+            href  = resourceUrl
+            label = message(code: 'provider.label') + ' in der we:kb aufrufen'
+        }
+        else if (attrs.type == 'vendor') {
+            href  = resourceUrl
+            label = message(code: 'vendor.label') + ' in der we:kb aufrufen'
         }
         else if (attrs.type == 'platform') {
-            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
+            href  = resourceUrl
             label = message(code: 'platform.label') + ' in der we:kb aufrufen'
         }
 
         out << '<a href="' + href + '" target="_blank" aria-label="' + label + '" '
-        out << 'class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay" '
+        out << 'class="' + Btn.MODERN.SIMPLE_TOOLTIP + '" '
         out << 'data-position="top right" data-content="' + label + '" '
-//        out << 'data-content="' + message(code: 'org.isWekbCurated.header.label') + '" '
-//        out << 'aria-label="' + message(code: 'org.isWekbCurated.header.label') + '" '
         out << 'role="button">'
 
-        out << '<i class="icon la-gokb" aria-hidden="true"></i>'
+        out << '<i class="' + Icon.WEKB + '" aria-hidden="true"></i>'
         out << '</a>'
+    }
+
+    def skipLink  = { attrs, body ->
+//        out << '<!-- skip to main content / for screenreader --!>'
+        out << '<nav class="la-skipLink" role="navigation" aria-label="' + message(code:'accessibility.jumpLink') + '">'
+        out << '<p><a href="#main" class="la-screenReaderText">"' + message(code:'accessibility.jumpToMain') + '"</a></p>'
+        out << '</nav>'
     }
 }

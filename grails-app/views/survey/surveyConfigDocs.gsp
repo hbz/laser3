@@ -1,5 +1,5 @@
-<%@ page import="de.laser.Doc; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;" %>
-<laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyConfigDocs.label')})" serviceInjection="true"/>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.Doc; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;" %>
+<laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyConfigDocs.label')})" />
 
 <ui:breadcrumbs>
 %{--    <ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}"/>--}%
@@ -13,13 +13,17 @@
 </ui:breadcrumbs>
 
 <ui:controlButtons>
+    <laser:render template="exports"/>
     <laser:render template="actions"/>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon type="Survey">
-<ui:xEditable owner="${surveyInfo}" field="name"/>
-</ui:h1HeaderWithIcon>
-<uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="surveyConfigDocs"/>
+<ui:h1HeaderWithIcon text="${surveyInfo.name}" type="Survey"/>
+
+<uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="${actionName}"/>
+
+<g:if test="${surveyConfig.subscription}">
+ <ui:buttonWithIcon style="vertical-align: super;" message="${message(code: 'button.message.showLicense')}" variation="tiny" icon="${Icon.SUBSCRIPTION}" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+</g:if>
 
 <laser:render template="nav"/>
 
@@ -30,8 +34,8 @@
 <br />
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">
-    <g:if test="${surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]}">
-        <i class="icon clipboard outline la-list-icon"></i>
+    <g:if test="${surveyConfig.subscription}">
+        <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
         <g:link controller="subscription" action="show" id="${surveyConfig.subscription.id}">
             ${surveyConfig.getConfigNameShort()}
         </g:link>
@@ -42,38 +46,17 @@
 </h2>
 <br />
 
-%{--<p><strong>${message(code: 'surveyConfigDocs.info')}</strong></p>
-<br />--}%
-
-
 <g:if test="${surveyConfig}">
 
     <div class="ui grid">
-%{--<div class="four wide column">
-    <div class="ui vertical fluid menu">
-        <g:each in="${surveyConfigs.sort { it.configOrder }}" var="config" status="i">
 
-            <g:link class="item ${params.surveyConfigID == config?.id.toString() ? 'active' : ''}"
-                    controller="survey" action="surveyConfigDocs"
-                    id="${config?.surveyInfo?.id}" params="[surveyConfigID: config?.id]">
-
-                <h5 class="ui header">${config?.getConfigNameShort()}</h5>
-                ${SurveyConfig.getLocalizedValue(config?.type)}
-
-
-                <div class="ui floating circular label">${config?.getCurrentDocs().size() ?: 0}</div>
-            </g:link>
-        </g:each>
-    </div>
-</div>
---}%
     <div class="sixteen wide stretched column">
 
         <ui:greySegment>
 
             <div class="four wide column">
-                <button type="button" class="ui icon button blue la-modern-button right floated" data-ui="modal"
-                        data-href="#modalCreateDocument"><i class="plus icon"></i></button>
+                <button type="button" class="${Btn.MODERN.SIMPLE} right floated" data-ui="modal"
+                        data-href="#modalCreateDocument"><i class="${Icon.CMD.ADD}"></i></button>
 %{--                <laser:render template="/templates/documents/modal"--}%
 %{--                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>--}%
             </div>
@@ -99,7 +82,7 @@
                             %{--ERMS-4524--}%
                             <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />
                             <g:if test="${docctx.isDocAFile() && supportedMimeType}">
-                                <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title}</a>
+                                <a href="#documentPreview" data-dctx="${docctx.id}">${docctx.owner.title}</a>
                             </g:if>
                             <g:else>
                                 ${docctx.owner.title}
@@ -115,29 +98,28 @@
                             %{--ERMS-4529--}%
                             <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
                             %{--//Vorerst alle Umfrage Dokumente als geteilt nur Kennzeichen--}%
-                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'property.share.tooltip.on')}">
-                                <i class="green alternate share icon"></i>
+                            <span class="la-popup-tooltip" data-content="${message(code: 'property.share.tooltip.on')}">
+                                <i class="${Icon.SIG.SHARED_OBJECT_ON} green"></i>
                             </span>
                         </td>
                         <td class="x">
                             <g:if test="${docctx.isDocAFile()}">
-
-                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i
-                                        class="download icon"></i></g:link>
+                                <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i
+                                        class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                                 <g:if test="${editable && !docctx.sharedFrom}">
-                                    <button type="button" class="ui icon blue button la-modern-button la-popup-tooltip la-delay" data-ui="modal"
+                                    <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-ui="modal"
                                             href="#modalEditDocument_${docctx.id}"
                                             data-content="${message(code: "template.documents.edit")}"
                                             aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                        <i class="pencil icon"></i></button>
+                                        <i class="${Icon.CMD.EDIT}"></i></button>
                                     <g:link controller="${controllerName}" action="deleteDocuments"
-                                            class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                            class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                             data-confirm-term-how="delete"
                                             params='[surveyConfigID: surveyConfig.id, id: surveyInfo.id, deleteId: "${docctx.id}", redirectAction: "${actionName}"]'
                                             role="button"
                                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                        <i class="trash alternate outline icon"></i>
+                                        <i class="${Icon.CMD.DELETE}"></i>
                                     </g:link>
                                 </g:if>
                             </g:if>

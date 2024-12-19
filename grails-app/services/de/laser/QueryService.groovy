@@ -38,9 +38,10 @@ class QueryService {
      * @param contextUser the user whose due objects should be retrieved
      * @return a list of objects with upcoming due dates
      */
-    List getDueObjectsCorrespondingUserSettings(Org contextOrg, User contextUser) {
+    List getDueObjectsCorrespondingUserSettings(User contextUser) {
         java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
         ArrayList dueObjects = new ArrayList()
+        Org contextOrg = contextUser.formalOrg
 
         if (contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE)==RDStore.YN_YES || contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD)==RDStore.YN_YES) {
             def endDateFrom =                (contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE)==RDStore.YN_YES)? today : null
@@ -49,16 +50,15 @@ class QueryService {
             def manualCancellationDateTo =   (contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD)==RDStore.YN_YES)? _computeInfoDate(contextUser, UserSetting.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD) : null
             getDueSubscriptions(contextOrg, endDateFrom, endDateTo, manualCancellationDateFrom, manualCancellationDateTo).each{
 
-                if ( ! (it._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION]) ) {
+                if ( !(it._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION]) && (!it.isAutomaticRenewAnnually || it._getCalculatedSuccessor().size() == 0)) {
                     dueObjects << it
                 }
             }
         }
 
         if (contextUser.getSettingsValue(UserSetting.KEYS.IS_REMIND_FOR_TASKS)==RDStore.YN_YES) {
-            dueObjects.addAll( taskService.getTasksByResponsibles(
+            dueObjects.addAll( taskService.getTasksByResponsibility(
                     contextUser,
-                    contextOrg,
                     [query:" and t.status = :open and t.endDate <= :endDate",
                      queryParams:[open: RDStore.TASK_STATUS_OPEN,
                                   endDate: _computeInfoDate(contextUser, UserSetting.KEYS.REMIND_PERIOD_FOR_TASKS)]]) )
@@ -202,6 +202,18 @@ class QueryService {
     List<OrgProperty> getDueOrgPrivateProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue) {
         Map query = _getQuery(OrgProperty.class, contextOrg, fromDateValue, toDateValue, false)
         OrgProperty.executeQuery(query.query, query.queryParams)
+    }
+
+    /**
+     * Retrieves due public vendor properties
+     * @param contextOrg the institution whose properties should be accessed
+     * @param fromDateValue from when should objects being retrieved?
+     * @param toDateValue until when should objects being retrieved?
+     * @return a list of upcoming due organisation properties
+     */
+    List<OrgProperty> getDueVendorPrivateProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue) {
+        Map query = _getQuery(VendorProperty.class, contextOrg, fromDateValue, toDateValue, false)
+        VendorProperty.executeQuery(query.query, query.queryParams)
     }
 
     /**

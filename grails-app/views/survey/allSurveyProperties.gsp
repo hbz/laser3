@@ -1,6 +1,6 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;de.laser.RefdataValue; de.laser.survey.SurveyConfig" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;de.laser.RefdataValue; de.laser.survey.SurveyConfig" %>
 
-<laser:htmlStart message="myinst.currentSubscriptions.label" serviceInjection="true"/>
+<laser:htmlStart message="myinst.currentSubscriptions.label" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
@@ -12,10 +12,8 @@
     <ui:crumb message="myinst.currentSubscriptions.label" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon type="Survey">
-    <ui:xEditable owner="${surveyInfo}" field="name"/>
-    <uiSurvey:status object="${surveyInfo}"/>
-</ui:h1HeaderWithIcon>
+<ui:h1HeaderWithIcon text="${surveyInfo.name}" type="Survey"/>
+<uiSurvey:status object="${surveyInfo}"/>
 
 <laser:render template="nav"/>
 
@@ -23,7 +21,7 @@
 
 
 <g:if test="${editable}">
-    <input class="ui button" value="${message(code:'surveyProperty.create_new')}"
+    <input class="${Btn.SIMPLE}" value="${message(code:'surveyProperty.create_new')}"
            data-ui="modal" data-href="#createSurveyPropertyModal" type="submit">
 </g:if>
 
@@ -31,10 +29,10 @@
 
     <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyProperty.all.label')}
 
-        <i class="question circle icon la-popup"></i>
+        <i class="${Icon.TOOLTIP.HELP} la-popup"></i>
 
         <div class="ui popup">
-            <i class="shield alternate icon"></i> = ${message(code: 'subscription.properties.my')}
+            <i class="${Icon.PROP.IS_PRIVATE}"></i> = ${message(code: 'subscription.properties.my')}
         </div>
         <ui:totalNumber total="${properties.size()}"/>
 
@@ -67,7 +65,7 @@
                 <td>
                     <g:if test="${property?.tenant && property?.tenant.id == institution.id}">
                         <ui:xEditable owner="${property}" field="name_${SUBSTITUTE}" type="textarea"/>
-                        <i class='shield alternate icon'></i>
+                        <i class='${Icon.PROP.IS_PRIVATE}'></i>
                     </g:if>
                     <g:else>
                         ${property?.getI10n('name')}
@@ -100,13 +98,13 @@
                 </td>
                 <td class="x">
                     <g:if test="${property.countUsages() == 0 && property?.tenant?.id == institution?.id}">
-                        <g:link action="deleteSurveyProperty" id="${params.id}" params="[deleteId: property?.id]"
-                                class="ui icon negative button js-open-confirm-modal"
+                        <g:link action="actionsForSurveyProperty" id="${params.id}" params="[deleteId: property?.id, actionForSurveyProperty: 'deleteSurveyProperty']"
+                                class="${Btn.ICON.NEGATIVE_CONFIRM}"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [property.getI10n('name')])}"
                                 data-confirm-term-how="delete"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                            <i class="trash alternate outline icon"></i>
+                            <i class="${Icon.CMD.DELETE}"></i>
                         </g:link>
                     </g:if>
                 </td>
@@ -117,24 +115,23 @@
 </ui:greySegment>
 
 <ui:modal id="createSurveyPropertyModal" message="surveyProperty.create_new.label">
-    <div class=" content">
 
-    <g:form class="ui form" action="createSurveyProperty" method="post" params="[surveyInfo: surveyInfo?.id]">
+    <g:form class="ui form" action="actionsForSurveyProperty" method="post" params="[id: surveyInfo?.id, actionForSurveyProperty: 'createSurveyProperty']">
 
         <div class="field">
-            <label class="property-label">Name</label>
-            <input type="text" name="pd_name"/>
+            <label for="pd_name" class="property-label">Name</label>
+            <input type="text" name="pd_name" id="pd_name"/>
         </div>
 
         <div class="field">
-            <label class="property-label">${message(code: 'propertyDefinition.expl.label')}</label>
-            <textarea class="la-textarea-resize-vertical" name="pd_expl" id="pd_expl" class="ui textarea" rows="2"></textarea>
+            <label for="pd_expl" class="property-label">${message(code: 'propertyDefinition.expl.label')}</label>
+            <textarea class="ui textarea la-textarea-resize-vertical" name="pd_expl" id="pd_expl" rows="2"></textarea>
         </div>
 
         <div class="fields">
 
             <div class="field six wide">
-                <label class="property-label">${message(code: 'default.description.label')}</label>
+                <label for="pd_descr" class="property-label">${message(code: 'default.description.label')}</label>
                 <%--<g:select name="pd_descr" from="${PropertyDefinition.AVAILABLE_PRIVATE_DESCR}"/>--%>
                 <select name="pd_descr" id="pd_descr" class="ui dropdown">
                     <g:each in="${[PropertyDefinition.SVY_PROP]}" var="pd">
@@ -145,7 +142,7 @@
             </div>
 
             <div class="field five wide">
-                <label class="property-label"><g:message code="default.type.label"/></label>
+                <label for="pd_type" class="property-label"><g:message code="default.type.label"/></label>
                 <g:select class="ui dropdown"
                           from="${PropertyDefinition.validTypes.entrySet()}"
                           optionKey="key" optionValue="${{ PropertyDefinition.getLocalizedValue(it.key) }}"

@@ -53,7 +53,7 @@ class AuditLogEvent implements Serializable {
         eventName(nullable: true)
         propertyName(nullable: true)
 
-        if(Holders.config.auditLog.largeValueColumnTypes) {
+        if (Holders.config.getProperty('grails.plugin.auditLog.largeValueColumnTypes', Boolean)) {
             oldValue(nullable: true, maxSize: 65534)
             newValue(nullable: true, maxSize: 65534)
         }
@@ -65,10 +65,10 @@ class AuditLogEvent implements Serializable {
 
     static mapping = {
         // GPAUDITLOGGING-30
-        table Holders.config.auditLog.tablename ?: 'audit_log'
+        table Holders.config.getProperty('grails.plugin.auditLog.tablename', String) ?: 'audit_log'
 
-        // Disable caching by setting auditLog.cacheDisabled = true in your app's Config.groovy
-        if (!Holders.config.auditLog.cacheDisabled) {
+        // Disable caching by setting auditLog.cacheDisabled = true
+        if (!Holders.config.getProperty('grails.plugin.auditLog.cacheDisabled', Boolean)) {
             cache usage: 'read-only', include: 'non-lazy'
         }
 

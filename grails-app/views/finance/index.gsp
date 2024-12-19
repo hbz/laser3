@@ -1,4 +1,5 @@
-<laser:htmlStart message="subscription.details.financials.label" serviceInjection="true"/>
+<%@ page import="de.laser.ExportClickMeService" %>
+<laser:htmlStart message="subscription.details.financials.label" />
 
         <g:set var="own" value="${financialData.own}"/>
         <g:set var="cons" value="${financialData.cons}"/>
@@ -13,46 +14,9 @@
 
         <ui:controlButtons>
             <ui:exportDropdown>
-                <g:if test="${filterSet}">
-                    <%--<ui:exportDropdownItem>
-                        <g:link class="item js-open-confirm-modal"
-                                 data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
-                                 data-confirm-term-how="ok"
-                                 controller="finance"
-                                 action="financialsExport"
-                                 params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}
-                        </g:link>
-                    </ui:exportDropdownItem>--%>
-                    <ui:exportDropdownItem>
-                        <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
-                    </ui:exportDropdownItem>
-                    <%--<ui:exportDropdownItem>
-                        <g:link class="item exportCSV js-open-confirm-modal"
-                                 data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartialCSV')}"
-                                 data-confirm-term-how="ok"
-                                 controller="finance"
-                                 action="financialsExport"
-                                 params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}
-                        </g:link>
-                    </ui:exportDropdownItem>--%>
-                </g:if>
-                <g:else>
-                    <%--<ui:exportDropdownItem>
-                        <g:link class="item" controller="finance" action="financialsExport" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
-                    </ui:exportDropdownItem>--%>
-                    <ui:exportDropdownItem>
-                        <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
-                    </ui:exportDropdownItem>
-                    <%--<ui:exportDropdownItem>
-                        <g:link class="item exportCSV js-open-confirm-modal"
-                                 data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportCSV')}"
-                                 data-confirm-term-how="ok"
-                                 controller="finance"
-                                 action="financialsExport"
-                                 params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}
-                        </g:link>
-                    </ui:exportDropdownItem>--%>
-                </g:else>
+                <ui:exportDropdownItem>
+                    <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.COST_ITEMS]"/>
+                </ui:exportDropdownItem>
             </ui:exportDropdown>
 
             <g:if test="${editable}">
@@ -82,5 +46,6 @@
 
         <laser:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets,ciTitles:ciTitles]" />
 
-        <laser:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal', subscription: null]" />
+        <g:render template="/clickMe/export/js"/>
+
 <laser:htmlEnd />

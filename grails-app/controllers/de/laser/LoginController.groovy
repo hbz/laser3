@@ -6,16 +6,15 @@ import de.laser.system.SystemEvent
 import de.laser.utils.CodeUtils
 import de.laser.utils.PasswordUtils
 import grails.converters.JSON
+import grails.core.GrailsApplication
 import grails.core.GrailsClass
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.SpringSecurityUtils
-import grails.core.GrailsApplication
-import grails.web.Action
+import grails.plugin.springsecurity.annotation.Secured
 import grails.web.mapping.UrlMappingInfo
 import grails.web.mapping.UrlMappingsHolder
 import org.apache.http.HttpStatus
-import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.security.authentication.AccountExpiredException
 import org.springframework.security.authentication.CredentialsExpiredException
 import org.springframework.security.authentication.DisabledException
@@ -53,25 +52,25 @@ class LoginController {
    * Show the login page.
    */
     def auth = {
-        log.debug 'Auth session: ' + request.session.id
+//        log.debug 'Attempting login ..... ' + request.getRemoteAddr() + ', ' + request.session.id
+        log.debug '+ Attempting login ..... ' + request.session.id
 
         ConfigObject config = SpringSecurityUtils.securityConfig
 
         if (springSecurityService.isLoggedIn()) {
-            log.debug 'Already logged in'
+            log.debug '+ Already logged in'
             redirect uri: config.successHandler.defaultTargetUrl
             return
         }
-        log.debug 'Attempting login'
 
         DefaultSavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, response) as DefaultSavedRequest
         if (savedRequest) {
-            log.debug 'The original request was saved as: ' + savedRequest.getRequestURL()
+            log.debug '+ Saved original request ..... ' + savedRequest.getRequestURL()
 
             boolean fuzzyCheck = _fuzzyCheck(savedRequest)
             if (!fuzzyCheck) {
                 String url = savedRequest.getRequestURL() + (savedRequest.getQueryString() ? '?' + savedRequest.getQueryString() : '')
-                log.warn 'Login failed from ' + request.getRemoteAddr() + ' for ' + url + ' ---> noted in system events'
+                log.warn '+ Login failed; invalid url; noted in system events ..... ' + request.getRemoteAddr() + ' - ' + url
 
                 SystemEvent.createEvent('LOGIN_WARNING', [
                         url: url,
@@ -129,22 +128,22 @@ class LoginController {
     def exception = session[WebAttributes.AUTHENTICATION_EXCEPTION]
     if (exception) {
       if (exception instanceof AccountExpiredException) {
-        msg = g.message(code: "springSecurity.errors.login.expired")
+        msg = g.message(code: 'springSecurity.errors.login.expired')
       }
       else if (exception instanceof CredentialsExpiredException) {
-        msg = g.message(code: "springSecurity.errors.login.passwordExpired")
-      }
-      else if (exception instanceof DisabledException) {
-        msg = g.message(code: "springSecurity.errors.login.disabled")
+        msg = g.message(code: 'springSecurity.errors.login.passwordExpired')
       }
       else if (exception instanceof LockedException) {
-        msg = g.message(code: "springSecurity.errors.login.locked")
+        msg = g.message(code: 'springSecurity.errors.login.locked') + ' ' + g.message(code: 'springSecurity.errors.login.locked.duration')
+      }
+      else if (exception instanceof DisabledException) {
+          msg = g.message(code: 'springSecurity.errors.login.disabled')
       }
       else {
-        msg = g.message(code: "springSecurity.errors.login.fail")
+        msg = g.message(code: 'springSecurity.errors.login.fail')
       }
     }
-    log.warn 'Login failed from ' + request.getRemoteAddr() + (msg ? ' ---> ' + msg : '')
+    log.warn '+ Login failed ..... ' + request.getRemoteAddr() + ' - ' + msg
 
     if (springSecurityService.isAjax(request)) {
       render([error: msg] as JSON)
@@ -227,15 +226,16 @@ class LoginController {
         boolean valid = false
 
         UrlMappingsHolder urlMappingsHolder = BeanStore.getUrlMappingsHolder()
-        UrlMappingInfo mappingInfo = urlMappingsHolder.matchAll(savedRequest.getRequestURI()).first()
+        UrlMappingInfo[] matchedMappingInfo = urlMappingsHolder.matchAll(savedRequest.getRequestURI())
 
-        if (mappingInfo) {
+        if (matchedMappingInfo.length > 0) {
+            UrlMappingInfo mappingInfo = matchedMappingInfo.first()
             GrailsClass controller = mappingInfo.hasProperty('controllerClass') ? mappingInfo.controllerClass :
                     CodeUtils.getAllControllerArtefacts().find {
                         it.clazz.simpleName == mappingInfo.controllerName.capitalize() + 'Controller'
                     }
 
-            if (controller && controller.name != 'ServerCodes') {
+            if (controller && controller.name != 'StatusCode') {
                 boolean match = mappingInfo.hasProperty('info') ? controller.actionUriToViewName.find { it.key == mappingInfo.info.params.action } : false
                 if (match) {
                     valid = true

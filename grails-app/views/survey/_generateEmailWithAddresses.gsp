@@ -1,5 +1,5 @@
 <!-- __generateEmailWithAddresses.gsp -->
-<%@ page import="de.laser.PersonRole; de.laser.Contact; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.addressbook.PersonRole; de.laser.ui.Btn; de.laser.addressbook.Contact; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 <laser:serviceInjection />
 
 <g:set var="modalID" value="${modalID ?: '_generateEmailWithAddresses_ajaxModal'}"/>
@@ -65,14 +65,14 @@
                             class="myTargetsNeu" style="width: 100%;">${mailText}</g:textArea>
             </div>
 
-            <button class="ui icon button right floated" onclick="JSPC.app.copyToClipboard()">
+            <button class="${Btn.SIMPLE} right floated" onclick="JSPC.app.copyToClipboard()">
                 ${message(code: 'menu.institutions.copy_emailaddresses_to_clipboard')}
             </button>
-            <button class="ui icon button right floated" onclick="JSPC.app.copyToEmailProgram()">
+            <button class="${Btn.SIMPLE} right floated" onclick="JSPC.app.copyToEmailProgram()">
                 ${message(code: 'menu.institutions.copy_emailaddresses_to_emailclient')}
             </button>
             <g:if test="${submitButtonValue == 'ReminderMail'}">
-                <button name="openOption" type="submit" value="ReminderMail" class="ui button left floated">
+                <button name="openOption" type="submit" value="ReminderMail" class="${Btn.SIMPLE} left floated">
                     ${message(code: 'openParticipantsAgain.reminder.participantsHasAccess')}
                 </button>
             </g:if>
@@ -103,7 +103,11 @@
                 url: '<g:createLink controller="ajaxJson" action="getEmailAddresses"/>'
                 + '?isPrivate=' + isPrivate + '&isPublic=' + isPublic + '&selectedRoleTypIds=' + selectedRoleTypIds + '&orgIdList=' + JSPC.app.jsonOrgIdList,
                 success: function (data) {
-                    $("#emailAddressesTextArea2").val(data.join('; '));
+                    let addresses = [];
+                    $.each(data, function (i, e) {
+                        addresses.push(e.join('; ')); //join multiple addresses within an org - inner row
+                    });
+                    $("#emailAddressesTextArea2").val(addresses.join('; ')); //join addresses of all orgs - outer row
                 }
             });
         }

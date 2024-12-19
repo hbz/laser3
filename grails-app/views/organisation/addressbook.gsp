@@ -1,10 +1,6 @@
-<%@ page import="de.laser.Org; de.laser.Person; de.laser.PersonRole; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants " %>
+<%@ page import="de.laser.addressbook.PersonRole; de.laser.ui.Btn; de.laser.helper.Params; de.laser.Org; de.laser.addressbook.Person; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants " %>
 
-<laser:htmlStart message="menu.institutions.myAddressbook" serviceInjection="true"/>
-
-<g:set var="allOrgTypeIds" value="${orgInstance.getAllOrgTypeIds()}"/>
-<g:set var="isProviderOrAgency"
-       value="${RDStore.OT_PROVIDER.id in allOrgTypeIds || RDStore.OT_AGENCY.id in allOrgTypeIds}"/>
+<laser:htmlStart message="menu.institutions.myAddressbook" />
 
 <laser:render template="breadcrumb" model="${[orgInstance: orgInstance, params: params]}"/>
 
@@ -12,8 +8,7 @@
     <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
 </ui:controlButtons>
 
-<laser:render template="/templates/copyFilteredEmailAddresses"
-          model="[emailAddresses: emailAddresses]"/>
+<laser:render template="/templates/copyFilteredEmailAddresses" model="[emailAddresses: emailAddresses]"/>
 
 <ui:h1HeaderWithIcon text="${orgInstance.name} - ${message(code: 'menu.institutions.myAddressbook')}">
     <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
@@ -23,7 +18,7 @@
 
 <ui:messages data="${flash}"/>
 
-<ui:msg class="warning" header="${message(code: 'message.information')}" message="myinst.addressBook.visible"/>
+<ui:msg class="info" header="${message(code: 'message.information')}" message="myinst.addressBook.visible"/>
 
 <ui:filter>
     <g:form action="addressbook" controller="organisation" method="get" params="[id: orgInstance.id]" class="ui small form">
@@ -32,8 +27,7 @@
                 <label for="prs">${message(code: 'person.filter.name')}</label>
 
                 <div class="ui input">
-                    <input type="text" id="prs" name="prs" value="${params.prs}"
-                           placeholder="${message(code: 'person.filter.name')}"/>
+                    <input type="text" id="prs" name="prs" value="${params.prs}" placeholder="${message(code: 'person.filter.name')}"/>
                 </div>
             </div>
 
@@ -42,83 +36,77 @@
 
         <div class="two fields">
             <div class="field">
-                <label><g:message code="person.function.label"/></label>
-                <ui:select class="ui dropdown search"
-                              name="function"
-                              from="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}"
-                              multiple=""
-                              optionKey="id"
-                              optionValue="value"
-                              value="${params.function}"
-                              noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                <label for="function"><g:message code="person.function.label"/></label>
+                <select id="function" name="function" multiple="" class="ui dropdown search">
+                    <option value=""><g:message code="default.select.choose.label"/></option>
+                    <g:each in="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}" var="rdv">
+                        <option <%=Params.getLongList(params, 'function').contains(rdv.id) ? 'selected="selected"' : ''%> value="${rdv.id}">${rdv.getI10n('value')}</option>
+                    </g:each>
+                </select>
             </div>
 
             <div class="field">
-                <label><g:message code="person.position.label"/></label>
-                <ui:select class="ui dropdown search"
-                              name="position"
-                              from="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}"
-                              multiple=""
-                              optionKey="id"
-                              optionValue="value"
-                              value="${params.position}"
-                              noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                <label for="position"><g:message code="person.position.label"/></label>
+                <select id="position" name="position" multiple="" class="ui dropdown search">
+                    <option value=""><g:message code="default.select.choose.label"/></option>
+                    <g:each in="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}" var="rdv">
+                        <option <%=Params.getLongList(params, 'position').contains(rdv.id) ? 'selected="selected"' : ''%> value="${rdv.id}">${rdv.getI10n('value')}</option>
+                    </g:each>
+                </select>
             </div>
         </div>
 
         <div class="field la-field-right-aligned">
             <label></label>
             <a href="${request.forwardURI}"
-               class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-            <input type="submit" class="ui primary button" value="${message(code: 'default.button.filter.label')}">
+               class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+            <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}">
         </div>
     </g:form>
 </ui:filter>
 
 <div class="ui top attached stackable tabular la-tab-with-js menu">
     <a class="${params.tab == 'contacts' ? 'active' : ''} item" data-tab="contacts">
-        ${message(code: 'org.prsLinks.label')}
+        ${message(code: 'org.prsLinks.label')} <ui:bubble count="${num_visiblePersons}" grey="true"/>
     </a>
 
     <a class="${params.tab == 'addresses' ? 'active' : ''} item" data-tab="addresses">
-        ${message(code: 'org.addresses.label')}
+        ${message(code: 'org.addresses.label')} <ui:bubble count="${num_visibleAddresses}" grey="true"/>
     </a>
 </div>
 
 <div class="ui bottom attached tab segment ${params.tab == 'contacts' ? 'active' : ''}" data-tab="contacts">
-    <laser:render template="/templates/cpa/person_table" model="${[
+    <laser:render template="/addressbook/person_table" model="${[
             persons       : visiblePersons,
             restrictToOrg : orgInstance,
             showContacts: true,
-            showAddresses: true,
-            tmplConfigShow: ['lineNumber', 'name', 'function', 'position',  'showContacts', 'showAddresses']
+            showOptions : true,
+            tmplConfigShow: ['lineNumber', 'name', 'function', 'position',  'showContacts']
     ]}"/>
 
-    <ui:paginate action="addressbook" controller="myInstitution" params="${params+[tab: 'contacts']}"
+    <ui:paginate action="organisation" controller="myInstitution" params="${params+[tab: 'contacts']}"
                     max="${max}" offset="${personOffset}"
                     total="${num_visiblePersons}"/>
 </div>
 
 <div class="ui bottom attached tab segment ${params.tab == 'addresses' ? 'active' : ''}" data-tab="addresses">
 
-    <laser:render template="/templates/cpa/address_table" model="${[
-            hideAddressType     : true,
+    <laser:render template="/addressbook/address_table" model="${[
             addresses           : addresses,
             offset              : addressOffset,
             tmplShowDeleteButton: true,
-            controller          : 'org',
-            action              : 'show',
-            editable            : editable
+            editable            : editable,
+            showOptions : true
     ]}"/>
 
-    <ui:paginate action="addressbook" controller="myInstitution" params="${params+[tab: 'addresses']}"
+    <ui:paginate action="organisation" controller="myInstitution" params="${params+[tab: 'addresses']}"
                  max="${max}" offset="${addressOffset}"
                  total="${num_visibleAddresses}"/>
 </div>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.personCreate = function (contactFor, org) {
-        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&org='+org+'&showAddresses=true&showContacts=true';
+        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&org='+org+'&showContacts=true';
         JSPC.app.createPersonModal(url)
     }
     JSPC.app.createPersonModal = function (url) {

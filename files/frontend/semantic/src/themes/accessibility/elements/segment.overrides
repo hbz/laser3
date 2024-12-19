@@ -28,7 +28,13 @@
   background: #f1ebe5;
   border: none;
 }
-
+.ui.segment.la-segmentNotVisable {
+    background: none;
+    border: none;
+    box-shadow: none;
+    margin: 0;
+    padding: 0;
+}
 /* Grey */
 .ui.grey.segment:not(.inverted) {
   border-top: 1px solid #d3dae3 !important;
@@ -96,7 +102,7 @@
 }
 aside.la-metabox {
   position: absolute !important;
-  width: inherit;
+  width: 100%;
   margin: 0 !important;
 }
 aside.la-metabox + .la-metabox-spacer {

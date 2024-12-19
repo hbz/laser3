@@ -2,13 +2,18 @@ package de.laser
 
 class UrlMappings {
 
+    static excludes = [ "/static/**" ]
+
     static mappings = {
 
-        "/"         (controller: 'public', action: 'index')
-        "/gasco"    (controller: 'public', action: 'gasco')
-        "/ebooks"   (controller: 'ebookCatalogue', action: 'index')
+        "/"             (controller: 'public', action: 'index')
+        "/robots.txt"   (controller: 'public', action: 'robots')
 
-        "/robots.txt" (controller: 'public', action: 'robots')
+        // gasco
+
+        "/gasco"                (controller: 'public', action: 'gasco')
+        "/gasco/details/$id"    (controller: 'public', action: 'gascoDetails')
+        "/gasco/json"           (controller: 'public', action: 'gascoJson')
 
         // ajax
 
@@ -34,11 +39,15 @@ class UrlMappings {
         "/org/$action?/$id?"                (controller: 'organisation')
         "/sub/$action?/$id?"                (controller: 'subscription')
 
+        // finance
+
         "/myInstitution/finance"            (controller: 'finance', action: 'index')
 
         name subfinance:                "/subscription/$sub/finance/"           (controller: 'finance', action: 'subFinancialData')
         name subfinanceEditCI:          "/subscription/$sub/editCostItem/$id"   (controller: 'finance', action: 'editCostItem')
         name subfinanceCopyCI:          "/subscription/$sub/copyCostItem/$id"   (controller: 'finance', action: 'copyCostItem')
+
+        // survey
 
         "/surveyconfig/show/$id"            (controller: 'survey', action: 'redirectSurveyConfig')
 
@@ -46,14 +55,14 @@ class UrlMappings {
 
         "/$controller/$action?/$id?" ()
 
-        // serverCodes
+        // statusCodes
 
-        "500"       (controller: 'serverCodes', action: 'error')
-        "401"       (controller: 'serverCodes', action: 'forbidden')
-        "403"       (controller: 'serverCodes', action: 'forbidden')
-        "404"       (controller: 'serverCodes', action: 'notFound')
-        "405"       (controller: 'serverCodes', action: 'error')
+        "500"       (controller: 'statusCode', action: 'error')
+        "401"       (controller: 'statusCode', action: 'forbidden')
+        "403"       (controller: 'statusCode', action: 'forbidden')
+        "404"       (controller: 'statusCode', action: 'notFound')
+        "405"       (controller: 'statusCode', action: 'error')
 
-        "/**"       (controller: 'serverCodes', action: 'fallback')
+        //        "/**"       (controller: 'statusCode', action: 'fallback')
     }
 }

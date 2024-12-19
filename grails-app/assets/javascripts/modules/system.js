@@ -11,11 +11,11 @@ system = {
     },
 
     status: function () {
-        let socket = new SockJS(JSPC.vars.ws.stompUrl)
+        let socket = new SockJS(JSPC.config.ws.stompUrl)
         let client = webstomp.over(socket, { debug: true })
         let subscription = function(frame) {
             console.log( frame )
-            client.subscribe(JSPC.vars.ws.topicStatusUrl, function(message) {
+            client.subscribe(JSPC.config.ws.topicStatusUrl, function(message) {
                 console.log( message )
                 let body = JSON.parse(message.body)
                 console.log( body )
@@ -26,7 +26,7 @@ system = {
                         $('#systemMaintenanceMode').addClass('hidden')
                     }
                     if (body.messages) {
-                        $('#systemMessages').load( JSPC.vars.ajax.openMessages, function() { $('#systemMessages').removeClass('hidden') })
+                        $('#systemMessages').load( JSPC.config.ajax.openMessages, function() { $('#systemMessages').removeClass('hidden') })
                     } else {
                         $('#systemMessages').addClass('hidden').empty()
                     }
@@ -38,7 +38,7 @@ system = {
 
     profiler: function (uri) {
         $.ajax({
-            url: JSPC.vars.ajax.openProfiler,
+            url: JSPC.config.ajax.openProfiler,
             data: {uri: uri},
             success: function (data) {
                 let $sp = $('#system-profiler')
