@@ -1586,12 +1586,16 @@ class SubscriptionController {
                 subscriptionService.bulkAddEntitlements(result.subscription, result.selectedTitles, result.subscription.hasPerpetualAccess)
                 if(configMap.withChildrenKBART == 'on') {
                     Sql sql = GlobalService.obtainSqlConnection()
+                    try {
                     childSubIds.each { Long childSubId ->
                         pkgIds.each { Long pkgId ->
                             batchQueryService.bulkAddHolding(sql, childSubId, pkgId, result.subscription.hasPerpetualAccess, result.subscription.id)
                         }
                     }
-                    sql.close()
+                    }
+                    finally {
+                        sql.close()
+                    }
                 }
                 if(globalService.isset(configMap, 'issueEntitlementGroupNewKBART') || globalService.isset(configMap, 'issueEntitlementGroupKBARTID')) {
                     IssueEntitlementGroup issueEntitlementGroup
