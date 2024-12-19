@@ -75,7 +75,7 @@ class SystemService {
             result = [
                     status:      'ok',
                     maintenance: SystemSetting.findByName('MaintenanceMode').value == 'true',
-                    messages:    SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION) ? true : false
+                    messages:    SystemMessage.getActiveMessages(SystemMessage.TYPE_GLOBAL) ? true : false
             ]
         } catch(Exception e) {
             log.error( e.getMessage() )

@@ -29,4 +29,16 @@ databaseChangeLog = {
     changeSet(author: "klober (generated)", id: "1734421515135-7") {
         dropColumn(columnName: "grs_uri", tableName: "global_record_source")
     }
+
+    changeSet(author: "klober (modified)", id: "1734421515135-8") {
+        grailsChange {
+            change {
+                String query = "update system_message set sm_type = 'TYPE_STARTPAGE' where sm_type = 'TYPE_STARTPAGE_NEWS'"
+                sql.execute(query)
+
+                query = "update system_message set sm_type = 'TYPE_GLOBAL' where sm_type = 'TYPE_ATTENTION'"
+                sql.execute(query)
+            }
+        }
+    }
 }
