@@ -43,7 +43,7 @@
         </g:if>
         <g:else>
             <g:set var="surveyProperties"
-                   value="${surveyConfig.getSurveyResultsByPropDefGroupAndOrg(pdg, contextService.getOrg())}"/>
+                   value="${surveyConfig.getSurveyResultsByPropDefGroupAndOrg(pdg, participant)}"/>
             <%
                 groupedProperties << surveyProperties
             %>
@@ -81,7 +81,7 @@
             </div>
         </g:if><g:else>
         <g:set var="surveyProperties"
-               value="${surveyConfig.getOrphanedSurveyResultsByOrg(groupedProperties, contextService.getOrg())}"/>
+               value="${surveyConfig.getOrphanedSurveyResultsByOrg(groupedProperties, participant)}"/>
         <g:if test="${surveyProperties.size() > 0}">
             <h2 class="ui header">
                 <g:if test="${allPropDefGroups.global}">
@@ -113,7 +113,7 @@
         </g:if>
     <g:else>
         <g:set var="surveyProperties"
-               value="${surveyConfig.getPrivateSurveyResultsByOrg(contextService.getOrg())}"/>
+               value="${surveyConfig.getPrivateSurveyResultsByOrg(participant)}"/>
         <g:if test="${surveyProperties.size() > 0}">
             <h2 class="ui header">
                 ${message(code: 'surveyConfigsInfo.properties.privat')}
