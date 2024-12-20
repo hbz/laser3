@@ -280,13 +280,13 @@
                             <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndPerson(participant, surveyConfig, person)}">
                                 <g:link controller="myInstitution" action="surveyInfos"
                                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: false, personId: person.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation']">
-                                    <i class="${Icon.SYM.SET}   large "></i>
+                                    <i class="${Icon.SYM.CHECKBOX_CHECKED}   large "></i>
                                 </g:link>
                             </g:if>
                             <g:else>
                                 <g:link controller="myInstitution" action="surveyInfos"
                                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: true, personId: person.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation']">
-                                    <i class="${Icon.SYM.UNSET} large"></i>
+                                    <i class="${Icon.SYM.CHECKBOX} large"></i>
                                 </g:link>
                             </g:else>
                         </g:if>
@@ -294,19 +294,19 @@
                             <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndPerson(participant, surveyConfig, person)}">
                                 <g:link controller="survey" action="evaluationParticipant"
                                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: false, personId: person.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation', participant: participant.id]">
-                                    <i class="${Icon.SYM.SET} large"></i>
+                                    <i class="${Icon.SYM.CHECKBOX_CHECKED} large"></i>
                                 </g:link>
                             </g:if>
                             <g:else>
                                 <g:link controller="survey" action="evaluationParticipant"
                                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: true, personId: person.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation', participant: participant.id]">
-                                    <i class="${Icon.SYM.UNSET} large"></i>
+                                    <i class="${Icon.SYM.CHECKBOX} large"></i>
                                 </g:link>
                             </g:else>
                         </g:elseif>
                         <g:else>
                             <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndPerson(participant, surveyConfig, person)}">
-                                    <i class="${Icon.SYM.SET} large"></i>
+                                    <i class="${Icon.SYM.CHECKBOX_CHECKED} large"></i>
                             </g:if>
                         </g:else>
                 </td>

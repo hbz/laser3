@@ -196,11 +196,6 @@ class Icon {
         // please do not touch during refactoring ..
         // convenient symbols
 
-        @UIDoc(usage = 'Generic symbol for: Check Button Not Set (see also SET)')
-        public static String UNSET   = 'blue bordered icon la-checkButton'
-        @UIDoc(usage = 'Generic symbol for: Check Button Set  (see also UNSET)')
-        public static String SET     = 'blue bordered check icon la-checkButton'
-
         @UIDoc(usage = 'Generic symbol for: Yes/Accept/Done (see also NO)')
         public static String YES    = 'check icon'
         @UIDoc(usage = 'Generic symbol for: No/Reject/Incomplete (see also YES)')
