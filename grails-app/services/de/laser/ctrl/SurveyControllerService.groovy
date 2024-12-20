@@ -498,7 +498,7 @@ class SurveyControllerService {
                 subscriptionList.each { Subscription sub ->
                     Org org = sub.getSubscriber()
                     if (selectedSubParticipants && org && org.id in selectedSubParticipants.id)
-                        result.selectedSubParticipants << sub.getSubscriber()
+                        result.selectedSubParticipants << sub.getSubscriberRespConsortia()
                 }
             }
 
