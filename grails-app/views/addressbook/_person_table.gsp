@@ -68,7 +68,7 @@
             <th>${message(code: 'person.contacts.label')}</th>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyInvoicingInformation')}">
-        <th>${message(code: 'surveyOrg.person.selected')}</th>
+        <th class="center aligned la-th-wrap">${message(code: 'surveyOrg.person.selected')}</th>
     </g:if>
 </g:each>
         <g:if test="${showOptions}">
@@ -275,18 +275,18 @@
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyInvoicingInformation')}">
-                <td>
+                <td class="center aligned">
                         <g:if test="${editable && controllerName == 'myInstitution'}">
                             <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndPerson(participant, surveyConfig, person)}">
                                 <g:link controller="myInstitution" action="surveyInfos"
                                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: false, personId: person.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation']">
-                                    <i class="${Icon.SYM.YES} bordered large green"></i>
+                                    <i class="${Icon.SYM.SET}   large "></i>
                                 </g:link>
                             </g:if>
                             <g:else>
                                 <g:link controller="myInstitution" action="surveyInfos"
                                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: true, personId: person.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation']">
-                                    <i class="${Icon.SYM.NO} bordered large red"></i>
+                                    <i class="${Icon.SYM.UNSET} large"></i>
                                 </g:link>
                             </g:else>
                         </g:if>
@@ -294,19 +294,19 @@
                             <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndPerson(participant, surveyConfig, person)}">
                                 <g:link controller="survey" action="evaluationParticipant"
                                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: false, personId: person.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation', participant: participant.id]">
-                                    <i class="${Icon.SYM.YES} bordered large green"></i>
+                                    <i class="${Icon.SYM.SET} large"></i>
                                 </g:link>
                             </g:if>
                             <g:else>
                                 <g:link controller="survey" action="evaluationParticipant"
                                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: true, personId: person.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation', participant: participant.id]">
-                                    <i class="${Icon.SYM.NO} bordered large red"></i>
+                                    <i class="${Icon.SYM.UNSET} large"></i>
                                 </g:link>
                             </g:else>
                         </g:elseif>
                         <g:else>
                             <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndPerson(participant, surveyConfig, person)}">
-                                    <i class="${Icon.SYM.YES} bordered large green"></i>
+                                    <i class="${Icon.SYM.SET} large"></i>
                             </g:if>
                         </g:else>
                 </td>

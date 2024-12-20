@@ -51,6 +51,9 @@
                 <div class="divider"></div>
                 <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
             </g:if>
+            <g:if test="${contextCustomerType == CustomerTypeService.ORG_INST_PRO && license.instanceOf}">
+                <ui:actionsDropdownItem controller="license" action="copyMyElements" params="${[sourceObjectId: genericOIDService.getOID(license)]}" message="myinst.copyMyElements" />
+            </g:if>
 
             <g:if test="${editable}">
                 <div class="divider"></div>

@@ -235,8 +235,12 @@ class ApiOAMonitor {
 
             try {
                 Sql sql = GlobalService.obtainSqlConnection()
-                result.packages = ApiOAMonitor.getPackageCollectionWithTitleStubMaps(sub.packages, sql)
-                sql.close()
+                try {
+                    result.packages = ApiOAMonitor.getPackageCollectionWithTitleStubMaps(sub.packages, sql)
+                }
+                finally {
+                    sql.close()
+                }
             }
             catch(NativeSqlException e) {
                 result.packages = 'unable to fetch, please retry call later'

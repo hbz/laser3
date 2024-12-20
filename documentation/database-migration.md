@@ -1,7 +1,8 @@
 
 ## Database Migration
 
-- http://grails-plugins.github.io/grails-database-migration/4.2.x
+- https://github.com/grails/grails-database-migration
+- https://grails.github.io/grails-database-migration/5.0.x/index.html
 
 ### Configuration
 
@@ -9,7 +10,7 @@
 
     buildscript {
         dependencies {
-            classpath 'org.grails.plugins:database-migration:4.2.1'
+            classpath 'org.grails.plugins:database-migration:5.0.0'
             classpath 'org.grails:grails-shell:6.1.2'    
         }
     }
@@ -30,7 +31,7 @@
     }
 
     dependencies {
-        implementation 'org.grails.plugins:database-migration:4.2.1', {
+        implementation 'org.grails.plugins:database-migration:5.0.0', {
             exclude module: 'spring-boot-cli'
         }
         implementation 'org.grails:grails-shell:6.1.2'

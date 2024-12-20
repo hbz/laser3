@@ -307,6 +307,7 @@ class StatsSyncService {
             if (http) { http.close() }
         }
         Sql sql = GlobalService.obtainSqlConnection()
+        try {
         Set<Long> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISBN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name).id]
         boolean oneMonthly = false
         c4SushiSources.each { List c4as ->
@@ -608,6 +609,10 @@ class StatsSyncService {
             else {
                 log.info("process only one monthly source per day!")
             }
+        }
+        }
+        finally {
+            sql.close()
         }
         running = false
         log.debug("fetch stats finished")

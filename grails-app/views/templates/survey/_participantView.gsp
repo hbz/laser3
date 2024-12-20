@@ -108,7 +108,7 @@
                 <div class="ui bottom attached tab segment active" data-tab="contacts">
 
                     <g:link controller="organisation" action="contacts" id="${participant.id}" class="${Btn.SIMPLE} right floated">
-                        <g:message code="default.show.label" args="[message(code: 'org.publicContacts.label')]"/>
+                        <g:message code="survey.contacts.add"/>
                     </g:link>
                     <br>
                     <br>
@@ -126,7 +126,7 @@
                 <div class="ui bottom attached tab segment" data-tab="addresses">
 
                     <g:link controller="organisation" action="contacts" id="${participant.id}" class="${Btn.SIMPLE} right floated">
-                        <g:message code="default.show.label" args="[message(code: 'org.publicContacts.label')]"/>
+                        <g:message code="survey.contacts.add"/>
                     </g:link>
                     <br>
                     <br>
@@ -281,7 +281,7 @@
                     <g:link class="item ${params.viewTab == 'vendorSurvey' && params.subTab == 'selectVendors' ? 'active' : ''}"
                             controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
                             params="${parame + [viewTab: 'vendorSurvey', subTab: 'selectVendors']}">
-                        ${message(code: 'surveyVendors.selectedVendors')}
+                        ${message(code: 'surveyVendors.selectedVendor')}
                         <ui:bubble float="true" count="${SurveyVendorResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}"/>
                     </g:link>
                 </div>
