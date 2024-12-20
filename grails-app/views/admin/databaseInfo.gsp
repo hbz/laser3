@@ -76,14 +76,14 @@
                 </td>
             </tr>
             <tr>
+                <td>Max Connections</td>
+                <td>${dbInfo.default.dbMaxConnections}</td>
+                <td>${dbInfo.storage.dbMaxConnections}</td>
+            </tr>
+            <tr>
                 <td>Statement Timeout</td>
                 <td>${dbInfo.default.dbStmtTimeout}</td>
                 <td>${dbInfo.storage.dbStmtTimeout}</td>
-            </tr>
-            <tr>
-                <td>Conflicts</td>
-                <td>${dbInfo.default.dbConflicts}</td>
-                <td>${dbInfo.storage.dbConflicts}</td>
             </tr>
             <tr>
                 <td>Database size</td>
@@ -94,6 +94,11 @@
                 <td>Postgresql server</td>
                 <td>${DatabaseInfo.getServerInfo()}</td>
                 <td>${DatabaseInfo.getServerInfo(DatabaseInfo.DS_STORAGE)}</td>
+            </tr>
+            <tr>
+                <td>Conflicts</td>
+                <td>${dbInfo.default.dbConflicts}</td>
+                <td>${dbInfo.storage.dbConflicts}</td>
             </tr>
         <tbody>
     </table>

@@ -51,7 +51,6 @@ class AdminController  {
     FilterService filterService
     GenericOIDService genericOIDService
     GlobalSourceSyncService globalSourceSyncService
-    GokbService gokbService
     MailService mailService
     PackageService packageService
     PropertyService propertyService
@@ -72,11 +71,11 @@ class AdminController  {
             database: [
                 default: [
                     dbName     : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT + '.url', String).split('/').last(),
-                    dbmVersion : GlobalService.obtainSqlConnection().firstRow('SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1').collect { it.value }
+                    dbmVersion : DatabaseInfo.getDbmVersion()
                 ],
                 storage: [
                     dbName     : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.url', String).split('/').last(),
-                    dbmVersion : GlobalService.obtainStorageSqlConnection().firstRow('SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1').collect { it.value }
+                    dbmVersion : DatabaseInfo.getDbmVersion( DatabaseInfo.DS_STORAGE )
                 ]
             ],
             events      : SystemEvent.executeQuery(
@@ -390,26 +389,28 @@ class AdminController  {
                     dbmDbCreate      : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT + '.dbCreate', String),
                     defaultCollate   : DatabaseInfo.getDatabaseCollate(),
                     dbConflicts      : DatabaseInfo.getDatabaseConflicts(),
+                    dbMaxConnections : DatabaseInfo.getMaxConnections(),
                     dbStmtTimeout    : DatabaseInfo.getStatementTimeout(),
                     dbSize           : DatabaseInfo.getDatabaseSize(),
                     dbStatistics     : DatabaseInfo.getDatabaseStatistics(),
                     dbActivity       : DatabaseInfo.getDatabaseActivity(),
                     dbUserFunctions  : DatabaseInfo.getDatabaseUserFunctions(),
                     dbTableUsage     : DatabaseInfo.getAllTablesUsageInfo(),
-                    dbmVersion       : GlobalService.obtainSqlConnection().firstRow('SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1').collect { it.value }
+                    dbmVersion       : DatabaseInfo.getDbmVersion()
             ],
             storage: [
                     dbName           : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.url', String).split('/').last(), // TODO
                     dbmDbCreate      : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.dbCreate', String), // TODO
                     defaultCollate   : DatabaseInfo.getDatabaseCollate( DatabaseInfo.DS_STORAGE ),
                     dbConflicts      : DatabaseInfo.getDatabaseConflicts( DatabaseInfo.DS_STORAGE ),
+                    dbMaxConnections : DatabaseInfo.getMaxConnections( DatabaseInfo.DS_STORAGE ),
                     dbStmtTimeout    : DatabaseInfo.getStatementTimeout( DatabaseInfo.DS_STORAGE ),
                     dbSize           : DatabaseInfo.getDatabaseSize( DatabaseInfo.DS_STORAGE ),
                     dbStatistics     : DatabaseInfo.getDatabaseStatistics( DatabaseInfo.DS_STORAGE ),
                     dbActivity       : DatabaseInfo.getDatabaseActivity( DatabaseInfo.DS_STORAGE ),
                     dbUserFunctions  : DatabaseInfo.getDatabaseUserFunctions( DatabaseInfo.DS_STORAGE ),
                     dbTableUsage     : DatabaseInfo.getAllTablesUsageInfo( DatabaseInfo.DS_STORAGE ),
-                    dbmVersion       : GlobalService.obtainStorageSqlConnection().firstRow('SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1').collect { it.value }
+                    dbmVersion       : DatabaseInfo.getDbmVersion( DatabaseInfo.DS_STORAGE )
             ]
         ]
 
@@ -1214,13 +1215,13 @@ SELECT * FROM (
                         dbName           : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT + '.url', String).split('/').last(),
                         dbmDbCreate      : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT + '.dbCreate', String),
                         defaultCollate   : DatabaseInfo.getDatabaseCollate(),
-                        dbmVersion       : GlobalService.obtainSqlConnection().firstRow('SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1').collect { it.value }
+                        dbmVersion       : DatabaseInfo.getDbmVersion()
                 ],
                 storage: [
                         dbName           : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.url', String).split('/').last(), // TODO
                         dbmDbCreate      : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.dbCreate', String), // TODO
                         defaultCollate   : DatabaseInfo.getDatabaseCollate( DatabaseInfo.DS_STORAGE ),
-                        dbmVersion       : GlobalService.obtainStorageSqlConnection().firstRow('SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1').collect { it.value }
+                        dbmVersion       : DatabaseInfo.getDbmVersion( DatabaseInfo.DS_STORAGE )
                 ]
         ]
 
