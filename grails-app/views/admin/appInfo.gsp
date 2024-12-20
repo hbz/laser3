@@ -21,7 +21,6 @@
             <tr><td>Configuration file</td><td> ${ConfigMapper.getCurrentConfigFile(this.applicationContext.getEnvironment()).name}</td></tr>
             <tr><td>Environment/Server</td><td> ${Metadata.getCurrent().getEnvironment()} / ${AppUtils.getCurrentServer()}</td></tr>
             <tr><td>Session timeout</td><td> ${(session.getMaxInactiveInterval() / 60)} Minutes</td></tr>
-            <tr><td>Last quartz heartbeat</td><td>${ConfigMapper.getQuartzHeartbeat()}</td></tr>
         </tbody>
     </table>
 
@@ -32,7 +31,6 @@
         <tbody>
             <tr><td>Build date</td><td> ${AppUtils.getMeta('info.app.build.date')}</td></tr>
             <tr><td>Build host</td><td> ${AppUtils.getMeta('info.app.build.host')}</td></tr>
-            <tr><td>Build profile</td><td> ${AppUtils.getMeta('info.app.build.profile')}</td></tr>
             <tr><td>Build java version</td><td> ${AppUtils.getMeta('info.app.build.javaVersion')}</td></tr>
         </tbody>
     </table>
@@ -88,11 +86,6 @@
                         collations.each { print it + '<br/>' }
                     %>
                 </td>
-            </tr>
-            <tr>
-                <td>Postgresql server</td>
-                <td>${DatabaseInfo.getServerInfo()}</td>
-                <td>${DatabaseInfo.getServerInfo(DatabaseInfo.DS_STORAGE)}</td>
             </tr>
         <tbody>
     </table>
