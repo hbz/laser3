@@ -1484,6 +1484,7 @@ class SubscriptionController {
                 selectedFieldsRaw.each { it -> selectedFields.put(it.key.replaceFirst('iex:', ''), it.value) }
             }
             if (params.exportKBart) {
+                configMap.format = ExportService.KBART
                 String dir = GlobalService.obtainFileStorageLocation()
                 File f = new File(dir + '/' + filename)
                 if (!f.exists()) {

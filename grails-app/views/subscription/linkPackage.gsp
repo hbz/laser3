@@ -129,7 +129,7 @@
             <g:if test="${institution.isCustomerType_Consortium()}">
                 <div class="field">
                     <div class="ui linkToChildren checkbox toggle">
-                        <g:checkBox name="linkToChildren" disabled="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}"/>
+                        <g:checkBox name="linkToChildren" checked="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}" disabled="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}"/>
                         <label><i data-content="${message(code:'consortium.member.plural')}" data-position="top center" class="users icon la-popup-tooltip"></i> <g:message code="subscription.details.linkPackage.label"/></label>
                     </div>
                 </div>
