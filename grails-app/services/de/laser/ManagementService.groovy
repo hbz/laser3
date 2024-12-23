@@ -359,7 +359,7 @@ class ManagementService {
                 }
             }
             else {
-                EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/linkPackage/${result.user.id}/pagination")
+                EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/linkPackages/${result.user.id}/pagination")
                 List selectionCache = []
                 if(paginationCache.checkedMap) {
                     selectionCache.addAll(paginationCache.checkedMap.values())
