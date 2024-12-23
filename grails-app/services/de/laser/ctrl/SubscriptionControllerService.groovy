@@ -2231,12 +2231,14 @@ class SubscriptionControllerService {
             executorService.execute({
                 String threadName = 'PackageUnlink_'+result.subscription.id
                 Thread.currentThread().setName(threadName)
-                long start = System.currentTimeSeconds()
+                //long start = System.currentTimeSeconds()
                 if(packageService.unlinkFromSubscription(result.package, subList.id, result.institution, unlinkPkg)){
                     result.message = messageSource.getMessage('subscription.details.unlink.successfully',null,locale)
+                    /*
                     if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
                         globalService.notifyBackgroundProcessFinish(result.user.id, threadName, messageSource.getMessage('subscription.details.unlink.thread.completed', [result.subscription.name] as Object[], locale))
                     }
+                    */
                 }else {
                     result.error = messageSource.getMessage('subscription.details.unlink.notSuccessfully',null,locale)
                 }

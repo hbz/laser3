@@ -436,7 +436,7 @@
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.holdingSelection.label')}</dt>
                                 <dd><ui:xEditableRefData owner="${subscription}" field="holdingSelection"
-                                                         config="${RDConstants.SUBSCRIPTION_HOLDING}"/></dd>
+                                                         config="${RDConstants.SUBSCRIPTION_HOLDING}" overwriteEditable="${editable && !AuditConfig.getConfig(subscription.instanceOf, 'holdingSelection')}"/></dd>
                                 <g:if test="${editable}">
                                     <dd>
                                         <ui:auditButton auditable="[subscription, 'holdingSelection']"

@@ -1,7 +1,6 @@
 package de.laser.ajax
 
-import de.laser.addressbook.Person
-import de.laser.addressbook.PersonRole
+
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserRole
@@ -49,6 +48,7 @@ import javax.servlet.ServletOutputStream
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.Year
+import java.util.concurrent.ExecutorService
 
 /**
  * This controller manages AJAX calls which result in object manipulation and / or do not deliver clearly either HTML or JSON.
@@ -61,10 +61,12 @@ class AjaxController {
     ContextService contextService
     DashboardDueDatesService dashboardDueDatesService
     EscapeService escapeService
+    ExecutorService executorService
     FilterService filterService
     FormService formService
     GenericOIDService genericOIDService
     IdentifierService identifierService
+    PackageService packageService
     PropertyService propertyService
     SubscriptionControllerService subscriptionControllerService
     SubscriptionService subscriptionService
@@ -235,6 +237,27 @@ class AjaxController {
 
                                 LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request)
                                 localeResolver.setLocale(request, response, newLocale)
+                            }
+                        }
+
+                        if (target instanceof Subscription) {
+                            if(params.name == 'holdingSelection') {
+                                Org ctx = contextService.getOrg()
+                                Subscription sub = (Subscription) target
+                                Map<String, Object> configMap = [sub: sub, value: value]
+                                subscriptionService.switchPackageHoldingInheritance(configMap)
+                                List<Long> subChildIDs = sub.getDerivedSubscriptions().id
+                                if(value == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+                                    executorService.execute({
+                                        String threadName = 'PackageUnlink_'+sub.id
+                                        Thread.currentThread().setName(threadName)
+                                        sub.packages.each { SubscriptionPackage sp ->
+                                            if(!packageService.unlinkFromSubscription(sp.pkg, subChildIDs, ctx, false)){
+                                                log.error('error on clearing issue entitlements when changing package holding selection')
+                                            }
+                                        }
+                                    })
+                                }
                             }
                         }
 
@@ -1179,31 +1202,12 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
-    @Transactional
     def switchPackageHoldingInheritance() {
         if(formService.validateToken(params)) {
-            String prop = 'holdingSelection'
             Subscription sub = Subscription.get(params.id)
             RefdataValue value = RefdataValue.get(params.value)
-            sub.holdingSelection = value
-            sub.save()
-            if(value == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
-                if(! AuditConfig.getConfig(sub, prop)) {
-                    AuditConfig.addConfig(sub, prop)
-
-                    Subscription.findAllByInstanceOf(sub).each { Subscription m ->
-                        m.setProperty(prop, sub.getProperty(prop))
-                        m.save()
-                    }
-                }
-            }
-            else if(!value) {
-                AuditConfig.removeConfig(sub, prop)
-                Subscription.findAllByInstanceOf(sub).each { Subscription m ->
-                    m.setProperty(prop, null)
-                    m.save()
-                }
-            }
+            Map<String, Object> configMap = [sub: sub, value: value]
+            subscriptionService.switchPackageHoldingInheritance(configMap)
         }
         render([success: true] as JSON)
     }
