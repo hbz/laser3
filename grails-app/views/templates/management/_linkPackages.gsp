@@ -70,7 +70,7 @@
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
                     <div class="ui buttons">
-                        <g:if test="${subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+                        <g:if test="${subscription?.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
                             <button class="${Btn.POSITIVE}" ${!editable || isLinkingRunning || isUnlinkingRunning  ? 'disabled="disabled"' : ''} type="submit"
                                     name="processOption"
                                     value="linkwithoutIE">${message(code: 'subscriptionsManagement.linkGeneral')}</button>

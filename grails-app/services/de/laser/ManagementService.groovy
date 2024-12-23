@@ -399,7 +399,10 @@ class ManagementService {
                                         subscriptionService.addToSubscriptionCurrentStock(selectedSub, result.subscription, pkg, params.processOption == 'linkwithIE')
                                     }
                                     else {
-                                        subscriptionService.addToSubscription(selectedSub, pkg, params.processOption == 'linkwithIE')
+                                        if(selectedSub.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+                                            subscriptionService.addToSubscription(selectedSub, pkg, true)
+                                        else
+                                            subscriptionService.addToSubscription(selectedSub, pkg, params.processOption == 'linkwithIE')
                                     }
                                 }
                             }
