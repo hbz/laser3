@@ -59,7 +59,7 @@
                       </g:link>
                   </g:if>
                   <g:else>
-                      <g:link class="item" action="${actionName}"
+                      <g:link class="item kbartExport" action="${actionName}"
                               params="${params + [exportKBart: true]}">KBART Export</g:link>
                   </g:else>
               </ui:exportDropdownItem>
@@ -120,7 +120,7 @@
         e.preventDefault();
         $('#globalLoadingIndicator').show();
         $.ajax({
-            url: "<g:createLink action="current" params="${params + [exportKBart: true]}"/>",
+            url: "<g:createLink action="${actionName}" params="${params + [exportKBart: true]}"/>",
             type: 'POST',
             contentType: false
         }).done(function(response){
