@@ -1362,9 +1362,10 @@ class MyInstitutionController  {
     })
     def subscriptionsManagement() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-
+        Profiler prf = new Profiler('subMgmt')
+        prf.setBenchmark('start loading data')
         params.tab = params.tab ?: 'generalProperties'
-        EhcacheWrapper filterCache = contextService.getUserCache("/subscriptionsManagement/subscriptionFilter/"), paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/${params.tab}/${result.user.id}/pagination")
+        EhcacheWrapper filterCache = contextService.getUserCache("/subscriptionsManagement/subscriptionFilter/")
         Set<String> filterFields = ['q', 'identifier', 'referenceYears', 'status', 'filterPropDef', 'filterProp', 'form', 'resource', 'subKinds', 'isPublicForApi', 'hasPerpetualAccess', 'hasPublishComponent', 'holdingSelection', 'subRunTime', 'subRunTimeMultiYear', 'subType', 'consortia']
         filterFields.each { String subFilterKey ->
             if(params.containsKey('processOption')) {
@@ -1377,7 +1378,6 @@ class MyInstitutionController  {
                 else filterCache.remove(subFilterKey)
             }
         }
-        result.selectionCache = paginationCache.checkedMap ?: [:]
 
         if(!(params.tab in ['notes', 'documents', 'properties'])){
             //Important
@@ -1388,7 +1388,7 @@ class MyInstitutionController  {
                 params.subTypes = [RDStore.SUBSCRIPTION_TYPE_LOCAL.id]
             }
         }
-
+        prf.setBenchmark('get data')
         if(params.tab == 'documents' && params.processOption == 'newDoc') {
             def input_file = request.getFile("upload_file")
             if (input_file.size == 0) {
@@ -1406,7 +1406,10 @@ class MyInstitutionController  {
         }else{
             result << managementService.subscriptionsManagement(this, params)
         }
-
+        //at end because cache may get cleared after a process
+        EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/${params.tab}/${result.user.id}/pagination")
+        result.selectionCache = paginationCache.checkedMap ?: [:]
+        result.benchMark = prf.stopBenchmark()
         result
 
     }

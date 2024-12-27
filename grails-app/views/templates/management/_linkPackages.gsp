@@ -59,11 +59,17 @@
                 </g:if>
 
                 <g:if test="${controllerName == "myInstitution"}">
-                    <g:select class="ui multiple search dropdown"
+                    <div class="ui multiple search selection dropdown" id="selectedPackages">
+                        <input type="hidden" name="selectedPackages">
+                        <i class="dropdown icon"></i>
+                        <input type="text" class="search">
+                        <div class="default text"></div>
+                    </div>
+                    %{--<g:select class="ui multiple search dropdown"
                               optionKey="id" optionValue="${{ it.getPackageNameWithCurrentTippsCount() }}"
                               from="${validPackages}" name="selectedPackages" value=""
                               required=""
-                              noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.package')}"]'/>
+                              noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.package')}"]'/>--}%
                 </g:if>
             </div>
 
@@ -294,6 +300,31 @@
                 $("#unlinkPackageModal").modal("show");
             });
      }
+
+     JSPC.app.ajaxDropdown = function(selector, url, valuesString) {
+        let values = [];
+        if(valuesString.includes(',')) {
+            values = valuesString.split(',');
+        }
+        else if(valuesString.length > 0) {
+            values.push(valuesString);
+        }
+        selector.dropdown({
+            apiSettings: {
+                url: url,
+                cache: false
+            },
+            clearable: true,
+            minCharacters: 0
+        });
+        if(values.length > 0) {
+            selector.dropdown('queryRemote', '', () => {
+                selector.dropdown('set selected', values);
+            });
+        }
+    }
+
+    JSPC.app.ajaxDropdown($("#selectedPackages"), "${createLink([controller:"ajaxJson", action:"lookupPackages"])}?query={query}", '');
 
     $('.packagesForm').form({
         on: 'blur',

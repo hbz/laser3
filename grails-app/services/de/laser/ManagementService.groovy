@@ -363,12 +363,12 @@ class ManagementService {
                 List selectionCache = []
                 if(paginationCache.checkedMap) {
                     selectionCache.addAll(paginationCache.checkedMap.values())
-                    paginationCache.remove('checkedMap')
                 }
                 else selectionCache.addAll(params.list('selectedSubs'))
                 if(selectionCache) {
                     subscriptions = Subscription.findAllByIdInList(selectionCache)
                 }
+                paginationCache.remove('checkedMap')
             }
             List selectedPackageKeys = params.list("selectedPackages")
             Set<Package> pkgsToProcess = []

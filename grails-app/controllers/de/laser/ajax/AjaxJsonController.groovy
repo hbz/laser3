@@ -740,6 +740,21 @@ class AjaxJsonController {
     }
 
     /**
+     * Retrieves a list of packages for dropdown display
+     * @return the result of {@link de.laser.ControlledListService#getPackages(grails.web.servlet.mvc.GrailsParameterMap)}
+     */
+    @Secured(['ROLE_USER'])
+    def lookupPackages() {
+        if (params.ctx != "undefined") {
+            render controlledListService.getPackages(params) as JSON
+        }
+        else {
+            Map empty = [results: []]
+            render empty as JSON
+        }
+    }
+
+    /**
      * Retrieves a list of subscription packages for dropdown display
      * @return the result of {@link de.laser.ControlledListService#getSubscriptionPackages(grails.web.servlet.mvc.GrailsParameterMap)}
      */
