@@ -4,9 +4,10 @@ Das Lizenzinformationsblatt beinhaltet alle Metadaten und Informationen, sowie V
 #### Konsortiallizenz
 **(Screenshot 1)**
 
-1.	**Status:** Hier sehen Sie die Laufzeit der Lizenz. Der grüne Kreis kennzeichnet eine aktive Lizenz, rote hingegen eine nicht aktive Lizenz. Gelbe Kreise zeigen eine geplante Nachfolgerlizenz an. Über die Pfeile können Sie zwischen den Jahrgängen blättern.  
-2.	**Lizenzkopf:** In den zwei weißen Kästen finden Sie die zentralen Rahmendaten der Lizenz, wie z.B. die Laufzeit, der Lizenztyp etc.
-3.	**Verknüpfte Pakete:** Zeigt die verknüpften Verträge an. Über das "Doppelpfeil"-Icon lassen sich die Einstellungen zu Paketänderungen aufklappen.  
+1.	**Status:** Hier sehen Sie die Laufzeit der Lizenz. Der grüne Kreis kennzeichnet eine aktive Lizenz, rote hingegen eine nicht aktive Lizenz. Gelbe Kreise zeigen eine geplante Nachfolgerlizenz an. Über die Pfeile können Sie zwischen den Jahrgängen blättern.
+2.	**Identifikatoren**: Hier sind die hinterlegten Identifikatoren der Konsortiallizenz aufgelistet.   
+3.	**Lizenzkopf:** In den zwei weißen Kästen finden Sie die zentralen Rahmendaten der Lizenz, wie z.B. die Laufzeit, der Lizenztyp etc.
+4.	**Verknüpfte Pakete:** Zeigt die verknüpften Verträge an. Über das "Doppelpfeil"-Icon lassen sich die Einstellungen zu Paketänderungen aufklappen.  
 5.	**Verknüpfte Konsortialstelle:** Hier ist der Verhandlungsführer mit seinen Kontaktdaten aufgelistet. Er ist zudem für die Verwaltung und Pflege der Lizenz zuständig.   
 6.	**Verknüpfter Anbieter:** Die Kontaktangaben des Anbieters kommen bevorzugt aus der we:kb sofern der Anbieter sich dort selbst pflegt. Diese Daten werden in LAS:eR wiedergespiegelt.   
 
@@ -20,6 +21,6 @@ Das Lizenzinformationsblatt beinhaltet alle Metadaten und Informationen, sowie V
 6.	**Lizenzverknüpfungen:** Jede Lizenz kann mit einer anderen Lizenz verknüpft werden, um z.B. Vorgänger-/Nachfolgerbeziehungen nachzuhalten
 
 #### Lokale Lizenz (LAS:eR Pro)
-Lokale Lizenzen sind identisch zu Konsortiallizenzen, bis auf einige Details. Da Sie von Ihnen selbst erstellt werden, sind alle Felder bearbeitbar und die Erstellung von Verknüpfungen zu Objekten ist möglich. 
+Lokale Lizenzen unterscheiden sich in einigen Details von Konsortiallizenzen. Da Sie von Ihnen selbst erstellt werden, sind alle Felder bearbeitbar und die Erstellung von Verknüpfungen zu Objekten ist möglich. 
 
  (Screenshot)
