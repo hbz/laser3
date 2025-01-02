@@ -14,11 +14,11 @@ Das Lizenzinformationsblatt beinhaltet alle Metadaten und Informationen, sowie V
 **(Screenshot 2)**
 
 1. **Verknüpfte Verträge:** Hier ist der Vertrag hinterlegt. Über das "Doppelpfeil"-Icon ist es möglich, sich die Vertragsmerkmale anzeigen zu lassen. Der Vertrag wird somit hier gespiegelt, um alle Informationen an einem Ort zu haben und mit den allgemeinen Merkmalen vergleichbar zu machen.  
-2.	**Allgemeine Merkmale:** Liefern zusätzliche Informationen zu der Lizenz.  
+2.	**Allgemeine Merkmale:** Metadaten, die zusätzliche Informationen zu der Lizenz liefern.  
 3.	**Meine Merkmale:** Pro-Nutzende können die Lizenzen um eigene Merkmale ergänzen. Die Merkmale können unter **Meine Einrichtung > Merkmale verwalten** erstellt und verwaltet werden.     
 4.	**Lieferanten:** Wie auch bei den Anbietern stammen die Kontaktangaben der Lieferanten aus der we:kb.   
 5.	**Kostenübersicht:** Ein Übersicht der Kosten für die Lizenz. Weitere Details finden Sie oben im Reiter **Kosten**.  
-6.	**Lizenzverknüpfungen:** Jede Lizenz kann mit einer anderen Lizenz verknüpft werden, um z.B. Vorgänger-/Nachfolgerbeziehungen nachzuhalten
+6.	**Lizenzverknüpfungen:** Jede Lizenz kann mit einer anderen Lizenz verknüpft werden, um z.B. Vorgänger-/Nachfolgerbeziehungen nachzuhalten.
 
 #### Lokale Lizenz (LAS:eR Pro)
 Lokale Lizenzen unterscheiden sich in einigen Details von Konsortiallizenzen. Da Sie von Ihnen selbst erstellt werden, sind alle Felder bearbeitbar und die Erstellung von Verknüpfungen zu Objekten ist möglich. 
