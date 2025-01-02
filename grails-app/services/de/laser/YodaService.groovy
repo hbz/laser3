@@ -17,6 +17,7 @@ import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
+import groovy.sql.BatchingPreparedStatementWrapper
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 
@@ -25,6 +26,7 @@ import io.micronaut.http.client.DefaultHttpClientConfiguration
 import io.micronaut.http.client.HttpClientConfiguration
 import org.hibernate.Session
 
+import java.sql.Connection
 import java.time.Duration
 import java.util.concurrent.ExecutorService
 
@@ -116,40 +118,50 @@ class YodaService {
     }
 
     /**
-     * Retrieves titles without we:kb ID
-     * @return a map containing faulty titles in the following structure:
+     * Retrieves {@link IssueEntitlement}s that should be deleted with trace
+     * @return a map containing issue entitlement traces in the following structure:
      * <ul>
-     *     <li>titles with a remapping target</li>
-     *     <li>titles with issue entitlements</li>
-     *     <li>deletable entries</li>
-     *     <li>titles which should receive a UUID</li>
+     *     <li>issue entitlement ID</li>
+     *     <li>{@link Package} we:kb ID</li>
+     *     <li>subscription global UID</li>
+     *     <li>{@link TitleInstancePackagePlatform} we:kb ID</li>
      * </ul>
      */
-    Map<String,Object> getTIPPsWithoutGOKBId() {
-        List<TitleInstancePackagePlatform> tippsWithoutGOKbID = TitleInstancePackagePlatform.findAllByGokbIdIsNullOrGokbIdLike(RDStore.GENERIC_NULL_VALUE.value)
-        List<IssueEntitlement> issueEntitlementsAffected = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp in :tipps',[tipps:tippsWithoutGOKbID])
-        Map<TitleInstancePackagePlatform,Set<IssueEntitlement>> ieTippMap = [:]
-        List<Map<String,Object>> tippsWithAlternate = []
-        Map<Long,Long> toDelete = [:]
-        Set<Long> toUUIDfy = []
-        tippsWithoutGOKbID.each { tipp ->
-            TitleInstancePackagePlatform altTIPP = TitleInstancePackagePlatform.executeQuery("select tipp from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status = :current and tipp.gokbId != null",[pkg:tipp.pkg,current:RDStore.TIPP_STATUS_CURRENT])[0]
-            if(altTIPP) {
-                toDelete[tipp.id] = altTIPP.id
-                tippsWithAlternate << [tipp:tipp,altTIPP:altTIPP]
+    void cleanupIssueEntitlements() {
+        Set<Subscription> subsConcerned = Subscription.executeQuery('select s from Subscription s where s.holdingSelection = :entire and s.instanceOf != null', [entire: RDStore.SUBSCRIPTION_HOLDING_ENTIRE])
+        Sql storageSql = GlobalService.obtainStorageSqlConnection(), sql = GlobalService.obtainSqlConnection()
+        Connection arrayConn = sql.getDataSource().getConnection()
+        //in order to distribute memory load
+        try {
+            subsConcerned.eachWithIndex { Subscription s, int si ->
+                Set<Map<String, Object>> data = IssueEntitlement.executeQuery("select new map(ie.version as version, now() as dateCreated, now() as lastUpdated, ie.globalUID as oldGlobalUID, coalesce(ie.dateCreated, ie.lastUpdated, '1970-01-01') as oldDateCreated, coalesce(ie.lastUpdated, ie.dateCreated, '1970-01-01') as oldLastUpdated, '"+IssueEntitlement.class.name+"' as oldObjectType, ie.id as oldDatabaseId, tipp.name as oldName, pkg.gokbId as referencePackageWekbId, tipp.gokbId as referenceTitleWekbId, s.globalUID as referenceSubscriptionUID) from IssueEntitlement ie join ie.tipp tipp join tipp.pkg pkg join ie.subscription s where s = :subConcerned", [subConcerned: s])
+                int offset = 0, step = 20000, total = data.size()
+                String query = "insert into deleted_object (do_version, do_old_date_created, do_old_last_updated, do_date_created, do_last_updated, do_old_object_type, do_old_database_id, do_old_global_uid, do_old_name, do_ref_package_wekb_id, do_ref_title_wekb_id, do_ref_subscription_uid) values (:version, :oldDateCreated, :oldLastUpdated, :dateCreated, :lastUpdated, :oldObjectType, :oldDatabaseId, :oldGlobalUID, :oldName, :referencePackageWekbId, :referenceTitleWekbId, :referenceSubscriptionUID)"
+                Set<Long> toDelete = []
+                log.debug("now processing entry subscription ${si+1} out of ${subsConcerned.size()} for ${total} records")
+                if(data) {
+                    storageSql.withBatch(step, query) { BatchingPreparedStatementWrapper stmt ->
+                        for (offset; offset < total; offset++) {
+                            stmt.addBatch(data[offset])
+                            if(offset % step == 0 && offset > 0) {
+                                log.debug("reached ${offset} rows")
+                            }
+                        }
+                    }
+                    toDelete.addAll(data.oldDatabaseId)
+                    toDelete.collate(65000).each { List<Long> part ->
+                        sql.execute("delete from price_item where pi_ie_fk = any(:toDelete)", [toDelete: arrayConn.createArrayOf('bigint', part as Object[])])
+                        sql.execute("delete from permanent_title where pt_ie_fk = any(:toDelete)", [toDelete: arrayConn.createArrayOf('bigint', part as Object[])])
+                        sql.execute("delete from issue_entitlement_coverage where ic_ie_fk = any(:toDelete)", [toDelete: arrayConn.createArrayOf('bigint', part as Object[])])
+                        sql.execute("delete from issue_entitlement where ie_id = any(:toDelete)", [toDelete: arrayConn.createArrayOf('bigint', part as Object[])])
+                    }
+                }
             }
-            else toUUIDfy << tipp.id
         }
-        issueEntitlementsAffected.each { IssueEntitlement ie ->
-            if (ieTippMap.get(ie.tipp)) {
-                ieTippMap[ie.tipp] << ie
-            } else {
-                Set<IssueEntitlement> ies = new TreeSet<IssueEntitlement>()
-                ies.add(ie)
-                ieTippMap[ie.tipp] = ies
-            }
+        finally {
+            storageSql.close()
+            sql.close()
         }
-        [tipps: tippsWithAlternate, issueEntitlements: ieTippMap, toDelete: toDelete, toUUIDfy: toUUIDfy]
     }
 
     /**

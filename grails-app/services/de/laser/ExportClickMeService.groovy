@@ -1856,6 +1856,11 @@ class ExportClickMeService {
                                 'subscription.uuid'                  : [field: 'subscription.globalUID', label: 'Laser-UUID', message: null],
                         ]
                 ],
+                subscriptionIdentifiers: [
+                        label  : 'Subscription Identifiers',
+                        message: 'subscription.identifiers.label',
+                        fields : [:]
+                ]
         ]
     }
 
@@ -3747,6 +3752,9 @@ class ExportClickMeService {
         IdentifierNamespace.findAllByNsType(TitleInstancePackagePlatform.class.name, [sort: 'ns']).each {
             fields.issueEntitlementIdentifiers.fields << ["issueEntitlementIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
+        IdentifierNamespace.findAllByNsType(Subscription.class.name, [sort: 'ns']).each {
+            fields.subscriptionIdentifiers.fields << ["subscriptionIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+        }
 
         fields
     }
@@ -3775,6 +3783,10 @@ class ExportClickMeService {
 
         IdentifierNamespace.findAllByNsType(TitleInstancePackagePlatform.class.name, [sort: 'ns']).each {
             exportFields.put("issueEntitlementIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+        }
+
+        IdentifierNamespace.findAllByNsType(Subscription.class.name, [sort: 'ns']).each {
+            exportFields.put("subscriptionIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
 
         exportFields
@@ -6422,6 +6434,11 @@ class ExportClickMeService {
             if(fieldKey.startsWith('issueEntitlementIdentifiers.')) {
                 String argKey = "ns${i}"
                 queryCols << "create_cell('${format}', (select string_agg(id_value,';') from identifier where id_tipp_fk = tipp_id and id_ns_fk = :${argKey}), null) as ${argKey}"
+                queryArgs.put(argKey, Long.parseLong(fieldKey.split("\\.")[1]))
+            }
+            else if(fieldKey.startsWith('subscriptionIdentifiers.')) {
+                String argKey = "ns${i}"
+                queryCols << "create_cell('${format}', (select string_agg(id_value,';') from identifier where id_sub_fk = ie_subscription_fk and id_ns_fk = :${argKey}), null) as ${argKey}"
                 queryArgs.put(argKey, Long.parseLong(fieldKey.split("\\.")[1]))
             }
             else if (fieldKey.contains('subscription.consortium')) {

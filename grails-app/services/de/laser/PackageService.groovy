@@ -215,6 +215,7 @@ class PackageService {
             Map<String,Object> queryParams = [sub: subList, pkg_id: pkg.id]
             //delete matches
             //IssueEntitlement.withSession { Session session ->
+            //todo pass issue entitlement IDs
             batchQueryService.clearIssueEntitlements(queryParams)
             PermanentTitle.executeUpdate("delete from PermanentTitle pt where pt.subscription.id in (:sub) and pt.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id)", queryParams)
             if (deletePackage) {
