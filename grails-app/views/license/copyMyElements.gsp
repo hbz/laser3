@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.Person; de.laser.RefdataValue; de.laser.LicenseController; de.laser.CopyElementsService" %>
+<%@ page import="de.laser.ui.Icon; de.laser.addressbook.Person; de.laser.RefdataValue; de.laser.LicenseController; de.laser.CopyElementsService" %>
 <laser:htmlStart message="license.details.copyMyElements.label" serviceInjection="true" />
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
