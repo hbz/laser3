@@ -1,5 +1,5 @@
 
-## Upgrade to Grails 6.2.2
+## Upgrade to Grails 6.2.3
 
 #### Updated core and dependencies
 
@@ -18,7 +18,7 @@ See [details.md](./details.md) for detailed information.
 
 ### Setup with SDKMAN
 
-    sdk i grails 6.2.2
+    sdk i grails 6.2.3
     sdk i groovy 3.0.23
     sdk i java 11.0.25-open
 

@@ -5,7 +5,7 @@ class SystemMessageCondition {
     static enum CONFIG {
         ERMS_6121   ('ERMS_6121', 'Nutzerzahlen überprüfen', SystemMessage.TYPE_DASHBOARD)
 
-        CONFIG(String key, String description, String systemMessageType) {
+        CONFIG (String key, String description, String systemMessageType) {
             this.key = key
             this.description = description
             this.systemMessageType = systemMessageType
