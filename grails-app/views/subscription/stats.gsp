@@ -27,11 +27,14 @@
                     <laser:render template="/platform/platformStatsDetails" model="[wekbServerUnavailable: wekbServerUnavailable, platformInstanceRecord: platform]"/>
                     <g:set var="statsInfo" value="${SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp where sp.owner = :subscription and sp.type = :statsAccess', [statsAccess: PropertyStore.SUB_PROP_STATS_ACCESS, subscription: subscription])}"/>
                     <g:if test="${statsInfo}">
-                        <ui:msg showIcon="true" class="info" noClose="true" header="${message(code: 'default.stats.info.header')}">
+                        <ui:msg showIcon="true" class="warning" noClose="true" header="${message(code: 'default.stats.info.header')}">
                             ${statsInfo[0]}<br>
-                            <g:message code="default.stats.wekbContact"/><ui:wekbIconLink type="org" gokbId="${platform.providerUuid}"/>
                         </ui:msg>
                     </g:if>
+                    <ui:msg showIcon="true" class="info" noClose="true" header="${message(code: 'default.stats.contact.header')}">
+                        <a href="#" class="infoFlyout-trigger" data-template="contactStats" data-platform="${platform.id}"><g:message code="default.stats.contact.link"/></a>
+                    </ui:msg>
+                    <laser:render template="/info/flyoutWrapper"/>
                     <g:if test="${platform.statisticsFormat.contains('COUNTER')}">
                         <g:form action="uploadRequestorIDs" params="${[id: params.id, platform: platform.id]}" controller="subscription" method="post" enctype="multipart/form-data" class="ui form">
                             <div class="ui message">

@@ -11,14 +11,20 @@
             template: cell.attr('data-template')
         }
 
-        if (data.template == 'org') {
-            data.id_org          = cell.attr('data-org')
-            data.id_subscription = cell.attr('data-sub')
-            data.id_surveyConfig = cell.attr('data-surveyConfig')
+        switch(data.template) {
+            case 'org':
+                data.id_org          = cell.attr('data-org')
+                data.id_subscription = cell.attr('data-sub')
+                data.id_surveyConfig = cell.attr('data-surveyConfig')
+                break;
+            case 'reportTitleToProvider':
+                data.id_tipp         = cell.attr('data-tipp')
+                break;
+            case 'contactStats':
+                data.id_platform     = cell.attr('data-platform')
+                break;
         }
-        else if (data.template == 'reportTitleToProvider') {
-            data.id_tipp          = cell.attr('data-tipp')
-        }
+
 
         $.ajax ({
             url: "<g:createLink controller="info" action="flyout"/>",

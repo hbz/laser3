@@ -192,6 +192,7 @@ class RDStore {
     public final static RefdataValue PRS_FUNC_INVOICING_CONTACT         = getRefdataValue('Invoicing Contact', RDConstants.PERSON_FUNCTION)
     public final static RefdataValue PRS_FUNC_RESPONSIBLE_ADMIN         = getRefdataValue('Responsible Admin', RDConstants.PERSON_FUNCTION)
     public final static RefdataValue PRS_FUNC_SERVICE_SUPPORT           = getRefdataValue('Service Support', RDConstants.PERSON_FUNCTION)
+    public final static RefdataValue PRS_FUNC_STATS_SUPPORT             = getRefdataValue('Statistical Support', RDConstants.PERSON_FUNCTION)
     public final static RefdataValue PRS_FUNC_TECHNICAL_SUPPORT         = getRefdataValue('Technical Support', RDConstants.PERSON_FUNCTION)
     public final static RefdataValue PRS_FUNC_METADATA                  = getRefdataValue('Metadata', RDConstants.PERSON_FUNCTION)
     public final static RefdataValue PRS_FUNC_OA_CONTACT                = getRefdataValue('OA contact', RDConstants.PERSON_FUNCTION)
