@@ -26,10 +26,13 @@ class SystemMessage {
      */
     static final String TYPE_STARTPAGE = "TYPE_STARTPAGE"
 
+
     String content_de
     String content_en
     String type
     boolean isActive = false
+
+    SystemMessageCondition.CONFIG condition
 
     Date dateCreated
     Date lastUpdated
@@ -40,18 +43,21 @@ class SystemMessage {
         id          column: 'sm_id'
         version     column: 'sm_version'
 
-        content_de  column: 'sm_content_de'
-        content_en  column: 'sm_content_en'
-        type        column: 'sm_type'
-        isActive    column: 'sm_is_active'
+        content_de column: 'sm_content_de'
+        content_en column: 'sm_content_en'
+        type       column: 'sm_type'
+        condition  column: 'sm_condition'
+        isActive   column: 'sm_is_active'
+
         dateCreated column: 'sm_date_created'
         lastUpdated column: 'sm_last_updated'
     }
 
     static constraints = {
-        content_de  (nullable:true,  blank:true)
-        content_en  (nullable:true,  blank:true)
-        type        (blank:false)
+        content_de          (nullable:true,  blank:true)
+        content_en          (nullable:true,  blank:true)
+        type                (blank:false)
+        condition           (nullable:true)
     }
 
     /**
@@ -89,6 +95,18 @@ class SystemMessage {
             default:
                 return content_en
                 break
+        }
+    }
+
+    boolean isConditionTrue() {
+        // logic:
+        // display message - isActive == true
+        // hide message    - isConditionTrue() == true
+
+        if (condition) {
+            SystemMessageCondition.isTrue(condition)
+        } else {
+            false
         }
     }
 }

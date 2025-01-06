@@ -495,9 +495,9 @@ class SurveyControllerService {
                 List<Subscription> subscriptionList = CostItem.executeQuery(query, [subList: orgSubscriptions, owner: result.surveyInfo.owner, status: RDStore.COST_ITEM_DELETED, costItemElement: Long.valueOf(result.selectedCostItemElementID)])
 
                 subscriptionList.each { Subscription sub ->
-                    Org org = sub.getSubscriber()
+                    Org org = sub.getSubscriberRespConsortia()
                     if (selectedSubParticipants && org && org.id in selectedSubParticipants.id)
-                        result.selectedSubParticipants << sub.getSubscriber()
+                        result.selectedSubParticipants << sub.getSubscriberRespConsortia()
                 }
             }
 

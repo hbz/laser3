@@ -30,7 +30,7 @@
 <g:else> %{--<g:if test="${!copyObject}">--}% %{-- only used @ _copyPropertiesCompare.gsp --}%
 
     <laser:script file="${this.getGroovyPageFileName()}">
-        // ONLY FOR PROPERIES
+        // ONLY FOR PROPERTIES
         JSPC.app.takeProperty = $('input[name="copyObject.takeProperty"]');
         JSPC.app.deleteProperty = $('input[name="copyObject.deleteProperty"]');
 

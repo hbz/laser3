@@ -41,4 +41,10 @@ databaseChangeLog = {
             }
         }
     }
+
+    changeSet(author: "klober (generated)", id: "1734421515135-9") {
+        addColumn(tableName: "system_message") {
+            column(name: "sm_condition", type: "varchar(255)")
+        }
+    }
 }
