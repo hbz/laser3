@@ -188,10 +188,6 @@
                 %{-- system info --}%
 
                 <sec:ifAnyGranted roles="ROLE_ADMIN">
-                    <g:if test="${ConfigMapper.getShowSystemInfo()}">
-                        <laser:render template="/templates/system/info" />
-                    </g:if>
-
                     <div id="system-profiler" class="ui label hidden la-debugInfos">
                         <i class="clock icon"></i> <span></span>
                     </div>
@@ -271,7 +267,7 @@
                         $('button#la-js-topButton').stop().fadeTo('slow',0);
                     }
                 });
-                if ( $('#system-profiler').length || $('#showDebugInfo').length || $('#showSystemInfo').length ){
+                if ( $('#system-profiler').length || $('#showDebugInfo').length ) {
 
                 }
                 else{
