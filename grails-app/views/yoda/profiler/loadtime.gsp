@@ -2,6 +2,16 @@
 <laser:htmlStart message="menu.yoda.profilerLoadtime">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
+${test}
+
+
+
+<g:each in="${globalHeatMap}" var="uri, stat" status="j">
+
+    <g:set var="avg" value="${((double) stat[2] / 1000).round(2)}" />
+    <g:set var="heat" value="${((double) stat[0]).round(2)}" />
+    ---${heat}--
+</g:each>
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
@@ -36,7 +46,6 @@
     </div>
 
     <div data-tab="first" class="ui bottom attached tab segment active" style="border-top: 1px solid #d4d4d5;">
-
         <table class="ui celled la-js-responsive-table la-table la-hover-table compact table" id="heatTable">
             <thead>
             <tr>
@@ -52,10 +61,12 @@
                 </g:if>
                 <th>avg</th>
                 <th><i class="icon fire"></i></th>
+                <th><i class="icon chartline"></i></th>
             </tr>
             </thead>
             <tbody>
-            <g:each in="${globalHeatMap}" var="uri, stat">
+            <g:each in="${globalHeatMap}" var="uri, stat" status="j">
+
                 <g:set var="avg" value="${((double) stat[2] / 1000).round(2)}" />
                 <g:set var="heat" value="${((double) stat[0]).round(2)}" />
 
@@ -108,6 +119,7 @@
                             <span class="ui circular label"> ${heat} </span>
                         </g:else>
                     </td>
+                    <td><div id="${j+1}" style="width: 100px;height:40px"></div></td>
                 </tr>
             </g:each>
             </tbody>
@@ -209,6 +221,7 @@
                     <th>Aufrufe</th>
                     <th>avg</th>
                     <th>max</th>
+                    <th><i class="icon chartline"></i></th>
                 </tr>
             </thead>
             <tbody>
@@ -231,6 +244,10 @@
                         </g:else>
                     </td>
                     <td>${((double) bench[1] / 1000).round(2)}</td>
+                    <td>    <g:set var="test2" value="${SystemProfiler.executeQuery("select count(sp_uri) from SystemProfiler where sp_uri = :test",   [
+                        test:   '/survey/workflowsSurveysConsortia'
+                    ])}" />
+                    </td>
                 </tr>
                 </g:each>
             </tbody>
@@ -278,5 +295,5 @@
         cursor: pointer;
     }
 </style>
-
+<laser:render template="sparklinesProfile" />
 <laser:htmlEnd />

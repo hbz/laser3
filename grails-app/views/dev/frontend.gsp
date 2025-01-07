@@ -69,7 +69,7 @@
     <laser:render template="frontend_modals" />
     %{-- CONFIRMATION MODAL  --}%
     <laser:render template="frontend_confirmationModals" />
-    %{-- RESPONSIBLE TABELLEN  --}%
+    %{-- COPY --}%
     <laser:render template="frontend_copyFunction" />
     %{-- Kopierfunktion  --}%
 
