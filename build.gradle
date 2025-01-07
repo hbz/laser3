@@ -1,14 +1,14 @@
 import java.text.SimpleDateFormat
 
-version '3.4.17'
-group 'de.laser'
+version = '3.4.17'
+group = 'de.laser'
 
 // ---[ build script ]---
 
 buildscript {
     repositories {
         mavenLocal()
-        maven { url 'https://repo.grails.org/grails/core' }
+        maven { url = 'https://repo.grails.org/grails/core' }
     }
     dependencies {
         classpath 'org.grails:grails-gradle-plugin:' + grailsGradlePluginVersion            // 2024
@@ -46,7 +46,7 @@ sourceSets {
 
 repositories {
     mavenLocal()
-    maven { url 'https://repo.grails.org/grails/core' }
+    maven { url = 'https://repo.grails.org/grails/core' }
 }
 
 configurations {
@@ -146,7 +146,7 @@ springBoot {
 }
 
 bootRun {
-    ignoreExitValue true
+    ignoreExitValue = true
     jvmArgs(
         '-Dspring.output.ansi.enabled=always', 
         '-noverify', 
@@ -168,7 +168,10 @@ gitProperties {
 // ---[ war ]---
 
 tasks.register('war.updateBuildInfo', Task) {
-    group 'laser'
+    group = 'laser'
+
+    String rootDir = project.rootDir
+    String buildDir = project.buildDir
 
     doFirst {
         Properties properties = new Properties()
@@ -177,10 +180,10 @@ tasks.register('war.updateBuildInfo', Task) {
         properties.setProperty('info.app.build.javaVersion', System.getProperty('java.version'))
 
         try {
-            File gitProperties = new File("${project.rootDir}/git.properties")
+            File gitProperties = new File("${rootDir}/git.properties")
             gitProperties.withInputStream { properties.load(it) } // read props from file
 
-            File grailsBuildInfo = new File("${project.buildDir}/resources/main/META-INF/grails.build.info")
+            File grailsBuildInfo = new File("${buildDir}/resources/main/META-INF/grails.build.info")
             grailsBuildInfo.withInputStream { properties.load(it) } // read props from file
 
             grailsBuildInfo.withOutputStream { properties.store(it, null) } // write back to file
