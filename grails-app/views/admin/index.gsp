@@ -89,7 +89,28 @@
 <br />
 <br />
 
-    <table class="ui sortable celled la-js-responsive-table la-table la-hover-table compact table">
+<table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
+    <thead>
+        <tr>
+            <th>ServiceCheck</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <g:each in="${systemService.serviceCheck()}" var="systemCheck">
+            <tr>
+                <td>${systemCheck.key}</td>
+                <td>${systemCheck.value}</td>
+            </tr>
+        </g:each>
+    </tbody>
+</table>
+
+<br />
+<br />
+
+<g:if test="${events}">
+    <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>
         <tr>
             <th scope="col" class="two wide">${message(code:'default.date.label')}</th>
@@ -127,5 +148,6 @@
         </g:each>
         </tbody>
     </table>
+</g:if>
 
 <laser:htmlEnd />
