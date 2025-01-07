@@ -1337,6 +1337,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             case "Service Support":
                                 contact.rdType = RDStore.PRS_FUNC_SERVICE_SUPPORT
                                 break
+                            case "Statistical Support":
+                                contact.rdType = RDStore.PRS_FUNC_STATS_SUPPORT
+                                break
                             case "Technical Support":
                                 contact.rdType = RDStore.PRS_FUNC_TECHNICAL_SUPPORT
                                 break
@@ -1529,6 +1532,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                     break
                                 case "Service Support":
                                     contact.rdType = RDStore.PRS_FUNC_SERVICE_SUPPORT
+                                    break
+                                case "Statistical Support":
+                                    contact.rdType = RDStore.PRS_FUNC_STATS_SUPPORT
                                     break
                                 case "Technical Support":
                                     contact.rdType = RDStore.PRS_FUNC_TECHNICAL_SUPPORT

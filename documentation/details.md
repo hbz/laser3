@@ -1,5 +1,5 @@
 
-## Details: Upgrade from [Grails 6.1.2](./grails6/details.md) to Grails 6.2.1
+## Details: Upgrade from [Grails 6.1.2](./grails6/details.md) to Grails 6.2.3
 
 ### Database Migration Plugin
 
@@ -7,7 +7,11 @@ Dependency *org.grails:grails-shell:6.1.2* added -> TODO: remove workaround
 
 ### Asset Pipeline Plugin
 
-Splitted dependencies: gradle:4.4.0, core:4.4.0, grails:4.5.1 -> TODO: upgrade & remove workaround
+Splitted dependencies: core:4.5.2, gradle:4.4.0, grails:4.5.2 -> TODO: upgrade & remove workaround
+
+### Grails Mail Plugin
+
+Upgrade to 4.0.0
 
 ### ExecutorGrailsPlugin
 

@@ -51,7 +51,6 @@ class ConfigMapper {
     static final List REPORTING             = ['reporting', Map]
 
     static final List SHOW_DEBUG_INFO                       = ['showDebugInfo',  Boolean]
-    static final List SHOW_SYSTEM_INFO                      = ['showSystemInfo', Boolean]
     static final List SHOW_STATS_INFO                       = ['showStatsInfo',  Boolean]
     static final List STATS_API_URL                         = ['statsApiUrl', String]
     static final List STATS_REPORT_SAVE_LOCATION            = ['statsReportSaveLocation', String]
@@ -78,7 +77,7 @@ class ConfigMapper {
             PGDUMP_PATH,
             QUARTZ_HEARTBEAT,
             REPORTING,
-            SHOW_DEBUG_INFO, SHOW_SYSTEM_INFO, SHOW_STATS_INFO, STATS_API_URL, STATS_REPORT_SAVE_LOCATION, STATS_SYNC_JOB_ACTIVE, SUSHI_COUNTER_REGISTRY_URL, SUSHI_COUNTER_REGISTRY_DATA_SUFFIX, SYSTEM_EMAIL, SYSTEM_INSIGHT_EMAILS,
+            SHOW_DEBUG_INFO, SHOW_STATS_INFO, STATS_API_URL, STATS_REPORT_SAVE_LOCATION, STATS_SYNC_JOB_ACTIVE, SUSHI_COUNTER_REGISTRY_URL, SUSHI_COUNTER_REGISTRY_DATA_SUFFIX, SYSTEM_EMAIL, SYSTEM_INSIGHT_EMAILS,
             WEKB_API_USERNAME, WEKB_API_PASSWORD, WEKB_SERVER_URL
     ]
 
@@ -205,9 +204,6 @@ class ConfigMapper {
     }
     static boolean getShowDebugInfo(int output = LOGGER) {
         readConfig( SHOW_DEBUG_INFO, output )
-    }
-    static boolean getShowSystemInfo(int output = LOGGER) {
-        readConfig( SHOW_SYSTEM_INFO, output )
     }
     static boolean getShowStatsInfo(int output = LOGGER) {
         readConfig( SHOW_STATS_INFO, output )
