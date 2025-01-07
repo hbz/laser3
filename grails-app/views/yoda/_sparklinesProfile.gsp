@@ -6,7 +6,7 @@
         test:   '/survey/workflowsSurveysConsortia'
     ])}" />
 
-      ${test2}
+      ---->${test2}
     </g:each>
 <script>
   function getRandomInt(max) {

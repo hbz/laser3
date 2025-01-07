@@ -221,6 +221,7 @@ ${test}
                     <th>Aufrufe</th>
                     <th>avg</th>
                     <th>max</th>
+                    <th><i class="icon chartline"></i></th>
                 </tr>
             </thead>
             <tbody>
@@ -243,6 +244,10 @@ ${test}
                         </g:else>
                     </td>
                     <td>${((double) bench[1] / 1000).round(2)}</td>
+                    <td>    <g:set var="test2" value="${SystemProfiler.executeQuery("select count(sp_uri) from SystemProfiler where sp_uri = :test",   [
+                        test:   '/survey/workflowsSurveysConsortia'
+                    ])}" />
+                    </td>
                 </tr>
                 </g:each>
             </tbody>
