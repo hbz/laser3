@@ -3927,11 +3927,11 @@ class ExportService {
 		userCache.put('label', 'Hole Titel ...')
 		//continue here with tests:
 		List<GroovyRowResult> tippIDs = sql.rows("select tipp_id from title_instance_package_platform where ${queryClauseParts.where}${queryClauseParts.order}", queryClauseParts.params)
-		List<GroovyRowResult> hostPlatformURLRows = sql.rows("select tipp_host_platform_url from permanent_title join title_instance_package_platform on pt_tipp_fk = tipp_id where pt_owner_fk = :subscriber and pt_subscription_fk = any(:subIDs)", [subscriber: subscriber.id, subIDs: conn.createArrayOf('bigint', configMap.perpetualSubIDs.toArray() as Object[])])
+		List<GroovyRowResult> hostPlatformURLRows = sql.rows("select tipp_host_platform_url from permanent_title join title_instance_package_platform on pt_tipp_fk = tipp_id where pt_owner_fk = :subscriber and pt_subscription_fk = any(:subIDs)", [subscriber: subscriber.id, subIDs: sql.getDataSource().getConnection().createArrayOf('bigint', configMap.perpetualSubIDs.toArray() as Object[])])
 		List<GroovyRowResult> rows = []
 		Set<String> hostPlatformURLs = hostPlatformURLRows['tipp_host_platform_url']
 		tippIDs.collate(65000).each { List subset ->
-			rows.addAll(sql.rows(baseQuery, [tippIDSubset: conn.createArrayOf('bigint', subset['tipp_id'].toArray() as Object[]), hostPlatformURLs: conn.createArrayOf('varchar', hostPlatformURLs.toArray() as Object[])]))
+			rows.addAll(sql.rows(baseQuery, [tippIDSubset: sql.getDataSource().getConnection().createArrayOf('bigint', subset['tipp_id'].toArray() as Object[]), hostPlatformURLs: sql.getDataSource().getConnection().createArrayOf('varchar', hostPlatformURLs.toArray() as Object[])]))
 		}
 		Map<String, Object> identifierInverseMap = subscriptionControllerService.fetchTitles(configMap.refSub, true)
 		List excelRows = []
