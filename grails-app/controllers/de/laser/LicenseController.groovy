@@ -369,13 +369,14 @@ class LicenseController {
             ArrayList<Long> filteredOrgIds = _getOrgIdsForFilter()
 
             result.validSubChilds.each { sub ->
-                List<Org> subscr = sub.getSubscriber() ? [sub.getSubscriber()] : [] // erms-5393
                 def filteredSubscr = []
-                subscr.each { Org subOrg ->
+                Org subOrg = sub.getSubscriber() // erms-5393
+                if (subOrg) {
                     if (filteredOrgIds.contains(subOrg.id)) {
                         filteredSubscr << subOrg
                     }
                 }
+
                 if (filteredSubscr) {
                     if(params.list("subscription").contains(sub.id) || !params.list("subscription")) {
                         if (params.subRunTimeMultiYear || params.subRunTime) {
