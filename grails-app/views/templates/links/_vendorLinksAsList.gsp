@@ -8,10 +8,11 @@
             <td>
                 <span class="la-flexbox la-minor-object">
                     <i class="${Icon.VENDOR} la-list-icon la-popup-tooltip" data-content="${message(code:'vendor.label')}"></i>
+
+                    <g:link controller="vendor" action="show" id="${role.vendor.id}">
+                        ${role.vendor.name}
+                    </g:link>
                 </span>
-                <g:link controller="vendor" action="show" id="${role.vendor.id}">
-                    ${role.vendor.name}
-                </g:link>
             </td>
 
             <td class="right aligned eight wide column">
