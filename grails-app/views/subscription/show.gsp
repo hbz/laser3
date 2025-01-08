@@ -9,6 +9,8 @@
 
         <p>sub.type: ${subscription.type}</p>
 
+        <p>sub.getSubscriber(): ${subscription.getSubscriber()}</p>
+
         <p>sub.getSubscriberRespConsortia(): ${subscription.getSubscriberRespConsortia()}</p>
 
         <p>sub.instanceOf: <g:if test="${subscription.instanceOf}">

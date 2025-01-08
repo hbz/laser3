@@ -1506,7 +1506,8 @@ class YodaController {
             //def property = PropertyDefinition.getByNameAndDescr("Perennial term checked", PropertyDefinition.SUB_PROP)
             parentSubChilds.each { sub ->
                 if (sub._getCalculatedSuccessorForSurvey()) {
-                    sub.getAllSubscribers().each { org1 ->
+                    Org org1 = sub.getSubscriber()
+                    if (org1) {
 
                         def surveyResult = SurveyResult.findAllBySurveyConfigAndParticipant(surConfig, org1)
                         if(surveyResult?.size() > 0) {
@@ -1536,48 +1537,7 @@ class YodaController {
                             //println("")
                             resultMap << newMap
                         }
-
                     }
-
-                } else {
-                   /* if (property?.isRefdataValueType()) {
-                        if (sub?.propertySet?.find {
-                            it?.type?.id == property?.id
-                        }?.refValue == RefdataValue.getByValueAndCategory('Yes', property?.refdataCategory)) {
-
-                            sub?.getAllSubscribers().each { org ->
-                                def surveyResult = SurveyResult.findAllBySurveyConfigAndParticipant(surConfig, org)
-                                if(surveyResult?.size() > 0) {
-                                    count++
-                                    def newMap = [:]
-                                    println(count + ":Merkmal: ${sub.name} (${sub.id}) [${org.name}]" + surveyResult)
-                                    newMap.surveyResult = surveyResult?.id ?: ""
-                                    newMap.subName = sub.name
-                                    newMap.subId = sub.id
-                                    newMap.orgName = org.name
-                                    newMap.sortName = org?.sortname
-                                    newMap.propertiesSize = surveyResult?.size()
-                                    newMap.info = 'Merkmal vorhanden'
-                                    println("")
-                                    resultMap << newMap
-                                }else{
-                                    count++
-                                    def newMap = [:]
-                                    println(count + ": LEER : ${sub.name} (${sub.id}) [${org.name}]" + surConfig)
-                                    newMap.surveyResult = 'Kein Umfrage'
-                                    newMap.subName = sub.name
-                                    newMap.subId = sub.id
-                                    newMap.orgName = org.name
-                                    newMap.sortName = org?.sortname
-                                    newMap.propertiesSize = 0
-                                    newMap.info = 'Merkmal vorhanden'
-                                    println("")
-                                    resultMap << newMap
-                                }
-
-                            }
-                        }
-                    }*/
                 }
             }
 
