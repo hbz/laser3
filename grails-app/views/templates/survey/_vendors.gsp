@@ -2,6 +2,9 @@
 <ui:filter>
     <g:form controller="${processController}" action="${processAction}" id="${surveyInfo.id}"
             params="${params}" method="get" class="ui form">
+        <g:if test="${params.viewTab}">
+            <g:hiddenField name="viewTab" value="${params.viewTab}"/>
+        </g:if>
         <laser:render template="/templates/filter/vendorFilter"
                       model="[
                               tmplConfigShow: [['name', 'venStatus'], ['supportedLibrarySystems', 'electronicBillings', 'invoiceDispatchs'], ['curatoryGroup', 'curatoryGroupType'], ['providers']],
