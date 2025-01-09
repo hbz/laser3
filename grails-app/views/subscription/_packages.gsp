@@ -26,7 +26,7 @@
                                     ${sp.getCurrentIssueEntitlementCountOfPackage()} <g:message code="subscription.packages.currentTitles"/>
                                 </div>
 
-                                <div class="right aligned column">
+                                <div class="seven wide right aligned column">
                                     <g:if test="${sp.pkg.nominalPlatform}">
                                         <i aria-hidden="true" class="${Icon.PLATFORM} grey la-popup-tooltip" data-content="${message(code: 'platform.label')}"></i>
                                         <g:link controller="platform" action="show" id="${sp.pkg.nominalPlatform.id}">${sp.pkg.nominalPlatform.name}</g:link>
