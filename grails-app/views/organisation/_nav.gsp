@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService" %>
+<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService" %>
 <laser:serviceInjection/>
 
 %{--<pre>--}%
@@ -18,7 +18,7 @@
 
     <g:if test="${orgInstance.isInfoAccessibleFor(contextService.getOrg())}">
 %{--            <ui:subNavItem controller="organisation" action="info" params="${breadcrumbParams}" message="org.nav.info"/>--}%
-        <g:link controller="org" action="info" params="${breadcrumbParams}" class="item ${actionName == 'info' ? 'active' : ''}" role="tab"><i class="chartline circular icon" style="margin:0"></i></g:link>
+        <g:link controller="org" action="info" params="${breadcrumbParams}" class="item ${actionName == 'info' ? 'active' : ''}" role="tab"><i class="${Icon.DATA_DASHBOARD} circular" style="margin:0"></i></g:link>
     </g:if>
 
     <ui:subNavItem controller="organisation" action="show" params="${breadcrumbParams}" message="org.nav.details"/>
