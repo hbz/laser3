@@ -250,7 +250,7 @@ class ApiOAMonitor {
 
             if (sub._getCalculatedType() in [Subscription.TYPE_PARTICIPATION]) {
                 List<Org> validOwners = getAccessibleOrgs()
-                List<Org> subSubscribers = sub.getAllSubscribers()
+                List<Org> subSubscribers = sub.getSubscriber() ? [sub.getSubscriber()] : [] // erms-5393
                 //filtered = sub.costItems.findAll{ it.owner in validOwners && it.owner in subSubscribers }
                 filtered = sub.costItems.findAll{ it.owner in validOwners && (it.owner in subSubscribers || it.isVisibleForSubscriber) }
             }

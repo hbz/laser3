@@ -503,17 +503,17 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     String _getCalculatedType() {
         String result = TYPE_UNKOWN
 
-        if(getConsortium() && !getAllSubscribers() && !instanceOf) {
+        if (getConsortium() && !getSubscriber() && !instanceOf) {
             if(administrative) {
                 result = TYPE_ADMINISTRATIVE
             }
             else result = TYPE_CONSORTIAL
         }
-        else if(getConsortium() && instanceOf) {
+        else if (getConsortium() && instanceOf) {
             result = TYPE_PARTICIPATION
         }
         // TODO remove type_local
-        else if(getAllSubscribers() && !instanceOf) {
+        else if (getSubscriber() && !instanceOf) {
             result = TYPE_LOCAL
         }
         result
@@ -603,19 +603,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
   }
 
     /**
-     * Retrieves all subscribers to this subscription
-     * @return a {@link List} of institutions ({@link Org}) subscribing this subscription
-     */
-    List<Org> getAllSubscribers() {
-        List<Org> result = []
-        orgRelations.each { OrgRole or ->
-            if ( or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN] )
-                result.add(or.org)
-            }
-        result
-    }
-
-    /**
      * Gets the content provider of this subscription
      * @return the {@link Org} linked to this subscription as 'Content Provider'; if several orgs are linked that way, the last one is being returned
      * @deprecated delivers the first result of {@link #getProviders()}; use {@link #getProviders()} instead because of 1:n relation
@@ -632,6 +619,11 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      */
     Org getConsortium() {
         Org result = OrgRole.findByRoleTypeAndSub(RDStore.OR_SUBSCRIPTION_CONSORTIUM, this)?.org //null check necessary because of single users!
+        result
+    }
+
+    Org getSubscriber() {
+        Org result = OrgRole.findBySubAndRoleTypeInList(this, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN])?.org
         result
     }
 

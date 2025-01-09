@@ -47,11 +47,11 @@
                             <tbody>
                             <g:each in="${validSourceSubChilds}" var="sub" status="i">
                                 <tr>
-                                    <g:each in="${sub.getAllSubscribers()}" var="subscriberOrg">
+                                    <g:if test="${sub.getSubscriber()}">
                                         <td class="titleCell">
-                                            <g:link controller="subscription" action="show" id="${sub.id}">${subscriberOrg.sortname}</g:link>
+                                            <g:link controller="subscription" action="show" id="${sub.id}">${sub.getSubscriber().sortname}</g:link>
 
-                                            <ui:customerTypeProIcon org="${subscriberOrg}" />
+                                            <ui:customerTypeProIcon org="${sub.getSubscriber()}" />
                                         </td>
                                         <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
                                         <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
@@ -74,7 +74,7 @@
                                                 <span class="la-popup-tooltip" data-content="${g.message(code: 'renewalEvaluation.orgsInSurvey')}" data-position="top right"><i class="icon times circle red"></i></span>
                                             </g:else>
                                         </td>
-                                    </g:each>
+                                    </g:if>
                                 </tr>
                             </g:each>
                             </tbody>
@@ -103,9 +103,9 @@
                             <tbody>
                             <g:each in="${validTargetSubChilds}" var="sub" status="i">
                                 <tr>
-                                    <g:each in="${sub.refresh().getAllSubscribers()}" var="subscriberOrg">
+                                    <g:if test="${sub.getSubscriber()}">
                                         <td class="titleCell">
-                                            <g:link controller="subscription" action="show" id="${sub.id}">${subscriberOrg.sortname}</g:link>
+                                            <g:link controller="subscription" action="show" id="${sub.id}">${sub.getSubscriber().sortname}</g:link>
                                         </td>
                                         <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
                                         <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
@@ -115,7 +115,7 @@
                                             </g:if>
                                         </td>
                                         <td>${sub.status.getI10n('value')}</td>
-                                    </g:each>
+                                    </g:if>
                                 </tr>
                             </g:each>
                             </tbody>

@@ -320,6 +320,9 @@ class Icon {
 
     public static String DOCUMENT                   = 'file alternate icon'
 
+    @UIDoc(usage = 'Symbol for data dashboard')
+    public static String DATA_DASHBOARD             = 'chartline icon'
+
     public static String DUE_DATE                   = 'bell icon'
 
     public static String FINANCE                    = 'euro sign icon'

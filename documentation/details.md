@@ -11,7 +11,7 @@ Splitted dependencies: core:4.5.2, gradle:4.4.0, grails:4.5.2 -> TODO: upgrade &
 
 ### Grails Mail Plugin
 
-Upgrade to 4.0.0
+Upgrade to 4.0.0 -> TODO: circular references
 
 ### ExecutorGrailsPlugin
 
