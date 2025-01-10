@@ -611,7 +611,10 @@
                     data: [${subscriptionTimelineMap.keySet().join(', ')}]
                 },
                 yAxis:  { type: 'value' },
-                legend: { bottom: 0 },
+                legend: {
+                    bottom: 0,
+                    selectedMode: false
+                },
                 grid:   JSPC.app.info.chart_config_helper.grid,
             },
             license: {
@@ -660,7 +663,10 @@
                     data: [${licenseTimelineMap.keySet().join(', ')}]
                 },
                 yAxis:  { type: 'value' },
-                legend: { bottom: 0 },
+                legend: {
+                    bottom: 0,
+                    selectedMode: false
+                },
                 grid:   JSPC.app.info.chart_config_helper.grid,
             },
             provider: {
@@ -668,7 +674,7 @@
                 series: [
                 <g:each in="${providerTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ Provider.get(it).sortname ?: Provider.get(it).name }}" var="provider">
                     {
-                        name    : '<% print Provider.get(provider).name %>',
+                        name    : '<% print Provider.get(provider).name.replaceAll("'", "\\\\'") %>',
                         type    : 'bar',
                         stack   : 'total',
 %{--                        areaStyle : {},--}%
@@ -687,6 +693,7 @@
                 yAxis:  { type: 'value' },
                 legend: {
                     bottom: 0,
+                    selectedMode: false,
                     type: 'scroll'
                 },
                 grid:   JSPC.app.info.chart_config_helper.grid,
@@ -745,7 +752,10 @@
                     data: [${surveyTimelineMap.keySet().join(', ')}]
                 },
                 yAxis:  { type: 'value' },
-                legend: { bottom: 0 },
+                legend: {
+                    bottom: 0,
+                    selectedMode: false
+                },
                 grid:   JSPC.app.info.chart_config_helper.grid,
             },
         };

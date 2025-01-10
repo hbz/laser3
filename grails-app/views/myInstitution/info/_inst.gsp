@@ -11,8 +11,9 @@
     // println base_qry; println qry_params
 
     List<List> subStruct = Subscription.executeQuery('select s.status.id, s.id, s.startDate, s.endDate, s.isMultiYear, s.referenceYear ' + base_qry, qry_params)
-    Map subscriptionMap = InfoService$Helper.reduceMap(InfoService$Helper.listToMap(subStruct))
+//    Map subscriptionMap = InfoService$Helper.reduceMap(InfoService$Helper.listToMap(subStruct))
     Map subscriptionTimelineMap = InfoService$Helper.getTimelineMap(subStruct)
+    Map subscriptionMap = InfoService$Helper.getTimelineCatsMap(subscriptionTimelineMap)
 %>
 
 %{--${subscriptionMap.get(RDStore.SUBSCRIPTION_CURRENT.id)?.size() ?: 0}--}%
@@ -137,7 +138,8 @@
                     orient: 'vertical',
                     top: 'center',
                     left: 'right',
-                    selectedMode: false
+                    selectedMode: false,
+                    type: 'scroll'
                 },
                 grid:   { left: '0.5%', right: '200px', top: '5%', bottom: '20%' }
             },
@@ -154,7 +156,7 @@
         .chartWrapper {
             width: 100%;
             min-height: 200px;
-            margin: 1em 0 0;
+            margin: 1em 0 -1em;
         }
     </style>
 
