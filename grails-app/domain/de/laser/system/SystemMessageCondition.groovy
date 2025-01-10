@@ -18,11 +18,14 @@ class SystemMessageCondition {
     static mapWith = 'none'
 
     static boolean isTrue(CONFIG type) {
+        boolean result = false
+
         if (type == CONFIG.ERMS_6121) {
             // do something
             // true if all conditions are met
             // false otherwise
         }
-        false
+
+        result
     }
 }

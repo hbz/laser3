@@ -11,8 +11,9 @@
     // println base_qry; println qry_params
 
     List<List> subStruct = Subscription.executeQuery('select s.status.id, s.id, s.startDate, s.endDate, s.isMultiYear, s.referenceYear ' + base_qry, qry_params)
-    Map subscriptionMap = InfoService$Helper.reduceMap(InfoService$Helper.listToMap(subStruct))
+//    Map subscriptionMap = InfoService$Helper.reduceMap(InfoService$Helper.listToMap(subStruct))
     Map subscriptionTimelineMap = InfoService$Helper.getTimelineMap(subStruct)
+    Map subscriptionMap = InfoService$Helper.getTimelineCatsMap(subscriptionTimelineMap)
 %>
 
 %{--${subscriptionMap.get(RDStore.SUBSCRIPTION_CURRENT.id)?.size() ?: 0}--}%
@@ -34,7 +35,16 @@
         </div>
         <div class="extra content">
             <div class="right floated">
-                <g:link controller="organisation" action="info" id="${contextService.getOrg().id}">Daten-Dashboard öffnen <i class="${Icon.DATA_DASHBOARD} circular"></i></g:link>
+                <g:if test="${contextService.getOrg().isCustomerType_Basic()}">
+                    <div class="disabled">
+                        ${message(code:'tooltip.onlyFullMembership')}: Daten-Dashboard <i class="${Icon.DATA_DASHBOARD} circular"></i>
+                    </div>
+                </g:if>
+                <g:else>
+                    <g:link controller="organisation" action="info" id="${contextService.getOrg().id}">
+                        Daten-Dashboard öffnen <i class="${Icon.DATA_DASHBOARD} circular"></i>
+                    </g:link>
+                </g:else>
             </div>
         </div>
     </div>
@@ -137,7 +147,8 @@
                     orient: 'vertical',
                     top: 'center',
                     left: 'right',
-                    selectedMode: false
+                    selectedMode: false,
+                    type: 'scroll'
                 },
                 grid:   { left: '0.5%', right: '200px', top: '5%', bottom: '20%' }
             },
@@ -154,7 +165,7 @@
         .chartWrapper {
             width: 100%;
             min-height: 200px;
-            margin: 1em 0 0;
+            margin: 1em 0 -1em;
         }
     </style>
 

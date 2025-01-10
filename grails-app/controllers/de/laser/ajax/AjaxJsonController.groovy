@@ -16,6 +16,8 @@ import de.laser.License
 import de.laser.LicenseService
 import de.laser.LinksGenerationService
 import de.laser.PendingChange
+import de.laser.system.SystemMessage
+import de.laser.system.SystemMessageCondition
 import de.laser.wekb.Package
 import de.laser.wekb.Provider
 import de.laser.ProviderService
@@ -351,6 +353,15 @@ class AjaxJsonController {
                 [value: 50, text: '50'],
                 [value: 100, text: '100'],
         ]
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def getSystemMessageDashboardConditionList() {
+        // TODO: erms-6120
+        List result = SystemMessageCondition.CONFIG.collect { it2 ->
+            [value: it2.key, text: '(' + it2.key + ') ' + it2.description]
+        }
         render result as JSON
     }
 
