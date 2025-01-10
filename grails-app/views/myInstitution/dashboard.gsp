@@ -135,7 +135,7 @@
             <laser:render template="wekbNews" model="${[wekbNews: wekbNews, tmplView: 'info']}"/>
         </g:if>
 
-        <g:if test="${contextService.getOrg().isCustomerType_Inst_Pro()}">
+        <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
             <laser:render template="/myInstitution/info/inst" />
         </g:if>
 

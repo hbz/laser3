@@ -35,7 +35,16 @@
         </div>
         <div class="extra content">
             <div class="right floated">
-                <g:link controller="organisation" action="info" id="${contextService.getOrg().id}">Daten-Dashboard öffnen <i class="${Icon.DATA_DASHBOARD} circular"></i></g:link>
+                <g:if test="${contextService.getOrg().isCustomerType_Basic()}">
+                    <div class="disabled">
+                        ${message(code:'tooltip.onlyFullMembership')}: Daten-Dashboard <i class="${Icon.DATA_DASHBOARD} circular"></i>
+                    </div>
+                </g:if>
+                <g:else>
+                    <g:link controller="organisation" action="info" id="${contextService.getOrg().id}">
+                        Daten-Dashboard öffnen <i class="${Icon.DATA_DASHBOARD} circular"></i>
+                    </g:link>
+                </g:else>
             </div>
         </div>
     </div>
