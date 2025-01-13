@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5393    08.01.2025  dev     3.5         David   Feature     getAllSubscribers in Lizenzen überdenken
+
+6170    03.01.2025  dev     3.5         Andreas Bug         Ladefehler bei der manuellen Verlängerung behoben
+
+5938    03.01.2025  dev     3.5         Andreas Feature     Statistikkontakt eingebunden und Kontaktmöglichkeit per Flyout erstellt
+
 6075    23.12.2024  dev     3.5         Andreas Feature     Umstellung der Exports auf mehrstufiges Ladeverfahren
 
 6068    23.12.2024  dev     3.5         Andreas Feature     Tests und Anpassungen der Titelverwaltung, hieran geknüpfte Bugfixes

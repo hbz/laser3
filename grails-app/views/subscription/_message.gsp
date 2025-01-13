@@ -8,9 +8,9 @@
     <div class="header">
         <g:message code="myinst.message.attention" />
         <g:message code="myinst.subscriptionDetails.message.ChildView" />
-        <g:each in="${subscription.getAllSubscribers()}" var="subscr">
-            <span class="ui label"><g:link controller="organisation" action="show" id="${subscr.id}">${subscr.getDesignation()}</g:link></span>.
-        </g:each>
+        <g:if test="${subscription.getSubscriber()}">
+            <span class="ui label"><g:link controller="organisation" action="show" id="${subscription.getSubscriber().id}">${subscription.getSubscriber().getDesignation()}</g:link></span>.
+        </g:if>
     </div>
     <p>
         <g:if test="${checkCons}">

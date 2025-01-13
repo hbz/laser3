@@ -63,9 +63,9 @@
 
             %{-- help panel --}%
 
-            <g:set var="helpFlag" value="${helpService.getFlag(params)}" />
+            <g:set var="helpMatch" value="${helpService.getMatch()}" />
 
-            <g:if test="${helpFlag}">
+            <g:if test="${helpMatch}">
                 <div class="item la-cb-action">
                     <button class="${Btn.ICON.SIMPLE} la-toggle-ui" id="help-toggle"><i class="${Icon.UI.HELP}"></i></button>
                 </div>
@@ -304,19 +304,19 @@
 
 %{-- help flyout --}%
 
-<g:if test="${helpFlag == HelpService.GSP}">
+<g:if test="${helpMatch == HelpService.GSP}">
     <div class="ui wide flyout" id="help-content">
-        <g:render template="${'/help/' + helpService.getMapping(params)}" />
+        <g:render template="${'/help/' + helpService.getMapping()}" />
     </div>
 </g:if>
-<g:elseif test="${helpFlag in [HelpService.MD, HelpService.BOTH]}">
+<g:elseif test="${helpMatch in [HelpService.MD, HelpService.BOTH]}">
     <div class="ui wide la-markdown flyout" id="help-content">
         <div class="scrolling content">
-            <ui:renderMarkdown help="${helpService.getMapping(params)}" />
+            <ui:renderMarkdown help="${helpService.getMapping()}" />
 
-            <g:if test="${helpFlag == HelpService.BOTH}">
+            <g:if test="${helpMatch == HelpService.BOTH}">
                 <br/>
-                <g:render template="${'/help/' + helpService.getMapping(params)}" />
+                <g:render template="${'/help/' + helpService.getMapping()}" />
             </g:if>
         </div>
         <div class="basic center aligned actions">

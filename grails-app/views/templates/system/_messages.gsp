@@ -2,7 +2,7 @@
 %{-- model: systemMessages --}%
 
 <g:set var="globalMessages" value="${SystemMessage.getActiveMessages(SystemMessage.TYPE_GLOBAL)}" />
-<g:set var="dashboardMessages" value="${SystemMessage.getActiveMessages(SystemMessage.TYPE_DASHBOARD)}" />
+<g:set var="dashboardMessages" value="${SystemMessage.getActiveMessages(SystemMessage.TYPE_DASHBOARD).findAll{ !it.isConditionTrue() }}" />
 
 <g:if test="${globalMessages && type == SystemMessage.TYPE_GLOBAL}">
     <div id="globalMessages" class="ui message warning system-message-wrapper">

@@ -1,22 +1,22 @@
 import java.text.SimpleDateFormat
 
-version '3.4.17'
-group 'de.laser'
+version = '3.4.17'
+group = 'de.laser'
 
 // ---[ build script ]---
 
 buildscript {
     repositories {
         mavenLocal()
-        maven { url 'https://repo.grails.org/grails/core' }
+        maven { url = 'https://repo.grails.org/grails/core' }
     }
     dependencies {
-        classpath 'org.grails:grails-gradle-plugin:' + grailsGradlePluginVersion            // 2024
-        classpath 'org.grails.plugins:hibernate5:' + gormVersion                            // 2024
-        classpath 'org.grails.plugins:database-migration:5.0.0'                             // 2024
-        classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:4.4.0'                     // 2024 : [freeze] 4.5.* fails
-        classpath 'com.gorylenko.gradle-git-properties:gradle-git-properties:2.4.2'         // 2024
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.51.0'                      // 2024
+        classpath 'org.grails:grails-gradle-plugin:' + grailsGradlePluginVersion                // 2024
+        classpath 'org.grails.plugins:hibernate5:' + gormVersion                                // 2024
+        classpath 'org.grails.plugins:database-migration:' + databaseMigrationVersion           // 2024
+        classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:' + assetPipelineGradleVersion // 2024 : [freeze] 4.5.* fails
+        classpath 'com.gorylenko.gradle-git-properties:gradle-git-properties:2.4.2'             // 2024
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.51.0'                          // 2024
 
         // -- dependency resolving issue
         classpath 'org.grails:grails-shell:6.1.2'                                           // 2024 : + org.grails.plugins:database-migration
@@ -46,7 +46,7 @@ sourceSets {
 
 repositories {
     mavenLocal()
-    maven { url 'https://repo.grails.org/grails/core' }
+    maven { url = 'https://repo.grails.org/grails/core' }
 }
 
 configurations {
@@ -95,7 +95,7 @@ dependencies {
     implementation 'org.grails:grails-shell:6.1.2'                          // 2024 : + org.grails.plugins:database-migration
 
     implementation 'org.grails.plugins:audit-logging:4.0.3'                 // 2021
-    implementation 'org.grails.plugins:database-migration:5.0.0', {         // 2024
+    implementation 'org.grails.plugins:database-migration:' + databaseMigrationVersion, {   // 2024
         exclude module: 'spring-boot-cli'
     }
     implementation 'org.grails.plugins:grails-executor:0.4'                 // 2016 : [deprecated]
@@ -112,9 +112,9 @@ dependencies {
 
     implementation 'commons-io:commons-io:2.18.0'                           // 2024
     implementation 'com.github.albfernandez:juniversalchardet:2.5.0'        // 2024
-    implementation 'com.vladsch.flexmark:flexmark:0.64.8'                           // 2023
-    implementation 'com.vladsch.flexmark:flexmark-ext-gfm-strikethrough:0.64.8'     // 2023
-    implementation 'com.vladsch.flexmark:flexmark-ext-tables:0.64.8'                // 2023
+    implementation 'com.vladsch.flexmark:flexmark:' + flexmarkVersion                       // 2023
+    implementation 'com.vladsch.flexmark:flexmark-ext-gfm-strikethrough:' + flexmarkVersion // 2023
+    implementation 'com.vladsch.flexmark:flexmark-ext-tables:' + flexmarkVersion            // 2023
     implementation 'io.github.gpc:asynchronous-mail:3.1.2'                  // 2023
     implementation 'org.apache.commons:commons-lang3:3.17.0'                // 2024
     implementation 'org.apache.poi:poi-ooxml:3.17'                          // 2017 : [freeze] : 5.x available
@@ -125,7 +125,7 @@ dependencies {
 
     // --------------------------------------------------
 
-    runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-gradle:4.4.0'       // 2024 : [freeze - not 4.5.*] -- JS Closure uglify JS Exception
+    runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-gradle:' + assetPipelineGradleVersion   // 2024 : [freeze - not 4.5.*] -- JS Closure uglify JS Exception
     runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-core:4.5.2'         // 2024 -- java.lang.ClassNotFoundException: org.graalvm.polyglot.Context
     runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-grails:4.5.2'       // 2024 -- No such property: asset for class: de.laser.system.AssetsTagLib
 
@@ -137,7 +137,8 @@ dependencies {
 }
 
 java {
-    sourceCompatibility = JavaVersion.toVersion("11")
+    sourceCompatibility = JavaVersion.toVersion('11')
+    targetCompatibility = JavaVersion.toVersion('11')
 }
 
 springBoot {
@@ -145,7 +146,7 @@ springBoot {
 }
 
 bootRun {
-    ignoreExitValue true
+    ignoreExitValue = true
     jvmArgs(
         '-Dspring.output.ansi.enabled=always', 
         '-noverify', 
@@ -167,7 +168,10 @@ gitProperties {
 // ---[ war ]---
 
 tasks.register('war.updateBuildInfo', Task) {
-    group 'laser'
+    group = 'laser'
+
+    String rootDir = project.rootDir
+    String buildDir = project.buildDir
 
     doFirst {
         Properties properties = new Properties()
@@ -176,10 +180,10 @@ tasks.register('war.updateBuildInfo', Task) {
         properties.setProperty('info.app.build.javaVersion', System.getProperty('java.version'))
 
         try {
-            File gitProperties = new File("${project.rootDir}/git.properties")
+            File gitProperties = new File("${rootDir}/git.properties")
             gitProperties.withInputStream { properties.load(it) } // read props from file
 
-            File grailsBuildInfo = new File("${project.buildDir}/resources/main/META-INF/grails.build.info")
+            File grailsBuildInfo = new File("${buildDir}/resources/main/META-INF/grails.build.info")
             grailsBuildInfo.withInputStream { properties.load(it) } // read props from file
 
             grailsBuildInfo.withOutputStream { properties.store(it, null) } // write back to file

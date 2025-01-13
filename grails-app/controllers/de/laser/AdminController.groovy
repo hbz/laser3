@@ -79,8 +79,11 @@ class AdminController  {
                 ]
             ],
             events      : SystemEvent.executeQuery(
-                    'select se from SystemEvent se where se.created >= :limit order by se.created desc',
-                    [limit: DateUtils.localDateToSqlDate(LocalDate.now().minusDays(1))]
+                    'select se from SystemEvent se where se.created >= :limit and se.relevance in (:rList) order by se.created desc',
+                    [
+                        limit: DateUtils.localDateToSqlDate(LocalDate.now().minusDays(1)),
+                        rList: [SystemEvent.RELEVANCE.ERROR, SystemEvent.RELEVANCE.WARNING]
+                    ]
             ),
             docStore    : AppUtils.getDocumentStorageInfo()
         ]

@@ -14,8 +14,9 @@ import de.laser.config.ConfigMapper
 import de.laser.flexmark.BaseExtension
 import de.laser.remote.Wekb
 import grails.gorm.transactions.Transactional
-import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.io.support.GrailsResourceUtils
+import org.grails.web.servlet.mvc.GrailsWebRequest
+import org.grails.web.util.WebUtils
 
 @Transactional
 class HelpService {
@@ -28,26 +29,27 @@ class HelpService {
 
     ContextService contextService
 
-    String getMapping(GrailsParameterMap params) {
-        if (params.controller == CONTROLLER_WITH_ID_SUPPORT && params.id) {
-            params.controller + '_' + params.action + '_' + params.id
+    String getMapping() {
+        GrailsWebRequest request = WebUtils.retrieveGrailsWebRequest()
+        String controller = request.getControllerName()
+        String action = request.getActionName()
+        String id = request.getId()
+
+        if (controller == CONTROLLER_WITH_ID_SUPPORT && id) {
+            controller + '_' + action + '_' + id
         }
         else {
-            params.controller + '_' + params.action
+            controller + '_' + action
         }
     }
 
     URL getResource(String file) {
-        URL url = GrailsResourceUtils.getClassLoader().getResource( file ) // resources
-//        if (url) {
-//            println file + ' >> ' + url
-//        }
-        url
+        GrailsResourceUtils.getClassLoader().getResource( file ) // resources
     }
 
-    String getFlag(GrailsParameterMap params) {
+    String getMatch() {
         String flag
-        String mapping = getMapping(params)
+        String mapping = getMapping()
 
         boolean isGSP  = getResource( 'help/_' + mapping + '.gsp' )
         boolean isMD   = getResource( 'help/' + mapping + '.md' )

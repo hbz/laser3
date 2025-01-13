@@ -203,7 +203,7 @@
                             </div>
                         </td>
                     <%--</g:each>--%>
-                    <g:if test="${! sub.getAllSubscribers()}">
+                    <g:if test="${! sub.getSubscriber()}">
                         <td></td>
                         <td></td>
                     </g:if>

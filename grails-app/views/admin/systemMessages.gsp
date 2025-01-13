@@ -64,6 +64,10 @@
                 </g:if>
                 <g:elseif test="${SystemMessage.TYPE_DASHBOARD == msg.type}">
                     <span class="ui label teal">Dashboard</span>
+                    <div>
+                        <br/> Bedingung: <br/>
+                        <ui:xEditableDropDown owner="${msg}" field="condition" id="msg_condition_${msg.id}" dataLink="getSystemMessageDashboardConditionList"/>
+                    </div>
                 </g:elseif>
                 <g:elseif test="${SystemMessage.TYPE_STARTPAGE == msg.type}">
                     <span class="ui label blue">Startseite</span>

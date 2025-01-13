@@ -1,5 +1,5 @@
 
-## Upgrade to Grails 6.2.2
+## Upgrade to Grails 6.2.3
 
 #### Updated core and dependencies
 
@@ -9,7 +9,7 @@
 - Hibernate 5.6.15.Final / GORM 8.1.1
 - Elasticsearch 7.17.26
 - Logback 1.2.12
-- Gradle 7.6.4
+- Gradle 8.12
 - Groovy 3.0.23
 - Java 11
 - PostgreSQL 13+
@@ -18,7 +18,7 @@ See [details.md](./details.md) for detailed information.
 
 ### Setup with SDKMAN
 
-    sdk i grails 6.2.2
+    sdk i grails 6.2.3
     sdk i groovy 3.0.23
     sdk i java 11.0.25-open
 
