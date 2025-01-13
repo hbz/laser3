@@ -359,16 +359,16 @@ class ManagementService {
                 }
             }
             else {
-                EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/linkPackage/${result.user.id}/pagination")
+                EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/linkPackages/${result.user.id}/pagination")
                 List selectionCache = []
                 if(paginationCache.checkedMap) {
                     selectionCache.addAll(paginationCache.checkedMap.values())
-                    paginationCache.remove('checkedMap')
                 }
                 else selectionCache.addAll(params.list('selectedSubs'))
                 if(selectionCache) {
                     subscriptions = Subscription.findAllByIdInList(selectionCache)
                 }
+                paginationCache.remove('checkedMap')
             }
             List selectedPackageKeys = params.list("selectedPackages")
             Set<Package> pkgsToProcess = []
@@ -399,7 +399,10 @@ class ManagementService {
                                         subscriptionService.addToSubscriptionCurrentStock(selectedSub, result.subscription, pkg, params.processOption == 'linkwithIE')
                                     }
                                     else {
-                                        subscriptionService.addToSubscription(selectedSub, pkg, params.processOption == 'linkwithIE')
+                                        if(selectedSub.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+                                            subscriptionService.addToSubscription(selectedSub, pkg, true)
+                                        else
+                                            subscriptionService.addToSubscription(selectedSub, pkg, params.processOption == 'linkwithIE')
                                     }
                                 }
                             }

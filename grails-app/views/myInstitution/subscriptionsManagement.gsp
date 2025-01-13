@@ -12,6 +12,10 @@
 
 <ui:messages data="${flash}"/>
 
+<ui:debugInfo>
+    <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+</ui:debugInfo>
+
 <g:if test="${params.tab == 'properties'}">
     <laser:render template="/templates/management/properties"/>
 </g:if><g:else>

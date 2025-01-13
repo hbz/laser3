@@ -13,6 +13,14 @@
 
 5938    03.01.2025  dev     3.5         Andreas Feature     Statistikkontakt eingebunden und Kontaktmöglichkeit per Flyout erstellt
 
+6075    23.12.2024  dev     3.5         Andreas Feature     Umstellung der Exports auf mehrstufiges Ladeverfahren
+
+6068    23.12.2024  dev     3.5         Andreas Feature     Tests und Anpassungen der Titelverwaltung, hieran geknüpfte Bugfixes
+
+6048    23.12.2024  dev     3.5         Andreas Feature     Umsetzung der neuen Regeln zur Titelverwaltung
+
+5937    23.12.2024  dev     3.5         Andreas Feature     Titelverwaltung auf neue Struktur umgestellt, mehrstufiges Laden der Bestandstitel
+
 6127    19.12.2024  rc-3.4  3.4.16      Moe     Bug         Benennung Tab in der Lieferanten-Umfrage ändern
 
 6118    19.12.2024  rc-3.4  3.4.16      Moe     Bug         Rechnungsstellungsabfrage: Button "öffentliche Kontakte anzeigen" umbennen

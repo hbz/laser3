@@ -33,6 +33,7 @@ import groovy.json.JsonSlurper
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.util.logging.Slf4j
+import groovyx.gpars.GParsPool
 
 /**
  * This class delivers given lists as maps of stubs or full objects
@@ -352,7 +353,11 @@ class ApiCollectionReader {
                 [sub: subPkg.subscription, pkg: subPkg.pkg, statusTipp: RDStore.TIPP_STATUS_REMOVED, statusIe: RDStore.TIPP_STATUS_REMOVED]
         )
         */
-        Map<String, Object> subParams = [subId: subPkg.subscription.id], pkgParams = [pkgId: subPkg.pkg.id], ieParams = [sub: subPkg.subscription.id, pkg: subPkg.pkg.id]
+        Subscription targetSub
+        if(subPkg.subscription.instanceOf && subPkg.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+            targetSub = subPkg.subscription.instanceOf
+        else targetSub = subPkg.subscription
+        Map<String, Object> subParams = [subId: targetSub.id], pkgParams = [pkgId: subPkg.pkg.id], ieParams = [sub: targetSub.id, pkg: subPkg.pkg.id]
         int limit = 50000, ieCount = sql.rows("select count(*) from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :sub and tipp_pkg_fk = :pkg", ieParams)[0]["count"]
         List<GroovyRowResult> ieRows = []
         for(int i = 0; i < ieCount; i += limit) {
@@ -392,48 +397,51 @@ class ApiCollectionReader {
         Map<String, Object> pkgData = packageOfSubscription.get(0)
         pkgData.ids = packageIDs
         pkgData.altnames = packageAltNames
-        ieRows.eachWithIndex{ GroovyRowResult row, int i ->
-            //println "now processing row ${i}"
-            //result << ApiIssueEntitlement.getIssueEntitlementMap(ie, ignoreRelation, context) // de.laser.IssueEntitlement
-            Map<String, Object> ie = [globalUID: row['ie_guid']]
-            //ie.name = row['ie_name']
-            ie.accessStartDate = row['ie_access_start_date'] ? ApiToolkit.formatInternalDate(row['ie_access_start_date']) : null
-            ie.accessEndDate = row['ie_access_end_date'] ? ApiToolkit.formatInternalDate(row['ie_access_end_date']) : null
-            ie.lastUpdated = row['ie_last_updated'] ? ApiToolkit.formatInternalDate(row['ie_last_updated']) : null
-            //RefdataValues - both removed as of API version 2.0
-            //ie.medium = row['ie_medium']
-            ie.status = row['ie_status']
-            ie.perpetualAccessBySub = ApiStubReader.requestSubscriptionStub(Subscription.get(row['ie_perpetual_access_by_sub_fk']), context, false)
-            ie.coverages = coverageMap.containsKey(row['tipp_id']) ? coverageMap.get(row['tipp_id']) : []
-            ie.priceItems = priceItemMap.containsKey(row['tipp_id']) ? priceItemMap.get(row['tipp_id']) : []
-            //References
-            row.ids = identifierMap.containsKey(row['tipp_id']) ? identifierMap.get(row['tipp_id']) : []
-            row.ddcs = ddcMap.containsKey(row['tipp_id']) ? ddcMap.get(row['tipp_id']) : []
-            row.languages = languageMap.containsKey(row['tipp_id']) ? languageMap.get(row['tipp_id']) : []
-            row.altnames = altNameMap.containsKey(row['tipp_id']) ? altNameMap.get(row['tipp_id']) : []
-            row.publishers = [] //publisherMap.containsKey(row['tipp_id']) ? publisherMap.get(row['tipp_id']) : []
-            if(ignoreRelation != ApiReader.IGNORE_ALL) {
-                //println "processing references"
-                if(ignoreRelation == ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE) {
-                    //row.platform = platformMap.get(row['tipp_plat_fk'])[0]
-                    row.pkg = pkgData
-                    ie.tipp = ApiMapReader.getTippMapWithSQL(row, ApiReader.IGNORE_ALL, context) // de.laser.wekb.TitleInstancePackagePlatform
-                }
-                else {
-                    if(ignoreRelation != ApiReader.IGNORE_TIPP) {
-                        //row.platform = platformMap.get(row['tipp_plat_fk'])[0]
-                        row.pkg = pkgData
-                        ie.tipp = ApiMapReader.getTippMapWithSQL(row, ApiReader.IGNORE_SUBSCRIPTION, context) // de.laser.wekb.TitleInstancePackagePlatform
+        GParsPool.withPool(8) {
+            ieRows.eachWithIndexParallel{ GroovyRowResult row, int i ->
+                Subscription.withTransaction {
+                    //println "now processing row ${i}"
+                    //result << ApiIssueEntitlement.getIssueEntitlementMap(ie, ignoreRelation, context) // de.laser.IssueEntitlement
+                    Map<String, Object> ie = [globalUID: row['ie_guid']]
+                    //ie.name = row['ie_name']
+                    ie.accessStartDate = row['ie_access_start_date'] ? ApiToolkit.formatInternalDate(row['ie_access_start_date']) : null
+                    ie.accessEndDate = row['ie_access_end_date'] ? ApiToolkit.formatInternalDate(row['ie_access_end_date']) : null
+                    ie.lastUpdated = row['ie_last_updated'] ? ApiToolkit.formatInternalDate(row['ie_last_updated']) : null
+                    //RefdataValues - both removed as of API version 2.0
+                    //ie.medium = row['ie_medium']
+                    ie.status = row['ie_status']
+                    ie.perpetualAccessBySub = ApiStubReader.requestSubscriptionStub(Subscription.get(row['ie_perpetual_access_by_sub_fk']), context, false)
+                    ie.coverages = coverageMap.containsKey(row['tipp_id']) ? coverageMap.get(row['tipp_id']) : []
+                    ie.priceItems = priceItemMap.containsKey(row['tipp_id']) ? priceItemMap.get(row['tipp_id']) : []
+                    //References
+                    row.ids = identifierMap.containsKey(row['tipp_id']) ? identifierMap.get(row['tipp_id']) : []
+                    row.ddcs = ddcMap.containsKey(row['tipp_id']) ? ddcMap.get(row['tipp_id']) : []
+                    row.languages = languageMap.containsKey(row['tipp_id']) ? languageMap.get(row['tipp_id']) : []
+                    row.altnames = altNameMap.containsKey(row['tipp_id']) ? altNameMap.get(row['tipp_id']) : []
+                    row.publishers = [] //publisherMap.containsKey(row['tipp_id']) ? publisherMap.get(row['tipp_id']) : []
+                    if(ignoreRelation != ApiReader.IGNORE_ALL) {
+                        //println "processing references"
+                        if(ignoreRelation == ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE) {
+                            //row.platform = platformMap.get(row['tipp_plat_fk'])[0]
+                            row.pkg = pkgData
+                            ie.tipp = ApiMapReader.getTippMapWithSQL(row, ApiReader.IGNORE_ALL, context) // de.laser.wekb.TitleInstancePackagePlatform
+                        }
+                        else {
+                            if(ignoreRelation != ApiReader.IGNORE_TIPP) {
+                                //row.platform = platformMap.get(row['tipp_plat_fk'])[0]
+                                row.pkg = pkgData
+                                ie.tipp = ApiMapReader.getTippMapWithSQL(row, ApiReader.IGNORE_SUBSCRIPTION, context) // de.laser.wekb.TitleInstancePackagePlatform
+                            }
+                            if(ignoreRelation != ApiReader.IGNORE_SUBSCRIPTION) {
+                                ie.subscription = ApiStubReader.requestSubscriptionStub(subPkg.subscription, context) // de.laser.wekb.TitleInstancePackagePlatform
+                            }
+                        }
                     }
-                    if(ignoreRelation != ApiReader.IGNORE_SUBSCRIPTION) {
-                        ie.subscription = ApiStubReader.requestSubscriptionStub(subPkg.subscription, context) // de.laser.wekb.TitleInstancePackagePlatform
-                    }
+                    //println "processing finished"
+                    result << ApiToolkit.cleanUp(ie, true, true)
                 }
             }
-            //println "processing finished"
-            result << ApiToolkit.cleanUp(ie, true, true)
         }
-
         return ApiToolkit.cleanUp(result, true, true)
     }
 

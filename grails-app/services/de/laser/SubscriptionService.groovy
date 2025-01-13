@@ -15,8 +15,6 @@ import de.laser.finance.PriceItem
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
-import de.laser.properties.PropertyDefinitionGroup
-import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.properties.SubscriptionProperty
 import de.laser.remote.Wekb
 import de.laser.stats.Counter4Report
@@ -903,19 +901,6 @@ class SubscriptionService {
     /**
      * Gets the current issue entitlements for the given subscription
      * @param subscription the subscription whose titles should be returned
-     * @return a sorted list of current issue entitlements
-     */
-    List getCurrentIssueEntitlements(Subscription subscription) {
-        List<IssueEntitlement> ies = subscription?
-                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :cur order by ie.tipp.sortname",
-                        [sub: subscription, cur: RDStore.TIPP_STATUS_CURRENT])
-                : []
-        ies
-    }
-
-    /**
-     * Gets the current issue entitlements for the given subscription
-     * @param subscription the subscription whose titles should be returned
      * @return integer of current issue entitlements
      */
     Integer countCurrentIssueEntitlements(Subscription subscription) {
@@ -1343,74 +1328,29 @@ class SubscriptionService {
         }
     }
 
-    /**
-     * Builds the comparison map for the properties; inverting the relation subscription-properties to property-subscriptions
-     * @param subsToCompare the subscriptions whose property sets should be compared
-     * @param org the institution whose property definition groups should be considered
-     * @return the inverse property map
-     */
-    Map regroupSubscriptionProperties(List<Subscription> subsToCompare, Org org) {
-        LinkedHashMap result = [groupedProperties:[:],orphanedProperties:[:],privateProperties:[:]]
-        subsToCompare.each{ sub ->
-            Map allPropDefGroups = sub.getCalculatedPropDefGroups(org)
-            allPropDefGroups.entrySet().each { propDefGroupWrapper ->
-                //group group level
-                //There are: global, local, member (consortium@subscriber) property *groups* and orphaned *properties* which is ONE group
-                String wrapperKey = propDefGroupWrapper.getKey()
-                if(wrapperKey.equals("orphanedProperties")) {
-                    TreeMap orphanedProperties = result.orphanedProperties
-                    orphanedProperties = comparisonService.buildComparisonTree(orphanedProperties,sub,propDefGroupWrapper.getValue())
-                    result.orphanedProperties = orphanedProperties
-                }
-                else {
-                    LinkedHashMap groupedProperties = result.groupedProperties
-                    //group level
-                    //Each group may have different property groups
-                    propDefGroupWrapper.getValue().each { propDefGroup ->
-                        PropertyDefinitionGroup groupKey
-                        PropertyDefinitionGroupBinding groupBinding
-                        switch(wrapperKey) {
-                            case "global":
-                                groupKey = (PropertyDefinitionGroup) propDefGroup
-                                if(groupKey.isVisible)
-                                    groupedProperties.put(groupKey,comparisonService.getGroupedPropertyTrees(groupedProperties,groupKey,null,sub))
-                                break
-                            case "local":
-                                try {
-                                    groupKey = (PropertyDefinitionGroup) propDefGroup.get(0)
-                                    groupBinding = (PropertyDefinitionGroupBinding) propDefGroup.get(1)
-                                    if(groupBinding.isVisible) {
-                                        groupedProperties.put(groupKey,comparisonService.getGroupedPropertyTrees(groupedProperties,groupKey,groupBinding,sub))
-                                    }
-                                }
-                                catch (ClassCastException e) {
-                                    log.error("Erroneous values in calculated property definition group! Stack trace as follows:")
-                                    e.printStackTrace()
-                                }
-                                break
-                            case "member":
-                                try {
-                                    groupKey = (PropertyDefinitionGroup) propDefGroup.get(0)
-                                    groupBinding = (PropertyDefinitionGroupBinding) propDefGroup.get(1)
-                                    if(groupBinding.isVisible && groupBinding.isVisibleForConsortiaMembers) {
-                                        groupedProperties.put(groupKey,comparisonService.getGroupedPropertyTrees(groupedProperties,groupKey,groupBinding,sub))
-                                    }
-                                }
-                                catch (ClassCastException e) {
-                                    log.error("Erroneous values in calculated property definition group! Stack trace as follows:")
-                                    e.printStackTrace()
-                                }
-                                break
-                        }
-                    }
-                    result.groupedProperties = groupedProperties
+    void switchPackageHoldingInheritance(Map configMap) {
+        String prop = 'holdingSelection'
+        Subscription sub = configMap.sub
+        RefdataValue value = configMap.value
+        sub.holdingSelection = value
+        sub.save()
+        if(value == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+            if(! AuditConfig.getConfig(sub, prop)) {
+                AuditConfig.addConfig(sub, prop)
+
+                Subscription.findAllByInstanceOf(sub).each { Subscription m ->
+                    m.setProperty(prop, sub.getProperty(prop))
+                    m.save()
                 }
             }
-            TreeMap privateProperties = result.privateProperties
-            privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.propertySet.findAll { it.type.tenant?.id == org.id })
-            result.privateProperties = privateProperties
         }
-        result
+        else {
+            AuditConfig.removeConfig(sub, prop)
+            Subscription.findAllByInstanceOf(sub).each { Subscription m ->
+                m.setProperty(prop, null)
+                m.save()
+            }
+        }
     }
 
     /**

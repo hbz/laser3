@@ -642,11 +642,13 @@ class YodaController {
         redirect(url: request.getHeader('referer'))
     }
 
-    @Deprecated
     @Secured(['ROLE_YODA'])
-    def getTIPPsWithoutGOKBId() {
-        log.debug("delete TIPPs without GOKb-ID")
-        yodaService.getTIPPsWithoutGOKBId()
+    def cleanupIssueEntitlements() {
+        log.debug("purge unnecessary titles ...")
+        executorService.execute ({
+            yodaService.cleanupIssueEntitlements()
+        })
+        redirect action: "systemThreads"
     }
 
     /**

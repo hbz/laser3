@@ -7,7 +7,8 @@
     <laser:render template="actions"/>
 </ui:controlButtons>
 
-<ui:modeSwitch controller="subscription" action="index" params="${params}"/>
+<%-- deactivated because there are no differences between basic and advanced modes
+<ui:modeSwitch controller="subscription" action="index" params="${params}"/>--%>
 
 <ui:messages data="${flash}"/>
 

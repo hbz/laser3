@@ -412,6 +412,27 @@ class ControlledListService {
     }
 
     /**
+     * Retrieves a list of issue entitlements owned by the context institution matching given parameters
+     * @param params eventual request params
+     * @return a map containing a sorted list of issue entitlements, an empty one if no issue entitlements match the filter
+     */
+    Map getPackages(GrailsParameterMap params) {
+        LinkedHashMap result = [results:[]]
+        String queryString = 'select p.id, p.name, (select count(*) from TitleInstancePackagePlatform tipp where tipp.pkg = p and tipp.status = :current) from Package p where p.packageStatus not in (:removed)'
+        LinkedHashMap filter = [current: RDStore.TIPP_STATUS_CURRENT, removed: [RDStore.PACKAGE_STATUS_DELETED, RDStore.PACKAGE_STATUS_REMOVED]]
+        //may be generalised later - here it is where to expand the query filter
+        if(params.query && params.query.length() > 0) {
+            filter.put('query', params.query)
+            queryString += " and genfunc_filter_matcher(p.name,:query) = true "
+        }
+        List rows = Package.executeQuery(queryString+" order by p.name asc",filter)
+        rows.each { row ->
+            result.results.add([name:"${row[1]} (${row[2]})",value:row[0]])
+        }
+        result
+    }
+
+    /**
      * Retrieves a list of budget codes owned by the context institution matching given parameters
      * @param params eventual request params
      * @return a map containing a sorted list of budget codes, an empty one if no budget codes match the filter
