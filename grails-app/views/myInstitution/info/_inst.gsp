@@ -1,4 +1,4 @@
-<%@ page import="de.laser.InfoService$Helper; de.laser.ui.Icon; java.time.Year; de.laser.RefdataValue; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.Org; de.laser.Subscription" %>
+<%@ page import="de.laser.InfoService$Helper; de.laser.ui.Icon; de.laser.ui.EChart; java.time.Year; de.laser.RefdataValue; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.Org; de.laser.Subscription" %>
 
 <laser:javascript src="echarts.js"/>%{-- dont move --}%
 
@@ -94,18 +94,7 @@
                             silent  : true,
                             data    : [${subscriptionTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
                             raw     : [${subscriptionTimelineMap.values().collect{ it[status] ?: [] }.join(', ')}],
-                            color   : <%
-                                String color = 'JSPC.colors.hex.grey'
-                                switch (RefdataValue.get(status)) {
-                                    case RDStore.SUBSCRIPTION_CURRENT:      color = 'JSPC.colors.hex.green'; break;
-                                    case RDStore.SUBSCRIPTION_EXPIRED:      color = 'JSPC.colors.hex.blue'; break;
-                                    case RDStore.SUBSCRIPTION_INTENDED:     color = 'JSPC.colors.hex.yellow'; break;
-                                    case RDStore.SUBSCRIPTION_ORDERED:      color = 'JSPC.colors.hex.ice'; break;
-                                    case RDStore.SUBSCRIPTION_TEST_ACCESS:  color = 'JSPC.colors.hex.orange'; break;
-                                    case RDStore.SUBSCRIPTION_NO_STATUS:    color = 'JSPC.colors.hex.red'; break;
-                                }
-                                println color
-                                %>
+                            color   : ${EChart.getJspcColorBySubscriptionStatus(RefdataValue.get(status))}
                         },
                     </g:each>
                         {

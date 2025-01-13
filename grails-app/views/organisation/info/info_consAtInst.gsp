@@ -1,4 +1,4 @@
-<%@ page import="de.laser.wekb.Provider; de.laser.ui.Icon; java.time.Year; de.laser.finance.CostItem; de.laser.RefdataValue; de.laser.survey.SurveyInfo; de.laser.wekb.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.addressbook.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.addressbook.PersonRole; de.laser.addressbook.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.addressbook.Contact" %>
+<%@ page import="de.laser.wekb.Provider; de.laser.ui.Icon; de.laser.ui.EChart; java.time.Year; de.laser.finance.CostItem; de.laser.RefdataValue; de.laser.survey.SurveyInfo; de.laser.wekb.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.addressbook.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.addressbook.PersonRole; de.laser.addressbook.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.addressbook.Contact" %>
 
 <laser:htmlStart message="menu.institutions.org.info">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
@@ -575,18 +575,7 @@
                             animation : false,
                             data    : [${subscriptionTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
                             raw     : [${subscriptionTimelineMap.values().collect{ it[status] ?: [] }.join(', ')}],
-                            color   : <%
-                                String color = 'JSPC.colors.hex.grey'
-                                switch (RefdataValue.get(status)) {
-                                    case RDStore.SUBSCRIPTION_CURRENT:      color = 'JSPC.colors.hex.green'; break;
-                                    case RDStore.SUBSCRIPTION_EXPIRED:      color = 'JSPC.colors.hex.blue'; break;
-                                    case RDStore.SUBSCRIPTION_INTENDED:     color = 'JSPC.colors.hex.yellow'; break;
-                                    case RDStore.SUBSCRIPTION_ORDERED:      color = 'JSPC.colors.hex.ice'; break;
-                                    case RDStore.SUBSCRIPTION_TEST_ACCESS:  color = 'JSPC.colors.hex.orange'; break;
-                                    case RDStore.SUBSCRIPTION_NO_STATUS:    color = 'JSPC.colors.hex.red'; break;
-                                }
-                                println color
-                                %>
+                            color   : ${EChart.getJspcColorBySubscriptionStatus(RefdataValue.get(status))}
                         },
                     </g:each>
                         {
@@ -629,16 +618,7 @@
                             animation : false,
                             data    : [${licenseTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
                             raw     : [${licenseTimelineMap.values().collect{ it[status] ?: [] }.join(', ')}],
-                            color   : <%
-                                color = 'JSPC.colors.hex.grey'
-                                switch (RefdataValue.get(status)) {
-                                    case RDStore.LICENSE_CURRENT:      color = 'JSPC.colors.hex.green'; break;
-                                    case RDStore.LICENSE_EXPIRED:      color = 'JSPC.colors.hex.blue'; break;
-                                    case RDStore.LICENSE_INTENDED:     color = 'JSPC.colors.hex.yellow'; break;
-                                    case RDStore.LICENSE_NO_STATUS:    color = 'JSPC.colors.hex.red'; break;
-                                }
-                                println color
-                            %>
+                            color   : ${EChart.getJspcColorByLicenseStatus(RefdataValue.get(status))}
                         },
                     </g:each>
                         {
@@ -710,16 +690,7 @@
                             animation : false,
                             data    : [${surveyTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
                             raw     : [${surveyTimelineMap.values().collect{ it[status] ? it[status].collect{ it[0].id } : [] }.join(', ')}],
-                            color   : <%
-                                color = 'JSPC.colors.hex.grey'
-                                switch (status) {
-                                    case 'open':        color = 'JSPC.colors.hex.green'; break;
-                                    case 'finish':      color = 'JSPC.colors.hex.blue'; break;
-                                    case 'termination': color = 'JSPC.colors.hex.red'; break;
-                                    case 'notFinish':   color = 'JSPC.colors.hex.yellow'; break;
-                                }
-                                println color
-                            %>
+                            color   : ${EChart.getJspcColorBySurveyVirtualStatus(status)}
                         },
                     </g:each>
                     <g:set var="surveyTypeTimeline" value="${surveyTimelineMap.values().collect{ it.values().collect{ it.collect{ it[0].type }}.flatten()}}" />
@@ -734,16 +705,7 @@
 %{--                emphasis: { focus: 'series' },--}%
                             animation : false,
                             data    : ${surveyTypeTimeline.collect{ it.findAll{ it2 -> it2 == type }.size() }},
-                            color   : "<%
-                                color = 'JSPC.colors.hex.grey'
-                                switch (type) {
-                                    case RDStore.SURVEY_TYPE_INTEREST:          color = '#ff9688'; break;
-                                    case RDStore.SURVEY_TYPE_RENEWAL:           color = '#ebff82'; break;
-                                    case RDStore.SURVEY_TYPE_SUBSCRIPTION:      color = '#fee8d2'; break;
-                                    case RDStore.SURVEY_TYPE_TITLE_SELECTION:   color = '#45b2ff'; break;
-                                }
-                                print color
-                            %>"
+                            color   : '${EChart.getHexColorBySurveyType(type)}'
                         },
                     </g:each>
                 ],
