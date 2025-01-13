@@ -78,7 +78,7 @@ class DashboardDueDatesService {
                 log.debug("Start DashboardDueDatesService takeCareOfDueDates")
 //                SystemEvent.createEvent('DBDD_SERVICE_START_1')
 
-                _removeInvalidDueDates()
+                // _removeInvalidDueDates()
 
                 if (isUpdateDashboardTableInDatabase) {
                     flash = _updateDashboardTableInDatabase(flash)
@@ -103,8 +103,9 @@ class DashboardDueDatesService {
         }
     }
 
-    private _removeInvalidDueDates() {
+    private int _removeInvalidDueDates() {
         log.debug '_removeInvalidDueDates' // missing fk constraint
+        int countInvalid = 0
 
         DueDateObject.executeQuery('select ddo.id, ddo.oid from DueDateObject ddo order by ddo.id').each {
 
@@ -114,10 +115,12 @@ class DashboardDueDatesService {
 
                 ddd.each { did ->
                     DashboardDueDate.get(did).delete()
+                    countInvalid++
                 }
                 DueDateObject.get(it[0]).delete()
             }
         }
+        countInvalid
     }
 
     /**
@@ -127,6 +130,8 @@ class DashboardDueDatesService {
      */
     private _updateDashboardTableInDatabase(def flash){
         SystemEvent sysEvent = SystemEvent.createEvent('DBDD_SERVICE_START_2')
+
+        int countNew = 0, countUpdated = 0, countDeleted = 0, countInvalid = _removeInvalidDueDates()
 
         Date now = new Date();
         log.debug("Start DashboardDueDatesService updateDashboardTableInDatabase")
@@ -153,25 +158,24 @@ class DashboardDueDatesService {
                     if (das) { //update
                         das.update(obj)
                         log.debug("DashboardDueDatesService UPDATE: " + das);
+                        countUpdated++
                     }
                     else { // insert
                         das = new DashboardDueDate(obj, user)
                         das.save()
                         dashboarEntriesToInsert << das
                         log.debug("DashboardDueDatesService INSERT: " + das);
+                        countNew++
                     }
                 }
             }
         }
 
-        sysEvent.changeTo('DBDD_SERVICE_COMPLETE_2', [count: dashboarEntriesToInsert.size()])
-
         DashboardDueDate.withTransaction { session ->
             try {
                 // delete (not-inserted and non-updated entries, they are obsolet)
-                int anzDeletes = DashboardDueDate.executeUpdate("DELETE from DashboardDueDate WHERE lastUpdated < :now and isHidden = false", [now: now])
-                log.debug("DashboardDueDatesService DELETES: " + anzDeletes);
-                log.debug("DashboardDueDatesService INSERT Anzahl: " + dashboarEntriesToInsert.size())
+                countDeleted = DashboardDueDate.executeUpdate("DELETE from DashboardDueDate WHERE lastUpdated < :now and isHidden = false", [now: now])
+                log.debug("DashboardDueDatesService DELETES: " + countDeleted)
 
                 flash.message += messageSource.getMessage('menu.admin.updateDashboardTable.successful', null, locale)
             } catch (Throwable t) {
@@ -179,10 +183,15 @@ class DashboardDueDatesService {
                 SystemEvent.createEvent('DBDD_SERVICE_ERROR_2', ['error': tMsg])
 
                 session.setRollbackOnly()
+                countDeleted = -1
                 log.error("DashboardDueDatesService - updateDashboardTableInDatabase() :: Rollback for reason: ${tMsg}")
                 flash.error += messageSource.getMessage('menu.admin.updateDashboardTable.error', null, locale)
             }
         }
+
+        log.debug( '_updateDashboardTableInDatabase() -> new: ' + countNew + ', updated: ' + countUpdated + ', deleted: ' + countDeleted + ', INVALID: ' + countInvalid + ')')
+        sysEvent.changeTo('DBDD_SERVICE_COMPLETE_2', [new: countNew, updated: countUpdated, deleted: countDeleted, INVALID: countInvalid])
+
         log.debug("Finished DashboardDueDatesService updateDashboardTableInDatabase")
 
         flash
@@ -196,7 +205,7 @@ class DashboardDueDatesService {
     private _sendEmailsForDueDatesOfAllUsers(def flash) {
         SystemEvent sysEvent = SystemEvent.createEvent('DBDD_SERVICE_START_3')
 
-        int userCount = 0
+        int userCount = 0, mailCount = 0
         try {
             List<User> users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
             users.each { user ->
@@ -204,18 +213,19 @@ class DashboardDueDatesService {
                 if (userWantsEmailReminder) {
                     if (user.formalOrg) {
                         List<DashboardDueDate> dashboardEntries = getDashboardDueDates(user)
-                        _sendEmail(user, user.formalOrg, dashboardEntries)
+                        if (_sendEmail(user, user.formalOrg, dashboardEntries)) {
+                            mailCount++
+                        }
                         userCount++
                     }
                 }
             }
-
             flash.message += messageSource.getMessage('menu.admin.sendEmailsForDueDates.successful', null, locale)
         } catch (Exception e) {
             e.printStackTrace()
             flash.error += messageSource.getMessage('menu.admin.sendEmailsForDueDates.error', null, locale)
         }
-        sysEvent.changeTo('DBDD_SERVICE_COMPLETE_3', [count: userCount])
+        sysEvent.changeTo('DBDD_SERVICE_COMPLETE_3', [users: userCount, mails: mailCount])
 
         flash
     }
@@ -225,8 +235,11 @@ class DashboardDueDatesService {
      * @param user the {@link User} who should be reminded
      * @param org the context {@link Org} the object is settled in
      * @param dashboardEntries the {@link List} of {@link DashboardDueDate}s to process
+     * @return isMailed
      */
-    private void _sendEmail(User user, Org org, List<DashboardDueDate> dashboardEntries) {
+    private boolean _sendEmail(User user, Org org, List<DashboardDueDate> dashboardEntries) {
+        boolean isMailed = false
+
         String emailReceiver = user.getEmail()
         Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value.toString())
         RefdataValue userLang = user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value as RefdataValue
@@ -331,6 +344,7 @@ class DashboardDueDatesService {
                         subject mailSubject
                         html(view: "/mailTemplates/html/dashboardDueDates", model: [user: user, org: org, dueDates: dueDateRows])
                     }
+                    isMailed = true
                 }
                 catch (Exception e) {
                     log.error "Unable to perform email due to exception: ${e.message}"
@@ -344,6 +358,7 @@ class DashboardDueDatesService {
                         subject mailSubject
                         html(view: "/mailTemplates/html/dashboardDueDates", model: [user: user, org: org, dueDates: dueDateRows])
                     }
+                    isMailed = true
                 }
                 catch (Exception e) {
                     log.error "Unable to perform email due to exception: ${e.message}"
@@ -351,6 +366,8 @@ class DashboardDueDatesService {
             }
             log.debug("DashboardDueDatesService - finished sendEmail() to "+ user.displayName + " (" + user.email + ") " + org.name);
         }
+
+        isMailed
     }
 
     /**
