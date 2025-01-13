@@ -267,6 +267,7 @@
                 $flyout: $('#gascoFlyout'),
                 $title:  $('#gascoFlyout > .header > .content'),
                 $info:   $('#gascoFlyout > .content > .info'),
+                $infoHeader: $('#gascoFlyout > .content > h3'),
                 $filter: $('#gascoFlyout > .content > .filter'),
                 $charts: $('#gascoFlyout > .content > .charts'),
 
@@ -335,6 +336,12 @@
             }).done (function (data) {
                 JSPC.app.gasco.ui.$title.html (data.title);
                 JSPC.app.gasco.ui.$info.html (data.info);
+                if(data.info !== null) {
+                    JSPC.app.gasco.ui.$infoHeader.show ();
+                }
+                else {
+                    JSPC.app.gasco.ui.$infoHeader.hide ();
+                }
 
                 data.data.forEach (function (dd) {
                     JSPC.app.gasco.ui.$charts.append ('<p class="ui header chartHeader">' + dd.title + '</p>');
