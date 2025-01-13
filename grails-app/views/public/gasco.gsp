@@ -217,6 +217,8 @@
             <div class="content"></div>
         </div>
         <div class="content">
+            <h3><g:message code="gasco.flyout.infoHeader"/></h3>
+            <div class="info"></div>
             <div class="filter" style="margin:0 0 1em 0; text-align:right;">
                 <div class="ui buttons mini">
                     <span class="${Btn.SIMPLE_TOOLTIP}" data-content="Vergrößern" onclick="JSPC.app.gasco.ui.zoomIn()">+</span>
@@ -264,6 +266,7 @@
             ui: {
                 $flyout: $('#gascoFlyout'),
                 $title:  $('#gascoFlyout > .header > .content'),
+                $info:   $('#gascoFlyout > .content > .info'),
                 $filter: $('#gascoFlyout > .content > .filter'),
                 $charts: $('#gascoFlyout > .content > .charts'),
 
@@ -331,6 +334,7 @@
                 }
             }).done (function (data) {
                 JSPC.app.gasco.ui.$title.html (data.title);
+                JSPC.app.gasco.ui.$info.html (data.info);
 
                 data.data.forEach (function (dd) {
                     JSPC.app.gasco.ui.$charts.append ('<p class="ui header chartHeader">' + dd.title + '</p>');

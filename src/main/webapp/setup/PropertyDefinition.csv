@@ -197,6 +197,7 @@ Subscription Property,EZB Collection Transfer,EZB Kollektionsdatenweitergabe an 
 Subscription Property,EZB tagging (yellow),EZB Gelbschaltung,EZB tagging (yellow),de.laser.RefdataValue,y.n,,,,Wird eine Gelbschaltung in der EZB vorgenommen?,,
 Subscription Property,GASCO display name,GASCO-Anzeigename,GASCO display name,java.lang.String,,,,true,"Dieses Merkmal setzen, um bei Bedarf im GASCO-Monitor einen anderen Lizenznamen anzugeben als in LAS:eR aufgenommen.",,
 Subscription Property,GASCO Entry,GASCO-Eintrag,GASCO Entry,de.laser.RefdataValue,y.n,,,true,"Dieses Merkmal als Konsortialstelle auf ""ja"" setzen, um eine Lizenz im GASCO-Monitor aufzunehmen.",,
+Subscription Property,GASCO general information,GASCO-Zusatzinformationen,GASCO general information,java.lang.String,,,,true,"Hier haben Sie die Möglichkeit, allgemeine Hinweise zur Teilnahme zu geben.",Here you can enter general information to a subscription.,
 Subscription Property,GASCO information link,GASCO-Informations-Link,GASCO information link,java.net.URL,,,,true,Unter welchem Link finden sich Informationen zum Produkt?,,
 Subscription Property,GASCO negotiator name,GASCO-Verhandlername,GASCO negotiator name,java.lang.String,,,,true,"Dieses Merkmal als Konsortialstelle verwenden, um im GASCO-Monitor einen anderen Verhandlungsführer-Namen anzugeben.",,
 Subscription Property,HAN information,HAN-Hinweise,HAN information,java.lang.String,,,,,Hidden Automatic Navigator (HAN) - Hinweise zur Nutzung etc.,Hidden Automatic Navigator (HAN) - usage information,
