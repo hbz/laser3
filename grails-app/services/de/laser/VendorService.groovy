@@ -245,7 +245,8 @@ class VendorService {
                     List<Person> targetPersons = Person.executeQuery('select pr.prs from PersonRole pr where pr.vendor = :target', [target: replacement])
                     updateCount = 0
                     deleteCount = 0
-                    PersonRole.findAllByVendor(vendor).each { PersonRole pr ->
+                    vendor.prsLinks.clear()
+                    prsLinks.each { PersonRole pr ->
                         Person equivalent = targetPersons.find { Person pT -> pT.last_name == pr.prs.last_name && pT.tenant == pT.tenant }
                         if(!equivalent) {
                             pr.vendor = replacement

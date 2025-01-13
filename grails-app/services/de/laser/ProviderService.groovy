@@ -229,7 +229,8 @@ class ProviderService {
                     List<Person> targetPersons = Person.executeQuery('select pr.prs from PersonRole pr where pr.provider = :target', [target: replacement])
                     updateCount = 0
                     deleteCount = 0
-                    PersonRole.findAllByProvider(provider).each { PersonRole pr ->
+                    provider.prsLinks.clear()
+                    prsLinks.each { PersonRole pr ->
                         Person equivalent = targetPersons.find { Person pT -> pT.last_name == pr.prs.last_name && pT.tenant == pT.tenant }
                         if(!equivalent) {
                             pr.provider = replacement
@@ -238,7 +239,8 @@ class ProviderService {
                                 pr.prs.isPublic = false
                                 pr.prs.save()
                             }
-                            pr.save()
+                            if(!pr.save())
+                                log.error(pr.errors.getAllErrors().toListString())
                             updateCount++
                         }
                         else {
