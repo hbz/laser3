@@ -1395,36 +1395,20 @@ class SubscriptionController {
 
         String filename = params.kbartPreselect.originalFilename
         result.putAll(subscriptionService.tippSelectForSurvey(params.kbartPreselect, baseSub, result.surveyConfig, subscriberSub))
-            if (result.selectedTipps) {
+        if (result.selectedTipps) {
+            if (!issueEntitlementGroup) {
+                String groupName = IssueEntitlementGroup.countBySubAndName(subscriberSub,  result.surveyConfig.issueEntitlementGroupName) > 0 ? (IssueEntitlementGroup.countBySubAndNameIlike(subscriberSub, result.surveyConfig.issueEntitlementGroupName) + 1) : result.surveyConfig.issueEntitlementGroupName
 
-                result.selectedTipps.each { String tippKey ->
-                    TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(tippKey)
-                    if (tipp) {
-                        try {
-                            if (!issueEntitlementGroup) {
-                                IssueEntitlementGroup.withTransaction {
-                                    String groupName = IssueEntitlementGroup.countBySubAndName(subscriberSub,  result.surveyConfig.issueEntitlementGroupName) > 0 ? (IssueEntitlementGroup.countBySubAndNameIlike(subscriberSub, result.surveyConfig.issueEntitlementGroupName) + 1) : result.surveyConfig.issueEntitlementGroupName
-
-                                    issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: groupName)
-                                    if (!issueEntitlementGroup.save())
-                                        log.error(issueEntitlementGroup.getErrors().getAllErrors().toListString())
-                                    else {
-                                        result.titleGroupID = issueEntitlementGroup.id.toString()
-                                        result.titleGroup = issueEntitlementGroup
-                                    }
-                                }
-                            }
-
-                            if (issueEntitlementGroup && subscriptionService.addEntitlement(subscriberSub, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
-                                log.debug("selectEntitlementsWithKBARTForSurvey: Added tipp ${tipp.gokbId} to sub ${subscriberSub.id}")
-                            }
-                        }
-                        catch (EntitlementCreationException e) {
-                            log.debug("Error selectEntitlementsWithKBARTForSurvey: Adding tipp ${tipp} to sub ${subscriberSub.id}: " + e.getMessage())
-                        }
-                    }
+                issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: groupName)
+                if (!issueEntitlementGroup.save())
+                    log.error(issueEntitlementGroup.getErrors().getAllErrors().toListString())
+                else {
+                    result.titleGroupID = issueEntitlementGroup.id.toString()
+                    result.titleGroup = issueEntitlementGroup
                 }
             }
+            subscriptionService.addSelectedTipps(result.selectedTipps, subscriberSub, issueEntitlementGroup, result.surveyConfig.pickAndChoosePerpetualAccess)
+        }
 
         result.tippSelectForSurveySuccess = true
         params.remove("kbartPreselect")
