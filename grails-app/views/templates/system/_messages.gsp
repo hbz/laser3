@@ -1,4 +1,4 @@
-<%@ page import="de.laser.system.SystemMessage" %>
+<%@ page import="de.laser.system.SystemMessage; de.laser.system.SystemMessageCondition" %>
 %{-- model: systemMessages --}%
 
 <g:set var="globalMessages" value="${SystemMessage.getActiveMessages(SystemMessage.TYPE_GLOBAL)}" />
@@ -39,6 +39,7 @@
         <g:each in="${dashboardMessages}" var="message" status="i">
             <div class="system-message">
                 <ui:renderContentAsMarkdown>${message.getLocalizedContent()}</ui:renderContentAsMarkdown>
+                <g:if test="${message.condition == SystemMessageCondition.CONFIG.ERMS_6121}"><g:link action="readerNumber" controller="organisation" id="${contextService.getOrg().id}">Hier gelangen Sie zur Übersicht der Nutzendenzahlen.</g:link></g:if>
             </div>
         </g:each>
     </div>
