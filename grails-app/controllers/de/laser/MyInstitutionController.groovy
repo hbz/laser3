@@ -4694,5 +4694,10 @@ join sub.orgRelations or_sub where
         redirect(action: 'exportConfigs', params: [tab: ctrlResult.result.tab])
     }
 
+    // -- Redirects to OrganisationController --
 
+//    @Secured(['ROLE_USER'])
+//    def readerNumber() {
+//        redirect controller: 'organisation', action: 'readerNumber', id: contextService.getOrg().id
+//    }
 }

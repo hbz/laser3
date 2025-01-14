@@ -235,12 +235,12 @@ Some text to show that the reference links can follow later.
 [link text itself]: http://www.reddit.com
 
 ```
-* [LAS:eR]({{ current_server_laser }} "current_server_laser: {{ current_server_laser }}")
-* [we:kb]({{ current_server_wekb }} "current_server_wekb: {{ current_server_wekb }}")
+* [LAS:eR]({{ url_laser }} "url_laser: {{ url_laser }}")
+* [we:kb]({{ url_wekb }} "url_wekb: {{ url_wekb }}")
 ```
 
-* [LAS:eR]({{current_server_laser}} "current_server_laser: {{current_server_laser}}")
-* [we:kb]({{current_server_wekb}} "current_server_wekb: {{current_server_wekb}}")
+* [LAS:eR]({{url_laser}} "url_laser: {{url_laser}}")
+* [we:kb]({{url_wekb}} "url_wekb: {{url_wekb}}")
 
 ------
 
@@ -624,7 +624,7 @@ Underscores
 
 # Various
 
-![Image not found]({{current_server_webapp}}/media/reporting/global.packages.png "{{current_server_webapp}}")
+![Image not found]({{url_laser_static}}/media/reporting/global.packages.png "{{url_laser_static}}")
 
 | Option | Description |
 |--------|-------------|
@@ -652,6 +652,6 @@ Underscores
 
 [Laser Dashboard](https://laser.hbz-nrw.de/myInstitution/dashboard)
 
-[Laser Dashboard @ current_server_laser]({{current_server_laser}}/myInstitution/dashboard)
+[Laser Dashboard @ url_laser]({{url_laser}}/myInstitution/dashboard)
 
-[Wekb @ current_server_wekb]({{current_server_wekb}})
+[Wekb @ url_wekb]({{url_wekb}})

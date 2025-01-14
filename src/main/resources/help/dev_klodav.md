@@ -21,7 +21,7 @@ _This is italic text_
 
 ~~Strikethrough~~ with two tildes.
 
-![IMG: ASSETS]({{current_server_assets}}/gasco-logo.jpg "Source: {{current_server_assets}}")
+![IMG: ASSETS]({{url_laser_assets}}/gasco-logo.jpg "Source: {{url_laser_assets}}")
 
-![IMG: WEBAPP]({{current_server_webapp}}/media/test.jpg "Source: {{current_server_webapp}}")
+![IMG: WEBAPP]({{url_laser_static}}/media/test.jpg "Source: {{url_laser_static}}")
 
