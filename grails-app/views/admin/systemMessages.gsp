@@ -21,7 +21,15 @@
 <ui:msg class="info" showIcon="true" hideClose="true">
     ${message(code: 'admin.systemMessage.info.TMP', args: [HeartbeatJob.HEARTBEAT_IN_SECONDS])}
     <br />
-    ${message(code: 'admin.help.markdown')}
+    <br />
+    ${message(code: 'admin.help.markdown')}.
+    <br />
+    Dabei können folgende Token zur Erzeugung dynamischer Inhalte verwendet werden:
+    <ul>
+        <g:each in="${helpService.getTokenMap()}" var="tk">
+            <li>{{${tk.key}}} -> ${tk.value}</li>
+        </g:each>
+    </ul>
 </ui:msg>
 
 <ui:messages data="${flash}" />

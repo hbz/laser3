@@ -22,17 +22,19 @@ class SystemMessageCondition {
 
     static mapWith = 'none'
 
-    static boolean isTrue(CONFIG type) {
+    static boolean isDone(CONFIG type) {
         boolean result = false
 
         if (type == CONFIG.ERMS_6121) {
-            if(BeanStore.getContextService().isInstEditor()) {
+            if (BeanStore.getContextService().getOrg().isCustomerType_Inst() && BeanStore.getContextService().isInstEditor()) {
                 //check if there are reader numbers from current year
                 int now = Year.now().value
                 Set<ReaderNumber> check = ReaderNumber.executeQuery('select rn from ReaderNumber rn where rn.org = :contextOrg and year(rn.lastUpdated) = :currYear', [contextOrg: BeanStore.getContextService().getOrg(), currYear: now])
                 result = check.size() > 0
             }
-            else result = true
+            else {
+                result = true
+            }
         }
 
         result
