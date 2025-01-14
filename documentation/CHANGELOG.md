@@ -7,11 +7,13 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-6175    13.01.2024  dev     3.5         Andreas Feature     Hochsetzen des Zuordnungsjahres bei automatischer Verlängerung
+6120    14.01.2025  dev     3.5         David   Feature     Neuer Message-Typ "Dashboard"
 
 6004    13.01.2024  dev     3.5         Andreas Feature     neues Merkmal "GASCO-Zusatzinformationen" aufgenommen und in Flyout eingebunden
 
 --      13.01.2024  rc-3.4  3.4.18      Andreas Bug         Hinzufügen von Titel in Umfrage lief unperformant
+
+6175    13.01.2024  dev     3.5         Andreas Feature     Hochsetzen des Zuordnungsjahres bei automatischer Verlängerung
 
 5393    08.01.2025  dev     3.5         David   Feature     getAllSubscribers in Lizenzen überdenken
 

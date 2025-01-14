@@ -58,8 +58,8 @@
         </thead>
         <tbody>
             <tr>
-                <td>App Id/Version</td>
-                <td colspan="2">${ConfigMapper.getLaserSystemId()} / ${AppUtils.getMeta('info.app.version')}</td>
+                <td>App Id/Version/Build</td>
+                <td colspan="2">${ConfigMapper.getLaserSystemId()} / ${AppUtils.getMeta('info.app.version')} / ${AppUtils.getMeta('info.app.build.date')}</td>
             </tr>
             <tr>
                 <td>Configuration file</td>
