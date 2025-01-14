@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6178    14.01.2025  dev     3.5         Andreas Feature     Dashboard-Aufforderung zur Aktualisierung der Nutzerzahlen
+
 6120    14.01.2025  dev     3.5         David   Feature     Neuer Message-Typ "Dashboard"
 
 6004    13.01.2024  dev     3.5         Andreas Feature     neues Merkmal "GASCO-Zusatzinformationen" aufgenommen und in Flyout eingebunden
