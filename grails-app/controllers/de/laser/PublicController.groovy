@@ -288,6 +288,7 @@ class PublicController {
                         [parent: sub, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
                 )
                 result.title = sub.name
+                result.info  = SubscriptionProperty.findByOwnerAndType(sub, PropertyStore.SUB_PROP_GASCO_GENERAL_INFORMATION)?.getValue()
 
                 if (participants) {
                     List libraryTypes = Org.executeQuery('select lt, count(lt) from Org o join o.libraryType lt where o in (:oList) group by lt', [oList: participants])

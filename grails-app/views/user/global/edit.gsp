@@ -46,7 +46,7 @@
 
                             <div class="ui field">
                                 <label>${message(code:'user.email')}</label>
-                                <ui:xEditable owner="${user}" field="email" validation="email"/>
+                                <ui:xEditable owner="${user}" field="email" validation="email,notEmpty"/>
                             </div>
 
                             <g:if test="${editable}">

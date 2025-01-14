@@ -900,7 +900,7 @@
                 success: function (data) {
                     $.each(data, function (key, entry) {
                         if(entry.value == "${costItem?.sub?.id}"){
-                            dropdownSelectedSubs.append($('<option></option>').attr('value', entry.value).attr('selected', 'selected').text(entry.text));
+                            //dropdownSelectedSubs.append($('<option></option>').attr('value', entry.value).attr('selected', 'selected').text(entry.text));
                         }else{
                             dropdownSelectedSubs.append($('<option></option>').attr('value', entry.value).text(entry.text));
                             }

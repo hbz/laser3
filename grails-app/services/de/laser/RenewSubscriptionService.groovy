@@ -86,6 +86,7 @@ class RenewSubscriptionService extends AbstractLockableService {
                                 copySub.startDate = subscription.endDate + 1.day
                                 copySub.endDate = subscription.endDate + 1.year
                             }
+                            copySub.referenceYear = copySub.referenceYear ? subscription.referenceYear.plusYears(1) : null
 
                             if (copySub.save()) {
 

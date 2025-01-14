@@ -13,7 +13,15 @@
 
 --      13.01.2024  rc-3.4  3.4.18      Andreas Bug         Hinzufügen von Titel in Umfrage lief unperformant
 
+6175    13.01.2024  dev     3.5         Andreas Feature     Hochsetzen des Zuordnungsjahres bei automatischer Verlängerung
+
 5393    08.01.2025  dev     3.5         David   Feature     getAllSubscribers in Lizenzen überdenken
+
+6002    07.01.2024  rc-3.4  3.4.17      Moe     Bug         Filtern der Lieferanten in der Umfrage funktioniert nicht
+
+--      07.01.2024  rc-3.4  3.4.17      Moe     Bug         Export funktioniert nicht mehr bei Titel-Umfrage mit Statistik
+
+6095    07.01.2024  rc-3.4  3.4.17      Moe     Bug         Kosten kopieren: Bei Statuswechsel wird Quelllizenz als ausgewählt angezeigt
 
 6170    03.01.2025  dev     3.5         Andreas Bug         Ladefehler bei der manuellen Verlängerung behoben
 
@@ -26,6 +34,8 @@
 6048    23.12.2024  dev     3.5         Andreas Feature     Umsetzung der neuen Regeln zur Titelverwaltung
 
 5937    23.12.2024  dev     3.5         Andreas Feature     Titelverwaltung auf neue Struktur umgestellt, mehrstufiges Laden der Bestandstitel
+
+6159    19.12.2024  rc-3.4  3.4.16      David   Feature     Anzahl der Datenbankverbindungen erhöhen
 
 6127    19.12.2024  rc-3.4  3.4.16      Moe     Bug         Benennung Tab in der Lieferanten-Umfrage ändern
 
