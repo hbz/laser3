@@ -1,5 +1,10 @@
 package de.laser.system
 
+import de.laser.ReaderNumber
+import de.laser.storage.BeanStore
+
+import java.time.Year
+
 class SystemMessageCondition {
 
     static enum CONFIG {
@@ -21,9 +26,13 @@ class SystemMessageCondition {
         boolean result = false
 
         if (type == CONFIG.ERMS_6121) {
-            // do something
-            // true if all conditions are met
-            // false otherwise
+            if(BeanStore.getContextService().isInstEditor()) {
+                //check if there are reader numbers from current year
+                int now = Year.now().value
+                Set<ReaderNumber> check = ReaderNumber.executeQuery('select rn from ReaderNumber rn where rn.org = :contextOrg and year(rn.lastUpdated) = :currYear', [contextOrg: BeanStore.getContextService().getOrg(), currYear: now])
+                result = check.size() > 0
+            }
+            else result = true
         }
 
         result
