@@ -2677,7 +2677,7 @@ class MyInstitutionController  {
     def users() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        Map filterParams = params.clone()
+        GrailsParameterMap filterParams = params.clone() as GrailsParameterMap
         filterParams.max = result.max
         filterParams.offset = result.offset
         filterParams.org = genericOIDService.getOID(contextService.getOrg())

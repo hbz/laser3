@@ -50,21 +50,24 @@ class UserService {
      * @param params the request parameter map
      * @return a list of users, either globally or belonging to a given institution
      */
-    Map<String, Object> getUserMap(Map params) {
+    Map<String, Object> getUserMap(GrailsParameterMap params) {
         // only context org depending
         String baseQuery = 'select distinct u from User u'
         List whereQuery = []
         Map queryParams = [:]
 
-        if (params.org || params.authority) {
+        if (params.org || params.role || params.authority) {
             if (params.org) {
                 whereQuery.add( 'u.formalOrg = :org' )
                 queryParams.put( 'org', genericOIDService.resolveOID(params.org) )
             }
-            // params.authority vs params.role ???
             if (params.role) {
                 whereQuery.add( 'u.formalRole = :role' )
                 queryParams.put('role', genericOIDService.resolveOID(params.role) )
+            }
+            if (params.authority) {
+                whereQuery.add( 'u.formalRole != null and u.formalRole.authority = :authority' )
+                queryParams.put('authority', params.authority )
             }
         }
 
