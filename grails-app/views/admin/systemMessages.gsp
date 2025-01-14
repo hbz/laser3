@@ -10,7 +10,9 @@
 <ui:h1HeaderWithIcon message="menu.admin.systemMessage" type="admin"/>
 
 <div class="la-float-right">
-    <input type="submit" class="${Btn.SIMPLE}" value="${message(code: 'admin.systemMessage.create')}" data-ui="modal" data-href="#modalCreateSystemMessage" />
+    <a onclick="JSPC.app.systemMessages.edit();" class="${Btn.SIMPLE}" role="button" aria-label="${message(code: 'admin.systemMessage.create')}">
+        ${message(code: 'admin.systemMessage.create')}
+    </a>
 </div>
 
 <br />
@@ -40,34 +42,29 @@
             <td>
                 <div class="ui top attached segment">
                     <span class="ui mini top right attached label">DE</span>
-                    <ui:xEditable owner="${msg}" field="content_de" id="sm_content_de_${mi}" type="textarea"/>
-                </div>
-                <div class="ui attached segment">
-%{--                    <span class="ui top attached label">${message(code: 'default.preview.label')}</span>--}%
-                    <div id="sm_preview_de_${mi}">
+                    <div>
                         <ui:renderContentAsMarkdown>${msg.content_de}</ui:renderContentAsMarkdown>
                     </div>
                 </div>
-                <div class="ui top attached segment">
-                    <span class="ui mini top right attached label">EN</span>
-                    <ui:xEditable owner="${msg}" field="content_en" id="sm_content_en_${mi}" type="textarea"/>
-                </div>
                 <div class="ui attached segment">
-                    <div id="sm_preview_en_${mi}">
+                    <span class="ui mini top right attached label">EN</span>
+                    <div>
                         <ui:renderContentAsMarkdown>${msg.content_en}</ui:renderContentAsMarkdown>
                     </div>
                 </div>
+                <g:if test="${msg.condition}">
+                    <div class="ui attached segment">
+                        <span class="ui mini top right attached label">${message(code: 'default.condition')}</span>
+                        <span class="ui text red"><strong>${msg.condition.key}</strong> - ${msg.condition.description} (${msg.condition.systemMessageType})</span>
+                    </div>
+                </g:if>
             </td>
             <td>
                 <g:if test="${SystemMessage.TYPE_GLOBAL == msg.type}">
-                    <span class="ui label red">Systemmeldung</span>
+                    <span class="ui label orange">Systemmeldung</span>
                 </g:if>
                 <g:elseif test="${SystemMessage.TYPE_DASHBOARD == msg.type}">
                     <span class="ui label teal">Dashboard</span>
-                    <div>
-                        <br/> Bedingung: <br/>
-                        <ui:xEditableDropDown owner="${msg}" field="condition" id="msg_condition_${msg.id}" dataLink="getSystemMessageDashboardConditionList"/>
-                    </div>
                 </g:elseif>
                 <g:elseif test="${SystemMessage.TYPE_STARTPAGE == msg.type}">
                     <span class="ui label blue">Startseite</span>
@@ -85,6 +82,10 @@
                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                     <i class="${Icon.CMD.DELETE}"></i>
                 </g:link>
+
+                <a onclick="JSPC.app.systemMessages.edit(${msg.id});" class="${Btn.MODERN.SIMPLE}" role="button" aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
+                </a>
             </td>
         </tr>
         </g:each>
@@ -92,47 +93,42 @@
 </table>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    JSPC.app.updateSysMsgPreview = function (elem, newValue) {
-        $.ajax({
-            url: '<g:createLink controller="ajaxHtml" action="renderMarkdown"/>',
-            method: 'POST',
-            data: {
-                text: newValue
-            },
-            success: function(data) {
-                let pp = $(elem).attr('id').split('_')
-                $('#sm_preview_' + pp[2] + '_' + pp[3]).html(data)
-            }
-        });
+    JSPC.app.systemMessages = {
+
+        edit: function (id) {
+            $.ajax({
+                url: '<g:createLink controller="admin" action="editSystemMessage"/>?id=' + id,
+                success: function(result){
+                    $('#dynamicModalContainer').empty()
+                    $('#modalCreateSystemMessage, #modalEditSystemMessage').remove()
+
+                    $('#dynamicModalContainer').html(result);
+                    $('#dynamicModalContainer .ui.modal').modal({
+                        autofocus: false,
+                        onVisible: function() {
+                            r2d2.helper.focusFirstFormElement(this)
+                        }
+                    }).modal('show')
+                }
+            });
+        },
+
+        updatePreview: function (elem) {
+            let id = $(elem).attr('id').replace('_content_', '_preview_')
+            let value = $(elem).val()
+
+            $.ajax({
+                url: '<g:createLink controller="ajaxHtml" action="renderMarkdown"/>',
+                method: 'POST',
+                data: {
+                    text: value
+                },
+                success: function(data) {
+                    $('.modal #' + id).html(data)
+                }
+            });
+        }
     }
-
-    $('a[id^=sm_content_]').on('save', function(e, params) { JSPC.app.updateSysMsgPreview(this, params.newValue) });
 </laser:script>
-
-<ui:modal id="modalCreateSystemMessage" message="admin.systemMessage.create">
-    <g:form class="ui form" url="[controller: 'admin', action: 'systemMessages', params: [create: true]]" method="post">
-
-        <fieldset>
-            <div class="field">
-                <label for="content_de">${message(code: 'default.content.label')} (${message(code: 'default.german.label')})</label>
-                <textarea name="content_de" id="content_de"></textarea>
-            </div>
-
-            <div class="field">
-                <label for="content_en">${message(code: 'default.content.label')} (${message(code: 'default.english.label')})</label>
-                <textarea name="content_en" id="content_en"></textarea>
-            </div>
-
-            <div class="field">
-                <label for="type">${message(code: 'default.type.label')}</label>
-                <g:select from="${[[SystemMessage.TYPE_GLOBAL, 'Systemmeldung'], [SystemMessage.TYPE_DASHBOARD, 'Dashboard'], [SystemMessage.TYPE_STARTPAGE, 'Startseite']]}"
-                          optionKey="${{it[0]}}"
-                          optionValue="${{it[1]}}"
-                          name="type"
-                          class="ui fluid search dropdown la-not-clearable"/>
-            </div>
-        </fieldset>
-    </g:form>
-</ui:modal>
 
 <laser:htmlEnd />

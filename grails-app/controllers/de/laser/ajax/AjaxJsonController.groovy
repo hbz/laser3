@@ -356,15 +356,6 @@ class AjaxJsonController {
         render result as JSON
     }
 
-    @Secured(['ROLE_USER'])
-    def getSystemMessageDashboardConditionList() {
-        // TODO: erms-6120
-        List result = SystemMessageCondition.CONFIG.collect { it2 ->
-            [value: it2.key, text: '(' + it2.key + ') ' + it2.description]
-        }
-        render result as JSON
-    }
-
     /**
      * Called from subTransfer.gsp and currentSubTransfers.gsp
      * Gets the list of subscription discount scales registered for the given subscription

@@ -1146,18 +1146,31 @@ SELECT * FROM (
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
 
-        if (params.create){
-            SystemMessage sm = new SystemMessage(
-                    content_de: params.content_de ?: '',
-                    content_en: params.content_en ?: '',
-                    type: params.type,
-                    isActive: false)
+        SystemMessage sm
+        if (params.cmd == 'create') {
+            sm = new SystemMessage( isActive: false )
+        }
+        else if (params.cmd == 'edit') {
+            sm = SystemMessage.get(params.id)
+        }
+
+        if (sm) {
+            sm.content_de = params.content_de ?: ''
+            sm.content_en = params.content_en ?: ''
+            sm.type = params.type
+            sm.condition = params.condition ?: null
 
             if (sm.save()){
-                flash.message = 'Systemmeldung erstellt'
-            } else {
-                flash.error = 'Systemmeldung wurde nicht erstellt'
+                flash.message = 'Systemmeldung erfolgreich gespeichert'
             }
+            else {
+                if (params.cmd == 'create') {
+                    flash.error = 'Systemmeldung wurde nicht erstellt'
+                } else {
+                    flash.error = 'Systemmeldung konnte nicht gespeichert werden'
+                }
+            }
+            log.debug 'SystemMessage #' + sm.id + ' -> ' + params.cmd
         }
 
         result.systemMessages = SystemMessage.executeQuery('select sm from SystemMessage sm order by sm.isActive desc, sm.lastUpdated desc')
@@ -1165,10 +1178,11 @@ SELECT * FROM (
         result
     }
 
-    /**
-     * Deletes the given {@link SystemMessage}
-     * @param id the system message to delete
-     */
+    @Secured(['ROLE_ADMIN'])
+    def editSystemMessage(Long id) {
+        render template: 'systemMessageModal', model: [msg: SystemMessage.get(id)]
+    }
+
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def deleteSystemMessage(Long id) {
