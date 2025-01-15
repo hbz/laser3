@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6140    15.01.2024  rc-3.4  3.4.18      Moe     Bug          Informationen in Info-i zu Rechnungskontakten optimieren
+
+--      15.01.2024  rc-3.4  3.4.18      Moe     Bug         Title-Upload bei Titel-Umfrage
+
 --      13.01.2024  rc-3.4  3.4.18      Andreas Bug         Hinzufügen von Titel in Umfrage lief unperformant
 
 6002    07.01.2024  rc-3.4  3.4.17      Moe     Bug         Filtern der Lieferanten in der Umfrage funktioniert nicht
