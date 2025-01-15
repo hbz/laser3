@@ -1,4 +1,4 @@
-<%@ page import="de.laser.addressbook.Person; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.utils.LocaleUtils; de.laser.utils.SqlDateUtils; de.laser.survey.SurveyInfo; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DueDateObject; de.laser.*; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.addressbook.Person; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.utils.LocaleUtils; de.laser.utils.SqlDateUtils; de.laser.survey.SurveyInfo; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.*;" %>
 <laser:serviceInjection />
 <table class="ui celled table la-js-responsive-table la-table">
     <thead>
@@ -115,29 +115,12 @@
                     </div>
                 </td>
                 <td class="center aligned">
-                    <g:if test="${false}">
-                        <ui:remoteLink class="${Btn.MODERN.NEGATIVE_CONFIRM}"
-                                          controller="ajax"
-                                          action="deleteDashboardDueDate_does_not_exist_yet"
-                                          params=''
-                                          id="${genericOIDService.getOID(dashDueDate)}"
-                                          data-confirm-tokenMsg="Möchten Sie wirklich diesen fälligen Termin aus dem System löschen?"
-                                          data-confirm-term-how="ok"
-
-                                          data-done=""
-                                          data-update="container-table"
-                                          role="button"
-                                          ariaLabel="${message(code:'ariaLabel.delete.universal')}"
-                        >
-                            <i class="${Icon.CMD.DELETE}"></i>
-                        </ui:remoteLink>
-                    </g:if>
                     <g:if test="${dashDueDate?.isHidden}">
                         <ui:remoteLink class="${Btn.MODERN.SIMPLE_TOOLTIP}"
                                           data-content="${message(code:'myinst.dash.due_dates.visibility.off.tooltip')}"
                                           controller="ajax"
-                                          action="showDashboardDueDate"
-                                          params='[owner:"${dashDueDate.class.name}:${dashDueDate.id}"]'
+                                          action="setDashboardDueDateVisibility"
+                                          params='[visibility:true]'
                                           id="${dashDueDate.id}"
                                           data-confirm-tokenMsg="Möchten Sie diesen fälligen Termin wieder auf Ihrem Dashboard anzeigen lassen? "
                                           data-confirm-term-how="ok"
@@ -153,8 +136,8 @@
                         <ui:remoteLink class="${Btn.MODERN.POSITIVE_TOOLTIP}"
                                           data-content="${message(code:'myinst.dash.due_dates.visibility.on.tooltip')}"
                                           controller="ajax"
-                                          action="hideDashboardDueDate"
-                                          params='[owner:"${dashDueDate.class.name}:${dashDueDate.id}"]'
+                                          action="setDashboardDueDateVisibility"
+                                          params='[visibility:false]'
                                           id="${dashDueDate.id}"
                                           data-done=""
                                           data-update="container-table"
@@ -170,8 +153,8 @@
                     <ui:remoteLink class="${Btn.MODERN.POSITIVE_TOOLTIP}"
                                       data-content="${message(code:'myinst.dash.due_dates.status.pending.tooltip')}"
                                       controller="ajax"
-                                      action="dashboardDueDateSetIsUndone"
-                                      params='[owner:"${dashDueDate.dueDateObject.class.name}:${dashDueDate.dueDateObject.id}"]'
+                                      action="setDueDateObjectStatus"
+                                      params='[done:false]'
                                       id="${dashDueDate.dueDateObject.id}"
                                       data-confirm-tokenMsg="Möchten Sie diesen fälligen Termin auf NICHT erledigt sezten? "
                                       data-confirm-term-how="ok"
@@ -187,8 +170,8 @@
                     <ui:remoteLink class="${Btn.MODERN.SIMPLE_TOOLTIP}"
                                       data-content="${message(code:'myinst.dash.due_dates.status.done.tooltip')}"
                                       controller="ajax"
-                                      action="dashboardDueDateSetIsDone"
-                                      params='[owner:"${dashDueDate.dueDateObject.class.name}:${dashDueDate.dueDateObject.id}"]'
+                                      action="setDueDateObjectStatus"
+                                      params='[done:true]'
                                       id="${dashDueDate.dueDateObject.id}"
                                       data-done=""
                                       data-update="container-table"

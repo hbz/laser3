@@ -206,7 +206,7 @@ class DashboardDueDate {
         version                 column: 'das_version'
         responsibleUser         column: 'das_responsible_user_fk', index: 'das_responsible_user_idx'
         isHidden                column: 'das_is_hidden'
-        dueDateObject           column: 'das_ddobj_fk', lazy: false, index: 'das_ddobj_idx'
+        dueDateObject           column: 'das_ddobj_fk', index: 'das_ddobj_idx'
         dateCreated             column: 'das_date_created'
         lastUpdated             column: 'das_last_updated'
     }

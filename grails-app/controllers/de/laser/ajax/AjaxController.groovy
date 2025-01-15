@@ -1472,29 +1472,14 @@ class AjaxController {
   }
 
     /**
-     * Hides the given dashboard due date
-     */
-    @Secured(['ROLE_USER'])
-    def hideDashboardDueDate(){
-        _setDashboardDueDateIsHidden(true)
-    }
-
-    /**
-     * Shows the given dashboard due date
-     */
-    @Secured(['ROLE_USER'])
-    def showDashboardDueDate(){
-        _setDashboardDueDateIsHidden(false)
-    }
-
-    /**
      * Shows or hides the given dashboard due date
      * @param isHidden is the dashboard due date hidden?
      */
     @Secured(['ROLE_USER'])
     @Transactional
-    private _setDashboardDueDateIsHidden(boolean isHidden){
-        log.debug("Hide/Show Dashboard DueDate - isHidden="+isHidden)
+    def setDashboardDueDateVisibility(){
+        boolean isHidden = ! params.boolean('visibility')
+        log.debug('Hide/Show DashboardDueDate - isHidden=' + isHidden)
 
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
@@ -1507,8 +1492,8 @@ class AjaxController {
             return
         }
 
-        if (params.owner) {
-            DashboardDueDate dueDate = (DashboardDueDate) genericOIDService.resolveOID(params.owner)
+        if (params.id) {
+            DashboardDueDate dueDate = DashboardDueDate.get(params.id)
             if (dueDate){
                 dueDate.isHidden = isHidden
                 dueDate.save()
@@ -1533,29 +1518,14 @@ class AjaxController {
     }
 
     /**
-     * Marks the given due date as completed
-     */
-    @Secured(['ROLE_USER'])
-    def dashboardDueDateSetIsDone() {
-       _setDashboardDueDateIsDone(true)
-    }
-
-    /**
-     * Marks the given due date as undone
-     */
-    @Secured(['ROLE_USER'])
-    def dashboardDueDateSetIsUndone() {
-       _setDashboardDueDateIsDone(false)
-    }
-
-    /**
      * Marks the given due date as done or undone
      * @param isDone is the due date completed or not?
      */
     @Secured(['ROLE_USER'])
     @Transactional
-    private _setDashboardDueDateIsDone(boolean isDone){
-        log.debug("Done/Undone Dashboard DueDate - isDone="+isDone)
+    def setDueDateObjectStatus(){
+        boolean isDone = params.boolean('done')
+        log.debug('Done/Undone DueDateObject - isDone=' + isDone)
 
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
@@ -1568,8 +1538,8 @@ class AjaxController {
             return
         }
 
-        if (params.owner) {
-            DueDateObject dueDateObject = (DueDateObject) genericOIDService.resolveOID(params.owner)
+        if (params.id) {
+            DueDateObject dueDateObject = DueDateObject.get(params.id)
             if (dueDateObject){
                 Object obj = genericOIDService.resolveOID(dueDateObject.oid)
 //                Object obj = dueDateObject.getObject() // TODO - ERMS-5862
