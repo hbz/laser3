@@ -138,7 +138,7 @@ class OrganisationControllerService {
             RefdataValue responsibleAdmin   = RDStore.PRS_FUNC_RESPONSIBLE_ADMIN
             RefdataValue billingContact     = RDStore.PRS_FUNC_INVOICING_CONTACT
 
-            List contactList = Contact.executeQuery("select c.content, pr.functionType from PersonRole pr " +
+            List contactList = Contact.executeQuery("select c.content, p.title, p.first_name, p.middle_name, p.last_name, pr.functionType from PersonRole pr " +
                     "join pr.prs p join p.contacts c where pr.org = :org and " +
                     "pr.functionType in (:functionTypes) and c.contentType = :type and p.isPublic = true",
                     [org: result.orgInstance,
@@ -151,14 +151,14 @@ class OrganisationControllerService {
 
             contactList.each { row ->
                 String c = row[0]
-                if(generalContact == row[1]){
+                if(generalContact == row[5]){
                     generalContactsList << c
                 }
-                else if(responsibleAdmin == row[1]){
+                else if(responsibleAdmin == row[5]){
                     responsibleAdminsList << c
                 }
-                else if(billingContact == row[1]){
-                    billingContactsList << c
+                else if(billingContact == row[5]){
+                    billingContactsList << row
                 }
             }
 
@@ -167,8 +167,8 @@ class OrganisationControllerService {
             Set<Address> addressList = Address.executeQuery("select a from Address a join a.type type where type = :type and a.org = :org and a.tenant = null "+adressFilter, [org: result.orgInstance, type: RDStore.ADDRESS_TYPE_BILLING])
             Set<Address> postBoxList = Address.executeQuery("select a from Address a join a.type type where type = :type and a.org = :org and a.tenant = null "+postBoxFilter, [org: result.orgInstance, type: RDStore.ADDRESS_TYPE_BILLING])
 
-            String billingAddress = addressList.collect { Address address -> address.getAddressForExport()}.join(";")
-            String billingPostBox = postBoxList.collect { Address address -> address.getAddressForExport()}.join(";")
+            List billingAddresses = addressList.collect { Address address -> address.getAddressForExport()}
+            List billingPostBoxes = postBoxList.collect { Address address -> address.getAddressForExport()}
 
             if(params.surveyConfigID){
                 SurveyConfig surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.long('surveyConfigID')) : null
@@ -180,12 +180,12 @@ class OrganisationControllerService {
                         Set<Address> addressSurveyList = Address.executeQuery("select a from Address a join a.type type where a.id = :adressID " + adressSurveyFilter, [adressID: surveyOrg.address.id])
                         Set<Address> postBoxSurveyList = Address.executeQuery("select a from Address a join a.type type where a.id = :adressID " + postBoxSurveyFilter, [adressID: surveyOrg.address.id])
 
-                        billingAddress = addressSurveyList.collect { Address address -> address.getAddressForExport() }.join(";")
-                        billingPostBox = postBoxSurveyList.collect { Address address -> address.getAddressForExport() }.join(";")
+                        billingAddresses = addressSurveyList.collect { Address address -> address.getAddressForExport() }
+                        billingPostBoxes = postBoxSurveyList.collect { Address address -> address.getAddressForExport() }
                     }
 
                     if(surveyOrg.person) {
-                        billingContactsList = Contact.executeQuery("select c.content from PersonRole pr " +
+                        billingContactsList = Contact.executeQuery("select c.content, p.title, p.first_name, p.middle_name, p.last_name from PersonRole pr " +
                                 "join pr.prs p join p.contacts c where pr.prs.id = :personId and c.contentType = :type",
                                 [personId: surveyOrg.person.id, type: RDStore.CCT_EMAIL])
                     }
@@ -194,7 +194,7 @@ class OrganisationControllerService {
 
             String generalContacts = generalContactsList.join('; ')
             String responsibleAdmins = responsibleAdminsList.join('; ')
-            String billingContacts = billingContactsList.join('; ')
+            //String billingContacts = billingContactsList.join('; ')
 
 
             List accessPoints = []
@@ -259,10 +259,10 @@ class OrganisationControllerService {
                                                                                                                                               currentSemester     : currentSemester,
                                                                                                                                               generalContacts     : generalContacts,
                                                                                                                                               responsibleAdmins   : responsibleAdmins,
-                                                                                                                                              billingContacts     : billingContacts,
+                                                                                                                                              billingContacts     : billingContactsList,
                                                                                                                                               accessPoints        : accessPoints,
-                                                                                                                                              billingAddress       : billingAddress,
-                                                                                                                                              billingPostBox: billingPostBox,
+                                                                                                                                              billingAddresses       : billingAddresses,
+                                                                                                                                              billingPostBoxes: billingPostBoxes,
                                                                                                                                               vatID: vatID]
 
         } else {

@@ -1377,7 +1377,6 @@ class SubscriptionService {
                         log.error(issueEntitlementGroupItem.errors)
                     }
                 }
-
                 Set coverageStatements
                 Set fallback = tipp.coverages
                 if(issueEntitlementOverwrite?.coverages) {
@@ -1420,9 +1419,27 @@ class SubscriptionService {
                         }
                     }
                 }
-                else return true
+
+                /*else*/
+                    return true
             } else {
                 log.error(new_ie.errors)
+            }
+        }
+    }
+
+    void addSelectedTipps(Set<String> selectedTipps, Subscription subscriberSub, IssueEntitlementGroup issueEntitlementGroup, boolean pickAndChoosePerpetualAccess = false) {
+        selectedTipps.each { String tippKey ->
+            TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(tippKey)
+            if (tipp) {
+                try {
+                    if (addEntitlement(subscriberSub, tipp.gokbId, null, (tipp.priceItems != null), pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
+                        log.debug("selectEntitlementsWithKBARTForSurvey: Added tipp ${tipp.gokbId} to sub ${subscriberSub.id}")
+                    }
+                }
+                catch (EntitlementCreationException e) {
+                    log.debug("Error selectEntitlementsWithKBARTForSurvey: Adding tipp ${tipp} to sub ${subscriberSub.id}: " + e.getMessage())
+                }
             }
         }
     }
@@ -2689,7 +2706,7 @@ class SubscriptionService {
 
             ArrayList<String> rows = stream.text.split('\n')
             //read off first line of KBART file
-            titleRow = rows.remove(0).split('\t')
+            titleRow = rows.size() > 0 ? rows[0].split('\t') : []
             titleRow.eachWithIndex { headerCol, int c ->
                 switch (headerCol.toLowerCase().trim()) {
                     case "zdb_id": zdbCol = c
