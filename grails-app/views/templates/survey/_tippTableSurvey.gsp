@@ -7,7 +7,7 @@
     <g:set var="sumlistPriceGBP" value="${0}"/>
     %{-- <g:set var="sumlocalPrice" value="${0}"/>--}%
 
-    <div class="ui accordion la-accordion-showMore" id="surveyEntitlements">
+    <div class="ui accordion la-accordion-showMore la-js-showMoreCloseArea" id="surveyEntitlements">
         <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>
         <g:each in="${titlesList}" var="tipp">
             <g:set var="ieInNewSub"

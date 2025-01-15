@@ -7,7 +7,7 @@
 <g:if test="${tipps}">
     <div class="ui fluid card">
         <div class="content">
-            <div class="ui accordion la-accordion-showMore">
+            <div class="ui accordion la-accordion-showMore la-js-showMoreCloseArea">
                 <g:each in="${tipps}" var="tipp">
                     <div class="ui raised segments la-accordion-segments">
 

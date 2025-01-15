@@ -47,7 +47,7 @@
                     <g:if test="${titles}">
                         <div class="ui fluid card">
                             <div class="content">
-                                <div class="ui accordion la-accordion-showMore">
+                                <div class="ui accordion la-accordion-showMore la-js-showMoreCloseArea">
                                     <g:each in="${titles}" var="tipp">
                                         <div class="ui raised segments la-accordion-segments">
                                             <%
