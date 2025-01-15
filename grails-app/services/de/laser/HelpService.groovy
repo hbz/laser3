@@ -13,8 +13,10 @@ import com.vladsch.flexmark.util.misc.Extension
 import de.laser.config.ConfigMapper
 import de.laser.flexmark.BaseExtension
 import de.laser.remote.Wekb
+import de.laser.storage.BeanStore
 import grails.gorm.transactions.Transactional
 import org.grails.io.support.GrailsResourceUtils
+import org.grails.plugins.web.taglib.ApplicationTagLib
 import org.grails.web.servlet.mvc.GrailsWebRequest
 import org.grails.web.util.WebUtils
 
@@ -99,12 +101,17 @@ class HelpService {
     }
 
     Map<String, String> getTokenMap() {
+        ApplicationTagLib g = BeanStore.getApplicationTagLib()
+
         [
-            'current_server_laser'  : ConfigMapper.getGrailsServerURL(),
-            'current_server_wekb'   : Wekb.getURL(), // ConfigMapper.getWekbServerURL(), // TODO
-            'current_server_assets' : ConfigMapper.getGrailsServerURL() + '/assets',
-            'current_server_webapp' : ConfigMapper.getGrailsServerURL() + '/static',
-        ]
+            'url_laser'         : ConfigMapper.getGrailsServerURL(),
+            'url_laser_assets'  : ConfigMapper.getGrailsServerURL() + '/assets',
+            'url_laser_static'  : ConfigMapper.getGrailsServerURL() + '/static',
+
+            'url_wekb'          : Wekb.getURL(), // ConfigMapper.getWekbServerURL(), // TODO
+
+            'link_org_readerNumber_id' : g.createLink(controller: 'organisation', action: 'readerNumber', id: contextService.getOrg().id, absolute: true)
+        ] as Map<String, String>
     }
 
     String replaceTokens(String markdown) {

@@ -3,4 +3,4 @@ Die unterschiedlichen Reiter teilen die Titel je nach deren Status (aktuell, gep
 
 Das **Stern-Icon** oben links in den Titeln zeigt systemweit an, dass es sich bei diesem Titel um eben einen dauerhaften Titel handelt.
 Über das Doppelpfeil-Icon lassen sich weitere Informationen zu dem Titel ausklappen. 
-Über den blauen Button **Detailliere Bestandsangaben** springt man in einen sich neu öffnenden Tab, bei dem die jeweiligen Titeldetails angezeigt werden.
+Über den blauen Button *Detailliere Bestandsangaben* springt man in einen sich neu öffnenden Tab, bei dem die jeweiligen Titeldetails angezeigt werden.

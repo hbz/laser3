@@ -55,11 +55,6 @@
                               class="ui fluid search dropdown"/>
                 </div>
             </div>
-            <div class="field">
-                <ui:msg class="info" showIcon="true" hideClose="true" >
-                    ${message(code: 'admin.help.markdown')}
-                </ui:msg>
-            </div>
         </fieldset>
     </g:form>
 </ui:modal>

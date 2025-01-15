@@ -2677,7 +2677,7 @@ class MyInstitutionController  {
     def users() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        Map filterParams = params.clone()
+        GrailsParameterMap filterParams = params.clone() as GrailsParameterMap
         filterParams.max = result.max
         filterParams.offset = result.offset
         filterParams.org = genericOIDService.getOID(contextService.getOrg())
@@ -4694,5 +4694,10 @@ join sub.orgRelations or_sub where
         redirect(action: 'exportConfigs', params: [tab: ctrlResult.result.tab])
     }
 
+    // -- Redirects to OrganisationController --
 
+//    @Secured(['ROLE_USER'])
+//    def readerNumber() {
+//        redirect controller: 'organisation', action: 'readerNumber', id: contextService.getOrg().id
+//    }
 }

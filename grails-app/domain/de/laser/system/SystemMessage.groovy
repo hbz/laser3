@@ -98,15 +98,15 @@ class SystemMessage {
         }
     }
 
-    boolean isConditionFulfilled() {
+    boolean isDisplayed() {
         // logic:
         // display message - isActive == true
-        // hide message    - isConditionFulfilled() == true
+        // hide message    - isDisplayed() == false
 
         if (condition) {
-            SystemMessageCondition.isTrue(condition)
+            ! SystemMessageCondition.isDone(condition)
         } else {
-            false
+            true
         }
     }
 }

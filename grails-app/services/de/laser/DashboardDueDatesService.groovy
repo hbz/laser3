@@ -157,14 +157,14 @@ class DashboardDueDatesService {
 
                     if (das) { //update
                         das.update(obj)
-                        log.debug("DashboardDueDatesService UPDATE: " + das);
+                        log.debug('DashboardDueDatesService UPDATE: ' + das + ' > ' + obj)
                         countUpdated++
                     }
                     else { // insert
                         das = new DashboardDueDate(obj, user)
                         das.save()
                         dashboarEntriesToInsert << das
-                        log.debug("DashboardDueDatesService INSERT: " + das);
+                        log.debug('DashboardDueDatesService INSERT: ' + das + ' < ' + obj)
                         countNew++
                     }
                 }

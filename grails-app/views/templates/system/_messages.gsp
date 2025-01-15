@@ -1,10 +1,14 @@
 <%@ page import="de.laser.system.SystemMessage; de.laser.system.SystemMessageCondition" %>
 %{-- model: systemMessages --}%
 
-<g:set var="globalMessages" value="${SystemMessage.getActiveMessages(SystemMessage.TYPE_GLOBAL)}" />
-<g:set var="dashboardMessages" value="${SystemMessage.getActiveMessages(SystemMessage.TYPE_DASHBOARD).findAll{ !it.isConditionFulfilled() }}" />
+<g:if test="${type == SystemMessage.TYPE_GLOBAL}">
+    <g:set var="globalMessages" value="${SystemMessage.getActiveMessages(SystemMessage.TYPE_GLOBAL)}" />
+</g:if>
+<g:if test="${type == SystemMessage.TYPE_DASHBOARD}">
+    <g:set var="dashboardMessages" value="${SystemMessage.getActiveMessages(SystemMessage.TYPE_DASHBOARD).findAll{ it.isDisplayed() }}" />
+</g:if>
 
-<g:if test="${globalMessages && type == SystemMessage.TYPE_GLOBAL}">
+<g:if test="${globalMessages}">
     <div id="globalMessages" class="ui message warning system-message-wrapper">
         <div class="ui top attached label">
             <i class="icon exclamation circular inverted red"></i>
@@ -24,7 +28,7 @@
     </div>
 </g:if>
 
-<g:if test="${dashboardMessages && type == SystemMessage.TYPE_DASHBOARD}">
+<g:if test="${dashboardMessages}">
     <div id="dashboardMessages" class="ui message info system-message-wrapper">
         <div class="ui top attached label">
             <i class="icon exclamation circular inverted teal"></i>
@@ -39,13 +43,12 @@
         <g:each in="${dashboardMessages}" var="message" status="i">
             <div class="system-message">
                 <ui:renderContentAsMarkdown>${message.getLocalizedContent()}</ui:renderContentAsMarkdown>
-                <g:if test="${message.condition == SystemMessageCondition.CONFIG.ERMS_6121}"><g:link action="readerNumber" controller="organisation" id="${contextService.getOrg().id}">Hier gelangen Sie zur Übersicht der Nutzendenzahlen.</g:link></g:if>
             </div>
         </g:each>
     </div>
 </g:if>
 
-<g:if test="${(globalMessages && type == SystemMessage.TYPE_GLOBAL) || (dashboardMessages && type == SystemMessage.TYPE_DASHBOARD)}">
+<g:if test="${globalMessages || dashboardMessages}">
     <style>
         .system-message-wrapper {
             padding: 2em 3em;

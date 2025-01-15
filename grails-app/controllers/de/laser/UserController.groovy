@@ -10,6 +10,7 @@ import de.laser.utils.PasswordUtils
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
+import grails.web.servlet.mvc.GrailsParameterMap
 
 /**
  * This controller handles calls related to global user management
@@ -80,7 +81,7 @@ class UserController {
         Profiler prf = new Profiler()
         Map<String, Object> result = userControllerService.getResultGenerics(params)
         prf.setBenchmark('init')
-        Map filterParams = params.clone()
+        GrailsParameterMap filterParams = params.clone() as GrailsParameterMap
         filterParams.max = result.max
         filterParams.offset = result.offset
         Map userData = userService.getUserMap(filterParams)

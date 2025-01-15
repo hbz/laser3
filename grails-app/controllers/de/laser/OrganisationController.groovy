@@ -1168,7 +1168,7 @@ class OrganisationController  {
             return
         }
 
-        Map filterParams = params
+        GrailsParameterMap filterParams = params.clone() as GrailsParameterMap
         filterParams.org = genericOIDService.getOID(result.orgInstance)
 
         Map userData = userService.getUserMap(filterParams)

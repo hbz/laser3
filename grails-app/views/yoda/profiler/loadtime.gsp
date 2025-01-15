@@ -51,7 +51,7 @@
                     <th> &gt; ${((int) globalMatrixSteps.last() / 1000)} s </th>
                 </g:if>
                 <th>avg</th>
-                <th><i class="icon fire"></i></th>
+                <th>score</th>
             </tr>
             </thead>
             <tbody>
