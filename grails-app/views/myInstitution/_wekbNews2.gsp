@@ -17,7 +17,8 @@
             <div class="content">
             <div class="ui grid">
                 <div class="one wide column"></div>
-                <div class="fourteen wide column" style="padding-top:0; padding-bottom:0">
+%{--                <div class="fourteen wide column" style="padding-top:0; padding-bottom:0">--}%
+                <div class="fourteen wide column">
 
                     <table class="ui basic compact table" style="border: none">
 %{--                        <thead>--}%
@@ -44,7 +45,87 @@
 %{--                            </th>--}%
 %{--                        </tr>--}%
 %{--                        </thead>--}%
+                        <thead>
+                            <tr>
+                                <th>Betrifft</th>
+                                <th>Neu</th>
+                                <th>Geändert</th>
+                                <th>Gelöscht</th>
+                                <th>
+                                    <span class="la-popup-tooltip" data-content="${message(code: 'menu.my')}" data-position="top right"><i class="${Icon.SIG.MY_OBJECT}"></i></span>
+                                </th>
+                                <th>
+                                    <span class="la-popup-tooltip" data-content="${message(code: 'marker.label')}" data-position="top right"><i class="${Icon.MARKER}"></i></span>
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
                         <tbody>
+%{--                        <tr style="border-bottom: none">--}%
+%{--                            <td></td>--}%
+%{--                            <td>Neu</td>--}%
+%{--                            <td>Geändert</td>--}%
+%{--                            <td>Gelöscht</td>--}%
+%{--                            <td><i class="${Icon.SIG.MY_OBJECT}"></i></td>--}%
+%{--                            <td><i class="${Icon.MARKER}"></i></td>--}%
+%{--                            <td>--}%
+%{--                                <a href="#" class="wekb-flyout-trigger" data-preset="provider,all">--}%
+%{--                                    <i class="${Icon.PROVIDER} la-list-icon"></i> ${message(code: 'provider.label')}--}%%{--: ${wekbNews.provider.count}--}%
+%{--                                </a>--}%
+%{--                            </td>--}%
+%{--                            <td>--}%
+%{--                                <a href="#" class="wekb-flyout-trigger" data-preset="vendor,all">--}%
+%{--                                    <i class="${Icon.VENDOR} la-list-icon"></i> ${message(code: 'vendor.plural')}--}%%{--: ${wekbNews.vendor.count}--}%
+%{--                                </a>--}%
+%{--                            </td>--}%
+%{--                            <td>--}%
+%{--                                <a href="#" class="wekb-flyout-trigger" data-preset="platform,all">--}%
+%{--                                    <i class="${Icon.PLATFORM} la-list-icon"></i> ${message(code: 'platform.plural')}--}%%{--: ${wekbNews.platform.count}--}%
+%{--                                </a>--}%
+%{--                            </td>--}%
+%{--                            <td>--}%
+%{--                                <a href="#" class="wekb-flyout-trigger" data-preset="package,all">--}%
+%{--                                    <i class="${Icon.PACKAGE} la-list-icon"></i> ${message(code: 'package.plural')}--}%%{--: ${wekbNews.package.count}--}%
+%{--                                </a>--}%
+%{--                            </td>--}%
+%{--                        </tr>--}%
+%{--                        <tr style="border-bottom: none">--}%
+%{--                            <td>--}%
+%{--                                Neu <br />--}%
+%{--                                Geändert <br />--}%
+%{--                                Gelöscht <br />--}%
+%{--                                <i class="${Icon.SIG.MY_OBJECT}"></i> <br />--}%
+%{--                                <i class="${Icon.MARKER}"></i> <br />--}%
+%{--                            </td>--}%
+%{--                            <td>--}%
+%{--                                <a href="#" class="wekb-flyout-trigger" data-preset="provider,created">${wekbNews.provider.created.size()}</a> <br/>--}%
+%{--                                <a href="#" class="wekb-flyout-trigger" data-preset="provider,updated">${wekbNews.provider.countUpdated}</a> <br/>--}%
+%{--                                <a href="#" class="wekb-flyout-trigger" data-preset="provider,deleted">${wekbNews.provider.deleted.size()}</a> <br/>--}%
+%{--                                <a href="#" class="wekb-flyout-trigger" data-preset="provider,my">${wekbNews.provider.my.size()}</a> <br/>--}%
+%{--                                <a href="#" class="wekb-flyout-trigger" data-preset="provider,marker">${wekbNews.provider.marker.size()}</a>--}%
+%{--                            </td>--}%
+%{--                            <td>--}%
+%{--                                <a href="#" class="wekb-flyout-trigger" data-preset="vendor,created">${wekbNews.vendor.created.size()}</a> <br/>--}%
+%{--                                <a href="#" class="wekb-flyout-trigger" data-preset="vendor,updated">${wekbNews.vendor.countUpdated}</a> <br/>--}%
+%{--                                <a href="#" class="wekb-flyout-trigger" data-preset="vendor,deleted">${wekbNews.vendor.deleted.size()}</a> <br/>--}%
+%{--                                <a href="#" class="wekb-flyout-trigger" data-preset="vendor,my">${wekbNews.vendor.my.size()}</a> <br/>--}%
+%{--                                <a href="#" class="wekb-flyout-trigger" data-preset="vendor,marker">${wekbNews.vendor.marker.size()}</a>--}%
+%{--                            </td>--}%
+%{--                            <td>--}%
+%{--                                <a href="#" class="wekb-flyout-trigger" data-preset="platform,created">${wekbNews.platform.created.size()}</a> <br/>--}%
+%{--                                <a href="#" class="wekb-flyout-trigger" data-preset="platform,updated">${wekbNews.platform.countUpdated}</a> <br/>--}%
+%{--                                <a href="#" class="wekb-flyout-trigger" data-preset="platform,deleted">${wekbNews.platform.deleted.size()}</a> <br/>--}%
+%{--                                <a href="#" class="wekb-flyout-trigger" data-preset="platform,my">${wekbNews.platform.my.size()}</a> <br/>--}%
+%{--                                <a href="#" class="wekb-flyout-trigger" data-preset="platform,marker">${wekbNews.platform.marker.size()}</a>--}%
+%{--                            </td>--}%
+%{--                            <td>--}%
+%{--                                <a href="#" class="wekb-flyout-trigger" data-preset="package,created">${wekbNews.package.created.size()}</a> <br/>--}%
+%{--                                <a href="#" class="wekb-flyout-trigger" data-preset="package,updated">${wekbNews.package.countUpdated}</a> <br/>--}%
+%{--                                <a href="#" class="wekb-flyout-trigger" data-preset="package,deleted">${wekbNews.package.deleted.size()}</a> <br/>--}%
+%{--                                <a href="#" class="wekb-flyout-trigger" data-preset="package,my">${wekbNews.package.my.size()}</a> <br/>--}%
+%{--                                <a href="#" class="wekb-flyout-trigger" data-preset="package,marker">${wekbNews.package.marker.size()}</a>--}%
+%{--                            </td>--}%
+
                         <tr style="border-bottom: none">
                             <td>
                                 <a href="#" class="wekb-flyout-trigger" data-preset="provider,all">
@@ -52,51 +133,31 @@
                                 </a>
                             </td>
                             <td>
-                                <a href="#" class="wekb-flyout-trigger" data-preset="vendor,all">
-                                    <i class="${Icon.VENDOR} la-list-icon"></i> ${message(code: 'vendor.plural')}%{--: ${wekbNews.vendor.count}--}%
-                                </a>
+                                <g:if test="${wekbNews.provider.created.size()}">
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="provider,created">${wekbNews.provider.created.size()}</a>
+                                </g:if>
                             </td>
                             <td>
-                                <a href="#" class="wekb-flyout-trigger" data-preset="platform,all">
-                                    <i class="${Icon.PLATFORM} la-list-icon"></i> ${message(code: 'platform.plural')}%{--: ${wekbNews.platform.count}--}%
-                                </a>
+                                <g:if test="${wekbNews.provider.countUpdated}">
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="provider,updated">${wekbNews.provider.countUpdated}</a>
+                                </g:if>
                             </td>
                             <td>
-                                <a href="#" class="wekb-flyout-trigger" data-preset="package,all">
-                                    <i class="${Icon.PACKAGE} la-list-icon"></i> ${message(code: 'package.plural')}%{--: ${wekbNews.package.count}--}%
-                                </a>
-                            </td>
-                        </tr>
-                        <tr style="border-bottom: none">
-                            <td>
-                                <a href="#" class="wekb-flyout-trigger" data-preset="provider,created">Neu: ${wekbNews.provider.created.size()}</a> <br/>
-                                <a href="#" class="wekb-flyout-trigger" data-preset="provider,updated">Geändert: ${wekbNews.provider.countUpdated}</a> <br/>
-                                <a href="#" class="wekb-flyout-trigger" data-preset="provider,deleted">Gelöscht: ${wekbNews.provider.deleted.size()}</a> <br/>
-                                <a href="#" class="wekb-flyout-trigger" data-preset="provider,my"><i class="${Icon.SIG.MY_OBJECT}"></i>${wekbNews.provider.my.size()}</a> <br/>
-                                <a href="#" class="wekb-flyout-trigger" data-preset="provider,marker"><i class="${Icon.MARKER}"></i>${wekbNews.provider.marker.size()}</a>
+                                <g:if test="${wekbNews.provider.deleted.size()}">
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="provider,deleted">${wekbNews.provider.deleted.size()}</a>
+                                </g:if>
                             </td>
                             <td>
-                                <a href="#" class="wekb-flyout-trigger" data-preset="vendor,created">Neu: ${wekbNews.vendor.created.size()}</a> <br/>
-                                <a href="#" class="wekb-flyout-trigger" data-preset="vendor,updated">Geändert: ${wekbNews.vendor.countUpdated}</a> <br/>
-                                <a href="#" class="wekb-flyout-trigger" data-preset="vendor,deleted">Gelöscht: ${wekbNews.vendor.deleted.size()}</a> <br/>
-                                <a href="#" class="wekb-flyout-trigger" data-preset="vendor,my"><i class="${Icon.SIG.MY_OBJECT}"></i>${wekbNews.vendor.my.size()}</a> <br/>
-                                <a href="#" class="wekb-flyout-trigger" data-preset="vendor,marker"><i class="${Icon.MARKER}"></i>${wekbNews.vendor.marker.size()}</a>
+                                <g:if test="${wekbNews.provider.my.size()}">
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="provider,my">${wekbNews.provider.my.size()}</a>
+                                </g:if>
                             </td>
                             <td>
-                                <a href="#" class="wekb-flyout-trigger" data-preset="platform,created">Neu: ${wekbNews.platform.created.size()}</a> <br/>
-                                <a href="#" class="wekb-flyout-trigger" data-preset="platform,updated">Geändert: ${wekbNews.platform.countUpdated}</a> <br/>
-                                <a href="#" class="wekb-flyout-trigger" data-preset="platform,deleted">Gelöscht: ${wekbNews.platform.deleted.size()}</a> <br/>
-                                <a href="#" class="wekb-flyout-trigger" data-preset="platform,my"><i class="${Icon.SIG.MY_OBJECT}"></i>${wekbNews.platform.my.size()}</a> <br/>
-                                <a href="#" class="wekb-flyout-trigger" data-preset="platform,marker"><i class="${Icon.MARKER}"></i>${wekbNews.platform.marker.size()}</a>
+                                <g:if test="${wekbNews.provider.marker.size()}">
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="provider,marker">${wekbNews.provider.marker.size()}</a>
+                                </g:if>
                             </td>
-                            <td>
-                                <a href="#" class="wekb-flyout-trigger" data-preset="package,created">Neu: ${wekbNews.package.created.size()}</a> <br/>
-                                <a href="#" class="wekb-flyout-trigger" data-preset="package,updated">Geändert: ${wekbNews.package.countUpdated}</a> <br/>
-                                <a href="#" class="wekb-flyout-trigger" data-preset="package,deleted">Gelöscht: ${wekbNews.package.deleted.size()}</a> <br/>
-                                <a href="#" class="wekb-flyout-trigger" data-preset="package,my"><i class="${Icon.SIG.MY_OBJECT}"></i>${wekbNews.package.my.size()}</a> <br/>
-                                <a href="#" class="wekb-flyout-trigger" data-preset="package,marker"><i class="${Icon.MARKER}"></i>${wekbNews.package.marker.size()}</a>
-                            </td>
-                            <td>
+                            <td rowspan="4">
                                 <div class="ui vertical secondary menu right floated">
                                     <a href="#" id="wekb-menu-trigger" class="ui item la-popup-tooltip"
                                        data-content="Alle Änderungen anzeigen" data-position="top right">
@@ -112,6 +173,160 @@
                                     </a>
                                 </div>
                             </td>
+                        </tr>
+                        <tr style="border-bottom: none">
+                            <td>
+                                <a href="#" class="wekb-flyout-trigger" data-preset="vendor,all">
+                                    <i class="${Icon.VENDOR} la-list-icon"></i> ${message(code: 'vendor.plural')}%{--: ${wekbNews.vendor.count}--}%
+                                </a>
+                            </td>
+                            <td>
+                                <g:if test="${wekbNews.vendor.created.size()}">
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="vendor,created">${wekbNews.vendor.created.size()}</a>
+                                </g:if>
+                            </td>
+                            <td>
+                                <g:if test="${wekbNews.vendor.countUpdated}">
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="vendor,updated">${wekbNews.vendor.countUpdated}</a>
+                                </g:if>
+                            </td>
+                            <td>
+                                <g:if test="${wekbNews.vendor.deleted.size()}">
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="vendor,deleted">${wekbNews.vendor.deleted.size()}</a>
+                                </g:if>
+                            </td>
+                            <td>
+                                <g:if test="${wekbNews.vendor.my.size()}">
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="vendor,my">${wekbNews.vendor.my.size()}</a>
+                                </g:if>
+                            </td>
+                            <td>
+                                <g:if test="${wekbNews.vendor.marker.size()}">
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="vendor,marker">${wekbNews.vendor.marker.size()}</a>
+                                </g:if>
+                            </td>
+                        </tr>
+                        <tr style="border-bottom: none">
+                            <td>
+                                <a href="#" class="wekb-flyout-trigger" data-preset="platform,all">
+                                    <i class="${Icon.PLATFORM} la-list-icon"></i> ${message(code: 'platform.plural')}%{--: ${wekbNews.platform.count}--}%
+                                </a>
+                            </td>
+                            <td>
+                                <g:if test="${wekbNews.platform.created.size()}">
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="platform,created">${wekbNews.platform.created.size()}</a>
+                                </g:if>
+                            </td>
+                            <td>
+                                <g:if test="${wekbNews.platform.countUpdated}">
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="platform,updated">${wekbNews.platform.countUpdated}</a>
+                                </g:if>
+                            </td>
+                            <td>
+                                <g:if test="${wekbNews.platform.deleted.size()}">
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="platform,deleted">${wekbNews.platform.deleted.size()}</a>
+                                </g:if>
+                            </td>
+                            <td>
+                                <g:if test="${wekbNews.platform.my.size()}">
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="platform,my">${wekbNews.platform.my.size()}</a>
+                                </g:if>
+                            </td>
+                            <td>
+                                <g:if test="${wekbNews.platform.marker.size()}">
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="platform,marker">${wekbNews.platform.marker.size()}</a>
+                                </g:if>
+                            </td>
+                        </tr>
+                        <tr style="border-bottom: none">
+                            <td>
+                                <a href="#" class="wekb-flyout-trigger" data-preset="package,all">
+                                    <i class="${Icon.PACKAGE} la-list-icon"></i> ${message(code: 'package.plural')}%{--: ${wekbNews.package.count}--}%
+                                </a>
+                            </td>
+                            <td>
+                                <g:if test="${wekbNews.package.created.size()}">
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="package,created">${wekbNews.package.created.size()}</a>
+                                </g:if>
+                            </td>
+                            <td>
+                                <g:if test="${wekbNews.package.countUpdated}">
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="package,updated">${wekbNews.package.countUpdated}</a>
+                                </g:if>
+                            </td>
+                            <td>
+                                <g:if test="${wekbNews.package.deleted.size()}">
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="package,deleted">${wekbNews.package.deleted.size()}</a>
+                                </g:if>
+                            </td>
+                            <td>
+                                <g:if test="${wekbNews.package.my.size()}">
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="package,my">${wekbNews.package.my.size()}</a>
+                                </g:if>
+                            </td>
+                            <td>
+                                <g:if test="${wekbNews.package.marker.size()}">
+                                    <a href="#" class="wekb-flyout-trigger" data-preset="package,marker">${wekbNews.package.marker.size()}</a>
+                                </g:if>
+                            </td>
+                        </tr>
+                        <tr style="border-bottom: none">
+%{--                        <td>--}%
+%{--                            <a href="#" class="wekb-flyout-trigger" data-preset="provider,all">--}%
+%{--                                <i class="${Icon.PROVIDER} la-list-icon"></i> ${message(code: 'provider.label')}--}%%{--: ${wekbNews.provider.count}--}%
+%{--                            </a>--}%
+%{--                            <a href="#" class="wekb-flyout-trigger" data-preset="provider,created">Neu: ${wekbNews.provider.created.size()}</a> <br/>--}%
+%{--                            <a href="#" class="wekb-flyout-trigger" data-preset="provider,updated">Geändert: ${wekbNews.provider.countUpdated}</a> <br/>--}%
+%{--                            <a href="#" class="wekb-flyout-trigger" data-preset="provider,deleted">Gelöscht: ${wekbNews.provider.deleted.size()}</a> <br/>--}%
+%{--                            <a href="#" class="wekb-flyout-trigger" data-preset="provider,my"><i class="${Icon.SIG.MY_OBJECT}"></i>${wekbNews.provider.my.size()}</a> <br/>--}%
+%{--                            <a href="#" class="wekb-flyout-trigger" data-preset="provider,marker"><i class="${Icon.MARKER}"></i>${wekbNews.provider.marker.size()}</a>--}%
+%{--                        </td>--}%
+%{--                        <td>--}%
+%{--                            <a href="#" class="wekb-flyout-trigger" data-preset="vendor,all">--}%
+%{--                                <i class="${Icon.VENDOR} la-list-icon"></i> ${message(code: 'vendor.plural')}--}%%{--: ${wekbNews.vendor.count}--}%
+%{--                            </a>--}%
+%{--                            <a href="#" class="wekb-flyout-trigger" data-preset="vendor,created">Neu: ${wekbNews.vendor.created.size()}</a> <br/>--}%
+%{--                            <a href="#" class="wekb-flyout-trigger" data-preset="vendor,updated">Geändert: ${wekbNews.vendor.countUpdated}</a> <br/>--}%
+%{--                            <a href="#" class="wekb-flyout-trigger" data-preset="vendor,deleted">Gelöscht: ${wekbNews.vendor.deleted.size()}</a> <br/>--}%
+%{--                            <a href="#" class="wekb-flyout-trigger" data-preset="vendor,my"><i class="${Icon.SIG.MY_OBJECT}"></i>${wekbNews.vendor.my.size()}</a> <br/>--}%
+%{--                            <a href="#" class="wekb-flyout-trigger" data-preset="vendor,marker"><i class="${Icon.MARKER}"></i>${wekbNews.vendor.marker.size()}</a>--}%
+%{--                        </td>--}%
+%{--                        <td>--}%
+%{--                            <a href="#" class="wekb-flyout-trigger" data-preset="platform,all">--}%
+%{--                                <i class="${Icon.PLATFORM} la-list-icon"></i> ${message(code: 'platform.plural')}--}%%{--: ${wekbNews.platform.count}--}%
+%{--                            </a>--}%
+%{--                            <a href="#" class="wekb-flyout-trigger" data-preset="platform,created">Neu: ${wekbNews.platform.created.size()}</a> <br/>--}%
+%{--                            <a href="#" class="wekb-flyout-trigger" data-preset="platform,updated">Geändert: ${wekbNews.platform.countUpdated}</a> <br/>--}%
+%{--                            <a href="#" class="wekb-flyout-trigger" data-preset="platform,deleted">Gelöscht: ${wekbNews.platform.deleted.size()}</a> <br/>--}%
+%{--                            <a href="#" class="wekb-flyout-trigger" data-preset="platform,my"><i class="${Icon.SIG.MY_OBJECT}"></i>${wekbNews.platform.my.size()}</a> <br/>--}%
+%{--                            <a href="#" class="wekb-flyout-trigger" data-preset="platform,marker"><i class="${Icon.MARKER}"></i>${wekbNews.platform.marker.size()}</a>--}%
+%{--                        </td>--}%
+%{--                        <td>--}%
+%{--                            <a href="#" class="wekb-flyout-trigger" data-preset="package,all">--}%
+%{--                                <i class="${Icon.PACKAGE} la-list-icon"></i> ${message(code: 'package.plural')}--}%%{--: ${wekbNews.package.count}--}%
+%{--                            </a>--}%
+%{--                            <a href="#" class="wekb-flyout-trigger" data-preset="package,created">Neu: ${wekbNews.package.created.size()}</a> <br/>--}%
+%{--                            <a href="#" class="wekb-flyout-trigger" data-preset="package,updated">Geändert: ${wekbNews.package.countUpdated}</a> <br/>--}%
+%{--                            <a href="#" class="wekb-flyout-trigger" data-preset="package,deleted">Gelöscht: ${wekbNews.package.deleted.size()}</a> <br/>--}%
+%{--                            <a href="#" class="wekb-flyout-trigger" data-preset="package,my"><i class="${Icon.SIG.MY_OBJECT}"></i>${wekbNews.package.my.size()}</a> <br/>--}%
+%{--                            <a href="#" class="wekb-flyout-trigger" data-preset="package,marker"><i class="${Icon.MARKER}"></i>${wekbNews.package.marker.size()}</a>--}%
+%{--                        </td>--}%
+%{--                            <td>--}%
+%{--                                <div class="ui vertical secondary menu right floated">--}%
+%{--                                    <a href="#" id="wekb-menu-trigger" class="ui item la-popup-tooltip"--}%
+%{--                                       data-content="Alle Änderungen anzeigen" data-position="top right">--}%
+%{--                                        <i class="${Icon.WEKB} blue"></i> We:kb-News--}%
+%{--                                    </a>--}%
+%{--                                    <a href="#" class="ui icon item la-popup-tooltip wekb-flyout-trigger" data-preset="all,my"--}%
+%{--                                       data-content="${message(code: 'menu.my')}" data-position="top right">--}%
+%{--                                        <i class="${Icon.SIG.MY_OBJECT} yellow"></i> ${wekbNews.counts.my}--}%
+%{--                                    </a>--}%
+%{--                                    <a href="#" class="ui icon item la-popup-tooltip wekb-flyout-trigger" data-preset="all,marker"--}%
+%{--                                       data-content="${message(code: 'marker.label')}" data-position="top right">--}%
+%{--                                        <i class="${Icon.MARKER} purple"></i> ${wekbNews.counts.marker}--}%
+%{--                                    </a>--}%
+%{--                                </div>--}%
+%{--                            </td>--}%
                         </tr>
                         </tbody>
                     </table>
