@@ -10,10 +10,12 @@
 
         <laser:render template="/templates/system/messages" model="${[type: SystemMessage.TYPE_DASHBOARD]}"/>
 
-        <div class="ui equal width grid la-clear-before" style="margin:1em 0;">
-            <div class="row">
+    <div class="ui fluid card">
+        <div class="content" style="padding-bottom: 0">
+            <div class="ui four column relaxed divided grid">
+
                 <div class="column">
-                    <div class="ui divided relaxed list">
+                    <div class="ui relaxed list">
                         <div class="item">
                             <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                             <div class="content">
@@ -35,7 +37,7 @@
                     </div>
                 </div>
                 <div class="column">
-                    <div class="ui divided relaxed list">
+                    <div class="ui relaxed list">
                         <div class="item">
                             <i class="${Icon.TASK} la-list-icon"></i>
                             <div class="content">
@@ -57,7 +59,7 @@
                     </div>
                 </div>
                 <div class="column">
-                    <div class="ui divided relaxed list">
+                    <div class="ui relaxed list">
                         <div class="item">
                             <i class="${Icon.ORG} la-list-icon"></i>
                             <div class="content">
@@ -79,7 +81,7 @@
                     </div>
                 </div>
                 <div class="column">
-                    <div class="ui divided relaxed list">
+                    <div class="ui relaxed list">
                         <div class="item">
                             <i class="${Icon.ORG} la-list-icon"></i>
                             <div class="content">
@@ -100,8 +102,10 @@
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
+    </div>
 
         <style>
             .list .item .content .disabled { color:lightgrey }
@@ -119,7 +123,8 @@
             break
         }
     %>
-    <div class="ui secondary stackable pointing tabular la-tab-with-js menu">
+%{--    <div class="ui secondary stackable pointing tabular la-tab-with-js menu">--}%
+    <div class="ui tabular la-tab-with-js top attached small menu">
         <a class="${us_dashboard_tab.value == 'Due Dates' ? 'active item':'item'}" data-tab="duedates">
             <i class="${Icon.DUE_DATE} large"></i>
             ${dueDatesCount} ${message(code:'myinst.dash.due_dates.label')}
@@ -143,13 +148,13 @@
         </g:if>
 
     </div><!-- secondary -->
-        <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Due Dates' ? 'active':''}" data-tab="duedates">
+        <div class="ui bottom attached segment tab ${us_dashboard_tab.value == 'Due Dates' ? 'active':''}" data-tab="duedates">
             <div>
                 <laser:render template="/user/dueDatesView" model="[user: user, dueDates: dueDates, dueDatesCount: dueDatesCount]"/>
             </div>
         </div>
 
-        <div class="ui bottom attached tab ${us_dashboard_tab.value =='Announcements' ? 'active':''}" data-tab="news">
+        <div class="ui bottom attached segment tab ${us_dashboard_tab.value =='Announcements' ? 'active':''}" data-tab="news">
 
             <g:message code="profile.dashboardSysAnnTimeWindow"
                        args="${user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)}" />
@@ -188,7 +193,7 @@
             </g:if>
         </div>
 
-        <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Tasks' ? 'active':''}" data-tab="tasks">
+        <div class="ui bottom attached segment tab ${us_dashboard_tab.value == 'Tasks' ? 'active':''}" data-tab="tasks">
 
             <div class="ui cards">
                 <g:each in="${tasks}" var="tsk">
@@ -200,7 +205,7 @@
         <g:if test="${workflowService.hasREAD()}"><!-- TODO: workflows-permissions -->
             <div id="wfFlyout" class="ui eight wide flyout"></div>
 
-            <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Workflows' ? 'active':''}" data-tab="workflows">
+            <div class="ui bottom attached segment tab ${us_dashboard_tab.value == 'Workflows' ? 'active':''}" data-tab="workflows">
 
                 <g:if test="${allChecklists}">
                     <g:if test="${allChecklistsCount > user.getPageSizeOrDefault()}">

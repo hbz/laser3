@@ -173,7 +173,7 @@ class UiTagLib {
                 }
             }
             if (!phraseCheck) {
-                log.warn 'INVALID USAGE: <ui:msg/> only accepts phrasing content'
+                log.warn 'INVALID USAGE: <ui:msg/> only accepts phrasing content -> ' + content
             }
         }
         out << ' </p>'
