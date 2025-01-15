@@ -2689,7 +2689,7 @@ class SubscriptionService {
 
             ArrayList<String> rows = stream.text.split('\n')
             //read off first line of KBART file
-            titleRow = rows.remove(0).split('\t')
+            titleRow = rows.size() > 0 ? rows[0].split('\t') : []
             titleRow.eachWithIndex { headerCol, int c ->
                 switch (headerCol.toLowerCase().trim()) {
                     case "zdb_id": zdbCol = c
