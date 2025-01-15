@@ -133,7 +133,7 @@ dependencies {
 
     runtimeOnly 'org.apache.tomcat:tomcat-jdbc'
     runtimeOnly 'org.graalvm.sdk:graal-sdk:22.0.0.2'                        // + com.bertramlabs.plugins:asset-pipeline-core [freeze]
-    runtimeOnly 'org.postgresql:postgresql:42.7.4'                          // 2024
+    runtimeOnly 'org.postgresql:postgresql:42.7.5'                          // 2025
 }
 
 java {
