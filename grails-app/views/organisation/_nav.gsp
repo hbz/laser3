@@ -16,7 +16,7 @@
         Map<String, Object> breadcrumbParams = [id: orgInstance.id]
     %>
 
-    <g:if test="${orgInstance.isInfoAccessibleFor(contextService.getOrg())}">
+    <g:if test="${orgInstance.isInfoAccessible()}">
 %{--            <ui:subNavItem controller="organisation" action="info" params="${breadcrumbParams}" message="org.nav.info"/>--}%
         <g:link controller="org" action="info" params="${breadcrumbParams}" class="item ${actionName == 'info' ? 'active' : ''}" role="tab"><i class="${Icon.DATA_DASHBOARD} circular" style="margin:0"></i></g:link>
     </g:if>

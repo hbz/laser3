@@ -26,25 +26,18 @@
         </div>
         <div class="content">
             <div class="ui grid">
-                <div class="two wide column"></div>
-                <div class="twelve wide column">
+                <div class="one wide column"></div>
+                <div class="fourteen wide column">
                     <div class="chartWrapper" id="cw-subscription"></div>
                 </div>
-                <div class="two wide column"></div>
+                <div class="one wide column"></div>
             </div><!-- .grid -->
         </div>
         <div class="extra content">
             <div class="right floated">
-                <g:if test="${contextService.getOrg().isCustomerType_Basic()}">
-                    <div class="disabled">
-                        ${message(code:'tooltip.onlyFullMembership')}: Daten-Dashboard <i class="${Icon.DATA_DASHBOARD} circular"></i>
-                    </div>
-                </g:if>
-                <g:else>
-                    <g:link controller="organisation" action="info" id="${contextService.getOrg().id}">
-                        Daten-Dashboard öffnen <i class="${Icon.DATA_DASHBOARD} circular"></i>
-                    </g:link>
-                </g:else>
+                <g:link controller="organisation" action="info" id="${contextService.getOrg().id}">
+                    Daten-Dashboard öffnen <i class="${Icon.DATA_DASHBOARD} circular"></i>
+                </g:link>
             </div>
         </div>
     </div>

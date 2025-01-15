@@ -815,9 +815,9 @@ class OrganisationController  {
     }
 
     @UnstableFeature
-    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
+    @DebugInfo(isInstUser = [])
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_PRO )
+        ctx.contextService.isInstUser()
     })
     @Check404(domain=Org)
     def info() {
@@ -832,7 +832,7 @@ class OrganisationController  {
         Org ctxOrg = contextService.getOrg()
         Org org    = result.orgInstance as Org
 
-        if (! org.isInfoAccessibleFor(ctxOrg)) {
+        if (! org.isInfoAccessible()) {
             response.sendError(401); return
         }
         else if (ctxOrg.isCustomerType_Consortium() && org.isCustomerType_Inst()) {
