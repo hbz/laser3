@@ -217,10 +217,10 @@
     let startDate;
     <g:if test="${subscription.startDate}">
         let start = new Date(<g:formatDate date="${subscription.startDate}" format="yyyy, M, d"/>, 0, 0, 0, 0);
-                start.setMonth(start.getMonth()-1); //correction because month is 0-based
-                if(start.getTime() < currDate.getTime())
-                    currDate = start;
-                startDate = '<g:formatDate date="${subscription.startDate}" format="yyyy-MM"/>';
+        start.setMonth(start.getMonth()-1); //correction because month is 0-based
+        if(start.getTime() < currDate.getTime())
+            currDate = start;
+        startDate = '<g:formatDate date="${subscription.startDate}" format="yyyy-MM"/>';
     </g:if>
     <g:else>
         let start = new Date(limit.getFullYear()-1, 0, 1, 0, 0, 0, 0);
@@ -260,6 +260,12 @@
             endIndex = monthIndex;
         currDate.setMonth(currDate.getMonth()+1);
         monthIndex++;
+    }
+    if(startIndex === endIndex)
+        startIndex -= 3;
+    if(startIndex < 0) {
+        startIndex = 0;
+        endIndex = 3;
     }
     $("#selDate").slider({
         min: 0,
