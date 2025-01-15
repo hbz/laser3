@@ -404,7 +404,7 @@
                 <g:if test="${entitlements}">
                     <div class="ui fluid card">
                         <div class="content">
-                            <div class="ui accordion la-accordion-showMore">
+                            <div class="ui accordion la-accordion-showMore la-js-showMoreCloseArea">
                                 <g:each in="${entitlements}" var="ie">
                                     <div class="ui raised segments la-accordion-segments">
                                         <div class="ui fluid segment title" data-ajaxTippId="${ie.tipp.id}" data-ajaxIeId="${ie ? ie.id : null}">
