@@ -2933,7 +2933,7 @@ class SubscriptionService {
                         identifier: UUID.randomUUID())
                 sub.startDate = entry.startDate ? databaseDateFormatParser.parse(entry.startDate) : null
                 sub.endDate = entry.endDate ? databaseDateFormatParser.parse(entry.endDate) : null
-                sub.referenceYear = entry.referenceYear ? new Year(entry.referenceYear.value) : null
+                sub.referenceYear = entry.referenceYear ? Year.parse(entry.referenceYear.value) : null
                 sub.manualCancellationDate = entry.manualCancellationDate ? databaseDateFormatParser.parse(entry.manualCancellationDate) : null
                 sub.isAutomaticRenewAnnually = entry.isAutomaticRenewAnnually ?: false
                 /* TODO [ticket=2276]

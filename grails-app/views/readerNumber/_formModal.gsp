@@ -5,19 +5,19 @@
     Date startOfYear = DateUtils.getSDF_yyyyMMdd().parse(Calendar.getInstance().get(Calendar.YEAR)+'-01-01')
     Set<RefdataValue> preloadGroups
     switch(formId) {
-        case 'newForUni': preloadGroups = [RDStore.READER_NUMBER_STUDENTS, RDStore.READER_NUMBER_SCIENTIFIC_STAFF, RDStore.READER_NUMBER_FTE]
+        case 'newForUni': preloadGroups = [RDStore.READER_NUMBER_STUDENTS, RDStore.READER_NUMBER_FTE]
             break
         case 'newForPublic': preloadGroups = [RDStore.READER_NUMBER_PEOPLE]
             break
         case 'newForState': preloadGroups = [RDStore.READER_NUMBER_USER]
             break
-        case 'newForResearchInstitute': preloadGroups = [RDStore.READER_NUMBER_FTE]
+        case 'newForResearchInstitute': preloadGroups = [RDStore.READER_NUMBER_FTE, RDStore.READER_NUMBER_FTE_TOTAL, RDStore.READER_NUMBER_USER]
             break
         case 'newForScientificLibrary': preloadGroups = [RDStore.READER_NUMBER_FTE, RDStore.READER_NUMBER_USER]
             break
     }
     if(formId.contains("newForSemester"))
-        preloadGroups = [RDStore.READER_NUMBER_STUDENTS, RDStore.READER_NUMBER_SCIENTIFIC_STAFF, RDStore.READER_NUMBER_FTE]
+        preloadGroups = [RDStore.READER_NUMBER_STUDENTS, RDStore.READER_NUMBER_FTE_TOTAL, RDStore.READER_NUMBER_FTE]
     List<Map<String,Object>> referenceGroups = []
     if(preloadGroups) {
         preloadGroups.each { RefdataValue group ->
@@ -52,9 +52,9 @@
                                       optionKey="id" optionValue="value" required=""
                                       value="${semester}"/>
                     </g:if>
-                    <g:elseif test="${withDueDate}">
-                        <ui:datepicker label="readerNumber.dueDate.label" id="dueDate" name="dueDate"
-                                          placeholder="default.date.label" value="${numbersInstance?.dueDate ?: sdf.format(startOfYear)}" required=""
+                    <g:elseif test="${withYear}">
+                        <ui:datepicker type="year" label="readerNumber.year.label" id="year" name="year"
+                                          placeholder="default.date.label" value="${numbersInstance?.year}" required=""
                                           bean="${numbersInstance}"/>
                     </g:elseif>
                 </div>
@@ -86,13 +86,12 @@
                             }
                         ]
                     },
-                    dueDate: {
-                        identifier : 'dueDate',
+                    year: {
+                        identifier : 'year',
                         rules: [
                             {
-                                type : 'regExp',
-                                value: /\d{2}\.\d{2}\.\d{4}/,
-                                prompt: '<g:message code="validation.validDate"/>'
+                                type : 'empty',
+                                prompt: '{name} <g:message code="validation.needsToBeFilledOut"/>'
                             }
                         ]
                     },

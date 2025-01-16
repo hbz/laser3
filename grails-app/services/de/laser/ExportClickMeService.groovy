@@ -4,9 +4,7 @@ import de.laser.addressbook.Address
 import de.laser.addressbook.Contact
 import de.laser.addressbook.Person
 import de.laser.addressbook.PersonRole
-import de.laser.base.AbstractCoverage
 import de.laser.finance.CostItem
-import de.laser.finance.PriceItem
 import de.laser.properties.LicenseProperty
 import de.laser.properties.ProviderProperty
 import de.laser.properties.VendorProperty
@@ -39,17 +37,13 @@ import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.GroovyRowResult
-import groovy.sql.Sql
 import groovy.xml.XmlSlurper
 import groovy.xml.slurpersupport.GPathResult
 import org.grails.web.util.WebUtils
 import org.springframework.context.MessageSource
-import org.hibernate.Session
 import org.xml.sax.SAXException
 
 import java.math.RoundingMode
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.Year
@@ -7007,30 +7001,32 @@ class ExportClickMeService {
                 ReaderNumber readerNumberStudents
                 ReaderNumber readerNumberStaff
                 ReaderNumber readerNumberFTE
-                ReaderNumber readerNumberStaffWithDueDate
-                ReaderNumber readerNumberFTEWithDueDate
-                List dueDateCheck = ReaderNumber.executeQuery('select rn.dueDate from ReaderNumber rn where rn.org = :org and rn.dueDate != null order by rn.dueDate desc', [org: org])
-                if(dueDateCheck) {
-                    Date newestDueDate = (Date) dueDateCheck[0]
-                    readerNumberPeople = ReaderNumber.findByReferenceGroupAndOrgAndDueDate(RDStore.READER_NUMBER_PEOPLE, org, newestDueDate)
-                    readerNumberUser = ReaderNumber.findByReferenceGroupAndOrgAndDueDate(RDStore.READER_NUMBER_USER, org, newestDueDate)
-                    readerNumberStaffWithDueDate = ReaderNumber.findByReferenceGroupAndOrgAndDueDateIsNotNullAndDueDate(RDStore.READER_NUMBER_SCIENTIFIC_STAFF, org, newestDueDate)
-                    readerNumberFTEWithDueDate = ReaderNumber.findByReferenceGroupAndOrgAndDueDateIsNotNullAndDueDate(RDStore.READER_NUMBER_FTE, org, newestDueDate)
+                ReaderNumber readerNumberTotalWithYear
+                ReaderNumber readerNumberFTEWithYear
+                List yearCheck = ReaderNumber.executeQuery('select rn.year from ReaderNumber rn where rn.org = :org and rn.year != null order by rn.year desc', [org: org])
+                if(yearCheck) {
+                    Year newestYear = (Year) yearCheck[0]
+                    readerNumberPeople = ReaderNumber.findByReferenceGroupAndOrgAndYear(RDStore.READER_NUMBER_PEOPLE, org, newestYear)
+                    readerNumberUser = ReaderNumber.findByReferenceGroupAndOrgAndYear(RDStore.READER_NUMBER_USER, org, newestYear)
+                    readerNumberTotalWithYear = ReaderNumber.findByReferenceGroupAndOrgAndYear(RDStore.READER_NUMBER_FTE_TOTAL, org, newestYear)
+                    readerNumberFTEWithYear = ReaderNumber.findByReferenceGroupAndOrgAndYear(RDStore.READER_NUMBER_FTE, org, newestYear)
 
-                    if(readerNumberStaffWithDueDate || readerNumberFTEWithDueDate){
+                    if(readerNumberTotalWithYear || readerNumberFTEWithYear){
                         row.add(createTableCell(format, ' '))
-                        row.add(createTableCell(format, DateUtils.getLocalizedSDF_noTime(LocaleUtils.getCurrentLocale()).format(newestDueDate)))
+                        row.add(createTableCell(format, newestYear.value))
                         row.add(createTableCell(format, ' '))
-                        if(readerNumberStaffWithDueDate)
-                            row.add(createTableCell(format, readerNumberStaffWithDueDate.value))
+                        row.add(createTableCell(format, ' '))
+                        if(readerNumberTotalWithYear)
+                            row.add(createTableCell(format, readerNumberTotalWithYear.value))
                         else row.add(createTableCell(format, ' '))
-                        if(readerNumberFTEWithDueDate)
-                            row.add(createTableCell(format, readerNumberFTEWithDueDate.value))
+                        if(readerNumberFTEWithYear)
+                            row.add(createTableCell(format, readerNumberFTEWithYear.value))
                         else row.add(createTableCell(format, ' '))
                     }
                     else if(readerNumberPeople || readerNumberUser){
                         row.add(createTableCell(format, ' '))
-                        row.add(createTableCell(format, DateUtils.getLocalizedSDF_noTime(LocaleUtils.getCurrentLocale()).format(newestDueDate)))
+                        row.add(createTableCell(format, newestYear.value))
+                        row.add(createTableCell(format, ' '))
                         row.add(createTableCell(format, ' '))
                         row.add(createTableCell(format, ' '))
                         row.add(createTableCell(format, ' '))
@@ -7051,6 +7047,7 @@ class ExportClickMeService {
                         fteStr = readerNumberFTE ? readerNumberFTE.value : null
                         row.add(createTableCell(format, studentsStr))
                         row.add(createTableCell(format, staffStr))
+                        row.add(createTableCell(format, null))
                         row.add(createTableCell(format, fteStr))
                     }else{
                         boolean nextSemester = false
@@ -7068,18 +7065,18 @@ class ExportClickMeService {
                                     BigDecimal studentsStr = readerNumberStudents ? readerNumberStudents.value : null,
                                            staffStr = readerNumberStaff ? readerNumberStaff.value : null,
                                            fteStr = readerNumberFTE ? readerNumberFTE.value : null
-                                    BigDecimal studentsFTEStr = studentsStr && fteStr ? studentsStr+fteStr : null
-                                    BigDecimal studentsStaffStr = studentsStr && staffStr ? studentsStr+staffStr : null
                                     row.add(createTableCell(format, refdataValueList[count].getI10n('value')))
                                     row.add(createTableCell(format, ' '))
                                     row.add(createTableCell(format, studentsStr))
                                     row.add(createTableCell(format, staffStr))
+                                    row.add(createTableCell(format, null))
                                     row.add(createTableCell(format, fteStr))
                                     break
                                 }
                             }
                         }
                         if(!readerNumberStudents && !readerNumberStaff && !readerNumberFTE){
+                            row.add(createTableCell(format, null))
                             row.add(createTableCell(format, null))
                             row.add(createTableCell(format, null))
                             row.add(createTableCell(format, null))
@@ -7116,27 +7113,26 @@ class ExportClickMeService {
                     sum = sum + (readerNumberUser.value != null ? readerNumberUser.value : 0)
                 }
 
-                if(readerNumberStaffWithDueDate){
-                    sum = sum + (readerNumberStaffWithDueDate.value != null ? readerNumberStaffWithDueDate.value : 0)
-                    sumStudHeads += (readerNumberStaffWithDueDate.value != null ? readerNumberStaffWithDueDate.value : 0)
-                }
-                if(readerNumberFTEWithDueDate){
-                    sum = sum + (readerNumberFTEWithDueDate.value != null ? readerNumberFTEWithDueDate.value : 0)
-                    sumStudFTE += (readerNumberFTEWithDueDate.value != null ? readerNumberFTEWithDueDate.value : 0)
+                if(readerNumberFTEWithYear){
+                    sum = sum + (readerNumberFTEWithYear.value != null ? readerNumberFTEWithYear.value : 0)
+                    sumStudFTE += (readerNumberFTEWithYear.value != null ? readerNumberFTEWithYear.value : 0)
                 }
 
                 row.add(createTableCell(format, sumStudFTE))
                 row.add(createTableCell(format, sumStudHeads))
-                if((readerNumberFTE?.value || readerNumberFTEWithDueDate?.value) && (readerNumberStaff?.value || readerNumberStaffWithDueDate?.value))
+                if((readerNumberFTE?.value || readerNumberFTEWithYear?.value) && (readerNumberStaff?.value || readerNumberTotalWithYear?.value))
                     row.add(createTableCell(format, ' '))
                 else
                     row.add(createTableCell(format, sum))
 
-                String note = readerNumberStudents ? readerNumberStudents.dateGroupNote : (readerNumberPeople ? readerNumberPeople.dateGroupNote : (readerNumberUser ? readerNumberUser.dateGroupNote : (readerNumberStaffWithDueDate ? readerNumberStaffWithDueDate.dateGroupNote : (readerNumberFTEWithDueDate ? readerNumberFTEWithDueDate.dateGroupNote : ''))))
+                String note = readerNumberStudents ? readerNumberStudents.dateGroupNote : (readerNumberPeople ? readerNumberPeople.dateGroupNote : (readerNumberUser ? readerNumberUser.dateGroupNote : (readerNumberTotalWithYear ? readerNumberTotalWithYear.dateGroupNote : (readerNumberFTEWithYear ? readerNumberFTEWithYear.dateGroupNote : ''))))
 
                 row.add(createTableCell(format, note))
 
             } else {
+                row.add(createTableCell(format, ' '))
+                row.add(createTableCell(format, ' '))
+                row.add(createTableCell(format, ' '))
                 row.add(createTableCell(format, ' '))
                 row.add(createTableCell(format, ' '))
                 row.add(createTableCell(format, ' '))
@@ -7486,9 +7482,10 @@ class ExportClickMeService {
                 }*/
                 else if (fieldKey == 'participant.readerNumbers') {
                     titles.add(createTableCell(format,  messageSource.getMessage('readerNumber.semester.label', null, locale)))
-                    titles.add(createTableCell(format,  messageSource.getMessage('readerNumber.dueDate.label', null, locale)))
+                    titles.add(createTableCell(format,  messageSource.getMessage('readerNumber.year.label', null, locale)))
                     titles.add(createTableCell(format,  RDStore.READER_NUMBER_STUDENTS."${localizedValue}"))
                     titles.add(createTableCell(format,  RDStore.READER_NUMBER_SCIENTIFIC_STAFF."${localizedValue}"))
+                    titles.add(createTableCell(format,  RDStore.READER_NUMBER_FTE_TOTAL."${localizedValue}"))
                     titles.add(createTableCell(format,  RDStore.READER_NUMBER_FTE."${localizedValue}"))
                     titles.add(createTableCell(format,  RDStore.READER_NUMBER_USER."${localizedValue}"))
                     titles.add(createTableCell(format,  RDStore.READER_NUMBER_PEOPLE."${localizedValue}"))

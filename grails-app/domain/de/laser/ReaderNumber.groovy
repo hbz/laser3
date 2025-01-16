@@ -6,6 +6,7 @@ import de.laser.utils.DateUtils
 import groovy.util.logging.Slf4j
 
 import java.text.SimpleDateFormat
+import java.time.Year
 
 /**
  * Represents a registered reader count entry for a library. It may be grouped by a reference group and a temporal entity: one of semester or due date.
@@ -22,7 +23,10 @@ class ReaderNumber {
     BigDecimal value
     @RefdataInfo(cat = RDConstants.SEMESTER)
     RefdataValue semester
+    //direct conversion via SQL is not possible because java.time.Year is stored by GORM as bytea
+    @Deprecated
     Date dueDate
+    Year year
 
     Date dateCreated
     Date lastUpdated
@@ -33,13 +37,14 @@ class ReaderNumber {
         dateGroupNote(nullable: true, blank: false)
         value(nullable: true)
         semester(nullable: true, validator: { RefdataValue val, ReaderNumber obj ->
-            if (obj.dueDate && obj.semester) {
-                return ['no simultaneous due date and semester']
+            if (obj.year && obj.semester) {
+                return ['no simultaneous year and semester']
             }
         })
-        dueDate(nullable: true, validator: { Date val, ReaderNumber obj ->
-            if (obj.semester && obj.dueDate) {
-                return ['no simultaneous due date and semester']
+        dueDate(nullable: true) //deprecated and to be removed; cannot be removed because of impossible direct conversion via SQL
+        year(nullable: true, validator: { Year val, ReaderNumber obj ->
+            if (obj.semester && obj.year) {
+                return ['no simultaneous year and semester']
             }
         })
     }
@@ -52,7 +57,8 @@ class ReaderNumber {
         dateGroupNote   column:'num_date_group_note', type: 'text'
         value           column:'num_value'
         semester        column:'num_semester_rv_fk'
-        dueDate         column:'num_due_date'
+        dueDate         column:'num_due_date' //deprecated and to be removed; cannot be removed because of impossible direct conversion via SQL
+        year            column:'num_year'
 
         lastUpdated     column:'num_last_updated'
         dateCreated     column:'num_date_created'
@@ -61,22 +67,21 @@ class ReaderNumber {
 
     /**
      * Constructor method to build a reader number record with defined configuration parameters.
-     * It updates a given record, matching by reference group and temporal unit (one of {@link #dueDate} or {@link #semester}) or creates a new one, if it does not exist
+     * It updates a given record, matching by reference group and temporal unit (one of {@link #year} or {@link #semester}) or creates a new one, if it does not exist
      * @param configMap the {@link Map} containing the record arguments
      * @return the new reader number record
      */
     static ReaderNumber construct(Map configMap) {
         Map<String, Object> rnData = [:]
-        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         rnData.org = Org.get(configMap.orgid)
         rnData.referenceGroup = RefdataValue.get(configMap.referenceGroup)
         ReaderNumber readerNumber
-        if (configMap.dueDate)
-            rnData.dueDate = sdf.parse(configMap.dueDate)
+        if (configMap.year)
+            rnData.year = Year.parse(configMap.year)
         else if (configMap.semester)
             rnData.semester = RefdataValue.get(configMap.semester)
-        if(rnData.containsKey('dueDate'))
-            readerNumber = ReaderNumber.findByOrgAndReferenceGroupAndDueDate(rnData.org, rnData.referenceGroup, rnData.dueDate)
+        if(rnData.containsKey('year'))
+            readerNumber = ReaderNumber.findByOrgAndReferenceGroupAndYear(rnData.org, rnData.referenceGroup, rnData.year)
         else if(rnData.containsKey('semester'))
             readerNumber = ReaderNumber.findByOrgAndReferenceGroupAndSemester(rnData.org, rnData.referenceGroup, rnData.semester)
         if(!readerNumber)

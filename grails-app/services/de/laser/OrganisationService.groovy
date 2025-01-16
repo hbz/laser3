@@ -212,7 +212,7 @@ class OrganisationService {
     /**
      * Helper method to group reader numbers by their key property which is a temporal unit
      * @param readerNumbers the {@link List} of {@link ReaderNumber}s to group
-     * @param keyProp may be a dueDate or semester; a temporal unit to group the reader numbers by
+     * @param keyProp may be a year or semester; a temporal unit to group the reader numbers by
      * @return the {@link Map} with the grouped result entries
      */
     Map<String,Map<String,ReaderNumber>> groupReaderNumbersByProperty(List<ReaderNumber> readerNumbers,String keyProp) {

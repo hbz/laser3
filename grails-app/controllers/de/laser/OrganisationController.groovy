@@ -1491,10 +1491,10 @@ class OrganisationController  {
         }
 
         Map<String,Map<String,ReaderNumber>> numbersWithSemester = organisationService.groupReaderNumbersByProperty(ReaderNumber.findAllByOrgAndSemesterIsNotNull((Org) result.orgInstance,[sort:params.sortA,order:params.orderA]),"semester")
-        Map<String,Map<String,ReaderNumber>> numbersWithDueDate = organisationService.groupReaderNumbersByProperty(ReaderNumber.findAllByOrgAndDueDateIsNotNull((Org) result.orgInstance,[sort:params.sortB,order:params.orderB]),"dueDate")
+        Map<String,Map<String,ReaderNumber>> numbersWithYear = organisationService.groupReaderNumbersByProperty(ReaderNumber.findAllByOrgAndYearIsNotNull((Org) result.orgInstance,[sort:params.sortB,order:params.orderB]),"year")
 
-        TreeSet<String> semesterCols = [], dueDateCols = []
-        Map<String,BigDecimal> dueDateSums = [:]
+        TreeSet<String> semesterCols = [], yearCols = []
+        Map<String,BigDecimal> yearSums = [:]
         Map<String,Map<String,BigDecimal>> semesterSums = [:]
         numbersWithSemester.each { Map.Entry<String,Map<String,ReaderNumber>> semesters ->
             semesters.value.each { Map.Entry<String,ReaderNumber> row ->
@@ -1514,27 +1514,27 @@ class OrganisationController  {
                 semesterSums.put(semesters.key,semesterSumRow)
             }
         }
-        numbersWithDueDate.each { Map.Entry<String,Map<String,ReaderNumber>> dueDates ->
-            dueDates.value.each { Map.Entry<String,ReaderNumber> row ->
-                dueDateCols << row.key
+        numbersWithYear.each { Map.Entry<String,Map<String,ReaderNumber>> years ->
+            years.value.each { Map.Entry<String,ReaderNumber> row ->
+                yearCols << row.key
                 ReaderNumber rn = row.value
-                BigDecimal dueDateSum = dueDateSums.get(dueDates.key)
+                BigDecimal yearSum = yearSums.get(years.key)
                 if(rn.value) {
-                    if(dueDateSum == null) {
-                        dueDateSum = rn.value
+                    if(yearSum == null) {
+                        yearSum = rn.value
                     }
-                    else dueDateSum += rn.value
+                    else yearSum += rn.value
                 }
-                dueDateSums.put(dueDates.key,dueDateSum)
+                yearSums.put(years.key,yearSum)
             }
         }
 
         result.numbersWithSemester = numbersWithSemester
-        result.numbersWithDueDate = numbersWithDueDate
+        result.numbersWithYear = numbersWithYear
         result.semesterCols = semesterCols
         result.semesterSums = semesterSums
-        result.dueDateCols = dueDateCols
-        result.dueDateSums = dueDateSums
+        result.yearCols = yearCols
+        result.yearSums = yearSums
 
         result
     }
