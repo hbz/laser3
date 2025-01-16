@@ -23,7 +23,7 @@
         </g:if>
     </ui:controlButtons>
 
-    <ui:h1HeaderWithIcon message="menu.public.all_insts" total="${consortiaMemberTotal}" floated="true" />
+    <ui:h1HeaderWithIcon message="menu.public.all_insts" total="${consortiaMemberTotal}" floated="true" type="institution" />
 
     <ui:messages data="${flash}" />
 

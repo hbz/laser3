@@ -6,7 +6,7 @@
             <ui:crumb text="${message(code:'menu.institutions.dash')}" class="active" />
         </ui:breadcrumbs>
 
-        <ui:h1HeaderWithIcon text="${contextService.getOrg().name}" />
+        <ui:h1HeaderWithIcon text="${contextService.getOrg().name}" type="${contextService.getOrg().getCustomerType()}"/>
 
         <laser:render template="/templates/system/messages" model="${[type: SystemMessage.TYPE_DASHBOARD]}"/>
 

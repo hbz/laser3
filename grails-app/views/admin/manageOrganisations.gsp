@@ -201,7 +201,7 @@
                                 data-orgName="${org.name}"
                                 data-ui="modal"
                                 data-href="#customerTypeModal"
-                                data-content="Kundentyp ändern" data-position="top left"><i class="user tie icon"></i></button>
+                                data-content="Kundentyp ändern" data-position="top left"><i class="trophy icon"></i></button>
 
                         <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}"
                                 data-alTarget="${org.id}"

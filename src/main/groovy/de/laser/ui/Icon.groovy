@@ -78,13 +78,17 @@ class Icon {
         public static String INST_ADM       = 'user shield icon'
 
         @UIDoc(usage = 'Only for Customer Type: Institution Basic (COLORED)')
-        public static String ORG_INST_BASIC         = 'user circle icon grey'
+        public static String ORG_INST_BASIC         = 'walking icon grey'
         @UIDoc(usage = 'Only for Customer Type: Institution Pro (COLORED)')
-        public static String ORG_INST_PRO           = 'trophy icon grey'
+        public static String ORG_INST_PRO           = 'walking icon teal'
         @UIDoc(usage = 'Only for Customer Type: Consortium Basic (COLORED)')
-        public static String ORG_CONSORTIUM_BASIC   = 'user circle icon teal'
+        public static String ORG_CONSORTIUM_BASIC   = 'landmark icon grey'
         @UIDoc(usage = 'Only for Customer Type: Consortium Pro (COLORED)')
-        public static String ORG_CONSORTIUM_PRO     = 'trophy icon teal'
+        public static String ORG_CONSORTIUM_PRO     = 'landmark icon teal'
+        @UIDoc(usage = 'Only for Customer Type: Basic (COLORED)')
+        public static String ORG_BASIC              = 'trophy icon grey'
+        @UIDoc(usage = 'Only for Customer Type: Pro (COLORED)')
+        public static String ORG_PRO                = 'trophy icon teal'
         @UIDoc(usage = 'Only for Customer Type: Support (COLORED)')
         public static String ORG_SUPPORT            = 'theater masks icon red'
 

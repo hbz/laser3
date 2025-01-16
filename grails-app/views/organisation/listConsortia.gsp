@@ -46,7 +46,7 @@
         </ui:exportDropdown>
     </ui:controlButtons>
 
-    <ui:h1HeaderWithIcon message="menu.public.all_cons" total="${consortiaTotal}" floated="true" />
+    <ui:h1HeaderWithIcon message="menu.public.all_cons" total="${consortiaTotal}" floated="true" type="consortium" />
 
     <ui:messages data="${flash}" />
 
