@@ -477,6 +477,7 @@ class VendorService {
 
         result.vendorListTotal = vendorsTotal.size()
         result.vendorList = vendorsTotal.drop(result.offset).take(result.max)
+        result.vendorTotal = vendorsTotal
         result
 
     }
