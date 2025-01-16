@@ -10,7 +10,7 @@
 
         <laser:render template="/templates/system/messages" model="${[type: SystemMessage.TYPE_DASHBOARD]}"/>
 
-        <laser:render template="/myInstitution/topmenu2" />
+        <laser:render template="/myInstitution/topmenu" />
 
         <ui:messages data="${flash}" />
 
@@ -38,47 +38,47 @@
             break
         }
     %>
-%{--    <div class="ui secondary stackable pointing tabular la-tab-with-js menu">--}%
+
     <div class="ui tabular la-tab-with-js top attached small menu">
+        <a class="${us_dashboard_tab.value == 'Announcements' ? 'active item':'item'}" data-tab="news" id="jsFallbackAnnouncements">
+            %{--            <i class="${Icon.ANNOUNCEMENT} large"></i>--}%
+            ${message(code:'announcement.plural')} <ui:bubble count="${systemAnnouncements.size()}" />
+        </a>
+
         <a class="${us_dashboard_tab.value == 'Due Dates' ? 'active item':'item'}" data-tab="duedates">
-            <i class="${Icon.DUE_DATE} large"></i>
-            ${dueDatesCount} ${message(code:'myinst.dash.due_dates.label')}
+%{--            <i class="${Icon.DUE_DATE} large"></i>--}%
+            ${message(code:'myinst.dash.due_dates.label')} <ui:bubble count="${dueDatesCount}" />
         </a>
 
         <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro()}">
             <a class="${us_dashboard_tab.value == 'PendingChanges' ? 'active item':'item'}" data-tab="pendingchanges">
-                <i class="history icon large"></i>
-                <span id="pendingCount">${message(code:'myinst.pendingChanges.label', args: [message(code:'myinst.loadPending')])}</span>
+%{--                <i class="history icon large"></i>--}%
+                ${message(code:'myinst.pendingChanges.label', args:[''])} <span id="pendingCount" class="ui circular label blue">${message(code: 'myinst.loadPending')}</span>
             </a>
         </g:if>
         <a class="${us_dashboard_tab.value == 'AcceptedChanges' ? 'active item':'item'}" data-tab="acceptedchanges">
-            <i class="warning circle icon large"></i>
-            <span id="notificationsCount">${message(code:'myinst.acceptedChanges.label', args: [message(code:'myinst.loadPending')])}</span>
-        </a>
-
-        <a class="${us_dashboard_tab.value == 'Announcements' ? 'active item':'item'}" data-tab="news" id="jsFallbackAnnouncements">
-            <i class="${Icon.ANNOUNCEMENT} large"></i>
-            ${systemAnnouncements.size()} ${message(code:'announcement.plural')}
+%{--            <i class="warning circle icon large"></i>--}%
+            ${message(code:'myinst.acceptedChanges.label', args:[''])} <span id="notificationsCount" class="ui circular label blue">${message(code: 'myinst.loadPending')}</span>
         </a>
 
         <g:if test="${(contextService.getOrg().isCustomerType_Inst() || contextService.getOrg().isCustomerType_Consortium_Pro())}">
             <a class="${us_dashboard_tab.value == 'Surveys' ? 'active item' : 'item'}" data-tab="surveys">
-                <i class="${Icon.SURVEY} large"></i>
-                <span id="surveyCount">${message(code: 'myinst.dash.survey.label', args: [message(code: 'myinst.loadPending')])}</span>
+%{--                <i class="${Icon.SURVEY} large"></i>--}%
+                ${message(code:'myinst.dash.survey.label', args:[''])} <span id="surveyCount" class="ui circular label blue">${message(code: 'myinst.loadPending')}</span>
             </a>
         </g:if>
 
         <g:if test="${taskService.hasREAD()}">
             <a class="${us_dashboard_tab.value == 'Tasks' ? 'active item':'item'}" data-tab="tasks">
-                <i class="${Icon.TASK} large"></i>
-                ${tasksCount} ${message(code:'myinst.dash.task.label')}
+%{--                <i class="${Icon.TASK} large"></i>--}%
+                ${message(code:'myinst.dash.task.label')} <ui:bubble count="${tasksCount}" />
             </a>
         </g:if>
 
         <g:if test="${workflowService.hasREAD()}">
             <a class="${us_dashboard_tab.value == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
-                <i class="${Icon.WORKFLOW} large"></i>
-                ${allChecklistsCount} ${message(code:'workflow.plural')}
+%{--                <i class="${Icon.WORKFLOW} large"></i>--}%
+                ${message(code:'workflow.plural')} <ui:bubble count="${allChecklistsCount}" />
             </a>
         </g:if>
 
