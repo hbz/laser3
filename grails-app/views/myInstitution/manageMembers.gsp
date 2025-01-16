@@ -49,7 +49,7 @@
     </g:if>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon text="${title}" total="${membersCount}" floated="true" />
+<ui:h1HeaderWithIcon text="${title}" total="${membersCount}" floated="true" type="institution" />
 
 <ui:messages data="${flash}"/>
     <%

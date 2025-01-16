@@ -36,6 +36,9 @@ class IconTagLib {
                     icon = 'icon user slash bordered inverted grey la-object-extended'
                 }
                 break
+            case [ 'consortium', CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO ]:
+                icon = Icon.AUTH.ORG_CONSORTIUM_PRO + ' bordered inverted la-object-extended'
+                break
             case 'database':
                 icon = 'icon bordered la-object-database'
                 break
@@ -50,6 +53,9 @@ class IconTagLib {
                 break
             case 'help':
                 icon = Icon.UI.HELP + ' bordered inverted grey la-object-extended'
+                break
+            case [ 'institution', CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO ]:
+                icon = Icon.AUTH.ORG_INST_PRO + ' bordered inverted la-object-extended'
                 break
             case [ 'journal', 'serial' ]:
                 icon = 'icon bordered la-object-journal'
@@ -264,11 +270,16 @@ class IconTagLib {
             if (attrs.org.isCustomerType_Pro()) {
                 out << '<span class="la-long-tooltip la-popup-tooltip" data-position="bottom center" data-content="' + attrs.org.getCustomerTypeI10n() + '">'
 
-                String color = attrs.org.isCustomerType_Consortium() ? 'teal' : 'grey'
+//                String color = attrs.org.isCustomerType_Consortium() ? 'teal' : 'grey'
+//                if (attrs.cssClass) {
+//                    out << '<i class="icon ' + color + ' trophy ' + attrs.cssClass + '"></i>'
+//                } else {
+//                    out << '<i class="icon ' + color + ' trophy"></i>'
+//                }
                 if (attrs.cssClass) {
-                    out << '<i class="icon ' + color + ' trophy ' + attrs.cssClass + '"></i>'
+                    out << '<i class="' + Icon.AUTH.ORG_PRO + ' ' + attrs.cssClass + '"></i>'
                 } else {
-                    out << '<i class="icon ' + color + ' trophy"></i>'
+                    out << '<i class="' + Icon.AUTH.ORG_PRO + '"></i>'
                 }
                 out << '</span>'
             }

@@ -169,7 +169,9 @@
         <ui:paginate controller="myInstitution" action="dashboard" offset="${acceptedOffset ? acceptedOffset : '0'}" max="${max}" params="${[view:'AcceptedChanges']}" total="${notificationsCount}"/>
     </div>
     <laser:script file="${this.getGroovyPageFileName()}">
-        $("#pendingCount").text("${message(code: 'myinst.pendingChanges.label', args: [pendingCount])}");
-        $("#notificationsCount").text("${message(code: 'myinst.acceptedChanges.label', args: [notificationsCount])}");
+%{--        $("#pendingCount").text("${message(code: 'myinst.pendingChanges.label', args: [pendingCount])}");--}%
+%{--        $("#notificationsCount").text("${message(code: 'myinst.acceptedChanges.label', args: [notificationsCount])}");--}%
+        $("#pendingCount").text("${pendingCount}")
+        $("#notificationsCount").text("${notificationsCount}")
     </laser:script>
 </div>

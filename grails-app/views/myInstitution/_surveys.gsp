@@ -95,5 +95,6 @@
 
 </div>
 <laser:script file="${this.getGroovyPageFileName()}">
-    $("#surveyCount").text("${message(code:'myinst.dash.survey.label', args: [countSurvey])}")
+%{--    $("#surveyCount").text("${message(code:'myinst.dash.survey.label', args: [countSurvey])}")--}%
+    $("#surveyCount").text("${countSurvey}")
 </laser:script>

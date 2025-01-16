@@ -184,20 +184,20 @@
     </div>
     <div class="ui list">
         <div class="item">
-            <div class="ui label yellow">
+            <div class="ui label grey">
                 <i class="${Icon.AUTH.ORG_INST_BASIC}" style="color:#FFFFFF;"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_INST_BASIC).getI10n('authority')}
             </div>
         </div>
         <div class="item">
-            <div class="ui label yellow">
+            <div class="ui label teal">
                 <i class="${Icon.AUTH.ORG_INST_PRO}" style="color:#FFFFFF;"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_INST_PRO).getI10n('authority')}
             </div>
         </div>
 
         <div class="item">
-            <div class="ui label teal">
+            <div class="ui label grey">
                 <i class="${Icon.AUTH.ORG_CONSORTIUM_BASIC}" style="color:#FFFFFF;"></i>
                 ${Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_BASIC).getI10n('authority')}
             </div>

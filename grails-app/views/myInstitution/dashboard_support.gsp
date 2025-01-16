@@ -10,7 +10,7 @@
 
         <laser:render template="/templates/system/messages" model="${[type: SystemMessage.TYPE_DASHBOARD]}"/>
 
-        <laser:render template="/myInstitution/topmenu2" />
+        <laser:render template="/myInstitution/topmenu" />
 
         <ui:messages data="${flash}" />
 
@@ -24,27 +24,27 @@
             break
         }
     %>
-%{--    <div class="ui secondary stackable pointing tabular la-tab-with-js menu">--}%
+
     <div class="ui tabular la-tab-with-js top attached small menu">
-        <a class="${us_dashboard_tab.value == 'Due Dates' ? 'active item':'item'}" data-tab="duedates">
-            <i class="${Icon.DUE_DATE} large"></i>
-            ${dueDatesCount} ${message(code:'myinst.dash.due_dates.label')}
+        <a class="${us_dashboard_tab.value == 'Announcements' ? 'active item':'item'}" data-tab="news" id="jsFallbackAnnouncements">
+            %{--            <i class="${Icon.ANNOUNCEMENT} large"></i>--}%
+            ${message(code:'announcement.plural')} <ui:bubble count="${systemAnnouncements.size()}" />
         </a>
 
-        <a class="${us_dashboard_tab.value == 'Announcements' ? 'active item':'item'}" data-tab="news" id="jsFallbackAnnouncements">
-            <i class="${Icon.ANNOUNCEMENT} large"></i>
-            ${systemAnnouncements.size()} ${message(code:'announcement.plural')}
+        <a class="${us_dashboard_tab.value == 'Due Dates' ? 'active item':'item'}" data-tab="duedates">
+%{--            <i class="${Icon.DUE_DATE} large"></i>--}%
+            ${message(code:'myinst.dash.due_dates.label')} <ui:bubble count="${dueDatesCount}" />
         </a>
 
         <a class="${us_dashboard_tab.value == 'Tasks' ? 'active item':'item'}" data-tab="tasks">
-            <i class="${Icon.TASK} large"></i>
-            ${tasksCount} ${message(code:'myinst.dash.task.label')}
+%{--            <i class="${Icon.TASK} large"></i>--}%
+            ${message(code:'myinst.dash.task.label')} <ui:bubble count="${tasksCount}" />
         </a>
 
         <g:if test="${workflowService.hasREAD()}"><!-- TODO: workflows-permissions -->
             <a class="${us_dashboard_tab.value == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
-                <i class="${Icon.WORKFLOW} large"></i>
-                ${allChecklistsCount} ${message(code:'workflow.plural')}
+%{--                <i class="${Icon.WORKFLOW} large"></i>--}%
+                ${message(code:'workflow.plural')} <ui:bubble count="${allChecklistsCount}" />
             </a>
         </g:if>
 
