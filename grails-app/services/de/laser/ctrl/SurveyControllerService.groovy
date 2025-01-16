@@ -650,31 +650,34 @@ class SurveyControllerService {
                 Vendor vendor = Vendor.findById(params.removeVendor)
                 if(vendor) {
                     SurveyConfigVendor.executeUpdate("delete from SurveyConfigVendor scp where scp.surveyConfig = :surveyConfig and scp.vendor = :vendor", [surveyConfig: result.surveyConfig, vendor: vendor])
-                    result.surveyConfig = result.surveyConfig.refresh()
-                    result.surveyPackagesCount = SurveyConfigVendor.executeQuery("select count(*) from SurveyConfigVendor where surveyConfig = :surConfig", [surConfig: result.surveyConfig])[0]
                 }
                 params.remove("removeVendor")
             }
 
-            List selectedVendors = Params.getLongList(params, "selectedVendors")
+            result.putAll(vendorService.getWekbVendors(params))
 
-            if (selectedVendors) {
-                selectedVendors.each {
-                    Vendor vendor = Vendor.findById(it)
-                    if(vendor) {
-                        SurveyConfigVendor.executeUpdate("delete from SurveyConfigVendor scp where scp.surveyConfig = :surveyConfig and scp.vendor = :vendor", [surveyConfig: result.surveyConfig, vendor: vendor])
-                    }
-                }
-                result.surveyConfig = result.surveyConfig.refresh()
-                result.surveyVendorsCount = SurveyConfigVendor.executeQuery("select count(*) from SurveyConfigVendor where surveyConfig = :surConfig", [surConfig: result.surveyConfig])[0]
-                params.remove("selectedVendors")
+
+            if(params.vendorListToggler == 'on') {
+                SurveyConfigVendor.executeUpdate("delete from SurveyConfigVendor scp where scp.surveyConfig = :surveyConfig", [surveyConfig: result.surveyConfig])
+                params.remove("vendorListToggler")
             }
+            else {
+                List selectedVendors = Params.getLongList(params, "selectedVendors")
+                if (selectedVendors) {
+                    selectedVendors.each {
+                        Vendor vendor = Vendor.findById(it)
+                        if (vendor) {
+                            SurveyConfigVendor.executeUpdate("delete from SurveyConfigVendor scp where scp.surveyConfig = :surveyConfig and scp.vendor = :vendor", [surveyConfig: result.surveyConfig, vendor: vendor])
+                        }
+                    }
+                    params.remove("selectedVendors")
+                }
+            }
+
+            result.surveyVendorsCount = SurveyConfigVendor.executeQuery("select count(*) from SurveyConfigVendor where surveyConfig = :surConfig", [surConfig: result.surveyConfig])[0]
 
             result.selectedVendorIdList = SurveyConfigVendor.executeQuery("select scv.vendor.id from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
             params.ids = result.selectedVendorIdList
-
-
-            result.putAll(vendorService.getWekbVendors(params))
 
             [result: result, status: STATUS_OK]
         }
@@ -692,8 +695,6 @@ class SurveyControllerService {
                         SurveyConfigVendor surveyConfigVendor = new SurveyConfigVendor(surveyConfig: result.surveyConfig, vendor: vendor).save()
                     }
                 }
-                result.surveyConfig = result.surveyConfig.refresh()
-                result.surveyVendorsCount = SurveyConfigVendor.executeQuery("select count(*) from SurveyConfigVendor where surveyConfig = :surConfig", [surConfig: result.surveyConfig])[0]
                 params.remove("addVendor")
             }
 
@@ -701,13 +702,17 @@ class SurveyControllerService {
                 Vendor vendor = Vendor.findById(params.removeVendor)
                 if(vendor) {
                     SurveyConfigVendor.executeUpdate("delete from SurveyConfigVendor scp where scp.surveyConfig = :surveyConfig and scp.vendor = :vendor", [surveyConfig: result.surveyConfig, vendor: vendor])
-                    result.surveyConfig = result.surveyConfig.refresh()
-                    result.surveyVendorsCount = SurveyConfigVendor.executeQuery("select count(*) from SurveyConfigVendor where surveyConfig = :surConfig", [surConfig: result.surveyConfig])[0]
                 }
                 params.remove("removeVendor")
             }
 
-            List selectedVendors = Params.getLongList(params, "selectedVendors")
+            result.putAll(vendorService.getWekbVendors(params))
+
+            List selectedVendors
+            if(params.vendorListToggler == 'on') {
+                selectedVendors = result.vendorTotal.id
+            }
+            else selectedVendors = Params.getLongList(params, "selectedVendors")
 
             if (selectedVendors) {
                 selectedVendors.each {
@@ -719,6 +724,7 @@ class SurveyControllerService {
                     }
                 }
                 params.remove("selectedVendors")
+                params.remove("vendorListToggler")
             }
 
             if(result.surveyConfig.subscription && params.initial){
@@ -728,8 +734,7 @@ class SurveyControllerService {
                     params.remove('initial')
                 }
             }
-
-            result.putAll(vendorService.getWekbVendors(params))
+            result.surveyVendorsCount = SurveyConfigVendor.executeQuery("select count(*) from SurveyConfigVendor where surveyConfig = :surConfig", [surConfig: result.surveyConfig])[0]
 
             result.selectedVendorIdList = SurveyConfigVendor.executeQuery("select scv.vendor.id from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
 
