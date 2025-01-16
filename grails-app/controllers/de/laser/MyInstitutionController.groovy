@@ -3122,9 +3122,9 @@ class MyInstitutionController  {
      * Call to load the current watchlist of objects coming from we:kb
      * @return a {@link Map} containing the {@link Org}s, {@link de.laser.wekb.Package}s and {@link Platform}s currently being observed
      */
-    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.PERMS_PRO])
+    @DebugInfo(isInstUser_denySupport = [])
     @Secured(closure = {
-        ctx.contextService.isInstUser_denySupport(CustomerTypeService.PERMS_PRO)
+        ctx.contextService.isInstUser_denySupport()
     })
     def currentMarkers() {
 //        log.debug 'currentMarkers()'

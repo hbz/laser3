@@ -10,102 +10,7 @@
 
         <laser:render template="/templates/system/messages" model="${[type: SystemMessage.TYPE_DASHBOARD]}"/>
 
-        <div class="ui equal width grid la-clear-before" style="margin:1em 0;">
-            <div class="row">
-                <div class="column">
-                    <div class="ui divided relaxed list">
-                        <div class="item">
-                            <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
-                            <div class="content">
-                                <g:link controller="myInstitution" action="currentSubscriptions">${message(code:'menu.my.subscriptions')}</g:link>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <i class="${Icon.LICENSE} la-list-icon"></i>
-                            <div class="content">
-                                <g:link controller="myInstitution" action="currentLicenses">${message(code:'menu.my.licenses')}</g:link>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <i class="${Icon.ORG} la-list-icon"></i>
-                            <div class="content">
-                                <ui:securedMainNavItem specRole="ROLE_ADMIN" controller="myInstitution" action="manageMembers" message="menu.my.insts" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="column">
-                    <div class="ui divided relaxed list">
-                        <div class="item">
-                            <i class="${Icon.TASK} la-list-icon"></i>
-                            <div class="content">
-                                <ui:securedMainNavItem controller="myInstitution" action="tasks" message="menu.my.tasks" />
-                            </div>
-                        </div>
-                        <div class="item">
-                            <i class="${Icon.DOCUMENT} la-list-icon"></i>
-                            <div class="content">
-                                <ui:securedMainNavItem controller="myInstitution" action="documents" message="menu.my.documents" />
-                            </div>
-                        </div>
-                        <div class="item">
-                            <i class="${Icon.WORKFLOW} la-list-icon"></i>
-                            <div class="content">
-                                <ui:securedMainNavItem controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="column">
-                    <div class="ui divided relaxed list">
-                        <div class="item">
-                            <i class="${Icon.ORG} la-list-icon"></i>
-                            <div class="content">
-                                <g:link controller="org" action="show" id="${contextService.getOrg().id}">${message(code: 'menu.institutions.org.show')}</g:link>
-                            </div>
-                        </div>
-                        <div class="item">
-                            <i class="${Icon.ACP_PUBLIC} la-list-icon"></i>
-                            <div class="content">
-                                <ui:securedMainNavItem controller="myInstitution" action="addressbook" message="menu.institutions.addressbook" />
-                            </div>
-                        </div>
-                        <div class="item">
-                            <i class="${Icon.FINANCE} la-list-icon"></i>
-                            <div class="content">
-                                <ui:securedMainNavItem controller="myInstitution" action="finance" message="menu.institutions.finance" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="column">
-                    <div class="ui divided relaxed list">
-                        <div class="item">
-                            <i class="${Icon.ORG} la-list-icon"></i>
-                            <div class="content">
-                                <ui:securedMainNavItem specRole="ROLE_ADMIN" controller="myInstitution" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
-                            </div>
-                        </div>
-                        <div class="item">
-                            <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
-                            <div class="content">
-                                <ui:securedMainNavItem controller="myInstitution" action="subscriptionsManagement" message="menu.institutions.subscriptionsManagement" />
-                            </div>
-                        </div>
-                        <div class="item">
-                            <i class="${Icon.TOOLTIP.HELP} la-list-icon"></i>
-                            <div class="content">
-                                <g:link controller="public" action="help">${message(code:'menu.user.help')}</g:link>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <style>
-            .list .item .content .disabled { color:lightgrey }
-        </style>
+        <laser:render template="/myInstitution/topmenu" />
 
         <ui:messages data="${flash}" />
 
@@ -119,7 +24,8 @@
             break
         }
     %>
-    <div class="ui secondary stackable pointing tabular la-tab-with-js menu">
+%{--    <div class="ui secondary stackable pointing tabular la-tab-with-js menu">--}%
+    <div class="ui tabular la-tab-with-js top attached small menu">
         <a class="${us_dashboard_tab.value == 'Due Dates' ? 'active item':'item'}" data-tab="duedates">
             <i class="${Icon.DUE_DATE} large"></i>
             ${dueDatesCount} ${message(code:'myinst.dash.due_dates.label')}
@@ -143,13 +49,13 @@
         </g:if>
 
     </div><!-- secondary -->
-        <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Due Dates' ? 'active':''}" data-tab="duedates">
+        <div class="ui bottom attached segment tab ${us_dashboard_tab.value == 'Due Dates' ? 'active':''}" data-tab="duedates">
             <div>
                 <laser:render template="/user/dueDatesView" model="[user: user, dueDates: dueDates, dueDatesCount: dueDatesCount]"/>
             </div>
         </div>
 
-        <div class="ui bottom attached tab ${us_dashboard_tab.value =='Announcements' ? 'active':''}" data-tab="news">
+        <div class="ui bottom attached segment tab ${us_dashboard_tab.value =='Announcements' ? 'active':''}" data-tab="news">
 
             <g:message code="profile.dashboardSysAnnTimeWindow"
                        args="${user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)}" />
@@ -188,7 +94,7 @@
             </g:if>
         </div>
 
-        <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Tasks' ? 'active':''}" data-tab="tasks">
+        <div class="ui bottom attached segment tab ${us_dashboard_tab.value == 'Tasks' ? 'active':''}" data-tab="tasks">
 
             <div class="ui cards">
                 <g:each in="${tasks}" var="tsk">
@@ -200,7 +106,7 @@
         <g:if test="${workflowService.hasREAD()}"><!-- TODO: workflows-permissions -->
             <div id="wfFlyout" class="ui eight wide flyout"></div>
 
-            <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Workflows' ? 'active':''}" data-tab="workflows">
+            <div class="ui bottom attached segment tab ${us_dashboard_tab.value == 'Workflows' ? 'active':''}" data-tab="workflows">
 
                 <g:if test="${allChecklists}">
                     <g:if test="${allChecklistsCount > user.getPageSizeOrDefault()}">

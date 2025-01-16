@@ -808,8 +808,9 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         return Identifier.findByOrgAndNs(this, IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR))
     }
 
-    boolean isInfoAccessibleFor(Org ctx) {
-        if (this.isCustomerType_Inst() && ctx.isCustomerType_Pro()) {
+    boolean isInfoAccessible() {
+        if (this.isCustomerType_Inst()) {
+            Org ctx = BeanStore.getContextService().getOrg()
             return (this.id == ctx.id) || (ctx.isCustomerType_Consortium() && Combo.findByToOrgAndFromOrgAndType(ctx, this, RDStore.COMBO_TYPE_CONSORTIUM))
         }
         return false

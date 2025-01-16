@@ -25,11 +25,12 @@
     ${message(code: 'admin.help.markdown')}.
     <br />
     Dabei können folgende Token zur Erzeugung dynamischer Inhalte verwendet werden:
-    <ul>
-        <g:each in="${helpService.getTokenMap()}" var="tk">
-            <li>{{${tk.key}}} -> ${tk.value}</li>
-        </g:each>
-    </ul>
+    <br />
+    <br />
+    <g:each in="${helpService.getTokenMap()}" var="tk">
+        &nbsp; {{${tk.key}}} -> ${tk.value} <br />
+    </g:each>
+
 </ui:msg>
 
 <ui:messages data="${flash}" />
