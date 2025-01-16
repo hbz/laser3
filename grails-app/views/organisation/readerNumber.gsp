@@ -19,12 +19,12 @@
         <ui:messages data="${flash}"/>
 
         <laser:render template="/readerNumber/formModal" model="[formId: 'newForUni',withSemester: true,title:message(code: 'readerNumber.createForUni.label'), semester: RefdataValue.getCurrentSemester().id]"/>
-        <laser:render template="/readerNumber/formModal" model="[formId: 'newForPublic',withDueDate: true,title:message(code: 'readerNumber.createForPublic.label')]"/>
-        <laser:render template="/readerNumber/formModal" model="[formId: 'newForState',withDueDate: true,title:message(code: 'readerNumber.createForState.label')]"/>
-        <laser:render template="/readerNumber/formModal" model="[formId: 'newForResearchInstitute',withDueDate: true,title:message(code: 'readerNumber.createForResearchInstitute.label')]"/>
-        <laser:render template="/readerNumber/formModal" model="[formId: 'newForScientificLibrary',withDueDate: true,title:message(code: 'readerNumber.createForScientificLibrary.label')]"/>
+        <laser:render template="/readerNumber/formModal" model="[formId: 'newForPublic',withYear: true,title:message(code: 'readerNumber.createForPublic.label')]"/>
+        <laser:render template="/readerNumber/formModal" model="[formId: 'newForState',withYear: true,title:message(code: 'readerNumber.createForState.label')]"/>
+        <laser:render template="/readerNumber/formModal" model="[formId: 'newForResearchInstitute',withYear: true,title:message(code: 'readerNumber.createForResearchInstitute.label')]"/>
+        <laser:render template="/readerNumber/formModal" model="[formId: 'newForScientificLibrary',withYear: true,title:message(code: 'readerNumber.createForScientificLibrary.label')]"/>
 
-        <g:if test="${numbersWithSemester || numbersWithDueDate}">
+        <g:if test="${numbersWithSemester || numbersWithYear}">
             <g:if test="${numbersWithSemester}">
                 <table class="ui table celled sortable la-js-responsive-table la-table">
                     <thead>
@@ -77,7 +77,7 @@
                                 BigDecimal students = sumRow.get(RDStore.READER_NUMBER_STUDENTS.getI10n("value")) ?: 0.0
                                 BigDecimal users = sumRow.get(RDStore.READER_NUMBER_USER.getI10n("value")) ?: 0.0
                                 BigDecimal FTEs = sumRow.get(RDStore.READER_NUMBER_FTE.getI10n("value")) ?: 0.0
-                                BigDecimal staff = sumRow.get(RDStore.READER_NUMBER_SCIENTIFIC_STAFF.getI10n("value")) ?: 0.0
+                                BigDecimal staff = sumRow.get(RDStore.READER_NUMBER_FTE_TOTAL.getI10n("value")) ?: 0.0
                                 boolean missing = students == 0.0 || users == 0.0 || FTEs == 0.0 || staff == 0.0
                             %>
                             <td>
@@ -128,13 +128,13 @@
                 </table>
             </g:if>
 
-            <g:if test="${numbersWithDueDate}">
+            <g:if test="${numbersWithYear}">
                 <table class="ui table celled sortable la-js-responsive-table la-table">
                     <thead>
                         <tr>
-                            <g:sortableColumn property="dueDate" title="${message(code: 'readerNumber.dueDate.label')}" params="${[tableB:true]}"/>
+                            <g:sortableColumn property="year" title="${message(code: 'readerNumber.year.label')}" params="${[tableB:true]}"/>
                             <th><g:message code="default.lastUpdated.label"/></th>
-                            <g:each in="${dueDateCols}" var="column">
+                            <g:each in="${yearCols}" var="column">
                                 <th>${column}</th>
                             </g:each>
                             <th><g:message code="readerNumber.sum.label"/></th>
@@ -143,31 +143,31 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <g:each in="${numbersWithDueDate}" var="numbersInstance">
+                        <g:each in="${numbersWithYear}" var="numbersInstance">
                             <tr>
-                                <td><g:formatDate date="${numbersInstance.getKey()}" format="${message(code:'default.date.format.notime')}"/></td>
+                                <td>${numbersInstance.getKey()}</td>
                                 <td>
                                     <%
-                                        Date dueDateLastUpdated
+                                        Date yearLastUpdated
                                     %>
-                                    <g:each in="${dueDateCols}" var="column">
+                                    <g:each in="${yearCols}" var="column">
                                         <%
                                             if(numbersInstance.getValue().get(column)) {
                                                 ReaderNumber rn = numbersInstance.getValue().get(column)
-                                                if(rn.lastUpdated > dueDateLastUpdated)
-                                                    dueDateLastUpdated = rn.lastUpdated
+                                                if(rn.lastUpdated > yearLastUpdated)
+                                                    yearLastUpdated = rn.lastUpdated
                                             }
                                         %>
                                     </g:each>
-                                    <g:if test="${dueDateLastUpdated}">
-                                        <g:formatDate date="${dueDateLastUpdated}" format="${message(code:'default.date.format.notime')}"/>
+                                    <g:if test="${yearLastUpdated}">
+                                        <g:formatDate date="${yearLastUpdated}" format="${message(code:'default.date.format.notime')}"/>
                                     </g:if>
                                 </td>
-                                <g:each in="${dueDateCols}" var="column">
+                                <g:each in="${yearCols}" var="column">
                                     <td>
-                                        <g:set var="dueDateNumber" value="${numbersInstance.getValue().get(column)}"/>
-                                        <g:if test="${dueDateNumber}">
-                                            <ui:xEditable validation="number" owner="${dueDateNumber}" field="value"/>
+                                        <g:set var="yearNumber" value="${numbersInstance.getValue().get(column)}"/>
+                                        <g:if test="${yearNumber}">
+                                            <ui:xEditable validation="number" owner="${yearNumber}" field="value"/>
                                             <%-- see above; removed after command of November 27th, '24
                                             <span class="la-popup-tooltip la-delay" data-position="right center" data-content="${message(code:'default.lastUpdated.message')} ${formatDate(format:message(code:'default.date.format.notime'), date:number.lastUpdated)}">
                                                 <i class="${Icon.TOOLTIP.INFO}"></i>
@@ -175,13 +175,13 @@
                                         </g:if>
                                     </td>
                                 </g:each>
-                                <td><g:formatNumber number="${dueDateSums.get(numbersInstance.getKey())}" format="${message(code:'default.decimal.format')}"/></td>
+                                <td><g:formatNumber number="${yearSums.get(numbersInstance.getKey())}" format="${message(code:'default.decimal.format')}"/></td>
                                 <td><ui:xEditable type="readerNumber" owner="${numbersInstance.getValue().entrySet()[0].getValue()}" field="dateGroupNote"/></td>
                                 <td class="x">
                                     <g:if test="${editable}">
                                         <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="readerNumber" action="delete"
                                                 data-confirm-tokenMsg="${message(code: 'readerNumber.confirmRow.delete')}"
-                                                data-confirm-term-how="ok" params="${[dueDate:numbersInstance.getKey(),org:params.id]}"
+                                                data-confirm-term-how="ok" params="${[year:numbersInstance.getKey(),org:params.id]}"
                                                 role="button"
                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                             <i class="${Icon.CMD.DELETE}"></i>

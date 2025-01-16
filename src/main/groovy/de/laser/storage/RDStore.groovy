@@ -228,6 +228,7 @@ class RDStore {
     public final static RefdataValue READER_NUMBER_SCIENTIFIC_STAFF  = getRefdataValue('Scientific staff', RDConstants.NUMBER_TYPE)
     public final static RefdataValue READER_NUMBER_STUDENTS          = getRefdataValue('Students', RDConstants.NUMBER_TYPE)
     public final static RefdataValue READER_NUMBER_FTE               = getRefdataValue('FTE', RDConstants.NUMBER_TYPE)
+    public final static RefdataValue READER_NUMBER_FTE_TOTAL         = getRefdataValue('FTE total', RDConstants.NUMBER_TYPE)
 
     public final static RefdataValue SHARE_CONF_ALL                     = getRefdataValue('everyone', RDConstants.SHARE_CONFIGURATION)
     public final static RefdataValue SHARE_CONF_UPLOADER_ORG            = getRefdataValue('only for author organisation', RDConstants.SHARE_CONFIGURATION)

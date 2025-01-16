@@ -431,7 +431,7 @@ abstract class BaseDetailsExport {
         }
 
         int y = Year.now().value
-        result.addAll( (y+2..y-4).collect{[ 'dd-' + it, 'Stichtage für ' + it ]} )
+        result.addAll( (y+2..y-4).collect{[ 'yr-' + it, 'Jahre für ' + it ]} )
 
         result
     }
