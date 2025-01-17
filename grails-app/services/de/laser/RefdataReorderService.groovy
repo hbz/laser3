@@ -17,9 +17,9 @@ class RefdataReorderService {
      */
     void reorderRefdata() {
         //country: Germany, Austria and Switzerland first
-        int order = 10
+        long order = 10
         List countries = RefdataValue.executeQuery("select rdv from RefdataValue rdv join rdv.owner rdc where rdc.desc = :country order by rdv.value_de asc", [country: RDConstants.COUNTRY])
-        countries.eachWithIndex { RefdataValue ct, int i ->
+        countries.eachWithIndex { RefdataValue ct, long i ->
             switch(ct.value) {
                 case 'DE': ct.order = 0
                     break
@@ -35,7 +35,7 @@ class RefdataReorderService {
         //address type: billing address first
         order = 10
         List addressTypes = RefdataValue.executeQuery("select rdv from RefdataValue rdv join rdv.owner rdc where rdc.desc = :addressType order by rdv.value_de asc", [addressType: RDConstants.ADDRESS_TYPE])
-        addressTypes.eachWithIndex { RefdataValue at, int i ->
+        addressTypes.eachWithIndex { RefdataValue at, long i ->
             if(at.value == 'Billing address')
                 at.order = 0
             else {
@@ -43,13 +43,16 @@ class RefdataReorderService {
             }
             at.save()
         }
-        //semesters: take the order of insertion and make then the ID ascending
-        List semesters = RefdataValue.findAllByOwnerAndOrderIsNull(RefdataCategory.getByDesc(RDConstants.SEMESTER),[sort:'id', order:'asc'])
+        //semesters
+        List<String> semesters = ['semester.not.applicable', //TODO Ben needed?
+                'w17/18', 's18', 'w18/19', 's19', 'w19/20', 's20', 'w20/21', 's21', 'w21/22', 's22', 'w22/23', 's23', 'w23/24', 's24', 'w24/25',
+                's25', 'w25/26', 's26', 'w26/27', 's27', 'w27/28', 's28', 'w28/29', 's29', 'w29/30', 's30', 'w30/31', 's31']
         //RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = 0 where rdv.value = :value',[value:'semester.not.applicable'])
-        order = 10
-        semesters.each { RefdataValue s ->
-            s.order = order
-            s.save()
+        order = 0
+        semesters.each { String s ->
+            RefdataValue semester = RefdataValue.getByValueAndCategory(s, RDConstants.SEMESTER)
+            semester.order = order
+            semester.save()
             order += 10
         }
         //price categories: take the order of insertion and make then the ID ascending
