@@ -44,10 +44,8 @@ class RefdataReorderService {
             at.save()
         }
         //semesters
-        List<String> semesters = ['semester.not.applicable', //TODO Ben needed?
-                'w17/18', 's18', 'w18/19', 's19', 'w19/20', 's20', 'w20/21', 's21', 'w21/22', 's22', 'w22/23', 's23', 'w23/24', 's24', 'w24/25',
+        List<String> semesters = ['w17/18', 's18', 'w18/19', 's19', 'w19/20', 's20', 'w20/21', 's21', 'w21/22', 's22', 'w22/23', 's23', 'w23/24', 's24', 'w24/25',
                 's25', 'w25/26', 's26', 'w26/27', 's27', 'w27/28', 's28', 'w28/29', 's29', 'w29/30', 's30', 'w30/31', 's31']
-        //RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = 0 where rdv.value = :value',[value:'semester.not.applicable'])
         order = 0
         semesters.each { String s ->
             RefdataValue semester = RefdataValue.getByValueAndCategory(s, RDConstants.SEMESTER)

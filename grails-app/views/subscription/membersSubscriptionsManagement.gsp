@@ -14,7 +14,7 @@
 <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" text="${subscription.name}" />
 
 <ui:anualRings object="${subscription}" controller="subscription" action="${actionName}"
-                  navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+                  navNext="${navNextSubscription}" navPrev="${navPrevSubscription}" tab="${params.tab}"/>
 
 <h2 class="ui left aligned icon header la-clear-before">
     ${message(code: 'subscriptionsManagement.subscriptions.members')}
