@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Icon; de.laser.utils.AppUtils; de.laser.interfaces.CalculatedType;" %>
 <laser:serviceInjection />
-<g:if test="${isMyPlatform || isMyPkg || isMyOrg || isMyVendor}">
+<g:if test="${isMyPlatform || isMyPkg || isMyOrg || isMyProvider || isMyVendor}">
 
 <span class="la-additionalIcon">
   <g:if test="${isMyPlatform}">

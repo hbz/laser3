@@ -9,7 +9,7 @@
         <ui:crumb message="menu.institutions.add_consortia_members" class="active" />
     </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon message="menu.institutions.add_consortia_members" />
+    <ui:h1HeaderWithIcon message="menu.institutions.add_consortia_members" type="institution"/>
 
     <ui:messages data="${flash}" />
 

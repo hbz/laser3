@@ -6,15 +6,12 @@
     <div id="wekb-menu">
         <div id="wekb-menu-content">
 
-%{--                Folgende Ressourcen wurden in den vergangenen <strong>${wekbNews.query.days}</strong> Tagen--}%
-%{--        (seit dem <strong>${wekbNews.query.changedSince}</strong>) geändert, bzw. neu angelegt.--}%
-
             <div class="ui fluid card">
                 <div class="content">
                     <div class="header">${message(code: 'marker.WEKB_CHANGES')}</div>
                 </div>
 
-            <div class="content">
+            <div class="content" style="padding-bottom: 0">
             <div class="ui grid">
 %{--                <div class="one wide column"></div>--}%
 %{--                <div class="fourteen wide column" style="padding-top:0; padding-bottom:0">--}%

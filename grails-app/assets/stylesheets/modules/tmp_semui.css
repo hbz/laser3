@@ -338,3 +338,37 @@ body.survey_copyElementsIntoSurvey nav.tabular .item .content .description
 */
 
 
+/* ERMS-6192 */
+
+body[class*="Provider"] .ui.icon.header .icon.la-object::before, body[class*="provider"] .ui.icon.header .icon.la-object::before {
+    content: "\f519";
+}
+body[class*="Provider"] .ui.icon.header .icon.la-object, body[class*="provider"] .ui.icon.header .icon.la-object {
+    display: inline-block;
+    background-color: #b54800;
+    border-color: #b54800;
+}
+body[class*="Provider"] .la-objectIsMine,
+body[class*="provider"] .la-objectIsMine {
+    box-shadow: 0 0 0 0.1em #b54800 inset !important;
+    color: #b54800;
+}
+
+body[class*="Vendor"] .ui.icon.header .icon.la-object::before, body[class*="vendor"] .ui.icon.header .icon.la-object::before {
+    content: "\f2b5";
+}
+body[class*="Vendor"] .ui.icon.header .icon.la-object, body[class*="vendor"] .ui.icon.header .icon.la-object {
+    display: inline-block;
+    background-color: #5d7c62;
+    border-color: #5d7c62;
+}
+
+body[class*="Vendor"] .la-objectIsMine,
+body[class*="vendor"] .la-objectIsMine {
+    box-shadow: 0 0 0 0.1em #5d7c62 inset !important;
+    color: #5d7c62;
+}
+
+/* TODO: org basic != pro */
+
+

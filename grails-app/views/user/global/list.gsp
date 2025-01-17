@@ -14,7 +14,7 @@
             <laser:render template="/user/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>
         </g:if>
 
-        <ui:h1HeaderWithIcon text="${titleMessage}" total="${total}" type="${controllerName == 'user' ? 'user' : ''}">
+        <ui:h1HeaderWithIcon text="${titleMessage}" total="${total}" type="${controllerName == 'user' ? 'admin' : orgInstance.getCustomerType()}">
             <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
         </ui:h1HeaderWithIcon>
 

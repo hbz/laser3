@@ -3,7 +3,7 @@
 
     <laser:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
 
-    <ui:h1HeaderWithIcon text="${orgInstance?.name}" />
+    <ui:h1HeaderWithIcon text="${orgInstance?.name}" type="${orgInstance?.getCustomerType()}"/>
 
     <g:if test="${delResult.status != deletionService.RESULT_SUCCESS}">
         <laser:render template="nav" />

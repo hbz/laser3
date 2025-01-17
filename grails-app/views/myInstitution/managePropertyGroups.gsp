@@ -15,7 +15,7 @@
             <laser:render template="actions"/>
         </ui:controlButtons>
 
-        <ui:h1HeaderWithIcon message="menu.institutions.manage_props" />
+        <ui:h1HeaderWithIcon message="menu.institutions.manage_props" type="${contextService.getOrg().getCustomerType()}" />
 
         <laser:render template="nav" />
 

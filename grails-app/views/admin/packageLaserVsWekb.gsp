@@ -5,7 +5,7 @@
     <ui:crumb message="menu.admin.packageLaserVsWekb" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon message="menu.admin.packageLaserVsWekb" total="${recordsCount}" floated="true" />
+<ui:h1HeaderWithIcon message="menu.admin.packageLaserVsWekb" total="${recordsCount}" floated="true" type="admin" />
 
 <ui:messages data="${flash}"/>
 
