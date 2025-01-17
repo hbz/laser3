@@ -44,7 +44,7 @@ class IconTagLib {
                    CustomerTypeService.ORG_INST_BASIC.toLowerCase(),
                    CustomerTypeService.ORG_INST_PRO.toLowerCase(),
                    CustomerTypeService.ORG_SUPPORT.toLowerCase() ]:
-                println "!!!!!!!!!!!"
+
                      if (attrs.type.toLowerCase() == CustomerTypeService.ORG_CONSORTIUM_BASIC.toLowerCase()) { icon = Icon.AUTH.ORG_CONSORTIUM_BASIC + ' bordered inverted la-object-extended' }
                 else if (attrs.type.toLowerCase() == CustomerTypeService.ORG_CONSORTIUM_PRO.toLowerCase())   { icon = Icon.AUTH.ORG_CONSORTIUM_PRO + ' bordered inverted la-object-extended' }
                 else if (attrs.type.toLowerCase() == CustomerTypeService.ORG_INST_BASIC.toLowerCase())       { icon = Icon.AUTH.ORG_INST_BASIC + ' bordered inverted la-object-extended' }
