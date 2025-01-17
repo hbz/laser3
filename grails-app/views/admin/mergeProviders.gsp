@@ -1,6 +1,11 @@
 <%@ page import="de.laser.ui.Btn" %>
 <laser:htmlStart message="menu.admin.mergeProviders" />
 
+    <ui:breadcrumbs>
+        <ui:crumb message="menu.admin" controller="admin" action="index" />
+        <ui:crumb message="menu.admin.mergeProviders" class="active"/>
+    </ui:breadcrumbs>
+
     <ui:h1HeaderWithIcon message="menu.admin.mergeProviders" />
 
     <g:if test="${mergeResult}">
