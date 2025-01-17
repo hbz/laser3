@@ -1216,7 +1216,7 @@ class ControlledListService {
             queryParams.query = "%${query}%"
         }
 
-        subjects = TitleInstancePackagePlatform.executeQuery("select new map(Year(dateFirstOnline) as name, Year(dateFirstOnline) as value) from TitleInstancePackagePlatform where dateFirstOnline is not null and pkg = :pkg and status = :status "+nameFilter+" group by YEAR(dateFirstOnline) order by YEAR(dateFirstOnline)", queryParams)
+        subjects = TitleInstancePackagePlatform.executeQuery("select new map(Year(dateFirstOnline) as name, Year(dateFirstOnline) as value) from TitleInstancePackagePlatform where dateFirstOnline is not null and pkg = :pkg and status = :status "+nameFilter+" group by YEAR(dateFirstOnline) order by YEAR(dateFirstOnline) desc", queryParams)
 
 //        if(subjects.size() == 0){
 //            subjects << [name: messageSource.getMessage('default.selectionNotPossible.label', null, LocaleUtils.getCurrentLocale()), value: null]
@@ -1247,7 +1247,7 @@ class ControlledListService {
         }
 
         if(subscription.packages){
-            yearsFirstOnline = TitleInstancePackagePlatform.executeQuery("select new map(Year(dateFirstOnline) as name, Year(dateFirstOnline) as value) from TitleInstancePackagePlatform where dateFirstOnline is not null and pkg in (:pkg) "+statusFilter+nameFilter+" group by YEAR(dateFirstOnline) order by YEAR(dateFirstOnline)", queryParams)
+            yearsFirstOnline = TitleInstancePackagePlatform.executeQuery("select new map(Year(dateFirstOnline) as name, Year(dateFirstOnline) as value) from TitleInstancePackagePlatform where dateFirstOnline is not null and pkg in (:pkg) "+statusFilter+nameFilter+" group by YEAR(dateFirstOnline) order by YEAR(dateFirstOnline) desc", queryParams)
         }
 //        if(yearsFirstOnline.size() == 0){
 //            yearsFirstOnline << [name: messageSource.getMessage('default.selectionNotPossible.label', null, LocaleUtils.getCurrentLocale()), value: null]
@@ -1280,7 +1280,7 @@ class ControlledListService {
                queryMap.query = "%${params.query}%"
            }
 
-           query += " group by YEAR(tipp.dateFirstOnline) order by YEAR(tipp.dateFirstOnline)"
+           query += " group by YEAR(tipp.dateFirstOnline) order by YEAR(tipp.dateFirstOnline) desc"
            yearsFirstOnline = TitleInstancePackagePlatform.executeQuery(query, queryMap)
         }
 //        if(yearsFirstOnline.size() == 0){

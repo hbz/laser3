@@ -652,7 +652,7 @@ class PackageController {
         if(contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support())
             consortiaFilter = 'and s.instanceOf = null'
 
-        Set<Year> availableReferenceYears = Subscription.executeQuery('select s.referenceYear from OrgRole oo join oo.sub s where s.referenceYear != null and oo.org = :contextOrg '+consortiaFilter+' order by s.referenceYear', [contextOrg: contextService.getOrg()])
+        Set<Year> availableReferenceYears = Subscription.executeQuery('select s.referenceYear from OrgRole oo join oo.sub s where s.referenceYear != null and oo.org = :contextOrg '+consortiaFilter+' order by s.referenceYear desc', [contextOrg: contextService.getOrg()])
         result.referenceYears = availableReferenceYears
 
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, '', contextService.getOrg())

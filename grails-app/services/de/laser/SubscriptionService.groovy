@@ -132,7 +132,7 @@ class SubscriptionService {
         if(contextOrg.isCustomerType_Consortium() || contextOrg.isCustomerType_Support())
             consortiaFilter = 'and s.instanceOf = null'
 
-        Set<Year> availableReferenceYears = Subscription.executeQuery('select s.referenceYear from OrgRole oo join oo.sub s where s.referenceYear != null and oo.org = :contextOrg '+consortiaFilter+' order by s.referenceYear', [contextOrg: contextOrg])
+        Set<Year> availableReferenceYears = Subscription.executeQuery('select s.referenceYear from OrgRole oo join oo.sub s where s.referenceYear != null and oo.org = :contextOrg '+consortiaFilter+' order by s.referenceYear desc', [contextOrg: contextOrg])
         result.referenceYears = availableReferenceYears
 
         def date_restriction = null
@@ -269,7 +269,7 @@ class SubscriptionService {
         if(contextOrg.isCustomerType_Consortium())
             consortiaFilter = 'and s.instanceOf = null'
 
-        Set<Year> availableReferenceYears = Subscription.executeQuery('select s.referenceYear from OrgRole oo join oo.sub s where s.referenceYear != null and oo.org = :contextOrg '+consortiaFilter+' order by s.referenceYear', [contextOrg: contextOrg])
+        Set<Year> availableReferenceYears = Subscription.executeQuery('select s.referenceYear from OrgRole oo join oo.sub s where s.referenceYear != null and oo.org = :contextOrg '+consortiaFilter+' order by s.referenceYear desc', [contextOrg: contextOrg])
         result.referenceYears = availableReferenceYears
 
         if(params.isSiteReloaded == "yes") {
@@ -345,7 +345,7 @@ class SubscriptionService {
         result.filterSubTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE).minus(RDStore.SUBSCRIPTION_TYPE_LOCAL)
         result.filterPropList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextOrg)
 
-        Set<Year> availableReferenceYears = Subscription.executeQuery('select s.referenceYear from OrgRole oo join oo.sub s where s.referenceYear != null and oo.org = :contextOrg and s.instanceOf != null order by s.referenceYear', [contextOrg: contextOrg])
+        Set<Year> availableReferenceYears = Subscription.executeQuery('select s.referenceYear from OrgRole oo join oo.sub s where s.referenceYear != null and oo.org = :contextOrg and s.instanceOf != null order by s.referenceYear desc', [contextOrg: contextOrg])
         result.referenceYears = availableReferenceYears
 
         // CostItem ci
