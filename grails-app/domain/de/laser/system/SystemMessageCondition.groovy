@@ -28,9 +28,19 @@ class SystemMessageCondition {
         if (type == CONFIG.ERMS_6121) {
             if (BeanStore.getContextService().getOrg().isCustomerType_Inst() && BeanStore.getContextService().isInstEditor()) {
                 //check if there are reader numbers from current year
-                int now = Year.now().value
-                Set<ReaderNumber> check = ReaderNumber.executeQuery('select rn from ReaderNumber rn where rn.org = :contextOrg and year(rn.lastUpdated) = :currYear', [contextOrg: BeanStore.getContextService().getOrg(), currYear: now])
-                result = check.size() > 0
+                Calendar now = GregorianCalendar.getInstance(), timeCheck = GregorianCalendar.getInstance()
+                ReaderNumber check = ReaderNumber.findByOrgAndSemesterIsNotNull(BeanStore.getContextService().getOrg(), [sort: 'semester', order: 'desc'])
+                if(check) {
+                    timeCheck.setTime(check.lastUpdated)
+                    result = now.get(Calendar.YEAR) == timeCheck.get(Calendar.YEAR)
+                }
+                else {
+                    check = ReaderNumber.findByOrgAndYearIsNotNull(BeanStore.getContextService().getOrg(), [sort: 'year', order: 'desc'])
+                    if(check) {
+                        timeCheck.setTime(check.lastUpdated)
+                        result = now.get(Calendar.YEAR) == timeCheck.get(Calendar.YEAR)
+                    }
+                }
             }
             else {
                 result = true
