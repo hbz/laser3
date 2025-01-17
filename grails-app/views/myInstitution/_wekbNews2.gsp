@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.Wekb" %>
+<%@ page import="de.laser.system.SystemActivityProfiler; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.Wekb" %>
 <laser:serviceInjection />
 
 <g:if test="${tmplView == 'info' && wekbNews.counts.all > 0}">
@@ -7,14 +7,25 @@
 
         <div class="ui fluid card">
             <div class="content">
-                <div class="header">todo</div>
+                <div class="header">Dies und das (TODO)</div>
             </div>
             <div class="content">
-                todo
+                Derzeit sind ${SystemActivityProfiler.getNumberOfActiveUsers()} Benutzer online. <br />
+
+                <br />
+                <br />
+                <br />
+                <br />
+
+                <div class="ui red indeterminate progress">
+                    <div class="bar">
+                        <div class="progress">Vorsicht: Baustelle</div>
+                    </div>
+                </div>
             </div>
-            <div class="extra content">
-                todo
-            </div>
+%{--            <div class="extra content">--}%
+%{--                todo--}%
+%{--            </div>--}%
         </div>
 
         <div class="ui fluid card">

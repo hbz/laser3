@@ -369,6 +369,17 @@ body[class*="vendor"] .la-objectIsMine {
     color: #5d7c62;
 }
 
-/* TODO: org basic != pro */
+/* ERMS-6192 >>>>> customerType basic != pro */
+body[class*="Organisation"] .la-object-extended.grey + .la-additionalIcon .la-objectIsMine,
+body[class*="organisation"] .la-object-extended.grey + .la-additionalIcon .la-objectIsMine {
+    box-shadow: 0 0 0 0.1em #767676 inset !important;
+    color: #767676;
+}
+/* ERMS-6192 >>>>> customerType pro != basic */
+body[class*="Organisation"] .la-object-extended.teal + .la-additionalIcon .la-objectIsMine,
+body[class*="organisation"] .la-object-extended.teal + .la-additionalIcon .la-objectIsMine {
+    box-shadow: 0 0 0 0.1em #00B5AD inset !important;
+    color: #00B5AD;
+}
 
 
