@@ -345,6 +345,28 @@ class AjaxHtmlController {
         render template: '/survey/ieInfos', model: result
     }
 
+    @Secured(['ROLE_USER'])
+    def updatePricesSelection() {
+        Map<String,Object> result = [:]
+        String sub = params.sub ?: params.id
+        EhcacheWrapper userCache = contextService.getUserCache("/subscription/${params.referer}/${sub}")
+        Map<String,Object> cache = userCache.get('selectedTitles')
+        if(cache) {
+            Map checked = cache.get('checked')
+            Set<Long> tippIDs = []
+            checked.each { String key, String value ->
+                if(value == 'checked')
+                    tippIDs << Long.parseLong(key)
+            }
+            Map<String, Object> listPriceSums = issueEntitlementService.calculateListPriceSumsForTitles(tippIDs)
+            result.selectionListPriceEuro = listPriceSums.listPriceSumEUR
+            result.selectionListPriceUSD = listPriceSums.listPriceSumUSD
+            result.selectionListPriceGBP = listPriceSums.listPriceSumGBP
+        }
+
+        render template: '/templates/survey/priceList', model: result
+    }
+
     /**
      * Generates a list of selectable metrics or access types for the given report types in the statistics filter
      * @return a {@link List} of available metric types
