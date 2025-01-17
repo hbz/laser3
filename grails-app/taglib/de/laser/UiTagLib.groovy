@@ -657,14 +657,18 @@ class UiTagLib {
         }
         else if(object.hasProperty('retirementDate'))
             startDate = g.formatDate(date: object.retirementDate, format: ddf_notime)
+        Map params = [:]
+        if(attrs.tab)
+            params.tab = attrs.tab
         if (prev) {
             if (prev.size() == 1) {
                 prev.each { p ->
                     if (attrs.mapping) {
-                        out << g.link("<i class='arrow left icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: p.id], mapping: attrs.mapping)
+                        params.sub = p.id
+                        out << g.link("<i class='arrow left icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", params: params, mapping: attrs.mapping)
 
                     } else {
-                        out << g.link("<i class='arrow left icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", id: p.id)
+                        out << g.link("<i class='arrow left icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", params: params, id: p.id)
                     }
                 }
             } else {
@@ -681,9 +685,10 @@ class UiTagLib {
                         }
                     }
                     if (attrs.mapping) {
-                        out << g.link("<strong>${p instanceof License ? p.reference : p.name}:</strong> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: p.id], mapping: attrs.mapping)
+                        params.sub = p.id
+                        out << g.link("<strong>${p instanceof License ? p.reference : p.name}:</strong> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: params, mapping: attrs.mapping)
                     } else {
-                        out << g.link("<strong>${p instanceof License ? p.reference : p.name}:</strong> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", id: p.id)
+                        out << g.link("<strong>${p instanceof License ? p.reference : p.name}:</strong> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: params, id: p.id)
                     }
                 }
                 out << '</div> </div>'
@@ -701,10 +706,11 @@ class UiTagLib {
             if (next.size() == 1) {
                 next.each { n ->
                     if (attrs.mapping) {
-                        out << g.link("<i class='arrow right icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: n.id], mapping: attrs.mapping)
+                        params.sub = n.id
+                        out << g.link("<i class='arrow right icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", params: params, mapping: attrs.mapping)
 
                     } else {
-                        out << g.link("<i class='arrow right icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", id: n.id)
+                        out << g.link("<i class='arrow right icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", params: params, id: n.id)
                     }
                 }
             } else {
@@ -720,9 +726,10 @@ class UiTagLib {
                         }
                     }
                     if (attrs.mapping) {
-                        out << g.link("<strong>${n instanceof License ? n.reference : n.name}:</strong> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: n.id], mapping: attrs.mapping)
+                        params.sub = n.id
+                        out << g.link("<strong>${n instanceof License ? n.reference : n.name}:</strong> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: params, mapping: attrs.mapping)
                     } else {
-                        out << g.link("<strong>${n instanceof License ? n.reference : n.name}:</strong> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", id: n.id)
+                        out << g.link("<strong>${n instanceof License ? n.reference : n.name}:</strong> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: params, id: n.id)
                     }
                 }
                 out << '</div> </div>'
