@@ -29,9 +29,7 @@ class IconTagLib {
             case 'affiliation':
                 Role fr = contextService.getUser().formalRole
                 if (fr) {
-                    if (fr.authority == Role.INST_USER)   { icon = Icon.AUTH.INST_USER      + ' bordered inverted grey la-object-extended' }
-                    if (fr.authority == Role.INST_EDITOR) { icon = Icon.AUTH.INST_EDITOR    + ' bordered inverted grey la-object-extended' }
-                    if (fr.authority == Role.INST_ADM)    { icon = Icon.AUTH.INST_ADM       + ' bordered inverted grey la-object-extended' }
+                    icon = Icon.AUTH[fr.authority] + ' bordered inverted grey la-object-extended'
                 } else {
                     icon = 'icon user slash bordered inverted grey la-object-extended'
                 }
@@ -44,12 +42,7 @@ class IconTagLib {
                    CustomerTypeService.ORG_INST_BASIC.toLowerCase(),
                    CustomerTypeService.ORG_INST_PRO.toLowerCase(),
                    CustomerTypeService.ORG_SUPPORT.toLowerCase() ]:
-
-                     if (attrs.type.toLowerCase() == CustomerTypeService.ORG_CONSORTIUM_BASIC.toLowerCase()) { icon = Icon.AUTH.ORG_CONSORTIUM_BASIC + ' bordered inverted la-object-extended' }
-                else if (attrs.type.toLowerCase() == CustomerTypeService.ORG_CONSORTIUM_PRO.toLowerCase())   { icon = Icon.AUTH.ORG_CONSORTIUM_PRO + ' bordered inverted la-object-extended' }
-                else if (attrs.type.toLowerCase() == CustomerTypeService.ORG_INST_BASIC.toLowerCase())       { icon = Icon.AUTH.ORG_INST_BASIC + ' bordered inverted la-object-extended' }
-                else if (attrs.type.toLowerCase() == CustomerTypeService.ORG_INST_PRO.toLowerCase())         { icon = Icon.AUTH.ORG_INST_PRO + ' bordered inverted la-object-extended' }
-                else if (attrs.type.toLowerCase() == CustomerTypeService.ORG_SUPPORT.toLowerCase())          { icon = Icon.AUTH.ORG_SUPPORT + ' bordered inverted la-object-extended' }
+                icon = Icon.AUTH[attrs.type.toUpperCase()] + ' bordered inverted la-object-extended'
                 break
             case 'database':
                 icon = 'icon bordered la-object-database'
