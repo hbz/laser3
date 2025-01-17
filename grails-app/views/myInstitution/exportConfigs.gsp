@@ -5,7 +5,7 @@
     <ui:crumb message="menu.institutions.clickMeConfig" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon type="file" message="menu.institutions.clickMeConfig" total="${clickMeConfigsAllCount}" floated="true"/>
+<ui:h1HeaderWithIcon message="menu.institutions.clickMeConfig" total="${clickMeConfigsAllCount}" floated="true" type="${contextService.getOrg().getCustomerType()}"/>
 <br>
 <br>
 <br>

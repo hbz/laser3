@@ -21,7 +21,7 @@
     </ui:controlButtons>
 %{--</g:if>--}%
 
-<ui:h1HeaderWithIcon text="${orgInstance.name}" >
+<ui:h1HeaderWithIcon text="${orgInstance.name}" type="${orgInstance.getCustomerType()}">
     <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
 </ui:h1HeaderWithIcon>
 

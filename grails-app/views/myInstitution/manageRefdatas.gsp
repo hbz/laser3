@@ -7,7 +7,7 @@
         <ui:crumb message="menu.institutions.manage_props" class="active" />
     </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon message="menu.institutions.manage_props" />
+    <ui:h1HeaderWithIcon message="menu.institutions.manage_props" type="${contextService.getOrg().getCustomerType()}" />
 
     <laser:render template="nav" />
 

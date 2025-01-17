@@ -6,7 +6,7 @@
     <ui:crumb message="menu.my.workflows" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon message="menu.my.workflows" type="Workflow" total="${total}" floated="true" />
+<ui:h1HeaderWithIcon message="menu.my.workflows" type="workflow" total="${total}" floated="true" />
 
 <ui:filter>
     <form id="wfFilterForm" class="ui form">

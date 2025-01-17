@@ -36,8 +36,20 @@ class IconTagLib {
                     icon = 'icon user slash bordered inverted grey la-object-extended'
                 }
                 break
-            case [ 'consortium', CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO ]:
+            case 'consortium':
                 icon = Icon.AUTH.ORG_CONSORTIUM_PRO + ' bordered inverted la-object-extended'
+                break
+            case [ CustomerTypeService.ORG_CONSORTIUM_BASIC.toLowerCase(),
+                   CustomerTypeService.ORG_CONSORTIUM_PRO.toLowerCase(),
+                   CustomerTypeService.ORG_INST_BASIC.toLowerCase(),
+                   CustomerTypeService.ORG_INST_PRO.toLowerCase(),
+                   CustomerTypeService.ORG_SUPPORT.toLowerCase() ]:
+                println "!!!!!!!!!!!"
+                     if (attrs.type.toLowerCase() == CustomerTypeService.ORG_CONSORTIUM_BASIC.toLowerCase()) { icon = Icon.AUTH.ORG_CONSORTIUM_BASIC + ' bordered inverted la-object-extended' }
+                else if (attrs.type.toLowerCase() == CustomerTypeService.ORG_CONSORTIUM_PRO.toLowerCase())   { icon = Icon.AUTH.ORG_CONSORTIUM_PRO + ' bordered inverted la-object-extended' }
+                else if (attrs.type.toLowerCase() == CustomerTypeService.ORG_INST_BASIC.toLowerCase())       { icon = Icon.AUTH.ORG_INST_BASIC + ' bordered inverted la-object-extended' }
+                else if (attrs.type.toLowerCase() == CustomerTypeService.ORG_INST_PRO.toLowerCase())         { icon = Icon.AUTH.ORG_INST_PRO + ' bordered inverted la-object-extended' }
+                else if (attrs.type.toLowerCase() == CustomerTypeService.ORG_SUPPORT.toLowerCase())          { icon = Icon.AUTH.ORG_SUPPORT + ' bordered inverted la-object-extended' }
                 break
             case 'database':
                 icon = 'icon bordered la-object-database'
@@ -54,7 +66,7 @@ class IconTagLib {
             case 'help':
                 icon = Icon.UI.HELP + ' bordered inverted grey la-object-extended'
                 break
-            case [ 'institution', CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO ]:
+            case 'institution':
                 icon = Icon.AUTH.ORG_INST_PRO + ' bordered inverted la-object-extended'
                 break
             case [ 'journal', 'serial' ]:
@@ -77,6 +89,9 @@ class IconTagLib {
                 break
             case 'subscription':
                 icon = Icon.SUBSCRIPTION + ' bordered inverted orange la-object-extended'
+                break
+            case 'support':
+                icon = Icon.AUTH.ORG_SUPPORT + ' bordered inverted la-object-extended'
                 break
             case 'survey':
                 icon = Icon.SURVEY + ' bordered inverted pink la-object-extended'

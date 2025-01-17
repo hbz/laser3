@@ -8,7 +8,7 @@
 		<ui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
 	</ui:breadcrumbs>
 
-		<ui:h1HeaderWithIcon message="default.create.label" args="[entityName]" />
+		<ui:h1HeaderWithIcon message="default.create.label" args="[entityName]" type="institution"/>
 
 		<ui:messages data="${flash}" />
 

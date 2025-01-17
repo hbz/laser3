@@ -24,8 +24,8 @@
     <laser:render template="${customerTypeService.getActionsTemplatePath()}" model="${[org: orgInstance, user: user]}"/>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon text="${orgInstance.name}" >
-    <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
+<ui:h1HeaderWithIcon text="${orgInstance.name}" type="${orgInstance.getCustomerType()}">
+    <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}" />
 </ui:h1HeaderWithIcon>
 
 <ui:anualRings object="${orgInstance}" controller="organisation" action="show" navNext="${navNextOrg}"

@@ -10,7 +10,7 @@
 <laser:render template="breadcrumb"
               model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView, consortialView: consortialView]}"/>
 
-<ui:h1HeaderWithIcon text="${orgInstance.name}">
+<ui:h1HeaderWithIcon text="${orgInstance.name}" type="${orgInstance.getCustomerType()}">
     <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
 </ui:h1HeaderWithIcon>
 
