@@ -326,6 +326,7 @@
 
     JSPC.app.ajaxDropdown($("#selectedPackages"), "${createLink([controller:"ajaxJson", action:"lookupPackages"])}?query={query}", '');
 
+    /*
     $('.packagesForm').form({
         on: 'blur',
         inline: true,
@@ -341,6 +342,7 @@
             }
         }
     });
+    */
 </laser:script>
 
 

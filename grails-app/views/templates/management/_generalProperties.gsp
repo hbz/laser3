@@ -544,7 +544,7 @@
                         prompt: '<g:message code="validation.endDateBeforeStartDate"/>'
                     }
                 ]
-            },
+            }/*,
             noSubscription: {
                 identifier: 'selectedSubs',
                 rules: [
@@ -554,6 +554,7 @@
                     }
                 ]
             }
+            */
         }
     });
 </laser:script>
