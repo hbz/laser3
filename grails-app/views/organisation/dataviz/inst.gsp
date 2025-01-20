@@ -1,4 +1,4 @@
-<%@ page import="de.laser.wekb.Provider; de.laser.ui.Icon; de.laser.ui.EChart; java.time.Year; de.laser.finance.CostItem; de.laser.RefdataValue; de.laser.survey.SurveyInfo; de.laser.wekb.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.addressbook.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.addressbook.PersonRole; de.laser.addressbook.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.addressbook.Contact" %>
+<%@ page import="de.laser.wekb.Provider; de.laser.ui.Icon; de.laser.ui.EChart; java.time.Year; de.laser.finance.CostItem; de.laser.RefdataValue; de.laser.survey.SurveyInfo; de.laser.wekb.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.addressbook.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.addressbook.PersonRole; de.laser.addressbook.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting; de.laser.Combo; de.laser.addressbook.Contact" %>
 
 <laser:htmlStart message="menu.institutions.org.info">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
@@ -25,7 +25,7 @@
 
     <div class="ui grid" style="margin-top:1em">
         <div class="four wide column">
-            <laser:render template="info/partial" model="${[context: 'consAtInst']}"/>
+            <laser:render template="dataviz/partial" model="${[context: 'inst']}"/>
 
             <div class="stats_subscription stats-menu">
                 <div class="ui tiny header">${message(code: 'subscription.periodOfValidity.label')}</div>
@@ -35,13 +35,6 @@
                     </g:each>
 %{--                    <a href="#" class="item" data-tab="year-*"> Alle </a>--}%
                 </div>
-
-%{--                <div class="ui tiny header">${message(code: 'subscription.referenceYear.label')}</div>--}%
-%{--                <div class="ui secondary wrapping menu">--}%
-%{--                    <g:each in="${surveyTimelineMap.keySet()}" var="year">--}%
-%{--                        <a href="#" class="item" data-tab="referenceYear-${year}"> ${year} </a>--}%
-%{--                    </g:each>--}%
-%{--                </div>--}%
 
                 <div class="ui tiny header">${message(code: 'subscription.status.label')}</div>
                 <div class="ui secondary wrapping menu la-tab-with-js">
@@ -83,13 +76,6 @@
 %{--                    <a href="#" class="item" data-tab="year-*"> Alle </a>--}%
                 </div>
 
-%{--                <div class="ui tiny header">${message(code: 'subscription.referenceYear.label')}</div>--}%
-%{--                <div class="ui secondary wrapping menu">--}%
-%{--                    <g:each in="${surveyTimelineMap.keySet()}" var="year">--}%
-%{--                        <a href="#" class="item" data-tab="referenceYear-${year}"> ${year} </a>--}%
-%{--                    </g:each>--}%
-%{--                </div>--}%
-
                 <div class="ui tiny header">${message(code: 'provider.label')}</div>
                 <div class="ui secondary wrapping menu la-tab-with-js">
                     <g:each in="${providerMap}" var="prov,subList" status="i">
@@ -101,32 +87,33 @@
                 </div>
             </div>
 
-            <div class="stats_survey stats-menu">
-                <div class="ui tiny header">${message(code: 'subscription.periodOfValidity.label')}</div>
-                <div class="ui secondary wrapping menu">
-                    <g:each in="${surveyTimelineMap.keySet()}" var="year">
-                        <a href="#" class="item" data-tab="year-${year}"> ${year} </a>
-                    </g:each>
-%{--                    <a href="#" class="item" data-tab="year-*"> Alle </a>--}%
-                </div>
+%{--            <div class="stats_survey stats-menu">--}%
+%{--                <div class="ui tiny header">${message(code: 'subscription.periodOfValidity.label')}</div>--}%
+%{--                <div class="ui secondary wrapping menu">--}%
+%{--                    <g:each in="${surveyTimelineMap.keySet()}" var="year">--}%
+%{--                        <a href="#" class="item" data-tab="year-${year}"> ${year} </a>--}%
+%{--                    --}%%{--                        <a href="#" class="item ${year == Year.now().toString() ? 'active' : ''}" data-tab="year-${year}"> ${year} </a>--}%
+%{--                    </g:each>--}%
+%{--                <a href="#" class="item" data-tab="year-*"> Alle </a>--}%
+%{--                </div>--}%
 
-                <div class="ui tiny header">${message(code: 'default.status.label')}</div>
-                <div class="ui secondary wrapping menu la-tab-with-js">
-                    <g:each in="${surveyMap}" var="surveyStatus,surveyData">
-                        <a href="#" class="item ${surveyStatus == 'open' ? 'active' : ''}" data-tab="survey-${surveyStatus}">
-                            <uiSurvey:virtualState status="${surveyStatus}" />
-                            <span class="ui blue circular tiny label">${surveyData.size()}</span>
-                        </a>
-                    </g:each>
-                </div>
+%{--                <div class="ui tiny header">${message(code: 'default.status.label')}</div>--}%
+%{--                <div class="ui secondary wrapping menu la-tab-with-js">--}%
+%{--                    <g:each in="${surveyMap}" var="surveyStatus,surveyData">--}%
+%{--                        <a href="#" class="item ${surveyStatus == 'open' ? 'active' : ''}" data-tab="survey-${surveyStatus}">--}%
+%{--                            <uiSurvey:virtualState status="${surveyStatus}" />--}%
+%{--                            <span class="ui blue circular tiny label">${surveyData.size()}</span>--}%
+%{--                        </a>--}%
+%{--                    </g:each>--}%
+%{--                </div>--}%
 
-                <div>
-                    <span class="ui checkbox">
-                        <label for="survey-toggle-subscriptions">Lizenzen anzeigen</label>
-                        <input type="checkbox" id="survey-toggle-subscriptions">
-                    </span>
-                </div>
-            </div>
+%{--                <div>--}%
+%{--                    <span class="ui checkbox">--}%
+%{--                        <label for="survey-toggle-subscriptions">Lizenzen anzeigen</label>--}%
+%{--                        <input type="checkbox" id="survey-toggle-subscriptions">--}%
+%{--                    </span>--}%
+%{--                </div>--}%
+%{--            </div>--}%
         </div>
         <div class="twelve wide column">
 
@@ -143,33 +130,38 @@
                             <thead>
                                 <tr>
                                     <g:if test="${subStatus != RDStore.SUBSCRIPTION_CURRENT}">
-                                        <th class="ten wide">${message(code:'subscription.label')}</th>
+                                        <th class="six wide">${message(code:'subscription.label')}</th>
+                                        <th class="four wide">${message(code:'consortium.label')}</th>
                                     </g:if>
                                     <g:else>
-                                        <th class="nine wide">${message(code:'subscription.label')}</th>
+                                        <th class="five wide">${message(code:'subscription.label')}</th>
+                                        <th class="four wide">${message(code:'consortium.label')}</th>
                                         <th class="one wide"><ui:usageIcon /></th>
                                     </g:else>
                                     <th class="one wide"><ui:multiYearIcon /></th>
                                     <th class="one wide">${message(code:'subscription.referenceYear.label.shy')}</th>
-                                    <th class="two wide">${message(code:'subscription.startDate.label')}</th>
-                                    <th class="two wide">${message(code:'subscription.endDate.label')}</th>
+                                    <th class="one wide">${message(code:'subscription.startDate.label')}</th>
+                                    <th class="one wide">${message(code:'subscription.endDate.label')}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <g:each in="${subList}" var="subId">
                                     <g:set var="sub" value="${Subscription.get(subId)}" />
+                                    <g:set var="orgCons" value="${sub.getConsortium()}" />
                                     <tr data-id="${subId}" data-referenceYear="${sub.referenceYear}">
                                         <td>
                                             <div class="la-flexbox la-minor-object">
                                                 <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                                 <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
-
-                                                <g:if test="${OrgRole.findBySubAndOrgAndRoleType(sub, orgInstance, RDStore.OR_SUBSCRIBER_CONS_HIDDEN)}">
-                                                    <span class="ui icon la-popup-tooltip" data-content="${message(code:'subscription.details.hiddenForSubscriber')}" style="margin-left:1em">
-                                                        <i class="${Icon.SIG.VISIBLE_OFF} orange"></i>
-                                                    </span>
-                                                </g:if>
                                             </div>
+                                        </td>
+                                        <td>
+                                            <g:if test="${orgCons}">
+                                                <div class="la-flexbox la-minor-object">
+                                                    <i class="${Icon.ORG} la-list-icon"></i>
+                                                    <g:link controller="org" action="show" id="${orgCons.id}" target="_blank">${orgCons.name}</g:link>
+                                                </div>
+                                            </g:if>
                                         </td>
                                         <g:if test="${subStatus == RDStore.SUBSCRIPTION_CURRENT}">
                                             <td>
@@ -208,21 +200,31 @@
                         <table class="ui table very compact">
                             <thead>
                             <tr>
-                                <th class="ten wide">${message(code:'license.label')}</th>
+                                <th class="six wide">${message(code:'license.label')}</th>
+                                <th class="six wide">${message(code:'consortium.label')}</th>
                                 <th class="two wide">${message(code:'license.openEnded.label')}</th>
-                                <th class="two wide">${message(code:'license.startDate.label')}</th>
-                                <th class="two wide">${message(code:'license.endDate.label')}</th>
+                                <th class="one wide">${message(code:'license.startDate.label')}</th>
+                                <th class="one wide">${message(code:'license.endDate.label')}</th>
                             </tr>
                             </thead>
                             <tbody>
                                 <g:each in="${licList}" var="licId">
                                     <g:set var="lic" value="${License.get(licId)}" />
+                                    <g:set var="orgCons" value="${lic.getLicensingConsortium()}" />
                                     <tr data-id="${licId}">
                                         <td>
                                             <div class="la-flexbox la-minor-object">
                                                 <i class="${Icon.LICENSE} la-list-icon"></i>
                                                 <g:link controller="license" action="show" id="${lic.id}" target="_blank">${lic.reference}</g:link>
                                             </div>
+                                        </td>
+                                        <td>
+                                            <g:if test="${orgCons}">
+                                                <div class="la-flexbox la-minor-object">
+                                                    <i class="${Icon.ORG} la-list-icon"></i>
+                                                    <g:link controller="org" action="show" id="${orgCons.id}" target="_blank">${orgCons.name}</g:link>
+                                                </div>
+                                            </g:if>
                                         </td>
                                         <td> ${lic.openEnded?.getI10n('value')} </td>
                                         <td> <g:formatDate formatName="default.date.format.notime" date="${lic.startDate}"/> </td>
@@ -246,24 +248,34 @@
                         <table class="ui table very compact">
                             <thead>
                             <tr>
-                                <th class="seven wide">${message(code:'subscription.label')}</th>
+                                <th class="five wide">${message(code:'subscription.label')}</th>
+                                <th class="four wide">${message(code:'consortium.label')}</th>
                                 <th class="two wide">${message(code:'default.status.label')}</th>
                                 <th class="one wide"><ui:usageIcon /></th>
                                 <th class="one wide"><ui:multiYearIcon /></th>
                                 <th class="one wide">${message(code:'subscription.referenceYear.label.shy')}</th>
-                                <th class="two wide">${message(code:'subscription.startDate.label')}</th>
-                                <th class="two wide">${message(code:'subscription.endDate.label')}</th>
+                                <th class="one wide">${message(code:'subscription.startDate.label')}</th>
+                                <th class="one wide">${message(code:'subscription.endDate.label')}</th>
                             </tr>
                             </thead>
                             <tbody>
                                 <g:each in="${subList}" var="subId">
                                     <g:set var="sub" value="${Subscription.get(subId)}" />
+                                    <g:set var="orgCons" value="${sub.getConsortium()}" />
                                     <tr data-id="${subId}" data-referenceYear="${sub.referenceYear}">
                                         <td>
                                             <div class="la-flexbox la-minor-object">
                                                 <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                                                 <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
                                             </div>
+                                        </td>
+                                        <td>
+                                            <g:if test="${orgCons}">
+                                                <div class="la-flexbox la-minor-object">
+                                                    <i class="${Icon.ORG} la-list-icon"></i>
+                                                    <g:link controller="org" action="show" id="${orgCons.id}" target="_blank">${orgCons.name}</g:link>
+                                                </div>
+                                            </g:if>
                                         </td>
                                         <td>
                                             ${sub.status.getI10n('value')}
@@ -305,7 +317,7 @@
                             <thead>
                             <tr>
                                 <th class="six wide">${message(code:'survey.label')}</th>
-                                <th class="one wide"></th>
+                                <th class="two wide">${message(code:'surveyInfo.owner.label')}</th>
                                 <th class="one wide"></th>
                                 <th class="one wide"></th>
                                 <th class="one wide"></th>
@@ -313,11 +325,11 @@
                                 <th class="one wide">Teilnahme</th>
                                 <th class="one wide">${message(code:'surveyInfo.type.label')}</th>
                                 <th class="one wide">${message(code:'default.endDate.label')}</th>
-                                <th class="two wide">${message(code:'default.status.label')}</th>
+                                <th class="one wide">${message(code:'default.status.label')}</th>
                             </tr>
                             <tr data-ctype="survey-subsciption" class="hidden">
                                 <th class="six wide">${message(code:'subscription.label')}</th>
-                                <th class="one wide">${message(code:'default.status.label')}</th>
+                                <th class="two wide">${message(code:'default.status.label')}</th>
                                 <th class="one wide"><ui:multiYearIcon /></th>
                                 <th class="one wide">${message(code:'subscription.referenceYear.label.shy')}</th>
                                 <th class="one wide">${message(code:'subscription.startDate.label')}</th>
@@ -325,7 +337,7 @@
                                 <th class="one wide"></th>
                                 <th class="one wide"></th>
                                 <th class="one wide"></th>
-                                <th class="two wide"></th>
+                                <th class="one wide"></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -333,6 +345,7 @@
                                 <g:set var="surveyInfo" value="${surveyStruct[0]}" />
                                 <g:set var="surveyConfig" value="${surveyStruct[1]}" />
                                 <g:set var="surveyOrg" value="${surveyStruct[2]}" />
+                                <g:set var="orgCons" value="${surveyInfo.owner}" />
 
                                 <tr data-id="${surveyInfo.id}">
                                     <td>
@@ -341,11 +354,14 @@
                                             <g:link controller="survey" action="show" id="${surveyInfo.id}" target="_blank">${surveyInfo.name}</g:link>
                                         </div>
                                     </td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
+                                    <td colspan="5">
+                                        <g:if test="${orgCons}">
+                                            <div class="la-flexbox la-minor-object">
+                                                <i class="${Icon.ORG} la-list-icon"></i>
+                                                <g:link controller="org" action="show" id="${orgCons.id}" target="_blank">${orgCons.name}</g:link>
+                                            </div>
+                                        </g:if>
+                                    </td>
                                     <td>
                                         <g:if test="${surveyOrg.finishDate}">
                                             <g:formatDate formatName="default.date.format.notime" date="${surveyOrg.finishDate}"/>
@@ -418,7 +434,7 @@
                     <tbody>
                         <g:each in="${costs.costItems}" var="ci" status="jj">
                             <%
-                                String dataTooltip = message(code:'financials.costItemConfiguration.notSet')
+                                String dataTooltip  = message(code:'financials.costItemConfiguration.notSet')
                                 String icon = Icon.FNC.COST_NOT_SET
 
                                 switch (ci.costItemElementConfiguration) {
@@ -571,7 +587,6 @@
                             name    : '${RefdataValue.get(status).getI10n('value')}',
                             type    : 'bar',
                             stack   : 'total',
-    %{--                        emphasis: { focus: 'series' },--}%
                             animation : false,
                             data    : [${subscriptionTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
                             raw     : [${subscriptionTimelineMap.values().collect{ it[status] ?: [] }.join(', ')}],
@@ -583,8 +598,6 @@
                             type    : 'line',
                             smooth  : true,
                             lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
-%{--                            areaStyle: {},--}%
-    %{--                        emphasis: { focus: 'series' },--}%
                             animation : false,
                             data    : [<%
                                         List<Long> subsPerYear = subscriptionTimelineMap.values().collect{ it.values().flatten() }
@@ -593,6 +606,19 @@
                                         }.join(', ')
                                         %>],
                             color   : JSPC.colors.hex.pink
+                        },
+                        {
+                            name    : '${RDStore.SUBSCRIPTION_TYPE_LOCAL.getI10n('value')}',
+                            type    : 'line',
+                            smooth  : true,
+                            lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
+                            animation : false,
+                            data    : [<%
+                                print subsPerYear.collect {
+                                    it.collect{ Subscription.get(it).type == RDStore.SUBSCRIPTION_TYPE_LOCAL ? 1 : 0 }.sum() ?: 0
+                                }.join(', ')
+                            %>],
+                            color   : JSPC.colors.hex.ice
                         },
                 ],
                 xAxis: {
@@ -614,7 +640,6 @@
                             name    : '${RefdataValue.get(status).getI10n('value')}',
                             type    : 'bar',
                             stack   : 'total',
-    %{--                        emphasis: { focus: 'series' },--}%
                             animation : false,
                             data    : [${licenseTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
                             raw     : [${licenseTimelineMap.values().collect{ it[status] ?: [] }.join(', ')}],
@@ -626,8 +651,6 @@
                             type    : 'line',
                             smooth  : true,
                             lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
-%{--                            areaStyle: {},--}%
-    %{--                        emphasis: { focus: 'series' },--}%
                             animation : false,
                             data    : [<%
                                         List<Long> licsPerYear = licenseTimelineMap.values().collect{ it.values().flatten() }
@@ -657,9 +680,6 @@
                         name    : '<% print Provider.get(provider).name.replaceAll("'", "\\\\'") %>',
                         type    : 'bar',
                         stack   : 'total',
-%{--                        areaStyle : {},--}%
-%{--                        smooth  : true,--}%
-                %{--                        emphasis: { focus: 'series' },--}%
                         animation : false,
                         data    : [${providerTimelineMap.values().collect{ it[provider] ? it[provider].size() : 0 }.join(', ')}],
                         raw     : [${providerTimelineMap.values().collect{ it[provider] ?: [] }.join(', ')}]
@@ -678,63 +698,55 @@
                 },
                 grid:   JSPC.app.info.chart_config_helper.grid,
             },
-            survey: {
-                tooltip: JSPC.app.info.chart_config_helper.tooltip,
-                series: [
-                    <g:each in="${surveyTimelineMap.values().collect{ it.keySet() }.flatten().unique()}" var="status"> %{-- sort --}%
-                        {
-                            name    : '<uiSurvey:virtualState status="${status}" />',
-                            type    : 'bar',
-                            stack   : 'total',
-                    %{--                        emphasis: { focus: 'series' },--}%
-                            animation : false,
-                            data    : [${surveyTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],
-                            raw     : [${surveyTimelineMap.values().collect{ it[status] ? it[status].collect{ it[0].id } : [] }.join(', ')}],
-                            color   : ${EChart.getJspcColorBySurveyVirtualStatus(status)}
-                        },
-                    </g:each>
-                    <g:set var="surveyTypeTimeline" value="${surveyTimelineMap.values().collect{ it.values().collect{ it.collect{ it[0].type }}.flatten()}}" />
-                    <g:each in="${surveyTypeTimeline.flatten().unique()}" var="type">
-                        {
-                            name    : '${type.getI10n('value')}',
-                            type    : 'line',
-%{--                            stack   : 'total_type',--}%
-                            smooth  : true,
-                            lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
-%{--                            areaStyle: {},--}%
-%{--                emphasis: { focus: 'series' },--}%
-                            animation : false,
-                            data    : ${surveyTypeTimeline.collect{ it.findAll{ it2 -> it2 == type }.size() }},
-                            color   : '${EChart.getHexColorBySurveyType(type)}'
-                        },
-                    </g:each>
-                ],
-                xAxis: {
-                    type: 'category',
-                    data: [${surveyTimelineMap.keySet().join(', ')}]
-                },
-                yAxis:  { type: 'value' },
-                legend: {
-                    bottom: 0,
-                    selectedMode: false
-                },
-                grid:   JSPC.app.info.chart_config_helper.grid,
-            },
+%{--            survey: {--}%
+%{--                tooltip: JSPC.app.info.chart_config_helper.tooltip,--}%
+%{--                series: [--}%
+%{--                    <g:each in="${surveyTimelineMap.values().collect{ it.keySet() }.flatten().unique()}" var="status"> --}%%{-- sort --}%
+%{--                        {--}%
+%{--                            name    : '<uiSurvey:virtualState status="${status}" />',--}%
+%{--                            type    : 'bar',--}%
+%{--                            stack   : 'total',--}%
+%{--                            data    : [${surveyTimelineMap.values().collect{ it[status] ? it[status].size() : 0 }.join(', ')}],--}%
+%{--                            raw     : [${surveyTimelineMap.values().collect{ it[status] ? it[status].collect{ it[0].id } : [] }.join(', ')}],--}%
+%{--                            color   : ${EChart.getColorBySurveyVirtualStatus(status)} --}%
+%{--                        },--}%
+%{--                    </g:each>--}%
+%{--                    <g:set var="surveyTypeTimeline" value="${surveyTimelineMap.values().collect{ it.values().collect{ it.collect{ it[0].type }}.flatten()}}" />--}%
+%{--                    <g:each in="${surveyTypeTimeline.flatten().unique()}" var="type">--}%
+%{--                        {--}%
+%{--                            name    : '${type.getI10n('value')}',--}%
+%{--                            type    : 'line',--}%
+%{--                            smooth  : true,--}%
+%{--                            lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,--}%
+%{--                            data    : ${surveyTypeTimeline.collect{ it.findAll{ it2 -> it2 == type }.size() }},--}%
+%{--                            color   : '${EChart.getHexColorBySurveyType(type)}'--}%
+%{--                        },--}%
+%{--                    </g:each>--}%
+%{--                ],--}%
+%{--                xAxis: {--}%
+%{--                    type: 'category',--}%
+%{--                    data: [${surveyTimelineMap.keySet().join(', ')}]--}%
+%{--                },--}%
+%{--                yAxis:  { type: 'value' },--}%
+%{--                legend: { bottom: 0, selectedMode: false },--}%
+%{--                grid:   JSPC.app.info.chart_config_helper.grid,--}%
+%{--            },--}%
         };
 
         JSPC.app.info.charts = {
             subscription :  echarts.init ($('#cw-subscription')[0]),
             license :       echarts.init ($('#cw-license')[0]),
             provider :      echarts.init ($('#cw-provider')[0]),
-            survey :        echarts.init ($('#cw-survey')[0])
+%{--            survey :        echarts.init ($('#cw-survey')[0])--}%
         }
 
         JSPC.app.info.charts.subscription.setOption (JSPC.app.info.chart_config.subscription);
         JSPC.app.info.charts.license.setOption (JSPC.app.info.chart_config.license);
         JSPC.app.info.charts.provider.setOption (JSPC.app.info.chart_config.provider);
-        JSPC.app.info.charts.survey.setOption (JSPC.app.info.chart_config.survey);
+%{--        JSPC.app.info.charts.survey.setOption (JSPC.app.info.chart_config.survey);--}%
 
-        $( ['subscription', 'license', 'provider', 'survey'] ).each( function(i) {
+%{--        $( ['subscription', 'license', 'provider', 'survey'] ).each( function(i) {--}%
+        $( ['subscription', 'license', 'provider'] ).each( function(i) {
             let statsId     = '.stats_' + this
             let chart       = JSPC.app.info.charts[this]
             let chartConfig = JSPC.app.info.chart_config[this]
@@ -763,7 +775,6 @@
                     }
                 })
                 // chart.dispatchAction({ type: 'select', dataIndex: y })
-                // chart.dispatchAction({ type: 'highlight', seriesIndex: s, dataIndex: y })
                 $($(statsId + ' .menu .item[data-tab^=' + t + ']')[s]).trigger('click')
 
                 $(statsId + ' .menu .item[data-tab^=year-]').removeClass('active')
@@ -772,7 +783,8 @@
 
         });
 
-        $( ['subscription', 'license', 'provider', 'survey'] ).each( function(i) {
+%{--        $( ['subscription', 'license', 'provider', 'survey'] ).each( function(i) {--}%
+        $( ['subscription', 'license', 'provider'] ).each( function(i) {
             let statsId = '.stats_' + this
             let chart   = JSPC.app.info.charts[this]
 %{--            console.log( statsId + ' ' + chart )--}%
@@ -786,14 +798,6 @@
                 let y = $(this).attr('data-tab')
                 if (y == 'year-*') {
 %{--                    $(statsId + ' tr[data-id]').show()--}%
-
-%{--                    $.each( $(statsId + ' .menu .item[data-tab^=' + statsId.replace('.stats_', '') + ']'), function(i, e) {--}%
-%{--                        let $tab = $(statsId + '.stats-content .tab[data-tab=' + $(e).attr('data-tab') + '])')  // survey problem--}%
-%{--                        JSPC.app.info.setCounter($(e), $tab.find('tr[data-id]').length)--}%
-
-%{--                        console.log($(e).attr('data-tab'))--}%
-%{--                        console.log($tab)--}%
-%{--                    })--}%
                 }
                 else {
                     $years.each( function(i, e) {
@@ -807,13 +811,13 @@
             $(statsId + ' .menu .item[data-tab=year-${Year.now()}]').trigger('click'); // init
         });
 
-        $('#survey-toggle-subscriptions').on('change', function() {
-            if ($(this).prop('checked')) {
-                $('table *[data-ctype=survey-subsciption]').removeClass('hidden')
-            } else {
-                $('table *[data-ctype=survey-subsciption]').addClass('hidden')
-            }
-        })
+%{--        $('#survey-toggle-subscriptions').on('change', function() {--}%
+%{--            if ($(this).prop('checked')) {--}%
+%{--                $('table *[data-ctype=survey-subsciption]').removeClass('hidden')--}%
+%{--            } else {--}%
+%{--                $('table *[data-ctype=survey-subsciption]').addClass('hidden')--}%
+%{--            }--}%
+%{--        })--}%
 
     </laser:script>
 

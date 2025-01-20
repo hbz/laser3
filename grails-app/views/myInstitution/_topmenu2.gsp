@@ -1,11 +1,11 @@
 <%@ page import="de.laser.CustomerTypeService; de.laser.ui.Icon" %>
 
-<div class="ui fluid card" style="margin-bottom: 2em">
-    <div class="content" style="padding-bottom: 0">
+<div class="ui fluid card" id="dashboard-topmenu">
+    <div class="content">
         <div class="ui four column grid">
 
             <div class="column">
-                <div class="ui vertical fluid secondary menu">
+                <div class="ui vertical fluid secondary compact menu">
                     <g:link class="item" controller="myInstitution" action="currentSubscriptions">
                         <i class="${Icon.SUBSCRIPTION} la-list-icon"></i> ${message(code:'menu.my.subscriptions')}
                     </g:link>
@@ -26,7 +26,7 @@
                 </div>
             </div><!-- .column -->
             <div class="column">
-                <div class="ui vertical fluid secondary menu">
+                <div class="ui vertical fluid secondary compact menu">
                     <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="tasks" message="menu.my.tasks" icon="${Icon.TASK} la-list-icon" />
 
                     <g:if test="${contextService.getOrg().isCustomerType_Support()}">
@@ -49,7 +49,7 @@
                 </div>
             </div><!-- .column -->
             <div class="column">
-                <div class="ui vertical fluid secondary menu">
+                <div class="ui vertical fluid secondary compact menu">
                     <g:link class="item" controller="org" action="show" id="${contextService.getOrg().id}">
                         <i class="${Icon.ORG} la-list-icon"></i> ${message(code: 'menu.institutions.org.show')}
                     </g:link>
@@ -58,7 +58,7 @@
                 </div>
             </div><!-- .column -->
             <div class="column">
-                <div class="ui vertical fluid secondary menu">
+                <div class="ui vertical fluid secondary compact menu">
                     <g:if test="${contextService.getOrg().isCustomerType_Support()}">
                         <ui:securedMainNavItem specRole="ROLE_ADMIN" controller="myInstitution" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" icon="${Icon.ORG} la-list-icon" />
                         <ui:securedMainNavItem controller="myInstitution" action="subscriptionsManagement" message="menu.institutions.subscriptionsManagement" icon="${Icon.SUBSCRIPTION} la-list-icon" />
@@ -83,5 +83,13 @@
 </div>
 
 <style>
-    .list .item .content .disabled { color:lightgrey }
+#dashboard-topmenu {
+    margin-bottom: 2em;
+}
+#dashboard-topmenu > .content {
+    padding-bottom: 0;
+}
+#dashboard-topmenu .menu .item {
+    margin-bottom: 0;
+}
 </style>

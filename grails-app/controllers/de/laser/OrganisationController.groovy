@@ -820,7 +820,7 @@ class OrganisationController  {
         ctx.contextService.isInstUser()
     })
     @Check404(domain=Org)
-    def info() {
+    def dataviz() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         Map<String,Object> info = [:]
         String view = ''
@@ -837,11 +837,11 @@ class OrganisationController  {
         }
         else if (ctxOrg.isCustomerType_Consortium() && org.isCustomerType_Inst()) {
             info = infoService.getInfo_ConsAtInst(ctxOrg, org)
-            view = 'info/info_consAtInst'
+            view = 'dataviz/consAtInst'
         }
         else if (ctxOrg.isCustomerType_Inst() && ctxOrg == org) {
             info = infoService.getInfo_Inst(ctxOrg)
-            view = 'info/info_inst'
+            view = 'dataviz/inst'
         }
 
         result.subscriptionMap          = info.subscriptionMap
