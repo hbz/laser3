@@ -2107,7 +2107,7 @@ class ExportService {
 		if(style)
 			style = "'${style}'"
 		else if(format == ExportService.EXCEL && configMap.containsKey('perpetuallyPurchasedTitleURLs')) {
-			style = "(select case when tipp_host_platform_url = any(:perpetuallyPurchasedTitleURLs) then 'negative' else null end case)"
+			style = "(select case when tipp_host_platform_url = any(:perpetuallyPurchasedTitleURLs) then 'negative' else null end)"
 			arrayParams.perpetuallyPurchasedTitleURLs = configMap.perpetuallyPurchasedTitleURLs
 		}
 		if(format == ExportService.KBART)
@@ -2134,7 +2134,7 @@ class ExportService {
 		}
 		if(!configMap.containsKey('usageData') && configMap.withPick == true) {
 			rowQuery += ","
-			rowQuery += "create_cell('${format}', (select ${valueCol} from refdata_value where rdv_id = (select case when tipp_host_platform_url = any(:perpetuallyPurchasedTitleURLs) then ${RDStore.YN_NO.id} else ${RDStore.YN_YES.id} end case)), ${style}) as selectable,"
+			rowQuery += "create_cell('${format}', (select ${valueCol} from refdata_value where rdv_id = (select case when tipp_host_platform_url = any(:perpetuallyPurchasedTitleURLs) then ${RDStore.YN_NO.id} else ${RDStore.YN_YES.id} end)), ${style}) as selectable,"
 			rowQuery += "create_cell('${format}', null, ${style}) as pick"
 		}
 		if(tippIDs) {
