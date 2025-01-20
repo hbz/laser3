@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6197    20.01.2024  dev     3.5         Andreas Bug         Filterfelder wurden nicht vorbelegt
+
 6196    20.01.2024  dev     3.5         David   Feature     Icons für Einrichtungen/Konsortialmanager
 
 6180    20.01.2024  dev     3.5         David   Feature     PublicController überarbeiten (Sicherheit)
