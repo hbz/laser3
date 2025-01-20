@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6180    20.01.2024  dev     3.5         David   Feature     PublicController überarbeiten (Sicherheit)
+
 6195    17.01.2024  dev     3.5         Andreas Feature     Beibehaltung eines eventuell aktiven Reiters
 
 6128    16.01.2024  dev     3.5         Andreas Bug         An-/Abwählen aller Lieferanten wirkte sich nur auf aktuelle Seite aus

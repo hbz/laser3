@@ -10,17 +10,6 @@
 <ui:h1HeaderWithIcon text="${message(code: 'releaseNotes')} (${AppUtils.getMeta('info.app.version')})" type="help"/>
 %{--<ui:h1HeaderWithIcon text="${message(code: 'releaseNotes')} (${AppUtils.getMeta('info.app.version')} / ${AppUtils.getMeta('info.app.build.date')})" type="help"/>--}%
 
-%{--<div class="ui dropdown item">--}%
-%{--    Schnellnavigation--}%
-%{--    <i class="dropdown icon"></i>--}%
-%{--    <div class="menu">--}%
-%{--        <g:link controller="public" action="manual" class="item">${message(code: 'menu.user.manual')}</g:link>--}%
-%{--        <g:link controller="public" action="faq" class="item">${message(code: 'menu.user.faq')}</g:link>--}%
-%{--        <g:link controller="public" action="release" class="item">${message(code: 'releaseNotes')}</g:link>--}%
-%{--        <g:link controller="public" action="api" class="item">${message(code: 'apiRelease')}</g:link>--}%
-%{--    </div>--}%
-%{--</div>--}%
-
 <div class="ui secondary pointing menu">
     <g:each in="${history.reverse()}" var="h">
         <g:link controller="public" action="releases" id="${h}" class="item ${h == version ? 'active' : ''}">Version: ${h}</g:link>
