@@ -322,6 +322,20 @@
             JSPC.app.updateSelectionCache("all",$('#select-all').prop('checked'));
         }
 
+        JSPC.app.recalculatePrices = function() {
+            $.ajax({
+                url: "<g:createLink controller="ajaxHtml" action="updatePricesSelection" />",
+                data: {
+                    sub: "${subscription.id}?${params.tab}",
+                    referer: "${actionName}"
+                }
+            }).done(function(result){
+                $("#dynamicListWrapper").html(result);
+            }).fail(function(xhr,status,message){
+                console.log("error occurred, consult logs!");
+            });
+        };
+
         JSPC.app.updateSelectionCache = function (index,checked) {
             let filterParams = {
                 filter: "${params.filter}",
@@ -356,20 +370,24 @@
 
                 },
                 success: function (data) {
-                        <g:if test="${editable && params.tab == 'allTipps'}">
-                            $("#processButton").html(data.checkedCount + " ${g.message(code: 'renewEntitlementsWithSurvey.preliminary')}");
-                        </g:if>
+                    <g:if test="${editable && params.tab == 'allTipps'}">
+                        $("#processButton").html(data.checkedCount + " ${g.message(code: 'renewEntitlementsWithSurvey.preliminary')}");
+                    </g:if>
 
-                        <g:if test="${editable && params.tab == 'selectedIEs'}">
-                            $("#processButton").html(data.checkedCount + " ${g.message(code: 'renewEntitlementsWithSurvey.remove')}");
-                        </g:if>
-                    }
+                    <g:if test="${editable && params.tab == 'selectedIEs'}">
+                        $("#processButton").html(data.checkedCount + " ${g.message(code: 'renewEntitlementsWithSurvey.remove')}");
+                    </g:if>
+                    JSPC.app.recalculatePrices();
+                }
             }).done(function(result){
 
             }).fail(function(xhr,status,message){
                 console.log("error occurred, consult logs!");
             });
     }
+
+    //initial load of eventual cache
+    JSPC.app.recalculatePrices();
 
     $("#select-all").change(function() {
         JSPC.app.selectAll();

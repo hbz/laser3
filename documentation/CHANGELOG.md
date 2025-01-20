@@ -9,7 +9,11 @@
 
 6180    20.01.2024  dev     3.5         David   Feature     PublicController überarbeiten (Sicherheit)
 
+6199    17.01.2024  dev     3.5         Andreas Feature     Sortierung der Jahre in Dropdowns auf absteigend umgestellt
+
 6195    17.01.2024  dev     3.5         Andreas Feature     Beibehaltung eines eventuell aktiven Reiters
+
+5106    17.01.2024  dev     3.5         Andreas Feature     Caching und Ausgabe der angehakten Titel
 
 6128    16.01.2024  dev     3.5         Andreas Bug         An-/Abwählen aller Lieferanten wirkte sich nur auf aktuelle Seite aus
 

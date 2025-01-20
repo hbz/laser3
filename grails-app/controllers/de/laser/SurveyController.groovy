@@ -124,7 +124,7 @@ class SurveyController {
             String newYear = sdfyear.format(new Date())
 
             if(!(newYear in result.surveyYears)){
-                result.surveyYears << newYear
+                result.surveyYears.push(newYear)
             }
             params.validOnYear = [newYear]
         }
@@ -207,7 +207,7 @@ class SurveyController {
             String newYear = sdfyear.format(new Date())
 
             if(!(newYear in result.surveyYears)){
-                result.surveyYears << newYear
+                result.surveyYears.push(newYear)
             }
             params.validOnYear = [newYear]
         }
