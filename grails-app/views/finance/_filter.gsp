@@ -121,18 +121,12 @@
             <div class="three fields">
                 <div class="field">
                     <label>${message(code:'financials.budgetCode')}</label>
-                    <%--<div class="ui search selection multiple dropdown newFilter" id="filterCIBudgetCode">
-                        <input type="hidden" name="filterCIBudgetCode">
-                        <i class="dropdown icon"></i>
-                        <input type="text" class="search">
-                        <div class="default text"><g:message code="default.select.all.label"/></div>
-                    </div>--%>
                     <g:select id="filterCIBudgetCode" class="ui multiple dropdown search selection"
                               multiple="multiple"
                               name="filterCIBudgetCode"
                               from="${budgetCodes}"
                               optionKey="id" optionValue="value"
-                              value="${filterPresets?.filterCIBudgetCode}"
+                              value="${filterPresets?.filterCIBudgetCode?.id}"
                               noSelection="${['':message(code:'default.select.all.label')]}" />
                 </div>
 
@@ -237,7 +231,7 @@
                 <div class="field">
                     <div class="ui checkbox">
                         <label for="filterCIUnpaid"><g:message code="financials.costItemUnpaid"/></label>
-                        <input id="filterCIUnpaid" name="filterCIUnpaid" type="checkbox" value="true" <g:if test="${params.filterCIUnpaid}">checked="checked"</g:if>>
+                        <input id="filterCIUnpaid" name="filterCIUnpaid" type="checkbox" value="true" <g:if test="${filterPresets?.filterCIUnpaid}">checked="checked"</g:if>>
                     </div>
                 </div>
             </div>
@@ -311,8 +305,8 @@
                     values = [<g:each in="${filterPresets?.filterCISub}" var="ciSub" status="i">'${genericOIDService.getOID(ciSub)}'<g:if test="${i < filterPresets.filterCISub.size()-1}">,</g:if></g:each>];
                     minCharacters = 1; //due to high amount of data
                     break;
-                case 'filterCISPkg':
-                    values = [<g:each in="${filterPresets?.filterCISPkg}" var="ciSPkg" status="i">'${genericOIDService.getOID(ciSPkg)}'<g:if test="${i < filterPresets.filterCISPkg.size()-1}">,</g:if></g:each>];
+                case 'filterCIPkg':
+                    values = [<g:each in="${filterPresets?.filterCIPkg}" var="ciPkg" status="i">'${ciPkg.id}'<g:if test="${i < filterPresets.filterCIPkg.size()-1}">,</g:if></g:each>];
                     break;
                 case 'filterSubProviders':
                     values = [<g:each in="${filterPresets?.filterSubProviders}" var="subProvider" status="i">'${genericOIDService.getOID(subProvider)}'<g:if test="${i < filterPresets.filterSubProviders.size()-1}">,</g:if></g:each>];
@@ -388,7 +382,7 @@
         });
     }
 
-        <g:if test="${params.filterCIUnpaid}">
+        <g:if test="${filterPresets?.filterCIUnpaid}">
             $("#filterCIPaidFrom,#filterCIPaidTo").attr("disabled",true);
         </g:if>
         JSPC.app.setupDropdowns();
