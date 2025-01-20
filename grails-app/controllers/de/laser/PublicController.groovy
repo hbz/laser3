@@ -19,6 +19,7 @@ import grails.plugins.mail.MailService
 @Secured(['permitAll'])
 class PublicController {
 
+    ContextService contextService
     EscapeService escapeService
     GenericOIDService genericOIDService
     MailService mailService
@@ -39,9 +40,14 @@ class PublicController {
         String text = "User-agent: *\n"
 
         if (AppUtils.getCurrentServer() == AppUtils.PROD) {
-            text += "Disallow: /tipp/ \n"                                   // TODO TMP
-            text += "Disallow: /public/gascoDetailsIssueEntitlements/ \n"   // TODO TMP
             text += "Disallow: /gasco/details/ \n"
+            text += "Disallow: /public/api/ \n"         // ERMS-6180
+            text += "Disallow: /public/dsgvo/ \n"
+            text += "Disallow: /public/faq/ \n"
+            text += "Disallow: /public/help/ \n"
+            text += "Disallow: /public/manual/ \n"
+            text += "Disallow: /public/releases/ \n"
+            text += "Disallow: /public/wcagTest/ \n"
         }
         else {
             text += "Disallow: / \n"
@@ -93,8 +99,17 @@ class PublicController {
     /**
      * Test page for check compatibility
      */
-    @Secured(['permitAll'])
+    @Secured(['ROLE_USER'])
     def wcagTest() {
+    }
+
+    /**
+     * Call to open the GDPR statement page
+     */
+    @Secured(['ROLE_USER'])
+    def dsgvo() {
+        Map<String, Object> result = [:]
+        result
     }
 
     /**
@@ -322,11 +337,11 @@ class PublicController {
         result
     }
 
-    @Secured(['permitAll'])
+    @Secured(['ROLE_USER'])
     def help() {
     }
 
-    @Secured(['permitAll'])
+    @Secured(['ROLE_USER'])
     def api() {
         Map<String, Object> result = [
                 history : [ 'legacy', '3.4' ], // todo
@@ -338,7 +353,7 @@ class PublicController {
         result
     }
 
-    @Secured(['permitAll'])
+    @Secured(['ROLE_USER'])
     def manual() {
         Map<String, Object> result = [
                 content : [
@@ -354,7 +369,7 @@ class PublicController {
         result
     }
 
-    @Secured(['permitAll'])
+    @Secured(['ROLE_USER'])
     def faq() {
         Map<String, Object> result = [
                 content : [
@@ -371,7 +386,7 @@ class PublicController {
         result
     }
 
-    @Secured(['permitAll'])
+    @Secured(['ROLE_USER'])
     def releases() {
         Map<String, Object> result = [
                 history : ['3.2', '3.3', '3.4'] // todo

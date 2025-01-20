@@ -4,14 +4,11 @@ package de.laser
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.UserSetting.KEYS
-import de.laser.utils.LocaleUtils
 import de.laser.utils.PasswordUtils
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.properties.PropertyDefinition
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
-import org.springframework.context.MessageSource
 
 /**
  * This controller manages calls to user profiles
@@ -23,11 +20,7 @@ class ProfileController {
     ContextService contextService
     DeletionService deletionService
     FormService formService
-    GenericOIDService genericOIDService
-    MessageSource messageSource
     def passwordEncoder
-    PropertyService propertyService
-    RefdataService refdataService
     UserService userService
 
     /**
@@ -46,16 +39,6 @@ class ProfileController {
 
     @Secured(['ROLE_USER'])
     def importManuel() {
-        Map<String, Object> result = [:]
-        result.user = contextService.getUser()
-        result
-    }
-
-    /**
-     * Call to open the GDPR statement page
-     */
-    @Secured(['ROLE_USER'])
-    def dsgvo() {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
         result
