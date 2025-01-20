@@ -165,6 +165,7 @@
         });
     });
 
+    /*
     $('.notes').form({
         on: 'blur',
         inline: true,
@@ -180,5 +181,5 @@
             }
         }
     });
-
+    */
 </laser:script>
