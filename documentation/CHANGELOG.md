@@ -11,6 +11,8 @@
 
 6195    17.01.2024  dev     3.5         Andreas Feature     Beibehaltung eines eventuell aktiven Reiters
 
+5106    17.01.2024  dev     3.5         Andreas Feature     Caching und Ausgabe der angehakten Titel
+
 6128    16.01.2024  dev     3.5         Andreas Bug         An-/Abwählen aller Lieferanten wirkte sich nur auf aktuelle Seite aus
 
 6179    16.01.2024  dev     3.5         Andreas Feature     Anpassungen und Neuerungen bei den Nutzerzahlen
