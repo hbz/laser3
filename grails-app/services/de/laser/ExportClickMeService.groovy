@@ -6458,7 +6458,7 @@ class ExportClickMeService {
                 queryCols << "create_cell('${format}', (select ${sqlCol} from issue_entitlement_group join issue_entitlement_group_item on igi_ie_group_fk = ig_id where igi_ie_fk = ie_id), null) as ${field}"
             }
             else if (fieldKey.contains('perpetualAccessBySub')) {
-                queryCols << "create_cell('${format}', (select case when ie_perpetual_access_by_sub_fk is not null then '${RDStore.YN_YES.getI10n('value')}' else '${RDStore.YN_NO.getI10n('value')}' end case), null) as perpetualAccessbySub"
+                queryCols << "create_cell('${format}', (select case when ie_perpetual_access_by_sub_fk is not null then '${RDStore.YN_YES.getI10n('value')}' else '${RDStore.YN_NO.getI10n('value')}' end), null) as perpetualAccessbySub"
             }
             else if (fieldKey.startsWith('coverage.')) {
                 if(fieldKey.contains('startDate')) {
