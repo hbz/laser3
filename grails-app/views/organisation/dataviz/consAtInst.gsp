@@ -821,7 +821,15 @@
             } else {
                 $('table *[data-ctype=survey-subsciption]').addClass('hidden')
             }
-        })
+        });
+
+        $(window).resize(function () {
+            JSPC.app.info.charts.subscription.resize();
+            JSPC.app.info.charts.license.resize();
+            JSPC.app.info.charts.provider.resize();
+            JSPC.app.info.charts.survey.resize();
+        });
+        $(window).trigger('resize');
 
     </laser:script>
 

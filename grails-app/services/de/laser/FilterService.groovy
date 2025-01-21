@@ -418,6 +418,11 @@ class FilterService {
                 queryParams << [statusId : params.long('taskStatus')]
             }
         }
+        if (params.taskObject) {
+             if (params.taskObject in ['license', 'org', 'provider', 'subscription', 'surveyConfig', 'tipp', 'vendor']) {
+                 query << ('t.' + params.taskObject + ' != null' as String)
+             }
+        }
         if (params.endDateFrom && sdFormat) {
             query << "t.endDate >= :endDateFrom"
             queryParams << [endDateFrom : sdFormat.parse(params.endDateFrom)]

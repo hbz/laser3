@@ -32,7 +32,7 @@
                                 </g:link>
 
                                 <g:if test="${task.title != message(code:'task.create.reportTitleToProvider.title')}">
-                                    &nbsp;/&nbsp;
+                                    &nbsp;-&nbsp;
                                     ${task.title}
 
 %{--                                    <g:link controller="task" action="show" id="${task.id}" target="_blank">--}%
@@ -46,9 +46,13 @@
                             </div>
                         </g:each>
                     </div>
-                    %{--            <div class="extra content">--}%
-                    %{--                todo--}%
-                    %{--            </div>--}%
+                </div>
+                <div class="extra content">
+                    <div class="right floated">
+                        <g:link controller="myInstitution" action="tasks" params="${[taskObject: 'tipp']}">
+                            <i class="${Icon.TASK} circular"></i> ${message(code:'menu.my.tasks')}
+                        </g:link>
+                    </div>
                 </div>
             </div>
         </g:if>
