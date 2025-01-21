@@ -10,12 +10,12 @@
 
         <laser:render template="/templates/system/messages" model="${[type: SystemMessage.TYPE_DASHBOARD]}"/>
 
-        <laser:render template="/myInstitution/topmenu" />
+        <laser:render template="/myInstitution/topmenu2" />
 
         <ui:messages data="${flash}" />
 
         <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
-            <laser:render template="/myInstitution/info/inst" />
+            <laser:render template="dataviz_inst" />
         </g:if>
 
         <g:if test="${wekbNews}">
