@@ -1,34 +1,79 @@
-<%@ page import="de.laser.system.SystemActivityProfiler; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.Wekb" %>
+<%@ page import="de.laser.utils.DateUtils;  de.laser.storage.RDStore; de.laser.Task; de.laser.system.SystemActivityProfiler; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.Wekb" %>
 <laser:serviceInjection />
 
 <g:if test="${tmplView == 'info' && wekbNews.counts.all > 0}">
 
     <div class="ui two cards">
 
-        <div class="ui fluid card">
-            <div class="ui top attached label">
-                Meldung des Tages (TODO)
-            </div>
-%{--            <div class="content">--}%
-%{--                <div class="header">Dies und das (TODO)</div>--}%
-%{--            </div>--}%
-            <div class="content">
-                Gäbe es eine wichtige Mitteilung .. <br />
-                hier wäre sie zu finden. <br />
-                <br />
-                <br />
-                Derzeit sind ${SystemActivityProfiler.getNumberOfActiveUsers()} Benutzer online. <br />
-                <br />
-                <div class="ui red indeterminate progress">
-                    <div class="bar">
-                        <div class="progress">Vorsicht: Baustelle</div>
+        <g:set var="wekbNewsProTaskList" value="[]" />
+
+        <g:if test="${contextService.getOrg().isCustomerType_Pro()}">
+            <%
+                wekbNewsProTaskList = Task.executeQuery(
+                    'select t from Task t where t.tipp != null and t.status = :status ' +
+                    'and (( t.responsibleUser = :user or t.responsibleOrg = :org ) or t.creator = :user )' +
+                    'order by endDate, createDate',
+                    [user: contextService.getUser(), org: contextService.getOrg(), status: RDStore.TASK_STATUS_OPEN]
+                )
+            %>
+        </g:if>
+
+        <g:if test="${wekbNewsProTaskList}">
+            <div class="ui fluid card">
+                <div class="ui top attached label">
+                    Beantragte Titel-Korrekturen durch den Anbieter
+                </div>
+                <div class="content">
+                    <div class="ui list relaxed divided">
+                        <g:each in="${wekbNewsProTaskList}" var="task">
+                            <div class="item">
+                                <g:link controller="tipp" action="show" id="${task.tipp?.id}" target="_blank">
+                                    <i class="${Icon.TIPP} la-list-icon"></i> ${task.tipp?.name}
+                                </g:link>
+
+                                <g:if test="${task.title != message(code:'task.create.reportTitleToProvider.title')}">
+                                    &nbsp;/&nbsp;
+                                    ${task.title}
+
+%{--                                    <g:link controller="task" action="show" id="${task.id}" target="_blank">--}%
+%{--                                        <i class="${Icon.TASK} la-list-icon"></i> ${task.title}--}%
+%{--                                    </g:link>--}%
+                                </g:if>
+
+                                <span class="right floated">
+                                    ${DateUtils.getLocalizedSDF_noTime().format(task.endDate)}
+                                </span>
+                            </div>
+                        </g:each>
                     </div>
+                    %{--            <div class="extra content">--}%
+                    %{--                todo--}%
+                    %{--            </div>--}%
                 </div>
             </div>
-%{--            <div class="extra content">--}%
-%{--                todo--}%
-%{--            </div>--}%
-        </div>
+        </g:if>
+        <g:else>
+            <div class="ui fluid card">
+                <div class="ui top attached label">
+                    Tipp des Tages
+                </div>
+                %{--            <div class="content">--}%
+                %{--                <div class="header">Dies und das (TODO)</div>--}%
+                %{--            </div>--}%
+                <div class="content">
+                    Gäbe es eine wichtige Mitteilung .. <br />
+                    hier wäre sie zu finden. <br />
+                    <br />
+                    <br />
+                    Derzeit sind ${SystemActivityProfiler.getNumberOfActiveUsers()} Benutzer online. <br />
+                    <br />
+                    <br />
+                </div>
+                %{--            <div class="extra content">--}%
+                %{--                todo--}%
+                %{--            </div>--}%
+            </div>
+        </g:else>
 
         <div class="ui fluid card">
 %{--            <div class="content">--}%
