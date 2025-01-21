@@ -46,7 +46,6 @@ class SymbolTagLib {
         out << '<i class="film icon"></i>'
     }
 
-
     // profile/help
 
     @UIDoc(usage = 'Specific symbol for: Chrome [middle aligned & large]')
@@ -60,5 +59,16 @@ class SymbolTagLib {
     @UIDoc(usage = 'Specific symbol for: Internet Explorer [middle aligned & large]')
     def help_ie = { attrs, body ->
         out << '<i class="internet explorer icon middle aligned large"></i>'
+    }
+
+    // flags --- != icons
+
+    @UIDoc(usage = 'Generic flag: DE')
+    def flag_de = { attrs, body ->
+        out << '<i class="de flag"></i>'
+    }
+    @UIDoc(usage = 'Generic flag: EN')
+    def flag_en = { attrs, body ->
+        out << '<i class="gb flag"></i>'
     }
 }

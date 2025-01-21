@@ -21,8 +21,11 @@
 <g:if test="${subscriptionMap}">
 
     <div class="ui fluid card">
-        <div class="content">
-            <div class="header">Meine Lizenzen</div>
+%{--        <div class="content">--}%
+%{--            <div class="header">Meine Lizenzen</div>--}%
+%{--        </div>--}%
+        <div class="ui top attached label">
+            ${message(code: 'myinst.currentSubscriptions.label')}
         </div>
         <div class="content">
             <div class="ui grid">
@@ -35,7 +38,7 @@
         </div>
         <div class="extra content">
             <div class="right floated">
-                <g:link controller="organisation" action="info" id="${contextService.getOrg().id}">
+                <g:link controller="organisation" action="dataviz" id="${contextService.getOrg().id}">
                     Daten-Dashboard öffnen <i class="${Icon.DATA_DASHBOARD} circular"></i>
                 </g:link>
             </div>

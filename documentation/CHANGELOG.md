@@ -17,6 +17,8 @@
 
 6180    20.01.2024  dev     3.5         David   Feature     PublicController überarbeiten (Sicherheit)
 
+5920    20.01.2024  dev     3.5         David   Feature     Dashboard "verschönern"
+
 6199    17.01.2024  dev     3.5         Andreas Feature     Sortierung der Jahre in Dropdowns auf absteigend umgestellt
 
 6195    17.01.2024  dev     3.5         Andreas Feature     Beibehaltung eines eventuell aktiven Reiters

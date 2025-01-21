@@ -1,7 +1,7 @@
 <%@ page import="de.laser.CustomerTypeService; de.laser.ui.Icon" %>
 
-<div class="ui fluid card" style="margin-bottom: 2em">
-    <div class="content" style="padding-bottom: 0">
+<div class="ui fluid card" id="dashboard-topmenu">
+    <div class="content">
         <div class="ui four column relaxed divided grid">
 
             <div class="column">
@@ -162,5 +162,16 @@
 </div>
 
 <style>
-    .list .item .content .disabled { color:lightgrey }
+    #dashboard-topmenu {
+        margin-bottom: 2em;
+    }
+    #dashboard-topmenu > .content {
+        padding-bottom: 0;
+    }
+    #dashboard-topmenu .list .item .content .disabled {
+        color:lightgrey
+    }
+    #dashboard-topmenu .list .item .content a:hover {
+        text-decoration: underline;
+    }
 </style>
