@@ -569,6 +569,7 @@
                     <g:each in="${subscriptionTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ RefdataValue.get(it).getI10n('value') }}" var="status">
                         {
                             name    : '${RefdataValue.get(status).getI10n('value')}',
+                            id      : ${status},
                             type    : 'bar',
                             stack   : 'total',
     %{--                        emphasis: { focus: 'series' },--}%
@@ -612,6 +613,7 @@
                     <g:each in="${licenseTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ RefdataValue.get(it).getI10n('value') }}" var="status">
                         {
                             name    : '${RefdataValue.get(status).getI10n('value')}',
+                            id      : ${status},
                             type    : 'bar',
                             stack   : 'total',
     %{--                        emphasis: { focus: 'series' },--}%
@@ -655,6 +657,7 @@
                 <g:each in="${providerTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ Provider.get(it).sortname ?: Provider.get(it).name }}" var="provider">
                     {
                         name    : '<% print Provider.get(provider).name.replaceAll("'", "\\\\'") %>',
+                        id      : ${provider},
                         type    : 'bar',
                         stack   : 'total',
 %{--                        areaStyle : {},--}%
@@ -684,6 +687,7 @@
                     <g:each in="${surveyTimelineMap.values().collect{ it.keySet() }.flatten().unique()}" var="status"> %{-- sort --}%
                         {
                             name    : '<uiSurvey:virtualState status="${status}" />',
+                            id      : '${status}', %{-- TODO --}%
                             type    : 'bar',
                             stack   : 'total',
                     %{--                        emphasis: { focus: 'series' },--}%
@@ -746,25 +750,29 @@
             chart.on ('click', function (params) {
                 let t = statsId.replace('.stats_', '')
                 let y = params.dataIndex
-                let s = params.seriesIndex
+                let j = params.seriesId
 
-%{--                console.log( statsId + ' -> ' + t + ' : ' + y + ' ' + s)--}%
+%{--                console.log( 'AAA t:' + t + ', dataIndex:' + y + ', seriesId:' + j )--}%
+%{--                console.log( params )--}%
 
                 $(statsId + ' tr[data-id]').hide()
 
-                $.each( $(statsId + ' .menu .item[data-tab^=' + t + ']'), function(i, e) {
-                    if (chartConfig.series[i]) {
-                        let yList = chartConfig.series[i].raw[y]
-                        JSPC.app.info.setCounter($(e), yList.length)
+                $.each( $(statsId + ' .menu .item[data-tab^=' + t + ']'), function() {
+                    let sid = $(this).attr('data-tab').split('-')[1]
+                    let cs = chartConfig.series.find(ss => ss.id == sid)
+                    if (cs) {
+                        let yList = cs.raw[y]
+                        JSPC.app.info.setCounter($(this), yList.length)
 
                         yList.forEach((f) => {
+%{--                            console.log( f )--}%
                             $(statsId + ' tr[data-id=' + f + ']').show()
                         })
                     }
                 })
-                // chart.dispatchAction({ type: 'select', dataIndex: y })
-                // chart.dispatchAction({ type: 'highlight', seriesIndex: s, dataIndex: y })
-                $($(statsId + ' .menu .item[data-tab^=' + t + ']')[s]).trigger('click')
+%{--                console.log( $(statsId + ' .menu .item[data-tab=' + t + '-' + j + ']') )--}%
+
+                $(statsId + ' .menu .item[data-tab=' + t + '-' + j + ']').trigger('click')
 
                 $(statsId + ' .menu .item[data-tab^=year-]').removeClass('active')
                 $(statsId + ' .menu .item[data-tab=year-' + params.name + ']').addClass('active')
