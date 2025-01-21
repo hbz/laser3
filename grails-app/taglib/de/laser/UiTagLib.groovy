@@ -80,12 +80,14 @@ class UiTagLib {
         if ( (attrs.referenceYear)|| (attrs.visibleProviders) ) {
             out << '<span class="la-subPlusYear-year">'
             out << attrs.referenceYear
-            if (attrs.referenceYear) {
-                out << ' – '
+            if(attrs.visibleProviders?.size() > 0) {
+                if (attrs.referenceYear) {
+                    out << ' – '
+                }
+                out << '<span class="la-orgRelations">'
+                out << attrs.visibleProviders
+                out << '</span>'
             }
-            out << '<span class="la-orgRelations">'
-            out << attrs.visibleProviders
-            out << '</span>'
             out << '</span>'
             out << '</div>'
             out << '</div>'

@@ -672,6 +672,7 @@
         }
     });
 
+    /*
     $('.propertiesForm').form({
         on: 'blur',
         inline: true,
@@ -687,5 +688,6 @@
             }
         }
     });
+    */
 </laser:script>
 

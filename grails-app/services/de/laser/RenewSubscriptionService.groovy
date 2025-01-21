@@ -395,7 +395,8 @@ class RenewSubscriptionService extends AbstractLockableService {
                                     }
                                 }
 
-                                //CostItems
+                                //CostItems - deactivated as of ERMS-6062
+                                /*
                                 subscription.costItems.each { CostItem costItem ->
                                     def costItemProperties = costItem.properties
 
@@ -408,8 +409,8 @@ class RenewSubscriptionService extends AbstractLockableService {
                                         log.error("Problem saving CostItem ${newCostItem.errors}")
                                         fail = true
                                     }
-
                                 }
+                                */
 
                                 Doc docContent = new Doc(contentType: Doc.CONTENT_TYPE_STRING, content: 'Diese Lizenz ist eine Kopie der vorherigen Lizenz. Es wurde automatisch vom System erstellt, da in der vorherigen Lizenz das Flag "Automatisch um ein Jahr verlängern" gesetzt war. (This subscription is a copy of the previous subscription. It was created automatically by the system because the flag "Automatic renew annually" was set in the previous subscription.)', title: AUTOMATIC_RENEW_ANNUALLY_DOC_TITLE, type: RDStore.DOC_TYPE_NOTE, owner: org, user: null)
                                 if(docContent.save()) {
