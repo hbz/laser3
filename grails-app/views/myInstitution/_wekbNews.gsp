@@ -32,7 +32,7 @@
                                 </g:link>
 
                                 <g:if test="${task.title != message(code:'task.create.reportTitleToProvider.title')}">
-                                    &nbsp;/&nbsp;
+                                    &nbsp;-&nbsp;
                                     ${task.title}
 
 %{--                                    <g:link controller="task" action="show" id="${task.id}" target="_blank">--}%

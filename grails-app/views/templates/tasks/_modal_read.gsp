@@ -19,7 +19,7 @@
         </div>
 
         <div class="field">
-            <label>Bezieht sich auf</label>
+            <label>${message(code: 'task.general')}</label>
             <g:if test="${taskInstance.getObjects()}">
                 <g:each in="${taskInstance.getObjects()}" var="tskObj">
                     <div class="la-flexbox">
