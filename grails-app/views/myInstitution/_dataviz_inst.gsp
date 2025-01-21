@@ -39,7 +39,7 @@
         <div class="extra content">
             <div class="right floated">
                 <g:link controller="organisation" action="dataviz" id="${contextService.getOrg().id}">
-                    Daten-Dashboard öffnen <i class="${Icon.DATA_DASHBOARD} circular"></i>
+                    <i class="${Icon.DATA_DASHBOARD} circular"></i> Daten-Dashboard
                 </g:link>
             </div>
         </div>

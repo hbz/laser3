@@ -9,6 +9,8 @@
 
 5673    21.01.2024  dev     3.5         David   Feature     We:kb-News / Titeländerungen
 
+5998    21.01.2024  dev     3.5         David   Feature     Rechteprüfung: Workflows
+
 --      21.01.2024  dev     3.5         Andreas Bug         Darstellungsfehler in der Lizenzübersicht behoben
 
 6062    21.01.2024  dev     3.5         Andreas Feature     Kosten werden bei automatischer Verlängerung nicht mehr mit übertragen
