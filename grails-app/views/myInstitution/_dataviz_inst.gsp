@@ -144,6 +144,11 @@
         }
 
         JSPC.app.info.charts.subscription.setOption (JSPC.app.info.chart_config.subscription);
+
+        $(window).resize(function () {
+            JSPC.app.info.charts.subscription.resize();
+        });
+        $(window).trigger('resize');
     </laser:script>
 
     <style>

@@ -819,6 +819,13 @@
             $(statsId + ' .menu .item[data-tab=year-${Year.now()}]').trigger('click'); // init
         });
 
+        $(window).resize(function () {
+            JSPC.app.info.charts.subscription.resize();
+            JSPC.app.info.charts.license.resize();
+            JSPC.app.info.charts.provider.resize();
+        });
+        $(window).trigger('resize');
+
 %{--        $('#survey-toggle-subscriptions').on('change', function() {--}%
 %{--            if ($(this).prop('checked')) {--}%
 %{--                $('table *[data-ctype=survey-subsciption]').removeClass('hidden')--}%
