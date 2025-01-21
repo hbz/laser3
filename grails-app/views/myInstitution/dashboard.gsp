@@ -19,7 +19,7 @@
         </g:if>
 
         <g:if test="${wekbNews}">
-            <laser:render template="wekbNews2" model="${[wekbNews: wekbNews, tmplView: 'info']}"/>
+            <laser:render template="wekbNews" model="${[wekbNews: wekbNews, tmplView: 'info']}"/>
         </g:if>
 
     <%
