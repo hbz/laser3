@@ -24,7 +24,7 @@
                     Beantragte Titel-Korrekturen durch den Anbieter
                 </div>
                 <div class="content">
-                    <div class="ui list relaxed divided">
+                    <div class="ui list relaxed divided" style="margin: 0.5em 0">
                         <g:each in="${wekbNewsProTaskList}" var="task">
                             <div class="item">
                                 <g:link controller="tipp" action="show" id="${task.tipp?.id}" target="_blank">
