@@ -38,13 +38,13 @@
             <div class="header">${message(code: 'org.eInvoice.info.header')}</div>
             ${message(code: 'org.eInvoice.info.text')}
             <div class="ui bulleted list">
-            <g:if test="${missing.eInvoicePortal}">
-                <div class="item">${missing.eInvoicePortal}</div>
-            </g:if>
-            <g:if test="${missing.leitID}">
-                <div class="item">${missing.leitID}</div>
-            </g:if>
-        </div>
+                <g:if test="${missing.eInvoicePortal}">
+                    <div class="item">${missing.eInvoicePortal}</div>
+                </g:if>
+                <g:if test="${missing.leitID}">
+                    <div class="item">${missing.leitID}</div>
+                </g:if>
+            </div>
         </div>
     </div>
 </g:if>
@@ -60,7 +60,7 @@
     <div class="eleven wide column">
 
         <div class="la-inline-lists">
-            <div class="ui card" id="js-confirmationCard">
+            <div class="ui card">
                 <div class="content">
 
                     <g:if test="${!inContextOrg && contextService.getOrg().isCustomerType_Consortium()}">
@@ -72,8 +72,7 @@
                     <dl>
                         <dt class="control-label"><g:message code="default.name.label" /></dt>
                         <dd>
-                            <ui:xEditable owner="${orgInstance}" field="name"
-                                    overwriteEditable="${editable}"/>
+                            <ui:xEditable owner="${orgInstance}" field="name" overwriteEditable="${editable}"/>
                         </dd>
                     </dl>
                     <g:if test="${!inContextOrg || isGrantedOrgRoleAdminOrOrgEditor}">
@@ -137,108 +136,114 @@
             </div><!-- .card -->
 
             <g:if test="${orgInstance.isCustomerType_Inst()}">
-                <div class="ui card">
-                    <div class="content">
-                        <dl>
-                            <dt class="control-label">
-                                <g:message code="org.libraryType.label" />
-                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
-                                      data-content="${message(code: 'org.libraryType.expl')}">
-                                    <i class="${Icon.TOOLTIP.HELP}"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <ui:xEditableRefData owner="${orgInstance}" field="libraryType"
-                                                        config="${RDConstants.LIBRARY_TYPE}"/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt class="control-label">
-                                <g:message code="org.subjectGroup.label" />
-                            </dt>
-                            <dd>
-                                <%
-                                    List<RefdataValue> subjectGroups = RefdataCategory.getAllRefdataValues(RDConstants.SUBJECT_GROUP)
-                                %>
-                                <laser:render template="orgSubjectGroupAsList"
-                                          model="${[org: orgInstance, orgSubjectGroups: orgInstance.subjectGroup, availableSubjectGroups: subjectGroups, editable: editable]}"/>
+                <div class="ui two doubling stackable cards">
+                    <div class="ui card">
+                        <div class="content">
+                            <dl>
+                                <dt class="control-label">
+                                    <g:message code="org.libraryType.label" />
+                                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                          data-content="${message(code: 'org.libraryType.expl')}">
+                                        <i class="${Icon.TOOLTIP.HELP}"></i>
+                                    </span>
+                                </dt>
+                                <dd>
+                                    <ui:xEditableRefData owner="${orgInstance}" field="libraryType"
+                                                            config="${RDConstants.LIBRARY_TYPE}"/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt class="control-label">
+                                    <g:message code="org.libraryNetwork.label" />
+                                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                          data-content="${message(code: 'org.libraryNetwork.expl')}">
+                                        <i class="${Icon.TOOLTIP.HELP}"></i>
+                                    </span>
+                                </dt>
+                                <dd>
+                                    <ui:xEditableRefData owner="${orgInstance}" field="libraryNetwork"
+                                                            config="${RDConstants.LIBRARY_NETWORK}"/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt class="control-label">
+                                    <g:message code="org.funderType.label" />
+                                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                          data-content="${message(code: 'org.funderType.expl')}">
+                                        <i class="${Icon.TOOLTIP.HELP}"></i>
+                                    </span>
+                                </dt>
+                                <dd>
+                                    <ui:xEditableRefData owner="${orgInstance}" field="funderType" config="${RDConstants.FUNDER_TYPE}"/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt class="control-label">
+                                    <g:message code="org.funderHSK.label" />
+                                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                          data-content="${message(code: 'org.funderHSK.expl')}">
+                                        <i class="${Icon.TOOLTIP.HELP}"></i>
+                                    </span>
+                                </dt>
+                                <dd>
+                                    <ui:xEditableRefData owner="${orgInstance}" field="funderHskType" config="${RDConstants.FUNDER_HSK_TYPE}"/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt class="control-label">
+                                    <g:message code="address.country.label" />
+                                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                          data-content="${message(code: 'org.country.expl')}">
+                                        <i class="${Icon.TOOLTIP.HELP}"></i>
+                                    </span>
+                                </dt>
+                                <dd>
+                                    <ui:xEditableRefData id="country" owner="${orgInstance}" field="country" config="${RDConstants.COUNTRY}" />
+                                    &nbsp
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt class="control-label">
+                                    <g:message code="org.region.label" />
+                                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                          data-content="${message(code: 'org.region.expl')}">
+                                        <i class="${Icon.TOOLTIP.HELP}"></i>
+                                    </span>
+                                </dt>
+                                <dd>
+                                    <%-- for non-editable views, the region is displayed three times - not for editable views! --%>
+                                    <g:if test="${editable}">
+                                        <ui:xEditableRefData id="regions_${RDStore.COUNTRY_DE.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_DE}"/>
+                                        <ui:xEditableRefData id="regions_${RDStore.COUNTRY_AT.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_AT}"/>
+                                        <ui:xEditableRefData id="regions_${RDStore.COUNTRY_CH.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_CH}"/>
+                                    </g:if>
+                                    <g:else>
+                                        ${orgInstance.region?.getI10n("value")}
+                                    </g:else>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div><!-- .card -->
 
-                                <laser:render template="orgSubjectGroupModal"
-                                          model="${[org: orgInstance, availableSubjectGroups: subjectGroups, editable: editable]}"/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt class="control-label">
-                                <g:message code="org.libraryNetwork.label" />
-                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
-                                      data-content="${message(code: 'org.libraryNetwork.expl')}">
-                                    <i class="${Icon.TOOLTIP.HELP}"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <ui:xEditableRefData owner="${orgInstance}" field="libraryNetwork"
-                                                        config="${RDConstants.LIBRARY_NETWORK}"/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt class="control-label">
-                                <g:message code="org.funderType.label" />
-                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
-                                      data-content="${message(code: 'org.funderType.expl')}">
-                                    <i class="${Icon.TOOLTIP.HELP}"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <ui:xEditableRefData owner="${orgInstance}" field="funderType" config="${RDConstants.FUNDER_TYPE}"/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt class="control-label">
-                                <g:message code="org.funderHSK.label" />
-                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
-                                      data-content="${message(code: 'org.funderHSK.expl')}">
-                                    <i class="${Icon.TOOLTIP.HELP}"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <ui:xEditableRefData owner="${orgInstance}" field="funderHskType" config="${RDConstants.FUNDER_HSK_TYPE}"/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt class="control-label">
-                                <g:message code="address.country.label" />
-                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
-                                      data-content="${message(code: 'org.country.expl')}">
-                                    <i class="${Icon.TOOLTIP.HELP}"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <ui:xEditableRefData id="country" owner="${orgInstance}" field="country" config="${RDConstants.COUNTRY}" />
-                                &nbsp
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt class="control-label">
-                                <g:message code="org.region.label" />
-                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
-                                      data-content="${message(code: 'org.region.expl')}">
-                                    <i class="${Icon.TOOLTIP.HELP}"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <%-- for non-editable views, the region is displayed three times - not for editable views! --%>
-                                <g:if test="${editable}">
-                                    <ui:xEditableRefData id="regions_${RDStore.COUNTRY_DE.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_DE}"/>
-                                    <ui:xEditableRefData id="regions_${RDStore.COUNTRY_AT.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_AT}"/>
-                                    <ui:xEditableRefData id="regions_${RDStore.COUNTRY_CH.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_CH}"/>
-                                </g:if>
-                                <g:else>
-                                    ${orgInstance.region?.getI10n("value")}
-                                </g:else>
-                            </dd>
-                        </dl>
+                    <div class="ui card">
+                        <div class="content">
+%{--                            <div class="ui header">${message(code:'org.subjectGroup.label')}</div>--}%
+                            <dl>
+                                <dt class="control-label">${message(code:'org.subjectGroup.label')}</dt>
+                                <dd>
+                                    <%
+                                        List<RefdataValue> subjectGroups = RefdataCategory.getAllRefdataValues(RDConstants.SUBJECT_GROUP)
+                                    %>
+                                    <laser:render template="orgSubjectGroupAsList"
+                                                  model="${[org: orgInstance, orgSubjectGroups: orgInstance.subjectGroup, availableSubjectGroups: subjectGroups, editable: editable]}"/>
+
+                                    <laser:render template="orgSubjectGroupModal"
+                                                  model="${[org: orgInstance, availableSubjectGroups: subjectGroups, editable: editable]}"/>
+                                </dd>
+                            </dl>
+                        </div>
                     </div>
-                </div><!-- .card -->
+                </div>
             </g:if>
 
             <g:if test="${orgInstance.isCustomerType_Inst()}">
@@ -275,6 +280,18 @@
             <g:if test="${orgInstance.isCustomerType_Inst()}">
                 <div class="ui card">
                     <div class="content">
+                        <dl>
+                            <dt class="control-label">
+                                <g:message code="org.linkResolverBase.label"/>
+                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                      data-content="${message(code: 'org.linkResolverBase.expl')}">
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
+                                </span>
+                            </dt>
+                            <dd>
+                                <ui:xEditable owner="${orgInstance}" field="linkResolverBaseURL" />
+                            </dd>
+                        </dl>
 %{--                        <div class="ui header">Discovery-Systeme</div>--}%
                         <dl>
                             <dt class="control-label"><g:message code="org.discoverySystems.frontend.label" /></dt>
@@ -298,18 +315,6 @@
                                               model="${[org: orgInstance, config: 'discoverySystemIndex', editable: editable]}"/>
                             </dd>
                         </dl>
-                        <dl>
-                            <dt class="control-label">
-                                <g:message code="org.linkResolverBase.label"/>
-                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
-                                      data-content="${message(code: 'org.linkResolverBase.expl')}">
-                                    <i class="${Icon.TOOLTIP.HELP}"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <ui:xEditable owner="${orgInstance}" field="linkResolverBaseURL" />
-                            </dd>
-                        </dl>
                     </div>
                 </div>
             </g:if>
@@ -328,9 +333,9 @@
                     box-shadow: none;
                 }
             </style>
-            <div class="ui bottom attached segment tab active" data-tab="tab-altnames">
+            <div class="ui bottom attached segment tab active" data-tab="tab-altnames" id="js-confirmationCard">%{-- id="js-confirmationCard" --> moved altnames from first card ???--}%
 
-                <div id="altnames" class="ui accordion la-accordion-showMore la-accordion-altName"> %{-- id="js-confirmationCard" --> moved altnames from first card ???--}%
+                <div id="altnames" class="ui accordion la-accordion-showMore la-accordion-altName">
                     <g:if test="${orgInstance.altnames}">
                         <div class="ui divided middle aligned selection list la-flex-center">
                             <div class="item title" id="altname_title"  data-objId="${genericOIDService.getOID(orgInstance.altnames[0])}">
@@ -397,17 +402,6 @@
                                 <th scope="row" class="control-label">${linkTypes[perspectiveIndex]}</th>
                                 <td><g:link action="show" id="${pair.id}">${pair.name}</g:link></td>
                                 <td class="right aligned">
-                                <%--<laser:render template="/templates/links/subLinksModal"
-                                          model="${[tmplText:message(code:'org.details.editLink'),
-                                                    tmplIcon:'write',
-                                                    tmplCss: 'icon la-selectable-button la-popup-tooltip',
-                                                    tmplID:'editLink',
-                                                    tmplModalID:"org_edit_link_${row.id}",
-                                                    editmode: editable,
-                                                    context: orgInstance,
-                                                    linkInstanceType: row.class.name,
-                                                    link: row
-                                          ]}" />--%>
                                     <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
                                         <span class="la-popup-tooltip" data-content="${message(code:'license.details.unlink')}">
                                             <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
@@ -751,24 +745,6 @@
                                                                             </g:if>
                                                                         </g:each>
                                                                     </g:if>
-                                                                    <%--<g:each in="${person.addresses.sort { it.type.each{it?.getI10n('value') }}}" var="address">
-                                                                            <laser:render template="/addressbook/address"
-                                                                                          model="${[address: address, tmplShowDeleteButton: false, editable: false]}"/>
-                                                                    </g:each>
-                                                                    <laser:render template="/addressbook/person_full_details" model="${[
-                                                                                    person                 : person,
-                                                                                    personContext          : orgInstance,
-                                                                                    tmplShowDeleteButton   : true,
-                                                                                    tmplShowFunctions      : false,
-                                                                                    tmplShowPositions      : true,
-                                                                                    tmplShowResponsiblities: true,
-                                                                                    tmplConfigShow         : ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax', 'address'],
-                                                                                    controller             : 'organisation',
-                                                                                    action                 : 'show',
-                                                                                    id                     : orgInstance.id,
-                                                                                    editable               : false,
-                                                                                    noSelection            : true
-                                                                        ]}"/>--%>
                                                                 </div>
                                                             </div>
                                                         </g:each>

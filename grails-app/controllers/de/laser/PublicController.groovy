@@ -47,6 +47,8 @@ class PublicController {
             text += "Disallow: /public/help/ \n"
             text += "Disallow: /public/manual/ \n"
             text += "Disallow: /public/releases/ \n"
+            text += "Disallow: /public/wcagFeedbackForm/ \n"
+            text += "Disallow: /public/wcagStatement/ \n"
             text += "Disallow: /public/wcagTest/ \n"
         }
         else {
@@ -58,7 +60,8 @@ class PublicController {
     /**
      * Displays the WCAG statement
      */
-    @Secured(['permitAll'])
+    @Secured(['ROLE_ADMIN'])
+    @Deprecated
     def wcagStatement() {
     }
 
@@ -99,7 +102,8 @@ class PublicController {
     /**
      * Test page for check compatibility
      */
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
+    @Deprecated
     def wcagTest() {
     }
 
