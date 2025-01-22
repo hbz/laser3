@@ -21,7 +21,7 @@
         <g:if test="${wekbNewsProTaskList}">
             <div class="ui fluid card">
                 <div class="ui top attached label">
-                    Beantragte Titel-Korrekturen durch den Anbieter
+                    Beantragte Titel-Korrekturen beim Anbieter
                 </div>
                 <div class="content">
                     <div class="ui list relaxed divided" style="margin: 0.5em 0">
