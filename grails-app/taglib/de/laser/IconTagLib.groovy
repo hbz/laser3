@@ -274,21 +274,20 @@ class IconTagLib {
 
     def customerTypeProIcon = { attrs, body ->
         if (attrs.org) {
-//            if (attrs.org.isCustomerType_Inst_Pro()) {
             if (attrs.org.isCustomerType_Pro()) {
                 out << '<span class="la-long-tooltip la-popup-tooltip" data-position="bottom center" data-content="' + attrs.org.getCustomerTypeI10n() + '">'
 
-//                String color = attrs.org.isCustomerType_Consortium() ? 'teal' : 'grey'
-//                if (attrs.cssClass) {
-//                    out << '<i class="icon ' + color + ' trophy ' + attrs.cssClass + '"></i>'
-//                } else {
-//                    out << '<i class="icon ' + color + ' trophy"></i>'
-//                }
+                String icon = attrs.org.isCustomerType_Consortium() ? Icon.AUTH.ORG_CONSORTIUM_PRO : Icon.AUTH.ORG_INST_PRO
                 if (attrs.cssClass) {
-                    out << '<i class="' + Icon.AUTH.ORG_PRO + ' ' + attrs.cssClass + '"></i>'
+                    out << '<i class="' + icon + ' ' + attrs.cssClass + '"></i>'
                 } else {
-                    out << '<i class="' + Icon.AUTH.ORG_PRO + '"></i>'
+                    out << '<i class="' + icon + '"></i>'
                 }
+//                if (attrs.cssClass) {
+//                    out << '<i class="' + Icon.AUTH.ORG_PRO + ' ' + attrs.cssClass + '"></i>'
+//                } else {
+//                    out << '<i class="' + Icon.AUTH.ORG_PRO + '"></i>'
+//                }
                 out << '</span>'
             }
         }
