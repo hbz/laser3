@@ -314,8 +314,8 @@ making obsolete package/actions
                                             <dd>${platformInstanceRecord.passwordAuthentication ? RefdataValue.getByValueAndCategory(platformInstanceRecord.passwordAuthentication, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
                                         </dl>
                                         <dl>
-                                            <dt><g:message code="platform.auth.proxy.supported"/></dt>
-                                            <dd>${platformInstanceRecord.proxySupported ? RefdataValue.getByValueAndCategory(platformInstanceRecord.proxySupported, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
+                                            <dt><g:message code="platform.auth.other.proxies"/></dt>
+                                            <dd>${platformInstanceRecord.otherProxies ? RefdataValue.getByValueAndCategory(platformInstanceRecord.otherProxies, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
                                         </dl>
                                         <dl>
                                             <dt><g:message code="platform.auth.openathens.supported"/></dt>
