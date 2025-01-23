@@ -68,7 +68,7 @@ class PublicController {
     /**
      * Displays the WCAG feedback form
      */
-    @Secured(['permitAll'])
+    @Secured(['ROLE_USER'])
     def wcagFeedbackForm() {
     }
 
@@ -76,7 +76,7 @@ class PublicController {
      * Takes the submitted message and sends a barrier-free feedback mail to an address responsible for
      * disability matters
      */
-    @Secured(['permitAll'])
+    @Secured(['ROLE_USER'])
     def sendFeedbackForm() {
 
         try {

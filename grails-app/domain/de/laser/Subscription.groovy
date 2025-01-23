@@ -179,7 +179,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                       ]
 
     static transients = [
-            'isSlavedAsString', 'provider', 'multiYearSubscription',
+            'provider', 'multiYearSubscription',
             'currentMultiYearSubscriptionNew', 'renewalDate',
             'commaSeperatedPackagesIsilList', 'calculatedPropDefGroups', 'allocationTerm',
             'subscriberRespConsortia', 'providers', 'agencies', 'consortium'
@@ -553,15 +553,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     List<Vendor> getSortedVendors(String order) {
         Vendor.executeQuery('select vr.vendor from VendorRole vr where vr.subscription = :sub order by vr.vendor.sortname '+order,
                 [sub: this])
-    }
-
-    /**
-     * Outputs the {@link #isSlaved} flag as string; isSlaved means whether changes on a consortial parent subscription should be
-     * passed directly to the members or if they need to be accepted before applying them
-     * @return 'Yes' if isSlaved is true, 'No' otherwise
-     */
-    String getIsSlavedAsString() {
-        isSlaved ? "Yes" : "No"
     }
 
     /**

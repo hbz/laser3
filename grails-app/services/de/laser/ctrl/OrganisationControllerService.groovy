@@ -432,7 +432,6 @@ class OrganisationControllerService {
                                       inContextOrg:true,
                                       isMyOrg:false,
                                       institutionalView:false,
-                                      isGrantedOrgRoleAdminOrOrgEditor: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'),
                                       isGrantedOrgRoleAdmin: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'),
                                       contextCustomerType:org.getCustomerType()]
 

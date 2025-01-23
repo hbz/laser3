@@ -3,8 +3,6 @@
 
 <laser:htmlStart message="${isProviderOrAgency ? 'org.nav.ids' : 'org.nav.idsCids.shy'}" />
 
-    <g:set var="isGrantedOrgRoleAdminOrOrgEditor" value="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}" />
-
 <laser:render template="breadcrumb"
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
 
@@ -42,7 +40,7 @@
 <div class="ui bottom attached tab active segment">
 
     <g:if test="${params.tab == 'identifier'}">
-    <%-- orgInstance.hasPerm(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC) && ((!fromCreate) || isGrantedOrgRoleAdminOrOrgEditor) --%>
+    <%-- orgInstance.hasPerm(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC) && ((!fromCreate) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) --%>
         <table class="ui table la-js-responsive-table la-table">
             <thead>
             <tr>
@@ -132,7 +130,7 @@
                 </thead>
                 <tbody>
                     <g:each in="${customerIdentifier}" var="ci" status="rowno">
-                        <g:if test="${ci.isPublic || (ci.owner.id == contextService.getOrg().id) || isGrantedOrgRoleAdminOrOrgEditor}">
+                        <g:if test="${ci.isPublic || (ci.owner.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
                             <%  boolean editable_this_ci = (ci.customer.id == institution.id || isComboRelated) %>
                             <tr>
                                 <td>${rowno+1}</td>

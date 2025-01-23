@@ -133,12 +133,12 @@
 %{--                                    <ui:xEditableBoolean owner="${user}" field="passwordExpired" overwriteEditable="true"/>--}%
 %{--                                </div>--}%
                                 <div class="ui field">
-                                    <label>${message(code:'user.lastLogin.label')}</label>
-                                    <p>${user.lastLogin ? DateUtils.getLocalizedSDF_noZ().format(user.lastLogin) : message(code: 'default.unknown')}</p>
-                                </div>
-                                <div class="ui field">
                                     <label>${message(code:'user.invalidLoginAttempts.label')}</label>
                                     <p>${user.invalidLoginAttempts ?: 0}</p>
+                                </div>
+                                <div class="ui field">
+                                    <label>${message(code:'user.lastLogin.label')}</label>
+                                    <p>${user.lastLogin ? DateUtils.getLocalizedSDF_noZ().format(user.lastLogin) : message(code: 'default.unknown')}</p>
                                 </div>
                                 <div class="ui field">
                                     <label>${message(code:'default.lastUpdated.label')}</label>
