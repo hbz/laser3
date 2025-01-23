@@ -2933,7 +2933,7 @@ class SubscriptionService {
                         identifier: UUID.randomUUID())
                 sub.startDate = entry.startDate ? databaseDateFormatParser.parse(entry.startDate) : null
                 sub.endDate = entry.endDate ? databaseDateFormatParser.parse(entry.endDate) : null
-                sub.referenceYear = entry.referenceYear ? Year.parse(entry.referenceYear.value) : null
+                sub.referenceYear = entry.referenceYear ? new Year(entry.referenceYear.value) : null
                 sub.manualCancellationDate = entry.manualCancellationDate ? databaseDateFormatParser.parse(entry.manualCancellationDate) : null
                 sub.isAutomaticRenewAnnually = entry.isAutomaticRenewAnnually ?: false
                 /* TODO [ticket=2276]
@@ -4028,6 +4028,8 @@ class SubscriptionService {
         List titleRow = rows.remove(0).split('\t'), wrongOrgs = [], truncatedRows = []
         titleRow.eachWithIndex { headerCol, int c ->
             switch (headerCol.toLowerCase().trim()) {
+                case ["laser-uuid", "las:er-uuid (einrichtung)", "las:er-uuid (institution)"]: colMap.uuidCol = c
+                    break
                 case "gnd-nr": colMap.gndCol = c
                     break
                 case "isil": colMap.isilCol = c
@@ -4055,30 +4057,35 @@ class SubscriptionService {
             ArrayList<String> cols = row.split('\t', -1)
             if(cols.size() == titleRow.size()) {
                 Org match = null
-                if (colMap.wibCol >= 0 && cols[colMap.wibCol] != null && !cols[colMap.wibCol].trim().isEmpty()) {
-                    List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.status != :removed', [value: cols[colMap.wibCol].trim(), ns: namespaces.wib, removed: RDStore.TIPP_STATUS_REMOVED])
-                    if (matchList.size() == 1)
-                        match = matchList[0] as Org
+                if (colMap.uuidCol >= 0 && cols[colMap.uuidCol] != null && !cols[colMap.uuidCol].trim().isEmpty()) {
+                    match = Org.findByGlobalUIDAndStatusNotEqual(cols[colMap.uuidCol].trim(), RDStore.ORG_STATUS_REMOVED)
                 }
-                if (!match && colMap.isilCol >= 0 && cols[colMap.isilCol] != null && !cols[colMap.isilCol].trim().isEmpty()) {
-                    List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.status != :removed', [value: cols[colMap.isilCol].trim(), ns: namespaces.isil, removed: RDStore.TIPP_STATUS_REMOVED])
-                    if (matchList.size() == 1)
-                        match = matchList[0] as Org
-                }
-                if (!match && colMap.gndCol >= 0 && cols[colMap.gndCol] != null && !cols[colMap.gndCol].trim().isEmpty()) {
-                    List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.status != :removed', [value: cols[colMap.gndCol].trim(), ns: namespaces.gnd, removed: RDStore.TIPP_STATUS_REMOVED])
-                    if (matchList.size() == 1)
-                        match = matchList[0] as Org
-                }
-                if (!match && colMap.rorCol >= 0 && cols[colMap.rorCol] != null && !cols[colMap.rorCol].trim().isEmpty()) {
-                    List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.status != :removed', [value: cols[colMap.rorCol].trim(), ns: namespaces.ror, removed: RDStore.TIPP_STATUS_REMOVED])
-                    if (matchList.size() == 1)
-                        match = matchList[0] as Org
-                }
-                if (colMap.dealCol >= 0 && cols[colMap.dealCol] != null && !cols[colMap.dealCol].trim().isEmpty()) {
-                    List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.status != :removed', [value: cols[colMap.dealCol].trim(), ns: namespaces.dealId, removed: RDStore.TIPP_STATUS_REMOVED])
-                    if (matchList.size() == 1)
-                        match = matchList[0] as Org
+                if(!match) {
+                    if (colMap.wibCol >= 0 && cols[colMap.wibCol] != null && !cols[colMap.wibCol].trim().isEmpty()) {
+                        List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.status != :removed', [value: cols[colMap.wibCol].trim(), ns: namespaces.wib, removed: RDStore.ORG_STATUS_REMOVED])
+                        if (matchList.size() == 1)
+                            match = matchList[0] as Org
+                    }
+                    if (!match && colMap.isilCol >= 0 && cols[colMap.isilCol] != null && !cols[colMap.isilCol].trim().isEmpty()) {
+                        List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.status != :removed', [value: cols[colMap.isilCol].trim(), ns: namespaces.isil, removed: RDStore.ORG_STATUS_REMOVED])
+                        if (matchList.size() == 1)
+                            match = matchList[0] as Org
+                    }
+                    if (!match && colMap.gndCol >= 0 && cols[colMap.gndCol] != null && !cols[colMap.gndCol].trim().isEmpty()) {
+                        List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.status != :removed', [value: cols[colMap.gndCol].trim(), ns: namespaces.gnd, removed: RDStore.ORG_STATUS_REMOVED])
+                        if (matchList.size() == 1)
+                            match = matchList[0] as Org
+                    }
+                    if (!match && colMap.rorCol >= 0 && cols[colMap.rorCol] != null && !cols[colMap.rorCol].trim().isEmpty()) {
+                        List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.status != :removed', [value: cols[colMap.rorCol].trim(), ns: namespaces.ror, removed: RDStore.ORG_STATUS_REMOVED])
+                        if (matchList.size() == 1)
+                            match = matchList[0] as Org
+                    }
+                    if (colMap.dealCol >= 0 && cols[colMap.dealCol] != null && !cols[colMap.dealCol].trim().isEmpty()) {
+                        List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.status != :removed', [value: cols[colMap.dealCol].trim(), ns: namespaces.dealId, removed: RDStore.ORG_STATUS_REMOVED])
+                        if (matchList.size() == 1)
+                            match = matchList[0] as Org
+                    }
                 }
 
                 if (match) {

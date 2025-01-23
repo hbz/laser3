@@ -1428,12 +1428,6 @@ class SubscriptionControllerService {
      */
     Map<String,Object> processAddMembers(GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
-        /*
-        continue here with following procedure:
-        - packages to process: collect in map
-        - process that map on controller level for ensuring new transaction ==> make tabula rasa
-        - implement holding selection switch and remove then the checkbox in the view
-         */
         if (!result) {
             [result:null,status:STATUS_ERROR]
         }

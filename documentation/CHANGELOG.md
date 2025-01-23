@@ -9,6 +9,8 @@
 
 6220    23.01.2024  dev     3.5         David   Feature     isGrantedOrgRoleAdminOrOrgEditor entfernen
 
+6218    23.01.2024  dev     3.5         Andreas Feature     Erweiterung des Einrichtungsim-/exports in/aus Lizenzen um globale UID der Einrichtung
+
 6216    23.01.2024  dev     3.5         Andreas Bug         vergessene Ringgold-ID in den Kernsatz der Einrichtungs-IDs aufgenommen
 
 6211    23.01.2024  rc-3.4  3.4.19      Andreas Bug         Kostenstatus gelöscht aus Inline-Bearbeitung entfernt
