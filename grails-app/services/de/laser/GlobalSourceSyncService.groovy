@@ -1507,8 +1507,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 vendor.activationForNewReleases = vendorRecord.activationForNewReleases == RDStore.YN_YES.value
                 vendor.exchangeOfIndividualTitles = vendorRecord.exchangeOfIndividualTitles == RDStore.YN_YES.value
                 vendor.researchPlatformForEbooks = vendorRecord.researchPlatformForEbooks
-                vendor.prequalificationVOL = vendorRecord.prequalificationVOL == RDStore.YN_YES.value
-                vendor.prequalificationVOLInfo = vendorRecord.prequalificationVOLInfo
+                vendor.prequalification = vendorRecord.prequalification == RDStore.YN_YES.value
+                vendor.prequalificationInfo = vendorRecord.prequalificationInfo
                 if(vendor.save()) {
                     if(vendorRecord.contacts) {
                         List<String> typeNames = contactTypes.values().collect { RefdataValue cct -> cct.getI10n("value") }

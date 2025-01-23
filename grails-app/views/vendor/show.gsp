@@ -358,26 +358,26 @@
                     <h2 class="ui header"><g:message code="vendor.supplier.header"/></h2>
                     <dl>
                         <dt>
-                            <g:message code="vendor.supplier.prequalificationVol.label" />
+                            <g:message code="vendor.supplier.prequalification.label" />
                         </dt>
                         <dd>
                             <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
                                                  data_confirm_term_how="ok"
                                                  class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                                 owner="${vendor}" field="prequalificationVOL"  overwriteEditable="${editable && !vendor.gokbId}"/>
+                                                 owner="${vendor}" field="prequalification"  overwriteEditable="${editable && !vendor.gokbId}"/>
                         </dd>
                     </dl>
                     <dl>
                         <dt>
-                            <g:message code="vendor.supplier.infoPrequalificationVol.label" />
+                            <g:message code="vendor.supplier.infoPrequalification.label" />
                         </dt>
                         <dd>
                             <ui:xEditable data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
                                           data_confirm_term_how="ok"
                                           class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                          owner="${vendor}" field="prequalificationVOLInfo"  overwriteEditable="${editable && !vendor.gokbId}"/>
-                            <g:if test="${vendor.prequalificationVOLInfo}">
-                                <ui:linkWithIcon href="${vendor.prequalificationVOLInfo}"/>
+                                          owner="${vendor}" field="prequalificationInfo"  overwriteEditable="${editable && !vendor.gokbId}"/>
+                            <g:if test="${vendor.prequalificationInfo}">
+                                <ui:linkWithIcon href="${vendor.prequalificationInfo}"/>
                             </g:if>
                         </dd>
                     </dl>
