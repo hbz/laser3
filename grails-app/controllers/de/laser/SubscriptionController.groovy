@@ -732,7 +732,7 @@ class SubscriptionController {
         List<Org> consortiaMembers = Org.executeQuery(fsr.query, fsr.queryParams, params)
 
 
-        ArrayList titles = ["WIB-ID", "ISIL", "ROR-ID", "GND-NR", "DEAL-ID", message(code: 'org.sortname.label'), message(code: 'default.name.label'), message(code: 'org.libraryType.label'), message(code: 'subscription.label')]
+        ArrayList titles = ["LAS:eR-UUID", "WIB-ID", "ISIL", "ROR-ID", "GND-NR", "DEAL-ID", message(code: 'org.sortname.label'), message(code: 'default.name.label'), message(code: 'org.libraryType.label'), message(code: 'subscription.label')]
 
         ArrayList rowData = []
         ArrayList row
@@ -744,6 +744,7 @@ class SubscriptionController {
             String gng = org.getIdentifierByType('gnd_org_nr')?.value
             String deal = org.getIdentifierByType('deal_id')?.value
 
+            row.add(org.globalUID)
             row.add((wibid != IdentifierNamespace.UNKNOWN && wibid != null) ? wibid : '')
             row.add((isil != IdentifierNamespace.UNKNOWN && isil != null) ? isil : '')
             row.add((ror != IdentifierNamespace.UNKNOWN && ror != null) ? ror : '')
