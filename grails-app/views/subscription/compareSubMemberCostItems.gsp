@@ -221,11 +221,6 @@
                 </td>
                 <td>
                     <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
-
-                    <g:if test="${sub.isSlaved}">
-                        <ui:auditIcon type="auto2" />
-                    </g:if>
-
                     <ui:customerTypeProIcon org="${subscr}"/>
                 </td>
                 <td>

@@ -450,8 +450,9 @@
             <div class="ui card">
                 <div class="content">
                     <h2 class="ui header"><g:message code="vendor.general.objects.label"/></h2>
+                </div>
+                <div class="content">
                     <div class="ui accordion">
-%{--                        <h2 class="ui header"><g:message code="vendor.general.objects.label"/></h2>--}%
                         <div class="title">
                             <i class="dropdown icon la-dropdown-accordion"></i>
                             <div class="ui horizontal relaxed list">
@@ -497,8 +498,9 @@
             <div class="ui card">
                 <div class="content">
                     <h2 class="ui header"><g:message code="vendor.my.objects.label"/></h2>
+                </div>
+                <div class="content">
                     <div class="ui accordion">
-%{--                        <h2 class="ui header"><g:message code="vendor.my.objects.label"/></h2>--}%
                         <div class="title">
                             <i class="dropdown icon la-dropdown-accordion"></i>
                             <div class="ui horizontal relaxed list">
