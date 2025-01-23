@@ -534,7 +534,7 @@ making obsolete package/actions
                                                 <tr>
                                                     <td>
                                                         <span class="la-flexbox la-minor-object">
-                                                            <i class="la-list-icon la-popup-tooltip la-consortia icon" data-content="${message(code: 'gasco.filter.consortialAuthority')}"></i><g:link target="_blank" controller="organisation" action="show" id="${personRole.org.id}">${gascoContact.orgDisplay}</g:link>
+                                                            <i class="${Icon.AUTH.ORG_CONSORTIUM} la-list-icon la-popup-tooltip" data-content="${message(code: 'gasco.filter.consortialAuthority')}"></i><g:link target="_blank" controller="organisation" action="show" id="${personRole.org.id}">${gascoContact.orgDisplay}</g:link>
                                                         </span>
                                                     </td>
                                                 </tr>

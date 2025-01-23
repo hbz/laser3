@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.RefdataCategory;de.laser.storage.RDConstants"%>
+<%@ page import="de.laser.Task; de.laser.ui.Btn; de.laser.RefdataCategory;de.laser.storage.RDConstants"%>
 <laser:htmlStart message="menu.my.tasks" />
 
     <ui:breadcrumbs>
@@ -26,14 +26,25 @@
                     <ui:datepicker label="task.endDate.to.label" id="endDateTo" name="endDateTo" placeholder="default.date.label" value="${params.endDateTo}" />
 
                     <div class="field">
+                        <label>${message(code: 'task.object.label')}</label>
+                        <g:select class="ui fluid dropdown"
+                                  name="taskObject"
+                                  value="${params.taskObject}"
+                                  from="${Task.getObjectMap()}"
+                                  noSelection="${['' : message(code:'default.all')]}"
+                                  optionKey="${{it.key}}"
+                                  optionValue="${{it.value}}" />
+                    </div>
+
+                    <div class="field">
                         <label>${message(code: 'default.status.label')}</label>
                         <ui:select class="ui fluid dropdown"
-                                  name="taskStatus"
-                                  value="${params.taskStatus}"
-                                  from="${RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
-                                  noSelection="${['' : message(code:'default.all')]}"
-                                  optionKey="id"
-                                  optionValue="value" />
+                                   name="taskStatus"
+                                   value="${params.taskStatus}"
+                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
+                                   noSelection="${['' : message(code:'default.all')]}"
+                                   optionKey="id"
+                                   optionValue="value" />
                     </div>
                 </div>
                 <div class="field la-field-right-aligned">

@@ -9,6 +9,7 @@ import de.laser.ui.Icon
 import de.laser.wekb.Provider
 import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
+import org.grails.plugins.web.taglib.ApplicationTagLib
 
 /**
  * Represents a single task which can be attached to an object an is, unlike {@link de.laser.workflow.WfCheckpoint}, not part of a more complex workflow
@@ -185,5 +186,18 @@ class Task {
         else if (tipp)          { name = tipp.name }
         else if (vendor)        { name = vendor.name }
         name
+    }
+
+    static Map<String, String> getObjectMap() {
+        ApplicationTagLib g = BeanStore.getApplicationTagLib()
+        [
+            license :       g.message(code: 'license.label'),
+            org :           g.message(code: 'org.label'),
+            provider :      g.message(code: 'provider.label'),
+            subscription :  g.message(code: 'subscription.label'),
+            surveyConfig :  g.message(code: 'survey.label'),
+            tipp :          g.message(code: 'title.label'),
+            vendor :        g.message(code: 'vendor.label')
+        ].sort{ it.value } as Map<String, String>
     }
 }

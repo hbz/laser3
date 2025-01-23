@@ -8,7 +8,7 @@
                 <td>
                     <span class="la-flexbox la-minor-object">
                         <g:if test="${role.roleType.value == RDStore.OR_SUBSCRIPTION_CONSORTIUM.value}">
-                            <i class="la-list-icon la-popup-tooltip la-consortia icon" data-content="${message(code:'consortium')}"></i>
+                            <i class="${Icon.AUTH.ORG_CONSORTIUM} la-list-icon la-popup-tooltip" data-content="${message(code:'consortium')}"></i>
                         </g:if>
                         <g:link controller="organisation" action="show" id="${role.org.id}">
                             ${role.org.name}

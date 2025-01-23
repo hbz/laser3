@@ -39,7 +39,7 @@
         <div class="extra content">
             <div class="right floated">
                 <g:link controller="organisation" action="dataviz" id="${contextService.getOrg().id}">
-                    Daten-Dashboard öffnen <i class="${Icon.DATA_DASHBOARD} circular"></i>
+                    <i class="${Icon.DATA_DASHBOARD} circular"></i> Daten-Dashboard
                 </g:link>
             </div>
         </div>
@@ -144,6 +144,11 @@
         }
 
         JSPC.app.info.charts.subscription.setOption (JSPC.app.info.chart_config.subscription);
+
+        $(window).resize(function () {
+            JSPC.app.info.charts.subscription.resize();
+        });
+        $(window).trigger('resize');
     </laser:script>
 
     <style>

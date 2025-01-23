@@ -77,10 +77,12 @@ class Icon {
         @UIDoc(usage = 'Only for Inst Role: Adm')
         public static String INST_ADM       = 'user shield icon'
 
-        @UIDoc(usage = 'Only for Customer Type: Basic (COLORED)')
-        public static String ORG_BASIC              = 'trophy icon grey'
-        @UIDoc(usage = 'Only for Customer Type: Pro (COLORED)')
-        public static String ORG_PRO                = 'trophy icon teal'
+        @UIDoc(usage = 'Only for Customer Type: Institution')
+        public static String ORG_INST           = 'walking icon'
+        @UIDoc(usage = 'Only for Customer Type: Consortium')
+        public static String ORG_CONSORTIUM     = 'landmark icon'
+        @UIDoc(usage = 'Only for Customer Type: Support (COLORED)')
+        public static String ORG_SUPPORT        = 'theater masks icon red'
 
         @UIDoc(usage = 'Only for Customer Type: Institution Basic (COLORED)')
         public static String ORG_INST_BASIC         = 'walking icon grey'
@@ -90,8 +92,6 @@ class Icon {
         public static String ORG_CONSORTIUM_BASIC   = 'landmark icon grey'
         @UIDoc(usage = 'Only for Customer Type: Consortium Pro (COLORED)')
         public static String ORG_CONSORTIUM_PRO     = 'landmark icon teal'
-        @UIDoc(usage = 'Only for Customer Type: Support (COLORED)')
-        public static String ORG_SUPPORT            = 'theater masks icon red'
 
         @UIDoc(usage = 'Only for Role: User')
         public static String ROLE_USER      = 'user icon'
@@ -356,7 +356,7 @@ class Icon {
 
     public static String SUBSCRIPTION               = 'clipboard icon'      // todo: duplicate license.licenseCategory, tipp.accessStartDate/tipp.accessEndDate
 
-    public static String SURVEY                     = 'la-survey icon'
+    public static String SURVEY                     = 'poll icon'
 
     public static String TASK                       = 'calendar check outline icon'
 
