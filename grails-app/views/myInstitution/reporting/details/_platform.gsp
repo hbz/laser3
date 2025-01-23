@@ -112,13 +112,13 @@
                         </g:else>
                     </uiReporting:detailsTableTD>
 
-                    <uiReporting:detailsTableTD config="${dtConfig}" field="platform-proxySupported">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="platform-otherProxies">
 
                         <g:if test="${useLocalFields}">
                             <uiReporting:objectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PropertyStore.PLA_PROXY.id}" />
                         </g:if>
                         <g:else>
-                            <uiReporting:detailsTableEsValue key="${key}" id="${plt.id}" field="proxySupported" records="${esRecords}" />
+                            <uiReporting:detailsTableEsValue key="${key}" id="${plt.id}" field="otherProxies" records="${esRecords}" />
                         </g:else>
                     </uiReporting:detailsTableTD>
 

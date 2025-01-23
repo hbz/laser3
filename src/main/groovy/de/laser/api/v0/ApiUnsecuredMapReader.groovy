@@ -500,9 +500,9 @@ class ApiUnsecuredMapReader {
         result.lastUpdated           = ApiToolkit.formatInternalDate(vendor._getCalculatedLastUpdated())
         result.homepage              = vendor.homepage
         result.researchPlatformForEbooks = vendor.researchPlatformForEbooks
-        result.prequalificationVOLInfo = vendor.prequalificationVOLInfo
+        result.prequalificationInfo = vendor.prequalificationInfo
         Set<String> boolFields = ['webShopOrders', 'ediOrders', 'xmlOrders', 'paperInvoice', 'managementOfCredits', 'processingOfCompensationPayments', 'individualInvoiceDesign',
-                                  'technicalSupport', 'shippingMetadata', 'forwardingUsageStatisticsFromPublisher', 'activationForNewReleases', 'exchangeOfIndividualTitles', 'prequalificationVOL']
+                                  'technicalSupport', 'shippingMetadata', 'forwardingUsageStatisticsFromPublisher', 'activationForNewReleases', 'exchangeOfIndividualTitles', 'prequalification']
         result.putAll(ApiToolkit.readBoolValues(vendor, boolFields))
 
         result.retirementDate      = vendor.retirementDate ? ApiToolkit.formatInternalDate(vendor.retirementDate) : null
