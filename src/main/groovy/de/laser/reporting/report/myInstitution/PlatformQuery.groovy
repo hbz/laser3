@@ -72,7 +72,7 @@ class PlatformQuery extends BaseQuery {
 
             _processESRefdataQuery(params.query, RDConstants.IP_AUTHENTICATION, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
         }
-        else if (suffix in ['passwordAuthentication', 'proxySupported', 'shibbolethAuthentication']) {
+        else if (suffix in ['passwordAuthentication', 'otherProxies', 'shibbolethAuthentication']) {
 
             _processESRefdataQuery(params.query, RDConstants.Y_N, BaseFilter.getCachedFilterESRecords(prefix, params), orphanedIdList, result)
         }

@@ -40,7 +40,7 @@ class PlatformExport extends BaseDetailsExport {
                                     'ipAuthentication'              : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
                                     'shibbolethAuthentication'      : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
                                     'passwordAuthentication'        : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
-                                    'proxySupported'                : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
+                                    'otherProxies'                  : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
                                     'statisticsFormat'              : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
                                     'statisticsUpdate'              : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
                                     'counterCertified'              : [ type: BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH ],
@@ -59,7 +59,7 @@ class PlatformExport extends BaseDetailsExport {
 
             "uuid", "providerUuid",
             "altname",
-            "ipAuthentication", "shibbolethAuthentication", "passwordAuthentication", "proxySupported",
+            "ipAuthentication", "shibbolethAuthentication", "passwordAuthentication", "otherProxies",
             "statisticsFormat", "statisticsUpdate", "counterCertified",
             "counterR3Supported", "counterR4Supported", "counterR4SushiApiSupported", "counterR5Supported", "counterR5SushiApiSupported",
             "lastUpdatedDisplay"
