@@ -2,7 +2,10 @@ package de.laser
 
 
 import de.laser.storage.RDConstants
+import de.laser.utils.DateUtils
 import grails.gorm.transactions.Transactional
+
+import java.text.SimpleDateFormat
 
 /**
  * This service handles reference data reordering upon system startup. Customised orderings may be defined in the method below
@@ -44,14 +47,22 @@ class RefdataReorderService {
             at.save()
         }
         //semesters
-        List<String> semesters = ['w17/18', 's18', 'w18/19', 's19', 'w19/20', 's20', 'w20/21', 's21', 'w21/22', 's22', 'w22/23', 's23', 'w23/24', 's24', 'w24/25',
-                's25', 'w25/26', 's26', 'w26/27', 's27', 'w27/28', 's28', 'w28/29', 's29', 'w29/30', 's30', 'w30/31', 's31']
+        Calendar limit = GregorianCalendar.getInstance(), start0 = GregorianCalendar.getInstance(), start1 = GregorianCalendar.getInstance()
+        limit.add(Calendar.YEAR, 6)
+        start0.set(2017, 0, 1)
+        start1.set(2018, 0, 1)
+        SimpleDateFormat sdf = DateUtils.getSDF_yy()
         order = 0
-        semesters.each { String s ->
+        while(start0 < limit) {
+            String s = "w${sdf.format(start0.getTime())}/${sdf.format(start1.getTime())}"
             RefdataValue semester = RefdataValue.getByValueAndCategory(s, RDConstants.SEMESTER)
-            semester.order = order
-            semester.save()
-            order += 10
+            if(semester) {
+                semester.order = order
+                semester.save()
+                order += 10
+            }
+            start0.add(Calendar.YEAR, 1)
+            start1.add(Calendar.YEAR, 1)
         }
         //price categories: take the order of insertion and make then the ID ascending
         //I do not use the getAllRefdataValues because this does the ordering in an incorrect way
