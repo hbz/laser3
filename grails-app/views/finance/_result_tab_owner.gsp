@@ -110,7 +110,7 @@
                         </g:if>
                     </td>
                     <td>
-                        <ui:xEditableRefData config="${de.laser.storage.RDConstants.COST_ITEM_STATUS}" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemStatus" />
+                        <ui:xEditableRefData config="${de.laser.storage.RDConstants.COST_ITEM_STATUS}" constraint="removeValue_deleted" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemStatus" />
                     </td>
                     <td>
                         <ui:xEditable owner="${ci}" type="date" field="startDate" validation="datesCheck"/>

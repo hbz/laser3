@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6211    23.01.2024  rc-3.4  3.4.19      Andreas Bug         Kostenstatus gelöscht aus Inline-Bearbeitung entfernt
+
 5673    21.01.2024  dev     3.5         David   Feature     We:kb-News / Titeländerungen
 
 5998    21.01.2024  dev     3.5         David   Feature     Rechteprüfung: Workflows
