@@ -1513,8 +1513,8 @@ class ExportClickMeService {
                         label: 'Supplier information',
                         message: 'vendor.supplier.header',
                         fields: [
-                                'vendor.prequalificationVOL'        : [field: 'prequalificationVOL', label: 'Prequalification VOL', message: 'vendor.supplier.prequalificationVol.label'],
-                                'vendor.prequalificationVOLInfo'    : [field: 'prequalificationVOLInfo', label: 'Info to Prequalification VOL', message: 'vendor.supplier.infoPrequalificationVol.label']
+                                'vendor.prequalification'        : [field: 'prequalification', label: 'Prequalification', message: 'vendor.supplier.prequalification.label'],
+                                'vendor.prequalificationInfo'    : [field: 'prequalificationInfo', label: 'Info to Prequalification', message: 'vendor.supplier.infoPrequalification.label']
                         ]
                 ],
                 vendorIdentifiers : [
