@@ -75,7 +75,7 @@
                             <ui:xEditable owner="${orgInstance}" field="name" overwriteEditable="${editable}"/>
                         </dd>
                     </dl>
-                    <g:if test="${!inContextOrg || isGrantedOrgRoleAdminOrOrgEditor}">
+                    <g:if test="${!inContextOrg || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
                         <dl>
                             <dt class="control-label"><g:message code="org.sortname.label" /></dt>
                             <dd>
@@ -405,7 +405,7 @@
                                 <th scope="row" class="control-label">${linkTypes[perspectiveIndex]}</th>
                                 <td><g:link action="show" id="${pair.id}">${pair.name}</g:link></td>
                                 <td class="right aligned">
-                                    <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
+                                    <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
                                         <span class="la-popup-tooltip" data-content="${message(code:'license.details.unlink')}">
                                             <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
@@ -422,7 +422,7 @@
                         </g:each>
                     </table>
                 </g:if>
-                <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
+                <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
                         <div class="ui la-vertical buttons">
                             <%
                                 Map<String,Object> model = [tmplText:message(code: 'org.linking.addLink'),
