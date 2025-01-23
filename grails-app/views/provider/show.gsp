@@ -34,7 +34,7 @@
             <div class="ui card" id="js-confirmationCard">
                 <div class="content">
                     <dl>
-                        <dt><g:message code="default.name.label" /></dt>
+                        <dt class="control-label"><g:message code="default.name.label" /></dt>
                         <dd>
                             <ui:xEditable
                                     data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
@@ -45,7 +45,7 @@
                         </dd>
                     </dl>
                     <dl>
-                        <dt><g:message code="org.sortname.label" /></dt>
+                        <dt class="control-label"><g:message code="org.sortname.label" /></dt>
                         <dd>
                             <ui:xEditable
                                     data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
@@ -55,8 +55,9 @@
                         </dd>
                     </dl>
                     <dl>
-                        <dt><g:message code="altname.plural" /></dt>
-                        <dd id="altnames" class="ui accordion la-accordion-showMore la-accordion-altName" style="padding-bottom: 0">
+                        <dt class="control-label"><g:message code="altname.plural" /></dt>
+                        <dd>
+                            <div id="altnames" class="ui accordion la-accordion-showMore la-accordion-altName">
                             <g:if test="${provider.altnames}">
                                 <div class="ui divided middle aligned selection list la-flex-center">
                                     <div class="item title" id="altname_title" data-objId="${genericOIDService.getOID(provider.altnames[0])}">
@@ -100,13 +101,14 @@
                                     </div>
                                 </div>
                             </g:if>
+                            </div><!-- #altnames -->
+                            <g:if test="${editable && !provider.gokbId}">
+                                <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} la-js-addListValue" data-objtype="altname" value="${message(code: 'altname.add')}">
+                            </g:if>
                         </dd>
                     </dl>
-                    <g:if test="${editable && !provider.gokbId}">
-                        <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} la-js-addListValue" data-objtype="altname" value="${message(code: 'altname.add')}">
-                    </g:if>
                     <dl>
-                        <dt><g:message code="default.url.label"/></dt>
+                        <dt class="control-label"><g:message code="default.url.label"/></dt>
                         <dd>
                             <ui:xEditable
                                     data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
@@ -119,7 +121,7 @@
                         </dd>
                     </dl>
                     <dl>
-                        <dt>
+                        <dt class="control-label">
                             <g:message code="org.metadataDownloaderURL.label" />
                         </dt>
                         <dd>
@@ -133,7 +135,7 @@
                         </dd>
                     </dl>
                     <dl>
-                        <dt>
+                        <dt class="control-label">
                             <g:message code="org.KBARTDownloaderURL.label" />
                         </dt>
                         <dd>
@@ -153,7 +155,7 @@
                 <div class="content">
                     <h2 class="ui header"><g:message code="vendor.invoicing.header"/></h2>
                     <dl>
-                        <dt>
+                        <dt class="control-label">
                             <g:message code="vendor.invoicing.inhouse.label"/>
                         </dt>
                         <dd>
@@ -165,7 +167,7 @@
                     </dl>
                     <g:if test="${provider.inhouseInvoicing}">
                         <dl>
-                            <dt>
+                            <dt class="control-label">
                                 <g:message code="vendor.invoicing.formats.label" />
                             </dt>
                             <dd>
@@ -180,7 +182,7 @@
                             </dd>
                         </dl>
                         <dl>
-                            <dt>
+                            <dt class="control-label">
                                 <g:message code="vendor.invoicing.dispatch.label" />
                             </dt>
                             <dd>
@@ -195,7 +197,7 @@
                             </dd>
                         </dl>
                         <dl>
-                            <dt>
+                            <dt class="control-label">
                                 <g:message code="vendor.invoicing.paperInvoice.label" />
                             </dt>
                             <dd>
@@ -206,7 +208,7 @@
                             </dd>
                         </dl>
                         <dl>
-                            <dt>
+                            <dt class="control-label">
                                 <g:message code="vendor.invoicing.managementOfCredits.label" />
                             </dt>
                             <dd>
@@ -217,7 +219,7 @@
                             </dd>
                         </dl>
                         <dl>
-                            <dt>
+                            <dt class="control-label">
                                 <g:message code="vendor.invoicing.compensationPayments.label" />
                             </dt>
                             <dd>
@@ -228,7 +230,7 @@
                             </dd>
                         </dl>
                         <dl>
-                            <dt>
+                            <dt class="control-label">
                                 <g:message code="vendor.invoicing.individualInvoiceDesign.label" />
                             </dt>
                             <dd>
@@ -240,7 +242,7 @@
                         </dl>
                     </g:if>
                     <dl>
-                        <dt>
+                        <dt class="control-label">
                             <g:message code="vendor.invoicing.vendors.label" />
                         </dt>
                         <dd>
@@ -262,14 +264,14 @@
             <div class="ui card">
                 <div class="content">
                     <dl>
-                        <dt>${message(code: 'default.status.label')}</dt>
+                        <dt class="control-label">${message(code: 'default.status.label')}</dt>
                         <dd>
                             <ui:xEditableRefData owner="${provider}" field="status" config="${RDConstants.PROVIDER_STATUS}" overwriteEditable="${editable && !provider.gokbId}"/>
                         </dd>
                     </dl>
                     <g:if test="${provider.status == RDStore.PROVIDER_STATUS_RETIRED}">
                         <dl>
-                            <dt>${message(code: 'provider.retirementDate.label')}</dt>
+                            <dt class="control-label">${message(code: 'provider.retirementDate.label')}</dt>
                             <dd>
                                 <g:formatDate date="${provider.retirementDate}" format="${message(code: 'default.date.format.notime')}"/>
                             </dd>
@@ -341,8 +343,9 @@
 
             <div class="ui card">
                 <div class="content">
+                    <h2 class="ui header"><g:message code="vendor.general.objects.label"/></h2>
                     <div class="ui accordion">
-                        <h2 class="ui header"><g:message code="vendor.general.objects.label"/></h2>
+%{--                        <h2 class="ui header"><g:message code="vendor.general.objects.label"/></h2>--}%
                         <div class="title">
                             <i class="dropdown icon la-dropdown-accordion"></i>
                             <div class="ui horizontal relaxed list">
@@ -387,8 +390,9 @@
 
             <div class="ui card">
                 <div class="content">
+                    <h2 class="ui header"><g:message code="vendor.my.objects.label"/></h2>
                     <div class="ui accordion">
-                        <h2 class="ui header"><g:message code="vendor.my.objects.label"/></h2>
+%{--                        <h2 class="ui header"><g:message code="vendor.my.objects.label"/></h2>--}%
                         <div class="title">
                             <i class="dropdown icon la-dropdown-accordion"></i>
                             <div class="ui horizontal relaxed list">
@@ -619,7 +623,7 @@
                     <div class="content">
                         <g:if test="${provider.createdBy}">
                             <dl>
-                                <dt>
+                                <dt class="control-label">
                                     <g:message code="org.createdBy.label" />
                                 </dt>
                                 <dd>
@@ -644,7 +648,7 @@
                         </g:if>
                         <g:if test="${provider.legallyObligedBy}">
                             <dl>
-                                <dt>
+                                <dt class="control-label">
                                     <g:message code="org.legallyObligedBy.label" />
                                 </dt>
                                 <dd>

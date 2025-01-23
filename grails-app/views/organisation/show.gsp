@@ -60,7 +60,7 @@
     <div class="eleven wide column">
 
         <div class="la-inline-lists">
-            <div class="ui card">
+            <div class="ui card" id="js-confirmationCard">
                 <div class="content">
 
                     <g:if test="${!inContextOrg && contextService.getOrg().isCustomerType_Consortium()}">
@@ -83,6 +83,54 @@
                             </dd>
                         </dl>
                     </g:if>
+                    <dl>
+                        <dt class="control-label"><g:message code="altname.plural" /></dt>
+                        <dd>
+                            <div id="altnames" class="ui accordion la-accordion-showMore la-accordion-altName">
+                                <g:if test="${orgInstance.altnames}">
+                                    <div class="ui divided middle aligned selection list la-flex-center">
+                                        <div class="item title" id="altname_title"  data-objId="${genericOIDService.getOID(orgInstance.altnames[0])}">
+                                            <div class="content la-space-right">
+                                                <ui:xEditable owner="${orgInstance.altnames[0]}" field="name" overwriteEditable="${editable}"/>
+                                            </div>
+                                            <g:if test="${editable}">
+                                                <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: orgInstance.altnames[0].id]"
+                                                               data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [orgInstance.altnames[0].name])}"
+                                                               data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(orgInstance.altnames[0])}')">
+                                                    <i class="${Icon.CMD.DELETE}"></i>
+                                                </ui:remoteLink>
+                                            </g:if>
+                                            <div class="${Btn.MODERN.SIMPLE_TOOLTIP} la-show-button" data-content="${message(code: 'altname.showAll')}">
+                                                <i class="${Icon.CMD.SHOW_MORE}"></i>
+                                            </div>
+                                        </div>
+                                        <div class="content" style="padding:0">
+                                            <g:each in="${orgInstance.altnames.drop(1)}" var="altname">
+                                                <div class="ui item" data-objId="${genericOIDService.getOID(altname)}">
+                                                    <div class="content la-space-right">
+                                                        <ui:xEditable owner="${altname}" field="name" overwriteEditable="${editable}"/>
+                                                    </div>
+                                                    <g:if test="${editable}">
+                                                        <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
+                                                                       data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
+                                                                       data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
+                                                            <i class="${Icon.CMD.DELETE}"></i>
+                                                        </ui:remoteLink>
+                                                    </g:if>
+                                                    <div class="${Btn.ICON.SIMPLE} la-hidden">
+                                                        <icon:placeholder/><%-- Hidden Fake Button --%>
+                                                    </div>
+                                                </div>
+                                            </g:each>
+                                        </div>
+                                    </div>
+                                </g:if>
+                            </div><!-- #altnames -->
+                            <g:if test="${editable}">
+                                <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} la-js-addListValue" data-objtype="altname" value="${message(code: 'altname.add')}">
+                            </g:if>
+                        </dd>
+                    </dl>
 
                     <dl>
                         <dt class="control-label"><g:message code="default.url.label"/></dt>
@@ -322,8 +370,8 @@
             <g:set var="showAdminTab" value="${(SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || institution.isCustomerType_Consortium()) && (institution != orgInstance)}" />
 
             <div class="ui tabular la-tab-with-js top attached small stackable menu">
-                <a class="item active" data-tab="tab-altnames">${message(code:'altname.plural')}</a>
-                <a class="item" data-tab="tab-linking">${message(code:'org.retirementLinking.label')}</a>
+%{--                <a class="item active" data-tab="tab-altnames">${message(code:'altname.plural')}</a>--}%
+                <a class="item active" data-tab="tab-linking">${message(code:'org.retirementLinking.label')}</a>
                 <g:if test="${showAdminTab && (orgInstance.createdBy || orgInstance.legallyObligedBy)}">
                     <a class="item" data-tab="tab-by">${message(code:'org.createdBy.label')}/${message(code:"org.legallyObligedBy.label")}</a>
                 </g:if>
@@ -333,54 +381,9 @@
                     box-shadow: none;
                 }
             </style>
-            <div class="ui bottom attached segment tab active" data-tab="tab-altnames" id="js-confirmationCard">%{-- id="js-confirmationCard" --> moved altnames from first card ???--}%
-
-                <div id="altnames" class="ui accordion la-accordion-showMore la-accordion-altName">
-                    <g:if test="${orgInstance.altnames}">
-                        <div class="ui divided middle aligned selection list la-flex-center">
-                            <div class="item title" id="altname_title"  data-objId="${genericOIDService.getOID(orgInstance.altnames[0])}">
-                                <div class="content la-space-right">
-                                    <ui:xEditable owner="${orgInstance.altnames[0]}" field="name" overwriteEditable="${editable}"/>
-                                </div>
-                                <g:if test="${editable}">
-                                    <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: orgInstance.altnames[0].id]"
-                                                   data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [orgInstance.altnames[0].name])}"
-                                                   data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(orgInstance.altnames[0])}')">
-                                        <i class="${Icon.CMD.DELETE}"></i>
-                                    </ui:remoteLink>
-                                </g:if>
-                                <div class="${Btn.MODERN.SIMPLE_TOOLTIP} la-show-button" data-content="${message(code: 'altname.showAll')}">
-                                    <i class="${Icon.CMD.SHOW_MORE}"></i>
-                                </div>
-                            </div>
-                            <div class="content" style="padding:0">
-                                <g:each in="${orgInstance.altnames.drop(1)}" var="altname">
-                                    <div class="ui item" data-objId="${genericOIDService.getOID(altname)}">
-                                        <div class="content la-space-right">
-                                            <ui:xEditable owner="${altname}" field="name" overwriteEditable="${editable}"/>
-                                        </div>
-                                        <g:if test="${editable}">
-                                            <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
-                                                           data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
-                                                           data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
-                                                <i class="${Icon.CMD.DELETE}"></i>
-                                            </ui:remoteLink>
-                                        </g:if>
-                                        <div class="${Btn.ICON.SIMPLE} la-hidden">
-                                            <icon:placeholder/><%-- Hidden Fake Button --%>
-                                        </div>
-                                    </div>
-                                </g:each>
-                            </div>
-                        </div>
-                    </g:if>
-                </div>
-                <g:if test="${editable}">
-                    <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} la-js-addListValue" data-objtype="altname" value="${message(code: 'altname.add')}">
-                </g:if>
-
-            </div><!-- .tab -->
-            <div class="ui bottom attached segment tab" data-tab="tab-linking">
+%{--            <div class="ui bottom attached segment tab active" data-tab="tab-altnames" id="js-confirmationCard">--}%%{-- id="js-confirmationCard" --> moved altnames from first card ???--}%
+%{--            </div><!-- .tab -->--}%
+            <div class="ui bottom attached segment tab active" data-tab="tab-linking">
 
                 <g:if test="${links}">
                     <table class="ui three column table">
