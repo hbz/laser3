@@ -91,10 +91,8 @@
                 <g:if test="${contextService.getUser().isYoda() || contextService.getUser().isAdmin()}">
                     <div class="ui card">
                         <div class="ui content">
-                            <h2 class="ui dividing orange header">
-                                <i class="${Icon.AUTH.ROLE_ADMIN} small"></i>
-                                <span class="content">${message(code: 'default.adminsOnly.label')}</span>
-                            </h2>
+                            <ui:h2AdminOnly />
+
                             <div class="ui form">
 %{--                                <div class="ui field">--}%
 %{--                                    <label>--}%

@@ -97,6 +97,54 @@ class UiTagLib {
 
     // <ui:messages data="${flash}" />
 
+    def h2AdminOnly= { attrs, body ->
+        String text = message(code: 'default.adminsOnly.label')
+
+        if (attrs.text) {
+            text = attrs.text
+        }
+        if (attrs.message) {
+            SwissKnife.checkMessageKey(attrs.message as String)
+            text = "${message(code: attrs.message)}"
+        }
+        out << '  <h2 class="ui dividing header orange">'
+        out << '    <i class="' + Icon.AUTH.ROLE_ADMIN + ' small"></i>'
+        out << '    <span class="content">' + text + '</span>'
+        out << '  </h2>'
+    }
+
+    def h2ConsortiumOnly = { attrs, body ->
+        String text = message(code: 'default.consortiumOnly.label')
+
+        if (attrs.text) {
+            text = attrs.text
+        }
+        if (attrs.message) {
+            SwissKnife.checkMessageKey(attrs.message as String)
+            text = "${message(code: attrs.message)}"
+        }
+        out << '  <h2 class="ui dividing header teal">'
+        out << '    <i class="' + Icon.AUTH.ORG_CONSORTIUM + ' small"></i>'
+        out << '    <span class="content">' + text + '</span>'
+        out << '  </h2>'
+    }
+
+    def h2Deprecated = { attrs, body ->
+        String text = 'DEPRECATED: Wird zukünftig entfernt'
+
+        if (attrs.text) {
+            text = attrs.text
+        }
+        if (attrs.message) {
+            SwissKnife.checkMessageKey(attrs.message as String)
+            text = "${message(code: attrs.message)}"
+        }
+        out << '  <h2 class="ui dividing header red">'
+        out << '    <i class="' + Icon.UI.ERROR + ' small"></i>'
+        out << '    <span class="content">' + text + '</span>'
+        out << '  </h2>'
+    }
+
     @FixedFeature_DoNotModify
     def messages = { attrs, body ->
 

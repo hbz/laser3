@@ -367,82 +367,66 @@
                 </div>
             </g:if>
 
-            <g:set var="showAdminTab" value="${(SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || institution.isCustomerType_Consortium()) && (institution != orgInstance)}" />
 
-            <div class="ui tabular la-tab-with-js top attached small stackable menu">
-%{--                <a class="item active" data-tab="tab-altnames">${message(code:'altname.plural')}</a>--}%
-                <a class="item active" data-tab="tab-linking">${message(code:'org.retirementLinking.label')}</a>
-                <g:if test="${showAdminTab && (orgInstance.createdBy || orgInstance.legallyObligedBy)}">
-                    <a class="item" data-tab="tab-by">${message(code:'org.createdBy.label')}/${message(code:"org.legallyObligedBy.label")}</a>
-                </g:if>
-            </div>
-            <style>
-                .ui.bottom.attached.tab.segment {
-                    box-shadow: none;
-                }
-            </style>
-%{--            <div class="ui bottom attached segment tab active" data-tab="tab-altnames" id="js-confirmationCard">--}%%{-- id="js-confirmationCard" --> moved altnames from first card ???--}%
-%{--            </div><!-- .tab -->--}%
-            <div class="ui bottom attached segment tab active" data-tab="tab-linking">
 
-                <g:if test="${links}">
-                    <table class="ui three column table">
-                        <g:each in="${links}" var="row">
-                            <%
-                                String[] linkTypes = RDStore.COMBO_TYPE_FOLLOWS.getI10n('value').split('\\|')
-                                int perspectiveIndex
-                                Org pair
-                                if(orgInstance == row.fromOrg) {
-                                    perspectiveIndex = 0
-                                    pair = row.toOrg
-                                }
-                                else if(orgInstance == row.toOrg) {
-                                    perspectiveIndex = 1
-                                    pair = row.fromOrg
-                                }
-                            %>
-                            <g:if test="${pair != null}">
-                                <th scope="row" class="control-label">${linkTypes[perspectiveIndex]}</th>
-                                <td><g:link action="show" id="${pair.id}">${pair.name}</g:link></td>
-                                <td class="right aligned">
-                                    <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
-                                        <span class="la-popup-tooltip" data-content="${message(code:'license.details.unlink')}">
-                                            <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
-                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
-                                                    data-confirm-term-how="unlink"
-                                                    action="unlinkOrg" params="[id: orgInstance.id, combo: row.id]"
-                                                    role="button"
-                                                    aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                <i class="${Icon.CMD.UNLINK}"></i>
-                                            </g:link>
-                                        </span>
-                                    </g:if>
-                                </td>
-                            </g:if>
-                        </g:each>
-                    </table>
-                </g:if>
-                <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
-                        <div class="ui la-vertical buttons">
-                            <%
-                                Map<String,Object> model = [tmplText:message(code: 'org.linking.addLink'),
-                                                            tmplID:'addLink',
-                                                            tmplButtonText:message(code: 'org.linking.addLink'),
-                                                            tmplModalID:'org_add_link',
-                                                            editmode: editable,
-                                                            linkInstanceType: Combo.class.name,
-                                                            context: orgInstance
-                                ]
-                            %>
-                            <laser:render template="/templates/links/subLinksModal" model="${model}" />
-                        </div>
+            %{-- TODO --}%
+            %{-- remove if ERMS-6223 is done --}%
+
+            <g:if test="${links}">
+                <div class="ui card">
+                    <div class="content">
+                        <ui:h2Deprecated />
+
+                        <table class="ui three column table">
+                            <g:each in="${links}" var="row">
+                                <%
+                                    String[] linkTypes = RDStore.COMBO_TYPE_FOLLOWS.getI10n('value').split('\\|')
+                                    int perspectiveIndex
+                                    Org pair
+                                    if(orgInstance == row.fromOrg) {
+                                        perspectiveIndex = 0
+                                        pair = row.toOrg
+                                    }
+                                    else if(orgInstance == row.toOrg) {
+                                        perspectiveIndex = 1
+                                        pair = row.fromOrg
+                                    }
+                                %>
+                                <g:if test="${pair != null}">
+                                    <th scope="row" class="control-label">${linkTypes[perspectiveIndex]}</th>
+                                    <td><g:link action="show" id="${pair.id}">${pair.name}</g:link></td>
+                                    <td class="right aligned">
+                                        <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
+                                            <span class="la-popup-tooltip" data-content="${message(code:'license.details.unlink')}">
+                                                <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
+                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
+                                                        data-confirm-term-how="unlink"
+                                                        action="unlinkOrg" params="[id: orgInstance.id, combo: row.id]"
+                                                        role="button"
+                                                        aria-label="${message(code: 'ariaLabel.unlink.universal')}">
+                                                    <i class="${Icon.CMD.UNLINK}"></i>
+                                                </g:link>
+                                            </span>
+                                        </g:if>
+                                    </td>
+                                </g:if>
+                            </g:each>
+                        </table>
+                    </div>
+                </div>
+            </g:if>
+
+        <g:set var="showAdminTab" value="${(SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || institution.isCustomerType_Consortium()) && (institution != orgInstance)}" />
+
+        <g:if test="${showAdminTab && (orgInstance.createdBy || orgInstance.legallyObligedBy)}">
+            <div class="ui card">
+                <div class="content">
+                    <g:if test="${institution.isCustomerType_Consortium()}">
+                        <ui:h2ConsortiumOnly />
                     </g:if>
-
-            </div><!-- .tab -->
-
-            <g:if test="${showAdminTab && (orgInstance.createdBy || orgInstance.legallyObligedBy)}">
-                <div class="ui bottom attached segment tab" data-tab="tab-by">
-
+                    <g:else>
+                        <ui:h2AdminOnly />
+                    </g:else>
                     <g:if test="${orgInstance.createdBy}">
                         <dl>
                             <dt class="control-label">
@@ -493,9 +477,9 @@
                                 </dd>
                             </dl>
                         </g:if>
-
-                </div><!-- .tab -->
-            </g:if>
+                </div>
+            </div>
+        </g:if>
 
             <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support() || contextService.getOrg().isCustomerType_Inst_Pro()}">
                 <div id="new-dynamic-properties-block">

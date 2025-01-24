@@ -132,22 +132,6 @@
                                     </a>
                                 </g:if>
                             </td>
-%{--                            <td rowspan="4">--}%
-%{--                                <div class="ui vertical secondary menu right floated">--}%
-%{--                                    <a href="#" id="wekb-menu-trigger" class="ui item la-popup-tooltip"--}%
-%{--                                       data-content="Alle Änderungen anzeigen" data-position="top right">--}%
-%{--                                        <i class="${Icon.WEKB} blue"></i> We:kb-News--}%
-%{--                                    </a>--}%
-%{--                                    <a href="#" class="ui icon item la-popup-tooltip wekb-flyout-trigger" data-preset="all,my"--}%
-%{--                                       data-content="${message(code: 'menu.my')}" data-position="top right">--}%
-%{--                                        <i class="${Icon.SIG.MY_OBJECT} yellow"></i> ${wekbNews.counts.my}--}%
-%{--                                    </a>--}%
-%{--                                    <a href="#" class="ui icon item la-popup-tooltip wekb-flyout-trigger" data-preset="all,marker"--}%
-%{--                                       data-content="${message(code: 'marker.label')}" data-position="top right">--}%
-%{--                                        <i class="${Icon.MARKER} purple"></i> ${wekbNews.counts.marker}--}%
-%{--                                    </a>--}%
-%{--                                </div>--}%
-%{--                            </td>--}%
                         </tr>
                         <tr style="border-bottom: none">
                             <td>
@@ -280,44 +264,7 @@
                         </tbody>
                     </table>
 
-%{--                </div>--}%
-%{--                <div class="one wide column"></div>--}%
-%{--                <div class="six wide column">--}%
-
-%{--                    <div class="ui vertical secondary menu right floated">--}%
-%{--                        <a href="#" class="ui item la-popup-tooltip wekb-flyout-trigger" data-preset="all,all"--}%
-%{--                           data-content="Alle Änderungen anzeigen" data-position="top right">--}%
-%{--                            <i class="${Icon.WEKB} blue"></i> We:kb-News--}%
-%{--                        </a>--}%
-%{--                        <a href="#" class="ui icon item la-popup-tooltip wekb-flyout-trigger" data-preset="all,my"--}%
-%{--                           data-content="${message(code: 'menu.my')}" data-position="top right">--}%
-%{--                            <i class="${Icon.SIG.MY_OBJECT} yellow"></i> ${wekbNews.counts.my}--}%
-%{--                        </a>--}%
-%{--                        <a href="#" class="ui icon item la-popup-tooltip wekb-flyout-trigger" data-preset="all,marker"--}%
-%{--                           data-content="${message(code: 'marker.label')}" data-position="top right">--}%
-%{--                            <i class="${Icon.MARKER} purple"></i> ${wekbNews.counts.marker}--}%
-%{--                        </a>--}%
-%{--                    </div>--}%
-%{--                </div>--}%
-%{--            </div><!-- .column -->--}%
-
-%{--                <div class="extra content">--}%
-%{--                    <div class="right floated">--}%
-%{--                        <div class="ui large labels">--}%
-%{--                            <a href="#" id="wekb-menu-trigger" class="ui label"><i class="${Icon.WEKB} blue"></i>&nbsp;We:kb-News</a>--}%
-%{--                            <a href="#" class="ui icon label la-popup-tooltip wekb-flyout-trigger" data-preset="all,my"--}%
-%{--                               data-content="${message(code: 'menu.my')}" data-position="top right">--}%
-%{--                                <i class="${Icon.SIG.MY_OBJECT} yellow"></i> ${wekbNews.counts.my}--}%
-%{--                            </a>--}%
-%{--                            <a href="#" class="ui icon label la-popup-tooltip wekb-flyout-trigger" data-preset="all,marker"--}%
-%{--                               data-content="${message(code: 'marker.WEKB_CHANGES')}" data-position="top right">--}%
-%{--                                <i class="${Icon.MARKER} purple"></i> ${wekbNews.counts.marker}--}%
-%{--                            </a>--}%
-%{--                        </div>--}%
-%{--                    </div>--}%
-%{--                </div>--}%
             </div>
-
         </div>
 
     </div>
