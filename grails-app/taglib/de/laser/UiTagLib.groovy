@@ -140,7 +140,7 @@ class UiTagLib {
             text = "${message(code: attrs.message)}"
         }
         out << '  <h2 class="ui dividing header red">'
-        out << '    <i class="' + Icon.UI.ERROR + ' small"></i>'
+        out << '    <i class="' + Icon.UI.WARNING + ' small"></i>'
         out << '    <span class="content">' + text + '</span>'
         out << '  </h2>'
     }

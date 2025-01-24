@@ -10,7 +10,7 @@
 
         <laser:render template="/templates/system/messages" model="${[type: SystemMessage.TYPE_DASHBOARD]}"/>
 
-        <laser:render template="/myInstitution/topmenu2" />
+        <laser:render template="/myInstitution/topmenu" />
 
         <ui:messages data="${flash}" />
 
