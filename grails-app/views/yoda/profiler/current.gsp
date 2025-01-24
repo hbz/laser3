@@ -10,12 +10,7 @@
 
     <ui:h1HeaderWithIcon message="menu.yoda.profiler" type="yoda" total="${SystemProfiler.executeQuery('select count(*) from SystemProfiler')[0]}" />
 
-    <nav class="ui secondary menu">
-        <g:link controller="yoda" action="profilerLoadtime" class="item">Ladezeiten</g:link>
-        <g:link controller="yoda" action="profilerActivity" class="item">Nutzerzahlen</g:link>
-        <g:link controller="yoda" action="profilerTimeline" class="item">Seitenaufrufe</g:link>
-        <g:link controller="yoda" action="profilerCurrent" class="item active">..</g:link>
-    </nav>
+    <g:render template="profiler/menu" />
 
     <div class="ui segment">
         <table class="ui table simple">
