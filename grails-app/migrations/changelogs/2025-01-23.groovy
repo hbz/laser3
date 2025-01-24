@@ -1,5 +1,7 @@
 package changelogs
 
+import de.laser.RefdataValue
+
 databaseChangeLog = {
 
     changeSet(author: "galffy (hand-coded)", id: "1737626994089-1") {
@@ -25,6 +27,27 @@ databaseChangeLog = {
                 changeSet.setComments(info)
             }
             rollback {}
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1737626994089-3") {
+        grailsChange {
+            change {
+                RefdataValue rdv = RefdataValue.getByValueAndCategory('follows', 'combo.type')
+                if (rdv) {
+                    sql.execute("delete from combo where combo_type_rv_fk = :id", [id: rdv.id])
+                    confirm("combo(type=follows) removed: ${sql.getUpdateCount()}")
+                }
+            }
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1737626994089-4") {
+        grailsChange {
+            change {
+                sql.execute("delete from refdata_value where rdv_value='follows' and rdv_owner = (select rdc_id from refdata_category where rdc_description='combo.type')")
+                confirm("refdata_value removed: ${sql.getUpdateCount()}")
+            }
         }
     }
 }

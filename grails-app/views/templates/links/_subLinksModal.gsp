@@ -55,13 +55,6 @@
                 thisString += "${DateUtils.getLocalizedSDF_noTime().format(context.endDate)}"
             thisString += ")"
             break
-        case Org.class.name: header = message(code:"org.linking.header")
-            thisString = context.name
-            lookupName = "lookupOrgs"
-            instanceType = message(code:"org.label")
-            urlParams.controller = 'organisation'
-            urlParams.action = 'linkOrgs'
-            break
         case Provider.class.name: header = message(code:"provider.linking.header")
             thisString = context.name
             lookupName = "lookupproviders"
@@ -86,10 +79,7 @@
             LinkedHashMap linkTypes = [:]
             if(!subscriptionLicenseLink) {
                 List<RefdataValue> refdataValues = []
-                if(linkInstanceType == Combo.class.name) {
-                    refdataValues << RDStore.COMBO_TYPE_FOLLOWS
-                }
-                else if(linkInstanceType in [ProviderLink.class.name, VendorLink.class.name]) {
+                if (linkInstanceType in [ProviderLink.class.name, VendorLink.class.name]) {
                     refdataValues << RDStore.PROVIDER_LINK_FOLLOWS
                 }
                 else {

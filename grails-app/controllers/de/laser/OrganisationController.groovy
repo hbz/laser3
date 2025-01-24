@@ -1581,30 +1581,6 @@ class OrganisationController  {
     }
 
     /**
-     * Links two organisations with the given params
-     */
-    @DebugInfo(isInstEditor = [])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor()
-    })
-    def linkOrgs() {
-        linksGenerationService.linkOrgs(params)
-        redirect action: 'show', id: params.context
-    }
-
-    /**
-     * Removes the given link between two organisations
-     */
-    @DebugInfo(isInstEditor = [])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor()
-    })
-    def unlinkOrg() {
-        linksGenerationService.unlinkOrg(params)
-        redirect action: 'show', id: params.id
-    }
-
-    /**
      * Assigns the given subject group to the given organisation
      */
     @Transactional
