@@ -14,7 +14,7 @@
                     </g:link>
 
                     <g:if test="${contextService.getOrg().isCustomerType_Support()}">
-                        <ui:securedMainNavItem specRole="ROLE_ADMIN" controller="myInstitution" action="manageMembers" message="menu.my.insts" icon="${Icon.ORG} la-list-icon" />
+                        <ui:securedMainNavItem specRole="ROLE_ADMIN" controller="myInstitution" action="manageMembers" message="menu.my.insts" icon="${Icon.AUTH.ORG_INST} la-list-icon" />
                     </g:if>
                     <g:else>
                         <g:link class="item" controller="myInstitution" action="currentProviders">
@@ -50,9 +50,27 @@
             </div><!-- .column -->
             <div class="column">
                 <div class="ui vertical fluid secondary compact menu">
-                    <g:link class="item" controller="org" action="show" id="${contextService.getOrg().id}">
-                        <i class="${Icon.ORG} la-list-icon"></i> ${message(code: 'menu.institutions.org.show')}
-                    </g:link>
+
+                    <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
+                        <g:link class="item" controller="org" action="show" id="${contextService.getOrg().id}">
+                            <i class="${Icon.AUTH.ORG_CONSORTIUM} la-list-icon"></i> ${message(code: 'menu.institutions.org.show')}
+                        </g:link>
+                    </g:if>
+                    <g:elseif test="${contextService.getOrg().isCustomerType_Inst()}">
+                        <g:link class="item" controller="org" action="show" id="${contextService.getOrg().id}">
+                            <i class="${Icon.AUTH.ORG_INST} la-list-icon"></i> ${message(code: 'menu.institutions.org.show')}
+                        </g:link>
+                    </g:elseif>
+                    <g:elseif test="${contextService.getOrg().isCustomerType_Support()}">
+                        <g:link class="item" controller="org" action="show" id="${contextService.getOrg().id}">
+                            <i class="${Icon.AUTH.ORG_SUPPORT} la-list-icon"></i> ${message(code: 'menu.institutions.org.show')}
+                        </g:link>
+                    </g:elseif>
+
+%{--                    <g:link class="item" controller="org" action="show" id="${contextService.getOrg().id}">--}%
+%{--                        <i class="${Icon.AUTH.ORG_INST} la-list-icon"></i> ${message(code: 'menu.institutions.org.show')}--}%
+%{--                    </g:link>--}%
+
                     <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="addressbook" message="menu.institutions.addressbook" icon="${Icon.ACP_PUBLIC} la-list-icon" />
                     <ui:securedMainNavItem controller="myInstitution" action="finance" message="menu.institutions.finance" icon="${Icon.FINANCE} la-list-icon" />
                 </div>
@@ -60,15 +78,15 @@
             <div class="column">
                 <div class="ui vertical fluid secondary compact menu">
                     <g:if test="${contextService.getOrg().isCustomerType_Support()}">
-                        <ui:securedMainNavItem specRole="ROLE_ADMIN" controller="myInstitution" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" icon="${Icon.ORG} la-list-icon" />
+                        <ui:securedMainNavItem specRole="ROLE_ADMIN" controller="myInstitution" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" icon="${Icon.AUTH.ORG_INST} la-list-icon" />
                         <ui:securedMainNavItem controller="myInstitution" action="subscriptionsManagement" message="menu.institutions.subscriptionsManagement" icon="${Icon.SUBSCRIPTION} la-list-icon" />
                     </g:if>
                     <g:else>
                         <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
-                            <ui:securedMainNavItem addItemAttributes="true" specRole="ROLE_ADMIN" controller="myInstitution" action="manageMembers" message="menu.my.insts" icon="${Icon.ORG} la-list-icon" />
+                            <ui:securedMainNavItem addItemAttributes="true" specRole="ROLE_ADMIN" controller="myInstitution" action="manageMembers" message="menu.my.insts" icon="${Icon.AUTH.ORG_INST} la-list-icon" />
                         </g:if>
                         <g:elseif test="${contextService.getOrg().isCustomerType_Inst()}">
-                            <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentConsortia" message="menu.my.consortia" icon="${Icon.ORG} la-list-icon" />
+                            <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentConsortia" message="menu.my.consortia" icon="${Icon.AUTH.ORG_CONSORTIUM} la-list-icon" />
                         </g:elseif>
                         <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="reporting" message="myinst.reporting" icon="${Icon.REPORTING} la-list-icon" />
                     </g:else>

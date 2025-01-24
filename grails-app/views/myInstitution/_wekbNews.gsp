@@ -50,7 +50,7 @@
                 <div class="extra content">
                     <div class="right floated">
                         <g:link controller="myInstitution" action="tasks" params="${[taskObject: 'tipp']}">
-                            <i class="${Icon.TASK} circular"></i> ${message(code:'menu.my.tasks')}
+                            %{--<i class="${Icon.TASK} circular"></i>--}% ${message(code:'menu.my.tasks')}
                         </g:link>
                     </div>
                 </div>
