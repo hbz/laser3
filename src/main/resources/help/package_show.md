@@ -7,6 +7,6 @@ Zudem finden in der leiste Reiter mit weiteren Informationen:
 - **Geplante Titel:** alle anstehenden Titel, die dem Paket zugeordnet werden
 - **Zurückgezogene Titel:** alle Titel, die nicht mehr in dem Paket angeboten werden
 - **Gelöschte Titel:** alle Titel, die aus der **we:kb** gelöscht wurden
-- **Änderungen**:
+- **Änderungen**: all durchgeführte Änderungen an Titeln
 - **Verknüfpte Lizenzen**: alle Lizenzen, die mit diesem Paket verknüpft sind
 

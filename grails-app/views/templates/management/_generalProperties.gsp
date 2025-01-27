@@ -387,11 +387,6 @@
                             </td>
                             <td>
                                 <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
-
-                                <g:if test="${sub.isSlaved}">
-                                    <ui:auditIcon type="auto2" />
-                                </g:if>
-
                                 <ui:customerTypeProIcon org="${subscr}" />
                             </td>
                         </g:if>
@@ -544,7 +539,7 @@
                         prompt: '<g:message code="validation.endDateBeforeStartDate"/>'
                     }
                 ]
-            },
+            }/*,
             noSubscription: {
                 identifier: 'selectedSubs',
                 rules: [
@@ -554,6 +549,7 @@
                     }
                 ]
             }
+            */
         }
     });
 </laser:script>

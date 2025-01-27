@@ -20,7 +20,7 @@
         </div>
 
         <div class="field ${hasErrors(bean: taskInstance, field: 'description', 'error')}">
-            <label>Bezieht sich auf</label>
+            <label>${message(code: 'task.object.label')}</label>
             <g:if test="${taskInstance.getObjects()}">
                 <g:each in="${taskInstance.getObjects()}" var="tskObj">
                     <div class="la-flexbox">

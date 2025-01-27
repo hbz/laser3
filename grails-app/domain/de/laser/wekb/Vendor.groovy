@@ -56,8 +56,8 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
     boolean activationForNewReleases = false
     boolean exchangeOfIndividualTitles = false
     String researchPlatformForEbooks
-    boolean prequalificationVOL = false
-    String prequalificationVOLInfo
+    boolean prequalification = false
+    String prequalificationInfo
 
     Date retirementDate
     Date dateCreated
@@ -131,8 +131,8 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         activationForNewReleases column: 'ven_activation_new_releases'
         exchangeOfIndividualTitles column: 'ven_exchange_individual_titles'
         researchPlatformForEbooks column: 'ven_research_platform_ebooks', type: 'text'
-        prequalificationVOL column: 'ven_prequalification_vol'
-        prequalificationVOLInfo column: 'ven_prequalification_vol_info', type: 'text'
+        prequalification column: 'ven_prequalification'
+        prequalificationInfo column: 'ven_prequalification_info', type: 'text'
         dateCreated column: 'ven_date_created'
         lastUpdated column: 'ven_last_updated'
         lastUpdatedCascading column: 'ven_last_updated_cascading'
@@ -145,7 +145,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         homepage                    (nullable: true, maxSize: 512)
         retirementDate              (nullable: true)
         researchPlatformForEbooks   (nullable: true)
-        prequalificationVOLInfo     (nullable: true)
+        prequalificationInfo        (nullable: true)
         lastUpdatedCascading        (nullable: true)
         createdBy                   (nullable: true)
         legallyObligedBy            (nullable: true)

@@ -7,7 +7,35 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6220    23.01.2024  dev     3.5         David   Feature     isGrantedOrgRoleAdminOrOrgEditor entfernen
+
+6218    23.01.2024  dev     3.5         Andreas Feature     Erweiterung des Einrichtungsim-/exports in/aus Lizenzen um globale UID der Einrichtung
+
+6216    23.01.2024  dev     3.5         Andreas Bug         vergessene Ringgold-ID in den Kernsatz der Einrichtungs-IDs aufgenommen
+
+6211    23.01.2024  rc-3.4  3.4.19      Andreas Bug         Kostenstatus gelöscht aus Inline-Bearbeitung entfernt
+
+5673    21.01.2024  dev     3.5         David   Feature     We:kb-News / Titeländerungen
+
+5998    21.01.2024  dev     3.5         David   Feature     Rechteprüfung: Workflows
+
+--      21.01.2024  dev     3.5         Andreas Bug         Darstellungsfehler in der Lizenzübersicht behoben
+
+6062    21.01.2024  dev     3.5         Andreas Feature     Kosten werden bei automatischer Verlängerung nicht mehr mit übertragen
+
+6197    20.01.2024  dev     3.5         Andreas Bug         Filterfelder wurden nicht vorbelegt
+
+6196    20.01.2024  dev     3.5         David   Feature     Icons für Einrichtungen/Konsortialmanager
+
+6180    20.01.2024  dev     3.5         David   Feature     PublicController überarbeiten (Sicherheit)
+
+5920    20.01.2024  dev     3.5         David   Feature     Dashboard "verschönern"
+
+6199    17.01.2024  dev     3.5         Andreas Feature     Sortierung der Jahre in Dropdowns auf absteigend umgestellt
+
 6195    17.01.2024  dev     3.5         Andreas Feature     Beibehaltung eines eventuell aktiven Reiters
+
+5106    17.01.2024  dev     3.5         Andreas Feature     Caching und Ausgabe der angehakten Titel
 
 6128    16.01.2024  dev     3.5         Andreas Bug         An-/Abwählen aller Lieferanten wirkte sich nur auf aktuelle Seite aus
 

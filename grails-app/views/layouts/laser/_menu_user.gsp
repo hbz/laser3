@@ -21,7 +21,7 @@
         <ui:link addItemAttributes="true" controller="public" action="api">
             ${message(code:'apiRelease')} (${ApiManager.VERSION})
         </ui:link>
-        <ui:link addItemAttributes="true" controller="profile" action="dsgvo">${message(code:'privacyNotice')}</ui:link>
+        <ui:link addItemAttributes="true" controller="public" action="dsgvo">${message(code:'privacyNotice')}</ui:link>
 
         <div class="divider"></div>
         <ui:link class="la-highlightedMenueItem" addItemAttributes="true" controller="public" action="licensingModel"><i class="smile outline icon"></i>${message(code:'menu.user.licensingModel')}</ui:link>

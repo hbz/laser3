@@ -21,8 +21,11 @@
 <g:if test="${subscriptionMap}">
 
     <div class="ui fluid card">
-        <div class="content">
-            <div class="header">Meine Lizenzen</div>
+%{--        <div class="content">--}%
+%{--            <div class="header">Meine Lizenzen</div>--}%
+%{--        </div>--}%
+        <div class="ui top attached label">
+            ${message(code: 'myinst.currentSubscriptions.label')}
         </div>
         <div class="content">
             <div class="ui grid">
@@ -35,8 +38,8 @@
         </div>
         <div class="extra content">
             <div class="right floated">
-                <g:link controller="organisation" action="info" id="${contextService.getOrg().id}">
-                    Daten-Dashboard öffnen <i class="${Icon.DATA_DASHBOARD} circular"></i>
+                <g:link controller="organisation" action="dataviz" id="${contextService.getOrg().id}">
+                    %{--<i class="${Icon.DATA_DASHBOARD} circular"></i>--}% Daten-Dashboard
                 </g:link>
             </div>
         </div>
@@ -141,6 +144,11 @@
         }
 
         JSPC.app.info.charts.subscription.setOption (JSPC.app.info.chart_config.subscription);
+
+        $(window).resize(function () {
+            JSPC.app.info.charts.subscription.resize();
+        });
+        $(window).trigger('resize');
     </laser:script>
 
     <style>

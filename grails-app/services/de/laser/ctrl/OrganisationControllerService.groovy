@@ -262,10 +262,10 @@ class OrganisationControllerService {
                                                                                                                                               currentSemester     : currentSemester,
                                                                                                                                               generalContacts     : generalContacts,
                                                                                                                                               responsibleAdmins   : responsibleAdmins,
-                                                                                                                                              billingContacts     : billingContacts,
+                                                                                                                                              billingContacts     : billingContactsList,
                                                                                                                                               accessPoints        : accessPoints,
-                                                                                                                                              billingAddress       : billingAddress,
-                                                                                                                                              billingPostBox: billingPostBox,
+                                                                                                                                              billingAddresses       : billingAddresses,
+                                                                                                                                              billingPostBoxes: billingPostBoxes,
                                                                                                                                               vatID: vatID]
 
             result.mailText[langEn] = groovyPageRenderer.render view: '/mailTemplates/text/orgInfos', contentType: "text", encoding: "UTF-8", model: [language    : new Locale(langEn),
@@ -432,7 +432,6 @@ class OrganisationControllerService {
                                       inContextOrg:true,
                                       isMyOrg:false,
                                       institutionalView:false,
-                                      isGrantedOrgRoleAdminOrOrgEditor: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'),
                                       isGrantedOrgRoleAdmin: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'),
                                       contextCustomerType:org.getCustomerType()]
 

@@ -149,7 +149,7 @@ class ExportClickMeService {
                                 'participant.uuid'                    : [field: 'participant.globalUID', label: 'Laser-UUID', message: null],
                                 'participant.libraryNetwork'          : [field: 'participant.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
                                 'participant.country'                 : [field: 'participant.country', label: 'Country', message: 'org.country.label'],
-                                'participant.region'                  : [field: 'participant.region', label: 'Region', message: 'org.region.label']
+                                'participant.region'                  : [field: 'participant.region', label: 'Region', message: 'org.region.label'],
                         ]
                 ],
                 participantContacts           : [
@@ -233,7 +233,7 @@ class ExportClickMeService {
                                 'subscription.holdingSelection'      : [field: 'sub.holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.label'],
                                 'subscription.notes'                 : [field: null, label: 'Notes', message: 'default.notes.label'],
                                 'subscription.notes.shared'          : [field: null, label: 'Shared notes', message: 'license.notes.shared'],
-                                'subscription.uuid'                  : [field: 'sub.globalUID', label: 'LAS:eR-UUID (Institution)', message: 'default.uuid.inst.label'],
+                                'subscription.uuid'                  : [field: 'sub.globalUID', label: 'LAS:eR-UUID (Institution subscription)', message: 'default.uuid.inst.sub.label'],
                         ]
                 ],
                 participant                   : [
@@ -260,6 +260,7 @@ class ExportClickMeService {
                                 'participant.readerNumbers'           : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
                                 'participant.discoverySystemsFrontend': [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
                                 'participant.discoverySystemsIndex'   : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
+                                'participant.uuid'                   : [field: 'orgs.globalUID', label: 'LAS:eR-UUID (Institution)', message: 'default.uuid.inst.label'],
                                 'participant.libraryNetwork'          : [field: 'orgs.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
                                 'participant.country'                 : [field: 'orgs.country', label: 'Country', message: 'org.country.label'],
                                 'participant.region'                  : [field: 'orgs.region', label: 'Region', message: 'org.region.label']
@@ -403,6 +404,12 @@ class ExportClickMeService {
                                 'license.notes'           : [field: null, label: 'Notes', message: 'default.notes.label'],
                                 'license.uuid'            : [field: 'licenses.globalUID', label: 'Laser-UUID',  message: null],
                         ]
+                ],
+
+                identifiers: [
+                        label  : 'Identifiers',
+                        message: 'subscription.identifiers.label',
+                        fields : [:]
                 ],
 
                 packages : [
@@ -679,6 +686,7 @@ class ExportClickMeService {
                                 'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
                                 'participant.discoverySystemsFrontend' : [field: null, label: 'Discovery Systems: Frontend', message: 'org.discoverySystems.frontend.label'],
                                 'participant.discoverySystemsIndex' : [field: null, label: 'Discovery Systems: Index', message: 'org.discoverySystems.index.label'],
+                                'participant.uuid'                   : [field: 'orgs.globalUID', label: 'LAS:eR-UUID (Institution)', message: 'default.uuid.inst.label'],
                                 'participant.libraryNetwork'    : [field: 'orgs.libraryNetwork', label: 'Library Network', message: 'org.libraryNetwork.label'],
                                 'participant.country'           : [field: 'orgs.country', label: 'Country', message: 'org.country.label'],
                                 'participant.region'            : [field: 'orgs.region', label: 'Region', message: 'org.region.label']
@@ -948,6 +956,12 @@ class ExportClickMeService {
                             'subscription.uuid'                         : [field: 'globalUID', label: 'Laser-UUID',  message: null],
                     ]
             ],*/
+
+                identifiers: [
+                        label  : 'Identifiers',
+                        message: 'license.identifiers.label',
+                        fields : [:]
+                ],
 
                 providers             : [
                         label  : 'Provider',
@@ -1513,8 +1527,8 @@ class ExportClickMeService {
                         label: 'Supplier information',
                         message: 'vendor.supplier.header',
                         fields: [
-                                'vendor.prequalificationVOL'        : [field: 'prequalificationVOL', label: 'Prequalification VOL', message: 'vendor.supplier.prequalificationVol.label'],
-                                'vendor.prequalificationVOLInfo'    : [field: 'prequalificationVOLInfo', label: 'Info to Prequalification VOL', message: 'vendor.supplier.infoPrequalificationVol.label']
+                                'vendor.prequalification'        : [field: 'prequalification', label: 'Prequalification', message: 'vendor.supplier.prequalification.label'],
+                                'vendor.prequalificationInfo'    : [field: 'prequalificationInfo', label: 'Info to Prequalification', message: 'vendor.supplier.infoPrequalification.label']
                         ]
                 ],
                 vendorIdentifiers : [
@@ -2343,6 +2357,9 @@ class ExportClickMeService {
                 break
         }
 
+        IdentifierNamespace.findAllByNsType(Subscription.class.name, [sort: 'ns']).each {
+            exportFields.put("identifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+        }
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
@@ -2415,6 +2432,9 @@ class ExportClickMeService {
         fields.mySubProperties.fields.clear()
         fields.subCostItems.fields.costItemsElements.clear()
 
+        IdentifierNamespace.executeQuery('select idns from IdentifierNamespace idns where idns.nsType = :nsType order by coalesce(idns.'+localizedName+', idns.ns)', [nsType: IdentifierNamespace.NS_SUBSCRIPTION]).each {
+            fields.identifiers.fields << ["identifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+        }
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
@@ -2666,6 +2686,10 @@ class ExportClickMeService {
             exportFields.put('consortium', [field: null, label: 'Consortium', message: 'consortium.label'])
         }
 
+        IdentifierNamespace.findAllByNsType(License.class.name, [sort: 'ns']).each {
+            exportFields.put("identifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+        }
+
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
@@ -2711,6 +2735,10 @@ class ExportClickMeService {
         fields.licProperties.fields.clear()
         fields.myLicProperties.fields.clear()
 
+
+        IdentifierNamespace.executeQuery('select idns from IdentifierNamespace idns where idns.nsType = :nsType order by coalesce(idns.'+localizedName+', idns.ns)', [nsType: IdentifierNamespace.NS_LICENSE]).each {
+            fields.identifiers.fields << ["identifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+        }
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
@@ -3746,7 +3774,7 @@ class ExportClickMeService {
         IdentifierNamespace.findAllByNsType(TitleInstancePackagePlatform.class.name, [sort: 'ns']).each {
             fields.issueEntitlementIdentifiers.fields << ["issueEntitlementIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
-        IdentifierNamespace.findAllByNsType(Subscription.class.name, [sort: 'ns']).each {
+        IdentifierNamespace.executeQuery('select idns from IdentifierNamespace idns where idns.nsType = :nsType order by coalesce(idns.'+localizedName+', idns.ns)', [nsType: IdentifierNamespace.NS_SUBSCRIPTION]).each {
             fields.subscriptionIdentifiers.fields << ["subscriptionIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
 
@@ -5515,6 +5543,15 @@ class ExportClickMeService {
                 else if(fieldKey == 'platform.url') {
                     row.add(createTableCell(format, Platform.executeQuery('select distinct(plat.primaryUrl) from SubscriptionPackage sp join sp.pkg pkg join pkg.nominalPlatform plat where sp.subscription = :sub', [sub: subscription]).join('; ')))
                 }
+                else if(fieldKey.startsWith('identifiers.')) {
+                    Long id = Long.parseLong(fieldKey.split("\\.")[1])
+                    List<String> identifierList = Identifier.executeQuery("select ident.value from Identifier ident where ident.sub = :sub and ident.ns.id = :namespace and ident.value != :unknown and ident.value != ''", [sub: subscription, namespace: id, unknown: IdentifierNamespace.UNKNOWN])
+                    if (identifierList) {
+                        row.add(createTableCell(format, identifierList.join("; ")))
+                    } else {
+                        row.add(createTableCell(format, ' '))
+                    }
+                }
                 else if(fieldKey.startsWith('packageIdentifiers.')) {
                     Long id = Long.parseLong(fieldKey.split("\\.")[1])
                     List<String> identifierList = Identifier.executeQuery("select ident.value from Identifier ident where ident.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription = :sub) and ident.ns.id = :namespace and ident.value != :unknown and ident.value != ''", [sub: subscription, namespace: id, unknown: IdentifierNamespace.UNKNOWN])
@@ -5724,6 +5761,15 @@ class ExportClickMeService {
                         row.add(createTableCell(format, license.altnames.collect { AlternativeName alt -> alt.name }.join('\n')))
                     }
                     else row.add(createTableCell(format, ' '))
+                }
+                else if(fieldKey.startsWith('identifiers.')) {
+                    Long id = Long.parseLong(fieldKey.split("\\.")[1])
+                    List<String> identifierList = Identifier.executeQuery("select ident.value from Identifier ident where ident.lic = :license and ident.ns.id = :namespace and ident.value != :unknown and ident.value != ''", [lic: license, namespace: id, unknown: IdentifierNamespace.UNKNOWN])
+                    if (identifierList) {
+                        row.add(createTableCell(format, identifierList.join("; ")))
+                    } else {
+                        row.add(createTableCell(format, ' '))
+                    }
                 }
                 else if (fieldKey.startsWith('participantLicProperty.') || fieldKey.startsWith('licProperty.')) {
                     Long id = Long.parseLong(fieldKey.split("\\.")[1])
@@ -6458,7 +6504,7 @@ class ExportClickMeService {
                 queryCols << "create_cell('${format}', (select ${sqlCol} from issue_entitlement_group join issue_entitlement_group_item on igi_ie_group_fk = ig_id where igi_ie_fk = ie_id), null) as ${field}"
             }
             else if (fieldKey.contains('perpetualAccessBySub')) {
-                queryCols << "create_cell('${format}', (select case when ie_perpetual_access_by_sub_fk is not null then '${RDStore.YN_YES.getI10n('value')}' else '${RDStore.YN_NO.getI10n('value')}' end case), null) as perpetualAccessbySub"
+                queryCols << "create_cell('${format}', (select case when ie_perpetual_access_by_sub_fk is not null then '${RDStore.YN_YES.getI10n('value')}' else '${RDStore.YN_NO.getI10n('value')}' end), null) as perpetualAccessbySub"
             }
             else if (fieldKey.startsWith('coverage.')) {
                 if(fieldKey.contains('startDate')) {

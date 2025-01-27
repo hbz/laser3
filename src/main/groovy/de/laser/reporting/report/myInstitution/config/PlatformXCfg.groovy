@@ -24,7 +24,7 @@ class PlatformXCfg extends BaseConfig {
                             'provider'          : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PLATFORM_PROVIDER, spec: BaseConfig.FIELD_IS_MULTIPLE ],
                             'ipAuthentication'          : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
                             'passwordAuthentication'    : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
-                            'proxySupported'            : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
+                            'otherProxies'              : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
                             'serviceProvider'           : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PLATFORM_SERVICEPROVIDER ],
                             'shibbolethAuthentication'  : [ type: BaseConfig.FIELD_TYPE_ELASTICSEARCH ],
                             'softwareProvider'          : [ type: BaseConfig.FIELD_TYPE_CUSTOM_IMPL, customImpl: BaseConfig.CI_GENERIC_PLATFORM_SOFTWAREPROVIDER ],
@@ -40,13 +40,13 @@ class PlatformXCfg extends BaseConfig {
                                     [ 'packageStatus', 'status' ],
                                     [ 'serviceProvider', 'softwareProvider', 'provider' ],
                                     [ 'ipAuthentication', 'shibbolethAuthentication', 'counterCertified' ],
-                                    [ 'passwordAuthentication', 'proxySupported', 'statisticsFormat' ]
+                                    [ 'passwordAuthentication', 'otherProxies', 'statisticsFormat' ]
                             ],
                             my: [
                                     [ 'packageStatus', 'subscriptionStatus', 'status' ],
                                     [ 'serviceProvider', 'softwareProvider', 'provider' ],
                                     [ 'ipAuthentication', 'shibbolethAuthentication', 'counterCertified' ],
-                                    [ 'passwordAuthentication', 'proxySupported', 'statisticsFormat' ]
+                                    [ 'passwordAuthentication', 'otherProxies', 'statisticsFormat' ]
                             ]
                     ],
                     query : [
@@ -59,7 +59,7 @@ class PlatformXCfg extends BaseConfig {
                                             'platform-ipAuthentication' :           [ '@' ],    // ES
                                             'platform-shibbolethAuthentication' :   [ '@' ],    // ES
                                             'platform-passwordAuthentication' :     [ '@' ],    // ES
-                                            'platform-proxySupported' :             [ '@' ],    // ES
+                                            'platform-otherProxies' :               [ '@' ],    // ES
                                             'platform-statisticsFormat' :           [ '@' ],    // ES
                                             'platform-statisticsUpdate' :           [ '@' ],    // ES
                                             'platform-counterCertified' :           [ '@' ],    // ES
@@ -86,7 +86,7 @@ class PlatformXCfg extends BaseConfig {
                                                     'platform-ipAuthentication',
                                                     'platform-shibbolethAuthentication',
                                                     'platform-passwordAuthentication',
-                                                    'platform-proxySupported',
+                                                    'platform-otherProxies',
                                                     'platform-counterCertified',
                                                     'platform-counterR3Supported',
                                                     'platform-counterR4Supported',
@@ -144,7 +144,7 @@ class PlatformXCfg extends BaseConfig {
             'platform-shibbolethAuthentication'     : [ dtc: false, es: true, filter: true, export: true, label: 'platform.auth.shibboleth.supported',    rdc: RDConstants.Y_N ],
 
             'platform-passwordAuthentication'       : [ dtc: false, es: true, filter: true, export: true, label: 'platform.auth.userPass.supported',      rdc: RDConstants.Y_N ],
-            'platform-proxySupported'               : [ dtc: false, es: true, filter: true, export: true, label: 'platform.auth.proxy.supported',         rdc: RDConstants.Y_N ],
+            'platform-otherProxies'                 : [ dtc: false, es: true, filter: true, export: true, label: 'platform.auth.other.proxies', rdc: RDConstants.Y_N ],
             'platform-statisticsFormat'             : [ dtc: false, es: true, filter: true, export: true, label: 'platform.stats.format',                 rdc: RDConstants.PLATFORM_STATISTICS_FORMAT ],
             'platform-statisticsUpdate'             : [ dtc: false, es: true,               export: true, label: 'platform.stats.update',                 rdc: RDConstants.PLATFORM_STATISTICS_FREQUENCY ],
             'platform-counterCertified'             : [ dtc: false, es: true, filter: true, export: true, label: 'platform.stats.counter.certified',      rdc: RDConstants.Y_N ],

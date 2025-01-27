@@ -5,7 +5,7 @@
         <tr>
             <td>
                 <span class="la-flexbox la-minor-object">
-                    <i class="la-list-icon la-popup-tooltip la-delay la-consortia icon" data-content="${message(code: 'consortium')}"></i>
+                    <i class="${Icon.AUTH.ORG_CONSORTIUM} la-list-icon la-popup-tooltip la-delay" data-content="${message(code: 'consortium')}"></i>
                     <g:link controller="organisation" action="show" id="${consortium.id}">
                         ${consortium.name}
                     </g:link>

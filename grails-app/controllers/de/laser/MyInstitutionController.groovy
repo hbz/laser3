@@ -2310,7 +2310,7 @@ class MyInstitutionController  {
             String newYear = sdfyear.format(new Date())
 
             if(!(newYear in result.surveyYears)){
-                result.surveyYears << newYear
+                result.surveyYears.push(newYear)
             }
             //params.validOnYear = [newYear]
         }

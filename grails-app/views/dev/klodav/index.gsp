@@ -77,45 +77,59 @@
 </div>
 
 <div class="ui segment">
-    <p class="ui header">Icons #1</p>
+    <p class="ui header">SymbolTagLib</p>
     <div class="ui list">
         <div class="item">
-            <i class="${Icon.SURVEY} large"></i>
-            <div class="content"> Umfragen (${Icon.SURVEY}) </div>
+            <icon:placeholder/>
+            <div class="content"> &lt;icon:placeholder/> </div>
         </div>
         <div class="item">
-            <i class="icon large chartline"></i>
-            <div class="content"> Dashboard (chartline) </div>
+            <icon:arrow/>
+            <div class="content"> &lt;icon:arrow/> </div>
         </div>
         <div class="item">
-            <i class="${Icon.REPORTING} large"></i>
-            <div class="content"> Reporting (${Icon.REPORTING})</div>
+            <icon:pointingHand/>
+            <div class="content"> &lt;icon:pointingHand/> </div>
         </div>
         <div class="item">
-            <i class="${Icon.STATS} large"></i>
-            <div class="content"> Statistik (${Icon.STATS})</div>
-        </div>
-    </div>
-</div>
-
-<div class="ui segment">
-    <p class="ui header">Icons #3</p>
-    <div class="ui list">
-        <div class="item">
-            <i class="${Icon.ATTR.SUBSCRIPTION_IS_MULTIYEAR} large"></i>
-            <div class="content"> Mehrjahreslaufzeit (${Icon.ATTR.SUBSCRIPTION_IS_MULTIYEAR})</div>
+            <icon:bug/>
+            <div class="content"> &lt;icon:bug/> </div>
         </div>
         <div class="item">
-            <i class="${Icon.FNC.COST} large"></i>
-            <div class="content"> Kosten (${Icon.FNC.COST})</div>
+            <icon:database/>
+            <div class="content"> &lt;icon:database/> </div>
         </div>
         <div class="item">
-            <i class="${Icon.FNC.COST_CONFIG} large"></i>
-            <div class="content"> Kosten (Konfiguration) (${Icon.FNC.COST_CONFIG})</div>
+            <icon:universalAccess/>
+            <div class="content"> &lt;icon:universalAccess/> </div>
         </div>
         <div class="item">
-            <i class="euro sign icon large"></i>
-            <div class="content"> euro sign icon large </div>
+            <icon:pdf/>
+            <div class="content"> &lt;icon:pdf/> </div>
+        </div>
+        <div class="item">
+            <icon:video/>
+            <div class="content"> &lt;icon:video/> </div>
+        </div>
+        <div class="item">
+            <icon:flag_de/>
+            <div class="content"> &lt;icon:flag_de/> </div>
+        </div>
+        <div class="item">
+            <icon:flag_en/>
+            <div class="content"> &lt;icon:flag_en/> </div>
+        </div>
+        <div class="item">
+            <icon:help_chrome/>
+            <div class="content"> &lt;icon:help_chrome/> </div>
+        </div>
+        <div class="item">
+            <icon:help_firefox/>
+            <div class="content"> &lt;icon:help_firefox/> </div>
+        </div>
+        <div class="item">
+            <icon:help_ie/>
+            <div class="content"> &lt;icon:help_ie/> </div>
         </div>
     </div>
 </div>

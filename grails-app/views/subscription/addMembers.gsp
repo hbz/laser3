@@ -41,8 +41,10 @@
 
         <div class="ui divider"></div>
 
-        <ui:msg header="${message(code: 'subscription.details.addMembers.option.selectMembersWithFile.info')}" noClose="true">
-
+        <div class="ui message la-clear-before">
+            <div class="header">
+                ${message(code: 'subscription.details.addMembers.option.selectMembersWithFile.info')}
+            </div>
             ${message(code: 'subscription.details.addMembers.option.selectMembersWithFile.text')}
 
             <br>
@@ -67,7 +69,7 @@
                     <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label')}"/>
                 </div>
             </g:if>
-        </ui:msg>
+        </div>
 
 
         <laser:render template="/templates/filter/orgFilterTable"

@@ -86,10 +86,10 @@
         .mk-userMeeting:before {
             content: "\f51c";
         }
-
     </style>
 
-</laser:htmlStart> %{-- </head><body>--}%
+</laser:htmlStart>
+
 <div class="ui stackable grid">
     <div class="eleven wide column">
         <h1 class="ui icon header la-clear-before left floated aligned la-positionRelative"><i class="icon blue icon la-laser la-object"></i> Das LAS:eR Lizenzmodell</h1>
@@ -206,9 +206,9 @@
 
     </div>
     <aside class="five wide column la-sidekick">
-
     </aside>
 </div>
+
     <g:each in="${mappingColsPro+mappingColsBasic+mappingColsServiceBasic+mappingColsServicePro}" var="mpg5" >
         <g:if test="${mpg5 in ['asService','accessRight', 'community', 'management','organisation', 'reporting']}">
 

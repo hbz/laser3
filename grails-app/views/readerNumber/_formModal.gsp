@@ -1,11 +1,13 @@
 <%@ page import="de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDConstants;de.laser.Org;de.laser.I10nTranslation; java.text.SimpleDateFormat; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 <%
-    SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-    Date startOfYear = DateUtils.getSDF_yyyyMMdd().parse(Calendar.getInstance().get(Calendar.YEAR)+'-01-01')
+    Calendar pastYear = GregorianCalendar.getInstance(), currentYear = GregorianCalendar.getInstance()
+    pastYear.add(Calendar.YEAR, -1)
+    SimpleDateFormat sdf = DateUtils.getSDF_yy()
+    RefdataValue pastTerm = RefdataValue.getByValueAndCategory("w${sdf.format(pastYear.getTime())}/${sdf.format(currentYear.getTime())}", RDConstants.SEMESTER)
     Set<RefdataValue> preloadGroups
     switch(formId) {
-        case 'newForUni': preloadGroups = [RDStore.READER_NUMBER_STUDENTS, RDStore.READER_NUMBER_FTE]
+        case 'newForUni': preloadGroups = [RDStore.READER_NUMBER_STUDENTS, RDStore.READER_NUMBER_SCIENTIFIC_STAFF, RDStore.READER_NUMBER_FTE]
             break
         case 'newForPublic': preloadGroups = [RDStore.READER_NUMBER_PEOPLE]
             break
@@ -17,7 +19,7 @@
             break
     }
     if(formId.contains("newForSemester"))
-        preloadGroups = [RDStore.READER_NUMBER_STUDENTS, RDStore.READER_NUMBER_FTE_TOTAL, RDStore.READER_NUMBER_FTE]
+        preloadGroups = [RDStore.READER_NUMBER_STUDENTS, RDStore.READER_NUMBER_SCIENTIFIC_STAFF, RDStore.READER_NUMBER_FTE]
     List<Map<String,Object>> referenceGroups = []
     if(preloadGroups) {
         preloadGroups.each { RefdataValue group ->
@@ -45,6 +47,8 @@
                     />
                 </div>
                 <div class="field four wide">
+                    <%--
+                    as of ERMS-6179, time point should be set to the past winter term or year
                     <g:if test="${withSemester}">
                         <label for="semester"><g:message code="readerNumber.semester.label"/></label>
                         <ui:select class="ui selection dropdown la-full-width" label="readerNumber.semester.label" id="semester" name="semester"
@@ -57,12 +61,23 @@
                                           placeholder="default.date.label" value="${numbersInstance?.year}" required=""
                                           bean="${numbersInstance}"/>
                     </g:elseif>
+                    --%>
+                    <g:if test="${withSemester}">
+                        <label for="semester"><g:message code="readerNumber.semester.label"/></label>
+                        <g:hiddenField name="semester" value="${pastTerm.id}"/>
+                        ${pastTerm.getI10n('value')}
+                    </g:if>
+                    <g:elseif test="${withYear}">
+                        <label for="year"><g:message code="readerNumber.year.label"/></label>
+                        <g:hiddenField name="year" value="${pastYear.get(Calendar.YEAR)}"/>
+                        ${pastYear.get(Calendar.YEAR)}
+                    </g:elseif>
                 </div>
                 <div class="field two wide required">
                     <label for="value">
                         <g:message code="readerNumber.number.label"/>
                     </label>
-                    <input type="number" id="value" name="value" step=".01" value="${numbersInstance?.value}"/>
+                    <input id="value" name="value" value="${numbersInstance?.value}"/>
                 </div>
             </div>
 

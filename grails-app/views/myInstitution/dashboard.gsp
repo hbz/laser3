@@ -15,11 +15,11 @@
         <ui:messages data="${flash}" />
 
         <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
-            <laser:render template="/myInstitution/info/inst" />
+            <laser:render template="dataviz_inst" />
         </g:if>
 
         <g:if test="${wekbNews}">
-            <laser:render template="wekbNews2" model="${[wekbNews: wekbNews, tmplView: 'info']}"/>
+            <laser:render template="wekbNews" model="${[wekbNews: wekbNews, tmplView: 'info']}"/>
         </g:if>
 
     <%
@@ -39,7 +39,7 @@
         }
     %>
 
-    <div class="ui tabular la-tab-with-js top attached small menu">
+    <div class="ui tabular la-tab-with-js top attached small stackable menu">
         <a class="${us_dashboard_tab.value == 'Announcements' ? 'active item':'item'}" data-tab="news" id="jsFallbackAnnouncements">
             %{--            <i class="${Icon.ANNOUNCEMENT} large"></i>--}%
             ${message(code:'announcement.plural')} <ui:bubble count="${systemAnnouncements.size()}" />
@@ -137,7 +137,7 @@
         <g:if test="${taskService.hasREAD()}">
         <div class="ui bottom attached segment tab ${us_dashboard_tab.value == 'Tasks' ? 'active':''}" data-tab="tasks">
 
-            <div class="ui cards">
+            <div class="ui four columns cards">
                 <g:each in="${tasks}" var="tsk">
                     <g:render template="/templates/tasks/dashboardCard" model="${[tsk: tsk]}" />
                 </g:each>

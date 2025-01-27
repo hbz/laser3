@@ -639,7 +639,7 @@ class FinanceService {
             Org org = (Org) configMap.institution
             prf.setBenchmark("load filter")
             Map<String,Object> filterQuery = processFilterParams(params)
-            Map<String,Object> result = [filterPresets:filterQuery.filterData]
+            Map<String,Object> result = [filterPresets:filterQuery.filterData+filterQuery.checkboxFilters]
             SortedSet<String> costTitles = new TreeSet<String>()
             costTitles.addAll(CostItem.executeQuery('select ci.costTitle from CostItem ci where (ci.owner = :ctx or ci.isVisibleForSubscriber = true) and ci.costTitle != null and (ci.sub = :sub or ci.sub.instanceOf = :sub) order by ci.costTitle asc', [ctx: org, sub: sub]))
             SortedSet<BudgetCode> budgetCodes = new TreeSet<BudgetCode>()
@@ -733,7 +733,7 @@ class FinanceService {
         prf.setBenchmark("load filter params")
         params.filterKey = "global"
         Map<String,Object> filterQuery = processFilterParams(params)
-        Map<String,Object> result = [filterPresets:filterQuery.filterData]
+        Map<String,Object> result = [filterPresets:filterQuery.filterData+filterQuery.checkboxFilters]
         result.filterSet = filterQuery.subFilter || filterQuery.ciFilter
         Org org = (Org) configMap.institution
         SortedSet<String> ciTitles = new TreeSet<String>()
@@ -844,11 +844,11 @@ class FinanceService {
     Map<String,Object> processFilterParams(GrailsParameterMap params) {
         Map<String,Object> result
         String subFilterQuery = "", costItemFilterQuery = ""
-        Map<String,Object> queryParams = [:]
+        Map<String,Object> queryParams = [:], checkboxFilters = [:]
         EhcacheWrapper cache = contextService.getUserCache("/finance/${params.filterKey}/filter/")
         if((cache && cache.get('cachedFilter')) && params.reset == null && params.submit == null && !params.subDetailsPage) {
             Map<String,Object> cachedFilter = (Map<String, Object>) cache.get('cachedFilter')
-            result = [subFilter:cachedFilter.subFilter,ciFilter:cachedFilter.ciFilter,filterData:cachedFilter.filterData]
+            result = [subFilter:cachedFilter.subFilter,ciFilter:cachedFilter.ciFilter,filterData:cachedFilter.filterData,checkboxFilters: cachedFilter.checkboxFilters]
         }
         else {
             SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -943,7 +943,7 @@ class FinanceService {
                 List<Package> filterPackages = []
                 String[] packages = params.list('filterCIPkg')
                 packages.each { String pkg ->
-                    filterPackages.add((Package) genericOIDService.resolveOID(pkg))
+                    filterPackages.add(Package.get(pkg))
                 }
                 queryParams.filterCIPkg = filterPackages
             }
@@ -1056,6 +1056,7 @@ class FinanceService {
             }
             if(params.filterCIUnpaid) {
                 costItemFilterQuery += " and ci.datePaid is null "
+                checkboxFilters.filterCIUnpaid = true
             }
             else {
                 //paid from
@@ -1071,7 +1072,7 @@ class FinanceService {
                     queryParams.filterCIPaidTo = invoiceTo
                 }
             }
-            result = [subFilter:subFilterQuery,ciFilter:costItemFilterQuery,filterData:queryParams]
+            result = [subFilter:subFilterQuery,ciFilter:costItemFilterQuery,filterData:queryParams,checkboxFilters:checkboxFilters]
             if(params.reset || params.submit)
                 cache.put('cachedFilter',result)
         }

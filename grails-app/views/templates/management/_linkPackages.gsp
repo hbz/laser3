@@ -178,11 +178,6 @@
                             </td>
                             <td>
                                 <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
-
-                                <g:if test="${sub.isSlaved}">
-                                    <ui:auditIcon type="auto2" />
-                                </g:if>
-
                                 <ui:customerTypeProIcon org="${subscr}" />
                             </td>
                             <g:if test="${params.showMembersSubWithMultiYear}">
@@ -326,6 +321,7 @@
 
     JSPC.app.ajaxDropdown($("#selectedPackages"), "${createLink([controller:"ajaxJson", action:"lookupPackages"])}?query={query}", '');
 
+    /*
     $('.packagesForm').form({
         on: 'blur',
         inline: true,
@@ -341,6 +337,7 @@
             }
         }
     });
+    */
 </laser:script>
 
 

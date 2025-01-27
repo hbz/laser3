@@ -26,7 +26,7 @@
                 <div class="content">
 
                     <dl>
-                        <dt><g:message code="default.name.label" /></dt>
+                        <dt class="control-label"><g:message code="default.name.label" /></dt>
                         <dd>
                             <ui:xEditable
                                     data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
@@ -36,7 +36,7 @@
                         </dd>
                     </dl>
                     <dl>
-                        <dt><g:message code="org.sortname.label" /></dt>
+                        <dt class="control-label"><g:message code="org.sortname.label" /></dt>
                         <dd>
                             <ui:xEditable
                                     data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
@@ -46,8 +46,9 @@
                         </dd>
                     </dl>
                     <dl>
-                        <dt><g:message code="altname.plural" /></dt>
-                        <dd id="altnames" class="ui accordion la-accordion-showMore la-accordion-altName" style="padding-bottom: 0">
+                        <dt class="control-label"><g:message code="altname.plural" /></dt>
+                        <dd>
+                            <div id="altnames" class="ui accordion la-accordion-showMore la-accordion-altName">
                             <g:if test="${vendor.altnames}">
                                 <div class="ui divided middle aligned selection list la-flex-center">
                                     <div class="item title" id="altname_title" data-objId="${genericOIDService.getOID(vendor.altnames[0])}">
@@ -94,13 +95,14 @@
                                     </div>
                                 </div>
                             </g:if>
+                            </div><!-- #altnames -->
+                            <g:if test="${editable && !vendor.gokbId}">
+                                <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} la-js-addListValue" data-objtype="altname" value="${message(code: 'altname.add')}">
+                            </g:if>
                         </dd>
                     </dl>
-                    <g:if test="${editable && !vendor.gokbId}">
-                        <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} la-js-addListValue" data-objtype="altname" value="${message(code: 'altname.add')}">
-                    </g:if>
                     <dl>
-                        <dt><g:message code="vendor.homepage.label"/></dt>
+                        <dt class="control-label"><g:message code="vendor.homepage.label"/></dt>
                         <dd>
                             <ui:xEditable
                                     data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
@@ -113,14 +115,14 @@
                         </dd>
                     </dl>
                     <dl>
-                        <dt><g:message code="default.status.label"/></dt>
+                        <dt class="control-label"><g:message code="default.status.label"/></dt>
                         <dd>
                             <ui:xEditableRefData owner="${vendor}" field="status" config="${RDConstants.VENDOR_STATUS}" overwriteEditable="${editable && !vendor.gokbId}"/>
                         </dd>
                     </dl>
                     <g:if test="${vendor.status == RDStore.VENDOR_STATUS_RETIRED}">
                         <dl>
-                            <dt>${message(code: 'vendor.retirementDate.label')}</dt>
+                            <dt class="control-label">${message(code: 'vendor.retirementDate.label')}</dt>
                             <dd>
                                 <g:formatDate date="${vendor.retirementDate}" format="${message(code: 'default.date.format.notime')}"/>
                             </dd>
@@ -133,7 +135,7 @@
                 <div class="content">
                     <h2 class="ui header"><g:message code="vendor.ordering.header"/></h2>
                     <dl>
-                        <dt>
+                        <dt class="control-label">
                             <g:message code="vendor.ordering.webshop.label" />
                         </dt>
                         <dd>
@@ -144,7 +146,7 @@
                         </dd>
                     </dl>
                     <dl>
-                        <dt>
+                        <dt class="control-label">
                             <g:message code="vendor.ordering.xml.label" />
                         </dt>
                         <dd>
@@ -155,7 +157,7 @@
                         </dd>
                     </dl>
                     <dl>
-                        <dt>
+                        <dt class="control-label">
                             <g:message code="vendor.ordering.edi.label" />
                         </dt>
                         <dd>
@@ -166,7 +168,7 @@
                         </dd>
                     </dl>
                     <dl>
-                        <dt>
+                        <dt class="control-label">
                             <g:message code="vendor.ordering.supportedLibrarySystems.label" />
                         </dt>
                         <dd>
@@ -181,7 +183,7 @@
                         </dd>
                     </dl>
                     <dl>
-                        <dt>
+                        <dt class="control-label">
                             <g:message code="vendor.ordering.electronicDeliveryDelayNotifications.label" />
                         </dt>
                         <dd>
@@ -202,7 +204,7 @@
                 <div class="content">
                     <h2 class="ui header"><g:message code="vendor.invoicing.header"/></h2>
                     <dl>
-                        <dt>
+                        <dt class="control-label">
                             <g:message code="vendor.invoicing.formats.label" />
                         </dt>
                         <dd>
@@ -217,7 +219,7 @@
                         </dd>
                     </dl>
                     <dl>
-                        <dt>
+                        <dt class="control-label">
                             <g:message code="vendor.invoicing.dispatch.label" />
                         </dt>
                         <dd>
@@ -232,7 +234,7 @@
                         </dd>
                     </dl>
                     <dl>
-                        <dt>
+                        <dt class="control-label">
                             <g:message code="vendor.invoicing.paperInvoice.label" />
                         </dt>
                         <dd>
@@ -243,7 +245,7 @@
                         </dd>
                     </dl>
                     <dl>
-                        <dt>
+                        <dt class="control-label">
                             <g:message code="vendor.invoicing.managementOfCredits.label" />
                         </dt>
                         <dd>
@@ -254,7 +256,7 @@
                         </dd>
                     </dl>
                     <dl>
-                        <dt>
+                        <dt class="control-label">
                             <g:message code="vendor.invoicing.compensationPayments.label" />
                         </dt>
                         <dd>
@@ -265,7 +267,7 @@
                         </dd>
                     </dl>
                     <dl>
-                        <dt>
+                        <dt class="control-label">
                             <g:message code="vendor.invoicing.individualInvoiceDesign.label" />
                         </dt>
                         <dd>
@@ -282,7 +284,7 @@
                 <div class="content">
                     <h2 class="ui header"><g:message code="vendor.general.header"/></h2>
                     <dl>
-                        <dt>
+                        <dt class="control-label">
                             <g:message code="vendor.general.technicalSupport.label" />
                         </dt>
                         <dd>
@@ -293,7 +295,7 @@
                         </dd>
                     </dl>
                     <dl>
-                        <dt>
+                        <dt class="control-label">
                             <g:message code="vendor.general.metadata.label" />
                         </dt>
                         <dd>
@@ -304,7 +306,7 @@
                         </dd>
                     </dl>
                     <dl>
-                        <dt>
+                        <dt class="control-label">
                             <g:message code="vendor.general.usageStats.label" />
                         </dt>
                         <dd>
@@ -315,7 +317,7 @@
                         </dd>
                     </dl>
                     <dl>
-                        <dt>
+                        <dt class="control-label">
                             <g:message code="vendor.general.newReleaseInformation.label" />
                         </dt>
                         <dd>
@@ -326,7 +328,7 @@
                         </dd>
                     </dl>
                     <dl>
-                        <dt>
+                        <dt class="control-label">
                             <g:message code="vendor.general.exchangeIndividualTitles.label" />
                         </dt>
                         <dd>
@@ -337,7 +339,7 @@
                         </dd>
                     </dl>
                     <dl>
-                        <dt>
+                        <dt class="control-label">
                             <g:message code="vendor.general.researchPlatform.label" />
                         </dt>
                         <dd>
@@ -357,27 +359,27 @@
                 <div class="content">
                     <h2 class="ui header"><g:message code="vendor.supplier.header"/></h2>
                     <dl>
-                        <dt>
-                            <g:message code="vendor.supplier.prequalificationVol.label" />
+                        <dt class="control-label">
+                            <g:message code="vendor.supplier.prequalification.label" />
                         </dt>
                         <dd>
                             <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
                                                  data_confirm_term_how="ok"
                                                  class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                                 owner="${vendor}" field="prequalificationVOL"  overwriteEditable="${editable && !vendor.gokbId}"/>
+                                                 owner="${vendor}" field="prequalification"  overwriteEditable="${editable && !vendor.gokbId}"/>
                         </dd>
                     </dl>
                     <dl>
-                        <dt>
-                            <g:message code="vendor.supplier.infoPrequalificationVol.label" />
+                        <dt class="control-label">
+                            <g:message code="vendor.supplier.infoPrequalification.label" />
                         </dt>
                         <dd>
                             <ui:xEditable data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
                                           data_confirm_term_how="ok"
                                           class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                          owner="${vendor}" field="prequalificationVOLInfo"  overwriteEditable="${editable && !vendor.gokbId}"/>
-                            <g:if test="${vendor.prequalificationVOLInfo}">
-                                <ui:linkWithIcon href="${vendor.prequalificationVOLInfo}"/>
+                                          owner="${vendor}" field="prequalificationInfo"  overwriteEditable="${editable && !vendor.gokbId}"/>
+                            <g:if test="${vendor.prequalificationInfo}">
+                                <ui:linkWithIcon href="${vendor.prequalificationInfo}"/>
                             </g:if>
                         </dd>
                     </dl>
@@ -447,8 +449,10 @@
 
             <div class="ui card">
                 <div class="content">
+                    <h2 class="ui header"><g:message code="vendor.general.objects.label"/></h2>
+                </div>
+                <div class="content">
                     <div class="ui accordion">
-                        <h2 class="ui header"><g:message code="vendor.general.objects.label"/></h2>
                         <div class="title">
                             <i class="dropdown icon la-dropdown-accordion"></i>
                             <div class="ui horizontal relaxed list">
@@ -493,8 +497,10 @@
 
             <div class="ui card">
                 <div class="content">
+                    <h2 class="ui header"><g:message code="vendor.my.objects.label"/></h2>
+                </div>
+                <div class="content">
                     <div class="ui accordion">
-                        <h2 class="ui header"><g:message code="vendor.my.objects.label"/></h2>
                         <div class="title">
                             <i class="dropdown icon la-dropdown-accordion"></i>
                             <div class="ui horizontal relaxed list">
@@ -593,7 +599,7 @@
                     <div class="content">
                         <g:if test="${vendor.createdBy}">
                             <dl>
-                                <dt>
+                                <dt class="control-label">
                                     <g:message code="org.createdBy.label" />
                                 </dt>
                                 <dd>
@@ -618,7 +624,7 @@
                         </g:if>
                         <g:if test="${vendor.legallyObligedBy}">
                             <dl>
-                                <dt>
+                                <dt class="control-label">
                                     <g:message code="org.legallyObligedBy.label" />
                                 </dt>
                                 <dd>

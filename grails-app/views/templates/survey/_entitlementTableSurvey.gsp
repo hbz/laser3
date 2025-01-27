@@ -86,7 +86,7 @@
                                     <div class="ui list">
                                         <g:if test="${priceItem.listPrice}">
                                             <div class="item">
-                                                <div class="contet">
+                                                <div class="content">
                                                     <div class="header">
                                                         <g:message code="tipp.price.listPrice"/>
                                                     </div>
@@ -355,7 +355,7 @@
         <div class="four wide column ">
             <div class="ui list">
                 %{--<div class="item">
-                    <div class="contet">
+                    <div class="content">
                             <g:message code="renewEntitlementsWithSurvey.totalCostSelected"/> <br/>
                     </div>
                 </div>--}%
@@ -363,7 +363,7 @@
 
                 <g:if test="${sumlistPriceEuro > 0}">
                     <div class="item">
-                        <div class="contet">
+                        <div class="content">
                             <strong><g:message code="renewEntitlementsWithSurvey.totalCostOnPage"/>:</strong> <g:formatNumber
                                 number="${sumlistPriceEuro}" type="currency" currencyCode="EUR"/><br/>
                         </div>
@@ -371,7 +371,7 @@
                 </g:if>
                 <g:if test="${sumlistPriceUSD > 0}">
                     <div class="item">
-                        <div class="contet">
+                        <div class="content">
                             <strong><g:message code="renewEntitlementsWithSurvey.totalCostOnPage"/>:</strong> <g:formatNumber
                                 number="${sumlistPriceUSD}" type="currency" currencyCode="USD"/><br/>
                         </div>
@@ -379,16 +379,17 @@
                 </g:if>
                 <g:if test="${sumlistPriceGBP > 0}">
                     <div class="item">
-                        <div class="contet">
+                        <div class="content">
                             <strong><g:message code="renewEntitlementsWithSurvey.totalCostOnPage"/>:</strong> <g:formatNumber
                                 number="${sumlistPriceGBP}" type="currency" currencyCode="GBP"/><br/>
                         </div>
                     </div>
                 </g:if>
+                <div id="dynamicListWrapper"></div>
                 %{--<g:message code="tipp.price.localPrice"/>: <g:formatNumber number="${sumlocalPrice}" type="currency"/>--}%
                 <g:if test="${tippsListPriceSumEUR > 0}">
                     <div class="item">
-                        <div class="contet">
+                        <div class="content">
                             <strong><g:message code="renewEntitlementsWithSurvey.totalCost"/>:</strong> <g:formatNumber
                                 number="${tippsListPriceSumEUR}" type="currency" currencyCode="EUR"/><br/>
                         </div>
@@ -396,7 +397,7 @@
                 </g:if>
                 <g:if test="${tippsListPriceSumUSD > 0}">
                     <div class="item">
-                        <div class="contet">
+                        <div class="content">
                             <strong><g:message code="renewEntitlementsWithSurvey.totalCost"/>:</strong> <g:formatNumber
                                 number="${tippsListPriceSumUSD}" type="currency" currencyCode="USD"/><br/>
                         </div>
@@ -404,7 +405,7 @@
                 </g:if>
                 <g:if test="${tippsListPriceSumGBP > 0}">
                     <div class="item">
-                        <div class="contet">
+                        <div class="content">
                             <strong><g:message code="renewEntitlementsWithSurvey.totalCost"/>:</strong> <g:formatNumber
                                 number="${tippsListPriceSumGBP}" type="currency" currencyCode="GBP"/><br/>
                         </div>
@@ -412,7 +413,7 @@
                 </g:if>
                 <g:if test="${iesTotalListPriceSumEUR > 0}">
                     <div class="item">
-                        <div class="contet">
+                        <div class="content">
                             <strong><g:message code="renewEntitlementsWithSurvey.totalCost"/>:</strong> <g:formatNumber
                                 number="${iesTotalListPriceSumEUR}" type="currency" currencyCode="EUR"/><br/>
                         </div>
@@ -420,7 +421,7 @@
                 </g:if>
                 <g:if test="${iesTotalListPriceSumUSD > 0}">
                     <div class="item">
-                        <div class="contet">
+                        <div class="content">
                             <strong><g:message code="renewEntitlementsWithSurvey.totalCost"/>:</strong> <g:formatNumber
                                 number="${iesTotalListPriceSumUSD}" type="currency" currencyCode="USD"/><br/>
                         </div>
@@ -428,7 +429,7 @@
                 </g:if>
                 <g:if test="${iesTotalListPriceSumGBP > 0}">
                     <div class="item">
-                        <div class="contet">
+                        <div class="content">
                             <strong><g:message code="renewEntitlementsWithSurvey.totalCost"/>:</strong> <g:formatNumber
                                 number="${iesTotalListPriceSumGBP}" type="currency" currencyCode="GBP"/><br/>
                         </div>

@@ -80,12 +80,14 @@ class UiTagLib {
         if ( (attrs.referenceYear)|| (attrs.visibleProviders) ) {
             out << '<span class="la-subPlusYear-year">'
             out << attrs.referenceYear
-            if (attrs.referenceYear) {
-                out << ' – '
+            if(attrs.visibleProviders?.size() > 0) {
+                if (attrs.referenceYear) {
+                    out << ' – '
+                }
+                out << '<span class="la-orgRelations">'
+                out << attrs.visibleProviders
+                out << '</span>'
             }
-            out << '<span class="la-orgRelations">'
-            out << attrs.visibleProviders
-            out << '</span>'
             out << '</span>'
             out << '</div>'
             out << '</div>'
@@ -94,6 +96,54 @@ class UiTagLib {
     }
 
     // <ui:messages data="${flash}" />
+
+    def h2AdminOnly= { attrs, body ->
+        String text = message(code: 'default.adminsOnly.label')
+
+        if (attrs.text) {
+            text = attrs.text
+        }
+        if (attrs.message) {
+            SwissKnife.checkMessageKey(attrs.message as String)
+            text = "${message(code: attrs.message)}"
+        }
+        out << '  <h2 class="ui dividing header orange">'
+        out << '    <i class="' + Icon.AUTH.ROLE_ADMIN + ' small"></i>'
+        out << '    <span class="content">' + text + '</span>'
+        out << '  </h2>'
+    }
+
+    def h2ConsortiumOnly = { attrs, body ->
+        String text = message(code: 'default.consortiumOnly.label')
+
+        if (attrs.text) {
+            text = attrs.text
+        }
+        if (attrs.message) {
+            SwissKnife.checkMessageKey(attrs.message as String)
+            text = "${message(code: attrs.message)}"
+        }
+        out << '  <h2 class="ui dividing header teal">'
+        out << '    <i class="' + Icon.AUTH.ORG_CONSORTIUM + ' small"></i>'
+        out << '    <span class="content">' + text + '</span>'
+        out << '  </h2>'
+    }
+
+    def h2Deprecated = { attrs, body ->
+        String text = 'DEPRECATED: Wird zukünftig entfernt'
+
+        if (attrs.text) {
+            text = attrs.text
+        }
+        if (attrs.message) {
+            SwissKnife.checkMessageKey(attrs.message as String)
+            text = "${message(code: attrs.message)}"
+        }
+        out << '  <h2 class="ui dividing header red">'
+        out << '    <i class="' + Icon.UI.WARNING + ' small"></i>'
+        out << '    <span class="content">' + text + '</span>'
+        out << '  </h2>'
+    }
 
     @FixedFeature_DoNotModify
     def messages = { attrs, body ->
@@ -360,11 +410,11 @@ class UiTagLib {
         }
     }
 
-    // <ui:auditIcon type="default|auto|auto2" />
+    // <ui:auditIcon type="default|auto" />
 
     def auditIcon = { attrs, body ->  // TODO - in progress
 
-        if (! ['default', 'auto', 'auto2'].contains(attrs.type)) {
+        if (! ['default', 'auto'].contains(attrs.type)) {
             out << "[auditIconWithTooltip: missing/faulty attribute 'type']"
         }
         else {
@@ -377,12 +427,6 @@ class UiTagLib {
             else if (attrs.type == 'auto') {
                 // Wert wird automatisch geerbt
                 out << '<span class="la-popup-tooltip" data-content="' + message(code: 'property.audit.target.inherit.auto') + '" data-position="top right">'
-                out << '<i class="' + Icon.SIG.INHERITANCE_AUTO + '"></i>'
-                out << '</span>'
-            }
-            else if (attrs.type == 'auto2') { // TODO: merge with 'auto'
-                // Änderungen werden automatisch übernommen
-                out << '<span class="la-popup-tooltip" data-content="' + message(code: 'license.details.isSlaved.tooltip') + '" data-position="top right">'
                 out << '<i class="' + Icon.SIG.INHERITANCE_AUTO + '"></i>'
                 out << '</span>'
             }

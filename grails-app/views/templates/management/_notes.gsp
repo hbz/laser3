@@ -92,11 +92,6 @@
                         </td>
                         <td>
                             <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
-
-                            <g:if test="${sub.isSlaved}">
-                                <ui:auditIcon type="auto2" />
-                            </g:if>
-
                             <ui:customerTypeProIcon org="${subscr}" />
                         </td>
                         <g:if test="${params.showMembersSubWithMultiYear}">
@@ -165,6 +160,7 @@
         });
     });
 
+    /*
     $('.notes').form({
         on: 'blur',
         inline: true,
@@ -180,5 +176,5 @@
             }
         }
     });
-
+    */
 </laser:script>
