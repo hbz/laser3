@@ -115,11 +115,9 @@ class ApiEZB {
     static private List<Org> getAccessibleOrgs() {
 
         List<Org> orgs = OrgSetting.executeQuery(
-                "select o from OrgSetting os join os.org o where os.key = :key and os.rdValue = :rdValue " +
-                        "and (o.status is null or o.status != :deleted)", [
+                "select o from OrgSetting os join os.org o where os.key = :key and os.rdValue = :rdValue ", [
                 key    : OrgSetting.KEYS.EZB_SERVER_ACCESS,
-                rdValue: RDStore.YN_YES,
-                deleted: RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS)
+                rdValue: RDStore.YN_YES
         ])
         //List<Org> orgs = Org.executeQuery('select id.org from Identifier id where id.ns.ns = :ezb', [ezb: IdentifierNamespace.EZB_ORG_ID])
 

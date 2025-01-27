@@ -82,11 +82,9 @@ class ApiOAMonitor {
     static private List<Org> getAccessibleOrgs() {
 
         List<Org> orgs = OrgSetting.executeQuery(
-                "select o from OrgSetting os join os.org o where os.key = :key and os.rdValue = :rdValue " +
-                        "and (o.status is null or o.status != :deleted)", [
+                "select o from OrgSetting os join os.org o where os.key = :key and os.rdValue = :rdValue ", [
                 key    : OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS,
-                rdValue: RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N),
-                deleted: RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS)
+                rdValue: RDStore.YN_YES
         ])
 
         orgs

@@ -67,7 +67,10 @@ class ApiOrg {
         result.validatePrecondition_1()
 
         if (result.obj instanceof Org) {
-            result.validateDeletedStatus_2('status', RDStore.ORG_STATUS_DELETED)
+//            result.validateDeletedStatus_2('status', RDStore.ORG_STATUS_DELETED)
+//            if ((result.obj as Org).isDeprecated()) {
+//                result.status = Constants.OBJECT_STATUS_DELETED // TODO: erms-6224
+//            }
         }
         result
     }
