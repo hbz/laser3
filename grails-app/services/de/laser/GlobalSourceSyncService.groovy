@@ -68,7 +68,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     Map<String, RefdataValue> titleMedium = [:],
             tippStatus = [:],
             packageStatus = [:],
-            orgStatus = [:],
+//            orgStatus = [:],
             currency = [:],
             accessType = [:],
             openAccess = [:],
@@ -341,7 +341,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         defineMapFields()
             long rectype
             switch(componentType) {
-                case 'Org': rectype = RECTYPE_PROVIDER
+                case 'Org': rectype = RECTYPE_PROVIDER          // ERMS-6224 - needed? - proper implementation?
                     break
                 case 'Package': rectype = RECTYPE_PACKAGE
                     break
@@ -2211,11 +2211,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
             packageStatus.put(rdv.value, rdv)
         }
         packageStatus.put(Constants.PERMANENTLY_DELETED, RDStore.PACKAGE_STATUS_REMOVED)
-        orgStatus.put(RDStore.ORG_STATUS_CURRENT.value,RDStore.ORG_STATUS_CURRENT)
-        orgStatus.put(RDStore.ORG_STATUS_DELETED.value,RDStore.ORG_STATUS_DELETED)
-        orgStatus.put(Constants.PERMANENTLY_DELETED,RDStore.ORG_STATUS_REMOVED)
-        orgStatus.put(RDStore.ORG_STATUS_REMOVED.value,RDStore.ORG_STATUS_REMOVED)
-        orgStatus.put(RDStore.ORG_STATUS_RETIRED.value,RDStore.ORG_STATUS_RETIRED)
+//        orgStatus.put(RDStore.ORG_STATUS_CURRENT.value,RDStore.ORG_STATUS_CURRENT)
+//        orgStatus.put(RDStore.ORG_STATUS_DELETED.value,RDStore.ORG_STATUS_DELETED)
+//        orgStatus.put(Constants.PERMANENTLY_DELETED,RDStore.ORG_STATUS_REMOVED)
+//        orgStatus.put(RDStore.ORG_STATUS_REMOVED.value,RDStore.ORG_STATUS_REMOVED)
+//        orgStatus.put(RDStore.ORG_STATUS_RETIRED.value,RDStore.ORG_STATUS_RETIRED)
         RefdataCategory.getAllRefdataValues(RDConstants.CURRENCY).each { RefdataValue rdv ->
             currency.put(rdv.value, rdv)
         }
