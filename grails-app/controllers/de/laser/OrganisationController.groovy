@@ -1372,6 +1372,21 @@ class OrganisationController  {
         redirect action:'users', id:params.id, params:[disabledAccounts: disabledAccounts]
     }
 
+    @Secured(['ROLE_ADMIN'])
+    def markAsDeprecated() {
+        Org org = Org.get(params.id)
+        if (org) {
+            if (org.retirementDate) {
+                flash.error = "Die Einrichtung wurde bereits archiviert."
+            } else {
+                org.retirementDate = new Date()
+                org.save()
+                flash.message = "Die Einrichtung wurde archiviert."
+            }
+        }
+        redirect action:'show', id:params.id
+    }
+
     /**
      * Call to list the public contacts of the given organisation
      * @return a table view of public contacts

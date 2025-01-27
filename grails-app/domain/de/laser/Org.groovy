@@ -212,13 +212,18 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         lastUpdatedCascading (nullable: true)
     }
 
+    boolean isDeprecated() {
+        return retirementDate != null || status in [RDStore.ORG_STATUS_DELETED, RDStore.ORG_STATUS_REMOVED, RDStore.ORG_STATUS_RETIRED]
+    }
+
     /**
-     * Checks if the organisation is marked as deleted
-     * @return true if the status is deleted, false otherwise
+     * Checks if the organisation is marked as deleted/deprecated
+     * @return true if isDeprecated(), false otherwise
      */
     @Override
     boolean isDeleted() {
-        return RDStore.ORG_STATUS_DELETED.id == status?.id
+//        return RDStore.ORG_STATUS_DELETED.id == status?.id
+        isDeprecated()
     }
 
     /**
