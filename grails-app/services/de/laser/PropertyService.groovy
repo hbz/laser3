@@ -630,6 +630,7 @@ class PropertyService {
      Map<String, Object> getAvailableProperties(PropertyDefinition propDef, Org contextOrg, GrailsParameterMap params) {
          Set filteredObjs = [], objectsWithoutProp = []
          Map<String,Object> parameterMap = [type:propDef,ctx:contextOrg], result = [:]
+
          if(params.objStatus)
              parameterMap.status = RefdataValue.get(params.objStatus)
          String subFilterClause = '', licFilterClause = '', spOwnerFilterClause = '', lpOwnerFilterClause = ''
@@ -660,8 +661,8 @@ class PropertyService {
                  filteredObjs.addAll(PersonProperty.executeQuery('select pp.owner from PersonProperty pp where pp.type = :type and pp.tenant = :ctx order by pp.owner.last_name asc, pp.owner.first_name asc',parameterMap))
                  break
              case PropertyDefinition.ORG_PROP:
-                 if(!params.objStatus)
-                     parameterMap.status = RDStore.ORG_STATUS_CURRENT
+//                 if(!params.objStatus)
+//                     parameterMap.status = RDStore.ORG_STATUS_CURRENT
                  String orgfilter = '', orgfilter2 = ''
                  Map<String,Object> orgFilterMap = [:]
 
