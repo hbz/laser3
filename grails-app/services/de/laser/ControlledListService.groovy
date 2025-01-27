@@ -42,8 +42,8 @@ class ControlledListService {
     Map getOrgs(GrailsParameterMap params) {
         LinkedHashMap result = [results:[]]
         Org org = genericOIDService.resolveOID(params.ctx)
-        String queryString = 'select o from Org o where o.status != :deleted and o != :context'
-        LinkedHashMap filter = [deleted: RDStore.ORG_STATUS_DELETED, context: org]
+        String queryString = 'select o from Org o where o != :context'
+        LinkedHashMap filter = [context: org]
         if (params.query && params.query.length() > 0) {
             queryString += " and (genfunc_filter_matcher(o.name, :query) = true or genfunc_filter_matcher(o.sortname, :query) = true) "
             filter.put('query', params.query)

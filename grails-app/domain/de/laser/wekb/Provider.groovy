@@ -251,14 +251,14 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
             p.legallyObligedBy = provider.legallyObligedBy
         p.homepage = provider.url
         switch(provider.status) {
-            case RDStore.ORG_STATUS_CURRENT: p.status = RDStore.PROVIDER_STATUS_CURRENT
-                break
-            case RDStore.ORG_STATUS_DELETED: p.status = RDStore.PROVIDER_STATUS_DELETED
-                break
-            case RDStore.ORG_STATUS_RETIRED: p.status = RDStore.PROVIDER_STATUS_RETIRED
-                break
-            case RDStore.ORG_STATUS_REMOVED: p.status = RDStore.PROVIDER_STATUS_REMOVED
-                break
+//            case RDStore.ORG_STATUS_CURRENT: p.status = RDStore.PROVIDER_STATUS_CURRENT
+//                break
+//            case RDStore.ORG_STATUS_DELETED: p.status = RDStore.PROVIDER_STATUS_DELETED
+//                break
+//            case RDStore.ORG_STATUS_RETIRED: p.status = RDStore.PROVIDER_STATUS_RETIRED
+//                break
+//            case RDStore.ORG_STATUS_REMOVED: p.status = RDStore.PROVIDER_STATUS_REMOVED
+//                break
             default: p.status = RDStore.PROVIDER_STATUS_CURRENT
                 break
         }

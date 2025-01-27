@@ -259,9 +259,7 @@ class OrganisationController  {
 
         if(!params.sort)
             params.sort = " LOWER(o.sortname)"
-        if(!params.orgStatus && !params.filterSet) {
-            params.orgStatus = [RDStore.ORG_STATUS_CURRENT.id]
-        }
+
         FilterService.Result fsr = filterService.getOrgQuery(params)
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
