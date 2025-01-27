@@ -528,7 +528,7 @@ class ControlledListService {
         Org org = contextService.getOrg()
         List<Map<String,Object>> result = []
         //to translate in hql: select org_name from org left join combo on org_id = combo_from_org_fk where combo_to_org_fk = 1 or org_sector_rv_fk = 82 order by org_sortname asc, org_name asc;
-        List orgs = Org.executeQuery("select new map(o.id as id,o.name as name,o.sortname as sortname) from Combo c right join c.fromOrg o where (o.status = null or o.status != :deleted) and (c.toOrg = :contextOrg) order by o.sortname asc, o.name asc",[contextOrg:org, deleted:RDStore.O_STATUS_DELETED])
+        List orgs = Org.executeQuery("select new map(o.id as id,o.name as name,o.sortname as sortname) from Combo c right join c.fromOrg o where c.toOrg = :contextOrg order by o.sortname asc, o.name asc", [contextOrg:org])
         orgs.each { row ->
             if(row.id != org.id) {
                 String text = row.sortname ? "${row.sortname} (${row.name})" : "${row.name}"

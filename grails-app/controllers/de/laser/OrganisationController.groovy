@@ -737,7 +737,7 @@ class OrganisationController  {
         switch (request.method) {
             case 'POST':
                 Org orgInstance = new Org(params)
-                orgInstance.status = RDStore.O_STATUS_CURRENT
+                orgInstance.status = RDStore.ORG_STATUS_CURRENT
 
                 //if (params.name) {
                     if (orgInstance.save()) {
@@ -1339,12 +1339,12 @@ class OrganisationController  {
             }
 
             if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-                result.substituteList = Org.executeQuery("select distinct o from Org o where o.status != :delState", [delState: RDStore.O_STATUS_DELETED])
+                result.substituteList = Org.executeQuery('select distinct o from Org o where o.retirementDate is null')
             }
             else {
                 List<Org> orgList = [result.orgInstance]
-                orgList.addAll(Org.executeQuery("select o from Combo cmb join cmb.fromOrg o where o.status != :delState and cmb.toOrg = :org", [delState: RDStore.O_STATUS_DELETED, org: result.orgInstance]))
-                orgList.addAll(Org.executeQuery("select o from Combo cmb join cmb.toOrg o where o.status != :delState and cmb.fromOrg = :org", [delState: RDStore.O_STATUS_DELETED, org: result.orgInstance]))
+                orgList.addAll(Org.executeQuery("select o from Combo cmb join cmb.fromOrg o where o.retirementDate is null and cmb.toOrg = :org", [org: result.orgInstance]))
+                orgList.addAll(Org.executeQuery("select o from Combo cmb join cmb.toOrg o where o.retirementDate is null and cmb.fromOrg = :org", [org: result.orgInstance]))
                 orgList.unique()
 
                 result.substituteList = orgList
