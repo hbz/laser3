@@ -51,7 +51,7 @@
 
 <laser:render template="${customerTypeService.getNavTemplatePath()}" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 
-<ui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
+<ui:objectStatus object="${orgInstance}" />
 
 <ui:messages data="${flash}"/>
 <laser:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" />

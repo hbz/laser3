@@ -14,7 +14,7 @@
     <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
 </ui:h1HeaderWithIcon>
 
-<ui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
+<ui:objectStatus object="${orgInstance}" />
 
 <ui:messages data="${flash}"/>
 

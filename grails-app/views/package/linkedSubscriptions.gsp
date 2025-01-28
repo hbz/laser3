@@ -15,7 +15,7 @@
 
 <laser:render template="nav"/>
 
-<ui:objectStatus object="${packageInstance}" status="${packageInstance.packageStatus}"/>
+<ui:objectStatus object="${packageInstance}" />
 
 <ui:messages data="${flash}"/>
 

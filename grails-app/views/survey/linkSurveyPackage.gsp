@@ -20,7 +20,7 @@
 
 <laser:render template="nav"/>
 
-<ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
+<ui:objectStatus object="${surveyInfo}" />
 
 <h2> <g:message code="surveyPackages.linkPackage"/>:</h2>
 <br>

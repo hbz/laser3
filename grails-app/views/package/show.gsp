@@ -38,7 +38,7 @@ making obsolete package/actions
 
 <laser:render template="nav"/>
 
-<ui:objectStatus object="${packageInstance}" status="${packageInstance.packageStatus}"/>
+<ui:objectStatus object="${packageInstance}" />
 
 <laser:render template="/templates/meta/identifier" model="${[object: packageInstance, editable: false]}"/>
 
