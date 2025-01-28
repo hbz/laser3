@@ -259,9 +259,7 @@ class OrganisationController  {
 
         if(!params.sort)
             params.sort = " LOWER(o.sortname)"
-        if(!params.orgStatus && !params.filterSet) {
-            params.orgStatus = [RDStore.ORG_STATUS_CURRENT.id]
-        }
+
         FilterService.Result fsr = filterService.getOrgQuery(params)
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
@@ -739,8 +737,6 @@ class OrganisationController  {
         switch (request.method) {
             case 'POST':
                 Org orgInstance = new Org(params)
-                orgInstance.status = RDStore.O_STATUS_CURRENT
-
                 //if (params.name) {
                     if (orgInstance.save()) {
                         orgInstance.setDefaultCustomerType()
@@ -1341,12 +1337,12 @@ class OrganisationController  {
             }
 
             if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-                result.substituteList = Org.executeQuery("select distinct o from Org o where o.status != :delState", [delState: RDStore.O_STATUS_DELETED])
+                result.substituteList = Org.executeQuery('select distinct o from Org o where o.archiveDate is null')
             }
             else {
                 List<Org> orgList = [result.orgInstance]
-                orgList.addAll(Org.executeQuery("select o from Combo cmb join cmb.fromOrg o where o.status != :delState and cmb.toOrg = :org", [delState: RDStore.O_STATUS_DELETED, org: result.orgInstance]))
-                orgList.addAll(Org.executeQuery("select o from Combo cmb join cmb.toOrg o where o.status != :delState and cmb.fromOrg = :org", [delState: RDStore.O_STATUS_DELETED, org: result.orgInstance]))
+                orgList.addAll(Org.executeQuery("select o from Combo cmb join cmb.fromOrg o where o.archiveDate is null and cmb.toOrg = :org", [org: result.orgInstance]))
+                orgList.addAll(Org.executeQuery("select o from Combo cmb join cmb.toOrg o where o.archiveDate is null and cmb.fromOrg = :org", [org: result.orgInstance]))
                 orgList.unique()
 
                 result.substituteList = orgList
@@ -1370,6 +1366,21 @@ class OrganisationController  {
             SystemEvent.createEvent('SYSTEM_UA_FLAG_DISABLED', [org: [org.id, org.name], disabled: disabledAccounts])
         }
         redirect action:'users', id:params.id, params:[disabledAccounts: disabledAccounts]
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def markAsArchive() {
+        Org org = Org.get(params.id)
+        if (org) {
+            if (org.isArchived()) {
+                flash.error = "Die Einrichtung wurde bereits archiviert."
+            } else {
+                org.archiveDate = new Date()
+                org.save()
+                flash.message = "Die Einrichtung wurde archiviert."
+            }
+        }
+        redirect action:'show', id:params.id
     }
 
     /**
@@ -1578,30 +1589,6 @@ class OrganisationController  {
         }else {
             result
         }
-    }
-
-    /**
-     * Links two organisations with the given params
-     */
-    @DebugInfo(isInstEditor = [])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor()
-    })
-    def linkOrgs() {
-        linksGenerationService.linkOrgs(params)
-        redirect action: 'show', id: params.context
-    }
-
-    /**
-     * Removes the given link between two organisations
-     */
-    @DebugInfo(isInstEditor = [])
-    @Secured(closure = {
-        ctx.contextService.isInstEditor()
-    })
-    def unlinkOrg() {
-        linksGenerationService.unlinkOrg(params)
-        redirect action: 'show', id: params.id
     }
 
     /**

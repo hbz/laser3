@@ -89,7 +89,7 @@ class ApiUnsecuredMapReader {
         result.gokbId       = org.gokbId
         result.name         = org.name
         result.sortname     = org.sortname
-        result.status       = org.status?.value
+//        result.status       = org.status?.value // todo: ERMS-6224 - removed org.status
 
         // References
         result.identifiers = ApiCollectionReader.getIdentifierCollection(org.ids) // de.laser.Identifier

@@ -460,11 +460,6 @@
           type: string
           description: The base URL for the permalink resolver.
           example: "https://www.redi-bw.de/links/fhkn"
-        links:
-          type: array
-          description: Other organisations linked to the given one
-          items:
-            $ref: "#/components/schemas/Link_Org"
         orgAccessPoints:
           type: array
           description: A set of access point configurations defined by the given institution.
@@ -1426,23 +1421,13 @@
         license:
           $ref: "#/components/schemas/LicenseStub"
 
-    Link_Org:
-      type: object
-      properties:
-        linktype:
-          type: string
-          description: Type of the link between two organisations
-          example: ${RDStore.COMBO_TYPE_FOLLOWS.value}
-        org:
-          $ref: "#/components/schemas/OrganisationStub"
-
     Link_Provider:
       type: object
       properties:
         linktype:
           type: string
           description: Type of the link between two provider
-          example: ${RDStore.COMBO_TYPE_FOLLOWS.value}
+          example: follows
         provider:
           $ref: "#/components/schemas/ProviderStub"
 
@@ -1462,7 +1447,7 @@
         linktype:
           type: string
           description: Type of the link between two provider
-          example: ${RDStore.COMBO_TYPE_FOLLOWS.value}
+          example: follows
       vendor:
         $ref: "#/components/schemas/VendorStub"
 
@@ -1812,11 +1797,6 @@
           description: Further set of identifiers of the organisation.
           items:
             $ref: "#/components/schemas/Identifier"
-        status:
-          type: string
-          description: Status of the organisation. Maps to the RefdataCategory "${RDConstants.ORG_STATUS}".
-          enum: <% printRefdataEnum(RDConstants.ORG_STATUS, 12) %>
-          example: ${RDStore.ORG_STATUS_CURRENT.value}
         type:
           type: array
           description: Describing the type of the organisation. Maps to the RefdataCategory "${RDConstants.ORG_TYPE}"
@@ -2406,11 +2386,6 @@
           description: Further set of identifiers of the institution.
           items:
             $ref: "#/components/schemas/Identifier"
-        status:
-          type: string
-          description: Status of the organisation. Maps to the RefdataCategory "${RDConstants.ORG_STATUS}".
-          enum: <% printRefdataEnum(RDConstants.ORG_STATUS, 12) %>
-          example: ${RDStore.ORG_STATUS_CURRENT.value}
         type:
           type: array
           description: Describing the type of the organisation. Maps to the RefdataCategory "${RDConstants.ORG_TYPE}"

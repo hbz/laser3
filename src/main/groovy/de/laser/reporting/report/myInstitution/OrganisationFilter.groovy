@@ -32,27 +32,24 @@ class OrganisationFilter extends BaseFilter {
 
         switch (filterSource) {
             case 'all-org':
-                queryParams.orgIdList = Org.executeQuery(
-                        'select o.id from Org o where (o.status is null or o.status != :orgStatus)',
-                        [orgStatus: RDStore.ORG_STATUS_DELETED]
-                )
+                queryParams.orgIdList = Org.executeQuery('select o.id from Org o')
                 break
             case 'all-consortium':
                 queryParams.orgIdList = Org.executeQuery(
-                        'select o.id from Org o, OrgSetting os where os.org = o and os.key = :ct and os.roleValue.authority in (:roles) and (o.status is null or o.status != :orgStatus)',
-                        [ct: OrgSetting.KEYS.CUSTOMER_TYPE, roles: [CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO], orgStatus: RDStore.ORG_STATUS_DELETED]
+                        'select o.id from Org o, OrgSetting os where os.org = o and os.key = :ct and os.roleValue.authority in (:roles)',
+                        [ct: OrgSetting.KEYS.CUSTOMER_TYPE, roles: [CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO]]
                 )
                 break
             case 'all-inst':
                 queryParams.orgIdList = Org.executeQuery(
-                        'select o.id from Org o, OrgSetting os where os.org = o and os.key = :ct and os.roleValue.authority in (:roles) and (o.status is null or o.status != :orgStatus)',
-                        [ct: OrgSetting.KEYS.CUSTOMER_TYPE, roles: [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO], orgStatus: RDStore.ORG_STATUS_DELETED]
+                        'select o.id from Org o, OrgSetting os where os.org = o and os.key = :ct and os.roleValue.authority in (:roles)',
+                        [ct: OrgSetting.KEYS.CUSTOMER_TYPE, roles: [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]]
                 )
                 break
             case 'my-inst':
                 queryParams.orgIdList = Org.executeQuery(
-                        'select o.id from Org as o, Combo as c where c.fromOrg = o and c.toOrg = :org and c.type = :comboType and (o.status is null or o.status != :orgStatus)',
-                        [org: contextService.getOrg(), orgStatus: RDStore.ORG_STATUS_DELETED, comboType: RDStore.COMBO_TYPE_CONSORTIUM]
+                        'select o.id from Org as o, Combo as c where c.fromOrg = o and c.toOrg = :org and c.type = :comboType',
+                        [org: contextService.getOrg(), comboType: RDStore.COMBO_TYPE_CONSORTIUM]
                 )
                 break
             case 'my-consortium':
@@ -60,10 +57,9 @@ class OrganisationFilter extends BaseFilter {
 select distinct(consOr.org.id) from OrgRole consOr 
     join consOr.sub sub join sub.orgRelations subOr 
 where (consOr.roleType = :consRoleType) 
-    and (sub = subOr.sub and subOr.org = :org and subOr.roleType in (:subRoleTypes))
-    and (consOr.org.status is null or consOr.org.status != :orgStatus)  ''',
+    and (sub = subOr.sub and subOr.org = :org and subOr.roleType in (:subRoleTypes))  ''',
                         [
-                                org: contextService.getOrg(), orgStatus: RDStore.ORG_STATUS_DELETED,
+                                org: contextService.getOrg(),
                                 subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS],
                                 consRoleType: RDStore.OR_SUBSCRIPTION_CONSORTIUM
                         ]
@@ -73,10 +69,9 @@ where (consOr.roleType = :consRoleType)
 select distinct(consOr.org.id) from OrgRole consOr 
     join consOr.lic lic join lic.orgRelations licOr 
 where (consOr.roleType = :consRoleType) 
-    and (lic = licOr.lic and licOr.org = :org and licOr.roleType in (:licRoleTypes))
-    and (consOr.org.status is null or consOr.org.status != :orgStatus)  ''',
+    and (lic = licOr.lic and licOr.org = :org and licOr.roleType in (:licRoleTypes))  ''',
                         [
-                                org: contextService.getOrg(), orgStatus: RDStore.ORG_STATUS_DELETED,
+                                org: contextService.getOrg(),
                                 licRoleTypes: [RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS],
                                 consRoleType: RDStore.OR_LICENSING_CONSORTIUM
                         ]

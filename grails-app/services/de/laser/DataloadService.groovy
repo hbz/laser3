@@ -185,8 +185,8 @@ class DataloadService {
                     result.altnames << altname.name
                 }
 
-                result.status = org.status?.getMapForES()
                 result.visible = 'Public'
+                result.archiveDate = org.archiveDate
                 result.rectype = org.getClass().getSimpleName()
 
                 result.sortname = org.sortname

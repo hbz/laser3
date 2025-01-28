@@ -16,7 +16,6 @@
     </div>
 </ui:debugInfo>
 
-
 <laser:render template="breadcrumb"
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView, consortialView: consortialView]}"/>
 
@@ -27,9 +26,6 @@
 <ui:h1HeaderWithIcon text="${orgInstance.name}" type="${orgInstance.getCustomerType()}">
     <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}" />
 </ui:h1HeaderWithIcon>
-
-<ui:anualRings object="${orgInstance}" controller="organisation" action="show" navNext="${navNextOrg}"
-               navPrev="${navPrevOrg}"/>
 
 <g:if test="${missing.size() > 0}">
     <div class="ui icon message warning">
@@ -51,7 +47,7 @@
 
 <laser:render template="${customerTypeService.getNavTemplatePath()}" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 
-<ui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
+<ui:objectStatus object="${orgInstance}" />
 
 <ui:messages data="${flash}"/>
 <laser:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" />
@@ -363,55 +359,6 @@
                                               model="${[org: orgInstance, config: 'discoverySystemIndex', editable: editable]}"/>
                             </dd>
                         </dl>
-                    </div>
-                </div>
-            </g:if>
-
-
-
-            %{-- TODO --}%
-            %{-- remove if ERMS-6223 is done --}%
-
-            <g:if test="${links}">
-                <div class="ui card">
-                    <div class="content">
-                        <ui:h2Deprecated />
-
-                        <table class="ui three column table">
-                            <g:each in="${links}" var="row">
-                                <%
-                                    String[] linkTypes = RDStore.COMBO_TYPE_FOLLOWS.getI10n('value').split('\\|')
-                                    int perspectiveIndex
-                                    Org pair
-                                    if(orgInstance == row.fromOrg) {
-                                        perspectiveIndex = 0
-                                        pair = row.toOrg
-                                    }
-                                    else if(orgInstance == row.toOrg) {
-                                        perspectiveIndex = 1
-                                        pair = row.fromOrg
-                                    }
-                                %>
-                                <g:if test="${pair != null}">
-                                    <th scope="row" class="control-label">${linkTypes[perspectiveIndex]}</th>
-                                    <td><g:link action="show" id="${pair.id}">${pair.name}</g:link></td>
-                                    <td class="right aligned">
-                                        <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
-                                            <span class="la-popup-tooltip" data-content="${message(code:'license.details.unlink')}">
-                                                <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
-                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
-                                                        data-confirm-term-how="unlink"
-                                                        action="unlinkOrg" params="[id: orgInstance.id, combo: row.id]"
-                                                        role="button"
-                                                        aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                    <i class="${Icon.CMD.UNLINK}"></i>
-                                                </g:link>
-                                            </span>
-                                        </g:if>
-                                    </td>
-                                </g:if>
-                            </g:each>
-                        </table>
                     </div>
                 </div>
             </g:if>

@@ -133,7 +133,7 @@ class UserController {
         }
         else {
             result.availableOrgs = Org.executeQuery(
-                    "select o from Org o left join o.status s where exists (select os.org from OrgSetting os where os.org = o and os.key = :customerType) and (s = null or s.value != 'Deleted') order by o.sortname",
+                    "select o from Org o where exists (select os.org from OrgSetting os where os.org = o and os.key = :customerType) and (o.archiveDate is null) order by o.sortname",
                         [customerType: OrgSetting.KEYS.CUSTOMER_TYPE]
                 )
             result.manipulateAffiliations = true

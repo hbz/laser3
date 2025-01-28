@@ -67,7 +67,10 @@ class ApiOrg {
         result.validatePrecondition_1()
 
         if (result.obj instanceof Org) {
-            result.validateDeletedStatus_2('status', RDStore.ORG_STATUS_DELETED)
+//            result.validateDeletedStatus_2('status', RDStore.ORG_STATUS_DELETED)
+//            if ((result.obj as Org).isArchived()) {
+//                result.status = Constants.OBJECT_STATUS_DELETED // TODO: erms-6224 - check needed if org.status removed?
+//            }
         }
         result
     }
@@ -115,15 +118,15 @@ class ApiOrg {
         result.legalPatronName     = org.legalPatronName
 
         result.retirementDate      = org.retirementDate ? ApiToolkit.formatInternalDate(org.retirementDate) : null
-        result.links               = []
 
-        Set<Combo> links = Combo.executeQuery('select c from Combo c where (c.fromOrg = :org or c.toOrg = :org) and c.type != :excludes', [org: org, excludes: RDStore.COMBO_TYPE_CONSORTIUM])
-        links.each { Combo c ->
-            if(c.fromOrg == org)
-                result.links << [linktype: c.type.value, org: ApiUnsecuredMapReader.getOrganisationStubMap(c.toOrg)]
-            else if(c.toOrg == org)
-                result.links << [linktype: c.type.value, org: ApiUnsecuredMapReader.getOrganisationStubMap(c.fromOrg)]
-        }
+//        result.links = [] // ERMS-6223 - removed Link_Org
+//        Set<Combo> links = Combo.executeQuery('select c from Combo c where (c.fromOrg = :org or c.toOrg = :org) and c.type != :excludes', [org: org, excludes: RDStore.COMBO_TYPE_CONSORTIUM])
+//        links.each { Combo c ->
+//            if(c.fromOrg == org)
+//                result.links << [linktype: c.type.value, org: ApiUnsecuredMapReader.getOrganisationStubMap(c.toOrg)]
+//            else if(c.toOrg == org)
+//                result.links << [linktype: c.type.value, org: ApiUnsecuredMapReader.getOrganisationStubMap(c.fromOrg)]
+//        }
 
         //result.fteStudents  = org.fteStudents // TODO dc/table readerNumber
         //result.fteStaff     = org.fteStaff // TODO dc/table readerNumber
@@ -139,7 +142,7 @@ class ApiOrg {
         result.subjectGroup   = org.subjectGroup?.collect { OrgSubjectGroup subjectGroup -> subjectGroup.subjectGroup.value }
         result.libraryNetwork = org.libraryNetwork?.value
         result.type           = org.getOrgType() ? [org.getOrgType().value] : [] // TODO: ERMS-6009
-        result.status         = org.status?.value
+        // result.status         = org.status?.value // todo: ERMS-6224 - removed org.status
 
         // References
         Map<String, Object> queryParams = [org:org]

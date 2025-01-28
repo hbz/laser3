@@ -17,7 +17,7 @@
 
         <laser:render template="nav" />
 
-        <ui:objectStatus object="${subscription}" status="${subscription.status}" />
+        <ui:objectStatus object="${subscription}" />
         <laser:render template="message" />
         <ui:messages data="${flash}" />
 

@@ -80,14 +80,7 @@ class FilterService {
             query << "((genfunc_filter_matcher(o.name, :orgNameContains) = true or genfunc_filter_matcher(o.sortname, :orgNameContains) = true) or exists(select alt.id from AlternativeName alt where alt.org = o and genfunc_filter_matcher(alt.name, :orgNameContains) = true) )"
              queryParams << [orgNameContains : "${params.orgNameContains}"]
         }
-        if (params.orgStatus) {
-            query << "o.status.id in (:orgStatus)"
-            queryParams.orgStatus = Params.getLongList(params, 'orgStatus')
-        }
-        else {
-            query << "o.status.id != :orgStatus"
-            queryParams.orgStatus = RDStore.ORG_STATUS_REMOVED.id
-        }
+
         if (params.orgRole) {
             query << " exists (select ogr from o.links as ogr where ogr.roleType.id = :orgRole )"
              queryParams << [orgRole : params.long('orgRole')]
@@ -213,8 +206,8 @@ class FilterService {
         int hashCode = params.hashCode()
         boolean isFilterSet = false
 
-        ArrayList<String> query = ["(o.status is null or o.status != :orgStatus)"]
-        Map<String, Object> queryParams = ["orgStatus" : RDStore.ORG_STATUS_DELETED]
+        ArrayList<String> query = []
+        Map<String, Object> queryParams = [:]
 
         if (params.orgNameContains?.length() > 0) {
             query << "(genfunc_filter_matcher(o.name, :orgNameContains1) = true or genfunc_filter_matcher(o.sortname, :orgNameContains2) = true) "

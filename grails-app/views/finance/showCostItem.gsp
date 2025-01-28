@@ -29,7 +29,7 @@
     </g:else>
 </ui:h1HeaderWithIcon>
 
-<ui:objectStatus object="${costItem}" status="${costItem.costItemStatus}"/>
+<ui:objectStatus object="${costItem}" />
 <ui:messages data="${flash}"/>
 
 <div class="ui stackable grid">

@@ -306,7 +306,7 @@ class OrganisationControllerService {
         if(formService.validateToken(params)) {
             try {
                 // createdBy will set by Org.beforeInsert()
-                orgInstance = new Org(name: params.institution, status: RDStore.O_STATUS_CURRENT)
+                orgInstance = new Org(name: params.institution)
                 orgInstance.save()
                 Combo newMember = new Combo(fromOrg: orgInstance, toOrg: contextService.getOrg(), type: RDStore.COMBO_TYPE_CONSORTIUM)
                 newMember.save()
@@ -478,11 +478,6 @@ class OrganisationControllerService {
         result.docsCount        = docstoreService.getDocsCount(result.orgInstance, contextService.getOrg())
         result.notesCount       = docstoreService.getNotesCount(result.orgInstance, contextService.getOrg())
         result.checklistCount   = workflowService.getWorkflowCount(result.orgInstance, contextService.getOrg())
-
-        result.links = linksGenerationService.getOrgLinks(result.orgInstance)
-        Map<String, List> nav = (linksGenerationService.generateNavigation(result.orgInstance, true))
-        result.navPrevOrg = nav.prevLink
-        result.navNextOrg = nav.nextLink
 
         result
     }
