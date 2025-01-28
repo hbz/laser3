@@ -4,7 +4,6 @@ import de.laser.addressbook.Address
 import de.laser.addressbook.Person
 import de.laser.addressbook.PersonRole
 import de.laser.annotations.RefdataInfo
-import de.laser.annotations.UnstableFeature
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
@@ -60,12 +59,16 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
     boolean eInvoice = false
 
+    Date archiveDate
+
     Date retirementDate
     Date dateCreated
     Date lastUpdated
     Date lastUpdatedCascading
 
-    @RefdataInfo(cat = RDConstants.ORG_STATUS)
+    // todo: ERMS-6224 - remove
+    @Deprecated
+    @RefdataInfo(cat = '?')
     RefdataValue status
 
     @RefdataInfo(cat = RDConstants.COUNTRY, i18n = 'org.country.label')
@@ -155,6 +158,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         eInvoicePortal      column:'org_e_invoice_portal_fk', lazy: false
         gokbId              column:'org_gokb_id', type:'text'
             status          column:'org_status_rv_fk'
+       archiveDate          column:'org_archive_date'
     retirementDate          column:'org_retirement_date'
            country          column:'org_country_rv_fk'
             region          column:'org_region_rv_fk'
@@ -190,6 +194,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
                  url(nullable:true, blank:true, maxSize:512)
               urlGov(nullable:true, blank:true, maxSize:512)
  linkResolverBaseURL(nullable:true, blank:false)
+         archiveDate(nullable:true)
       retirementDate(nullable:true)
              comment(nullable:true, blank:true, maxSize:2048)
              ipRange(nullable:true, blank:true, maxSize:1024)
@@ -212,13 +217,18 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         lastUpdatedCascading (nullable: true)
     }
 
+    boolean isArchived() {
+        return archiveDate != null
+    }
+
     /**
-     * Checks if the organisation is marked as deleted
-     * @return true if the status is deleted, false otherwise
+     * Checks if the organisation is marked as deleted/archived
+     * @return true if isArchived(), false otherwise
      */
     @Override
     boolean isDeleted() {
-        return RDStore.ORG_STATUS_DELETED.id == status?.id
+//        return RDStore.ORG_STATUS_DELETED.id == status?.id
+        isArchived() // TODO - remove
     }
 
     /**

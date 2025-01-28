@@ -60,6 +60,10 @@
                         data-confirm-tokenMsg="${message(code: "confirm.dialog.disable.allInstUsers")}" data-confirm-term-how="ok">
                     <i class="user lock icon"></i> ${message(code:'org.disableAllUsers.label')}
                 </g:link>
+                <g:link class="item js-open-confirm-modal la-popup-tooltip ${org.isArchived() ? 'disabled' : ''}" action="markAsArchive" id="${params.id}"
+                        data-confirm-tokenMsg="${message(code: "confirm.dialog.disable.org")}" data-confirm-term-how="ok">
+                    <i class="exclamation triangle icon"></i> ${message(code:'org.markAsArchive.label')}
+                </g:link>
                 <g:link class="item" action="delete" id="${params.id}"><i class="${Icon.CMD.DELETE}"></i> ${message(code:'deletion.org')}</g:link>
             </g:if>
         </sec:ifAnyGranted>

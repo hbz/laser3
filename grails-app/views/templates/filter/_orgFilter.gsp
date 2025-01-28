@@ -156,21 +156,6 @@
                 </div>
             </g:if>
 
-            <g:if test="${field.equalsIgnoreCase('orgStatus')}">
-                <div class="field">
-                    <label for="orgStatus">${message(code: 'default.status.label')}</label>
-                    <g:if test="${orgStatusSet == null || orgStatusSet.isEmpty()}">
-                        <g:set var="orgStatusSet" value="${RefdataCategory.getAllRefdataValues([RDConstants.ORG_STATUS])-RDStore.ORG_STATUS_REMOVED}" scope="request"/>
-                    </g:if>
-                    <select id="orgStatus" name="orgStatus" multiple="" class="ui selection fluid dropdown">
-                        <option value=""><g:message code="default.select.choose.label"/></option>
-                        <g:each in="${orgStatusSet}" var="orgStatus">
-                            <option <%=Params.getLongList(params, 'orgStatus').contains(orgStatus.id) ? 'selected="selected"' : ''%> value="${orgStatus.id}">${orgStatus.getI10n('value')}</option>
-                        </g:each>
-                    </select>
-                </div>
-            </g:if>
-
             <g:if test="${field.equalsIgnoreCase('role')}">
                 <div class="field">
                     <label for="orgRole">${message(code: 'org.orgRole.label')}</label>
@@ -244,7 +229,7 @@
             <g:if test="${field.equalsIgnoreCase('isLegallyObligedBy')}">
                 <div class="field">
                     <label for="legallyObligedBy">${message(code: 'org.legallyObligedBy.label')}</label>
-                    <g:set var="legalObligations" value="${Org.executeQuery('select distinct(lob) from Org o inner join o.legallyObligedBy lob where o.status != :removed order by lob.sortname', [removed: RDStore.ORG_STATUS_REMOVED])}" scope="request"/>
+                    <g:set var="legalObligations" value="${Org.executeQuery('select distinct(lob) from Org o inner join o.legallyObligedBy lob order by lob.sortname')}" scope="request"/>
                     <select id="legallyObligedBy" name="legallyObligedBy" multiple="" class="ui search select dropdown">
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:each in="${legalObligations}" var="legalObligation">

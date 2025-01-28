@@ -496,8 +496,8 @@ class AjaxJsonController {
                 switch(propDef.descr) {
                     case PropertyDefinition.SUB_PROP: statusList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
                         break
-                    case PropertyDefinition.ORG_PROP: statusList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.ORG_STATUS)-RDStore.ORG_STATUS_REMOVED)
-                        break
+//                    case PropertyDefinition.ORG_PROP: [] // not used in _genericFilter.gsp
+//                        break
                     case PropertyDefinition.PLA_PROP: statusList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.PLATFORM_STATUS)-RDStore.PLATFORM_STATUS_REMOVED)
                         break
                     case PropertyDefinition.LIC_PROP: statusList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS))

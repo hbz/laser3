@@ -1273,7 +1273,7 @@ class SubscriptionControllerService {
                     org.endDate = subChild.endDate ? DateUtils.getLocalizedSDF_noTime().format( subChild.endDate ) : ''
                     org.isPublicForApi = subChild.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
                     org.hasPerpetualAccess = subChild.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")
-                    org.status = subChild.status
+//                    org.status = subChild.status // todo: ERMS-6224 - removed org.status
                     org.customProperties = subscr.propertySet.findAll{ OrgProperty op -> op.type.tenant == null && ((op.tenant?.id == result.institution.id && op.isPublic) || op.tenant == null) }
                     org.privateProperties = subscr.propertySet.findAll{ OrgProperty op -> op.type.tenant?.id == result.institution.id }
                     Set generalContacts = []

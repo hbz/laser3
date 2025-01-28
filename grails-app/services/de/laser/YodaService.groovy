@@ -367,10 +367,10 @@ class YodaService {
         String componentType
         Set objects = []
         switch(className) {
-            case Org.class.name: rectype = GlobalSourceSyncService.RECTYPE_PROVIDER
-                componentType = 'Org'
-                objects.addAll(Org.findAllByStatusNotEqualAndGokbIdIsNotNull(RDStore.ORG_STATUS_REMOVED))
-                break
+//            case Org.class.name: rectype = GlobalSourceSyncService.RECTYPE_PROVIDER                               // ERMS-6224 - needed? - proper implementation?
+//                componentType = 'Org'                                                                             // ERMS-6224 - needed? - proper implementation?
+//                objects.addAll(Org.findAllByStatusNotEqualAndGokbIdIsNotNull(RDStore.ORG_STATUS_REMOVED))         // ERMS-6224 - needed? - proper implementation?
+//                break
             case Vendor.class.name: rectype = GlobalSourceSyncService.RECTYPE_VENDOR
                 componentType = 'Vendor'
                 objects.addAll(Vendor.findAllByStatusNotEqualAndGokbIdIsNotNull(RDStore.VENDOR_STATUS_REMOVED))
@@ -388,18 +388,19 @@ class YodaService {
             objects.each { obj ->
                 Map record = globalSourceSyncService.fetchRecordJSON(false, [componentType: componentType, uuid: obj.gokbId])
                 if(record?.count == 0) {
-                    if(obj instanceof Org) {
-                        OrgRole.executeUpdate('delete from OrgRole oo where oo.org = :org', [org: obj])
-                        PersonRole.executeUpdate('delete from PersonRole pr where pr.org = :org', [org: obj])
-                        Identifier.executeUpdate('delete from Identifier id where id.org = :org', [org: obj])
-                        Address.executeUpdate('delete from Address a where a.org = :org', [org: obj])
-                        Contact.executeUpdate('delete from Contact c where c.org = :org', [org: obj])
-                        OrgProperty.executeUpdate('delete from OrgProperty op where op.owner = :org', [org: obj])
-                        DocContext.executeUpdate('update DocContext dc set dc.targetOrg = null where dc.targetOrg = :org', [org: obj])
-                        DocContext.executeUpdate('update DocContext dc set dc.org = (select doc.owner from Doc doc where doc = dc.owner) where dc.org = :org', [org: obj])
-                        deletionService.deleteOrganisation(obj, null, false)
-                    }
-                    else if(obj instanceof Platform) {
+//                    if(obj instanceof Org) {                                                                      // ERMS-6224 - needed? - proper implementation?
+//                        OrgRole.executeUpdate('delete from OrgRole oo where oo.org = :org', [org: obj])
+//                        PersonRole.executeUpdate('delete from PersonRole pr where pr.org = :org', [org: obj])
+//                        Identifier.executeUpdate('delete from Identifier id where id.org = :org', [org: obj])
+//                        Address.executeUpdate('delete from Address a where a.org = :org', [org: obj])
+//                        Contact.executeUpdate('delete from Contact c where c.org = :org', [org: obj])
+//                        OrgProperty.executeUpdate('delete from OrgProperty op where op.owner = :org', [org: obj])
+//                        DocContext.executeUpdate('update DocContext dc set dc.targetOrg = null where dc.targetOrg = :org', [org: obj])
+//                        DocContext.executeUpdate('update DocContext dc set dc.org = (select doc.owner from Doc doc where doc = dc.owner) where dc.org = :org', [org: obj])
+//                        deletionService.deleteOrganisation(obj, null, false)
+//                    }
+//                    else
+                    if (obj instanceof Platform) {
                         IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed where ie.status != :removed and ie.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.platform = :plat)', [removed: RDStore.TIPP_STATUS_REMOVED, plat: obj])
                         TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.status = :removed where tipp.status != :removed and tipp.platform = :plat', [plat: obj, removed: RDStore.TIPP_STATUS_REMOVED])
                         obj.status = RDStore.PLATFORM_STATUS_REMOVED

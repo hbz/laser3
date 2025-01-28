@@ -2,6 +2,11 @@
 
 Source: ${de.laser.config.ConfigMapper.getGrailsServerURL()} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 3.5
+
+- removed attribute: `EZBInstitutionStub.status`
+- removed attribute: `OrganisationStub.status`
+
 #### 3.4
 
 - internal refactoring: `Org.type`

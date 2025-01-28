@@ -273,6 +273,11 @@ class UiTagLib {
             out << '<p><strong>' + message(code: 'default.object.isDeleted') + '</strong></p>'
             out << '</div>'
         }
+        if (attrs.object && attrs.object instanceof Org && attrs.object.isArchived()) {
+            out << '<div class="ui segment inverted red">'
+            out << '<p><strong>' + message(code: 'default.object.isArchived') + '</strong></p>'
+            out << '</div>'
+        }
     }
 
     // <ui:card text="${text}" message="local.string" class="some_css_class">

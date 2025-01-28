@@ -42,11 +42,9 @@ class ApiStatistic {
     static private List<Org> getAccessibleOrgs() {
 
         List<Org> orgs = OrgSetting.executeQuery(
-                "select o from OrgSetting os join os.org o where os.key = :key and os.rdValue = :rdValue " +
-                        "and (o.status is null or o.status != :deleted)", [
+                "select o from OrgSetting os join os.org o where os.key = :key and os.rdValue = :rdValue ", [ // TODO: erms-6224 - removed o.status = 'deleted'
                             key    : OrgSetting.KEYS.NATSTAT_SERVER_ACCESS,
-                            rdValue: RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N),
-                            deleted: RefdataValue.getByValueAndCategory('Deleted', RDConstants.ORG_STATUS)
+                            rdValue: RDStore.YN_YES
                     ])
 
         orgs
@@ -147,11 +145,11 @@ class ApiStatistic {
         Collection<Object> result = []
         orgRoles.each { ogr ->
             if (ogr.roleType.id == RDStore.OR_CONTENT_PROVIDER.id) {
-                if (ogr.org.status?.value == 'Deleted') {
-                }
-                else {
+//                if (ogr.org.status?.value == 'Deleted') { // ERMS-6224 - removed org.status
+//                }
+//                else {
                     result.add(ApiUnsecuredMapReader.getOrganisationStubMap(ogr.org))
-                }
+//                }
             }
         }
 
@@ -236,13 +234,13 @@ class ApiStatistic {
                     if (ogr.roleType?.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIPTION_CONSORTIUM.id]) {
                         if (ogr.org.id in accessibleOrgs.collect{ it.id }) {
 
-                            if (ogr.org.status?.value == 'Deleted') {
-                            }
-                            else {
+//                            if (ogr.org.status?.value == 'Deleted') { // ERMS-6224 - removed org.status
+//                            }
+//                            else {
                                 Map<String, Object> org = ApiUnsecuredMapReader.getOrganisationStubMap(ogr.org)
                                 if (org) {
                                     orgList.add(ApiToolkit.cleanUp(org, true, true))
-                                }
+//                                }
                             }
                         }
                     }

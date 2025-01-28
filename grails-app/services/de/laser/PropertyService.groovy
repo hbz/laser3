@@ -630,6 +630,7 @@ class PropertyService {
      Map<String, Object> getAvailableProperties(PropertyDefinition propDef, Org contextOrg, GrailsParameterMap params) {
          Set filteredObjs = [], objectsWithoutProp = []
          Map<String,Object> parameterMap = [type:propDef,ctx:contextOrg], result = [:]
+
          if(params.objStatus)
              parameterMap.status = RefdataValue.get(params.objStatus)
          String subFilterClause = '', licFilterClause = '', spOwnerFilterClause = '', lpOwnerFilterClause = ''
@@ -660,8 +661,7 @@ class PropertyService {
                  filteredObjs.addAll(PersonProperty.executeQuery('select pp.owner from PersonProperty pp where pp.type = :type and pp.tenant = :ctx order by pp.owner.last_name asc, pp.owner.first_name asc',parameterMap))
                  break
              case PropertyDefinition.ORG_PROP:
-                 if(!params.objStatus)
-                     parameterMap.status = RDStore.ORG_STATUS_CURRENT
+                // ERMS-6224 - removed org.status
                  String orgfilter = '', orgfilter2 = ''
                  Map<String,Object> orgFilterMap = [:]
 
@@ -685,11 +685,11 @@ class PropertyService {
                  }
 
                  if(orgfilter != ''){
-                     objectsWithoutProp.addAll(Org.executeQuery('select o from Org o where o.status != :deleted and not exists (select op from OrgProperty op where op.owner = o and op.tenant = :ctx and op.type = :type) and o.status = :status  ' + orgfilter + ' order by o.sortname asc, o.name asc', parameterMap + orgFilterMap + [deleted: RDStore.ORG_STATUS_DELETED]))
-                     filteredObjs.addAll(OrgProperty.executeQuery('select op.owner from OrgProperty op where op.type = :type and op.tenant = :ctx and op.owner.status = :status ' + orgfilter2 + ' order by op.owner.sortname asc, op.owner.name asc', parameterMap + orgFilterMap ))
+                     objectsWithoutProp.addAll(Org.executeQuery('select o from Org o where not exists (select op from OrgProperty op where op.owner = o and op.tenant = :ctx and op.type = :type) ' + orgfilter + ' order by o.sortname asc, o.name asc', parameterMap + orgFilterMap))
+                     filteredObjs.addAll(OrgProperty.executeQuery('select op.owner from OrgProperty op where op.type = :type and op.tenant = :ctx ' + orgfilter2 + ' order by op.owner.sortname asc, op.owner.name asc', parameterMap + orgFilterMap ))
                  }else {
-                     objectsWithoutProp.addAll(Org.executeQuery('select o from Org o where o.status != :deleted and not exists (select op from OrgProperty op where op.owner = o and op.tenant = :ctx and op.type = :type) and o.status = :status order by o.sortname asc, o.name asc', parameterMap + [deleted: RDStore.ORG_STATUS_DELETED]))
-                     filteredObjs.addAll(OrgProperty.executeQuery('select op.owner from OrgProperty op where op.type = :type and op.tenant = :ctx and op.owner.status = :status order by op.owner.sortname asc, op.owner.name asc', parameterMap))
+                     objectsWithoutProp.addAll(Org.executeQuery('select o from Org o where not exists (select op from OrgProperty op where op.owner = o and op.tenant = :ctx and op.type = :type) order by o.sortname asc, o.name asc', parameterMap))
+                     filteredObjs.addAll(OrgProperty.executeQuery('select op.owner from OrgProperty op where op.type = :type and op.tenant = :ctx order by op.owner.sortname asc, op.owner.name asc', parameterMap))
                  }
                  result.sortname = true
                  break

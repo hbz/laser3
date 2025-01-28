@@ -115,11 +115,6 @@ class RDStore {
     public final static RefdataValue MAIL_TYPE_SURVEY_REMINDER   = getRefdataValue('Survey-Reminder', RDConstants.MAIL_TYPE)
     public final static RefdataValue MAIL_TYPE_SURVEY_OPEN       = getRefdataValue('Survey-Open', RDConstants.MAIL_TYPE)
 
-    public final static RefdataValue ORG_STATUS_CURRENT     = getRefdataValue('Current', RDConstants.ORG_STATUS)
-    public final static RefdataValue ORG_STATUS_DELETED     = getRefdataValue('Deleted', RDConstants.ORG_STATUS)
-    public final static RefdataValue ORG_STATUS_REMOVED     = getRefdataValue('Removed', RDConstants.ORG_STATUS)
-    public final static RefdataValue ORG_STATUS_RETIRED     = getRefdataValue('Retired', RDConstants.ORG_STATUS)
-
     public final static RefdataValue OR_LICENSING_CONSORTIUM    = getRefdataValue('Licensing Consortium', RDConstants.ORGANISATIONAL_ROLE)
     public final static RefdataValue OR_LICENSEE                = getRefdataValue('Licensee', RDConstants.ORGANISATIONAL_ROLE)
     public final static RefdataValue OR_LICENSEE_CONS           = getRefdataValue('Licensee_Consortial', RDConstants.ORGANISATIONAL_ROLE)
@@ -135,9 +130,6 @@ class RDStore {
     public final static RefdataValue OR_PUBLISHER               = getRefdataValue('Publisher', RDConstants.ORGANISATIONAL_ROLE)
     public final static RefdataValue OR_CONTENT_PROVIDER        = getRefdataValue('Content Provider', RDConstants.ORGANISATIONAL_ROLE)
     public final static RefdataValue OR_PACKAGE_CONSORTIA       = getRefdataValue('Package Consortia', RDConstants.ORGANISATIONAL_ROLE)
-
-    public final static RefdataValue O_STATUS_CURRENT       = getRefdataValue('Current', RDConstants.ORG_STATUS)
-    public final static RefdataValue O_STATUS_DELETED       = getRefdataValue('Deleted', RDConstants.ORG_STATUS)
 
     @Deprecated
     public final static RefdataValue OT_CONSORTIUM  = getRefdataValue('Consortium', RDConstants.ORG_TYPE)   // TODO: ERMS-6009

@@ -285,7 +285,7 @@ class TaskService {
             GrailsParameterMap params = new GrailsParameterMap(WebUtils.retrieveGrailsWebRequest().getCurrentRequest())
             params.sort      = " LOWER(o.sortname), LOWER(o.name)"
             //def fsq          = filterService.getOrgQuery(params)
-            //validOrgs = Org.executeQuery('select o.id, o.name, o.sortname from Org o where (o.status is null or o.status != :orgStatus) order by  LOWER(o.sortname), LOWER(o.name) asc', fsq.queryParams)
+            //validOrgs = Org.executeQuery('select o.id, o.name, o.sortname from Org o order by LOWER(o.sortname), LOWER(o.name) asc', fsq.queryParams)
 
             if (isConsortium) {
                 String comboQuery = 'select new map(o.id as id, o.name as name, o.sortname as sortname) from Org o join o.outgoingCombos c where c.toOrg = :toOrg and c.type = :type order by '+params.sort

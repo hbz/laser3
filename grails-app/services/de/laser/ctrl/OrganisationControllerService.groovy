@@ -306,7 +306,7 @@ class OrganisationControllerService {
         if(formService.validateToken(params)) {
             try {
                 // createdBy will set by Org.beforeInsert()
-                orgInstance = new Org(name: params.institution, status: RDStore.O_STATUS_CURRENT)
+                orgInstance = new Org(name: params.institution)
                 orgInstance.save()
                 Combo newMember = new Combo(fromOrg: orgInstance, toOrg: contextService.getOrg(), type: RDStore.COMBO_TYPE_CONSORTIUM)
                 newMember.save()

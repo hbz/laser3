@@ -250,15 +250,7 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
         if(!provider.gokbId && provider.legallyObligedBy)
             p.legallyObligedBy = provider.legallyObligedBy
         p.homepage = provider.url
-        switch(provider.status) {
-            case RDStore.ORG_STATUS_CURRENT: p.status = RDStore.PROVIDER_STATUS_CURRENT
-                break
-            case RDStore.ORG_STATUS_DELETED: p.status = RDStore.PROVIDER_STATUS_DELETED
-                break
-            case RDStore.ORG_STATUS_RETIRED: p.status = RDStore.PROVIDER_STATUS_RETIRED
-                break
-            case RDStore.ORG_STATUS_REMOVED: p.status = RDStore.PROVIDER_STATUS_REMOVED
-                break
+        switch(provider.status) { // ERMS-6224 - removed org.status
             default: p.status = RDStore.PROVIDER_STATUS_CURRENT
                 break
         }

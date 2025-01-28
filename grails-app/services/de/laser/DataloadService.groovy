@@ -185,7 +185,9 @@ class DataloadService {
                     result.altnames << altname.name
                 }
 
-                result.status = org.status?.getMapForES()
+//                result.status = org.status?.getMapForES() // todo: ERMS-6224 - removed org.status
+//                result.archiveDate = org.archiveDate
+
                 result.visible = 'Public'
                 result.rectype = org.getClass().getSimpleName()
 

@@ -67,7 +67,10 @@ class ApiOrg {
         result.validatePrecondition_1()
 
         if (result.obj instanceof Org) {
-            result.validateDeletedStatus_2('status', RDStore.ORG_STATUS_DELETED)
+//            result.validateDeletedStatus_2('status', RDStore.ORG_STATUS_DELETED)
+//            if ((result.obj as Org).isArchived()) {
+//                result.status = Constants.OBJECT_STATUS_DELETED // TODO: erms-6224 - check needed if org.status removed?
+//            }
         }
         result
     }
@@ -139,7 +142,7 @@ class ApiOrg {
         result.subjectGroup   = org.subjectGroup?.collect { OrgSubjectGroup subjectGroup -> subjectGroup.subjectGroup.value }
         result.libraryNetwork = org.libraryNetwork?.value
         result.type           = org.getOrgType() ? [org.getOrgType().value] : [] // TODO: ERMS-6009
-        result.status         = org.status?.value
+        // result.status         = org.status?.value // todo: ERMS-6224 - removed org.status
 
         // References
         Map<String, Object> queryParams = [org:org]

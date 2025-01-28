@@ -1812,11 +1812,6 @@
           description: Further set of identifiers of the organisation.
           items:
             $ref: "#/components/schemas/Identifier"
-        status:
-          type: string
-          description: Status of the organisation. Maps to the RefdataCategory "${RDConstants.ORG_STATUS}".
-          enum: <% printRefdataEnum(RDConstants.ORG_STATUS, 12) %>
-          example: ${RDStore.ORG_STATUS_CURRENT.value}
         type:
           type: array
           description: Describing the type of the organisation. Maps to the RefdataCategory "${RDConstants.ORG_TYPE}"
@@ -2406,11 +2401,6 @@
           description: Further set of identifiers of the institution.
           items:
             $ref: "#/components/schemas/Identifier"
-        status:
-          type: string
-          description: Status of the organisation. Maps to the RefdataCategory "${RDConstants.ORG_STATUS}".
-          enum: <% printRefdataEnum(RDConstants.ORG_STATUS, 12) %>
-          example: ${RDStore.ORG_STATUS_CURRENT.value}
         type:
           type: array
           description: Describing the type of the organisation. Maps to the RefdataCategory "${RDConstants.ORG_TYPE}"
