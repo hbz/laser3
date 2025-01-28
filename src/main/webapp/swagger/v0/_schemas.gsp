@@ -460,11 +460,6 @@
           type: string
           description: The base URL for the permalink resolver.
           example: "https://www.redi-bw.de/links/fhkn"
-        links:
-          type: array
-          description: Other organisations linked to the given one
-          items:
-            $ref: "#/components/schemas/Link_Org"
         orgAccessPoints:
           type: array
           description: A set of access point configurations defined by the given institution.
@@ -1425,16 +1420,6 @@
           example: references
         license:
           $ref: "#/components/schemas/LicenseStub"
-
-    Link_Org:
-      type: object
-      properties:
-        linktype:
-          type: string
-          description: Type of the link between two organisations
-          example: follows
-        org:
-          $ref: "#/components/schemas/OrganisationStub"
 
     Link_Provider:
       type: object

@@ -95,11 +95,12 @@
                 <g:if test="${editable && contextService.getOrg().isCustomerType_Consortium() && subscription.getConsortium()?.id == contextService.getOrg().id}">
                     <div class="item la-cb-action">
 %{--                        <button class="${Btn.ICON.SIMPLE_TOOLTIP} la-toggle-ui" id="subscriptionMembers-toggle"--}%
-%{--                                data-content="${message(code:'consortium.member.plural')} ${message(code:'default.and')} ${message(code:'subscription.member.plural')}" data-position="bottom left">--}%
-%{--                            <i class="${Icon.ORG}"></i>--}%
+%{--                                data-content="${message(code:'consortium.member.plural')} ${message(code:'default.and')} ${message(code:'subscription.member.plural')}" --}%
+%{--                                data-position="bottom left">--}%
+%{--                            <i class="${Icon.AUTH.ORG_INST}"></i>--}%
 %{--                        </button>--}%
                         <button class="${Btn.ICON.SIMPLE} la-toggle-ui" id="subscriptionMembers-toggle">
-                            <i class="${Icon.ORG}"></i>
+                            <i class="${Icon.AUTH.ORG_INST}"></i>
                         </button>
                     </div>
                 </g:if>

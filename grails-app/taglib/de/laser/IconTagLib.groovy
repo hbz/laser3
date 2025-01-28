@@ -249,23 +249,25 @@ class IconTagLib {
         out << '</span>'
     }
 
-    // <ui:customerTypeIcon org="${org}" showTooltip />
+    // <ui:customerTypeIcon org="${org}" option="text|tooltip" />
 
     def customerTypeIcon = { attrs, body ->
         if (attrs.org) {
             Org org = attrs.org as Org
             Map ctm = org.getCustomerTypeInfo()
 
-            if (ctm.text && ctm.icon) {
-                if (attrs.showTooltip) {
-                    out << '<span class="la-long-tooltip la-popup-tooltip" data-position="top right" data-content="' + ctm.text + '">'
-                    out << '<i class="' + ctm.icon + '"></i>'
-                    out << '</span>'
-                } else {
-                    out << '<span>'
-                    out << '<i class="' + ctm.icon + ' la-list-icon"></i>' + ctm.text
-                    out << '</span>'
-                }
+            if (attrs.option == 'text') {
+                out << '<span>'
+                out << '<i class="' + ctm.icon + ' la-list-icon"></i>' + ctm.text
+                out << '</span>'
+            }
+            else if (attrs.option == 'tooltip') {
+                out << '<span class="la-long-tooltip la-popup-tooltip" data-position="top right" data-content="' + ctm.text + '">'
+                out << '<i class="' + ctm.icon + '"></i>'
+                out << '</span>'
+            }
+            else {
+                out << '<i class="' + ctm.icon + ' la-list-icon"></i>'
             }
         }
     }

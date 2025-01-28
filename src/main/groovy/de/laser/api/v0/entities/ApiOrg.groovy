@@ -118,15 +118,15 @@ class ApiOrg {
         result.legalPatronName     = org.legalPatronName
 
         result.retirementDate      = org.retirementDate ? ApiToolkit.formatInternalDate(org.retirementDate) : null
-        result.links               = []
 
-        Set<Combo> links = Combo.executeQuery('select c from Combo c where (c.fromOrg = :org or c.toOrg = :org) and c.type != :excludes', [org: org, excludes: RDStore.COMBO_TYPE_CONSORTIUM])
-        links.each { Combo c ->
-            if(c.fromOrg == org)
-                result.links << [linktype: c.type.value, org: ApiUnsecuredMapReader.getOrganisationStubMap(c.toOrg)]
-            else if(c.toOrg == org)
-                result.links << [linktype: c.type.value, org: ApiUnsecuredMapReader.getOrganisationStubMap(c.fromOrg)]
-        }
+//        result.links = [] // ERMS-6223 - removed Link_Org
+//        Set<Combo> links = Combo.executeQuery('select c from Combo c where (c.fromOrg = :org or c.toOrg = :org) and c.type != :excludes', [org: org, excludes: RDStore.COMBO_TYPE_CONSORTIUM])
+//        links.each { Combo c ->
+//            if(c.fromOrg == org)
+//                result.links << [linktype: c.type.value, org: ApiUnsecuredMapReader.getOrganisationStubMap(c.toOrg)]
+//            else if(c.toOrg == org)
+//                result.links << [linktype: c.type.value, org: ApiUnsecuredMapReader.getOrganisationStubMap(c.fromOrg)]
+//        }
 
         //result.fteStudents  = org.fteStudents // TODO dc/table readerNumber
         //result.fteStaff     = org.fteStaff // TODO dc/table readerNumber

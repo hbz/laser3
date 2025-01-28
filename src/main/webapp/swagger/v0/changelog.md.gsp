@@ -6,6 +6,8 @@ Source: ${de.laser.config.ConfigMapper.getGrailsServerURL()} - Version: ${de.las
 
 - removed attribute: `EZBInstitutionStub.status`
 - removed attribute: `OrganisationStub.status`
+- removed attribute: `Org.links`
+- removed new virtual object: `Link_Org`
 
 #### 3.4
 
