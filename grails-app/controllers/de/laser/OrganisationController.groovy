@@ -737,8 +737,6 @@ class OrganisationController  {
         switch (request.method) {
             case 'POST':
                 Org orgInstance = new Org(params)
-                orgInstance.status = RDStore.ORG_STATUS_CURRENT
-
                 //if (params.name) {
                     if (orgInstance.save()) {
                         orgInstance.setDefaultCustomerType()

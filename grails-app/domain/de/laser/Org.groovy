@@ -66,7 +66,9 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     Date lastUpdated
     Date lastUpdatedCascading
 
-    @RefdataInfo(cat = RDConstants.ORG_STATUS)
+    // todo: ERMS-6224 - remove
+    @Deprecated
+    @RefdataInfo(cat = '?')
     RefdataValue status
 
     @RefdataInfo(cat = RDConstants.COUNTRY, i18n = 'org.country.label')

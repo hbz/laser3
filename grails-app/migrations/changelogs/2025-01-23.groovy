@@ -62,7 +62,9 @@ databaseChangeLog = {
     changeSet(author: "klober (modified)", id: "1737626994089-6") {
         grailsChange {
             change {
-                Org.findAllByStatusInList([RDStore.ORG_STATUS_DELETED, RDStore.ORG_STATUS_REMOVED]).each { org ->
+                RefdataValue deleted = RefdataValue.getByValueAndCategory('Deleted', 'org.status')
+                RefdataValue removed = RefdataValue.getByValueAndCategory('Removed', 'org.status')
+                Org.findAllByStatusInList([deleted, removed]).each { org ->
                     org.archiveDate = org.lastUpdated
                     org.save()
                     println 'update org #' + org.id + ' set archiveDate = ' + org.lastUpdated + ' from lastUpdated, because status = ' + org.status.value

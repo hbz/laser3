@@ -276,15 +276,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
         if(!agency.gokbId && agency.legallyObligedBy)
             v.legallyObligedBy = agency.legallyObligedBy
         v.homepage = agency.url
-        switch(agency.status) {
-//            case RDStore.ORG_STATUS_CURRENT: v.status = RDStore.VENDOR_STATUS_CURRENT
-//                break
-//            case RDStore.ORG_STATUS_DELETED: v.status = RDStore.VENDOR_STATUS_DELETED
-//                break
-//            case RDStore.ORG_STATUS_RETIRED: v.status = RDStore.VENDOR_STATUS_RETIRED
-//                break
-//            case RDStore.ORG_STATUS_REMOVED: v.status = RDStore.VENDOR_STATUS_REMOVED
-//                break
+        switch(agency.status) { // ERMS-6224 - removed org.status
             default: v.status = RDStore.VENDOR_STATUS_CURRENT
                 break
         }

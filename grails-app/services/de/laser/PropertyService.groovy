@@ -661,8 +661,7 @@ class PropertyService {
                  filteredObjs.addAll(PersonProperty.executeQuery('select pp.owner from PersonProperty pp where pp.type = :type and pp.tenant = :ctx order by pp.owner.last_name asc, pp.owner.first_name asc',parameterMap))
                  break
              case PropertyDefinition.ORG_PROP:
-//                 if(!params.objStatus)
-//                     parameterMap.status = RDStore.ORG_STATUS_CURRENT
+                // ERMS-6224 - removed org.status
                  String orgfilter = '', orgfilter2 = ''
                  Map<String,Object> orgFilterMap = [:]
 

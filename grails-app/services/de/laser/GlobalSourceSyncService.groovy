@@ -2211,6 +2211,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             packageStatus.put(rdv.value, rdv)
         }
         packageStatus.put(Constants.PERMANENTLY_DELETED, RDStore.PACKAGE_STATUS_REMOVED)
+        // ERMS-6224 - removed org.status
 //        orgStatus.put(RDStore.ORG_STATUS_CURRENT.value,RDStore.ORG_STATUS_CURRENT)
 //        orgStatus.put(RDStore.ORG_STATUS_DELETED.value,RDStore.ORG_STATUS_DELETED)
 //        orgStatus.put(Constants.PERMANENTLY_DELETED,RDStore.ORG_STATUS_REMOVED)
