@@ -686,11 +686,11 @@ class PropertyService {
                  }
 
                  if(orgfilter != ''){
-                     objectsWithoutProp.addAll(Org.executeQuery('select o from Org o where not exists (select op from OrgProperty op where op.owner = o and op.tenant = :ctx and op.type = :type) and o.status = :status  ' + orgfilter + ' order by o.sortname asc, o.name asc', parameterMap + orgFilterMap))
-                     filteredObjs.addAll(OrgProperty.executeQuery('select op.owner from OrgProperty op where op.type = :type and op.tenant = :ctx and op.owner.status = :status ' + orgfilter2 + ' order by op.owner.sortname asc, op.owner.name asc', parameterMap + orgFilterMap ))
+                     objectsWithoutProp.addAll(Org.executeQuery('select o from Org o where not exists (select op from OrgProperty op where op.owner = o and op.tenant = :ctx and op.type = :type) ' + orgfilter + ' order by o.sortname asc, o.name asc', parameterMap + orgFilterMap))
+                     filteredObjs.addAll(OrgProperty.executeQuery('select op.owner from OrgProperty op where op.type = :type and op.tenant = :ctx ' + orgfilter2 + ' order by op.owner.sortname asc, op.owner.name asc', parameterMap + orgFilterMap ))
                  }else {
-                     objectsWithoutProp.addAll(Org.executeQuery('select o from Org o where not exists (select op from OrgProperty op where op.owner = o and op.tenant = :ctx and op.type = :type) and o.status = :status order by o.sortname asc, o.name asc', parameterMap))
-                     filteredObjs.addAll(OrgProperty.executeQuery('select op.owner from OrgProperty op where op.type = :type and op.tenant = :ctx and op.owner.status = :status order by op.owner.sortname asc, op.owner.name asc', parameterMap))
+                     objectsWithoutProp.addAll(Org.executeQuery('select o from Org o where not exists (select op from OrgProperty op where op.owner = o and op.tenant = :ctx and op.type = :type) order by o.sortname asc, o.name asc', parameterMap))
+                     filteredObjs.addAll(OrgProperty.executeQuery('select op.owner from OrgProperty op where op.type = :type and op.tenant = :ctx order by op.owner.sortname asc, op.owner.name asc', parameterMap))
                  }
                  result.sortname = true
                  break

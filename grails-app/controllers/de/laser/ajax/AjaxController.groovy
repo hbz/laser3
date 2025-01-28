@@ -95,8 +95,8 @@ class AjaxController {
     ],
     "allOrgs" : [
             domain:'Org',
-            countQry:"select count(*) from Org as o where lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted')",
-            rowQry:"select o from Org as o where lower(o.name) like :oname and (o.status is null or o.status.value != 'Deleted') order by o.name asc",
+            countQry:"select count(*) from Org as o where lower(o.name) like :oname",
+            rowQry:"select o from Org as o where lower(o.name) like :oname order by o.name asc",
             qryParams:[
                     [
                             param:'sSearch',
