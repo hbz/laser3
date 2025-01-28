@@ -1339,12 +1339,12 @@ class OrganisationController  {
             }
 
             if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-                result.substituteList = Org.executeQuery('select distinct o from Org o where o.retirementDate is null')
+                result.substituteList = Org.executeQuery('select distinct o from Org o where o.archiveDate is null')
             }
             else {
                 List<Org> orgList = [result.orgInstance]
-                orgList.addAll(Org.executeQuery("select o from Combo cmb join cmb.fromOrg o where o.retirementDate is null and cmb.toOrg = :org", [org: result.orgInstance]))
-                orgList.addAll(Org.executeQuery("select o from Combo cmb join cmb.toOrg o where o.retirementDate is null and cmb.fromOrg = :org", [org: result.orgInstance]))
+                orgList.addAll(Org.executeQuery("select o from Combo cmb join cmb.fromOrg o where o.archiveDate is null and cmb.toOrg = :org", [org: result.orgInstance]))
+                orgList.addAll(Org.executeQuery("select o from Combo cmb join cmb.toOrg o where o.archiveDate is null and cmb.fromOrg = :org", [org: result.orgInstance]))
                 orgList.unique()
 
                 result.substituteList = orgList
@@ -1371,13 +1371,13 @@ class OrganisationController  {
     }
 
     @Secured(['ROLE_ADMIN'])
-    def markAsDeprecated() {
+    def markAsArchive() {
         Org org = Org.get(params.id)
         if (org) {
-            if (org.retirementDate) {
+            if (org.isArchived()) {
                 flash.error = "Die Einrichtung wurde bereits archiviert."
             } else {
-                org.retirementDate = new Date()
+                org.archiveDate = new Date()
                 org.save()
                 flash.message = "Die Einrichtung wurde archiviert."
             }

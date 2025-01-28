@@ -4058,31 +4058,31 @@ class SubscriptionService {
             if(cols.size() == titleRow.size()) {
                 Org match = null
                 if (colMap.uuidCol >= 0 && cols[colMap.uuidCol] != null && !cols[colMap.uuidCol].trim().isEmpty()) {
-                    match = Org.findByGlobalUIDAndRetirementDateIsNull(cols[colMap.uuidCol].trim())
+                    match = Org.findByGlobalUIDAndArchiveDateIsNull(cols[colMap.uuidCol].trim())
                 }
                 if(!match) {
                     if (colMap.wibCol >= 0 && cols[colMap.wibCol] != null && !cols[colMap.wibCol].trim().isEmpty()) {
-                        List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.retirementDate is null', [value: cols[colMap.wibCol].trim(), ns: namespaces.wib])
+                        List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.archiveDate is null', [value: cols[colMap.wibCol].trim(), ns: namespaces.wib])
                         if (matchList.size() == 1)
                             match = matchList[0] as Org
                     }
                     if (!match && colMap.isilCol >= 0 && cols[colMap.isilCol] != null && !cols[colMap.isilCol].trim().isEmpty()) {
-                        List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.retirementDate is null', [value: cols[colMap.isilCol].trim(), ns: namespaces.isil])
+                        List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.archiveDate is null', [value: cols[colMap.isilCol].trim(), ns: namespaces.isil])
                         if (matchList.size() == 1)
                             match = matchList[0] as Org
                     }
                     if (!match && colMap.gndCol >= 0 && cols[colMap.gndCol] != null && !cols[colMap.gndCol].trim().isEmpty()) {
-                        List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.retirementDate is null', [value: cols[colMap.gndCol].trim(), ns: namespaces.gnd])
+                        List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.archiveDate is null', [value: cols[colMap.gndCol].trim(), ns: namespaces.gnd])
                         if (matchList.size() == 1)
                             match = matchList[0] as Org
                     }
                     if (!match && colMap.rorCol >= 0 && cols[colMap.rorCol] != null && !cols[colMap.rorCol].trim().isEmpty()) {
-                        List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.retirementDate is null', [value: cols[colMap.rorCol].trim(), ns: namespaces.ror])
+                        List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.archiveDate is null', [value: cols[colMap.rorCol].trim(), ns: namespaces.ror])
                         if (matchList.size() == 1)
                             match = matchList[0] as Org
                     }
                     if (colMap.dealCol >= 0 && cols[colMap.dealCol] != null && !cols[colMap.dealCol].trim().isEmpty()) {
-                        List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.retirementDate is null', [value: cols[colMap.dealCol].trim(), ns: namespaces.dealId])
+                        List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.archiveDate is null', [value: cols[colMap.dealCol].trim(), ns: namespaces.dealId])
                         if (matchList.size() == 1)
                             match = matchList[0] as Org
                     }

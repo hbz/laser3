@@ -221,7 +221,7 @@
             <g:set var="orgSub" value="${surveyConfig.subscription?.getDerivedSubscriptionForNonHiddenSubscriber(org)}"/>
         </g:if>
 
-        <tr class="${org.isDeprecated() ? 'error' : ''} ${tmplDisableOrgIds && (org.id in tmplDisableOrgIds) ? 'disabled' : ''}">
+        <tr class="${org.isArchived() ? 'error' : ''} ${tmplDisableOrgIds && (org.id in tmplDisableOrgIds) ? 'disabled' : ''}">
 
         <g:if test="${tmplShowCheckbox}">
             <td>
@@ -253,8 +253,8 @@
                 <td>
                     ${org.sortname}
 
-                    <g:if test="${org.isDeprecated()}">
-                        <span class="la-popup-tooltip" data-position="top right" <g:if test="${org.retirementDate}">data-content="<g:message code="org.retirementDate.label"/>: <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${org.retirementDate}"/>"</g:if>>
+                    <g:if test="${org.isArchived()}">
+                        <span class="la-popup-tooltip" data-position="top right" data-content="${message(code:'org.archiveDate.label')}: <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${org.archiveDate}"/>">
                             <i class="exclamation triangle icon red"></i>
                         </span>
                     </g:if>
