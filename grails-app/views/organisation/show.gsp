@@ -16,7 +16,6 @@
     </div>
 </ui:debugInfo>
 
-
 <laser:render template="breadcrumb"
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView, consortialView: consortialView]}"/>
 
@@ -27,9 +26,6 @@
 <ui:h1HeaderWithIcon text="${orgInstance.name}" type="${orgInstance.getCustomerType()}">
     <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}" />
 </ui:h1HeaderWithIcon>
-
-<ui:anualRings object="${orgInstance}" controller="organisation" action="show" navNext="${navNextOrg}"
-               navPrev="${navPrevOrg}"/>
 
 <g:if test="${missing.size() > 0}">
     <div class="ui icon message warning">
