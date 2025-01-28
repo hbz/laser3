@@ -16,7 +16,7 @@ buildscript {
         classpath 'org.grails.plugins:database-migration:' + databaseMigrationVersion           // 2024
         classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:' + assetPipelineGradleVersion // 2024 : [freeze] 4.5.* fails
         classpath 'com.gorylenko.gradle-git-properties:gradle-git-properties:2.4.2'             // 2024
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.51.0'                          // 2024
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.52.0'                          // 2025
 
         // -- dependency resolving issue
         classpath 'org.grails:grails-shell:6.1.2'                                           // 2024 : + org.grails.plugins:database-migration
@@ -89,8 +89,8 @@ dependencies {
 
     // --------------------------------------------------
 
-    implementation 'org.elasticsearch:elasticsearch:' + elasticsearchVersion                                // 2024
-    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:' + elasticsearchVersion  // 2024
+    implementation 'org.elasticsearch:elasticsearch:' + elasticsearchVersion                                // 2025
+    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:' + elasticsearchVersion  // 2025
 
     implementation 'org.grails:grails-shell:6.1.2'                          // 2024 : + org.grails.plugins:database-migration
 
