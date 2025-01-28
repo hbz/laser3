@@ -257,12 +257,18 @@ class UiTagLib {
         }
     }
 
-    // <ui:objectStatus object="${obj}" status="${status}"/>
+    // <ui:objectStatus object="${obj}" />
 
     def objectStatus = { attrs, body ->
+        String status
 
-        if ('deleted'.equalsIgnoreCase(attrs.status?.value)) {
+        if (attrs.object) {
+                 if (attrs.object.hasProperty('status'))            { status = attrs.object.status?.value }
+            else if (attrs.object.hasProperty('costItemStatus'))    { status = attrs.object.costItemStatus?.value }
+            else if (attrs.object.hasProperty('packageStatus'))     { status = attrs.object.packageStatus?.value }
+        }
 
+        if ('deleted'.equalsIgnoreCase(status)) {
             out << '<div class="ui segment inverted red">'
             out << '<p><strong>' + message(code: 'default.object.isDeleted') + '</strong></p>'
             out << '</div>'

@@ -38,7 +38,7 @@
 
         <laser:render template="${customerTypeService.getNavTemplatePath()}" />
 
-        <%--<ui:objectStatus object="${license}" status="${license.status}" />--%>
+        <%--<ui:objectStatus object="${license}" />--%>
 
         <g:if test="${license.instanceOf && (contextService.getOrg().id == license.getLicensingConsortium()?.id)}">
                 <ui:msg class="error" header="${message(code:'myinst.message.attention')}" hideClose="true">

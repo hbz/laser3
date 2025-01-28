@@ -14,7 +14,7 @@
             <laser:render template="actions" />
         </ui:controlButtons>
 
-        <ui:objectStatus object="${orgInstance}" status="${orgInstance.status}" />
+        <ui:objectStatus object="${orgInstance}" />
 
         <laser:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 

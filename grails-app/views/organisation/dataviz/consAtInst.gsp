@@ -19,7 +19,7 @@
 
 <laser:render template="${customerTypeService.getNavTemplatePath()}" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, isProviderOrAgency: isProviderOrAgency]}"/>
 
-<ui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
+<ui:objectStatus object="${orgInstance}" />
 
 <ui:messages data="${flash}"/>
 
