@@ -82,7 +82,7 @@ class ApiOAMonitor {
     static private List<Org> getAccessibleOrgs() {
 
         List<Org> orgs = OrgSetting.executeQuery(
-                "select o from OrgSetting os join os.org o where os.key = :key and os.rdValue = :rdValue ", [
+                "select o from OrgSetting os join os.org o where os.key = :key and os.rdValue = :rdValue ", [ // TODO: erms-6224 - removed o.status = 'deleted'
                 key    : OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS,
                 rdValue: RDStore.YN_YES
         ])
@@ -144,7 +144,7 @@ class ApiOAMonitor {
             // RefdataValues
 
             result.type         = org.getOrgType() ? [org.getOrgType().value] : [] // TODO: ERMS-6009
-            result.status       = org.status?.value
+            // result.status       = org.status?.value // todo: ERMS-6224 - removed org.status
 
             // References
 
@@ -272,9 +272,9 @@ class ApiOAMonitor {
         if (!org ) {
             return null
         }
-        if (org.status?.value == 'Deleted') {
-            return []
-        }
+//        if (org.status?.value == 'Deleted') { // ERMS-6224 - removed org.status
+//            return []
+//        }
 
         Collection<Object> result = []
 
