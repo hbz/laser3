@@ -21,7 +21,7 @@
 
 <laser:render template="${customerTypeService.getNavTemplatePath()}" model="${[provider: provider]}"/>
 
-<ui:objectStatus object="${provider}" status="${provider.status}"/>
+<ui:objectStatus object="${provider}" />
 <laser:render template="/templates/meta/identifier" model="${[object: provider, editable: editable]}"/>
 
 <ui:messages data="${flash}"/>

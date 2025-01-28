@@ -479,7 +479,6 @@ class OrganisationControllerService {
         result.notesCount       = docstoreService.getNotesCount(result.orgInstance, contextService.getOrg())
         result.checklistCount   = workflowService.getWorkflowCount(result.orgInstance, contextService.getOrg())
 
-        result.links = linksGenerationService.getOrgLinks(result.orgInstance)
         Map<String, List> nav = (linksGenerationService.generateNavigation(result.orgInstance, true))
         result.navPrevOrg = nav.prevLink
         result.navNextOrg = nav.nextLink

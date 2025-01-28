@@ -52,7 +52,7 @@
             message="subscription.details.permanentTitlesProcessRunning.info"/>
 </g:if>
 
-<ui:objectStatus object="${subscription}" status="${subscription.status}"/>
+<ui:objectStatus object="${subscription}" />
 <laser:render template="message"/>
 <laser:render template="/templates/meta/identifier" model="${[object: subscription, editable: editable]}"/>
 

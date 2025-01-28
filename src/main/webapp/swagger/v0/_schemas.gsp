@@ -1432,7 +1432,7 @@
         linktype:
           type: string
           description: Type of the link between two organisations
-          example: ${RDStore.COMBO_TYPE_FOLLOWS.value}
+          example: follows
         org:
           $ref: "#/components/schemas/OrganisationStub"
 
@@ -1442,7 +1442,7 @@
         linktype:
           type: string
           description: Type of the link between two provider
-          example: ${RDStore.COMBO_TYPE_FOLLOWS.value}
+          example: follows
         provider:
           $ref: "#/components/schemas/ProviderStub"
 
@@ -1462,7 +1462,7 @@
         linktype:
           type: string
           description: Type of the link between two provider
-          example: ${RDStore.COMBO_TYPE_FOLLOWS.value}
+          example: follows
       vendor:
         $ref: "#/components/schemas/VendorStub"
 

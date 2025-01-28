@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6223    24.01.2024  dev     3.5         David   Feature     Organisationsverlinkungen entfernen
+
 6220    23.01.2024  dev     3.5         David   Feature     isGrantedOrgRoleAdminOrOrgEditor entfernen
 
 6218    23.01.2024  dev     3.5         Andreas Feature     Erweiterung des Einrichtungsim-/exports in/aus Lizenzen um globale UID der Einrichtung
