@@ -10,106 +10,92 @@
 
     <ui:h1HeaderWithIcon message="menu.yoda.profiler" type="yoda" total="${SystemProfiler.executeQuery('select count(*) from SystemProfiler')[0]}" />
 
-    <nav class="ui secondary menu">
-        <g:render template="profiler/menu" model="${[hideWrapper: true]}"/>
+    <g:render template="profiler/menu" />
 
-        <div style="position:absolute; right:0">
-            <div class="ui toggle checkbox">
-                <input type="checkbox" id="chartToggle" name="chartToggle">
-            </div>
+    <div class="ui segment">
 
-            <laser:script file="${this.getGroovyPageFileName()}">
-                JSPC.app.chartToggler = $('#chartToggle').parent()
-                JSPC.app.chartToggler.checkbox('check')
-
-                JSPC.app.chartToggler.on('change', function() {
-                    if (JSPC.app.chartToggler.checkbox('is checked')) {
-                        $('.echarts-wrapper').show()
-                    } else {
-                        $('.echarts-wrapper').hide()
-                    }
-                })
-
-                $('table tr[data-cat]').hover(
-                    function() {
-                        if (JSPC.app.chartToggler.checkbox('is unchecked')) {
-                            $('table tr[data-cat=' + $(this).attr('data-cat') + ']').addClass('warning')
-                        }
-                    },
-                    function() {
-                        if (JSPC.app.chartToggler.checkbox('is unchecked')) {
-                            $('table tr[data-cat]').removeClass('warning')
-                        }
-                    }
-                );
-            </laser:script>
-        </div>
-    </nav>
-
-    <table class="ui celled la-js-responsive-table la-table compact table">
-        <thead>
-            <tr class="center aligned">
-                <th>Registrierte Seitenaufrufe am Tag</th>
-            </tr>
-        </thead>
-        <tbody>
-            <g:each in="${globalTimelineOrder}" var="ik,iv" status="index">
-                <g:set var="itemValue" value="${globalTimeline[ik]}" />
-
-                <tr data-cat="${ik.split('/')[1]}">
+        <table class="ui celled la-js-responsive-table la-table compact table">
+            <thead>
+                <tr class="center aligned">
+                    <th>Registrierte Seitenaufrufe am Tag</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
                     <td>
-                        <p><strong>${ik}</strong> (${iv})</p>
-
-                        <div id="ct-chart-${index}" class="echarts-wrapper"></div>
-
-                        <laser:script file="${this.getGroovyPageFileName()}">
-                            <g:if test="${index == 0}">
-                                JSPC.app.chartData_base = {
-                                    xAxis: {
-                                        type: 'category',
-                                        boundaryGap: false,
-                                        data: []
-                                    },
-                                    yAxis: {
-                                        type: 'value',
-                                        minInterval: 1
-                                    },
-                                    grid: {
-                                        top:20, right:30, bottom:30, left:50
-                                    },
-                                    tooltip: {
-                                        trigger: 'axis'
-                                    },
-                                    series: [{
-                                        data: [],
-                                        name: 'Seitenaufrufe',
-                                        type: 'line',
-                                        smooth: true,
-                                        animation: false,
-                                        areaStyle: { color: 'rgba(58,111,196, 0.3)' },
-                                        lineStyle: { color: 'rgb(58,111,196)', width: 2 },
-                                    }]
-                                }
-                            </g:if>
-
-                            JSPC.app.chartData_${index} = Object.assign({}, JSPC.app.chartData_base);
-                            JSPC.app.chartData_${index}.xAxis.data = [<% print '"' + globalTimelineDates.collect{ it.length() ? it.substring(0,5) : it }.join('","') + '"' %>];
-                            JSPC.app.chartData_${index}.series[0].data = [<% print itemValue.join(', ') %>];
-
-                            echarts.init( $('#ct-chart-${index}')[0] ).setOption( JSPC.app.chartData_${index} );
-                        </laser:script>
+                        <div id="echart-combined"></div>
                     </td>
                 </tr>
-            </g:each>
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+
+    </div>
+
+    <laser:script file="${this.getGroovyPageFileName()}">
+
+        JSPC.app.chartData_combined = {
+            xAxis: {
+               type: 'category',
+               boundaryGap: false,
+               data: []
+            },
+            yAxis: {
+               type: 'value',
+               minInterval: 1
+            },
+            grid: {
+               top:20, right:30, bottom:30, left:50
+            },
+            tooltip: {
+                trigger: 'axis',
+                formatter: function (params,event) {
+                    let content = ''
+                    let top10tmp = []
+                    params.forEach(function (e) { top10tmp.push(e.value) })
+                    let top10 = top10tmp.sort((a, b) => b - a).slice(0, 10)
+
+                    params.forEach(function (e) {
+                        if (e.value > 0) {
+                            if (e.value >= top10[4]) {
+                                content = content + '<br/>' + e.marker + ' <span>' + e.seriesName + '</span>&nbsp;&nbsp;&nbsp;<span style="float:right">' + e.value + '</span>'
+                                }
+                                else {
+                                    content = content + '<br/>' + e.marker + ' <span style="color:#c7c9cb">' + e.seriesName + '</span>&nbsp;&nbsp;&nbsp;<span style="color:#c7c9cb;float:right">' + e.value + '</span>'
+                                }
+                            }
+                        })
+                        return '<div><strong>' + params[0].name + '</strong>' + content + '</div>'
+                    }
+                },
+                series: []
+            }
+
+            JSPC.app.chartData_combined.xAxis.data = [<% print '"' + globalTimelineDates.collect{ it.length() ? it.substring(0,5) : it }.join('","') + '"' %>];
+
+        <g:each in="${globalTimelineOrder}" var="ik,iv" status="index">
+            <g:set var="itemValue" value="${globalTimeline[ik]}" />
+
+            JSPC.app.chartData_combined.series.push( {
+                name: '${ik}',
+                        type: 'bar',
+                        stack: 'total',
+                        animation: false,
+                        data: [<% print itemValue.join(', ') %>]
+                    });
+
+        </g:each>
+
+        JSPC.app.chart_combined = echarts.init( $('#echart-combined')[0] );
+        JSPC.app.chart_combined.setOption( JSPC.app.chartData_combined );
+        $(window).resize(function () {
+            JSPC.app.chart_combined.resize();
+        });
+    </laser:script>
+
     <style>
-    table tbody tr td p {
-        margin: 0;
-    }
-    .echarts-wrapper {
+    #echart-combined {
         width: 100%;
-        height: 150px;
+        height: 600px;
     }
     </style>
 

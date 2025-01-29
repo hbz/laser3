@@ -48,7 +48,7 @@
                     <th> &gt; ${((int) globalMatrixSteps.last() / 1000)} s </th>
                 </g:if>
                 <th>avg</th>
-                <th>score</th>
+                <th class="center aligned">score</th>
             </tr>
             </thead>
             <tbody>
@@ -91,18 +91,18 @@
                             <span>${avg}</span>
                         </g:else>
                     </td>
-                    <td>
+                    <td class="center aligned">
                         <g:if test="${heat >= 3}">
-                            <span class="ui circular red label"> ${heat} </span>
+                            <span class="ui circular red mini label"> ${heat} </span>
                         </g:if>
                         <g:elseif test="${heat >= 2}">
-                            <span class="ui circular orange label"> ${heat} </span>
+                            <span class="ui circular orange mini label"> ${heat} </span>
                         </g:elseif>
                         <g:elseif test="${heat >= 1}">
-                            <span class="ui circular yellow label"> ${heat} </span>
+                            <span class="ui circular yellow mini label"> ${heat} </span>
                         </g:elseif>
                         <g:else>
-                            <span class="ui circular label"> ${heat} </span>
+                            <span class="ui circular mini label"> ${heat} </span>
                         </g:else>
                     </td>
                 </tr>
