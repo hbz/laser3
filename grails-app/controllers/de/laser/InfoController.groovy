@@ -39,18 +39,15 @@ class InfoController {
     private static Map<String, String> _getEmailSignature(TitleInstancePackagePlatform tipp) {
 
         ContextService cs = BeanStore.getContextService()
-        User user = cs.getUser()
-        Org org   = cs.getOrg()
+        Org org = cs.getOrg()
         CustomerIdentifier custId = CustomerIdentifier.findByCustomerAndPlatform(org, tipp.platform)
 
         return [
                 'de' : """
-${user.getDisplayName()}
 ${org.getSortname()} - ${org.getName()}
 ${custId ? ('Kundennummer: ' + custId.value) : ''}
 """,
                 'en' : """
-${user.getDisplayName()}
 ${org.getSortname()} - ${org.getName()}
 ${custId ? ('Customer Identifier: ' + custId.value) : ''}
 """
@@ -60,18 +57,15 @@ ${custId ? ('Customer Identifier: ' + custId.value) : ''}
     private static Map<String, String> _getEmailSignature(Platform plat) {
 
         ContextService cs = BeanStore.getContextService()
-        User user = cs.getUser()
-        Org org   = cs.getOrg()
+        Org org = cs.getOrg()
         CustomerIdentifier custId = CustomerIdentifier.findByCustomerAndPlatform(org, plat)
 
         return [
                 'de' : """
-${user.getDisplayName()}
 ${org.getSortname()} - ${org.getName()}
 ${custId ? ('Kundennummer: ' + custId.value) : ''}
 """,
                 'en' : """
-${user.getDisplayName()}
 ${org.getSortname()} - ${org.getName()}
 ${custId ? ('Customer Identifier: ' + custId.value) : ''}
 """
@@ -98,14 +92,14 @@ ${custId ? ('Customer Identifier: ' + custId.value) : ''}
                 mailcc : user.email
         ]
         result.mailSubject = [
-                de: 'Fehlerhafte Titel-Daten in der We:kb',
-                en: 'Incorrect title information in the We:kb'
+                de: "Fehlerhafte Titel-Daten in der We:kb - ${tipp.platform.provider.name}",
+                en: "Incorrect title information in the We:kb - ${tipp.platform.provider.name}"
         ]
 
         Map sig = _getEmailSignature(tipp)
 
         result.mailText = [
-                de : """
+                de : sig['de'] + """
 Sehr geehrte Damen und Herren,
 
 bei einem We:kb-Titel sind mir unvollständige/fehlerhafte Informationen aufgefallen:
@@ -117,9 +111,9 @@ Betroffen ist das folgende Objekt:
 ${tipp.name}
 ${Wekb.getResourceShowURL() + '/' + tipp.gokbId}
 
-Vielen Dank,
-""" + sig['de'],
-                en : """
+Vielen Dank
+""",
+                en : sig['en'] + """
 Dear Sir or Madam,
 
 I noticed incomplete/incorrect information in a We:kb title:
@@ -131,8 +125,8 @@ The following object is affected:
 ${tipp.name}
 ${Wekb.getResourceShowURL() + '/' + tipp.gokbId}
 
-Thank you,
-""" + sig['en']
+Thank you
+"""
         ]
 
         result
@@ -155,14 +149,14 @@ Thank you,
                 mailcc : user.email
         ]
         result.mailSubject = [
-                de: 'Fehler bei den Nutzungsstatistiken',
-                en: 'Error concerning usage statistics'
+                de: "Fehler bei den Nutzungsstatistiken - ${platform.provider.name}",
+                en: "Error concerning usage statistics - ${platform.provider.name}"
         ]
 
         Map sig = _getEmailSignature(platform)
 
         result.mailText = [
-                de : """
+                de : sig['de'] + """
 Sehr geehrte Damen und Herren,
 
 bei den Nutzungsstatistiken sind mir unvollständige/fehlerhafte Informationen aufgefallen:
@@ -174,9 +168,9 @@ Betroffen ist die folgende Plattform:
 ${platform.name}
 ${Wekb.getResourceShowURL() + '/' + platform.gokbId}
 
-Vielen Dank,
-""" + sig['de'],
-                en : """
+Vielen Dank
+""",
+                en : sig['en'] + """
 Dear Sir or Madam,
 
 I noticed incomplete/incorrect information about usage statistics:
@@ -188,8 +182,8 @@ The following platform is affected:
 ${platform.name}
 ${Wekb.getResourceShowURL() + '/' + platform.gokbId}
 
-Thank you,
-""" + sig['en']
+Thank you
+"""
         ]
         result
     }
