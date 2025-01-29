@@ -25,7 +25,7 @@ a11yIcon = {
         let asc = $('.ui.sortable.table thead th.asc a');
 
 
-        $('<i class="large sort icon"></i>').appendTo($(sortable));
+        $('<i class="large la-lighter-grey sort icon"></i>').appendTo($(sortable));
         $('<i class="large caret down icon"></i>').appendTo($(desc));
         $('<i class="large caret up icon"></i>').appendTo($(asc));
     }

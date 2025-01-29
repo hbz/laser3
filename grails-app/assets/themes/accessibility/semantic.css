@@ -38250,10 +38250,16 @@ i.icon.la-check-double.slash:before {
   text-transform: none;
 }
 
-/* Light Grey */
+/* Very Light Grey */
 
 i.la-light-grey.icon {
   color: #e8e8e8 !important;
+}
+
+/* Light Grey */
+
+i.la-lighter-grey.icon {
+  color: #c9c9c9 !important;
 }
 
 i.inverted.la-light-grey.icon {
