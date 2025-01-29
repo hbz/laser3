@@ -450,7 +450,7 @@ class YodaController {
                 ordered[uri] = count
             }
         }
-        result.globalTimelineOrder = ordered.sort{ e,f -> f.value <=> e.value }
+        result.globalTimelineOrder = ordered.sort{ it.key }
 
         render view: '/yoda/profiler/timeline', model: result
     }
