@@ -53,6 +53,8 @@ class SystemTagLib {
 
     // DO NOT use for templates, pdf or email generation
 
+    // <laser:htmlStart text="" message="" description="" />
+
     def htmlStart = { attrs, body ->
 
         String title = message(code: 'laser')
@@ -69,6 +71,10 @@ class SystemTagLib {
 
         out << '<!doctype html><html><head>'
         out << '<meta name="layout" content="laser">'
+
+        if (attrs.description) {
+            out << '<meta name="description" content="' + attrs.description + '">'
+        }
         out << '<title>' + title + '</title>'
         out << body()
         out << '</head>'
