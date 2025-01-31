@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6210    31.01.2025  dev     3.5         David   Feature     Reporting: Skalierbare Charts
+
 6239    29.01.2025  rc-3.4  3.4.19      David   Bug         Beobachtungslisten bei Basic-Nutzenden
 
 6223    24.01.2025  dev     3.5         David   Feature     Organisationsverlinkungen entfernen

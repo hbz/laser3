@@ -353,6 +353,10 @@
                     let echart = echarts.init ( $('#chartWrapper-' + dd.key)[0] );
                     echart.setOption (chartCfg);
                     JSPC.app.gasco.current.charts[dd.key] = echart;
+
+                    $(window).resize(function () {
+                        JSPC.app.gasco.current.charts[dd.key].resize();
+                    });
                 });
                 JSPC.app.gasco.ui.commit();
                 JSPC.app.gasco.ui.$flyout.flyout ('show');

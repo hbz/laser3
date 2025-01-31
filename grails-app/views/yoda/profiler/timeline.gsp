@@ -12,9 +12,8 @@
 
     <g:render template="profiler/menu" />
 
-    <div class="ui segment">
-
-        <table class="ui celled la-js-responsive-table la-table compact table">
+    <div class="ui fluid card">
+        <table class="ui la-table compact table">
             <thead>
                 <tr class="center aligned">
                     <th>Registrierte Seitenaufrufe am Tag</th>
@@ -23,17 +22,17 @@
             <tbody>
                 <tr>
                     <td>
-                        <div id="echart-combined"></div>
+                        <div id="echart-timeline"></div>
                     </td>
                 </tr>
             </tbody>
         </table>
-
     </div>
 
     <laser:script file="${this.getGroovyPageFileName()}">
+        JSPC.app.yoda = {}
 
-        JSPC.app.chartData_combined = {
+        JSPC.app.yoda.chart_config= {
             xAxis: {
                type: 'category',
                boundaryGap: false,
@@ -70,12 +69,12 @@
                 series: []
             }
 
-            JSPC.app.chartData_combined.xAxis.data = [<% print '"' + globalTimelineDates.collect{ it.length() ? it.substring(0,5) : it }.join('","') + '"' %>];
+            JSPC.app.yoda.chart_config.xAxis.data = [<% print '"' + globalTimelineDates.collect{ it.length() ? it.substring(0,5) : it }.join('","') + '"' %>];
 
         <g:each in="${globalTimelineOrder}" var="ik,iv" status="index">
             <g:set var="itemValue" value="${globalTimeline[ik]}" />
 
-            JSPC.app.chartData_combined.series.push( {
+            JSPC.app.yoda.chart_config.series.push( {
                 name: '${ik}',
                         type: 'bar',
                         stack: 'total',
@@ -85,15 +84,15 @@
 
         </g:each>
 
-        JSPC.app.chart_combined = echarts.init( $('#echart-combined')[0] );
-        JSPC.app.chart_combined.setOption( JSPC.app.chartData_combined );
+        JSPC.app.yoda.chart = echarts.init( $('#echart-timeline')[0] );
+        JSPC.app.yoda.chart.setOption( JSPC.app.yoda.chart_config);
         $(window).resize(function () {
-            JSPC.app.chart_combined.resize();
+            JSPC.app.yoda.chart.resize();
         });
     </laser:script>
 
     <style>
-    #echart-combined {
+    #echart-timeline {
         width: 100%;
         height: 600px;
     }

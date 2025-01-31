@@ -47,7 +47,7 @@
 
     <laser:script file="${this.getGroovyPageFileName()}">
 
-        JSPC.app.info = {
+        JSPC.app.dataviz = {
             chart_config_helper: {
                 tooltip_formatter_notNull: function (params, x, callback) {
                     let content = ''
@@ -71,15 +71,15 @@
             }
         }
 
-        JSPC.app.info.chart_config_helper.tooltip = {
+        JSPC.app.dataviz.chart_config_helper.tooltip = {
             trigger:        'axis',
             axisPointer:    { type: 'shadow' },
-            formatter:      JSPC.app.info.chart_config_helper.tooltip_formatter_notNull
+            formatter:      JSPC.app.dataviz.chart_config_helper.tooltip_formatter_notNull
         }
 
-        JSPC.app.info.chart_config = {
+        JSPC.app.dataviz.chart_config = {
             subscription: {
-                tooltip: JSPC.app.info.chart_config_helper.tooltip,
+                tooltip: JSPC.app.dataviz.chart_config_helper.tooltip,
                 series: [
                     <g:each in="${subscriptionTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ RefdataValue.get(it).getI10n('value') }}" var="status">
                         {
@@ -97,7 +97,7 @@
                             name    : '${message(code: 'subscription.isMultiYear.label')}',
                             type    : 'line',
                             smooth  : true,
-                            lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
+                            lineStyle : JSPC.app.dataviz.chart_config_helper.series_lineStyle,
                             animation : false,
                             silent  : true,
                             data    : [<%
@@ -112,7 +112,7 @@
                             name    : '${RDStore.SUBSCRIPTION_TYPE_LOCAL.getI10n('value')}',
                             type    : 'line',
                             smooth  : true,
-                            lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
+                            lineStyle : JSPC.app.dataviz.chart_config_helper.series_lineStyle,
                             animation : false,
                             silent  : true,
                             data    : [<%
@@ -139,14 +139,14 @@
             },
         };
 
-        JSPC.app.info.charts = {
+        JSPC.app.dataviz.charts = {
             subscription : echarts.init ($('#cw-subscription')[0])
         }
 
-        JSPC.app.info.charts.subscription.setOption (JSPC.app.info.chart_config.subscription);
+        JSPC.app.dataviz.charts.subscription.setOption (JSPC.app.dataviz.chart_config.subscription);
 
         $(window).resize(function () {
-            JSPC.app.info.charts.subscription.resize();
+            JSPC.app.dataviz.charts.subscription.resize();
         });
         $(window).trigger('resize');
     </laser:script>

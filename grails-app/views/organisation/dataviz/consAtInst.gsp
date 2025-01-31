@@ -560,9 +560,9 @@
 
     <laser:script file="${this.getGroovyPageFileName()}">
 
-        JSPC.app.info.chart_config = {
+        JSPC.app.dataviz.chart_config = {
             subscription: {
-                tooltip: JSPC.app.info.chart_config_helper.tooltip,
+                tooltip: JSPC.app.dataviz.chart_config_helper.tooltip,
                 series: [
                     <g:each in="${subscriptionTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ RefdataValue.get(it).getI10n('value') }}" var="status">
                         {
@@ -581,7 +581,7 @@
                             name    : '${message(code: 'subscription.isMultiYear.label')}',
                             type    : 'line',
                             smooth  : true,
-                            lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
+                            lineStyle : JSPC.app.dataviz.chart_config_helper.series_lineStyle,
 %{--                            areaStyle: {},--}%
     %{--                        emphasis: { focus: 'series' },--}%
                             animation : false,
@@ -603,10 +603,10 @@
                     bottom: 0,
                     selectedMode: false
                 },
-                grid:   JSPC.app.info.chart_config_helper.grid,
+                grid:   JSPC.app.dataviz.chart_config_helper.grid,
             },
             license: {
-                tooltip: JSPC.app.info.chart_config_helper.tooltip,
+                tooltip: JSPC.app.dataviz.chart_config_helper.tooltip,
                 series: [
                     <g:each in="${licenseTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ RefdataValue.get(it).getI10n('value') }}" var="status">
                         {
@@ -625,7 +625,7 @@
                             name    : '${message(code: 'license.openEnded.label')}',
                             type    : 'line',
                             smooth  : true,
-                            lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
+                            lineStyle : JSPC.app.dataviz.chart_config_helper.series_lineStyle,
 %{--                            areaStyle: {},--}%
     %{--                        emphasis: { focus: 'series' },--}%
                             animation : false,
@@ -647,10 +647,10 @@
                     bottom: 0,
                     selectedMode: false
                 },
-                grid:   JSPC.app.info.chart_config_helper.grid,
+                grid:   JSPC.app.dataviz.chart_config_helper.grid,
             },
             provider: {
-                tooltip: JSPC.app.info.chart_config_helper.tooltip,
+                tooltip: JSPC.app.dataviz.chart_config_helper.tooltip,
                 series: [
                 <g:each in="${providerTimelineMap.values().collect{ it.keySet() }.flatten().unique().sort{ Provider.get(it).sortname ?: Provider.get(it).name }}" var="provider">
                     {
@@ -677,10 +677,10 @@
                     selectedMode: false,
                     type: 'scroll'
                 },
-                grid:   JSPC.app.info.chart_config_helper.grid,
+                grid:   JSPC.app.dataviz.chart_config_helper.grid,
             },
             survey: {
-                tooltip: JSPC.app.info.chart_config_helper.tooltip,
+                tooltip: JSPC.app.dataviz.chart_config_helper.tooltip,
                 series: [
                     <g:each in="${surveyTimelineMap.values().collect{ it.keySet() }.flatten().unique()}" var="status"> %{-- sort --}%
                         {
@@ -702,7 +702,7 @@
                             type    : 'line',
 %{--                            stack   : 'total_type',--}%
                             smooth  : true,
-                            lineStyle : JSPC.app.info.chart_config_helper.series_lineStyle,
+                            lineStyle : JSPC.app.dataviz.chart_config_helper.series_lineStyle,
 %{--                            areaStyle: {},--}%
 %{--                emphasis: { focus: 'series' },--}%
                             animation : false,
@@ -720,26 +720,26 @@
                     bottom: 0,
                     selectedMode: false
                 },
-                grid:   JSPC.app.info.chart_config_helper.grid,
+                grid:   JSPC.app.dataviz.chart_config_helper.grid,
             },
         };
 
-        JSPC.app.info.charts = {
+        JSPC.app.dataviz.charts = {
             subscription :  echarts.init ($('#cw-subscription')[0]),
             license :       echarts.init ($('#cw-license')[0]),
             provider :      echarts.init ($('#cw-provider')[0]),
             survey :        echarts.init ($('#cw-survey')[0])
         }
 
-        JSPC.app.info.charts.subscription.setOption (JSPC.app.info.chart_config.subscription);
-        JSPC.app.info.charts.license.setOption (JSPC.app.info.chart_config.license);
-        JSPC.app.info.charts.provider.setOption (JSPC.app.info.chart_config.provider);
-        JSPC.app.info.charts.survey.setOption (JSPC.app.info.chart_config.survey);
+        JSPC.app.dataviz.charts.subscription.setOption (JSPC.app.dataviz.chart_config.subscription);
+        JSPC.app.dataviz.charts.license.setOption (JSPC.app.dataviz.chart_config.license);
+        JSPC.app.dataviz.charts.provider.setOption (JSPC.app.dataviz.chart_config.provider);
+        JSPC.app.dataviz.charts.survey.setOption (JSPC.app.dataviz.chart_config.survey);
 
         $( ['subscription', 'license', 'provider', 'survey'] ).each( function(i) {
             let statsId     = '.stats_' + this
-            let chart       = JSPC.app.info.charts[this]
-            let chartConfig = JSPC.app.info.chart_config[this]
+            let chart       = JSPC.app.dataviz.charts[this]
+            let chartConfig = JSPC.app.dataviz.chart_config[this]
 
 %{--            console.log( statsId )--}%
 %{--            console.log( chart )--}%
@@ -760,7 +760,7 @@
                     let cs = chartConfig.series.find(ss => ss.id == sid)
                     if (cs) {
                         let yList = cs.raw[y]
-                        JSPC.app.info.setCounter($(this), yList.length)
+                        JSPC.app.dataviz.setCounter($(this), yList.length)
 
                         yList.forEach((f) => {
 %{--                            console.log( f )--}%
@@ -780,7 +780,7 @@
 
         $( ['subscription', 'license', 'provider', 'survey'] ).each( function(i) {
             let statsId = '.stats_' + this
-            let chart   = JSPC.app.info.charts[this]
+            let chart   = JSPC.app.dataviz.charts[this]
 %{--            console.log( statsId + ' ' + chart )--}%
 
             let $years = $(statsId + ' .menu .item[data-tab^=year-]')
@@ -795,7 +795,7 @@
 
 %{--                    $.each( $(statsId + ' .menu .item[data-tab^=' + statsId.replace('.stats_', '') + ']'), function(i, e) {--}%
 %{--                        let $tab = $(statsId + '.stats-content .tab[data-tab=' + $(e).attr('data-tab') + '])')  // survey problem--}%
-%{--                        JSPC.app.info.setCounter($(e), $tab.find('tr[data-id]').length)--}%
+%{--                        JSPC.app.dataviz.setCounter($(e), $tab.find('tr[data-id]').length)--}%
 
 %{--                        console.log($(e).attr('data-tab'))--}%
 %{--                        console.log($tab)--}%
@@ -822,10 +822,10 @@
         });
 
         $(window).resize(function () {
-            JSPC.app.info.charts.subscription.resize();
-            JSPC.app.info.charts.license.resize();
-            JSPC.app.info.charts.provider.resize();
-            JSPC.app.info.charts.survey.resize();
+            JSPC.app.dataviz.charts.subscription.resize();
+            JSPC.app.dataviz.charts.license.resize();
+            JSPC.app.dataviz.charts.provider.resize();
+            JSPC.app.dataviz.charts.survey.resize();
         });
         $(window).trigger('resize');
 
