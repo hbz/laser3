@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Icon; de.laser.addressbook.PersonRole; de.laser.addressbook.Contact; de.laser.OrgRole; de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
-<laser:htmlStart message="wcagEasyLanguage" />
+<laser:htmlStart message="wcagEasyLanguage" description="${message(code:'metaDescription.wcagEasyLanguage')}"/>
 
     <h1 class="ui header">
         <icon:universalAccess />
