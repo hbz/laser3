@@ -34,7 +34,6 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title><g:layoutTitle default="${meta(name: 'app.name')}"/></title>
-    <meta name="description" content="">
     <meta name="viewport" content="initial-scale = 1.0">
 
     <asset:stylesheet src="${currentTheme}.css"/>%{-- dont move --}%
