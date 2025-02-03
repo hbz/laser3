@@ -1,6 +1,6 @@
 <%@ page import="de.laser.addressbook.PersonRole; de.laser.addressbook.Contact; de.laser.wekb.ProviderRole; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.Subscription; de.laser.storage.PropertyStore; de.laser.Org; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
 
-<laser:htmlStart message="menu.public.gasco_monitor" description="${message(code:'metaDescription.gasco')}"/>
+<laser:htmlStart message="menu.public.gasco_monitor" description="${message(code:'metaDescription.gasco')}">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
 
@@ -353,6 +353,10 @@
                     let echart = echarts.init ( $('#chartWrapper-' + dd.key)[0] );
                     echart.setOption (chartCfg);
                     JSPC.app.gasco.current.charts[dd.key] = echart;
+
+                    $(window).resize(function () {
+                        JSPC.app.gasco.current.charts[dd.key].resize();
+                    });
                 });
                 JSPC.app.gasco.ui.commit();
                 JSPC.app.gasco.ui.$flyout.flyout ('show');

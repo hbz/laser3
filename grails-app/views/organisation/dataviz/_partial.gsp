@@ -59,7 +59,7 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
 
-    JSPC.app.info = {
+    JSPC.app.dataviz = {
         chart_config_helper: {
             tooltip_formatter_notNull: function (params, x, callback) {
                 let content = ''
@@ -82,13 +82,13 @@
             },
         }
     }
-    JSPC.app.info.chart_config_helper.tooltip = {
+    JSPC.app.dataviz.chart_config_helper.tooltip = {
         trigger:        'axis',
         axisPointer:    { type: 'shadow' },
-        formatter:      JSPC.app.info.chart_config_helper.tooltip_formatter_notNull
+        formatter:      JSPC.app.dataviz.chart_config_helper.tooltip_formatter_notNull
     }
 
-    JSPC.app.info.setCounter = function($e, c) {
+    JSPC.app.dataviz.setCounter = function($e, c) {
         if (c < 1) {
             $e.find('.blue.circular.label').addClass('disabled').text( c )
         } else {
@@ -105,8 +105,8 @@
         $(this).addClass('active')
         $('.' + $(this).attr('data-target')).show()
 
-        if (JSPC.app.info && JSPC.app.info.charts) {
-            $.each(JSPC.app.info.charts, function(i, e) { e.resize() })
+        if (JSPC.app.dataviz && JSPC.app.dataviz.charts) {
+            $.each(JSPC.app.dataviz.charts, function(i, e) { e.resize() })
         }
     })
 

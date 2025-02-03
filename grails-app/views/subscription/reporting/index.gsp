@@ -138,6 +138,9 @@
                             echart.on( 'legendselectchanged', function (params) { /* console.log(params); */ });
 
                             JSPC.app.reporting.current.chart.echart = echart;
+                            $(window).resize(function () {
+                                JSPC.app.reporting.current.chart.echart.resize();
+                            });
 
                             let escQuery = JSPC.app.reporting.current.request.query.replaceAll('*', '\\*')
                             let $dhs = $('#queryHelpModal .help-section[data-help-section=' + escQuery + ']');

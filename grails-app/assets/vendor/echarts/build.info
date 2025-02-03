@@ -1,10 +1,11 @@
 
-echarts / version 5.4.3
+echarts / version 5.6.0
 
     chart
         - bar *
         - line *
         - pie *
+        - scatter *
 
     coordinate systems
         - grid *

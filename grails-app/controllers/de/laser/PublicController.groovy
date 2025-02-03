@@ -41,6 +41,7 @@ class PublicController {
 
         if (AppUtils.getCurrentServer() == AppUtils.PROD) {
             text += "Disallow: /gasco/details/ \n"
+            text += "Disallow: /login/ \n"              // ERMS-6180
             text += "Disallow: /public/api/ \n"         // ERMS-6180
             text += "Disallow: /public/dsgvo/ \n"
             text += "Disallow: /public/faq/ \n"

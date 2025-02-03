@@ -7,65 +7,69 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-6223    24.01.2024  dev     3.5         David   Feature     Organisationsverlinkungen entfernen
+6210    31.01.2025  dev     3.5         David   Feature     Reporting: Skalierbare Charts
 
-6220    23.01.2024  dev     3.5         David   Feature     isGrantedOrgRoleAdminOrOrgEditor entfernen
+6239    29.01.2025  rc-3.4  3.4.19      David   Bug         Beobachtungslisten bei Basic-Nutzenden
 
-6218    23.01.2024  dev     3.5         Andreas Feature     Erweiterung des Einrichtungsim-/exports in/aus Lizenzen um globale UID der Einrichtung
+6223    24.01.2025  dev     3.5         David   Feature     Organisationsverlinkungen entfernen
 
-6216    23.01.2024  dev     3.5         Andreas Bug         vergessene Ringgold-ID in den Kernsatz der Einrichtungs-IDs aufgenommen
+6220    23.01.2025  dev     3.5         David   Feature     isGrantedOrgRoleAdminOrOrgEditor entfernen
 
-6211    23.01.2024  rc-3.4  3.4.19      Andreas Bug         Kostenstatus gelöscht aus Inline-Bearbeitung entfernt
+6218    23.01.2025  dev     3.5         Andreas Feature     Erweiterung des Einrichtungsim-/exports in/aus Lizenzen um globale UID der Einrichtung
 
-5673    21.01.2024  dev     3.5         David   Feature     We:kb-News / Titeländerungen
+6216    23.01.2025  dev     3.5         Andreas Bug         vergessene Ringgold-ID in den Kernsatz der Einrichtungs-IDs aufgenommen
 
-5998    21.01.2024  dev     3.5         David   Feature     Rechteprüfung: Workflows
+6211    23.01.2025  rc-3.4  3.4.19      Andreas Bug         Kostenstatus gelöscht aus Inline-Bearbeitung entfernt
 
---      21.01.2024  dev     3.5         Andreas Bug         Darstellungsfehler in der Lizenzübersicht behoben
+5673    21.01.2025  dev     3.5         David   Feature     We:kb-News / Titeländerungen
 
-6062    21.01.2024  dev     3.5         Andreas Feature     Kosten werden bei automatischer Verlängerung nicht mehr mit übertragen
+5998    21.01.2025  dev     3.5         David   Feature     Rechteprüfung: Workflows
 
-6197    20.01.2024  dev     3.5         Andreas Bug         Filterfelder wurden nicht vorbelegt
+--      21.01.2025  dev     3.5         Andreas Bug         Darstellungsfehler in der Lizenzübersicht behoben
 
-6196    20.01.2024  dev     3.5         David   Feature     Icons für Einrichtungen/Konsortialmanager
+6062    21.01.2025  dev     3.5         Andreas Feature     Kosten werden bei automatischer Verlängerung nicht mehr mit übertragen
 
-6180    20.01.2024  dev     3.5         David   Feature     PublicController überarbeiten (Sicherheit)
+6197    20.01.2025  dev     3.5         Andreas Bug         Filterfelder wurden nicht vorbelegt
 
-5920    20.01.2024  dev     3.5         David   Feature     Dashboard "verschönern"
+6196    20.01.2025  dev     3.5         David   Feature     Icons für Einrichtungen/Konsortialmanager
 
-6199    17.01.2024  dev     3.5         Andreas Feature     Sortierung der Jahre in Dropdowns auf absteigend umgestellt
+6180    20.01.2025  dev     3.5         David   Feature     PublicController überarbeiten (Sicherheit)
 
-6195    17.01.2024  dev     3.5         Andreas Feature     Beibehaltung eines eventuell aktiven Reiters
+5920    20.01.2025  dev     3.5         David   Feature     Dashboard "verschönern"
 
-5106    17.01.2024  dev     3.5         Andreas Feature     Caching und Ausgabe der angehakten Titel
+6199    17.01.2025  dev     3.5         Andreas Feature     Sortierung der Jahre in Dropdowns auf absteigend umgestellt
 
-6128    16.01.2024  dev     3.5         Andreas Bug         An-/Abwählen aller Lieferanten wirkte sich nur auf aktuelle Seite aus
+6195    17.01.2025  dev     3.5         Andreas Feature     Beibehaltung eines eventuell aktiven Reiters
 
-6179    16.01.2024  dev     3.5         Andreas Feature     Anpassungen und Neuerungen bei den Nutzerzahlen
+5106    17.01.2025  dev     3.5         Andreas Feature     Caching und Ausgabe der angehakten Titel
 
-6140    15.01.2024  rc-3.4  3.4.18      Moe     Bug         Informationen in Info-i zu Rechnungskontakten optimieren
+6128    16.01.2025  dev     3.5         Andreas Bug         An-/Abwählen aller Lieferanten wirkte sich nur auf aktuelle Seite aus
 
---      15.01.2024  rc-3.4  3.4.18      Moe     Bug         Title-Upload bei Titel-Umfrage
+6179    16.01.2025  dev     3.5         Andreas Feature     Anpassungen und Neuerungen bei den Nutzerzahlen
 
-6187    15.01.2024  rc-3.4  3.4.18      Andreas Feature     Schnitzer in der Statistiksicht behoben
+6140    15.01.2025  rc-3.4  3.4.18      Moe     Bug         Informationen in Info-i zu Rechnungskontakten optimieren
+
+--      15.01.2025  rc-3.4  3.4.18      Moe     Bug         Title-Upload bei Titel-Umfrage
+
+6187    15.01.2025  rc-3.4  3.4.18      Andreas Feature     Schnitzer in der Statistiksicht behoben
 
 6178    14.01.2025  dev     3.5         Andreas Feature     Dashboard-Aufforderung zur Aktualisierung der Nutzerzahlen
 
 6120    14.01.2025  dev     3.5         David   Feature     Neuer Message-Typ "Dashboard"
 
-6004    13.01.2024  dev     3.5         Andreas Feature     neues Merkmal "GASCO-Zusatzinformationen" aufgenommen und in Flyout eingebunden
+6004    13.01.2025  dev     3.5         Andreas Feature     neues Merkmal "GASCO-Zusatzinformationen" aufgenommen und in Flyout eingebunden
 
---      13.01.2024  rc-3.4  3.4.18      Andreas Bug         Hinzufügen von Titel in Umfrage lief unperformant
+--      13.01.2025  rc-3.4  3.4.18      Andreas Bug         Hinzufügen von Titel in Umfrage lief unperformant
 
-6175    13.01.2024  dev     3.5         Andreas Feature     Hochsetzen des Zuordnungsjahres bei automatischer Verlängerung
+6175    13.01.2025  dev     3.5         Andreas Feature     Hochsetzen des Zuordnungsjahres bei automatischer Verlängerung
 
 5393    08.01.2025  dev     3.5         David   Feature     getAllSubscribers in Lizenzen überdenken
 
-6002    07.01.2024  rc-3.4  3.4.17      Moe     Bug         Filtern der Lieferanten in der Umfrage funktioniert nicht
+6002    07.01.2025  rc-3.4  3.4.17      Moe     Bug         Filtern der Lieferanten in der Umfrage funktioniert nicht
 
---      07.01.2024  rc-3.4  3.4.17      Moe     Bug         Export funktioniert nicht mehr bei Titel-Umfrage mit Statistik
+--      07.01.2025  rc-3.4  3.4.17      Moe     Bug         Export funktioniert nicht mehr bei Titel-Umfrage mit Statistik
 
-6095    07.01.2024  rc-3.4  3.4.17      Moe     Bug         Kosten kopieren: Bei Statuswechsel wird Quelllizenz als ausgewählt angezeigt
+6095    07.01.2025  rc-3.4  3.4.17      Moe     Bug         Kosten kopieren: Bei Statuswechsel wird Quelllizenz als ausgewählt angezeigt
 
 6170    03.01.2025  dev     3.5         Andreas Bug         Ladefehler bei der manuellen Verlängerung behoben
 
