@@ -162,7 +162,7 @@
     <g:set var="sumDiffGBP" value="${0}"/>
 
 
-    <table class="ui celled sortable table la-js-responsive-table la-table">
+    <table class="ui compact celled sortable table la-js-responsive-table la-table">
         <thead>
         <tr>
             <g:if test="${showCheckboxForParticipantsHasAccess}">
@@ -204,7 +204,7 @@
                     </th>
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyTitlesCount')}">
-                    <th>
+                    <th style="white-space:normal">
                         ${message(code: 'surveyEvaluation.titles.currentAndFixedEntitlements')}
                     </th>
                     <th>

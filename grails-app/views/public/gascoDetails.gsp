@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Btn; de.laser.IssueEntitlement; de.laser.wekb.TitleInstancePackagePlatform;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
 
-<laser:htmlStart message="menu.public.gasco_monitor" />
+<laser:htmlStart message="menu.public.gasco_monitor" description="${message(code:'metaDescription.gasco')}"/>
 
     <ui:h1HeaderWithIcon text="${message(code: 'menu.public.gasco_monitor')}: ${subscription}" type="gasco" total="${issueEntitlementsCount}"/>
 

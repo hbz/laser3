@@ -3,7 +3,8 @@
 <g:set var="currentServer" scope="page" value="${AppUtils.getCurrentServer()}"/>
 <html>
 <head>
-    <meta name="layout" content="public"/>
+    <meta name="layout" content="public">
+    <meta name="description" content="${message(code: 'metaDescription.landingPage')}">
     <title>${message(code: 'laser')}</title>
 </head>
 <body>
