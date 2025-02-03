@@ -2680,7 +2680,8 @@ class MyInstitutionController  {
         GrailsParameterMap filterParams = params.clone() as GrailsParameterMap
         filterParams.max = result.max
         filterParams.offset = result.offset
-        filterParams.org = genericOIDService.getOID(contextService.getOrg())
+        filterParams.org = contextService.getOrg().id
+
         Map userData = userService.getUserMap(filterParams)
         result.total = userData.count
         result.users = userData.data

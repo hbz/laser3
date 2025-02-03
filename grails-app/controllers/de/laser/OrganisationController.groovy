@@ -1165,7 +1165,7 @@ class OrganisationController  {
         }
 
         GrailsParameterMap filterParams = params.clone() as GrailsParameterMap
-        filterParams.org = genericOIDService.getOID(result.orgInstance)
+        filterParams.org = (result.orgInstance as Org).id
 
         Map userData = userService.getUserMap(filterParams)
         result.total = userData.count

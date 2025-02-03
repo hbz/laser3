@@ -58,16 +58,16 @@ class UserService {
 
         if (params.org || params.role || params.authority) {
             if (params.org) {
-                whereQuery.add( 'u.formalOrg = :org' )
-                queryParams.put( 'org', genericOIDService.resolveOID(params.org) )
+                whereQuery.add( 'u.formalOrg != null and u.formalOrg.id = :org' )
+                queryParams.put('org', params.long('org'))
             }
             if (params.role) {
-                whereQuery.add( 'u.formalRole = :role' )
-                queryParams.put('role', genericOIDService.resolveOID(params.role) )
+                whereQuery.add( 'u.formalRole != null and u.formalRole.id = :role' )
+                queryParams.put('role', params.long('role'))
             }
             if (params.authority) {
                 whereQuery.add( 'u.formalRole != null and u.formalRole.authority = :authority' )
-                queryParams.put('authority', params.authority )
+                queryParams.put('authority', params.authority)
             }
         }
 
@@ -92,6 +92,7 @@ class UserService {
         }
         String query = baseQuery + (whereQuery ? ' where ' + whereQuery.join(' and ') : '') + ' order by u.username',
         countQuery = 'select count(distinct(u)) from User u' + (whereQuery ? ' where ' + whereQuery.join(' and ') : '')
+
         [count: User.executeQuery(countQuery, queryParams)[0], data: User.executeQuery(query, queryParams, [max: params.max, offset: params.offset])]
     }
 

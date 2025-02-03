@@ -14,7 +14,7 @@
                 <div class="field">
                     <label for="org"><g:message code="user.org"/></label>
                     <g:select from="${availableComboOrgs}" noSelection="${['': message(code:'default.all')]}" class="ui search dropdown"
-                              value="${params.org}" optionKey="${{it.oid}}" optionValue="${{it.name}}" id="org" name="org" />
+                              value="${params.org}" optionKey="${{it.id}}" optionValue="${{it.name}}" id="org" name="org" />
                 </div>
             </g:if>
 
@@ -23,7 +23,7 @@
                 <g:select from="${filterableRoles}"
                           noSelection="${['' : message(code:'default.all')]}"
                           class="ui dropdown"
-                          value="${params.role}" optionKey="${{genericOIDService.getOID(it)}}" optionValue="${{message(code:'cv.roles.'+it.authority)}}" id="role" name="role" />
+                          value="${params.role}" optionKey="${{it.id}}" optionValue="${{message(code:'cv.roles.'+it.authority)}}" id="role" name="role" />
             </div>
 
             <g:if test="${filterableStatus}">
