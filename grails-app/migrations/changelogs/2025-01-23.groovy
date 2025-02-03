@@ -77,4 +77,8 @@ databaseChangeLog = {
             }
         }
     }
+
+    changeSet(author: "klober (generated)", id: "1737626994089-7") {
+        dropNotNullConstraint(columnDataType: "bigint", columnName: "org_status_rv_fk", tableName: "org")
+    }
 }
