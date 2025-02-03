@@ -196,6 +196,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
  linkResolverBaseURL(nullable:true, blank:false)
          archiveDate(nullable:true)
       retirementDate(nullable:true)
+              status(nullable:true)
              comment(nullable:true, blank:true, maxSize:2048)
              ipRange(nullable:true, blank:true, maxSize:1024)
            shortcode(nullable:true, blank:true, maxSize:128)

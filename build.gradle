@@ -215,6 +215,7 @@ assets {
             languageMode:   'ES6',
             targetLanguage: 'ES5_STRICT'
     ]
+    enableSourceMaps = false
     skipNonDigests = true
     maxThreads = 8
 
