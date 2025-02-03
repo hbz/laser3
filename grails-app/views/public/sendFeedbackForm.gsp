@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Icon; de.laser.addressbook.PersonRole; de.laser.addressbook.Contact; de.laser.OrgRole; de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
-<laser:htmlStart message="feedback.title" />
+<laser:htmlStart message="feedback.title" description="${message(code:'metaDescription.sendFeedbackForm')}"/>
 
     <h1 class="ui header la-clear-before la-noMargin-top">
         <icon:universalAccess />
