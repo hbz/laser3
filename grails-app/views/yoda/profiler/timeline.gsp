@@ -16,7 +16,7 @@
         <table class="ui la-table compact table">
             <thead>
                 <tr class="center aligned">
-                    <th>Registrierte Seitenaufrufe am Tag</th>
+                    <th>Seitenaufrufe am Tag - Top 10</th>
                 </tr>
             </thead>
             <tbody>
@@ -55,12 +55,12 @@
 
                     params.forEach(function (e) {
                         if (e.value > 0) {
-                            if (e.value >= top10[4]) {
+                            if (e.value >= top10[9]) {
                                 content = content + '<br/>' + e.marker + ' <span>' + e.seriesName + '</span>&nbsp;&nbsp;&nbsp;<span style="float:right">' + e.value + '</span>'
                                 }
-                                else {
-                                    content = content + '<br/>' + e.marker + ' <span style="color:#c7c9cb">' + e.seriesName + '</span>&nbsp;&nbsp;&nbsp;<span style="color:#c7c9cb;float:right">' + e.value + '</span>'
-                                }
+%{--                                else {--}%
+%{--                                    content = content + '<br/>' + e.marker + ' <span style="color:#c7c9cb">' + e.seriesName + '</span>&nbsp;&nbsp;&nbsp;<span style="color:#c7c9cb;float:right">' + e.value + '</span>'--}%
+%{--                                }--}%
                             }
                         })
                         return '<div><strong>' + params[0].name + '</strong>' + content + '</div>'
