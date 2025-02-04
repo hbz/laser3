@@ -1,10 +1,10 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.workflow.WfChecklist; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
-<%
-    boolean editable2 = contextService.isInstEditor(CustomerTypeService.PERMS_PRO)
-%>
 
-    <ui:card message="workflow.open.plural" class="workflows" href="#modalCreateWorkflow" editable="${editable || editable2}">
+%{--# editable: ${editable}--}%
+%{--# workflowService.hasWRITE(): ${workflowService.hasWRITE()}--}%
+
+    <ui:card message="workflow.open.plural" class="workflows" href="#modalCreateWorkflow" editable="${workflowService.hasWRITE()}">
         <g:each in="${checklists.findAll{ it.getInfo().status != RDStore.WF_WORKFLOW_STATUS_DONE }}" var="clist">
             <g:set var="clistInfo" value="${clist.getInfo()}" />
             <div class="ui small feed content">
