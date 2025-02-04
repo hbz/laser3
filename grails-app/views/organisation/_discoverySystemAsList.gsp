@@ -12,7 +12,7 @@
                             <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.frontend", args: [frontend.frontend.getI10n('value')])}"
                                            data-confirm-term-how="delete"
-                                           controller="organisation" action="deleteDiscoverySystem" params="[id: org.id, oid: genericOIDService.getOID(frontend)]"
+                                           controller="organisation" action="deleteDiscoverySystem" params="[id: org.id, frontend: frontend.id]"
                                            role="button"
                                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                 <i class="${Icon.CMD.DELETE}"></i>
@@ -37,7 +37,7 @@
                             <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.frontend", args: [index.index.getI10n('value')])}"
                                            data-confirm-term-how="delete"
-                                           controller="organisation" action="deleteDiscoverySystem" params="[id: org.id, oid: genericOIDService.getOID(index)]"
+                                           controller="organisation" action="deleteDiscoverySystem" params="[id: org.id, index: index.id]"
                                            role="button"
                                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                 <i class="${Icon.CMD.DELETE}"></i>
