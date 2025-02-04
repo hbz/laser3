@@ -1,7 +1,10 @@
 <%@page import="de.laser.AccessService; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
-<ui:card message="task.plural" class="tasks ${css_class}" href="#modalCreateTask" editable="${editable}">
+%{--# editable: ${editable}--}%
+%{--# taskService.hasWRITE(): ${taskService.hasWRITE()}--}%
+
+<ui:card message="task.plural" class="tasks ${css_class}" href="#modalCreateTask" editable="${taskService.hasWRITE()}">
     <div class="ui relaxed divided list">
     <g:each in="${tasks}" var="tsk">
         <g:if test="${tsk.status == RDStore.TASK_STATUS_DONE}">

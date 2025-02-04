@@ -840,7 +840,7 @@ class AdminController  {
 
         switch (request.method) {
             case 'GET':
-                idnsInstance = (IdentifierNamespace) genericOIDService.resolveOID(params.oid)
+                idnsInstance = IdentifierNamespace.get(params.long('ns'))
 
                 if (params.cmd == 'deleteNamespace') {
                     if (idnsInstance && Identifier.countByNs(idnsInstance) == 0) {

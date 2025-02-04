@@ -255,16 +255,16 @@ class ConfigMapper {
 
             if (output == LOGGER) {
                 if (result == null || result instanceof org.grails.config.NavigableMap.NullSafeNavigator) {
-                    List stack = Thread.currentThread().getStackTrace()
-                    StackTraceElement ste
-                    String methodName = stack.find { it.declaringClass == ConfigMapper.class.name && it.methodName != 'readConfig' }.getMethodName()
+                    List<StackTraceElement> stack = Thread.currentThread().getStackTrace()
+                    StackTraceElement ste = stack.find { it.getClassName() == ConfigMapper.class.name && it.getMethodName() != 'readConfig' }
+                    String methodName = ste.getMethodName()
                     stack.eachWithIndex { it, i ->
-                        if (it.methodName == methodName ) {
-                            int j = i+ 1
-                            while (stack[j].methodName in ['call', 'defaultCall']) {
+                        if (it.getMethodName() == methodName ) {
+                            int j = i + 1
+                            while (stack[j].getMethodName() in ['call', 'defaultCall']) {
                                 j++
+                                ste = stack[j]
                             }
-                            ste = stack[j]
                         }
                     }
                     if (result == null) {

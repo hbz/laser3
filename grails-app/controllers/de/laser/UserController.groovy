@@ -90,8 +90,8 @@ class UserController {
         result.users = userData.data
 
         result.titleMessage = message(code:'user.show_all.label') as String
-        Set availableComboOrgs = [[oid: genericOIDService.getOID(result.orgInstance), name: result.orgInstance.sortname]]
-        String query = "select new map(concat('${Org.class.name}:',c.fromOrg.id) as oid,c.fromOrg.sortname as name) from Combo c where c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.sortname asc"
+        Set availableComboOrgs = [[id: result.orgInstance.id, name: result.orgInstance.sortname]]
+        String query = "select new map(c.fromOrg.id as id, c.fromOrg.sortname as name) from Combo c where c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.sortname asc"
         availableComboOrgs.addAll(Org.executeQuery(query, [ctxOrg: result.orgInstance, type: RDStore.COMBO_TYPE_CONSORTIUM]))
         prf.setBenchmark('after combo orgs')
         result.filterConfig = [
