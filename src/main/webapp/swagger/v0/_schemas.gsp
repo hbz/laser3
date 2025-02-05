@@ -1077,7 +1077,7 @@
           enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
         supportedLibrarySystems:
           type: array
-          description: A set of library systems supported by the vendor. The values map to the RefdataCategory ${RDConstants.VENDOR_SUPPORTED_LIBRARY_SYSTEM}.
+          description: A set of library systems supported by the vendor. The values map to the RefdataCategory ${RDConstants.SUPPORTED_LIBRARY_SYSTEM}.
           example: ["Alma", "Folio", "Sisis"]
           items:
             type: string
