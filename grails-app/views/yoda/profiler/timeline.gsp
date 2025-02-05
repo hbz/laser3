@@ -48,21 +48,26 @@
             tooltip: {
                 trigger: 'axis',
                 formatter: function (params, event) {
-                    let content = ''
+                    let content = '<br/>'
                     let top10tmp = []
                     params.forEach(function (e) { top10tmp.push(e.value) })
                     let top10 = top10tmp.sort((a, b) => b - a).slice(0, 10)
 
-                    params.sort(function(a,b){ return a.value - b.value }).forEach(function (e) {
+                    let ov = 0
+                    params.sort(function(a,b){ return b.value - a.value }).forEach(function (e) {
                         if (e.value > 0) {
                             if (e.value >= top10[9]) {
                                 content = content + '<br/>' + e.marker + ' <span>' + e.seriesName + '</span>&nbsp;&nbsp;&nbsp;<strong style="float:right">' + e.value + '</strong>'
                             }
-%{--                                else {--}%
-%{--                                    content = content + '<br/>' + e.marker + ' <span style="color:#c7c9cb">' + e.seriesName + '</span>&nbsp;&nbsp;&nbsp;<span style="color:#c7c9cb;float:right">' + e.value + '</span>'--}%
-%{--                                }--}%
+                            else {
+                                ov = ov + e.value
+                            }
                         }
                     })
+                    if (ov) {
+                        content = content + '<br/><span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:#dedede;"></span> <span> kumulierte Restsumme</span>&nbsp;&nbsp;&nbsp;<span style="float:right">' + ov + '</span>'
+                    }
+
                     return '<div><strong>' + params[0].name + '</strong>' + content + '</div>'
                 }
             },
