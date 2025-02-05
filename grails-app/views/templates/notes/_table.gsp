@@ -42,21 +42,33 @@
                         </g:if>
 
                         <g:if test="${instance.respondsTo('showUIShareButton') && instance.showUIShareButton()}">
-                            <g:if test="${docctx.isShared}">
-                                <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.on')}">
-                                    <g:link controller="ajax" action="toggleShare" class="${Btn.MODERN.POSITIVE}"
-                                            params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
-                                        <i class="${Icon.SIG.SHARED_OBJECT_ON}"></i>
-                                    </g:link>
-                                </span>
+                            <g:if test="${editable}">
+                                <g:if test="${docctx.isShared}">
+                                    <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.on')}">
+                                        <g:link controller="ajax" action="toggleShare" class="${Btn.MODERN.POSITIVE}"
+                                                params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
+                                            <i class="${Icon.SIG.SHARED_OBJECT_ON}"></i>
+                                        </g:link>
+                                    </span>
+                                </g:if>
+                                <g:else>
+                                    <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.off')}">
+                                        <g:link controller="ajax" action="toggleShare" class="${Btn.MODERN.SIMPLE}"
+                                                params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
+                                            <i class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>
+                                        </g:link>
+                                    </span>
+                                </g:else>
                             </g:if>
                             <g:else>
-                                <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.off')}">
-                                    <g:link controller="ajax" action="toggleShare" class="${Btn.MODERN.SIMPLE}"
-                                            params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
-                                        <i class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>
-                                    </g:link>
-                                </span>
+                                %{-- TODO: ERMS-6253 - show shared icon --}%
+                                <g:if test="${docctx.isShared}">
+                                    <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.on')}">
+                                        <span class="${Btn.MODERN.SIMPLE} disabled">
+                                            <i class="${Icon.SIG.SHARED_OBJECT_ON} green"></i>
+                                        </span>
+                                    </span>
+                                </g:if>
                             </g:else>
                         </g:if>
 
