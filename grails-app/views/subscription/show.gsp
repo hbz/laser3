@@ -67,25 +67,10 @@
                     <div class="content">
                         <dl>
                             <dt class="control-label"><g:message code="altname.plural"/></dt>
-                            <dd></dd>
-                            <dd>
-                                <g:if test="${editable}">
-                                    <button  data-content="${message(code: 'altname.add')}" data-objtype="altname" id="addAltname"  class="${Btn.MODERN.POSITIVE} la-js-addListValue blue la-popup-tooltip">
-                                        <i class="${Icon.CMD.ADD}"></i>
-                                    </button>
-                                </g:if>
-                            </dd>
-                            <span id="altnames"></span>
-                        </dl>
-
-                        <g:if test="${subscription.altnames}">
-                            <dl>
-                                <dt class="control-label"></dt>
-                                <dd  class="ui accordion la-accordion-showMore la-accordion-altName"
-                                    style="padding-bottom: 0">
+                            <dd id="altnames" class="ui accordion la-accordion-showMore la-accordion-altName" style="padding-bottom: 0">
+                                <g:if test="${subscription.altnames}">
                                     <div class="ui divided middle aligned selection list la-flex-center">
-                                        <div class="item title"
-                                             data-objId="${genericOIDService.getOID(subscription.altnames[0])}">
+                                        <div class="item title" data-objId="${genericOIDService.getOID(subscription.altnames[0])}" >
                                             <div class="content la-space-right">
                                                 <g:if test="${!subscription.altnames[0].instanceOf}">
                                                     <ui:xEditable owner="${subscription.altnames[0]}" field="name"/>
@@ -97,8 +82,7 @@
                                             <g:if test="${editable}">
                                                 <g:if test="${showConsortiaFunctions}">
                                                     <g:if test="${!subscription.altnames[0].instanceOf}">
-                                                        <g:if
-                                                            test="${!AuditConfig.getConfig(subscription.altnames[0])}">
+                                                        <g:if test="${!AuditConfig.getConfig(subscription.altnames[0])}">
                                                             <ui:link class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP}"
                                                                      controller="ajax"
                                                                      action="toggleAlternativeNameAuditConfig"
@@ -176,7 +160,8 @@
                                                 <i class="${Icon.CMD.SHOW_MORE}"></i>
                                             </div>
                                         </div>
-                                        <div class="content" style="padding:0">
+
+                                        <div  class="content" style="padding:0">
                                             <g:each in="${subscription.altnames.drop(1)}" var="altname">
                                                 <div class="ui item" data-objId="${genericOIDService.getOID(altname)}">
                                                     <div class="content la-space-right">
@@ -192,19 +177,19 @@
                                                             <g:if test="${!altname.instanceOf}">
                                                                 <g:if test="${!AuditConfig.getConfig(altname)}">
                                                                     <ui:link
-                                                                        class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP}"
-                                                                        controller="ajax"
-                                                                        action="toggleAlternativeNameAuditConfig"
-                                                                        params='[ownerId                         : "${subscription.id}",
-                                                                                 ownerClass                      : "${subscription.class}",
-                                                                                 showConsortiaFunctions          : true,
-                                                                                 (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
-                                                                        ]'
-                                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.altname", args: [altname.name])}"
-                                                                        data-confirm-term-how="inherit"
-                                                                        id="${altname.id}"
-                                                                        data-content="${message(code: 'property.audit.off.tooltip')}"
-                                                                        role="button">
+                                                                            class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP}"
+                                                                            controller="ajax"
+                                                                            action="toggleAlternativeNameAuditConfig"
+                                                                            params='[ownerId                         : "${subscription.id}",
+                                                                                     ownerClass                      : "${subscription.class}",
+                                                                                     showConsortiaFunctions          : true,
+                                                                                     (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
+                                                                            ]'
+                                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.altname", args: [altname.name])}"
+                                                                            data-confirm-term-how="inherit"
+                                                                            id="${altname.id}"
+                                                                            data-content="${message(code: 'property.audit.off.tooltip')}"
+                                                                            role="button">
                                                                         <i class="icon la-thumbtack slash"></i>
                                                                     </ui:link>
                                                                     <ui:remoteLink role="button"
@@ -223,19 +208,19 @@
                                                                 </g:if>
                                                                 <g:else>
                                                                     <ui:link
-                                                                        class="${Btn.MODERN.POSITIVE_CONFIRM_TOOLTIP}"
-                                                                        controller="ajax"
-                                                                        action="toggleAlternativeNameAuditConfig"
-                                                                        params='[ownerId                         : "${altname.id}",
-                                                                                 ownerClass                      : "${altname.class}",
-                                                                                 showConsortiaFunctions          : true,
-                                                                                 (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
-                                                                        ]'
-                                                                        id="${altname.id}"
-                                                                        data-content="${message(code: 'property.audit.on.tooltip')}"
-                                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.altname", args: [altname.name])}"
-                                                                        data-confirm-term-how="inherit"
-                                                                        role="button">
+                                                                            class="${Btn.MODERN.POSITIVE_CONFIRM_TOOLTIP}"
+                                                                            controller="ajax"
+                                                                            action="toggleAlternativeNameAuditConfig"
+                                                                            params='[ownerId                         : "${altname.id}",
+                                                                                     ownerClass                      : "${altname.class}",
+                                                                                     showConsortiaFunctions          : true,
+                                                                                     (FormService.FORM_SERVICE_TOKEN): formService.getNewToken()
+                                                                            ]'
+                                                                            id="${altname.id}"
+                                                                            data-content="${message(code: 'property.audit.on.tooltip')}"
+                                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.inherit.altname", args: [altname.name])}"
+                                                                            data-confirm-term-how="inherit"
+                                                                            role="button">
                                                                         <i class="${Icon.SIG.INHERITANCE}"></i>
                                                                     </ui:link>
                                                                     <div class="${Btn.ICON.SIMPLE} la-hidden">
@@ -282,17 +267,21 @@
                                             </g:each>
                                         </div>
                                     </div>
-                                </dd>
-                            </dl>
+                                </g:if>
+                            </dd>
+                        </dl>
+                        <g:if test="${editable}">
+                            <input name="addAltname" id="addAltname" type="button"
+                                   class="${Btn.SIMPLE} la-js-addListValue" data-objtype="altname"
+                                   value="${message(code: 'altname.add')}">
                         </g:if>
-
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.startDate.label')}</dt>
                             <dd><ui:xEditable owner="${subscription}" field="startDate" type="date"
                                               validation="datesCheck"/></dd>
                             <g:if test="${editable}">
                                 <dd><ui:auditButton
-                                    auditable="[subscription, 'startDate']" auditConfigs="${auditConfigs}"/></dd>
+                                        auditable="[subscription, 'startDate']" auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
                         <dl>
@@ -302,7 +291,7 @@
                                               overwriteEditable="${editable && !subscription.isAutomaticRenewAnnually}"/></dd>
                             <g:if test="${editable}">
                                 <dd><ui:auditButton
-                                    auditable="[subscription, 'endDate']" auditConfigs="${auditConfigs}"/></dd>
+                                        auditable="[subscription, 'endDate']" auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
 
@@ -311,8 +300,8 @@
                             <dd><ui:xEditable owner="${subscription}" field="manualCancellationDate" type="date"/></dd>
                             <g:if test="${editable}">
                                 <dd><ui:auditButton
-                                    auditable="[subscription, 'manualCancellationDate']"
-                                    auditConfigs="${auditConfigs}"/></dd>
+                                        auditable="[subscription, 'manualCancellationDate']"
+                                        auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
 
@@ -321,8 +310,8 @@
                             <dd><ui:xEditable owner="${subscription}" field="referenceYear" type="year"/></dd>
                             <g:if test="${editable}">
                                 <dd><ui:auditButton
-                                    auditable="[subscription, 'referenceYear']"
-                                    auditConfigs="${auditConfigs}"/></dd>
+                                        auditable="[subscription, 'referenceYear']"
+                                        auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
 
@@ -333,14 +322,14 @@
                                                      constraint="removeValue_deleted"/></dd>
                             <g:if test="${editable}">
                                 <dd><ui:auditButton
-                                    auditable="[subscription, 'status']" auditConfigs="${auditConfigs}"/></dd>
+                                        auditable="[subscription, 'status']" auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
 
                         <g:if test="${(subscription.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL &&
-                            subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) ||
-                            (subscription.type == RDStore.SUBSCRIPTION_TYPE_LOCAL &&
-                                subscription._getCalculatedType() == CalculatedType.TYPE_LOCAL)}">
+                                subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) ||
+                                (subscription.type == RDStore.SUBSCRIPTION_TYPE_LOCAL &&
+                                        subscription._getCalculatedType() == CalculatedType.TYPE_LOCAL)}">
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.isMultiYear.label')}</dt>
                                 <dd><ui:xEditableBoolean owner="${subscription}" field="isMultiYear"/></dd>
@@ -348,7 +337,7 @@
                         </g:if>
 
                         <g:if test="${(subscription.type == RDStore.SUBSCRIPTION_TYPE_LOCAL &&
-                            subscription._getCalculatedType() == CalculatedType.TYPE_LOCAL)}">
+                                subscription._getCalculatedType() == CalculatedType.TYPE_LOCAL)}">
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.isAutomaticRenewAnnually.label')}</dt>
                                 <dd><ui:xEditableBoolean owner="${subscription}" field="isAutomaticRenewAnnually"
@@ -380,7 +369,7 @@
                                                      config="${RDConstants.SUBSCRIPTION_KIND}"/></dd>
                             <g:if test="${editable}">
                                 <dd><ui:auditButton
-                                    auditable="[subscription, 'kind']" auditConfigs="${auditConfigs}"/></dd>
+                                        auditable="[subscription, 'kind']" auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
                         <dl>
@@ -389,7 +378,7 @@
                                                      config="${RDConstants.SUBSCRIPTION_FORM}"/></dd>
                             <g:if test="${editable}">
                                 <dd><ui:auditButton
-                                    auditable="[subscription, 'form']" auditConfigs="${auditConfigs}"/></dd>
+                                        auditable="[subscription, 'form']" auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
                         <dl>
@@ -398,7 +387,7 @@
                                                      config="${RDConstants.SUBSCRIPTION_RESOURCE}"/></dd>
                             <g:if test="${editable}">
                                 <dd><ui:auditButton
-                                    auditable="[subscription, 'resource']" auditConfigs="${auditConfigs}"/></dd>
+                                        auditable="[subscription, 'resource']" auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
                         <g:if test="${subscription.instanceOf && contextService.getOrg().id == subscription.getConsortium().id}">
@@ -554,19 +543,19 @@
                                             <g:each in="${v}" status="i" var="v2">
                                                 <td>
                                                     <ui:statsLink
-                                                        base="${ConfigMapper.getStatsApiUrl()}"
-                                                        module="statistics"
-                                                        controller="default"
-                                                        action="select"
-                                                        target="_blank"
-                                                        params="[mode        : usageMode,
-                                                                 packages    : subscription.getCommaSeperatedPackagesIsilList(),
-                                                                 vendors     : natStatSupplierId,
-                                                                 institutions: statsWibid,
-                                                                 reports     : reportMetric.split(':')[0],
-                                                                 years       : x_axis_labels[i]
-                                                        ]"
-                                                        title="Springe zu Statistik im Nationalen Statistikserver">
+                                                            base="${ConfigMapper.getStatsApiUrl()}"
+                                                            module="statistics"
+                                                            controller="default"
+                                                            action="select"
+                                                            target="_blank"
+                                                            params="[mode        : usageMode,
+                                                                     packages    : subscription.getCommaSeperatedPackagesIsilList(),
+                                                                     vendors     : natStatSupplierId,
+                                                                     institutions: statsWibid,
+                                                                     reports     : reportMetric.split(':')[0],
+                                                                     years       : x_axis_labels[i]
+                                                            ]"
+                                                            title="Springe zu Statistik im Nationalen Statistikserver">
                                                         ${v2}
                                                     </ui:statsLink>
                                                 </td>
@@ -684,7 +673,7 @@
                         <div class="content">
                             <g:if test="${costItemSums.ownCosts}">
                                 <g:if
-                                    test="${(contextService.getOrg().id != subscription.getConsortium()?.id && subscription.instanceOf) || !subscription.instanceOf}">
+                                        test="${(contextService.getOrg().id != subscription.getConsortium()?.id && subscription.instanceOf) || !subscription.instanceOf}">
                                     <h2 class="ui header">${message(code: 'financials.label')}: ${message(code: 'financials.tab.ownCosts')}</h2>
                                     <laser:render template="financials" model="[data: costItemSums.ownCosts]"/>
                                 </g:if>
