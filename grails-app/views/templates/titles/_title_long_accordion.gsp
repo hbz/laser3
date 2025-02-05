@@ -84,7 +84,7 @@
 
         <g:if test="${(tipp.titleType == 'monograph') && (tipp.volume || showEmptyFields)}">
             <div class="item">
-                <i class="grey icon la-books la-popup-tooltip " data-content="${message(code: 'tipp.volume')}"></i>
+                <i class="${Icon.ATTR.TIPP_COVERAGE} la-popup-tooltip" data-content="${message(code: 'tipp.volume')}"></i>
 
                 <div class="content">
                     <div class="header">
