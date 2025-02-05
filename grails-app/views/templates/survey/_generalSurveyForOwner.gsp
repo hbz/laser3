@@ -134,7 +134,7 @@
     <aside class="five wide column la-sidekick">
         <div class="ui one cards">
 
-            <div id="#container-links">
+            <div id="container-links">
                 <laser:render template="/survey/surveyLinkCard"/>
             </div>
 

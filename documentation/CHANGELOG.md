@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6253    05.02.2025  dev     3.5         David   Bug         Rechteprobleme bei Nutzenden mit Leser-Zugriff auf DEV
+
+6255    04.02.2025  dev     3.5         David   Bug         Erstellen von Aufgaben in DEV nicht immer möglich
+
 6210    31.01.2025  dev     3.5         David   Feature     Reporting: Skalierbare Charts
 
 6239    29.01.2025  rc-3.4  3.4.19      David   Bug         Beobachtungslisten bei Basic-Nutzenden

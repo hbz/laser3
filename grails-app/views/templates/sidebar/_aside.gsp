@@ -16,7 +16,7 @@
 
 <g:if test="${taskService.hasREAD()}">
     <div id="container-tasks">
-        <laser:render template="/templates/tasks/card" model="${[ownobj:ownobj, owntp:owntp, css_class:'']}"  />
+        <laser:render template="/templates/tasks/card" model="${[ownobj:ownobj, owntp:owntp, css_class:'']}" />
     </div>
 </g:if>
 

@@ -47,29 +47,29 @@
             },
             tooltip: {
                 trigger: 'axis',
-                formatter: function (params,event) {
+                formatter: function (params, event) {
                     let content = ''
                     let top10tmp = []
                     params.forEach(function (e) { top10tmp.push(e.value) })
                     let top10 = top10tmp.sort((a, b) => b - a).slice(0, 10)
 
-                    params.forEach(function (e) {
+                    params.sort(function(a,b){ return a.value - b.value }).forEach(function (e) {
                         if (e.value > 0) {
                             if (e.value >= top10[9]) {
-                                content = content + '<br/>' + e.marker + ' <span>' + e.seriesName + '</span>&nbsp;&nbsp;&nbsp;<span style="float:right">' + e.value + '</span>'
-                                }
+                                content = content + '<br/>' + e.marker + ' <span>' + e.seriesName + '</span>&nbsp;&nbsp;&nbsp;<strong style="float:right">' + e.value + '</strong>'
+                            }
 %{--                                else {--}%
 %{--                                    content = content + '<br/>' + e.marker + ' <span style="color:#c7c9cb">' + e.seriesName + '</span>&nbsp;&nbsp;&nbsp;<span style="color:#c7c9cb;float:right">' + e.value + '</span>'--}%
 %{--                                }--}%
-                            }
-                        })
-                        return '<div><strong>' + params[0].name + '</strong>' + content + '</div>'
-                    }
-                },
-                series: []
-            }
+                        }
+                    })
+                    return '<div><strong>' + params[0].name + '</strong>' + content + '</div>'
+                }
+            },
+            series: []
+        }
 
-            JSPC.app.yoda.chart_config.xAxis.data = [<% print '"' + globalTimelineDates.collect{ it.length() ? it.substring(0,5) : it }.join('","') + '"' %>];
+        JSPC.app.yoda.chart_config.xAxis.data = [<% print '"' + globalTimelineDates.collect{ it.length() ? it.substring(0,5) : it }.join('","') + '"' %>];
 
         <g:each in="${globalTimelineOrder}" var="ik,iv" status="index">
             <g:set var="itemValue" value="${globalTimeline[ik]}" />

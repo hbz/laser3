@@ -1165,7 +1165,7 @@ class OrganisationController  {
         }
 
         GrailsParameterMap filterParams = params.clone() as GrailsParameterMap
-        filterParams.org = genericOIDService.getOID(result.orgInstance)
+        filterParams.org = (result.orgInstance as Org).id
 
         Map userData = userService.getUserMap(filterParams)
         result.total = userData.count
@@ -1715,16 +1715,22 @@ class OrganisationController  {
             return
         }
         if (result.editable) {
-            def discoverySystem = genericOIDService.resolveOID(params.oid)
-            if(discoverySystem instanceof DiscoverySystemFrontend) {
-                result.orgInstance.removeFromDiscoverySystemFrontends(discoverySystem)
-                result.orgInstance.save()
+            if (params.frontend) {
+                DiscoverySystemFrontend ds = DiscoverySystemFrontend.get(params.long('frontend'))
+                if (ds) {
+                    result.orgInstance.removeFromDiscoverySystemFrontends(ds)
+                    result.orgInstance.save()
+                    ds.delete()
+                }
             }
-            else if(discoverySystem instanceof DiscoverySystemIndex) {
-                result.orgInstance.removeFromDiscoverySystemIndices(discoverySystem)
-                result.orgInstance.save()
+            else if (params.index) {
+                DiscoverySystemIndex ds = DiscoverySystemIndex.get(params.long('index'))
+                if (ds) {
+                    result.orgInstance.removeFromDiscoverySystemIndices(ds)
+                    result.orgInstance.save()
+                    ds.delete()
+                }
             }
-            discoverySystem.delete()
 //            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label'), orgInstance.name])
         }
 
