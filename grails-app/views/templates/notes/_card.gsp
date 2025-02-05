@@ -54,39 +54,45 @@
                         <div class="right aligned six wide column la-column-left-lessPadding">
                             <%-- 1 --%>
                             <g:if test="${ownobj.respondsTo('showUIShareButton') && ownobj.showUIShareButton()}">
-                                <g:if test="${docctx?.isShared}">
-                                    <ui:remoteLink class="${Btn.MODERN.POSITIVE_TOOLTIP} js-no-wait-wheel"
-                                                      controller="ajax"
-                                                      action="toggleShare"
-                                                      params='[owner:genericOIDService.getOID(ownobj), sharedObject:genericOIDService.getOID(docctx), tmpl:"notes", ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'
-                                                      data-content="${message(code:'property.share.tooltip.on')}"
-                                                      data-done=""
-                                                      data-update="container-notes"
-                                                      role="button">
-                                        <i class="icon la-share"></i>
-                                    </ui:remoteLink>
+                                <g:if test="${editable2}">
+                                    <g:if test="${docctx.isShared}">
+                                        <ui:remoteLink class="${Btn.MODERN.POSITIVE_TOOLTIP} js-no-wait-wheel"
+                                                          controller="ajax"
+                                                          action="toggleShare"
+                                                          params='[owner:genericOIDService.getOID(ownobj), sharedObject:genericOIDService.getOID(docctx), tmpl:"notes", ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'
+                                                          data-content="${message(code:'property.share.tooltip.on')}"
+                                                          data-done=""
+                                                          data-update="container-notes"
+                                                          role="button">
+                                            <i class="${Icon.SIG.SHARED_OBJECT_ON}"></i>
+                                        </ui:remoteLink>
+                                    </g:if>
+                                    <g:else>
+                                        <ui:remoteLink class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP} js-no-wait-wheel"
+                                                          controller="ajax"
+                                                          action="toggleShare"
+                                                          params='[owner:genericOIDService.getOID(ownobj), sharedObject:genericOIDService.getOID(docctx), tmpl:"notes", ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'
+                                                          data-content="${message(code:'property.share.tooltip.off')}"
+                                                          data-confirm-tokenMsg="${message(code: "confirm.dialog.share.element.member", args: [docctx.owner.title])}"
+                                                          data-confirm-term-how="share"
+                                                          data-done=""
+                                                          data-update="container-notes"
+                                                          role="button">
+                                            <i class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>
+                                        </ui:remoteLink>
+                                    </g:else>
                                 </g:if>
                                 <g:else>
-                                    <ui:remoteLink class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP} js-no-wait-wheel"
-                                                      controller="ajax"
-                                                      action="toggleShare"
-                                                      params='[owner:genericOIDService.getOID(ownobj), sharedObject:genericOIDService.getOID(docctx), tmpl:"notes", ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'
-                                                      data-content="${message(code:'property.share.tooltip.off')}"
-                                                      data-confirm-tokenMsg="${message(code: "confirm.dialog.share.element.member", args: [docctx.owner.title])}"
-                                                      data-confirm-term-how="share"
-                                                      data-done=""
-                                                      data-update="container-notes"
-                                                      role="button">
-                                        <i class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>
-                                    </ui:remoteLink>
+                                    <g:if test="${docctx.isShared}">
+                                        %{-- TODO: ERMS-6253 - show shared icon --}%
+                                        <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.on')}">
+                                            <span class="${Btn.MODERN.SIMPLE} disabled">
+                                                <i class="${Icon.SIG.SHARED_OBJECT_ON} green"></i>
+                                            </span>
+                                        </span>
+                                    </g:if>
                                 </g:else>
                             </g:if>
-%{--                            <g:else>--}%
-%{--                                    <!-- Hidden Fake Button To hold the other Botton in Place -->--}%
-%{--                                    <div class="${Btn.ICON.SIMPLE} mini la-hidden">--}%
-%{--                                        <icon:placeholder />--}%
-%{--                                    </div>--}%
-%{--                            </g:else>--}%
                             <%-- 2 --%>
                             <g:if test="${!docctx.isShared && (editable || editable2)}">
                                 <g:link controller="note" action="deleteNote" class="${Btn.MODERN.NEGATIVE_CONFIRM}"

@@ -790,11 +790,13 @@
                                     <div class="twelve wide column">
                                         <g:message code="org.contactpersons.and.addresses.my"/>
                                     </div>
-                                    <div class="right aligned four wide column">
-                                        <a href="#createPersonModal" class="${Btn.MODERN.SIMPLE} createContact" id="contactPersonForAgency" data-ui="modal">
-                                            <i aria-hidden="true" class="${Icon.CMD.ADD}"></i>
-                                        </a>
-                                    </div>
+                                    <g:if test="${contextService.isInstEditor()}">
+                                        <div class="right aligned four wide column">
+                                            <a href="#createPersonModal" class="${Btn.MODERN.SIMPLE} createContact" id="contactPersonForAgency" data-ui="modal">
+                                                <i aria-hidden="true" class="${Icon.CMD.ADD}"></i>
+                                            </a>
+                                        </div>
+                                    </g:if>
                                 </div>
                             </div>
                             <%

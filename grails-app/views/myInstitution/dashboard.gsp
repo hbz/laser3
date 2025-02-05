@@ -199,7 +199,6 @@
                                 <tr>
                                     <td>
                                         <div class="la-flexbox">
-                                            <i class="${Icon.WORKFLOW} la-list-icon"></i>
                                             <g:link controller="${clistInfo.targetController}" action="workflows" id="${clistInfo.target.id}"
                                                     params="${[info: '' + clistInfo.target.class.name + ':' + clistLinkParamPart]}">
                                                 <strong>${clist.title}</strong>

@@ -89,6 +89,15 @@
                         <g:if test="${! (editable || editable2)}">
                             <%-- 1 --%>
                             <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}" class="${Btn.MODERN.SIMPLE}" target="_blank"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+
+                            <g:if test="${docctx.isShared}">
+                                %{-- TODO: ERMS-6253 - show shared icon --}%
+                                <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'property.share.tooltip.on')}">
+                                    <span class="${Btn.MODERN.SIMPLE} disabled">
+                                        <i class="${Icon.SIG.SHARED_OBJECT_ON} green"></i>
+                                    </span>
+                                </span>
+                            </g:if>
                         </g:if>
                         <g:else>
                             <g:if test="${docctx.owner.owner?.id == contextService.getOrg().id}">
@@ -111,8 +120,7 @@
 
                             <%-- 3 --%>
                             <g:if test="${!(ownobj instanceof Org) && !(ownobj instanceof Provider) && !(ownobj instanceof Vendor) && ownobj?.showUIShareButton() && userService.hasFormalAffiliation(docctx.owner.owner, 'INST_EDITOR')}">
-                                <g:if test="${docctx?.isShared}">
-                                    <span>
+                                <g:if test="${docctx.isShared}">
                                         <ui:remoteLink class="${Btn.MODERN.POSITIVE_TOOLTIP} js-no-wait-wheel"
                                                        controller="ajax"
                                                        action="toggleShare"
@@ -121,9 +129,8 @@
                                                        data-done=""
                                                        data-update="container-documents"
                                                        role="button">
-                                            <i class="icon la-share"></i>
+                                            <i class="${Icon.SIG.SHARED_OBJECT_ON}"></i>
                                         </ui:remoteLink>
-                                    </span>
                                 </g:if>
                                 <g:else>
                                     <ui:remoteLink class="${Btn.MODERN.SIMPLE_CONFIRM_TOOLTIP} js-no-wait-wheel"
