@@ -269,12 +269,15 @@
                                     </div>
                                 </g:if>
                             </dd>
+                            <dd>
+                                <g:if test="${editable}">
+                                    <button  data-content="${message(code: 'altname.add')}" data-objtype="altname" id="addAltname"  class="${Btn.MODERN.POSITIVE} la-js-addValue blue la-popup-tooltip">
+                                        <i class="${Icon.CMD.ADD}"></i>
+                                    </button>
+                                </g:if>
+                            </dd>
                         </dl>
-                        <g:if test="${editable}">
-                            <input name="addAltname" id="addAltname" type="button"
-                                   class="${Btn.SIMPLE} la-js-addListValue" data-objtype="altname"
-                                   value="${message(code: 'altname.add')}">
-                        </g:if>
+                        <div></div>
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.startDate.label')}</dt>
                             <dd><ui:xEditable owner="${subscription}" field="startDate" type="date"
@@ -703,7 +706,7 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
 
-    $('.la-js-addListValue').click(function() {
+    $('.la-js-addItem').click(function() {
         let url;
         let returnSelector;
         switch($(this).attr('data-objtype')) {
