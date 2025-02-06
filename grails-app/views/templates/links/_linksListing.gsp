@@ -250,8 +250,6 @@
                 <g:message code="subscription.details.noLink"/>
             </p>
         </g:elseif>
-        +++++++++++++++++++++
-        <laser:render template="/templates/links/addButton" />
 
     </div>
 </div>
