@@ -14,12 +14,12 @@
 
         <ui:messages data="${flash}" />
 
-        <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
-            <laser:render template="dataviz_inst" />
-        </g:if>
-
         <g:if test="${wekbNews}">
             <laser:render template="wekbNews" model="${[wekbNews: wekbNews, tmplView: 'info']}"/>
+        </g:if>
+
+        <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
+            <laser:render template="dataviz_inst" />
         </g:if>
 
     <%
