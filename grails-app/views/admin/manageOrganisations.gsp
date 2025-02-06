@@ -53,19 +53,13 @@
         </thead>
         <tbody>
             <g:each in="${orgList}" var="org" status="i">
-                <tr class="${org.isArchived() ? 'error' : ''}">
+                <tr class="${org.isArchived() ? 'warning' : ''}">
                     <td class="center aligned">
                         ${ (params.int('offset') ?: 0)  + i + 1 }<br />
                     </td>
 
                     <td>
-                        ${org.sortname}
-
-                        <g:if test="${org.isArchived()}">
-                            <span class="la-popup-tooltip" data-position="top right" data-content="${message(code:'org.archiveDate.label')}: <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${org.archiveDate}"/>">
-                                <i class="exclamation triangle icon red"></i>
-                            </span>
-                        </g:if>
+                        <ui:archiveIcon org="${org}" /> ${org.sortname}
                     </td>
 
                     <td>

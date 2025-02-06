@@ -11,6 +11,7 @@
                 <td>
                     <p>
                         <strong>
+                            <ui:archiveIcon org="${chosenOrg}" />
                             <g:link controller="organisation" action="show" id="${chosenOrg.id}">${chosenOrg.name}</g:link>
                             <ui:customerTypeProIcon org="${chosenOrg}" />
                         </strong>
@@ -104,11 +105,12 @@
                     subscr = (Org) entry[1]
                 }
             %>
-            <tr>
+            <tr class="${subscr.isArchived() ? 'warning' : ''}">
                 <td>
                     ${ jj + 1 }
                 </td>
                 <td>
+                    <ui:archiveIcon org="${subscr}" />
                     <g:link controller="organisation" action="show" id="${subscr.id}">
                         <g:if test="${subscr.sortname}">${subscr.sortname}</g:if>
                         (${subscr.name})

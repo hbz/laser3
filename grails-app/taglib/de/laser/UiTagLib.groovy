@@ -444,6 +444,18 @@ class UiTagLib {
         }
     }
 
+    // <ui:archiveIcon org="${org}" />
+
+    def archiveIcon = { attrs, body ->  // TODO - in progress
+
+        if (attrs.org && attrs.org.isArchived()) {
+            String ad = formatDate(format: message(code: 'default.date.format.notime'), date: attrs.org.archiveDate)
+            out << '<span class="la-popup-tooltip" data-position="top right" data-content="' + message(code:'org.archiveDate.label') + ': ' + ad + '">'
+            out << '  <i class="exclamation triangle icon red"></i>'
+            out << '</span>'
+        }
+    }
+
     // <ui:modeSwitch controller="controller" action="action" params="params" />
 
     def modeSwitch = { attrs, body ->
