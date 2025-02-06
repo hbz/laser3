@@ -628,23 +628,23 @@ class UiTagLib {
         if (attrs.modifiers) {
             String modName = name + '_modifier'
             String modValue = params.get(modName) ?: attrs.defaultModifier
-            String modIconClass = 'small icon la-equals'
+            String modIconClass = Icon.MATH.EQUAL + ' small'
 
             switch (modValue) {
                 case 'less':
-                    modIconClass = 'small icon la-less-than'
+                    modIconClass = Icon.MATH.LESS + ' small'
                     break
                 case 'greater':
-                    modIconClass = 'small icon la-greater-than'
+                    modIconClass = Icon.MATH.GREATER + ' small'
                     break
                 case 'equals':
-                    modIconClass = 'small icon la-equals'
+                    modIconClass = Icon.MATH.EQUAL + ' small'
                     break
                 case 'less-equal':
-                    modIconClass = 'small icon la-less-than-equal'
+                    modIconClass = Icon.MATH.LESS_OR_EQUAL + ' small'
                     break
                 case 'greater-equal':
-                    modIconClass = 'small icon la-greater-than-equal'
+                    modIconClass = Icon.MATH.GREATER_OR_EQUAL + ' small'
                     break
             }
             out << '<div class="field la-combi-input-left">'
@@ -654,11 +654,11 @@ class UiTagLib {
             out <<     '<i class="dropdown icon"></i>'
             out <<      '<div class="text"><i class="' + modIconClass + '"></i></div>'
             out <<      '<div class="menu">'
-            out <<        '<div class="item' + ( modValue == 'less' ? ' active' : '' ) + '" data-value="less"><i class="la-less-than small icon"></i></div>'
-            out <<        '<div class="item' + ( modValue == 'greater' ? ' active' : '' ) + '" data-value="greater"><i class="la-greater-than small icon"></i></div>'
-            out <<        '<div class="item' + ( modValue == 'equals' ? ' active' : '' ) + '" data-value="equals"><i class="la-equals small icon"></i></div>'
-            out <<        '<div class="item' + ( modValue == 'less-equal' ? ' active' : '' ) + '" data-value="less-equal"><i class="la-less-than-equal small icon"></i></div>'
-            out <<        '<div class="item' + ( modValue == 'greater-equal' ? ' active' : '' ) + '" data-value="greater-equal"><i class="la-greater-than-equal small icon"></i></div>'
+            out <<        '<div class="item' + ( modValue == 'less' ? ' active' : '' ) + '" data-value="less"><i class="' + modIconClass + '"></i></div>'
+            out <<        '<div class="item' + ( modValue == 'greater' ? ' active' : '' ) + '" data-value="greater"><i class="' + modIconClass + '"></i></div>'
+            out <<        '<div class="item' + ( modValue == 'equals' ? ' active' : '' ) + '" data-value="equals"><i class="' + modIconClass + '"></i></div>'
+            out <<        '<div class="item' + ( modValue == 'less-equal' ? ' active' : '' ) + '" data-value="less-equal"><i class="' + modIconClass + '"></i></div>'
+            out <<        '<div class="item' + ( modValue == 'greater-equal' ? ' active' : '' ) + '" data-value="greater-equal"><i class="' +  + modIconClass + '"></i></div>'
             out <<     '</div>'
             out <<   '</div>'
             out << '</div>'
