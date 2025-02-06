@@ -161,7 +161,7 @@
                                             </div>
                                         </div>
 
-                                        <div  class="content" style="padding:0">
+                                        <div  class="content" style="padding:0" style="">
                                             <g:each in="${subscription.altnames.drop(1)}" var="altname">
                                                 <div class="ui item" data-objId="${genericOIDService.getOID(altname)}">
                                                     <div class="content la-space-right">
@@ -271,7 +271,7 @@
                             </dd>
                             <dd>
                                 <g:if test="${editable}">
-                                    <button  data-content="${message(code: 'altname.add')}" data-objtype="altname" id="addAltname"  class="${Btn.MODERN.POSITIVE} la-js-addValue blue la-popup-tooltip">
+                                    <button  data-content="${message(code: 'altname.add')}" data-objtype="altname" id="addAltname"  class="${Btn.MODERN.POSITIVE} la-js-addItem blue la-popup-tooltip">
                                         <i class="${Icon.CMD.ADD}"></i>
                                     </button>
                                 </g:if>

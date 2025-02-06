@@ -3,9 +3,9 @@
 <g:if test="${editmode}">
 
         <a role="button"
-           class="ui button la-popup-tooltip ${tmplCss}"
+           class="ui icon button la-popup-tooltip ${tmplCss}"
            data-ui="modal" href="#${tmplModalID}"
-           data-content="${message(code:'license.details.editLink')}">
+           data-content="${tmplTooltip}">
             <g:if test="${tmplIcon}">
                 <i class="${tmplIcon} icon"></i>
             </g:if>
