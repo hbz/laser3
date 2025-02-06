@@ -377,7 +377,7 @@ class UiTagLib {
                                     params: ['owner': oid, 'property': [objAttr]],
                             )
                             out << '">'
-                            out << '<i aria-hidden="true" class="icon la-thumbtack slash"></i>'
+                            out << '<i aria-hidden="true" class="' + Icon.SIG.INHERITANCE_OFF + '"></i>'
                             out << '</a>'
                         }
                     }
@@ -410,7 +410,7 @@ class UiTagLib {
                         }
                         else {
                             out << '<span class="la-popup-tooltip" data-content="Wert wird nicht vererbt" data-position="top right">'
-                            out << '<i aria-hidden="true" class="icon la-thumbtack slash"></i>'
+                            out << '<i aria-hidden="true" class="' + Icon.SIG.INHERITANCE_OFF + '"></i>'
                             out << '</span>'
                         }
                     }

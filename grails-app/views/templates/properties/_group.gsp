@@ -130,7 +130,7 @@
                                                           data-update="${custom_props_div}"
                                                           role="button"
                                         >
-                                            <i class="icon la-thumbtack slash"></i>
+                                            <i class="${Icon.SIG.INHERITANCE_OFF}"></i>
                                         </ui:remoteLink>
                                     </g:if>
                                     <g:else>
@@ -154,7 +154,7 @@
                                                           data-update="${custom_props_div}"
                                                           role="button"
                                         >
-                                            <i class="icon la-thumbtack slash"></i>
+                                            <i class="${Icon.SIG.INHERITANCE_OFF}"></i>
                                         </ui:remoteLink>
                                     </g:else>
                                 </g:if>

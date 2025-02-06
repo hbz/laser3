@@ -52,7 +52,7 @@
                         class="${Btn.ICON.SIMPLE_TOOLTIP} mini la-audit-button meinToggleButton"
                         params="['toggle': params.toggle=='true'?false:true]"
                     >
-                        <i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash"></i>
+                        <i aria-hidden="true" class="la-js-editmode-icon ${Icon.SIG.INHERITANCE_OFF}"></i>
 
                     </g:link>
 
@@ -108,7 +108,7 @@
                             aria-labelledby="wcag_mlbbjc4mb"
                             params="['toggle': params.toggle=='true'?false:true]"
                     >
-                        <i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash"></i>
+                        <i aria-hidden="true" class="la-js-editmode-icon ${Icon.SIG.INHERITANCE_OFF}"></i>
 
                     </g:link>
 

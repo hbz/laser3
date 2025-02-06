@@ -295,6 +295,8 @@ class Icon {
         public static String INHERITANCE        = 'thumbtack icon'
         @UIDoc(usage = 'Assignment symbol for: Inheritance set auto (COLORED)')
         public static String INHERITANCE_AUTO   = 'la-thumbtack-regular grey icon'
+        @UIDoc(usage = 'Assignment symbol for: Inheritance - OFF')
+        public static String INHERITANCE_OFF    = 'la-thumbtack slash icon'
 
         @UIDoc(usage = 'Assignment symbol for: Is my object')
         public static String MY_OBJECT      = 'star icon'               // todo: duplicate: survey/renew? > Icon.PROP.MANDATORY

@@ -96,7 +96,7 @@
                                                                          id="${subscription.altnames[0].id}"
                                                                          data-content="${message(code: 'property.audit.off.tooltip')}"
                                                                          role="button">
-                                                                    <i class="icon la-thumbtack slash"></i>
+                                                                    <i class="${Icon.SIG.INHERITANCE_OFF}"></i>
                                                                 </ui:link>
                                                                 <ui:remoteLink role="button"
                                                                                class="${Btn.MODERN.NEGATIVE_CONFIRM}"
@@ -190,7 +190,7 @@
                                                                         id="${altname.id}"
                                                                         data-content="${message(code: 'property.audit.off.tooltip')}"
                                                                         role="button">
-                                                                        <i class="icon la-thumbtack slash"></i>
+                                                                        <i class="${Icon.SIG.INHERITANCE_OFF}"></i>
                                                                     </ui:link>
                                                                     <ui:remoteLink role="button"
                                                                                    class="${Btn.MODERN.NEGATIVE_CONFIRM}"

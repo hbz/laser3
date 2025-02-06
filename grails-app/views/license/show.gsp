@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon;de.laser.Subscription;de.laser.License;de.laser.OrgRole;de.laser.DocContext;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.properties.PropertyDefinition;de.laser.interfaces.CalculatedType;de.laser.AuditConfig;de.laser.FormService" %>
+<%@ page import="de.laser.ui.Btn;de.laser.ui.Icon;de.laser.Subscription;de.laser.License;de.laser.OrgRole;de.laser.DocContext;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.properties.PropertyDefinition;de.laser.interfaces.CalculatedType;de.laser.AuditConfig;de.laser.FormService" %>
 <laser:htmlStart message="license.details.label" />
 
         <ui:debugInfo>
@@ -99,7 +99,7 @@
                                                                         id="${license.altnames[0].id}"
                                                                         data-content="${message(code: 'property.audit.off.tooltip')}"
                                                                         role="button">
-                                                                        <i class="icon la-thumbtack slash"></i>
+                                                                        <i class="${Icon.SIG.INHERITANCE_OFF}"></i>
                                                                     </ui:link>
 
                                                                     <ui:remoteLink role="button"
@@ -201,7 +201,7 @@
                                                                                 id="${altname.id}"
                                                                                 data-content="${message(code: 'property.audit.off.tooltip')}"
                                                                                 role="button">
-                                                                                <i class="icon la-thumbtack slash"></i>
+                                                                                <i class="${Icon.SIG.INHERITANCE_OFF}"></i>
                                                                             </ui:link>
                                                                             <ui:remoteLink role="button"
                                                                                            class="${Btn.MODERN.NEGATIVE_CONFIRM}"
