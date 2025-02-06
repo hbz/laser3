@@ -31,7 +31,7 @@
         </g:if>
         <g:if test="${covStmt.startIssue || objectTypeIsIE}">
             <span class="la-online-wrap">
-                <i class="grey fitted la-notebook icon la-popup-tooltip"
+                <i class="${Icon.ATTR.TIPP_ISSUE} fitted la-popup-tooltip"
                    data-content="${message(code: 'tipp.startIssue.tooltip')}"></i>
                 <span class="la-identifier">
                     ${message(code: 'tipp.Issue.short')}
@@ -68,7 +68,7 @@
         </g:if>
         <g:if test="${covStmt.endIssue || objectTypeIsIE}">
             <span class="la-online-wrap">
-                <i class="grey fitted la-notebook icon la-popup-tooltip"
+                <i class="${Icon.ATTR.TIPP_ISSUE} fitted la-popup-tooltip"
                    data-content="${message(code: 'tipp.endIssue.tooltip')}"></i>
                 <span class="la-identifier">
                     ${message(code: 'tipp.Issue.short')}

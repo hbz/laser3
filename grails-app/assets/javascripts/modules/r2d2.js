@@ -842,7 +842,7 @@ r2d2 = {
 
                 let map = {
                     'delete'            : JSPC.icons.CMD.DELETE,
-                    'unlink'            : 'la-chain broken icon',
+                    'unlink'            : JSPC.icons.CMD.UNLINK,
                     'unset'             : JSPC.icons.CMD.ERASE,
                     'share'             : JSPC.icons.SIG.SHARED_OBJECT_ON,
                     'inherit'           : JSPC.icons.SIG.INHERITANCE,

@@ -63,6 +63,8 @@ class Icon {
         public static String TIPP_COVERAGE          = 'la-books icon grey'      // TODO
         @UIDoc(usage = 'Only for TIPP: coverageDepth')
         public static String TIPP_COVERAGE_DEPTH    = 'file alternate icon'     // TODO
+        @UIDoc(usage = 'Only for TIPP: issue (COLORED)')
+        public static String TIPP_ISSUE             = 'la-notebook icon grey'   // TODO
 
         @UIDoc(usage = 'Only for Workflow: checkpoint')
         public static String WORKFLOW_CHECKPOINT        = 'circle icon'
@@ -168,7 +170,7 @@ class Icon {
         @UIDoc(usage = 'Only for Property attribute: isHardData (COLORED)')
         public static String HARDDATA       = 'database icon green'
         @UIDoc(usage = 'Only for Property attribute: !isHardData (COLORED)')
-        public static String HARDDATA_NOT   = 'database icon grey'
+        public static String HARDDATA_NOT   = 'times icon grey'
         @UIDoc(usage = 'Only for Property attribute: isUsedForLogic (COLORED)')
         public static String LOGIC          = 'cube icon red'
         @UIDoc(usage = 'Only for Property attribute: mandatory (COLORED)')

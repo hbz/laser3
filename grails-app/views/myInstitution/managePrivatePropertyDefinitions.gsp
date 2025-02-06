@@ -52,11 +52,11 @@
                                 <g:each in="${entry.value}" var="pd">
                                     <tr>
                                         <td>
-                                            <g:if test="${!pd.isHardData}">
-                                                <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.not.tooltip')}">
-                                                    <i class="${Icon.PROP.HARDDATA_NOT}"></i>
-                                                </span>
-                                            </g:if>
+%{--                                            <g:if test="${!pd.isHardData}">--}%
+%{--                                                <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.not.tooltip')}">--}%
+%{--                                                    <i class="${Icon.PROP.HARDDATA_NOT}"></i>--}%
+%{--                                                </span>--}%
+%{--                                            </g:if>--}%
                                             <g:if test="${pd.mandatory}">
                                                 <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.mandatory.tooltip')}">
                                                     <i class="${Icon.PROP.MANDATORY}"></i>
@@ -117,27 +117,27 @@
                                             <g:if test="${editable}">
                                                 <g:if test="${pd.mandatory}">
                                                     <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMandatory.label')}" data-position="left center"
-                                                            params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP} yellow">
-                                                        <i class="${Icon.PROP.MANDATORY} blue"></i>
+                                                            params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">
+                                                        <i class="${Icon.PROP.MANDATORY_NOT}"></i>
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMandatory.label')}" data-position="left center"
                                                             params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">
-                                                        <i class="la-star slash icon"></i>
+                                                        <i class="${Icon.PROP.MANDATORY}"></i>
                                                     </g:link>
                                                 </g:else>
                                                 <g:if test="${!multiplePdList?.contains(pd.id)}">
                                                     <g:if test="${pd.multipleOccurrence}">
                                                         <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="left center"
-                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP} teal">
-                                                            <i class="${Icon.PROP.MULTIPLE} blue"></i>
+                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">
+                                                            <i class="${Icon.PROP.MULTIPLE_NOT}"></i>
                                                         </g:link>
                                                     </g:if>
                                                     <g:else>
                                                         <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMultiple.label')}"  data-position="left center"
                                                                 params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">
-                                                            <i class="${Icon.PROP.MULTIPLE_NOT} blue"></i>
+                                                            <i class="${Icon.PROP.MULTIPLE}"></i>
                                                         </g:link>
                                                     </g:else>
                                                 </g:if>
