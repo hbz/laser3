@@ -140,7 +140,7 @@
                     <label for="qp_supportedLibrarySystems">${message(code: 'vendor.ordering.supportedLibrarySystems.label')}</label>
                     <select name="qp_supportedLibrarySystems" id="qp_supportedLibrarySystems" multiple="multiple" class="ui search selection dropdown">
                         <option value="">${message(code:'default.select.choose.label')}</option>
-                        <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_SUPPORTED_LIBRARY_SYSTEM)}" var="sls">
+                        <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUPPORTED_LIBRARY_SYSTEM)}" var="sls">
                             <option <%=Params.getLongList(params, 'qp_supportedLibrarySystems').contains(sls.id) ? 'selected=selected"' : ''%> value="${sls.id}">
                                 ${sls.getI10n("value")}
                             </option>

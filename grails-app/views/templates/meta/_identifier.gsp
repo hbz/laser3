@@ -50,7 +50,7 @@
 
                             <input name="auditNewIdentifier" id="auditNewIdentifier" type="hidden" value="false"/>
                             <button id="auditNewIdentifierToggle" data-content="${message(code: 'property.audit.off.tooltip')}" class="${Btn.MODERN.SIMPLE_TOOLTIP} la-audit-button">
-                                <i aria-hidden="true" class="icon la-thumbtack slash"></i>
+                                <i aria-hidden="true" class="${Icon.SIG.INHERITANCE_OFF}"></i>
                             </button>
                         </div>
                         </g:if>

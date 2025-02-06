@@ -59,8 +59,12 @@ class Icon {
         @UIDoc(usage = 'Only for Survey: Not all results processed by org (COLORED)')
         public static String SURVEY_RESULTS_NOT_PROCESSED    = 'edit red icon'
 
+        @UIDoc(usage = 'Only for TIPP: various coverage data (COLORED)')
+        public static String TIPP_COVERAGE          = 'la-books icon grey'      // TODO
         @UIDoc(usage = 'Only for TIPP: coverageDepth')
-        public static String TIPP_COVERAGE_DEPTH        = 'file alternate icon'
+        public static String TIPP_COVERAGE_DEPTH    = 'file alternate icon'     // TODO
+        @UIDoc(usage = 'Only for TIPP: issue (COLORED)')
+        public static String TIPP_ISSUE             = 'la-notebook icon grey'   // TODO
 
         @UIDoc(usage = 'Only for Workflow: checkpoint')
         public static String WORKFLOW_CHECKPOINT        = 'circle icon'
@@ -164,13 +168,15 @@ class Icon {
         public static String IN_USE     = 'check circle icon olive'
 
         @UIDoc(usage = 'Only for Property attribute: isHardData (COLORED)')
-        public static String HARDDATA   = 'database icon green'
+        public static String HARDDATA       = 'database icon green'
         @UIDoc(usage = 'Only for Property attribute: !isHardData (COLORED)')
-        public static String HARDDATA_NOT   = 'database icon grey'
+        public static String HARDDATA_NOT   = 'times icon grey'
         @UIDoc(usage = 'Only for Property attribute: isUsedForLogic (COLORED)')
-        public static String LOGIC      = 'cube icon red'
+        public static String LOGIC          = 'cube icon red'
         @UIDoc(usage = 'Only for Property attribute: mandatory (COLORED)')
-        public static String MANDATORY  = 'star icon yellow'               // todo: duplicate: survey/renew? > Icon.SIG.MY_OBJECT
+        public static String MANDATORY      = 'star icon yellow'               // todo: duplicate: survey/renew? > Icon.SIG.MY_OBJECT
+        @UIDoc(usage = 'Only for Property attribute: not mandatory (COLORED)')
+        public static String MANDATORY_NOT  = 'la-star slash icon yellow'
         @UIDoc(usage = 'Only for Property attribute: multipleOccurrence (COLORED)')
         public static String MULTIPLE       = 'check double icon teal'
         @UIDoc(usage = 'Only for Property attribute: not multipleOccurrence (COLORED)')
@@ -195,6 +201,21 @@ class Icon {
 
         @UIDoc(usage = 'Only for Cost items: Configuration not set (COLORED)')
         public static String COST_NOT_SET   = 'grey question circle icon'
+    }
+
+    class MATH {
+        // please do not touch during refactoring ..
+
+        @UIDoc(usage = 'Mathematical symbol for: is equal to')
+        public static String EQUAL              = 'la-equals icon'
+        @UIDoc(usage = 'Mathematical symbol for: is less than')
+        public static String LESS               = 'la-less-than icon'
+        @UIDoc(usage = 'Mathematical symbol for: is greater than')
+        public static String GREATER            = 'la-greater-than icon'
+        @UIDoc(usage = 'Mathematical symbol for: is less than or equal to')
+        public static String LESS_OR_EQUAL      = 'la-less-than-equal icon'
+        @UIDoc(usage = 'Mathematical symbol for: is greater than or equal to')
+        public static String GREATER_OR_EQUAL   = 'la-greater-than-equal icon'
     }
 
     class SYM {
@@ -276,6 +297,8 @@ class Icon {
         public static String INHERITANCE        = 'thumbtack icon'
         @UIDoc(usage = 'Assignment symbol for: Inheritance set auto (COLORED)')
         public static String INHERITANCE_AUTO   = 'la-thumbtack-regular grey icon'
+        @UIDoc(usage = 'Assignment symbol for: Inheritance - OFF')
+        public static String INHERITANCE_OFF    = 'la-thumbtack slash icon'
 
         @UIDoc(usage = 'Assignment symbol for: Is my object')
         public static String MY_OBJECT      = 'star icon'               // todo: duplicate: survey/renew? > Icon.PROP.MANDATORY
@@ -337,6 +360,8 @@ class Icon {
     public static String IDENTIFIER                 = 'barcode icon'
 
     public static String IE_GROUP                   = 'object ungroup icon'
+
+    public static String LASER                      = 'la-laser icon'
 
     public static String LICENSE                    = 'balance scale icon'
 

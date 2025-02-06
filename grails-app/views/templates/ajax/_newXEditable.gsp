@@ -31,7 +31,7 @@
                          data-content="${message(code:'property.audit.off.tooltip')}"
                          role="button"
                 >
-                    <i class="icon la-thumbtack slash"></i>
+                    <i class="${Icon.SIG.INHERITANCE_OFF}"></i>
                 </ui:link>
             </g:if>
             <g:elseif test="${ownObj.license && showConsortiaFunctions}">
@@ -49,7 +49,7 @@
                          data-content="${message(code:'property.audit.off.tooltip')}"
                          role="button"
                 >
-                    <i class="icon la-thumbtack slash"></i>
+                    <i class="${Icon.SIG.INHERITANCE_OFF}"></i>
                 </ui:link>
             </g:elseif>
             <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: ownObj.id]"

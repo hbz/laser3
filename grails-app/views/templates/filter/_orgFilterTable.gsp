@@ -221,7 +221,7 @@
             <g:set var="orgSub" value="${surveyConfig.subscription?.getDerivedSubscriptionForNonHiddenSubscriber(org)}"/>
         </g:if>
 
-        <tr class="${org.isArchived() ? 'error' : ''} ${tmplDisableOrgIds && (org.id in tmplDisableOrgIds) ? 'disabled' : ''}">
+        <tr class="${org.isArchived() ? 'warning' : ''} ${tmplDisableOrgIds && (org.id in tmplDisableOrgIds) ? 'disabled' : ''}">
 
         <g:if test="${tmplShowCheckbox}">
             <td>
@@ -251,13 +251,7 @@
 
             <g:if test="${tmplConfigItem.equalsIgnoreCase('sortname')}">
                 <td>
-                    ${org.sortname}
-
-                    <g:if test="${org.isArchived()}">
-                        <span class="la-popup-tooltip" data-position="top right" data-content="${message(code:'org.archiveDate.label')}: <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${org.archiveDate}"/>">
-                            <i class="exclamation triangle icon red"></i>
-                        </span>
-                    </g:if>
+                    <ui:archiveIcon org="${org}" /> ${org.sortname}
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">

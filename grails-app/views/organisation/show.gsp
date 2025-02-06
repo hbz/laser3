@@ -192,8 +192,7 @@
                                     </span>
                                 </dt>
                                 <dd>
-                                    <ui:xEditableRefData owner="${orgInstance}" field="libraryType"
-                                                            config="${RDConstants.LIBRARY_TYPE}"/>
+                                    <ui:xEditableRefData owner="${orgInstance}" field="libraryType" config="${RDConstants.LIBRARY_TYPE}"/>
                                 </dd>
                             </dl>
                             <dl>
@@ -205,8 +204,7 @@
                                     </span>
                                 </dt>
                                 <dd>
-                                    <ui:xEditableRefData owner="${orgInstance}" field="libraryNetwork"
-                                                            config="${RDConstants.LIBRARY_NETWORK}"/>
+                                    <ui:xEditableRefData owner="${orgInstance}" field="libraryNetwork" config="${RDConstants.LIBRARY_NETWORK}"/>
                                 </dd>
                             </dl>
                             <dl>
@@ -336,10 +334,14 @@
                                 <ui:xEditable owner="${orgInstance}" field="linkResolverBaseURL" />
                             </dd>
                         </dl>
-%{--                        <div class="ui header">Discovery-Systeme</div>--}%
+                        <dl>
+                            <dt class="control-label"><g:message code="org.supportedLibrarySystem.label" /></dt>
+                            <dd>
+                                <ui:xEditableRefData owner="${orgInstance}" field="supportedLibrarySystem" config="${RDConstants.SUPPORTED_LIBRARY_SYSTEM}"/>
+                            </dd>
+                        </dl>
                         <dl>
                             <dt class="control-label"><g:message code="org.discoverySystems.frontend.label" /></dt>
-%{--                            <dt class="control-label">Frontend</dt>--}%
                             <dd>
                                 <laser:render template="discoverySystemAsList"
                                               model="${[org: orgInstance, config: 'discoverySystemFrontend', editable: editable]}"/>
@@ -350,7 +352,6 @@
                         </dl>
                         <dl>
                             <dt class="control-label"><g:message code="org.discoverySystems.index.label" /></dt>
-%{--                            <dt class="control-label">Index</dt>--}%
                             <dd>
                                 <laser:render template="discoverySystemAsList"
                                               model="${[org: orgInstance, config: 'discoverySystemIndex', editable: editable]}"/>

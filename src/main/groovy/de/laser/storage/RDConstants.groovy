@@ -166,6 +166,7 @@ class RDConstants {
     public static final String SUBSCRIPTION_STATUS    = 'subscription.status'
     public static final String SUBSCRIPTION_TYPE      = 'subscription.type'
     public static final String SUBSCRIPTION_KIND      = 'subscription.kind'
+    public static final String SUPPORTED_LIBRARY_SYSTEM = 'vendor.ordering.supported.library.system'
     public static final String SURVEY_STATUS          = 'survey.status'
     public static final String SURVEY_TYPE            = 'survey.type'
 
@@ -190,7 +191,6 @@ class RDConstants {
     public static final String USER_SETTING_THEME         = 'user.setting.theme'
 
     public static final String VENDOR_STATUS                    = 'vendor.status'
-    public static final String VENDOR_SUPPORTED_LIBRARY_SYSTEM  = 'vendor.ordering.supported.library.system'
     public static final String VENDOR_ELECTRONIC_DELIVERY_DELAY = 'vendor.ordering.electronic.delivery.delay'
     public static final String VENDOR_INVOICING_FORMAT          = 'vendor.invoicing.format'
     public static final String VENDOR_INVOICING_DISPATCH        = 'vendor.invoicing.dispatch'

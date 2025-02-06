@@ -104,7 +104,7 @@
                                                               data-update="objIdentifierPanel"
                                                               role="button"
                                             >
-                                                <i class="icon la-thumbtack slash"></i>
+                                                <i class="${Icon.SIG.INHERITANCE_OFF}"></i>
                                             </ui:remoteLink>
                                             <g:link controller="ajax" action="deleteIdentifier" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
                                                     params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'

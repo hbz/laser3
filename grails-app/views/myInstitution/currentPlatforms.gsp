@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.wekb.Platform; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ui.Icon; de.laser.utils.AppUtils; de.laser.convenience.Marker; de.laser.wekb.Platform; de.laser.storage.RDStore" %>
 <laser:htmlStart message="menu.my.platforms" />
 
 <ui:breadcrumbs>
@@ -69,7 +69,7 @@
                                         <g:each in="${sub.deduplicatedAccessPointsForOrgAndPlatform(contextService.getOrg(), platformInstance)}" var="orgap">
                                             <div class="la-flexbox">
                                                 <span class="la-popup-tooltip" data-position="top right" data-content="${message(code: 'myinst.currentPlatforms.tooltip.thumbtack.content')}">
-                                                    <i class="icon la-thumbtack slash scale la-list-icon"></i>
+                                                    <i class="${Icon.SIG.INHERITANCE_OFF} la-list-icon"></i>
                                                 </span>
                                                 <g:link controller="accessPoint" action="edit_${orgap.accessMethod.value.toLowerCase()}"
                                                         id="${orgap.id}">${orgap.name} (${orgap.accessMethod.getI10n('value')})</g:link>

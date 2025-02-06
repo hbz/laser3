@@ -95,6 +95,9 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     @RefdataInfo(cat = RDConstants.E_INVOICE_PORTAL)
     RefdataValue eInvoicePortal
 
+    @RefdataInfo(cat = RDConstants.SUPPORTED_LIBRARY_SYSTEM)
+    RefdataValue supportedLibrarySystem
+
     SortedSet ids
     SortedSet altnames
 
@@ -156,6 +159,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         categoryId          column:'org_cat'
         eInvoice            column:'org_e_invoice'
         eInvoicePortal      column:'org_e_invoice_portal_fk', lazy: false
+     supportedLibrarySystem column:'org_supported_library_system_rv_fk'
         gokbId              column:'org_gokb_id', type:'text'
             status          column:'org_status_rv_fk'
        archiveDate          column:'org_archive_date'
@@ -205,6 +209,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
              country(nullable:true)
               region(nullable:true)
             eInvoicePortal(nullable:true)
+    supportedLibrarySystem(nullable:true)
       libraryNetwork(nullable:true)
           funderType(nullable:true)
        funderHskType(nullable:true)

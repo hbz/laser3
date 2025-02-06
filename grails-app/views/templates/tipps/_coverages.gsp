@@ -3,10 +3,10 @@
     <div class="ui card">
         <div class="content">
 
-            <i class="grey fitted la-books icon la-popup-tooltip" data-content="${message(code: 'tipp.dateFirstInPrint')}"></i>
+            <i class="${Icon.ATTR.TIPP_COVERAGE} fitted la-popup-tooltip" data-content="${message(code: 'tipp.dateFirstInPrint')}"></i>
             <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tipp.dateFirstInPrint}"/>
             <span class='ui grey horizontal divider la-date-devider'></span>
-            <i class="grey fitted la-books icon la-popup-tooltip" data-content="${message(code: 'tipp.dateFirstOnline')}"></i>
+            <i class="${Icon.ATTR.TIPP_COVERAGE} fitted la-popup-tooltip" data-content="${message(code: 'tipp.dateFirstOnline')}"></i>
             <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tipp.dateFirstOnline}"/>
         </div>
     </div>
@@ -56,7 +56,7 @@
 <g:else>
     <div class="ui card">
         <div class="content">
-            <i class="grey fitted la-books icon la-popup-tooltip"
+            <i class="${Icon.ATTR.TIPP_COVERAGE} fitted la-popup-tooltip"
                data-content="${message(code: 'tipp.dateFirstOnline')}"></i>
             <g:formatDate format="${message(code: 'default.date.format.notime')}"
                           date="${tipp.dateFirstOnline}"/>

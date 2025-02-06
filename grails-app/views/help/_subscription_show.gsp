@@ -22,34 +22,10 @@
         </tr>
         <tr>
             <td>
-                <i class="${Icon.CMD.EDIT} green" aria-hidden="true"></i>
-            </td>
-            <td>
-                Aktuell: Inhalte editierbar
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <i class="${Icon.CMD.EDIT} slash" aria-hidden="true"></i>
-            </td>
-            <td>
-                Aktuell: Inhalte nicht editierbar
-            </td>
-        </tr>
-        <tr>
-            <td>
                 <i class="${Icon.CMD.EDIT} blue" aria-hidden="true"></i>
             </td>
             <td>
                 Verknüpfung bearbeiten
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <i aria-hidden="true" class="icon la-thumbtack slash"></i>
-            </td>
-            <td>
-                Wert wird nicht vererbt
             </td>
         </tr>
         <tr>
@@ -62,7 +38,15 @@
         </tr>
         <tr>
             <td>
-                <i aria-hidden="true" class="icon thumbtack la-thumbtack-regular"></i>
+                <i aria-hidden="true" class="${Icon.SIG.INHERITANCE_OFF}"></i>
+            </td>
+            <td>
+                Wert wird nicht vererbt
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <i aria-hidden="true" class="${Icon.SIG.INHERITANCE_AUTO}"></i>
             </td>
             <td>
                 Wert wird automatisch geerbt

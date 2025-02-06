@@ -21,7 +21,7 @@
         </g:if>
         <g:if test="${covStmt.startVolume || objectTypeIsIE}">
             <span class="la-online-wrap">
-                <i class="grey fitted la-books icon la-popup-tooltip"
+                <i class="${Icon.ATTR.TIPP_COVERAGE} fitted la-popup-tooltip"
                    data-content="${message(code: 'tipp.startVolume.tooltip')}"></i>
                 <span class="la-identifier">
                     ${message(code: 'tipp.Volume.short')}
@@ -31,7 +31,7 @@
         </g:if>
         <g:if test="${covStmt.startIssue || objectTypeIsIE}">
             <span class="la-online-wrap">
-                <i class="grey fitted la-notebook icon la-popup-tooltip"
+                <i class="${Icon.ATTR.TIPP_ISSUE} fitted la-popup-tooltip"
                    data-content="${message(code: 'tipp.startIssue.tooltip')}"></i>
                 <span class="la-identifier">
                     ${message(code: 'tipp.Issue.short')}
@@ -58,7 +58,7 @@
         </g:if>
         <g:if test="${covStmt.endVolume || objectTypeIsIE}">
             <span class="la-online-wrap">
-                <i class="grey fitted la-books icon la-popup-tooltip"
+                <i class="${Icon.ATTR.TIPP_COVERAGE} fitted la-popup-tooltip"
                    data-content="${message(code: 'tipp.endVolume.tooltip')}"></i>
                 <span class="la-identifier">
                     ${message(code: 'tipp.Volume.short')}
@@ -68,7 +68,7 @@
         </g:if>
         <g:if test="${covStmt.endIssue || objectTypeIsIE}">
             <span class="la-online-wrap">
-                <i class="grey fitted la-notebook icon la-popup-tooltip"
+                <i class="${Icon.ATTR.TIPP_ISSUE} fitted la-popup-tooltip"
                    data-content="${message(code: 'tipp.endIssue.tooltip')}"></i>
                 <span class="la-identifier">
                     ${message(code: 'tipp.Issue.short')}

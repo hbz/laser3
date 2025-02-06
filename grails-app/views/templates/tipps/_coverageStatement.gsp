@@ -7,11 +7,11 @@
             <ui:xEditable owner="${covStmt}" type="date" field="startDate" overwriteEditable="${overwriteEditable}"/>
         </div>
         <div class="la-card-flexRow">
-            <i class="grey fitted la-books icon la-popup-tooltip" data-content="${message(code: 'tipp.startVolume.tooltip')}"></i>
+            <i class="${Icon.ATTR.TIPP_COVERAGE} fitted la-popup-tooltip" data-content="${message(code: 'tipp.startVolume.tooltip')}"></i>
             <ui:xEditable owner="${covStmt}" field="startVolume" emptytext="-" overwriteEditable="${overwriteEditable}"/>
         </div>
         <div class="la-card-flexRow">
-            <i class="grey fitted la-notebook icon la-popup-tooltip" data-content="${message(code: 'tipp.startIssue.tooltip')}"></i>
+            <i class="${Icon.ATTR.TIPP_ISSUE} fitted la-popup-tooltip" data-content="${message(code: 'tipp.startIssue.tooltip')}"></i>
             <ui:xEditable owner="${covStmt}" field="startIssue" emptytext="-" overwriteEditable="${overwriteEditable}"/>
         </div>
         <ui:dateDevider/>
@@ -21,11 +21,11 @@
             <ui:xEditable owner="${covStmt}" type="date" field="endDate" overwriteEditable="${overwriteEditable}"/>
         </div>
         <div class="la-card-flexRow">
-            <i class="grey fitted la-books icon la-popup-tooltip" data-content="${message(code: 'tipp.endVolume.tooltip')}"></i>
+            <i class="${Icon.ATTR.TIPP_COVERAGE} fitted la-popup-tooltip" data-content="${message(code: 'tipp.endVolume.tooltip')}"></i>
             <ui:xEditable owner="${covStmt}" field="endVolume" emptytext="-" overwriteEditable="${overwriteEditable}"/>
         </div>
         <div class="la-card-flexRow">
-            <i class="grey fitted la-notebook icon la-popup-tooltip" data-content="${message(code: 'tipp.endIssue.tooltip')}"></i>
+            <i class="${Icon.ATTR.TIPP_ISSUE} fitted la-popup-tooltip" data-content="${message(code: 'tipp.endIssue.tooltip')}"></i>
             <ui:xEditable owner="${covStmt}" field="endIssue" emptytext="-" overwriteEditable="${overwriteEditable}"/>
         </div>
     </div>

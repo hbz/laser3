@@ -8,7 +8,7 @@ class LibrarySystem implements Comparable<LibrarySystem> {
 
     Vendor vendor
 
-    @RefdataInfo(cat = RDConstants.VENDOR_SUPPORTED_LIBRARY_SYSTEM)
+    @RefdataInfo(cat = RDConstants.SUPPORTED_LIBRARY_SYSTEM)
     RefdataValue librarySystem
 
     static mapping = {

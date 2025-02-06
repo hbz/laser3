@@ -173,7 +173,7 @@
                         </dt>
                         <dd>
                             <%
-                                List<RefdataValue> supportedLibrarySystems = RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_SUPPORTED_LIBRARY_SYSTEM)
+                                List<RefdataValue> supportedLibrarySystems = RefdataCategory.getAllRefdataValues(RDConstants.SUPPORTED_LIBRARY_SYSTEM)
                             %>
                             <laser:render template="/templates/attributesList"
                                           model="${[ownObj: vendor, deleteAction: 'deleteAttribute', attributes: vendor.supportedLibrarySystems, field: 'librarySystem', availableAttributeIds: supportedLibrarySystems.collect { RefdataValue rdv -> rdv.id }, editable: editable && !vendor.gokbId]}"/>

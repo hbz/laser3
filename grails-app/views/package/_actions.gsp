@@ -43,7 +43,7 @@
                     <g:hiddenField name="subOID" value="null"/>
                     <div class="field">
                         <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherit')}" class="${Btn.MODERN.SIMPLE_TOOLTIP} la-audit-button" data-inherited="false">
-                            <i aria-hidden="true" class="icon la-thumbtack slash"></i>
+                            <i aria-hidden="true" class="${Icon.SIG.INHERITANCE_OFF}"></i>
                         </button>
                     </div>
                 </g:if>

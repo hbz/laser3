@@ -1591,7 +1591,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                     supportedLibrarySystemsB.each { String lsB ->
                         if(!vendor.isLibrarySystemSupported(lsB)) {
-                            new LibrarySystem(vendor: vendor, librarySystem: RefdataValue.getByValueAndCategory(lsB, RDConstants.VENDOR_SUPPORTED_LIBRARY_SYSTEM)).save()
+                            new LibrarySystem(vendor: vendor, librarySystem: RefdataValue.getByValueAndCategory(lsB, RDConstants.SUPPORTED_LIBRARY_SYSTEM)).save()
                         }
                     }
                     vendor.electronicBillings.each { ElectronicBilling ebA ->

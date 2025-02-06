@@ -6,83 +6,9 @@
 
     <ui:controlButtons>
         <ui:exportDropdown>
-            <%--<ui:exportDropdownItem>
-                <g:if test="${filterSet}">
-                    <g:link class="item js-open-confirm-modal"
-                            data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
-                            data-confirm-term-how="ok" controller="subscription" action="members"
-                            params="${params+[exportXLS:true]}">
-                        ${message(code:'default.button.exports.xls')}
-                    </g:link>
-                </g:if>
-                <g:else>
-                    <g:link class="item" action="members" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
-                </g:else>
-            </ui:exportDropdownItem>--%>
             <ui:exportDropdownItem>
                 <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.SUBSCRIPTIONS_MEMBERS]"/>
             </ui:exportDropdownItem>
-            <%--
-            <ui:exportDropdownItem>
-                <g:if test="${filterSet}">
-                    <g:link class="item js-open-confirm-modal"
-                            data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
-                            data-confirm-term-how="ok" controller="subscription" action="members"
-                            params="${params+[format:'csv']}">
-                        ${message(code:'default.button.exports.csv')}
-                    </g:link>
-                </g:if>
-                <g:else>
-                    <g:link class="item" action="members" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
-                </g:else>
-            </ui:exportDropdownItem>
-            <ui:exportDropdownItem>
-                <g:if test="${filterSet}">
-                    <g:link class="item js-open-confirm-modal"
-                            data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
-                            data-confirm-term-how="ok" controller="subscription" action="members"
-                            params="${params+[exportIPs:true]}">
-                        ${message(code:'subscriptionDetails.members.exportIPs')}
-                    </g:link>
-                </g:if>
-                <g:else>
-                    <g:link class="item" action="members" params="${params+[exportIPs:true]}">${message(code:'subscriptionDetails.members.exportIPs')}</g:link>
-                </g:else>
-                <g:if test="${filterSet}">
-                    <g:link class="item js-open-confirm-modal"
-                            data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
-                            data-confirm-term-how="ok" controller="subscription" action="members"
-                            params="${params+[exportProxys:true]}">
-                        ${message(code:'subscriptionDetails.members.exportProxys')}
-                    </g:link>
-                </g:if>
-                <g:else>
-                    <g:link class="item" action="members" params="${params+[exportProxys:true]}">${message(code:'subscriptionDetails.members.exportProxys')}</g:link>
-                </g:else>
-                <g:if test="${filterSet}">
-                    <g:link class="item js-open-confirm-modal"
-                            data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
-                            data-confirm-term-how="ok" controller="subscription" action="members"
-                            params="${params+[exportEZProxys:true]}">
-                        ${message(code:'subscriptionDetails.members.exportEZProxys')}
-                    </g:link>
-                </g:if>
-                <g:else>
-                    <g:link class="item" action="members" params="${params+[exportEZProxys:true]}">${message(code:'subscriptionDetails.members.exportEZProxys')}</g:link>
-                </g:else>
-                <g:if test="${filterSet}">
-                    <g:link class="item js-open-confirm-modal"
-                            data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
-                            data-confirm-term-how="ok" controller="subscription" action="members"
-                            params="${params+[exportShibboleths:true]}">
-                        ${message(code:'subscriptionDetails.members.exportShibboleths')}
-                    </g:link>
-                </g:if>
-                <g:else>
-                    <g:link class="item" action="members" params="${params+[exportShibboleths:true]}">${message(code:'subscriptionDetails.members.exportShibboleths')}</g:link>
-                </g:else>
-            </ui:exportDropdownItem>
-            --%>
         </ui:exportDropdown>
         <laser:render template="${customerTypeService.getActionsTemplatePath()}" />
     </ui:controlButtons>
@@ -160,12 +86,13 @@
             <tbody>
             <g:each in="${filteredSubChilds}" status="i" var="row">
                 <g:set var="sub" value="${row.sub}"/>
-                <tr>
-                    <g:set var="subscr" value="${row.orgs}" />
+                <g:set var="subscr" value="${row.orgs}" />
+                <tr class="${subscr.isArchived() ? 'warning' : ''}">
                     <td>${i + 1}</td>
                     <%--<g:each in="${filteredSubscribers}" var="subscr">--%>
                         <td>
-                            ${subscr.sortname}</td>
+                            <ui:archiveIcon org="${subscr}" /> ${subscr.sortname}
+                        </td>
                         <td>
                             <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
                             <ui:customerTypeProIcon org="${subscr}" />

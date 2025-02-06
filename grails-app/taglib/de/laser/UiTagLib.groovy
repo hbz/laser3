@@ -377,7 +377,7 @@ class UiTagLib {
                                     params: ['owner': oid, 'property': [objAttr]],
                             )
                             out << '">'
-                            out << '<i aria-hidden="true" class="icon la-thumbtack slash"></i>'
+                            out << '<i aria-hidden="true" class="' + Icon.SIG.INHERITANCE_OFF + '"></i>'
                             out << '</a>'
                         }
                     }
@@ -410,7 +410,7 @@ class UiTagLib {
                         }
                         else {
                             out << '<span class="la-popup-tooltip" data-content="Wert wird nicht vererbt" data-position="top right">'
-                            out << '<i aria-hidden="true" class="icon la-thumbtack slash"></i>'
+                            out << '<i aria-hidden="true" class="' + Icon.SIG.INHERITANCE_OFF + '"></i>'
                             out << '</span>'
                         }
                     }
@@ -441,6 +441,18 @@ class UiTagLib {
                 out << '<i class="' + Icon.SIG.INHERITANCE_AUTO + '"></i>'
                 out << '</span>'
             }
+        }
+    }
+
+    // <ui:archiveIcon org="${org}" />
+
+    def archiveIcon = { attrs, body ->  // TODO - in progress
+
+        if (attrs.org && attrs.org.isArchived()) {
+            String ad = formatDate(format: message(code: 'default.date.format.notime'), date: attrs.org.archiveDate)
+            out << '<span class="la-popup-tooltip" data-position="top right" data-content="' + message(code:'org.archiveDate.label') + ': ' + ad + '">'
+            out << '  <i class="exclamation triangle icon red"></i>'
+            out << '</span>'
         }
     }
 
