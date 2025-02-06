@@ -13,7 +13,7 @@
                         <strong>
                             <ui:archiveIcon org="${chosenOrg}" />
                             <g:link controller="organisation" action="show" id="${chosenOrg.id}">${chosenOrg.name}</g:link>
-                            <ui:customerTypeProIcon org="${chosenOrg}" />
+                            <ui:customerTypeOnlyProIcon org="${chosenOrg}" />
                         </strong>
                     </p>
                     ${chosenOrg.libraryType?.getI10n('value')}
@@ -121,7 +121,7 @@
                         </span>
                     </g:if>
 
-                    <ui:customerTypeProIcon org="${subscr}" />
+                    <ui:customerTypeOnlyProIcon org="${subscr}" />
                 </td>
                 <%
                     LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(subCons,false)

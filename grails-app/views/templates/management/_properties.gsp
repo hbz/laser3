@@ -437,7 +437,7 @@
                             </td>
                             <td>
                                 <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
-                                <ui:customerTypeProIcon org="${subscr}" />
+                                <ui:customerTypeOnlyProIcon org="${subscr}" />
                             </td>
                         </g:if>
                         <g:if test="${controllerName == "myInstitution"}">

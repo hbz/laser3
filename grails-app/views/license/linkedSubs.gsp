@@ -160,7 +160,7 @@
                     <td>${subscr.sortname}</td>
                     <td>
                         <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
-                        <ui:customerTypeProIcon org="${subscr}" />
+                        <ui:customerTypeOnlyProIcon org="${subscr}" />
 
                         <div class="ui list">
                             <g:each in="${Person.getPublicByOrgAndFunc(subscr, 'General contact person')}" var="gcp">

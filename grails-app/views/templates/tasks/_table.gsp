@@ -39,7 +39,7 @@
                                 <i class="${Icon.LICENSE} la-list-icon"></i> <g:link controller="license" action="show" id="${taskInstance.license.id}">${fieldValue(bean: taskInstance, field: "license")}</g:link>
                             </g:if>
                             <g:if test="${taskInstance.org}">
-                                <i class="${Icon.ORG} la-list-icon"></i> <g:link controller="organisation" action="show" id="${taskInstance.org.id}">${fieldValue(bean: taskInstance, field: "org")}</g:link>
+                                <ui:customerTypeIcon org="${taskInstance.org}" /> <g:link controller="organisation" action="show" id="${taskInstance.org.id}">${fieldValue(bean: taskInstance, field: "org")}</g:link>
                             </g:if>
                             <g:if test="${taskInstance.provider}">
                                 <i class="${Icon.PROVIDER} la-list-icon"></i> <g:link controller="provider" action="show" id="${taskInstance.provider.id}">${fieldValue(bean: taskInstance, field: "provider")}</g:link>
