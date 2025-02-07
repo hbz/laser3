@@ -9,4 +9,4 @@ Bitte hinterlegen Sie mindestens **folgende Kontaktdaten und Adressen:**
 * Postanschrift
 * Rechnungsanschrift
 
-Sie können einem Kontakt mehr als eine Position/Rolle zuordnen.
+Sie können einem Kontakt mehr als eine Position/Funktion zuordnen.
