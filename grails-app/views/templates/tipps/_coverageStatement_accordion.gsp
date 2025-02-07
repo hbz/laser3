@@ -79,7 +79,7 @@
     </div>
     <g:if test="${showEmbargo}">
         <div class="item">
-            <i class="grey icon hand paper right la-popup-tooltip" data-content="${message(code: 'tipp.embargo')}"></i>
+            <i class="${Icon.ATTR.TIPP_EMBARGO} la-popup-tooltip" data-content="${message(code: 'tipp.embargo')}"></i>
             <div class="content">
                 <div class="header">
                     ${message(code: 'tipp.embargo')}
