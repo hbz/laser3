@@ -21,9 +21,9 @@
 </div>
 
 <div class="ui basic segment">
-    <p class="ui header">de.laser.ui.Icon</p>
+    <p class="ui header">Icon</p>
     <div class="ui five cards">
-        <g:each in="${Icon.getDeclaredFields().findAll{ ! it.isSynthetic() }}" var="f" status="i">
+        <g:each in="${Icon.getDeclaredFields().findAll{ ! it.isSynthetic() && (it.getType().getTypeName() == String.getTypeName()) }}" var="f" status="i">
             <div class="ui mini card" data-cat="${f.name.split('\\.').last().split('_').first()}">
                 <div class="content">
                     <div class="header">

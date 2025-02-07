@@ -32,15 +32,15 @@
     <div class="la-card-column-with-row">
         <div class="la-card-row">
             <div class="la-card-flexRow">
-                <i class="grey icon quote right la-popup-tooltip" data-content="${message(code: 'default.note.label')}"></i>
+                <i class="${Icon.ATTR.TIPP_COVERAGE_NOTE} la-popup-tooltip" data-content="${message(code: 'default.note.label')}"></i>
                 <ui:xEditable owner="${covStmt}" field="coverageNote" overwriteEditable="${overwriteEditable}"/>
             </div>
             <div class="la-card-flexRow">
-                <i class="grey ${Icon.ATTR.TIPP_COVERAGE_DEPTH} right la-popup-tooltip" data-content="${message(code: 'tipp.coverageDepth')}"></i>
+                <i class="${Icon.ATTR.TIPP_COVERAGE_DEPTH} la-popup-tooltip" data-content="${message(code: 'tipp.coverageDepth')}"></i>
                 <ui:xEditable owner="${covStmt}" field="coverageDepth" overwriteEditable="${overwriteEditable}"/>
             </div>
             <div class="la-card-flexRow">
-                <i class="grey icon hand paper right la-popup-tooltip" data-content="${message(code: 'tipp.embargo')}"></i>
+                <i class="${Icon.ATTR.TIPP_EMBARGO} la-popup-tooltip" data-content="${message(code: 'tipp.embargo')}"></i>
                 <ui:xEditable owner="${covStmt}" field="embargo" overwriteEditable="${overwriteEditable}"/>
             </div>
         </div>

@@ -1,1 +1,1 @@
-Dieser Bereich ist für Sie nur als Admin der Einrichtung sichtbar. Hier können Sie die Weitergabe der Daten aus Ihrem LAS:eR-Konto verwalten.
+In diesem Bereich können Sie als Administrator grundlegende Einstellungen zur **Datenweitergabe** vornehmen (OA-Monitor etc) und API-Key und Passwort für die LAS:eR-API einsehen. 

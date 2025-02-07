@@ -7,36 +7,6 @@
 
 <ui:controlButtons>
     <ui:exportDropdown>
-    <%--
-    <ui:exportDropdownItem>
-        <g:if test="${filterSet}">
-            <g:link class="item js-open-confirm-modal"
-                    data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
-                    data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
-                    params="${params + [format: 'csv']}">
-                <g:message code="default.button.exports.csv"/>
-            </g:link>
-        </g:if>
-        <g:else>
-            <g:link class="item" action="currentTitles" params="${params + [format: 'csv']}">CSV Export</g:link>
-        </g:else>
-    </ui:exportDropdownItem>
-    <ui:exportDropdownItem>
-        <g:if test="${filterSet}">
-            <g:link class="item js-open-confirm-modal"
-                    data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
-                    data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
-                    params="${params + [exportXLSX: true]}">
-                <g:message code="default.button.exports.xls"/>
-            </g:link>
-        </g:if>
-        <g:else>
-            <g:link class="item" action="currentTitles" params="${params + [exportXLSX: true]}">
-                <g:message code="default.button.exports.xls"/>
-            </g:link>
-        </g:else>
-    </ui:exportDropdownItem>
-    --%>
         <g:if test="${num_ti_rows < 1000000}">
             <ui:exportDropdownItem>
                 <g:render template="/clickMe/export/exportDropdownItems" model="[clickMeType: ExportClickMeService.TIPPS]"/>
@@ -58,12 +28,6 @@
                 <a class="item export" href="#kbart" data-fileformat="kbart">KBART Export</a>
             <%--</g:else>--%>
         </ui:exportDropdownItem>
-    <%--<ui:exportDropdownItem>
-        <g:link class="item" action="currentTitles" params="${params + [format:'json']}">JSON Export</g:link>
-    </ui:exportDropdownItem>
-    <ui:exportDropdownItem>
-        <g:link class="item" action="currentTitles" params="${params + [format:'xml']}">XML Export</g:link>
-    </ui:exportDropdownItem>--%>
     </ui:exportDropdown>
 </ui:controlButtons>
 
@@ -324,8 +288,7 @@
                                                             </g:if>
                                                             <g:if test="${covStmt.coverageNote}">
                                                                 <div class="item">
-                                                                    <i class="grey icon quote right la-popup-tooltip"
-                                                                       data-content="${message(code: 'default.note.label')}"></i>
+                                                                    <i class="${Icon.ATTR.TIPP_COVERAGE_NOTE} la-popup-tooltip" data-content="${message(code: 'default.note.label')}"></i>
 
                                                                     <div class="content">
                                                                         <div class="header">
@@ -340,7 +303,7 @@
                                                             </g:if>
                                                             <g:if test="${covStmt.coverageDepth}">
                                                                 <div class="item">
-                                                                    <i class="grey ${Icon.ATTR.TIPP_COVERAGE_DEPTH} right la-popup-tooltip"
+                                                                    <i class="${Icon.ATTR.TIPP_COVERAGE_DEPTH} la-popup-tooltip"
                                                                        data-content="${message(code: 'tipp.coverageDepth')}"></i>
 
                                                                     <div class="content">
@@ -356,7 +319,7 @@
                                                             </g:if>
                                                             <g:if test="${covStmt.embargo}">
                                                                 <div class="item">
-                                                                    <i class="grey icon hand paper right la-popup-tooltip"
+                                                                    <i class="${Icon.ATTR.TIPP_EMBARGO} la-popup-tooltip"
                                                                        data-content="${message(code: 'tipp.embargo')}"></i>
 
                                                                     <div class="content">

@@ -4,7 +4,7 @@ import de.laser.annotations.UIDoc
 import de.laser.annotations.UnstableFeature
 
 @UnstableFeature
-class AttrIcon {
+class IconAttr {
     // please do not touch during refactoring ..
     // spec. domain class attributes/datas
 
@@ -56,12 +56,31 @@ class AttrIcon {
     @UIDoc(usage = 'Only for Survey: Not all results processed by org (COLORED)')
     public static String SURVEY_RESULTS_NOT_PROCESSED    = 'edit red icon'
 
+    @UIDoc(usage = 'Only for TASK: status done')
+    public static String TASK_STATUS_DONE       = 'check circle outline icon'   // TODO
+    @UIDoc(usage = 'Only for TASK: status open')
+    public static String TASK_STATUS_OPEN       = 'la-open icon'               // TODO
+    @UIDoc(usage = 'Only for TASK: status deferred')
+    public static String TASK_STATUS_DEFERRED   = 'pause circle outline icon'   // TODO
+
     @UIDoc(usage = 'Only for TIPP: various coverage data (COLORED)')
-    public static String TIPP_COVERAGE          = 'la-books icon grey'      // TODO
-    @UIDoc(usage = 'Only for TIPP: coverageDepth')
-    public static String TIPP_COVERAGE_DEPTH    = 'file alternate icon'     // TODO
+    public static String TIPP_COVERAGE          = 'la-books icon grey'          // TODO
+    @UIDoc(usage = 'Only for TIPP: coverageDepth (COLORED)')
+    public static String TIPP_COVERAGE_DEPTH    = 'file alternate icon grey'    // TODO
+    @UIDoc(usage = 'Only for TIPP: coverageNote (COLORED)')
+    public static String TIPP_COVERAGE_NOTE     = 'quote right icon grey'       // TODO
+    @UIDoc(usage = 'Only for TIPP: embargo (COLORED)')
+    public static String TIPP_EMBARGO           = 'hand paper icon grey'        // TODO
+    @UIDoc(usage = 'Only for TIPP: firstAuthor (COLORED)')
+    public static String TIPP_FIRST_AUTHOR      = 'user circle icon grey'       // TODO
+    @UIDoc(usage = 'Only for TIPP: firstEditor (COLORED)')
+    public static String TIPP_FIRST_EDITOR      = 'industry circle icon grey'   // TODO
     @UIDoc(usage = 'Only for TIPP: issue (COLORED)')
-    public static String TIPP_ISSUE             = 'la-notebook icon grey'   // TODO
+    public static String TIPP_ISSUE             = 'la-notebook icon grey'       // TODO
+    @UIDoc(usage = 'Only for TIPP: medium (COLORED)')
+    public static String TIPP_MEDIUM            = 'medium icon grey'            // TODO
+    @UIDoc(usage = 'Only for TIPP: summaryOfContent (COLORED)')
+    public static String TIPP_SUMMARY_OF_CONTENT = 'desktop icon grey'          // TODO
 
     @UIDoc(usage = 'Only for Workflow: checkpoint')
     public static String WORKFLOW_CHECKPOINT        = 'circle icon'

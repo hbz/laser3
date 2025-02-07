@@ -7,68 +7,7 @@ import de.laser.annotations.UnstableFeature
 class Icon {
     // please do not touch during refactoring ..
 
-    class ATTR {
-        // please do not touch during refactoring ..
-        // spec. domain class attributes/datas
-
-        @UIDoc(usage = 'Only for Document attribute: confidentiality')
-        public static String DOCUMENT_CONFIDENTIALITY   = 'lock icon'
-
-        @UIDoc(usage = 'Only for License attribute: licenseCategory')
-        public static String LICENSE_CATEGORY           = 'stamp icon'
-
-        @UIDoc(usage = 'Only for Org attributes: createdBy / legallyObligedBy')
-        public static String ORG_LEGAL_INFORMATION      = 'hands helping icon'
-
-        @UIDoc(usage = 'Only for Org attributes: createdBy=true / legallyObligedBy=true (COLORED)')
-        public static String ORG_LEGAL_INFORMATION_11   = 'green check circle icon'
-        @UIDoc(usage = 'Only for Org attributes: createdBy=true  / legallyObligedBy (COLORED)')
-        public static String ORG_LEGAL_INFORMATION_10   = 'grey outline circle icon'
-        @UIDoc(usage = 'Only for Org attributes: createdBy / legallyObligedBy=true (COLORED)')
-        public static String ORG_LEGAL_INFORMATION_01   = 'red question mark icon'
-
-        @UIDoc(usage = 'Only for Subscription transfer: discount scale')
-        public static String SUBSCRIPTION_DISCOUNT_SCALE    = 'percentage icon'
-
-        @UIDoc(usage = 'Only for Subscription attribute: form')
-        public static String SUBSCRIPTION_FORM              = 'dice icon'
-
-        @UIDoc(usage = 'Only for Subscription attribute: hasPerpetualAccess')
-        public static String SUBSCRIPTION_HAS_PERPETUAL_ACCESS  = 'flag outline icon'
-        @UIDoc(usage = 'Only for Subscription attribute: hasPublishComponent')
-        public static String SUBSCRIPTION_HAS_PUBLISH_COMPONENT = 'quote right icon'
-        @UIDoc(usage = 'Only for Subscription attribute: holdingSelection')
-        public static String SUBSCRIPTION_HOLDING_SELECTION     = 'cut icon'            // TODO
-
-        @UIDoc(usage = 'Only for Subscription attribute: isMultiYear')
-        public static String SUBSCRIPTION_IS_MULTIYEAR      = 'forward icon'
-        @UIDoc(usage = 'Only for Subscription attribute: kind')
-        public static String SUBSCRIPTION_KIND              = 'dice five icon'          // TODO
-        @UIDoc(usage = 'Only for Subscription attribute: resource')
-        public static String SUBSCRIPTION_RESOURCE          = 'expand icon'             // TODO
-
-        @UIDoc(usage = 'Only for Subscription transfer: survey cancellation')
-        public static String SURVEY_CANCELLATION   = 'times circle icon'
-        @UIDoc(usage = 'Only for Subscription transfer: survey evaluation')
-        public static String SURVEY_EVALUTAION     = 'vote yea icon'
-
-        @UIDoc(usage = 'Only for Survey: Participants')
-        public static String SURVEY_PARTICIPANTS   = 'users icon'
-        @UIDoc(usage = 'Only for Survey: All results processed by org (COLORED)')
-        public static String SURVEY_RESULTS_PROCESSED        = 'edit green icon'
-        @UIDoc(usage = 'Only for Survey: Not all results processed by org (COLORED)')
-        public static String SURVEY_RESULTS_NOT_PROCESSED    = 'edit red icon'
-
-        @UIDoc(usage = 'Only for TIPP: various coverage data (COLORED)')
-        public static String TIPP_COVERAGE          = 'la-books icon grey'      // TODO
-        @UIDoc(usage = 'Only for TIPP: coverageDepth')
-        public static String TIPP_COVERAGE_DEPTH    = 'file alternate icon'     // TODO
-        @UIDoc(usage = 'Only for TIPP: issue (COLORED)')
-        public static String TIPP_ISSUE             = 'la-notebook icon grey'   // TODO
-
-        @UIDoc(usage = 'Only for Workflow: checkpoint')
-        public static String WORKFLOW_CHECKPOINT        = 'circle icon'
-    }
+    static def ATTR = IconAttr
 
     class AUTH {
         // please do not touch during refactoring ..
