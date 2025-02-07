@@ -1,12 +1,12 @@
 Das ist das **Profil** Ihrer Einrichtung. 
 Alle von Ihnen hier hinterlegten Daten sind nur für Sie und die Konsortialstellen einsehbar. Sie dienen der besseren Vermittlung von Einrichtungsinformationen an die Konsortialstelle und somit auch an die Anbieter. 
-Halten Sie die Informationen aktuell, damit Ihre korrekten Daten weitergeleitet werden können. 
+Halten Sie die Informationen aktuell, damit die korrekten Daten weitergeleitet werden können. 
 
 In der **Übersicht** Ihres Einrichtungsprofils können Sie allgemeine Informationen festhalten. Dazu gehören:
 
 + **Rahmendaten:** Name, URL zur Website, Trägerschaft, Bibliothekstyp, Bundesland etc
 + **Fächergruppe:** diese Information benötigen die Konsortialstellen um Ihnen gezielte Interessenanfragen per Umfrage senden zu können
-+ **XRechnung:** Auszufüllen, sofern man die Rechnungen elektronisch beziehen möchte
++ **XRechnung:** Auszufüllen, sofern Sie die Rechnungen elektronisch über eine Rechnungseingangsplattform beziehen möchte
 + **Verwendete Drittsysteme:** Bibliotheksysteme, Discovery-Systeme etc.
 + **Eigene  Merkmale:** Ergänzende Informations-Felder, die Sie individuell festlegen können. Dazu müssen Sie zunächst unter **Meine Einrichtung > Merkmale verwalten** eigene Merkmale erstellen. Mehr Informationen dazu finden Sie auf der angegebenen Seite
 
