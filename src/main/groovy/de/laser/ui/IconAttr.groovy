@@ -4,7 +4,7 @@ import de.laser.annotations.UIDoc
 import de.laser.annotations.UnstableFeature
 
 @UnstableFeature
-class AttrIcon {
+class IconAttr {
     // please do not touch during refactoring ..
     // spec. domain class attributes/datas
 
