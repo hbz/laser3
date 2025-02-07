@@ -41,19 +41,19 @@ class ApiStatistic {
      */
     static private List<Org> getAccessibleOrgs() {
 
-        List<Org> orgs = OrgSetting.executeQuery(
-                "select o from OrgSetting os join os.org o where os.key = :key and os.rdValue = :rdValue " +
-                        "and (o.status is null or o.status != :deleted)", [
-                key    : OrgSetting.KEYS.NATSTAT_SERVER_ACCESS,
-                rdValue: RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N),
-                deleted: RefdataValue.getByValueAndCategory('Deleted', 'org.status') // TODO: erms-6224 - removed o.status != 'deleted'
-        ])
-        // TODO: erms-6224
 //        List<Org> orgs = OrgSetting.executeQuery(
-//                "select o from OrgSetting os join os.org o where os.key = :key and os.rdValue = :rdValue ", [
-//                            key    : OrgSetting.KEYS.NATSTAT_SERVER_ACCESS,
-//                            rdValue: RDStore.YN_YES
-//                    ])
+//                "select o from OrgSetting os join os.org o where os.key = :key and os.rdValue = :rdValue " +
+//                        "and (o.status is null or o.status != :deleted)", [
+//                key    : OrgSetting.KEYS.NATSTAT_SERVER_ACCESS,
+//                rdValue: RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N),
+//                deleted: RefdataValue.getByValueAndCategory('Deleted', 'org.status') // TODO: erms-6224 - removed o.status != 'deleted'
+//        ])
+        // TODO: erms-6238
+        List<Org> orgs = OrgSetting.executeQuery(
+                "select o from OrgSetting os join os.org o where os.key = :key and os.rdValue = :rdValue and o.archiveDate is null", [
+                            key    : OrgSetting.KEYS.NATSTAT_SERVER_ACCESS,
+                            rdValue: RDStore.YN_YES
+                    ])
 
         orgs
     }
@@ -153,9 +153,11 @@ class ApiStatistic {
         Collection<Object> result = []
         orgRoles.each { ogr ->
             if (ogr.roleType.id == RDStore.OR_CONTENT_PROVIDER.id) {
-                if (ogr.org.status?.value == 'Deleted') { // TODO: ERMS-6224 - remove org.status
-                }
-                else {
+//                if (ogr.org.status?.value == 'Deleted') { // TODO: ERMS-6224 - remove org.status
+//                }
+//                else {
+                // TODO: erms-6238
+                if (! ogr.org.isArchived()) {
                     result.add(ApiUnsecuredMapReader.getOrganisationStubMap(ogr.org))
                 }
             }
@@ -242,9 +244,11 @@ class ApiStatistic {
                     if (ogr.roleType?.id in [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIPTION_CONSORTIUM.id]) {
                         if (ogr.org.id in accessibleOrgs.collect{ it.id }) {
 
-                            if (ogr.org.status?.value == 'Deleted') { // TODO: ERMS-6224 - remove org.status
-                            }
-                            else {
+//                            if (ogr.org.status?.value == 'Deleted') { // TODO: ERMS-6224 - remove org.status
+//                            }
+//                            else {
+                            // TODO: erms-6238
+                            if (! ogr.org.isArchived()) {
                                 Map<String, Object> org = ApiUnsecuredMapReader.getOrganisationStubMap(ogr.org)
                                 if (org) {
                                     orgList.add(ApiToolkit.cleanUp(org, true, true))
