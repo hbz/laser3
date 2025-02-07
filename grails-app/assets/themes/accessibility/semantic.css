@@ -28763,11 +28763,11 @@ body[class*="provider"] .ui.icon.header .icon.la-object:before {
          Header in Card with Add Icon
     ----------------------------------- */
 
-div[id^="container"] {
+.card .grid .column {
   background: red;
 }
 
-div[id^="container"] .card .grid .column h2 {
+.card .grid .column h2 {
   font-size: 1rem;
 }
 /*!

@@ -611,28 +611,30 @@
                 <div id="container-provider">
                     <div class="ui card">
                         <div class="content">
-                            <h2 class="ui header">${message(code: 'provider.label')}</h2>
-                            <laser:render template="/templates/links/providerLinksAsList"
-                                          model="${[providerRoles: providerRoles,
-                                                    roleObject   : subscription,
-                                                    roleRespValue: RDStore.PRS_RESP_SPEC_SUB_EDITOR.value,
-                                                    editmode     : editable,
-                                                    showPersons  : true
-                                          ]}"/>
-
-                            <div class="ui la-vertical buttons">
-
-                                <laser:render template="/templates/links/providerLinksSimpleModal"
-                                              model="${[linkType      : subscription.class.name,
-                                                        parent        : genericOIDService.getOID(subscription),
-                                                        recip_prop    : 'subscription',
-                                                        tmplEntity    : message(code: 'subscription.details.linkProvider.tmplEntity'),
-                                                        tmplText      : message(code: 'subscription.details.linkProvider.tmplText'),
-                                                        tmplButtonText: message(code: 'subscription.details.linkProvider.tmplButtonText'),
-                                                        tmplModalID   : 'modal_add_provider',
-                                                        editmode      : editable
+                            <div class="ui header">
+                                <h2 class="ui header">${message(code: 'provider.label')}</h2>
+                                <laser:render template="/templates/links/providerLinksAsList"
+                                              model="${[providerRoles: providerRoles,
+                                                        roleObject   : subscription,
+                                                        roleRespValue: RDStore.PRS_RESP_SPEC_SUB_EDITOR.value,
+                                                        editmode     : editable,
+                                                        showPersons  : true
                                               ]}"/>
 
+                                <div class="ui la-vertical buttons">
+
+                                    <laser:render template="/templates/links/providerLinksSimpleModal"
+                                                  model="${[linkType      : subscription.class.name,
+                                                            parent        : genericOIDService.getOID(subscription),
+                                                            recip_prop    : 'subscription',
+                                                            tmplEntity    : message(code: 'subscription.details.linkProvider.tmplEntity'),
+                                                            tmplText      : message(code: 'subscription.details.linkProvider.tmplText'),
+                                                            tmplButtonText: message(code: 'subscription.details.linkProvider.tmplButtonText'),
+                                                            tmplModalID   : 'modal_add_provider',
+                                                            editmode      : editable
+                                                  ]}"/>
+
+                                </div>
                             </div>
 
                         </div>
