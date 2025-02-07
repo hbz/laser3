@@ -262,8 +262,14 @@ body[class*="provider"] .ui.icon.header .icon.la-object:before {
          Header in Card with Add Icon
     ----------------------------------- */
 
-.card .grid .column {
-    background: red;
+.ui.card>.content>.header,
+.ui.cards>.card>.content>.header {
+    &.la-flexbox{
+        display:flex;
+    }
+    &.la-justifyContent-spaceBetween{
+        justify-content:space-between;
+    }
     h2 {
           font-size: 1rem;
     }

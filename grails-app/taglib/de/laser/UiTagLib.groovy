@@ -291,17 +291,13 @@ class UiTagLib {
         out << '    <div class="content">'
 
         if (title) {
-            out << '    <div class="header">'
-            out << '        <div class="ui grid">'
-            out << '            <div class="twelve wide column">'
-            out << '                <h2>'+ title + '</h2>'
-            out << '            </div>'
+            out << '    <div class="ui header la-flexbox la-justifyContent-spaceBetween">'
+            out << '        <h2>'+ title + '</h2>'
             if (attrs.editable && attrs.href) {
                 out << '        <div class="right aligned four wide column">'
                 out << '            <button type="button" class="' + Btn.MODERN.SIMPLE + '" data-ui="modal" data-href="' + attrs.href + '" ><i aria-hidden="true" class="' + Icon.CMD.ADD + '"></i></button>'
                 out << '        </div>'
             }
-            out << '        </div>'
             out << '   </div>'
 
         }

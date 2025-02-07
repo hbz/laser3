@@ -611,7 +611,20 @@
                 <div id="container-provider">
                     <div class="ui card">
                         <div class="content">
-                            <h2 class="ui header">${message(code: 'provider.label')}</h2>
+                            <div class="ui header la-flexbox la-justifyContent-spaceBetween">
+                                <h2>${message(code: 'provider.label')}</h2>
+                                <laser:render template="/templates/links/providerLinksSimpleModal"
+                                              model="${[linkType      : subscription.class.name,
+                                                        parent        : genericOIDService.getOID(subscription),
+                                                        recip_prop    : 'subscription',
+                                                        tmplEntity    : message(code: 'subscription.details.linkProvider.tmplEntity'),
+                                                        tmplText      : message(code: 'subscription.details.linkProvider.tmplText'),
+                                                        tmplIcon        : 'add',
+                                                        tmplTooltip     : message(code: 'subscription.details.linkProvider.tmplButtonText'),
+                                                        tmplModalID   : 'modal_add_provider',
+                                                        editmode      : editable
+                                              ]}"/>
+                            </div>
                             <laser:render template="/templates/links/providerLinksAsList"
                                           model="${[providerRoles: providerRoles,
                                                     roleObject   : subscription,
@@ -620,21 +633,6 @@
                                                     showPersons  : true
                                           ]}"/>
 
-                            <div class="ui la-vertical buttons">
-
-                                <laser:render template="/templates/links/providerLinksSimpleModal"
-                                              model="${[linkType      : subscription.class.name,
-                                                        parent        : genericOIDService.getOID(subscription),
-                                                        recip_prop    : 'subscription',
-                                                        tmplEntity    : message(code: 'subscription.details.linkProvider.tmplEntity'),
-                                                        tmplText      : message(code: 'subscription.details.linkProvider.tmplText'),
-                                                        tmplButtonText: message(code: 'subscription.details.linkProvider.tmplButtonText'),
-                                                        tmplModalID   : 'modal_add_provider',
-                                                        editmode      : editable
-                                              ]}"/>
-
-                            </div>
-
                         </div>
                     </div>
                 </div>
@@ -642,7 +640,20 @@
                 <div id="container-vendor">
                     <div class="ui card">
                         <div class="content">
-                            <h2 class="ui header">${message(code: 'vendor.label')}</h2>
+                            <div class="ui header la-flexbox la-justifyContent-spaceBetween">
+                                <h2>${message(code: 'vendor.label')}</h2>
+                                <laser:render template="/templates/links/vendorLinksSimpleModal"
+                                              model="${[linkType      : subscription.class.name,
+                                                        parent        : genericOIDService.getOID(subscription),
+                                                        recip_prop    : 'subscription',
+                                                        tmplEntity    : message(code: 'subscription.details.linkAgency.tmplEntity'),
+                                                        tmplText      : message(code: 'subscription.details.linkAgency.tmplText'),
+                                                        tmplIcon      : 'add',
+                                                        tmplTooltip   : message(code: 'subscription.details.linkAgency.tmplButtonText'),
+                                                        tmplModalID   : 'modal_add_agency',
+                                                        editmode      : editable
+                                              ]}"/>
+                            </div>
                             <laser:render template="/templates/links/vendorLinksAsList"
                                           model="${[vendorRoles  : vendorRoles,
                                                     roleObject   : subscription,
@@ -650,21 +661,6 @@
                                                     editmode     : editable,
                                                     showPersons  : true
                                           ]}"/>
-
-                            <div class="ui la-vertical buttons">
-                                <laser:render template="/templates/links/vendorLinksSimpleModal"
-                                              model="${[linkType      : subscription.class.name,
-                                                        parent        : genericOIDService.getOID(subscription),
-                                                        recip_prop    : 'subscription',
-                                                        tmplEntity    : message(code: 'subscription.details.linkAgency.tmplEntity'),
-                                                        tmplText      : message(code: 'subscription.details.linkAgency.tmplText'),
-                                                        tmplButtonText: message(code: 'subscription.details.linkAgency.tmplButtonText'),
-                                                        tmplModalID   : 'modal_add_agency',
-                                                        editmode      : editable
-                                              ]}"/>
-
-                            </div>
-
                         </div>
                     </div>
                 </div>

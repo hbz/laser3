@@ -2,60 +2,58 @@
 <laser:serviceInjection/>
 
 <div class="content">
-    <div class="ui header">
-        <div class="ui grid">
-            <div class="twelve wide column">
-                <g:if test="${subscriptionLicenseLink}">
-                    <h2><g:message code="license.plural"/></h2>
-                </g:if>
-                <g:elseif test="${subscription}">
-                    <h2><g:message code="subscription.details.linksHeader"/></h2>
-                </g:elseif>
-                <g:elseif test="${license}">
-                    <h2><g:message code="license.details.linksHeader"/></h2>
-                </g:elseif>
-            </div>
-            <%
-                Map<String, Object> model
-                String addLink = ""
-                if (license || subscriptionLicenseLink)
-                    addLink = message(code: 'license.details.addLink')
-                else if (subscription)
-                    addLink = message(code: 'subscription.details.addLink')
-                if (subscriptionLicenseLink) {
-                    model = [tmplText               : addLink,
-                             tmplID                 : 'addLicenseLink',
-                             tmplIcon               : 'add',
-                             tmplTooltip            : addLink,
+    <div class="ui header la-flexbox la-justifyContent-spaceBetween">
+
+        <g:if test="${subscriptionLicenseLink}">
+            <h2><g:message code="license.plural"/></h2>
+        </g:if>
+        <g:elseif test="${subscription}">
+            <h2><g:message code="subscription.details.linksHeader"/></h2>
+        </g:elseif>
+        <g:elseif test="${license}">
+            <h2><g:message code="license.details.linksHeader"/></h2>
+        </g:elseif>
+
+        <%
+            Map<String, Object> model
+            String addLink = ""
+            if (license || subscriptionLicenseLink)
+                addLink = message(code: 'license.details.addLink')
+            else if (subscription)
+                addLink = message(code: 'subscription.details.addLink')
+            if (subscriptionLicenseLink) {
+                model = [tmplText               : addLink,
+                         tmplID                 : 'addLicenseLink',
+                         tmplIcon               : 'add',
+                         tmplTooltip            : addLink,
 /*                             tmplButtonText         : addLink,*/
-                             tmplModalID            : 'sub_add_license_link',
-                             editmode               : editable,
-                             subscriptionLicenseLink: true,
-                             atConsortialParent     : contextService.getOrg() == subscription.getConsortium(),
-                             context                : subscription,
-                             linkInstanceType       : Links.class.name
-                    ]
-                } else {
-                    model = [tmplText          : addLink,
-                             tmplID            : 'addLink',
-                             tmplIcon          : 'add',
-                             tmplTooltip        :addLink,
+                         tmplModalID            : 'sub_add_license_link',
+                         editmode               : editable,
+                         subscriptionLicenseLink: true,
+                         atConsortialParent     : contextService.getOrg() == subscription.getConsortium(),
+                         context                : subscription,
+                         linkInstanceType       : Links.class.name
+                ]
+            } else {
+                model = [tmplText          : addLink,
+                         tmplID            : 'addLink',
+                         tmplIcon          : 'add',
+                         tmplTooltip        :addLink,
 //                             tmplButtonText    : addLink,
-                             tmplModalID       : 'sub_add_link',
-                             editmode          : editable,
-                             atConsortialParent: atConsortialParent,
-                             context           : entry,
-                             linkInstanceType  : Links.class.name
-                    ]
-                }
-            %>
-            <div class="right aligned four wide column">
-                <laser:render template="/templates/links/subLinksModal"
-                              model="${model}"/>
-                %{--                <a type="button" class="ui button icon la-modern-button" data-ui="modal" href="#sub_add_link">
-                                    <i aria-hidden="true" class="plus icon"></i>
-                                </a>--}%
-            </div>
+                         tmplModalID       : 'sub_add_link',
+                         editmode          : editable,
+                         atConsortialParent: atConsortialParent,
+                         context           : entry,
+                         linkInstanceType  : Links.class.name
+                ]
+            }
+        %>
+        <div class="right aligned four wide column">
+            <laser:render template="/templates/links/subLinksModal"
+                          model="${model}"/>
+            %{--                <a type="button" class="ui button icon la-modern-button" data-ui="modal" href="#sub_add_link">
+                                <i aria-hidden="true" class="plus icon"></i>
+                            </a>--}%
         </div>
     </div>
 

@@ -28613,11 +28613,18 @@ body[class*="provider"] .ui.icon.header .icon.la-object:before {
          Header in Card with Add Icon
     ----------------------------------- */
 
-.card .grid .column {
-  background: red;
+.ui.card > .content > .header.la-flexbox,
+.ui.cards > .card > .content > .header.la-flexbox {
+  display: flex;
 }
 
-.card .grid .column h2 {
+.ui.card > .content > .header.la-justifyContent-spaceBetween,
+.ui.cards > .card > .content > .header.la-justifyContent-spaceBetween {
+  justify-content: space-between;
+}
+
+.ui.card > .content > .header h2,
+.ui.cards > .card > .content > .header h2 {
   font-size: 1rem;
 }
 /*!
