@@ -8,6 +8,6 @@ In der **Übersicht** Ihres Einrichtungsprofils können Sie allgemeine Informati
 + **Fächergruppe:** diese Information benötigen die Konsortialstellen um Ihnen gezielte Interessenanfragen per Umfrage senden zu können
 + **XRechnung:** Auszufüllen, sofern Sie die Rechnungen elektronisch über eine Rechnungseingangsplattform beziehen möchte
 + **Verwendete Drittsysteme:** Bibliotheksysteme, Discovery-Systeme etc.
-+ **Eigene  Merkmale:** Ergänzende Informations-Felder, die Sie individuell festlegen können. Dazu müssen Sie zunächst unter **Meine Einrichtung > Merkmale verwalten** eigene Merkmale erstellen. Mehr Informationen dazu finden Sie auf der angegebenen Seite
++ **Eigene  Merkmale:** Ergänzende Informations-Felder, die Sie als **Pro-Nutzender** individuell festlegen können. Dazu müssen Sie zunächst unter **Meine Einrichtung > Merkmale verwalten** eigene Merkmale erstellen. Mehr Informationen dazu finden Sie auf der angegebenen Seite
 
 Rechts in den **gelben Kästchen** sind zudem Ihre öffentliche Kontakte und Ihre internen Anmerkungen. Letzteres ist nur für die Mitarbeitenden Ihrer Einrichtung einsehar. Pro-Nutzende können hier zudem Aufgaben und Workflows erstellen und Dokumente hochladen. Eine Übersicht dieser befindet sich ebenfalls im Einrichtungsprofil unter den Reitern **Öffentliche Kontakte, Anmerkungen, Aufgaben, Dokumente** und **Workflows**.
