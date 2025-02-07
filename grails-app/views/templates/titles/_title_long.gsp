@@ -47,8 +47,7 @@
 
     <g:if test="${ie && (ie.tipp.medium || showEmptyFields)}">
         <div class="item">
-            <i class="grey medium icon la-popup-tooltip"
-               data-content="${message(code: 'tipp.medium')}"></i>
+            <i class="${Icon.ATTR.TIPP_MEDIUM} la-popup-tooltip" data-content="${message(code: 'tipp.medium')}"></i>
 
             <div class="content">
                 ${showCompact ? '' : message(code: 'tipp.medium') + ':'} ${ie.tipp.medium?.getI10n('value')}
@@ -58,8 +57,7 @@
     <g:else>
         <g:if test="${(tipp.medium || showEmptyFields)}">
             <div class="item">
-                <i class="grey medium icon la-popup-tooltip"
-                   data-content="${message(code: 'tipp.medium')}"></i>
+                <i class="${Icon.ATTR.TIPP_MEDIUM} la-popup-tooltip" data-content="${message(code: 'tipp.medium')}"></i>
 
                 <div class="content">
                     ${showCompact ? '' : message(code: 'tipp.medium') + ':'} ${tipp.medium?.getI10n('value')}
@@ -128,8 +126,7 @@
 
     <g:if test="${(tipp.titleType == 'monograph') && (tipp.firstAuthor || showEmptyFields)}">
         <div class="item">
-            <i class="grey icon user circle la-popup-tooltip"
-               data-content="${message(code: 'tipp.firstAuthor')}"></i>
+            <i class="${Icon.ATTR.TIPP_FIRST_AUTHOR} la-popup-tooltip" data-content="${message(code: 'tipp.firstAuthor')}"></i>
 
             <div class="content">
                 ${showCompact ? '' : message(code: 'tipp.firstAuthor') + ':'} ${tipp.firstAuthor}
@@ -139,8 +136,7 @@
 
     <g:if test="${(tipp.titleType == 'monograph') && (tipp.firstEditor || showEmptyFields)}">
         <div class="item">
-            <i class="grey icon industry circle la-popup-tooltip"
-               data-content="${message(code: 'tipp.firstEditor')}"></i>
+            <i class="${Icon.ATTR.TIPP_FIRST_EDITOR} la-popup-tooltip" data-content="${message(code: 'tipp.firstEditor')}"></i>
 
             <div class="content">
                 ${showCompact ? '' : message(code: 'tipp.firstEditor') + ':'} ${tipp.firstEditor}
@@ -172,8 +168,7 @@
 
     <g:if test="${(tipp.titleType == 'monograph') && (tipp.summaryOfContent || showEmptyFields)}">
         <div class="item">
-            <i class="grey icon desktop la-popup-tooltip"
-               data-content="${message(code: 'title.summaryOfContent.label')}"></i>
+            <i class="${Icon.ATTR.TIPP_SUMMARY_OF_CONTENT} la-popup-tooltip" data-content="${message(code: 'title.summaryOfContent.label')}"></i>
 
             <div class="content">
                 ${showCompact ? '' : message(code: 'title.summaryOfContent.label') + ':'} ${tipp.summaryOfContent}

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Icon; de.laser.ui.Btn; de.laser.storage.RDStore;" %>
 <laser:serviceInjection/>
 <div class="la-icon-list">
 
@@ -63,8 +63,7 @@
 
     <g:if test="${(tipp.titleType == 'monograph') && (tipp.firstAuthor || showEmptyFields)}">
         <div class="item">
-            <i class="grey icon user circle la-popup-tooltip"
-               data-content="${message(code: 'tipp.firstAuthor')}"></i>
+            <i class="${Icon.ATTR.TIPP_FIRST_AUTHOR} la-popup-tooltip" data-content="${message(code: 'tipp.firstAuthor')}"></i>
 
             <div class="content">
                 ${showCompact ? '' : message(code: 'tipp.firstAuthor') + ':'} ${tipp.firstAuthor}
@@ -74,8 +73,7 @@
 
     <g:if test="${(tipp.titleType == 'monograph') && (tipp.firstEditor || showEmptyFields)}">
         <div class="item">
-            <i class="grey icon industry circle la-popup-tooltip"
-               data-content="${message(code: 'tipp.firstEditor')}"></i>
+            <i class="${Icon.ATTR.TIPP_FIRST_EDITOR} la-popup-tooltip" data-content="${message(code: 'tipp.firstEditor')}"></i>
 
             <div class="content">
                 ${showCompact ? '' : message(code: 'tipp.firstEditor') + ':'} ${tipp.firstEditor}
