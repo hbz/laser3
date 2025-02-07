@@ -28608,6 +28608,18 @@ body[class*="provider"] .ui.icon.header .icon.la-object:before {
 .la-orgRelations {
   font-weight: normal;
 }
+
+/* -----------------------------------
+         Header in Card with Add Icon
+    ----------------------------------- */
+
+div[id^="container"] {
+  background: red;
+}
+
+div[id^="container"] .card .grid .column h2 {
+  font-size: 1rem;
+}
 /*!
  * # Fomantic-UI 2.9.3 - Icon
  * https://github.com/fomantic/Fomantic-UI/
