@@ -56,12 +56,12 @@ class IconAttr {
     @UIDoc(usage = 'Only for Survey: Not all results processed by org (COLORED)')
     public static String SURVEY_RESULTS_NOT_PROCESSED    = 'edit red icon'
 
-//    @UIDoc(usage = 'Only for TASK: status done')
-//    public static String TASK_STATUS_DONE       = 'check circle outline icon'   // TODO
-//    @UIDoc(usage = 'Only for TASK: status open')
-//    public static String TASK_STATUS_OPEN       = 'la-open icon'               // TODO
-//    @UIDoc(usage = 'Only for TASK: status deferred')
-//    public static String TASK_STATUS_DEFERRED   = 'pause circle outline icon'   // TODO
+    @UIDoc(usage = 'Only for TASK: status done')
+    public static String TASK_STATUS_DONE       = 'check circle outline icon'   // TODO
+    @UIDoc(usage = 'Only for TASK: status open')
+    public static String TASK_STATUS_OPEN       = 'la-open icon'               // TODO
+    @UIDoc(usage = 'Only for TASK: status deferred')
+    public static String TASK_STATUS_DEFERRED   = 'pause circle outline icon'   // TODO
 
     @UIDoc(usage = 'Only for TIPP: various coverage data (COLORED)')
     public static String TIPP_COVERAGE          = 'la-books icon grey'      // TODO

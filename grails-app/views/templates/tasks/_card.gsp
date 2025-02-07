@@ -8,15 +8,15 @@
     <div class="ui relaxed divided list">
     <g:each in="${tasks}" var="tsk">
         <g:if test="${tsk.status == RDStore.TASK_STATUS_DONE}">
-            <g:set var="icon" value="check circle outline"/>
+            <g:set var="icon" value="${Icon.ATTR.TASK_STATUS_DONE}"/>
             <g:set var="tooltip" value="${message(code: 'tooltip.closedTask')}"/>
         </g:if>
         <g:elseif test="${tsk.status == RDStore.TASK_STATUS_OPEN}">
-            <g:set var="icon" value="la-open"/>
+            <g:set var="icon" value="${Icon.ATTR.TASK_STATUS_OPEN}"/>
             <g:set var="tooltip" value="${message(code: 'tooltip.openTask')}"/>
         </g:elseif>
         <g:elseif test="${tsk.status == RDStore.TASK_STATUS_DEFERRED}">
-            <g:set var="icon" value="pause circle outline"/>
+            <g:set var="icon" value="${Icon.ATTR.TASK_STATUS_DEFERRED}"/>
             <g:set var="tooltip" value="${message(code: 'tooltip.pausedTask')}"/>
         </g:elseif>
 
@@ -36,7 +36,7 @@
                         </g:link>
                     </div>
                 </g:if>
-                <i class="large la-list-icon la-popup-tooltip icon ${icon}" data-content="${tooltip}"></i>
+                <i class="large ${icon} la-list-icon la-popup-tooltip" data-content="${tooltip}"></i>
                 <div class="content">
                     <g:if test="${overwriteEditable}">
                         <a class="header" onclick="JSPC.app.editTask(${tsk.id});">${tsk.title}</a>
