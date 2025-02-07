@@ -294,7 +294,7 @@ class UiTagLib {
             out << '    <div class="header">'
             out << '        <div class="ui grid">'
             out << '            <div class="twelve wide column">'
-            out <<                title
+            out << '                <h2>'+ title + '</h2>'
             out << '            </div>'
             if (attrs.editable && attrs.href) {
                 out << '        <div class="right aligned four wide column">'

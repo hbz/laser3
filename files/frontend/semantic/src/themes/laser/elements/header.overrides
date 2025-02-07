@@ -258,3 +258,13 @@ body[class*="provider"] .ui.icon.header .icon.la-object:before {
 .la-orgRelations {
     font-weight: normal
 }
+    /* -----------------------------------
+         Header in Card with Add Icon
+    ----------------------------------- */
+
+.card .grid .column {
+    background: red;
+    h2 {
+          font-size: 1rem;
+    }
+}
