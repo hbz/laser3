@@ -61,7 +61,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
     Date archiveDate
 
-    Date retirementDate
+    Date retirementDate // todo: ERMS-6224, ERMS-6238 -> remove ?
     Date dateCreated
     Date lastUpdated
     Date lastUpdatedCascading

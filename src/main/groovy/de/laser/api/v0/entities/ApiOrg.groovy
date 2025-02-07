@@ -118,7 +118,7 @@ class ApiOrg {
         result.linkResolverBaseURL = org.linkResolverBaseURL
         result.legalPatronName     = org.legalPatronName
 
-        result.retirementDate      = org.retirementDate ? ApiToolkit.formatInternalDate(org.retirementDate) : null
+        result.retirementDate      = org.retirementDate ? ApiToolkit.formatInternalDate(org.retirementDate) : null // todo: ERMS-6224, ERMS-6238 -> remove ?
 
         result.links = [] // TODO: ERMS-6223 - remove Link_Org - remove #122-129
 //        Set<Combo> links = Combo.executeQuery('select c from Combo c where (c.fromOrg = :org or c.toOrg = :org) and c.type != :excludes', [org: org, excludes: RDStore.COMBO_TYPE_CONSORTIUM])

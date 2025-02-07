@@ -27,7 +27,7 @@ class DevController  {
      */
     @Secured(['ROLE_ADMIN'])
     def klodav() {
-        Map<String, Object> result = [user: contextService.getUser(), institution: contextService.getOrg()]
+        Map<String, Object> result = [user: contextService.getUser(), institution: contextService.getOrg(), view: (params.id ?: 'index')]
         String view = params.id ? 'klodav/' + params.id : 'klodav/index'
         render view: view, model: result
     }
