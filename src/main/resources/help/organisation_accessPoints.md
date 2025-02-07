@@ -3,4 +3,4 @@ Die Vermittlung dieser dient dazu den Anbietern schnell die verhandelten Zugriff
 Da die Anbieter unterschiedliche Formate für Freischaltung des Nutzungszugriffes nutzen, bietet LAS:eR diese an. 
 Der gängigste Zugriff auf elektronische Ressourcen erfolgt über **IP-Adressen**. Bitte tragen Sie diese ein und halten sie aktuell. 
 
-Informieren Sie **bei Änderungen** in Ihrem Zugangskonfigurationen nach Möglichkeit Ihre Anbieter darüber. Den jeweiligen Kontakt sehen Sie in der Lizenz unter Anbieter. 
+Informieren Sie **bei Änderungen** in Ihrem Zugangskonfigurationen nach Möglichkeit Ihre Anbieter darüber. Den jeweiligen Kontakt sehen Sie in der Lizenz unter dem Kasten **Anbieter**. 
