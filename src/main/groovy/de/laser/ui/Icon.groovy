@@ -98,7 +98,7 @@ class Icon {
         public static String ORG_CONSORTIUM_PRO     = 'landmark icon teal'
 
         @UIDoc(usage = 'Only for Role: User')
-        public static String ROLE_USER      = 'user icon'
+        public static String ROLE_USER      = 'user alternate icon'
         @UIDoc(usage = 'Only for Role: Admin (Default color: orange)')
         public static String ROLE_ADMIN     = 'tools icon'
         @UIDoc(usage = 'Only for Role: Yoda (Default color: red)')
@@ -218,6 +218,42 @@ class Icon {
         public static String GREATER_OR_EQUAL   = 'la-greater-than-equal icon'
     }
 
+    class SIG {
+        // please do not touch during refactoring ..
+        // assignment
+
+        @UIDoc(usage = 'Assignment symbol for: Inheritance')
+        public static String INHERITANCE        = 'thumbtack icon'
+        @UIDoc(usage = 'Assignment symbol for: Inheritance set auto (COLORED)')
+        public static String INHERITANCE_AUTO   = 'la-thumbtack-regular grey icon'
+        @UIDoc(usage = 'Assignment symbol for: Inheritance - OFF')
+        public static String INHERITANCE_OFF    = 'la-thumbtack slash icon'
+
+//        @UIDoc(usage = 'Assignment symbol for: Marked object')
+//        public static String MARKER         = 'bookmark icon'       // todo: duplicate > reporting.history/bookmarks
+//        @UIDoc(usage = 'Assignment symbol for: Marked object - OFF')
+//        public static String MARKER_OFF     = 'la-bookmark slash icon'
+
+        @UIDoc(usage = 'Assignment symbol for: Is my object')
+        public static String MY_OBJECT      = 'star icon'               // todo: duplicate: survey/renew? > Icon.PROP.MANDATORY
+
+        @UIDoc(usage = 'Assignment symbol for: New object')
+        public static String NEW_OBJECT     = 'certificate icon'
+
+        @UIDoc(usage = 'Assignment symbol for: Shared object')          // todo: merge with SHARED_OBJECT_ON
+        public static String SHARED_OBJECT      = 'share alternate icon'
+
+        @UIDoc(usage = 'Assignment symbol for: Shared object - ON')
+        public static String SHARED_OBJECT_ON   = 'la-share icon'
+        @UIDoc(usage = 'Assignment symbol for: Shared object - OFF')
+        public static String SHARED_OBJECT_OFF  = 'la-share slash icon'
+
+        @UIDoc(usage = 'Assignment symbol for: Object is visible - ON/YES')
+        public static String VISIBLE_ON     = 'eye outline icon'
+        @UIDoc(usage = 'Assignment symbol for: Object is visible - OFF/NO')
+        public static String VISIBLE_OFF    = 'eye outline slash icon'
+    }
+
     class SYM {
         // please do not touch during refactoring ..
         // convenient symbols
@@ -233,7 +269,6 @@ class Icon {
         public static String CHECKBOX           = 'square outline icon'
         @UIDoc(usage = 'Generic symbol for: Checkbox/Option true (see also CHECKBOX)')
         public static String CHECKBOX_CHECKED   = 'square outline check icon'
-
 
         @UIDoc(usage = 'Generic symbol for: Date')
         public static String DATE           = 'calendar alternate outline icon'
@@ -287,37 +322,6 @@ class Icon {
         public static String SUCCESS    = 'check icon'
         @UIDoc(usage = 'Mandatory symbol for: Error')
         public static String ERROR      = 'exclamation triangle icon'
-    }
-
-    class SIG {
-        // please do not touch during refactoring ..
-        // assignment
-
-        @UIDoc(usage = 'Assignment symbol for: Inheritance')
-        public static String INHERITANCE        = 'thumbtack icon'
-        @UIDoc(usage = 'Assignment symbol for: Inheritance set auto (COLORED)')
-        public static String INHERITANCE_AUTO   = 'la-thumbtack-regular grey icon'
-        @UIDoc(usage = 'Assignment symbol for: Inheritance - OFF')
-        public static String INHERITANCE_OFF    = 'la-thumbtack slash icon'
-
-        @UIDoc(usage = 'Assignment symbol for: Is my object')
-        public static String MY_OBJECT      = 'star icon'               // todo: duplicate: survey/renew? > Icon.PROP.MANDATORY
-
-        @UIDoc(usage = 'Assignment symbol for: New object')
-        public static String NEW_OBJECT     = 'certificate icon'
-
-        @UIDoc(usage = 'Assignment symbol for: Shared object')          // todo: merge with SHARED_OBJECT_ON
-        public static String SHARED_OBJECT      = 'share alternate icon'
-
-        @UIDoc(usage = 'Assignment symbol for: Shared object - ON')
-        public static String SHARED_OBJECT_ON   = 'la-share icon'
-        @UIDoc(usage = 'Assignment symbol for: Shared object - OFF')
-        public static String SHARED_OBJECT_OFF  = 'la-share slash icon'
-
-        @UIDoc(usage = 'Assignment symbol for: Object is visible - ON/YES')
-        public static String VISIBLE_ON     = 'eye outline icon'
-        @UIDoc(usage = 'Assignment symbol for: Object is visible - OFF/NO')
-        public static String VISIBLE_OFF    = 'eye outline slash icon'
     }
 
     class TOOLTIP {

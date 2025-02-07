@@ -51,7 +51,7 @@
                                         <td class="titleCell">
                                             <g:link controller="subscription" action="show" id="${sub.id}">${sub.getSubscriber().sortname}</g:link>
 
-                                            <ui:customerTypeProIcon org="${sub.getSubscriber()}" />
+                                            <ui:customerTypeOnlyProIcon org="${sub.getSubscriber()}" />
                                         </td>
                                         <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
                                         <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>

@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6238    07.02.2025  dev     3.5         David   Feature     API: Umbau ERMS-6223/ERMS-6224 abfangen
+
 6253    05.02.2025  dev     3.5         David   Bug         Rechteprobleme bei Nutzenden mit Leser-Zugriff auf DEV
 
 6255    04.02.2025  dev     3.5         David   Bug         Erstellen von Aufgaben in DEV nicht immer möglich

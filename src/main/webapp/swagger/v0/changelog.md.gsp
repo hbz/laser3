@@ -9,6 +9,12 @@ Source: ${de.laser.config.ConfigMapper.getGrailsServerURL()} - Version: ${de.las
 - removed attribute: `Org.links`
 - removed new virtual object: `Link_Org`
 
+#### 3.4.1 (ERMS-6223, ERMS-6224, ERMS-6238)
+
+- internal refactoring: `EZBInstitutionStub.status`
+- internal refactoring: `OrganisationStub.status`
+- internal refactoring: `Org.links`
+
 #### 3.4
 
 - internal refactoring: `Org.type`

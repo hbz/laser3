@@ -59,7 +59,7 @@
                             </td>
                             <td>
                                 <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
-                                <ui:customerTypeProIcon org="${subscr}" />
+                                <ui:customerTypeOnlyProIcon org="${subscr}" />
                             </td>
                             <g:if test="${params.showMembersSubWithMultiYear}">
                                 <td>${sub.referenceYear}</td>

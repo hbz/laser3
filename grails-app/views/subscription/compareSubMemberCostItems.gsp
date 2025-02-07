@@ -221,7 +221,7 @@
                 </td>
                 <td>
                     <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
-                    <ui:customerTypeProIcon org="${subscr}"/>
+                    <ui:customerTypeOnlyProIcon org="${subscr}"/>
                 </td>
                 <td>
                     <g:if test="${sub.isMultiYear}">

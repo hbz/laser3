@@ -156,7 +156,7 @@
                                         <td>
                                             <g:if test="${orgCons}">
                                                 <div class="la-flexbox la-minor-object">
-                                                    <i class="${Icon.ORG} la-list-icon"></i>
+                                                    <ui:customerTypeIcon org="${orgCons}" />
                                                     <g:link controller="org" action="show" id="${orgCons.id}" target="_blank">${orgCons.name}</g:link>
                                                 </div>
                                             </g:if>
@@ -219,7 +219,7 @@
                                         <td>
                                             <g:if test="${orgCons}">
                                                 <div class="la-flexbox la-minor-object">
-                                                    <i class="${Icon.ORG} la-list-icon"></i>
+                                                    <ui:customerTypeIcon org="${orgCons}" />
                                                     <g:link controller="org" action="show" id="${orgCons.id}" target="_blank">${orgCons.name}</g:link>
                                                 </div>
                                             </g:if>
@@ -270,7 +270,7 @@
                                         <td>
                                             <g:if test="${orgCons}">
                                                 <div class="la-flexbox la-minor-object">
-                                                    <i class="${Icon.ORG} la-list-icon"></i>
+                                                    <ui:customerTypeIcon org="${orgCons}" />
                                                     <g:link controller="org" action="show" id="${orgCons.id}" target="_blank">${orgCons.name}</g:link>
                                                 </div>
                                             </g:if>
@@ -355,7 +355,7 @@
                                     <td colspan="5">
                                         <g:if test="${orgCons}">
                                             <div class="la-flexbox la-minor-object">
-                                                <i class="${Icon.ORG} la-list-icon"></i>
+                                                <ui:customerTypeIcon org="${orgCons}" />
                                                 <g:link controller="org" action="show" id="${orgCons.id}" target="_blank">${orgCons.name}</g:link>
                                             </div>
                                         </g:if>

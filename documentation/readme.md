@@ -11,7 +11,7 @@
 - Logback 1.2.12
 - Gradle 8.12.1
 - Groovy 3.0.23
-- Java 11
+- Java 17
 - PostgreSQL 13+
 
 See [details.md](./details.md) for detailed information.
@@ -20,7 +20,7 @@ See [details.md](./details.md) for detailed information.
 
     sdk i grails 6.2.3
     sdk i groovy 3.0.23
-    sdk i java 11.0.25-open
+    sdk i java 17.0.12-oracle
 
 #### Configuration files
 

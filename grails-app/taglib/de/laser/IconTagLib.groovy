@@ -272,9 +272,9 @@ class IconTagLib {
         }
     }
 
-    // <ui:customerTypeProIcon org="${org}" cssClass="${css}" />
+    // <ui:customerTypeOnlyProIcon org="${org}" cssClass="${css}" />
 
-    def customerTypeProIcon = { attrs, body ->
+    def customerTypeOnlyProIcon = { attrs, body ->
         if (attrs.org) {
             if (attrs.org.isCustomerType_Pro()) {
                 out << '<span class="la-long-tooltip la-popup-tooltip" data-position="bottom center" data-content="' + attrs.org.getCustomerTypeI10n() + '">'

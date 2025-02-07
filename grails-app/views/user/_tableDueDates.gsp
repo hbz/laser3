@@ -102,7 +102,7 @@
                                 <g:link controller="license" action="show" id="${obj.owner?.id}">${obj.owner?.reference}</g:link>
                             </g:elseif>
                             <g:elseif test="${obj.owner instanceof Org}">
-                                <i class="${Icon.ORG} la-list-icon"></i>
+                                <ui:customerTypeIcon org="${obj.owner}" />
                                 <g:link controller="organisation" action="show" id="${obj.owner?.id}">${obj.owner?.name}</g:link>
                             </g:elseif>
                             <g:else>

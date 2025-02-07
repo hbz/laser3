@@ -68,7 +68,10 @@ class ApiOrg {
         result.validatePrecondition_1()
 
         if (result.obj instanceof Org) {
-            result.validateDeletedStatus_2('status', RefdataValue.getByValueAndCategory('Deleted', 'org.status')) // TODO: erms-6224 - check needed if org.status removed?
+            // result.validateDeletedStatus_2('status', RefdataValue.getByValueAndCategory('Deleted', 'org.status')) // TODO: erms-6224 - check needed if org.status removed?
+            if ((result.obj as Org).isArchived()) {
+                result.status = Constants.OBJECT_STATUS_DELETED // TODO: ERMS-6238 -> ??
+            }
         }
         result
     }
@@ -115,7 +118,7 @@ class ApiOrg {
         result.linkResolverBaseURL = org.linkResolverBaseURL
         result.legalPatronName     = org.legalPatronName
 
-        result.retirementDate      = org.retirementDate ? ApiToolkit.formatInternalDate(org.retirementDate) : null
+        result.retirementDate      = org.retirementDate ? ApiToolkit.formatInternalDate(org.retirementDate) : null // todo: ERMS-6224, ERMS-6238 -> remove ?
 
         result.links = [] // TODO: ERMS-6223 - remove Link_Org - remove #122-129
 //        Set<Combo> links = Combo.executeQuery('select c from Combo c where (c.fromOrg = :org or c.toOrg = :org) and c.type != :excludes', [org: org, excludes: RDStore.COMBO_TYPE_CONSORTIUM])
@@ -140,7 +143,8 @@ class ApiOrg {
         result.subjectGroup   = org.subjectGroup?.collect { OrgSubjectGroup subjectGroup -> subjectGroup.subjectGroup.value }
         result.libraryNetwork = org.libraryNetwork?.value
         result.type           = org.getOrgType() ? [org.getOrgType().value] : [] // TODO: ERMS-6009
-        result.status         = org.status?.value // TODO: ERMS-6224 - remove org.status
+//        result.status         = org.status?.value // TODO: ERMS-6224 - remove org.status
+        result.status         = org.isArchived() ? 'Deleted' : 'Current' // TODO: ERMS-6238
 
         // References
         Map<String, Object> queryParams = [org:org]

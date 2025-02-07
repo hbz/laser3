@@ -298,7 +298,7 @@ body.survey_copyElementsIntoSurvey nav.tabular .item .content .description
     color: #999;
 }
 
-/* customer type hack @ ui:customerTypeProIcon */
+/* customer type hack @ ui:customerTypeOnlyProIcon */
 
 .icon.teal.la-list-icon:before {
     color: #00b5ad;

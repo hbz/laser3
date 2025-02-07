@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils;  de.laser.storage.RDStore; de.laser.Task; de.laser.system.SystemActivityProfiler; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.Wekb" %>
+<%@ page import="de.laser.License; de.laser.Subscription; de.laser.CustomerTypeService; de.laser.OrgSetting; de.laser.auth.User; de.laser.Org; de.laser.utils.DateUtils;  de.laser.storage.RDStore; de.laser.Task; de.laser.system.SystemActivityProfiler; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.Wekb" %>
 <laser:serviceInjection />
 
 <g:if test="${tmplView == 'info' && wekbNews.counts.all > 0}">
@@ -59,23 +59,51 @@
         <g:else>
             <div class="ui fluid card">
                 <div class="ui top attached label">
-                    Tipp des Tages
+                    Aktuell
                 </div>
-                %{--            <div class="content">--}%
-                %{--                <div class="header">Dies und das (TODO)</div>--}%
-                %{--            </div>--}%
                 <div class="content">
-                    Gäbe es eine wichtige Mitteilung .. <br />
-                    hier wäre sie zu finden. <br />
-                    <br />
-                    <br />
-                    Derzeit sind ${SystemActivityProfiler.getNumberOfActiveUsers()} Benutzer online. <br />
-                    <br />
-                    <br />
+                    <div class="ui relaxed list">
+                        <div class="item">
+%{--                            <i class="${Icon.AUTH.ORG_INST}"></i>--}%
+                            <div class="content">
+                                .. sind <strong>${OrgSetting.executeQuery(
+                                        'select count(os.org) from OrgSetting as os where os.key = :key and os.roleValue.authority in (:roles) and os.org.archiveDate is null',
+                                        [key: OrgSetting.KEYS.CUSTOMER_TYPE, roles: [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]]
+                                )[0]}</strong> aktive Einrichtungen registriert.
+                            </div>
+                        </div>
+                        <div class="item">
+%{--                            <i class="${Icon.AUTH.ORG_CONSORTIUM}"></i>--}%
+                            <div class="content">
+                                .. sind <strong>${OrgSetting.executeQuery(
+                                        'select count(os.org) from OrgSetting as os where os.key = :key and os.roleValue.authority in (:roles) and os.org.archiveDate is null',
+                                        [key: OrgSetting.KEYS.CUSTOMER_TYPE, roles: [CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO]]
+                                )[0]}</strong> aktive Konsortialmanager registriert.
+                            </div>
+                        </div>
+                        <div class="item">
+%{--                            <i class="${Icon.AUTH.INST_USER}"></i>--}%
+                            <div class="content">
+                                .. sind <strong>${User.executeQuery('select count(*) from User where enabled is true')[0]}</strong> aktive Benutzer registriert.
+                            </div>
+                        </div>
+                        <div class="item">
+                            %{--                            <i class="${Icon.AUTH.INST_USER}"></i>--}%
+                            <div class="content">
+                                .. werden <strong>${Subscription.executeQuery(
+                                    'select count(*) from Subscription where status = :current', [current: RDStore.SUBSCRIPTION_CURRENT]
+                                )[0]}</strong> aktive Lizenzen und <strong>${License.executeQuery(
+                                'select count(*) from License where status = :current', [current: RDStore.LICENSE_CURRENT]
+                                )[0]}</strong> aktive Verträge verwaltet.
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="content">
+                                .. sind <strong>${SystemActivityProfiler.getNumberOfActiveUsers()}</strong> Benutzer online.
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                %{--            <div class="extra content">--}%
-                %{--                todo--}%
-                %{--            </div>--}%
             </div>
         </g:else>
 

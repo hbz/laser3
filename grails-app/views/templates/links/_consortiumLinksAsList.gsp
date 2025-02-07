@@ -33,7 +33,7 @@
                                     <g:each in="${Person.getPublicByOrgAndFunc(consortium, 'General contact person')}" var="func">
                                         <div class="row">
                                             <div class="two wide column">
-                                                <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
+                                                <i class="circular large ${Icon.ACP_PUBLIC} la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'address.public')}"></i>
                                             </div>
 
@@ -65,7 +65,7 @@
                                     <g:each in="${techSupports}" var="func">
                                         <div class="row">
                                             <div class="two wide column">
-                                                <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
+                                                <i class="circular large ${Icon.ACP_PUBLIC} la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'address.public')}"></i>
                                             </div>
 
@@ -93,7 +93,7 @@
                                     <g:each in="${serviceSupports}" var="func">
                                         <div class="row">
                                             <div class="two wide column">
-                                                <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
+                                                <i class="circular large ${Icon.ACP_PUBLIC} la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'address.public')}"></i>
                                             </div>
 
@@ -121,7 +121,7 @@
                                     <g:each in="${metadataContacts}" var="func">
                                         <div class="row">
                                             <div class="two wide column">
-                                                <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
+                                                <i class="circular large ${Icon.ACP_PUBLIC} la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'address.public')}"></i>
                                             </div>
 
@@ -150,7 +150,7 @@
                                     <g:each in="${Person.getPublicByOrgAndObjectResp(consortium, roleObject, roleRespValue)}" var="resp">
                                         <div class="row">
                                             <div class="two wide column">
-                                                <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
+                                                <i class="circular large ${Icon.ACP_PUBLIC} la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'address.public')}"></i>
                                             </div>
 
@@ -193,7 +193,7 @@
                                     <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'General contact person')}" var="func">
                                         <div class="row">
                                             <div class="two wide column">
-                                                <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
+                                                <i class="circular large ${Icon.ACP_PRIVATE} la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'address.private')}"></i>
                                             </div>
 
@@ -222,7 +222,7 @@
                                     <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Technical Support')}" var="func">
                                         <div class="row">
                                             <div class="two wide column">
-                                                <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
+                                                <i class="circular large ${Icon.ACP_PRIVATE} la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'address.private')}"></i>
                                             </div>
 
@@ -250,7 +250,7 @@
                                     <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Service Support')}" var="func">
                                         <div class="row">
                                             <div class="two wide column">
-                                                <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
+                                                <i class="circular large ${Icon.ACP_PRIVATE} la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'address.private')}"></i>
                                             </div>
 
@@ -278,7 +278,7 @@
                                     <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(consortium, 'Metadata Contact')}" var="func">
                                         <div class="row">
                                             <div class="two wide column">
-                                                <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
+                                                <i class="circular large ${Icon.ACP_PRIVATE} la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'address.private')}"></i>
                                             </div>
 
@@ -308,7 +308,7 @@
                                             var="resp">
                                         <div class="row">
                                             <div class="two wide column">
-                                                <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
+                                                <i class="circular large ${Icon.ACP_PRIVATE} la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'address.private')}"></i>
                                             </div>
 

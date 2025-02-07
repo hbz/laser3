@@ -1,5 +1,5 @@
-<%@ page import="de.laser.annotations.UIDoc; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
-<laser:htmlStart text="Playground: New Icons" />
+<%@ page import="de.laser.ui.AttrIcon; de.laser.annotations.UIDoc; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<laser:htmlStart text="Playground: New AttrIcons" />
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.admin" controller="admin" action="index"/>
@@ -21,16 +21,16 @@
 </div>
 
 <div class="ui basic segment">
-    <p class="ui header">de.laser.ui.Icon</p>
+    <p class="ui header">de.laser.ui.AttrIcon</p>
     <div class="ui five cards">
-        <g:each in="${Icon.getDeclaredFields().findAll{ ! it.isSynthetic() }}" var="f" status="i">
+        <g:each in="${AttrIcon.getDeclaredFields().findAll{ ! it.isSynthetic() }}" var="f" status="i">
             <div class="ui mini card" data-cat="${f.name.split('\\.').last().split('_').first()}">
                 <div class="content">
                     <div class="header">
-                        <i class="${Icon[f.name]} large"></i>
+                        <i class="${AttrIcon[f.name]} large"></i>
                         ${f.name.split('\\.').last()}
                     </div>
-                    <div class="meta hidden">${Icon[f.name]}</div>
+                    <div class="meta hidden">${AttrIcon[f.name]}</div>
                     <g:if test="${f.getAnnotation(de.laser.annotations.UIDoc)}">
                         <div class="description hidden">${f.getAnnotation(UIDoc).usage()}</div>
                     </g:if>
@@ -40,9 +40,9 @@
     </div>
 </div>
 
-<g:each in="${Icon.getDeclaredClasses().findAll{ true }}" var="ic">
+<g:each in="${AttrIcon.getDeclaredClasses().findAll{ true }}" var="ic">
     <div class="ui basic segment">
-        <p class="ui header">${ic.name.replace(Icon.name + '$', 'Icon.')}</p>
+        <p class="ui header">${ic.name.replace(de.laser.ui.AttrIcon.name + '$', 'AttrIcon.')}</p>
         <div class="ui five cards">
             <g:each in="${ic.getDeclaredFields().findAll{ ! it.isSynthetic() }}" var="f">
                 <div class="ui mini card" data-cat="${f.name.split('\\.').last().split('_').first()}">

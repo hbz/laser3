@@ -258,7 +258,7 @@
                 <th scope="row" class="la-th-column la-main-object">
                     <div class="la-flexbox">
                         <g:if test="${org instanceof Org}">
-                            <ui:customerTypeProIcon org="${org}" cssClass="la-list-icon" />
+                            <ui:customerTypeOnlyProIcon org="${org}" cssClass="la-list-icon" />
 
                             <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
                                 ${fieldValue(bean: org, field: "name")}
