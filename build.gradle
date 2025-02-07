@@ -137,8 +137,8 @@ dependencies {
 }
 
 java {
-    sourceCompatibility = JavaVersion.toVersion('11')
-    targetCompatibility = JavaVersion.toVersion('11')
+    sourceCompatibility = JavaVersion.toVersion( javaVersion )
+    targetCompatibility = JavaVersion.toVersion( javaVersion )
 }
 
 springBoot {
