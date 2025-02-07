@@ -1,6 +1,13 @@
 Das ist das **Profil** Ihrer Einrichtung. 
-Hier können Sie alle Ihre Einrichtungsdaten, Identifikationsnummern, Nutzerzahlen und Kontaktdaten pflegen, die für die Verwaltung Ihrer Einrichtung durch die Konsortialstellen benötigt werden.
+Alle von Ihnen hier hinterlegten Daten sind nur für Sie und die Konsortialstellen einsehbar. Sie dienen der besseren Vermittlung von Einrichtungsinformationen an die Konsortialstelle und somit auch an die Anbieter. 
+Halten Sie die Informationen aktuell, damit Ihre korrekten Daten weitergeleitet werden können. 
 
-![Bild: Datencockpit (Icon)]({{url_laser_static}}/media/organisation/datencockpit_icon.png "Bild: Datencockpit (Icon)")
+In der **Übersicht** Ihres Einrichtungsprofils können Sie allgemeine Informationen festhalten. Dazu gehören:
 
-![Bild: Datencockpit]({{url_laser_static}}/media/organisation/datencockpit_1.png "Bild: Datencockpit")
++ **Rahmendaten:** Name, URL zur Website, Trägerschaft, Bibliothekstyp, Bundesland etc
++ **Fächergruppe:** diese Information benötigen die Konsortialstellen um Ihnen gezielte Interessenanfragen per Umfrage senden zu können
++ **XRechnung:** Auszufüllen, sofern man die Rechnungen elektronisch beziehen möchte
++ **Verwendete Drittsysteme:** Bibliotheksysteme, Discovery-Systeme etc.
++ **Eigene  Merkmale:** Ergänzende Informations-Felder, die Sie individuell festlegen können. Dazu müssen Sie zunächst unter **Meine Einrichtung > Merkmale verwalten** eigene Merkmale erstellen. Mehr Informationen dazu finden Sie auf der angegebenen Seite
+
+Rechts in den **gelben Kästchen** sind zudem Ihre öffentliche Kontakte und Ihre internen Anmerkungen. Letzteres ist nur für die Mitarbeitenden Ihrer Einrichtung einsehar. Pro-Nutzende können hier zudem Aufgaben und Workflows erstellen und Dokumente hochladen. Eine Übersicht dieser befindet sich ebenfalls im Einrichtungsprofil unter den Reitern **Öffentliche Kontakte, Anmerkungen, Aufgaben, Dokumente** und **Workflows**.
