@@ -8,3 +8,5 @@ Bitte hinterlegen Sie mindestens **folgende Kontaktdaten und Adressen:**
 * Technischer Support
 * Postanschrift
 * Rechnungsanschrift
+
+Sie können einem Kontakt mehr als eine Position/Rolle zuordnen.
