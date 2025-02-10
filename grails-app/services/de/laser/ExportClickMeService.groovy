@@ -3038,11 +3038,12 @@ class ExportClickMeService {
                         exportFields.put(it.key, it.value)
                     }
                 }
-                exportFields.put('participant.subscriptions', [field: null, label: 'Subscriptions',  message: 'subscription.plural'])
+                exportFields.put('participant.subscriptions', [field: null, label: 'Current subscription count',  message: 'subscription.plural.current.count'])
 
                 IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
                     exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
                 }
+                exportFields.put("participant.uuid", [field: 'globalUID', label: 'Laser-UUID',  message: null])
 
                 Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx)', contextParams).each { Platform plat ->
                     exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
@@ -3115,7 +3116,7 @@ class ExportClickMeService {
             case 'institution':
                 fields.putAll(contextOrg.getCustomerType() == CustomerTypeService.ORG_SUPPORT ? getDefaultExportOrgSupportConfig() : getDefaultExportOrgConfig())
 
-                fields.participant.fields << ['participant.subscriptions':[field: null, label: 'Subscriptions',  message: 'subscription.plural']]
+                fields.participant.fields << ['participant.subscriptions':[field: null, label: 'Current subscriptions count',  message: 'subscription.plural.current.count']]
                 fields.participantIdentifiers.fields.clear()
                 IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
                     fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
@@ -5956,19 +5957,15 @@ class ExportClickMeService {
                     _setOrgFurtherInformation(result, row, fieldKey, format)
                 }
                 else if (fieldKey == 'participant.subscriptions') {
-                    def subStatus
-                    if(configMap.action == 'currentProviders') {
-                        subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
-                    }
-                    else subStatus = configMap.subStatus
+                    List<Long> subStatus = [RDStore.SUBSCRIPTION_CURRENT.id]
                     List subscriptionQueryParams
                     if(configMap.filterPvd && configMap.filterPvd != "" && filterService.listReaderWrapper(configMap, 'filterPvd')){
-                        subscriptionQueryParams = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: result, actionName: configMap.action, status: subStatus ?: null, date_restr: configMap.subValidOn ? DateUtils.parseDateGeneric(configMap.subValidOn) : null, providers: filterService.listReaderWrapper(configMap, 'filterPvd')])
+                        subscriptionQueryParams = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([count: true, org: result, actionName: configMap.action, status: subStatus, date_restr: configMap.subValidOn ? DateUtils.parseDateGeneric(configMap.subValidOn) : null, providers: filterService.listReaderWrapper(configMap, 'filterPvd')])
                     }else {
-                        subscriptionQueryParams = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: result, actionName: configMap.action, status: subStatus ?: null, date_restr: configMap.subValidOn ? DateUtils.parseDateGeneric(configMap.subValidOn) : null])
+                        subscriptionQueryParams = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([count: true, org: result, actionName: configMap.action, status: subStatus, date_restr: configMap.subValidOn ? DateUtils.parseDateGeneric(configMap.subValidOn) : null])
                     }
-                    List nameOfSubscriptions = Subscription.executeQuery("select s.name " + subscriptionQueryParams[0], subscriptionQueryParams[1])
-                    row.add(createTableCell(format, nameOfSubscriptions.join('; ')))
+                    int countOfSubscriptions = Subscription.executeQuery("select count(s) " + subscriptionQueryParams[0], subscriptionQueryParams[1])[0]
+                    row.add(createTableCell(format, countOfSubscriptions))
                 }
                 else if (fieldKey == 'participant.readerNumbers') {
                     _setOrgFurtherInformation(result, row, fieldKey, format)

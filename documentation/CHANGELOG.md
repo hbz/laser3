@@ -11,6 +11,14 @@
 
 6224    10.02.2025  dev     3.5         David   Feature     Org.status überarbeiten
 
+6267    10.02.2025  rc-3.4  3.4.19      Andreas Feature     Umstellung der Ausgabe "Lizenzen" beim Einrichtungs-Export
+
+6249    10.02.2025  rc-3.4  3.4.19      Andreas Bug         weitere Filterung der angezeigten Kundennummern
+
+6235    10.02.2025  rc-3.4  3.4.19      Andreas Feature     Mailadressen können nun auch aus "Alle Einrichtungen" kopiert werden
+
+6234    10.02.2025  rc-3.4  3.4.19      Andreas Bug         500er bei der Ausgabe von Lizenzen im Export der Einrichtungen behoben
+
 6238    07.02.2025  dev     3.5         David   Feature     API: Umbau ERMS-6223/ERMS-6224 abfangen
 
 6253    05.02.2025  dev     3.5         David   Bug         Rechteprobleme bei Nutzenden mit Leser-Zugriff auf DEV
