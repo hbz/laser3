@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      10.02.2025  dev     3.5         Andreas Bug         veralteten Aufruf von list.size korrigiert
+
+6265    10.02.2025  dev     3.5         Andreas Bug         Regex-Validierung aus EZB-Lizenz-ID entfernt und Beispiellink aktualisiert
+
 6260    10.02.2025  dev     3.5         David   Feature     Meine Workflows
 
 6224    10.02.2025  dev     3.5         David   Feature     Org.status überarbeiten

@@ -70,8 +70,11 @@
         <ui:securedSubNavItem instRole="INST_ADM" affiliationOrg="${orgInstance}"
                               controller="organisation" action="settings" params="${breadcrumbParams}" message="org.nav.dataTransfer.shy" />
     </g:if>
-    <g:elseif test="${contextService.otherOrgAndComboCheckPermAffiliation_or_ROLEADMIN(orgInstance, CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_ADM') && !orgInstance.hasInstAdminEnabled()}">
-        <ui:subNavItem controller="organisation" action="settings" params="${breadcrumbParams}" message="org.nav.dataTransfer.shy"/>
+    <g:elseif test="${contextService.getUser().isComboInstAdminOf(orgInstance)}">
+        <%-- to exclude other consortium admins --%>
+        <g:if test="${contextService.getUser().isAdmin() || contextService.getUser().isYoda() || !orgInstance.hasInstAdminEnabled()}">
+            <ui:subNavItem controller="organisation" action="settings" params="${breadcrumbParams}" message="org.nav.dataTransfer.shy"/>
+        </g:if>
     </g:elseif>
     <%-- sense???
     <g:else>

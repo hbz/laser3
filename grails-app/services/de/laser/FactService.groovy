@@ -169,7 +169,7 @@ class FactService {
     if (org_id != null &&
         supplier_id != null) {
       def factList = _getTotalUsageFactsForSub(org_id, supplier_id, subscription, title_id, true)
-      if (factList.size == 0){
+      if (factList.size() == 0){
         return result
       }
       Calendar cal = Calendar.getInstance()
