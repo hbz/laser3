@@ -62,18 +62,12 @@ databaseChangeLog = {
     changeSet(author: "klober (modified)", id: "1737626994089-6") {
         grailsChange {
             change {
-                RefdataValue deleted = RefdataValue.getByValueAndCategory('Deleted', 'org.status')
-                RefdataValue removed = RefdataValue.getByValueAndCategory('Removed', 'org.status')
-                Org.findAllByStatusInList([deleted, removed]).each { org ->
-                    org.archiveDate = org.lastUpdated
-                    org.save()
-                    println 'update org #' + org.id + ' set archiveDate = ' + org.lastUpdated + ' from lastUpdated, because status = ' + org.status.value
-                }
-                Org.findAllByRetirementDateIsNotNull().each { org ->
-                    org.archiveDate = org.retirementDate
-                    org.save()
-                    println 'update org #' + org.id + ' set archiveDate = ' + org.archiveDate + ' from retirementDate'
-                }
+                int c1 = sql.executeUpdate("update org set org_archive_date = org_last_updated where org_status_rv_fk in (select rdv_id from refdata_value join refdata_category ON rdv_owner = rdc_id where rdc_description = 'org.status' and rdv_value in ('Deleted', 'Removed'))")
+                int c2 = sql.executeUpdate("update org set org_archive_date = org_retirement_date where org_retirement_date is not null")
+
+                String cc = 'set archiveDate=lastUpdated: ' + c1 + ' / set archiveDate=retirementDate: ' + c2
+                confirm(cc)
+                changeSet.setComments(cc)
             }
         }
     }

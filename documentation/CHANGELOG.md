@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6260    10.02.2025  dev     3.5         David   Feature     Meine Workflows
+
+6224    10.02.2025  dev     3.5         David   Feature     Org.status überarbeiten
+
 6267    10.02.2025  rc-3.4  3.4.19      Andreas Feature     Umstellung der Ausgabe "Lizenzen" beim Einrichtungs-Export
 
 6249    10.02.2025  rc-3.4  3.4.19      Andreas Bug         weitere Filterung der angezeigten Kundennummern

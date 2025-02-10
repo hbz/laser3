@@ -36,7 +36,7 @@ abstract class AbstractBase {
      */
     protected void beforeInsertHandler() {
 
-//        log.debug("beforeInsertHandler()")
+        //log.debug("beforeInsertHandler()")
 
         if (! globalUID) {
             setGlobalUID()
@@ -61,7 +61,7 @@ abstract class AbstractBase {
             changes.newMap.put( prop, this.getProperty(prop) )
         }
 
-        log.debug("beforeUpdateHandler() " + changes.toMapString())
+        log.debug("beforeUpdateHandler() " + this.getDirtyPropertyNames())
         return changes
     }
 

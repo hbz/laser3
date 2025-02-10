@@ -316,8 +316,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     @Override
     def beforeUpdate() {
         Map<String, Object> changes = super.beforeUpdateHandler()
-        log.debug ("beforeUpdate() " + changes.toMapString())
-
         BeanStore.getAuditService().beforeUpdateHandler(this, changes.oldMap, changes.newMap)
     }
     @Override

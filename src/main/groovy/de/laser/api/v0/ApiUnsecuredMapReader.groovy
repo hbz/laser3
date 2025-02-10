@@ -90,7 +90,7 @@ class ApiUnsecuredMapReader {
         result.name         = org.name
         result.sortname     = org.sortname
 //        result.status       = org.status?.value // TODO: ERMS-6224 - remove org.status
-        result.status       = org.isArchived() ? 'Deleted' : 'Current' // TODO: ERMS-6238
+        result.status       = org.isArchived() ? 'Deleted' : 'Current' // TODO: ERMS-6238 -> REMOVE
 
         // References
         result.identifiers = ApiCollectionReader.getIdentifierCollection(org.ids) // de.laser.Identifier

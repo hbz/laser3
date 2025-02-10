@@ -75,7 +75,7 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
             changes.newMap.put( prop, this.getProperty(prop) )
         }
 
-        log.debug("beforeUpdateHandler() " + changes.toMapString())
+        log.debug("beforeUpdateHandler() " + this.getDirtyPropertyNames())
         return changes
     }
 

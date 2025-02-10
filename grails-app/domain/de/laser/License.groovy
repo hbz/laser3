@@ -211,8 +211,6 @@ class License extends AbstractBaseWithCalculatedLastUpdated
             sortableReference = generateSortableReference(reference)
         }
         Map<String, Object> changes = super.beforeUpdateHandler()
-        log.debug ("beforeUpdate() " + changes.toMapString())
-
         BeanStore.getAuditService().beforeUpdateHandler(this, changes.oldMap, changes.newMap)
     }
     @Override
