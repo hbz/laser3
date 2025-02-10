@@ -138,41 +138,26 @@
                         </dd>
                     </dl>
 
+                    <g:if test="${orgInstance.isCustomerType_Inst()}">
+                        <dl>
+                            <dt class="control-label">
+                                <g:message code="org.libraryType.label" />
+                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                      data-content="${message(code: 'org.libraryType.expl')}">
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
+                                </span>
+                            </dt>
+                            <dd>
+                                <ui:xEditableRefData owner="${orgInstance}" field="libraryType" config="${RDConstants.LIBRARY_TYPE}"/>
+                            </dd>
+                        </dl>
+                    </g:if>
+
                     <g:if test="${orgInstance.getCustomerType()}">
                         <dl>
                             <dt class="control-label"><g:message code="org.customerType.label"/></dt>
                             <dd>
                                 ${orgInstance.getCustomerTypeI10n()}
-%{--                                <ui:customerTypeIcon org="${orgInstance}" />--}%
-                            </dd>
-                        </dl>
-                    </g:if>
-                    <g:if test="${orgInstance.isCustomerType_Inst()}">
-                        <dl>
-                            <dt class="control-label">
-                                <g:message code="org.legalPatronName.label" />
-                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
-                                      data-content="${message(code: 'org.legalPatronName.expl')}">
-                                    <i class="${Icon.TOOLTIP.HELP}"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <ui:xEditable owner="${orgInstance}" field="legalPatronName"/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt class="control-label">
-                                <g:message code="org.urlGov.label"/>
-                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
-                                      data-content="${message(code: 'org.urlGov.expl')}">
-                                    <i class="${Icon.TOOLTIP.HELP}"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <ui:xEditable owner="${orgInstance}" type="url" field="urlGov" class="la-overflow la-ellipsis" />
-                                <g:if test="${orgInstance.urlGov}">
-                                    <ui:linkWithIcon href="${orgInstance.urlGov}" />
-                                </g:if>
                             </dd>
                         </dl>
                     </g:if>
@@ -185,18 +170,6 @@
                         <div class="content">
                             <dl>
                                 <dt class="control-label">
-                                    <g:message code="org.libraryType.label" />
-                                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
-                                          data-content="${message(code: 'org.libraryType.expl')}">
-                                        <i class="${Icon.TOOLTIP.HELP}"></i>
-                                    </span>
-                                </dt>
-                                <dd>
-                                    <ui:xEditableRefData owner="${orgInstance}" field="libraryType" config="${RDConstants.LIBRARY_TYPE}"/>
-                                </dd>
-                            </dl>
-                            <dl>
-                                <dt class="control-label">
                                     <g:message code="org.libraryNetwork.label" />
                                     <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                           data-content="${message(code: 'org.libraryNetwork.expl')}">
@@ -205,6 +178,33 @@
                                 </dt>
                                 <dd>
                                     <ui:xEditableRefData owner="${orgInstance}" field="libraryNetwork" config="${RDConstants.LIBRARY_NETWORK}"/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt class="control-label">
+                                    <g:message code="org.legalPatronName.label" />
+                                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                          data-content="${message(code: 'org.legalPatronName.expl')}">
+                                        <i class="${Icon.TOOLTIP.HELP}"></i>
+                                    </span>
+                                </dt>
+                                <dd>
+                                    <ui:xEditable owner="${orgInstance}" field="legalPatronName"/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt class="control-label">
+                                    <g:message code="org.urlGov.label"/>
+                                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                          data-content="${message(code: 'org.urlGov.expl')}">
+                                        <i class="${Icon.TOOLTIP.HELP}"></i>
+                                    </span>
+                                </dt>
+                                <dd>
+                                    <ui:xEditable owner="${orgInstance}" type="url" field="urlGov" class="la-overflow la-ellipsis" />
+                                    <g:if test="${orgInstance.urlGov}">
+                                        <ui:linkWithIcon href="${orgInstance.urlGov}" />
+                                    </g:if>
                                 </dd>
                             </dl>
                             <dl>
