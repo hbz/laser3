@@ -341,7 +341,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         defineMapFields()
             long rectype
             switch(componentType) {
-                case 'Org': rectype = RECTYPE_PROVIDER          // ERMS-6224 - needed? - proper implementation?
+                case 'Org': rectype = RECTYPE_PROVIDER
                     break
                 case 'Package': rectype = RECTYPE_PACKAGE
                     break

@@ -367,10 +367,10 @@ class YodaService {
         String componentType
         Set objects = []
         switch(className) {
-//            case Org.class.name: rectype = GlobalSourceSyncService.RECTYPE_PROVIDER                               // ERMS-6224 - needed? - proper implementation?
-//                componentType = 'Org'                                                                             // ERMS-6224 - needed? - proper implementation?
-//                objects.addAll(Org.findAllByStatusNotEqualAndGokbIdIsNotNull(RDStore.ORG_STATUS_REMOVED))         // ERMS-6224 - needed? - proper implementation?
-//                break
+            case Provider.class.name: rectype = GlobalSourceSyncService.RECTYPE_PROVIDER
+                componentType = 'Org'
+                objects.addAll(Provider.findAllByStatusNotEqualAndGokbIdIsNotNull(RDStore.PROVIDER_STATUS_REMOVED))
+                break
             case Vendor.class.name: rectype = GlobalSourceSyncService.RECTYPE_VENDOR
                 componentType = 'Vendor'
                 objects.addAll(Vendor.findAllByStatusNotEqualAndGokbIdIsNotNull(RDStore.VENDOR_STATUS_REMOVED))

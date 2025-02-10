@@ -976,7 +976,7 @@ class YodaController {
             executorService.execute({
                 Thread.currentThread().setName("GlobalDataUpdate_Provider")
                 globalSourceSyncService.reloadData('Org')
-                yodaService.expungeRemovedComponents(Org.class.name)    // ERMS-6224 - needed? - proper implementation?
+                yodaService.expungeRemovedComponents(Provider.class.name)
             })
         }
         else {
