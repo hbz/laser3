@@ -13,6 +13,7 @@ import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
+import de.laser.wekb.Provider
 import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
@@ -388,7 +389,8 @@ class YodaService {
             objects.each { obj ->
                 Map record = globalSourceSyncService.fetchRecordJSON(false, [componentType: componentType, uuid: obj.gokbId])
                 if(record?.count == 0) {
-//                    if(obj instanceof Org) {                                                                      // ERMS-6224 - needed? - proper implementation?
+                    //TODO implement cleanup of providers and vendors
+//                    if(obj instanceof Org) {
 //                        OrgRole.executeUpdate('delete from OrgRole oo where oo.org = :org', [org: obj])
 //                        PersonRole.executeUpdate('delete from PersonRole pr where pr.org = :org', [org: obj])
 //                        Identifier.executeUpdate('delete from Identifier id where id.org = :org', [org: obj])
