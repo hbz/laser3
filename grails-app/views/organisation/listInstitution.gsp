@@ -16,11 +16,12 @@
         <%
             editable = (editable && (contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro())) || contextService.is_ORG_COM_EDITOR_or_ROLEADMIN()
         %>
-        <g:if test="${editable}">
-            <ui:actionsDropdown>
+        <ui:actionsDropdown>
+            <g:if test="${editable}">
                 <ui:actionsDropdownItem controller="organisation" action="findOrganisationMatches" message="org.create_new_institution.label"/>
-            </ui:actionsDropdown>
-        </g:if>
+            </g:if>
+            <ui:actionsDropdownItem data-ui="modal" id="copyMailAddresses" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
+        </ui:actionsDropdown>
     </ui:controlButtons>
 
     <ui:h1HeaderWithIcon message="menu.public.all_insts" total="${consortiaMemberTotal}" floated="true" type="institution" />
@@ -62,6 +63,7 @@
               ]"/>
     </g:else>
 
+    <laser:render template="/templates/copyEmailaddresses" model="[orgList: totalOrgs]"/>
     <ui:paginate action="listInstitution" params="${params}" max="${max}" total="${consortiaMemberTotal}" />
 
 
