@@ -61,12 +61,13 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
     Date archiveDate
 
-    Date retirementDate // todo: ERMS-6224, ERMS-6238 -> remove ?
+    @Deprecated
+    Date retirementDate // todo: ERMS-6238 -> REMOVE
     Date dateCreated
     Date lastUpdated
     Date lastUpdatedCascading
 
-    // todo: ERMS-6224 - remove
+    // todo: ERMS-6224 - REMOVE
     @Deprecated
     @RefdataInfo(cat = '?')
     RefdataValue status

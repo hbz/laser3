@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6260    10.02.2025  dev     3.5         David   Feature     Meine Workflows
+
+6224    10.02.2025  dev     3.5         David   Feature     Org.status überarbeiten
+
 6238    07.02.2025  dev     3.5         David   Feature     API: Umbau ERMS-6223/ERMS-6224 abfangen
 
 6253    05.02.2025  dev     3.5         David   Bug         Rechteprobleme bei Nutzenden mit Leser-Zugriff auf DEV
