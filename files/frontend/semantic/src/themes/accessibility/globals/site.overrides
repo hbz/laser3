@@ -259,6 +259,9 @@ aside.ui.accordion .title:not(.ui) {
 .la-flexbox{
     display:flex;
 }
+.la-justifyContent-spaceBetween{
+    justify-content:space-between;
+}
 .la-inline-flexbox{
     display:inline-flex;
 }

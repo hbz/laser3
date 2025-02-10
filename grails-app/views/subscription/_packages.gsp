@@ -17,7 +17,7 @@
                         <ui:msg class="info" showIcon="true" message="subscriptionsManagement.unlinkInfo.unlinkingInProgress" args="${[sp.pkg.name]}" />
                     </g:if>
                     <g:else>
-                        <div class="ui sixteen equal width column stackable internally celled grid">
+                        <div class="ui sixteen equal width column stackable internally grid">
                             <div class="row">
                                 <div class="column">
                                     <g:link controller="package" action="show" id="${sp.pkg.id}">${sp.pkg.name}</g:link>
