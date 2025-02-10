@@ -13,6 +13,7 @@ import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
+import de.laser.wekb.Provider
 import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
@@ -367,10 +368,10 @@ class YodaService {
         String componentType
         Set objects = []
         switch(className) {
-//            case Org.class.name: rectype = GlobalSourceSyncService.RECTYPE_PROVIDER                               // ERMS-6224 - needed? - proper implementation?
-//                componentType = 'Org'                                                                             // ERMS-6224 - needed? - proper implementation?
-//                objects.addAll(Org.findAllByStatusNotEqualAndGokbIdIsNotNull(RDStore.ORG_STATUS_REMOVED))         // ERMS-6224 - needed? - proper implementation?
-//                break
+            case Provider.class.name: rectype = GlobalSourceSyncService.RECTYPE_PROVIDER
+                componentType = 'Org'
+                objects.addAll(Provider.findAllByStatusNotEqualAndGokbIdIsNotNull(RDStore.PROVIDER_STATUS_REMOVED))
+                break
             case Vendor.class.name: rectype = GlobalSourceSyncService.RECTYPE_VENDOR
                 componentType = 'Vendor'
                 objects.addAll(Vendor.findAllByStatusNotEqualAndGokbIdIsNotNull(RDStore.VENDOR_STATUS_REMOVED))
@@ -388,7 +389,8 @@ class YodaService {
             objects.each { obj ->
                 Map record = globalSourceSyncService.fetchRecordJSON(false, [componentType: componentType, uuid: obj.gokbId])
                 if(record?.count == 0) {
-//                    if(obj instanceof Org) {                                                                      // ERMS-6224 - needed? - proper implementation?
+                    //TODO implement cleanup of providers and vendors
+//                    if(obj instanceof Org) {
 //                        OrgRole.executeUpdate('delete from OrgRole oo where oo.org = :org', [org: obj])
 //                        PersonRole.executeUpdate('delete from PersonRole pr where pr.org = :org', [org: obj])
 //                        Identifier.executeUpdate('delete from Identifier id where id.org = :org', [org: obj])

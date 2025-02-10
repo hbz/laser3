@@ -32,6 +32,7 @@ import de.laser.utils.AppUtils
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.wekb.Platform
+import de.laser.wekb.Provider
 import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import grails.converters.JSON
@@ -976,7 +977,7 @@ class YodaController {
             executorService.execute({
                 Thread.currentThread().setName("GlobalDataUpdate_Provider")
                 globalSourceSyncService.reloadData('Org')
-                yodaService.expungeRemovedComponents(Org.class.name)    // ERMS-6224 - needed? - proper implementation?
+                yodaService.expungeRemovedComponents(Provider.class.name)
             })
         }
         else {
