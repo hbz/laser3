@@ -51,7 +51,7 @@
                             <div id="altnames" class="ui accordion la-accordion-showMore la-accordion-altName">
                             <g:if test="${vendor.altnames}">
                                 <div class="ui divided middle aligned selection list la-flex-center">
-                                    <div class="item title" id="altname_title" data-objId="${genericOIDService.getOID(vendor.altnames[0])}">
+                                    <div class="item title" id="altname_title" data-objId="altname-${vendor.altnames[0].id}">
                                         <div class="content la-space-right">
                                             <ui:xEditable data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
                                                       data_confirm_term_how="ok"
@@ -61,7 +61,7 @@
                                         <g:if test="${editable && !vendor.gokbId}">
                                             <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: vendor.altnames[0].id]"
                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [vendor.altnames[0].name])}"
-                                                           data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(vendor.altnames[0])}')">
+                                                           data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('altname-${vendor.altnames[0].id}')">
                                                 <i class="${Icon.CMD.DELETE}"></i>
                                             </ui:remoteLink>
                                         </g:if>
@@ -72,7 +72,7 @@
                                     </div>
                                     <div class="content" style="padding:0">
                                         <g:each in="${vendor.altnames.drop(1)}" var="altname">
-                                            <div class="ui item" data-objId="${genericOIDService.getOID(altname)}">
+                                            <div class="ui item" data-objId="altname-${altname.id}">
                                                 <div class="content la-space-right">
                                                     <ui:xEditable
                                                             data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
@@ -83,7 +83,7 @@
                                                 <g:if test="${editable && !vendor.gokbId}">
                                                     <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
                                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
-                                                                   data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
+                                                                   data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('altname-${altname.id}')">
                                                         <i class="${Icon.CMD.DELETE}"></i>
                                                     </ui:remoteLink>
                                                 </g:if>
