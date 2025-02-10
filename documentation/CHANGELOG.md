@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6267    10.02.2025  rc-3.4  3.4.19      Andreas Feature     Umstellung der Ausgabe "Lizenzen" beim Einrichtungs-Export
+
+6249    10.02.2025  rc-3.4  3.4.19      Andreas Bug         weitere Filterung der angezeigten Kundennummern
+
+6235    10.02.2025  rc-3.4  3.4.19      Andreas Feature     Mailadressen können nun auch aus "Alle Einrichtungen" kopiert werden
+
+6234    10.02.2025  rc-3.4  3.4.19      Andreas Bug         500er bei der Ausgabe von Lizenzen im Export der Einrichtungen behoben
+
 6239    29.01.2025  rc-3.4  3.4.19      David   Bug         Beobachtungslisten bei Basic-Nutzenden
 
 6211    23.01.2025  rc-3.4  3.4.19      Andreas Bug         Kostenstatus gelöscht aus Inline-Bearbeitung entfernt

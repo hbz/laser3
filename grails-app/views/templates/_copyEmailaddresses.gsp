@@ -48,7 +48,7 @@
                 <label for="publicContacts">${message(code:'email.fromPublicContacts')}</label>
             </div>
             <div class="ui checkbox">
-                <input type="checkbox" id="privateContacts" checked/>
+                <input type="checkbox" id="privateContacts"/>
                 <label for="privateContacts">${message(code:'email.fromPrivateAddressbook')}</label>
             </div>
         </div>
