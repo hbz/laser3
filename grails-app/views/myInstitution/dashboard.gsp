@@ -203,6 +203,9 @@
                                                     params="${[info: '' + clistInfo.target.class.name + ':' + clistLinkParamPart]}">
                                                 <strong>${clist.title}</strong>
                                             </g:link>
+%{--                                            <g:link controller="${clistInfo.targetController}" action="workflows" id="${clistInfo.target.id}">--}%
+%{--                                                <strong>${clist.title}</strong>--}%
+%{--                                            </g:link>--}%
                                         </div>
                                     </td>
                                     <td>

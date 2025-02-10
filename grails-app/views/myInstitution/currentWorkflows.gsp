@@ -72,11 +72,11 @@
         <tr>
             <th class="one wide" rowspan="2">${message(code:'sidewide.number')}</th>
             <th class="one wide" rowspan="2"></th>
-            <th class="four wide" rowspan="2">${message(code:'workflow.label')}</th>
+            <th class="three wide" rowspan="2">${message(code:'workflow.label')}</th>
             <th class="four wide" rowspan="2">${message(code:'default.relation.label')}</th>
             <th class="three wide" rowspan="2">${message(code:'default.progress.label')}</th>
             <th class="two wide la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
-            <th class="one wide" rowspan="2">${message(code:'default.actions.label')}</th>
+            <th class="two wide" rowspan="2">${message(code:'default.actions.label')}</th>
         </tr>
         <tr>
             <th class="two wide la-smaller-table-head">${message(code:'default.dateCreated.label')}</th>
@@ -97,6 +97,9 @@
                     <g:link controller="${clistInfo.targetController}" action="workflows" id="${clistInfo.target.id}" params="${[info: '' + clistInfo.target.class.name + ':' + clistInfo.target.id + ':' + WfChecklist.KEY + ':' + clist.id]}">
                         <strong>${clist.title}</strong>
                     </g:link>
+%{--                    <g:link controller="${clistInfo.targetController}" action="workflows" id="${clistInfo.target.id}">--}%
+%{--                        <strong>${clist.title}</strong>--}%
+%{--                    </g:link>--}%
                     <g:if test="${clist.template}">&nbsp;&nbsp;<span class="ui label tiny">Vorlage</span></g:if>
                     <g:if test="${clist.description}"><br /> ${clist.description}</g:if>
                 </td>
@@ -131,11 +134,11 @@
                 <td class="center aligned">
                     <g:if test="${workflowService.hasWRITE()}"><!-- TODO: workflows-permissions -->
 %{--                        <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'myInstitution:' + clist.id + ':' + WfChecklist.KEY + ':' + clist.id]}" />--}%
-%{--                        <button class="${Btn.MODERN.SIMPLE}" data-wfId="${clist.id}"><i class="${Icon.CMD.EDIT}"></i></button>--}%
+                        <button class="${Btn.MODERN.SIMPLE}" data-wfId="${clist.id}"><i class="${Icon.CMD.EDIT}"></i></button>
                     </g:if>
                     <g:elseif test="${workflowService.hasREAD()}"><!-- TODO: workflows-permissions -->
 %{--                        <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'myInstitution:' + clist.id + ':' + WfChecklist.KEY + ':' + clist.id]}" />--}%
-%{--                        <button class="${Btn.MODERN.SIMPLE}" data-wfId="${clist.id}"><i class="${Icon.CMD.EDIT}"></i></button>--}%
+                        <button class="${Btn.MODERN.SIMPLE}" data-wfId="${clist.id}"><i class="${Icon.CMD.READ}"></i></button>
                     </g:elseif>
                     <g:if test="${workflowService.hasWRITE()}"><!-- TODO: workflows-permissions -->
                         <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM}"
@@ -156,6 +159,7 @@
 <ui:paginate action="currentWorkflows" controller="myInstitution" max="${max}" offset="${offset}" total="${total}" />
 
 <div id="wfModal" class="ui modal"></div>
+<div id="wfFlyout" class="ui eight wide flyout"></div>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.wfModalLink').on('click', function(e) {
@@ -163,6 +167,38 @@
         var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'));
         func();
     });
+
+    $('button[data-wfId]').on ('click', function(e) {
+        var trigger = $(this).hasClass ('la-modern-button');
+        var key     = "${WfChecklist.KEY}:" + $(this).attr ('data-wfId');
+
+        $('button[data-wfId]').addClass ('la-modern-button');
+        $('#wfFlyout').flyout ({
+            onHidden: function (e) { %{-- after animation --}%
+                $('button[data-wfId]').addClass ('la-modern-button');
+                document.location = document.location.origin + document.location.pathname;
+            }
+        });
+
+        if (trigger) {
+            $(this).removeClass ('la-modern-button');
+
+            $.ajax ({
+                url: "<g:createLink controller="ajaxHtml" action="workflowFlyout"/>",
+                data: {
+                    key: key
+                }
+            }).done (function (response) {
+                $('#wfFlyout').html (response).flyout ('show');
+                r2d2.initDynamicUiStuff ('#wfFlyout');
+                r2d2.initDynamicXEditableStuff ('#wfFlyout');
+            })
+        }
+    });
+
+%{--    <g:if test="${info}">--}%
+%{--        $('button[data-wfId=' + '${info}'.split(':')[3] + ']').trigger ('click');--}%
+%{--    </g:if>--}%
 </laser:script>
 
 <laser:htmlEnd />
