@@ -287,7 +287,7 @@ class SubscriptionsQueryService {
             }
             else if(params.status != 'FETCH_ALL') base_qry += ")" //opened in line 262 or 266
         }
-        if (!(RDStore.SUBSCRIPTION_CURRENT.id in qry_params.status) && params.hasPerpetualAccess) {
+        if (!(RDStore.SUBSCRIPTION_CURRENT.id in Params.getLongList(params, 'status')) && params.hasPerpetualAccess) {
             base_qry += " and s.hasPerpetualAccess = :hasPerpetualAccess "
             qry_params.put('hasPerpetualAccess', (Long.valueOf(params.hasPerpetualAccess) == RDStore.YN_YES.id))
             filterSet = true

@@ -5995,7 +5995,7 @@ class ExportClickMeService {
                     _setOrgFurtherInformation(result, row, fieldKey, format)
                 }
                 else if (fieldKey == 'participant.subscriptions') {
-                    Long subStatus = RDStore.SUBSCRIPTION_CURRENT.id
+                    List<Long> subStatus = [RDStore.SUBSCRIPTION_CURRENT.id]
                     List subscriptionQueryParams
                     if(configMap.filterPvd && configMap.filterPvd != "" && filterService.listReaderWrapper(configMap, 'filterPvd')){
                         subscriptionQueryParams = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([count: true, org: result, actionName: configMap.action, status: subStatus, date_restr: configMap.subValidOn ? DateUtils.parseDateGeneric(configMap.subValidOn) : null, providers: filterService.listReaderWrapper(configMap, 'filterPvd')])
