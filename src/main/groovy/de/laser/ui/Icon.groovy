@@ -221,21 +221,22 @@ class Icon {
         public static String PHONE          = 'phone icon'
         @UIDoc(usage = 'Generic symbol for: External Website')
         public static String URL            = 'globe icon'
+        @UIDoc(usage = 'Generic symbol for: Language')
+        public static String LANGUAGE       = 'language icon'
 
-        @UIDoc(usage = 'Generic symbol for: Public for API/Data transfer')
-        public static String IS_PUBLIC      = 'lock open icon'
-
-        @UIDoc(usage = 'Generic symbol for: Linked objects')
-        public static String LINKED_OBJECTS = 'linkify icon'
         @UIDoc(usage = 'Generic symbol for: Status')
         public static String STATUS         = 'traffic light icon'
         @UIDoc(usage = 'Generic symbol for: Alternative name')
         public static String ALTNAME        = 'tag icon'
+        @UIDoc(usage = 'Generic symbol for: Public for API/Data transfer')
+        public static String IS_PUBLIC      = 'lock open icon'
 
         @UIDoc(usage = 'Generic symbol for: Note')
         public static String NOTE           = 'sticky note outline icon'
         @UIDoc(usage = 'Generic symbol for: Properties')
         public static String PROPERTIES     = 'tags icon'
+        @UIDoc(usage = 'Generic symbol for: Linked objects')
+        public static String LINKED_OBJECTS = 'linkify icon'
 
         @UIDoc(usage = 'Generic symbol for: Search')
         public static String SEARCH         = 'search icon'
