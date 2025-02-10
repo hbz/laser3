@@ -61,16 +61,9 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
     Date archiveDate
 
-    @Deprecated
-    Date retirementDate // todo: ERMS-6238 -> REMOVE
     Date dateCreated
     Date lastUpdated
     Date lastUpdatedCascading
-
-    // todo: ERMS-6224 - REMOVE
-    @Deprecated
-    @RefdataInfo(cat = '?')
-    RefdataValue status
 
     @RefdataInfo(cat = RDConstants.COUNTRY, i18n = 'org.country.label')
     RefdataValue country
@@ -162,9 +155,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         eInvoicePortal      column:'org_e_invoice_portal_fk', lazy: false
      supportedLibrarySystem column:'org_supported_library_system_rv_fk'
         gokbId              column:'org_gokb_id', type:'text'
-            status          column:'org_status_rv_fk'
        archiveDate          column:'org_archive_date'
-    retirementDate          column:'org_retirement_date'
            country          column:'org_country_rv_fk'
             region          column:'org_region_rv_fk'
     libraryNetwork          column:'org_library_network_rv_fk'
@@ -200,8 +191,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
               urlGov(nullable:true, blank:true, maxSize:512)
  linkResolverBaseURL(nullable:true, blank:false)
          archiveDate(nullable:true)
-      retirementDate(nullable:true)
-              status(nullable:true)
              comment(nullable:true, blank:true, maxSize:2048)
              ipRange(nullable:true, blank:true, maxSize:1024)
            shortcode(nullable:true, blank:true, maxSize:128)
