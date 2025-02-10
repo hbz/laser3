@@ -70,7 +70,7 @@
                             <dd id="altnames" class="ui accordion la-accordion-showMore la-accordion-altName" style="padding-bottom: 0">
                                 <g:if test="${subscription.altnames}">
                                     <div class="ui divided middle aligned selection list la-flex-center">
-                                        <div class="item title" data-objId="${genericOIDService.getOID(subscription.altnames[0])}" >
+                                        <div class="item title" data-objId="altname-${subscription.altnames[0].id}" >
                                             <div class="content la-space-right">
                                                 <g:if test="${!subscription.altnames[0].instanceOf}">
                                                     <ui:xEditable owner="${subscription.altnames[0]}" field="name"/>
@@ -104,7 +104,7 @@
                                                                                params="[object: 'altname', objId: subscription.altnames[0].id]"
                                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [subscription.altnames[0].name])}"
                                                                                data-confirm-term-how="delete"
-                                                                               data-done="JSPC.app.removeListValue('${genericOIDService.getOID(subscription.altnames[0])}')">
+                                                                               data-done="JSPC.app.removeListValue('altname-${subscription.altnames[0].id}')">
                                                                     <i class="${Icon.CMD.DELETE}"></i>
                                                                 </ui:remoteLink>
                                                             </g:if>
@@ -136,7 +136,7 @@
                                                                            params="[object: 'altname', objId: subscription.altnames[0].id]"
                                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [subscription.altnames[0].name])}"
                                                                            data-confirm-term-how="delete"
-                                                                           data-done="JSPC.app.removeListValue('${genericOIDService.getOID(subscription.altnames[0])}')">
+                                                                           data-done="JSPC.app.removeListValue('altname-${subscription.altnames[0].id}')">
                                                                 <i class="${Icon.CMD.DELETE}"></i>
                                                             </ui:remoteLink>
                                                         </g:else>
@@ -150,7 +150,7 @@
                                                                        params="[object: 'altname', objId: subscription.altnames[0].id]"
                                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [subscription.altnames[0].name])}"
                                                                        data-confirm-term-how="delete"
-                                                                       data-done="JSPC.app.removeListValue('${genericOIDService.getOID(subscription.altnames[0])}')">
+                                                                       data-done="JSPC.app.removeListValue('altname-${subscription.altnames[0].id}')">
                                                             <i class="${Icon.CMD.DELETE}"></i>
                                                         </ui:remoteLink>
                                                     </g:else>
@@ -163,7 +163,7 @@
 
                                         <div  class="content" style="padding:0">
                                             <g:each in="${subscription.altnames.drop(1)}" var="altname">
-                                                <div class="ui item" data-objId="${genericOIDService.getOID(altname)}">
+                                                <div class="ui item" data-objId="altname-${altname.id}">
                                                     <div class="content la-space-right">
                                                         <g:if test="${!altname.instanceOf}">
                                                             <ui:xEditable owner="${altname}" field="name"/>
@@ -199,7 +199,7 @@
                                                                                    params="[object: 'altname', objId: altname.id]"
                                                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
                                                                                    data-confirm-term-how="delete"
-                                                                                   data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
+                                                                                   data-done="JSPC.app.removeListValue('altname-${altname.id}')">
                                                                         <i class="${Icon.CMD.DELETE}"></i>
                                                                     </ui:remoteLink>
                                                                     <div class="${Btn.ICON.SIMPLE} la-hidden">
@@ -240,7 +240,7 @@
                                                                                params="[object: 'altname', objId: altname.id]"
                                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
                                                                                data-confirm-term-how="delete"
-                                                                               data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
+                                                                               data-done="JSPC.app.removeListValue('altname-${altname.id}')">
                                                                     <i class="${Icon.CMD.DELETE}"></i>
                                                                 </ui:remoteLink>
                                                             </g:else>
@@ -255,7 +255,7 @@
                                                                            params="[object: 'altname', objId: altname.id]"
                                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
                                                                            data-confirm-term-how="delete"
-                                                                           data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
+                                                                           data-done="JSPC.app.removeListValue('altname-${altname.id}')">
                                                                 <i class="${Icon.CMD.DELETE}"></i>
                                                             </ui:remoteLink>
                                                         </g:else>

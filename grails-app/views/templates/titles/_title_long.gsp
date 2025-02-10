@@ -201,7 +201,7 @@
 
     <g:if test="${(tipp.delayedOA || showEmptyFields)}">
         <div class="item">
-            <i class="grey lock open icon la-popup-tooltip"
+            <i class="${Icon.ATTR.TIPP_ACCESS_TYPE} la-popup-tooltip"
                data-content="${message(code: 'tipp.delayedOA')}"></i>
 
             <div class="content">
@@ -212,7 +212,7 @@
 
     <g:if test="${(tipp.hybridOA || showEmptyFields)}">
         <div class="item">
-            <i class="grey lock open alternate icon la-popup-tooltip"
+            <i class="${Icon.ATTR.TIPP_ACCESS_TYPE} la-popup-tooltip"
                data-content="${message(code: 'tipp.hybridOA')}"></i>
 
             <div class="content">
@@ -239,7 +239,7 @@
 
     <g:if test="${(tipp.languages || showEmptyFields)}">
         <div class="item">
-            <i class="grey language icon la-popup-tooltip"
+            <i class="grey ${Icon.SYM.LANGUAGE} la-popup-tooltip"
                data-content="${message(code: 'tipp.language')}"></i>
 
             <div class="content">
@@ -266,7 +266,7 @@
 
     <g:if test="${(tipp.accessType || showEmptyFields)}">
         <div class="item">
-            <i class="grey lock open icon la-popup-tooltip"
+            <i class="${Icon.ATTR.TIPP_ACCESS_TYPE} la-popup-tooltip"
                data-content="${message(code: 'tipp.accessType')}"></i>
 
             <div class="content">

@@ -188,7 +188,7 @@
 
                 <sec:ifAnyGranted roles="ROLE_ADMIN">
                     <div id="system-profiler" class="ui label hidden la-debugInfos">
-                        <i class="clock icon"></i> <span></span>
+                        <i class="clock outline icon"></i> <span></span>
                     </div>
                 </sec:ifAnyGranted>
                 <button style="display: none"  class="circular ui icon huge button icon la-scrollTopButton" id="la-js-topButton">

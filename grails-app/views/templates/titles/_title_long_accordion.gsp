@@ -217,7 +217,7 @@
 
         <g:if test="${(tipp.delayedOA || showEmptyFields)}">
             <div class="item">
-                <i class="grey lock open icon la-popup-tooltip" data-content="${message(code: 'tipp.delayedOA')}"></i>
+                <i class="${Icon.ATTR.TIPP_ACCESS_TYPE} la-popup-tooltip" data-content="${message(code: 'tipp.delayedOA')}"></i>
                 <div class="content">
                     <div class="header">
                         ${message(code: 'tipp.delayedOA') + ':'}
@@ -232,7 +232,7 @@
 
         <g:if test="${(tipp.hybridOA || showEmptyFields)}">
             <div class="item">
-                <i class="grey lock open alternate icon la-popup-tooltip" data-content="${message(code: 'tipp.hybridOA')}"></i>
+                <i class="${Icon.ATTR.TIPP_ACCESS_TYPE} la-popup-tooltip" data-content="${message(code: 'tipp.hybridOA')}"></i>
                 <div class="content">
                     <div class="header">
                         ${message(code: 'tipp.hybridOA') + ':'}
@@ -265,7 +265,7 @@
 
         <g:if test="${(tipp.languages || showEmptyFields)}">
             <div class="item">
-                <i class="grey language icon la-popup-tooltip" data-content="${message(code: 'tipp.language')}"></i>
+                <i class="grey ${Icon.SYM.LANGUAGE} la-popup-tooltip" data-content="${message(code: 'tipp.language')}"></i>
                 <div class="content">
                     <div class="header">
                         ${message(code: 'tipp.language') + ':'}
@@ -296,7 +296,7 @@
 
         <g:if test="${(tipp.accessType || showEmptyFields)}">
             <div class="item">
-                <i class="grey lock open icon la-popup-tooltip" data-content="${message(code: 'tipp.accessType')}"></i>
+                <i class="${Icon.ATTR.TIPP_ACCESS_TYPE} la-popup-tooltip" data-content="${message(code: 'tipp.accessType')}"></i>
                 <div class="content">
                     <div class="header">
                         ${message(code: 'tipp.accessType') + ':'}
@@ -325,7 +325,7 @@
         <g:set var="providers" value="${tipp.getPublishers()}"/>
         <g:if test="${(providers || showEmptyFields)}">
             <div class="item">
-                <i class="grey university icon la-popup-tooltip" data-content="${message(code: 'tipp.provider')}"></i>
+                <i class="grey ${Icon.PROVIDER} la-popup-tooltip" data-content="${message(code: 'tipp.provider')}"></i>
                 <div class="content">
                     <div class="header">
                         ${message(code: 'tipp.provider') + ':'}

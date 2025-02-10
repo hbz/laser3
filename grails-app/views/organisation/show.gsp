@@ -85,14 +85,14 @@
                             <div id="altnames" class="ui accordion la-accordion-showMore la-accordion-altName">
                                 <g:if test="${orgInstance.altnames}">
                                     <div class="ui divided middle aligned selection list la-flex-center">
-                                        <div class="item title" id="altname_title"  data-objId="${genericOIDService.getOID(orgInstance.altnames[0])}">
+                                        <div class="item title" id="altname_title"  data-objId="altname-${orgInstance.altnames[0].id}">
                                             <div class="content la-space-right">
                                                 <ui:xEditable owner="${orgInstance.altnames[0]}" field="name" overwriteEditable="${editable}"/>
                                             </div>
                                             <g:if test="${editable}">
                                                 <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: orgInstance.altnames[0].id]"
                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [orgInstance.altnames[0].name])}"
-                                                               data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(orgInstance.altnames[0])}')">
+                                                               data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('altname-${orgInstance.altnames[0].id}')">
                                                     <i class="${Icon.CMD.DELETE}"></i>
                                                 </ui:remoteLink>
                                             </g:if>
@@ -102,14 +102,14 @@
                                         </div>
                                         <div class="content" style="padding:0">
                                             <g:each in="${orgInstance.altnames.drop(1)}" var="altname">
-                                                <div class="ui item" data-objId="${genericOIDService.getOID(altname)}">
+                                                <div class="ui item" data-objId="altname-${altname.id}">
                                                     <div class="content la-space-right">
                                                         <ui:xEditable owner="${altname}" field="name" overwriteEditable="${editable}"/>
                                                     </div>
                                                     <g:if test="${editable}">
                                                         <ui:remoteLink role="button" class="${Btn.MODERN.NEGATIVE_CONFIRM}" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
                                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
-                                                                       data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('${genericOIDService.getOID(altname)}')">
+                                                                       data-confirm-term-how="delete" data-done="JSPC.app.removeListValue('altname-${altname.id}')">
                                                             <i class="${Icon.CMD.DELETE}"></i>
                                                         </ui:remoteLink>
                                                     </g:if>
@@ -138,41 +138,26 @@
                         </dd>
                     </dl>
 
+                    <g:if test="${orgInstance.isCustomerType_Inst()}">
+                        <dl>
+                            <dt class="control-label">
+                                <g:message code="org.libraryType.label" />
+                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                      data-content="${message(code: 'org.libraryType.expl')}">
+                                    <i class="${Icon.TOOLTIP.HELP}"></i>
+                                </span>
+                            </dt>
+                            <dd>
+                                <ui:xEditableRefData owner="${orgInstance}" field="libraryType" config="${RDConstants.LIBRARY_TYPE}"/>
+                            </dd>
+                        </dl>
+                    </g:if>
+
                     <g:if test="${orgInstance.getCustomerType()}">
                         <dl>
                             <dt class="control-label"><g:message code="org.customerType.label"/></dt>
                             <dd>
                                 ${orgInstance.getCustomerTypeI10n()}
-%{--                                <ui:customerTypeIcon org="${orgInstance}" />--}%
-                            </dd>
-                        </dl>
-                    </g:if>
-                    <g:if test="${orgInstance.isCustomerType_Inst()}">
-                        <dl>
-                            <dt class="control-label">
-                                <g:message code="org.legalPatronName.label" />
-                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
-                                      data-content="${message(code: 'org.legalPatronName.expl')}">
-                                    <i class="${Icon.TOOLTIP.HELP}"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <ui:xEditable owner="${orgInstance}" field="legalPatronName"/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt class="control-label">
-                                <g:message code="org.urlGov.label"/>
-                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
-                                      data-content="${message(code: 'org.urlGov.expl')}">
-                                    <i class="${Icon.TOOLTIP.HELP}"></i>
-                                </span>
-                            </dt>
-                            <dd>
-                                <ui:xEditable owner="${orgInstance}" type="url" field="urlGov" class="la-overflow la-ellipsis" />
-                                <g:if test="${orgInstance.urlGov}">
-                                    <ui:linkWithIcon href="${orgInstance.urlGov}" />
-                                </g:if>
                             </dd>
                         </dl>
                     </g:if>
@@ -185,18 +170,6 @@
                         <div class="content">
                             <dl>
                                 <dt class="control-label">
-                                    <g:message code="org.libraryType.label" />
-                                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
-                                          data-content="${message(code: 'org.libraryType.expl')}">
-                                        <i class="${Icon.TOOLTIP.HELP}"></i>
-                                    </span>
-                                </dt>
-                                <dd>
-                                    <ui:xEditableRefData owner="${orgInstance}" field="libraryType" config="${RDConstants.LIBRARY_TYPE}"/>
-                                </dd>
-                            </dl>
-                            <dl>
-                                <dt class="control-label">
                                     <g:message code="org.libraryNetwork.label" />
                                     <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
                                           data-content="${message(code: 'org.libraryNetwork.expl')}">
@@ -205,6 +178,33 @@
                                 </dt>
                                 <dd>
                                     <ui:xEditableRefData owner="${orgInstance}" field="libraryNetwork" config="${RDConstants.LIBRARY_NETWORK}"/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt class="control-label">
+                                    <g:message code="org.legalPatronName.label" />
+                                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                          data-content="${message(code: 'org.legalPatronName.expl')}">
+                                        <i class="${Icon.TOOLTIP.HELP}"></i>
+                                    </span>
+                                </dt>
+                                <dd>
+                                    <ui:xEditable owner="${orgInstance}" field="legalPatronName"/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt class="control-label">
+                                    <g:message code="org.urlGov.label"/>
+                                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                          data-content="${message(code: 'org.urlGov.expl')}">
+                                        <i class="${Icon.TOOLTIP.HELP}"></i>
+                                    </span>
+                                </dt>
+                                <dd>
+                                    <ui:xEditable owner="${orgInstance}" type="url" field="urlGov" class="la-overflow la-ellipsis" />
+                                    <g:if test="${orgInstance.urlGov}">
+                                        <ui:linkWithIcon href="${orgInstance.urlGov}" />
+                                    </g:if>
                                 </dd>
                             </dl>
                             <dl>

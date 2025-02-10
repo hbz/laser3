@@ -63,6 +63,8 @@ class IconAttr {
     @UIDoc(usage = 'Only for TASK: status deferred')
     public static String TASK_STATUS_DEFERRED   = 'pause circle outline icon'   // TODO
 
+    @UIDoc(usage = 'Only for TIPP: various access types (hybrid, delayed) (COLORED)')
+    public static String TIPP_ACCESS_TYPE       = 'lock open icon grey'         // TODO
     @UIDoc(usage = 'Only for TIPP: various coverage data (COLORED)')
     public static String TIPP_COVERAGE          = 'la-books icon grey'          // TODO
     @UIDoc(usage = 'Only for TIPP: coverageDepth (COLORED)')
