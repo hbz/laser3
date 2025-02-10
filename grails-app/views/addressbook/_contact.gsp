@@ -7,7 +7,17 @@
             <ui:contactIcon type="${contact.contentType?.value}" />
             <div class="content la-space-right">
                 <span class="js-copyTopic"><ui:xEditable owner="${contact}" field="content" overwriteEditable="${overwriteEditable}" /></span>
-                <g:if test="${contact.language}">(${contact.language.getI10n("value")})</g:if>
+                <g:if test="${contact.language}">
+                    <g:if test="${contact.language.value == 'ger'}">
+                        <i class="flag de"></i>
+                    </g:if>
+                    <g:elseif test="${contact.language.value == 'eng'}">
+                        <i class="flag gb"></i>
+                    </g:elseif>
+                    <g:else>
+                        (${contact.language.getI10n("value")})
+                    </g:else>
+                </g:if>
             </div>
         </div>
 
