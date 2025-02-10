@@ -1500,6 +1500,10 @@ aside.ui.accordion .title:not(.ui) {
   display: flex;
 }
 
+.la-justifyContent-spaceBetween {
+  justify-content: space-between;
+}
+
 .la-inline-flexbox {
   display: inline-flex;
 }
@@ -28757,6 +28761,25 @@ body[class*="provider"] .ui.icon.header .icon.la-object:before {
 
 .la-orgRelations {
   font-weight: normal;
+}
+
+/* -----------------------------------
+         Header in Card with Add Icon
+    ----------------------------------- */
+
+.ui.card > .content > .header.la-flexbox,
+.ui.cards > .card > .content > .header.la-flexbox {
+  display: flex;
+}
+
+.ui.card > .content > .header.la-justifyContent-spaceBetween,
+.ui.cards > .card > .content > .header.la-justifyContent-spaceBetween {
+  justify-content: space-between;
+}
+
+.ui.card > .content > .header h2,
+.ui.cards > .card > .content > .header h2 {
+  font-size: 1rem;
 }
 /*!
  * # Fomantic-UI 2.9.3 - Icon

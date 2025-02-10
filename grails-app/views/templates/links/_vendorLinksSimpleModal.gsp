@@ -1,6 +1,17 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <g:if test="${editmode}">
-    <a role="button" class="${Btn.SIMPLE}" data-ui="modal" href="#${tmplModalID}">${tmplButtonText}</a>
+    <a role="button"
+       class="ui icon button la-modern-button la-popup-tooltip ${tmplCss}"
+       data-ui="modal"
+       href="#${tmplModalID}"
+       data-content="${tmplTooltip}">
+        <g:if test="${tmplIcon}">
+            <i class="${tmplIcon} icon"></i>
+        </g:if>
+        <g:if test="${tmplButtonText}">
+            ${tmplButtonText}
+        </g:if>
+    </a>
 </g:if>
 
 <ui:modal contentClass="scrolling" modalSize="medium" id="${tmplModalID}" text="${tmplText}" isEditModal="${editmode}">

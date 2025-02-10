@@ -2,17 +2,17 @@
 <laser:serviceInjection/>
 <g:if test="${editmode}">
 
-        <a role="button"
-           class="ui button la-popup-tooltip ${tmplCss}"
-           data-ui="modal" href="#${tmplModalID}"
-           data-content="${message(code:'license.details.editLink')}">
-            <g:if test="${tmplIcon}">
-                <i class="${tmplIcon} icon"></i>
-            </g:if>
-            <g:if test="${tmplButtonText}">
-                ${tmplButtonText}
-            </g:if>
-        </a>
+    <a role="button"
+        class="ui icon button la-modern-button la-popup-tooltip ${tmplCss}"
+        data-ui="modal" href="#${tmplModalID}"
+        data-content="${tmplTooltip}">
+        <g:if test="${tmplIcon}">
+            <i class="${tmplIcon} icon"></i>
+        </g:if>
+        <g:if test="${tmplButtonText}">
+            ${tmplButtonText}
+        </g:if>
+    </a>
 
 </g:if>
 

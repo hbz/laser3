@@ -284,10 +284,15 @@
                                             </div>
                                         </g:if>
                                     </dd>
+                                    <dd>
+                                        <g:if test="${editable}">
+                                            <button  data-content="${message(code: 'altname.add')}" data-objtype="altname" id="addAltname"  class="${Btn.MODERN.POSITIVE} la-js-addItem blue la-popup-tooltip">
+                                                <i class="${Icon.CMD.ADD}"></i>
+                                            </button>
+                                        </g:if>
+                                    </dd>
                                 </dl>
-                                <g:if test="${editable}">
-                                    <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} la-js-addListValue" data-objtype="altname" value="${message(code: 'altname.add')}"></dd>
-                                </g:if>
+                                <div></div>%{-- Breaks DL for a reason --}%
                                 <dl>
                                     <dt class="control-label">${message(code: 'license.startDate.label')}</dt>
                                     <dd>
@@ -376,7 +381,9 @@
                         <div id="container-consortium">
                             <div class="ui card">
                                 <div class="content">
-                                    <h2 class="ui header">${message(code: 'consortium.label')}</h2>
+                                    <div class="ui header la-flexbox la-justifyContent-spaceBetween">
+                                        <h2>${message(code: 'consortium.label')}</h2>
+                                    </div>
                                     <laser:render template="/templates/links/consortiumLinksAsList"
                                                   model="${[consortium   : license.getLicensingConsortium(),
                                                             roleObject   : license,
@@ -391,7 +398,20 @@
                         <div id="container-provider">
                             <div class="ui card">
                                 <div class="content">
-                                    <h2 class="ui header">${message(code: 'provider.label')}</h2>
+                                    <div class="ui header la-flexbox la-justifyContent-spaceBetween">
+                                        <h2>${message(code: 'provider.label')}</h2>
+                                        <laser:render template="/templates/links/providerLinksSimpleModal"
+                                                      model="${[linkType: license.class.name,
+                                                                parent: license.class.name + ':' + license.id,
+                                                                recip_prop: 'license',
+                                                                tmplEntity: message(code:'license.details.tmplEntity'),
+                                                                tmplText: message(code:'license.details.tmplText'),
+                                                                tmplIcon        : 'add',
+                                                                tmplTooltip     : message(code:'license.details.tmplLinkProviderText'),
+                                                                tmplModalID:'osel_add_modal_lizenzgeber',
+                                                                editmode: editable
+                                                      ]}" />
+                                    </div>
                                     <laser:render template="/templates/links/providerLinksAsList"
                                               model="${[providerRoles: visibleProviders,
                                                         roleObject: license,
@@ -399,27 +419,26 @@
                                                         editmode: editable,
                                                         showPersons: true
                                               ]}" />
-
-                                    <div class="ui la-vertical buttons">
-                                        <laser:render template="/templates/links/providerLinksSimpleModal"
-                                                  model="${[linkType: license.class.name,
-                                                            parent: license.class.name + ':' + license.id,
-                                                            recip_prop: 'license',
-                                                            tmplEntity: message(code:'license.details.tmplEntity'),
-                                                            tmplText: message(code:'license.details.tmplText'),
-                                                            tmplButtonText: message(code:'license.details.tmplLinkProviderText'),
-                                                            tmplModalID:'osel_add_modal_lizenzgeber',
-                                                            editmode: editable
-                                                  ]}" />
-
-                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div id="container-vendor">
                             <div class="ui card">
                                 <div class="content">
-                                    <h2 class="ui header">${message(code: 'vendor.label')}</h2>
+                                    <div class="ui header la-flexbox la-justifyContent-spaceBetween">
+                                        <h2>${message(code: 'vendor.label')}</h2>
+                                        <laser:render template="/templates/links/vendorLinksSimpleModal"
+                                                      model="${[linkType: license.class.name,
+                                                                parent: license.class.name + ':' + license.id,
+                                                                recip_prop: 'license',
+                                                                tmplEntity: message(code:'license.details.linkAgency.tmplEntity'),
+                                                                tmplText: message(code:'license.details.linkAgency.tmplText'),
+                                                                tmplIcon        : 'add',
+                                                                tmplTooltip     : message(code:'license.details.tmplLinkAgencyText'),
+                                                                tmplModalID:'osel_add_modal_agency',
+                                                                editmode: editable
+                                                      ]}" />
+                                    </div>
                                     <laser:render template="/templates/links/vendorLinksAsList"
                                                   model="${[vendorRoles: visibleVendors,
                                                             roleObject: license,
@@ -427,18 +446,7 @@
                                                             editmode: editable,
                                                             showPersons: true
                                                   ]}" />
-                                    <div class="ui la-vertical buttons">
-                                        <laser:render template="/templates/links/vendorLinksSimpleModal"
-                                                      model="${[linkType: license.class.name,
-                                                                parent: license.class.name + ':' + license.id,
-                                                                recip_prop: 'license',
-                                                                tmplEntity: message(code:'license.details.linkAgency.tmplEntity'),
-                                                                tmplText: message(code:'license.details.linkAgency.tmplText'),
-                                                                tmplButtonText: message(code:'license.details.tmplLinkAgencyText'),
-                                                                tmplModalID:'osel_add_modal_agency',
-                                                                editmode: editable
-                                                      ]}" />
-                                    </div>
+
                                 </div>
                             </div>
                         </div>
@@ -453,7 +461,7 @@
 
         </div><!-- .grid -->
     <laser:script file="${this.getGroovyPageFileName()}">
-        $('.la-js-addListValue').click(function() {
+        $('.la-js-addItem').click(function() {
             let url;
             let returnSelector;
             switch($(this).attr('data-objtype')) {

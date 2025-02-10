@@ -2,17 +2,60 @@
 <laser:serviceInjection/>
 
 <div class="content">
-    <h2 class="ui header">
+    <div class="ui header la-flexbox la-justifyContent-spaceBetween">
+
         <g:if test="${subscriptionLicenseLink}">
-            <g:message code="license.plural"/>
+            <h2><g:message code="license.plural"/></h2>
         </g:if>
         <g:elseif test="${subscription}">
-            <g:message code="subscription.details.linksHeader"/>
+            <h2><g:message code="subscription.details.linksHeader"/></h2>
         </g:elseif>
         <g:elseif test="${license}">
-            <g:message code="license.details.linksHeader"/>
+            <h2><g:message code="license.details.linksHeader"/></h2>
         </g:elseif>
-    </h2>
+
+        <%
+            Map<String, Object> model
+            String addLink = ""
+            if (license || subscriptionLicenseLink)
+                addLink = message(code: 'license.details.addLink')
+            else if (subscription)
+                addLink = message(code: 'subscription.details.addLink')
+            if (subscriptionLicenseLink) {
+                model = [tmplText               : addLink,
+                         tmplID                 : 'addLicenseLink',
+                         tmplIcon               : 'add',
+                         tmplTooltip            : addLink,
+/*                             tmplButtonText         : addLink,*/
+                         tmplModalID            : 'sub_add_license_link',
+                         editmode               : editable,
+                         subscriptionLicenseLink: true,
+                         atConsortialParent     : contextService.getOrg() == subscription.getConsortium(),
+                         context                : subscription,
+                         linkInstanceType       : Links.class.name
+                ]
+            } else {
+                model = [tmplText          : addLink,
+                         tmplID            : 'addLink',
+                         tmplIcon          : 'add',
+                         tmplTooltip        :addLink,
+//                             tmplButtonText    : addLink,
+                         tmplModalID       : 'sub_add_link',
+                         editmode          : editable,
+                         atConsortialParent: atConsortialParent,
+                         context           : entry,
+                         linkInstanceType  : Links.class.name
+                ]
+            }
+        %>
+        <div class="right aligned four wide column">
+            <laser:render template="/templates/links/subLinksModal"
+                          model="${model}"/>
+            %{--                <a type="button" class="ui button icon la-modern-button" data-ui="modal" href="#sub_add_link">
+                                <i aria-hidden="true" class="plus icon"></i>
+                            </a>--}%
+        </div>
+    </div>
 
     <div class="ui accordion la-accordion-showMore">
         <g:if test="${links.entrySet()}">
@@ -73,8 +116,8 @@
                                                     <div class="header">
                                                         <g:formatDate date="${pair.startDate}"
                                                                       format="${message(code: 'default.date.format.notime')}"/>–<g:formatDate
-                                                                date="${pair.endDate}"
-                                                                format="${message(code: 'default.date.format.notime')}"/>
+                                                            date="${pair.endDate}"
+                                                            format="${message(code: 'default.date.format.notime')}"/>
                                                     </div>
                                                 </div>
                                             </div>
@@ -92,8 +135,8 @@
                                         <g:else>
                                             <g:if test="${pair.propertySet && pair instanceof License}">
                                                 <div id="derived-license-properties-toggle${link.id}"
-                                                        class="${Btn.MODERN.SIMPLE_TOOLTIP}"
-                                                        data-content="${message(code: 'subscription.details.viewLicenseProperties')}">
+                                                     class="${Btn.MODERN.SIMPLE_TOOLTIP}"
+                                                     data-content="${message(code: 'subscription.details.viewLicenseProperties')}">
                                                     <i class="${Icon.CMD.SHOW_MORE}"></i>
                                                 </div>
                                             </g:if>
@@ -131,35 +174,35 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <%--
+                                            <%--
+                                                <span class="la-popup-tooltip"
+                                                      data-content="${message(code: 'license.details.unlink')}">
+                                                    <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
+                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.license")}"
+                                                            data-confirm-term-how="unlink"
+                                                            controller="subscription" action="unlinkLicense"
+                                                            params="${[license: link.sourceLicense.id, id: subscription.id]}"
+                                                            role="button"
+                                                            aria-label="${message(code: 'ariaLabel.unlink.universal')}">
+                                                        <i class="${Icon.CMD.UNLINK}"></i>
+                                                    </g:link>
+                                                </span>
+                                                <g:if test="${atConsortialParent}">
+                                                    <div class="or" data-text="|"></div>
                                                     <span class="la-popup-tooltip"
-                                                          data-content="${message(code: 'license.details.unlink')}">
+                                                          data-content="${message(code: 'license.details.unlink.child')}">
                                                         <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
-                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.license")}"
+                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.child.license")}"
                                                                 data-confirm-term-how="unlink"
                                                                 controller="subscription" action="unlinkLicense"
-                                                                params="${[license: link.sourceLicense.id, id: subscription.id]}"
+                                                                params="${[license: link.sourceLicense.id, id: subscription.id, unlinkWithChildren: true]}"
                                                                 role="button"
                                                                 aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                            <i class="${Icon.CMD.UNLINK}"></i>
+                                                            <i class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>
                                                         </g:link>
                                                     </span>
-                                                    <g:if test="${atConsortialParent}">
-                                                        <div class="or" data-text="|"></div>
-                                                        <span class="la-popup-tooltip"
-                                                              data-content="${message(code: 'license.details.unlink.child')}">
-                                                            <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
-                                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.child.license")}"
-                                                                    data-confirm-term-how="unlink"
-                                                                    controller="subscription" action="unlinkLicense"
-                                                                    params="${[license: link.sourceLicense.id, id: subscription.id, unlinkWithChildren: true]}"
-                                                                    role="button"
-                                                                    aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                                <i class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>
-                                                            </g:link>
-                                                        </span>
-                                                    </g:if>
-                                                --%>
+                                                </g:if>
+                                            --%>
                                             </g:if>
                                             <g:else>
                                                 <span class="la-popup-tooltip"
@@ -205,39 +248,6 @@
                 <g:message code="subscription.details.noLink"/>
             </p>
         </g:elseif>
-        <div class="ui la-vertical buttons">
-            <%
-                Map<String, Object> model
-                String addLink = ""
-                if (license || subscriptionLicenseLink)
-                    addLink = message(code: 'license.details.addLink')
-                else if (subscription)
-                    addLink = message(code: 'subscription.details.addLink')
-                if (subscriptionLicenseLink) {
-                    model = [tmplText               : addLink,
-                             tmplID                 : 'addLicenseLink',
-                             tmplButtonText         : addLink,
-                             tmplModalID            : 'sub_add_license_link',
-                             editmode               : editable,
-                             subscriptionLicenseLink: true,
-                             atConsortialParent     : contextService.getOrg() == subscription.getConsortium(),
-                             context                : subscription,
-                             linkInstanceType       : Links.class.name
-                    ]
-                } else {
-                    model = [tmplText          : addLink,
-                             tmplID            : 'addLink',
-                             tmplButtonText    : addLink,
-                             tmplModalID       : 'sub_add_link',
-                             editmode          : editable,
-                             atConsortialParent: atConsortialParent,
-                             context           : entry,
-                             linkInstanceType  : Links.class.name
-                    ]
-                }
-            %>
-            <laser:render template="/templates/links/subLinksModal"
-                          model="${model}"/>
-        </div>
+
     </div>
 </div>
