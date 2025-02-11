@@ -12,7 +12,7 @@
                 data-confirm-tokenMsg="${message(code: "confirm.dialog.disable.org")}" data-confirm-term-how="ok">
             <i class="exclamation triangle icon"></i> ${message(code:'org.markAsArchive.label')}
         </g:link>
-        <g:link class="item" action="delete" id="${params.id}"><i class="${Icon.CMD.DELETE}"></i>
+        <g:link action="delete" id="${params.id}" class="item"><i class="${Icon.CMD.DELETE}"></i>
             ${message(code: 'deletion.institution')}
         </g:link>
     </g:if>
