@@ -24,9 +24,8 @@
             if (subscriptionLicenseLink) {
                 model = [tmplText               : addLink,
                          tmplID                 : 'addLicenseLink',
-                         tmplIcon               : 'add',
+                         tmplIcon               : 'large add',
                          tmplTooltip            : addLink,
-/*                             tmplButtonText         : addLink,*/
                          tmplModalID            : 'sub_add_license_link',
                          editmode               : editable,
                          subscriptionLicenseLink: true,
@@ -37,7 +36,7 @@
             } else {
                 model = [tmplText          : addLink,
                          tmplID            : 'addLink',
-                         tmplIcon          : 'add',
+                         tmplIcon          : 'large add',
                          tmplTooltip        :addLink,
 //                             tmplButtonText    : addLink,
                          tmplModalID       : 'sub_add_link',
