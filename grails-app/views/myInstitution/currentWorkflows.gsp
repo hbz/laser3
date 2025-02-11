@@ -176,7 +176,7 @@
         $('#wfFlyout').flyout ({
             onHidden: function (e) { %{-- after animation --}%
                 $('button[data-wfId]').addClass ('la-modern-button');
-                document.location = document.location.origin + document.location.pathname;
+                document.location = document.location %{-- restore filter settings --}%
             }
         });
 
@@ -195,10 +195,6 @@
             })
         }
     });
-
-%{--    <g:if test="${info}">--}%
-%{--        $('button[data-wfId=' + '${info}'.split(':')[3] + ']').trigger ('click');--}%
-%{--    </g:if>--}%
 </laser:script>
 
 <laser:htmlEnd />
