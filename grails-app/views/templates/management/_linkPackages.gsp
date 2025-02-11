@@ -279,6 +279,12 @@
         });
     });
 
+    $("input[name=selectedSubs]").checkbox({
+        onChange: function() {
+            $('#membersListToggler').prop('checked', false);
+        }
+    });
+
   $('.unlinkPackages').on('click',function() {
       JSPC.app.unlinkPackage($(this).attr("data-package"),$(this).attr("data-subscription"));
   });

@@ -509,6 +509,12 @@
         });
     });
 
+    $("input[name=selectedSubs]").checkbox({
+        onChange: function() {
+            $('#membersListToggler').prop('checked', false);
+        }
+    });
+
     $.fn.form.settings.rules.endDateNotBeforeStartDate = function() {
         if($("#valid_from").val() !== '' && $("#valid_to").val() !== '') {
             var startDate = Date.parse(JSPC.helper.formatDate($("#valid_from").val()));
