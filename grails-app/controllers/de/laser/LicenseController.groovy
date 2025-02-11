@@ -245,7 +245,6 @@ class LicenseController {
                     licenseCopy = institutionsService.copyLicense(
                             result.license, [
                                 lic_name: "${result.license.reference}",
-                                isSlaved: "true",
                                 copyStartEnd: true
                             ],
                             InstitutionsService.CUSTOM_PROPERTIES_ONLY_INHERITED)

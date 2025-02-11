@@ -169,7 +169,7 @@
                                     <g:set var="atSubscr" value="${object._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION}"/>
                                 </g:elseif>
                                 <g:if test="${(propValue.hasProperty('instanceOf') && propValue.instanceOf && AuditConfig.getConfig(propValue.instanceOf)) || AuditConfig.getConfig(propValue)}">
-                                    <g:if test="${object.isSlaved}">
+                                    <g:if test="${object.instanceOf}">
                                         &nbsp;
                                         <ui:auditIcon type="auto" />
                                     </g:if>

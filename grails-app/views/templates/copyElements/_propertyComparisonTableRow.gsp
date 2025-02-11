@@ -315,7 +315,7 @@
                                                        value="${targetObject._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION}"/>
                                             </g:elseif>
                                             <g:if test="${(propValue.hasProperty('instanceOf') && propValue.instanceOf && AuditConfig.getConfig(propValue.instanceOf)) || AuditConfig.getConfig(propValue)}">
-                                                <g:if test="${targetObject.isSlaved}">
+                                                <g:if test="${targetObject.instanceOf}">
                                                     <ui:auditIcon type="auto" />
                                                 </g:if>
                                                 <g:else>

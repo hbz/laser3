@@ -176,7 +176,7 @@
 
                                                     <%
                                                         if (AuditConfig.getConfig(customProperty)) {
-                                                            if (objWithoutProp.isSlaved) {
+                                                            if (objWithoutProp.instanceOf) {
                                                                 println '&nbsp;' + ui.auditIcon(type: 'auto')
                                                             } else {
                                                                 println '&nbsp;' + ui.auditIcon(type: 'default')
@@ -242,7 +242,7 @@
 
                                                     <%
                                                         if (AuditConfig.getConfig(privateProperty)) {
-                                                            if (objWithoutProp.isSlaved) {
+                                                            if (objWithoutProp.instanceOf) {
                                                                 println '&nbsp;' + ui.auditIcon(type: 'auto')
                                                             } else {
                                                                 println '&nbsp;' + ui.auditIcon(type: 'default')
@@ -421,7 +421,7 @@
                                                     </g:if>
                                                     <%
                                                         if ((customProperty.hasProperty('instanceOf') && customProperty.instanceOf && AuditConfig.getConfig(customProperty.instanceOf)) || AuditConfig.getConfig(customProperty)) {
-                                                            if (row.isSlaved) {
+                                                            if (row.instanceOf) {
                                                                 print ui.auditIcon(type: 'auto')
                                                             } else {
                                                                 print ui.auditIcon(type: 'default')
@@ -484,7 +484,7 @@
                                                     </g:if>
                                                     <%
                                                         if ((privateProperty.hasProperty('instanceOf') && privateProperty.instanceOf && AuditConfig.getConfig(privateProperty.instanceOf)) || AuditConfig.getConfig(privateProperty)) {
-                                                            if (row.isSlaved) {
+                                                            if (row.instanceOf) {
                                                                 println '&nbsp;' + ui.auditIcon(type: 'auto')
                                                             } else {
                                                                 println '&nbsp;' + ui.auditIcon(type: 'default')

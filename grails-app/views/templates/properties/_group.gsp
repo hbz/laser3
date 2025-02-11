@@ -250,7 +250,7 @@
                         </g:if>
                         <g:else>
                             <g:if test="${prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)}">
-                                <g:if test="${ownobj.isSlaved}">
+                                <g:if test="${ownobj.instanceOf}">
                                     <ui:auditIcon type="auto" />
                                 </g:if>
                                 <g:else>

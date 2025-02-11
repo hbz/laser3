@@ -1170,8 +1170,9 @@ class SubscriptionControllerService {
                                 identifier: UUID.randomUUID().toString(),
                                 status: status,
                                 administrative: administrative,
-                                instanceOf: new_sub,
-                                isSlaved: true)
+                                instanceOf: new_sub
+                        )
+
                         if (new_sub.administrative) {
                             new OrgRole(org: cm, sub: cons_sub, roleType: RDStore.OR_SUBSCRIBER_CONS_HIDDEN).save()
                         }
@@ -1523,7 +1524,6 @@ class SubscriptionControllerService {
                                             manualRenewalDate: currParent.manualRenewalDate,
                                             identifier: UUID.randomUUID().toString(),
                                             instanceOf: currParent,
-                                            isSlaved: true,
                                             resource: currParent.resource ?: null,
                                             form: currParent.form ?: null,
                                             isMultiYear: params.checkSubRunTimeMultiYear ?: false
@@ -3492,7 +3492,6 @@ class SubscriptionControllerService {
                         referenceYear: sub_refYear,
                         manualCancellationDate: manualCancellationDate,
                         identifier: UUID.randomUUID().toString(),
-                        isSlaved: result.subscription.isSlaved,
                         type: result.subscription.type,
                         kind: result.subscription.kind,
                         resource: result.subscription.resource,
@@ -3566,7 +3565,6 @@ class SubscriptionControllerService {
                         status: RDStore.SUBSCRIPTION_NO_STATUS,
                         identifier: UUID.randomUUID().toString(),
                         type: result.sourceObject.type,
-                        isSlaved: result.sourceObject.isSlaved,
                         administrative: result.sourceObject.administrative
                 )
                 //Copy InstanceOf

@@ -51,8 +51,7 @@ class InstitutionsService {
                 noticePeriod: base.noticePeriod,
                 licenseUrl: base.licenseUrl,
                 instanceOf: base,
-                openEnded: base.openEnded,
-                isSlaved: true //is default as of June 25th with ticket ERMS-2635
+                openEnded: base.openEnded
         )
 
         Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceId(License.class.name,base.id)

@@ -61,9 +61,9 @@ import static java.time.temporal.ChronoUnit.DAYS
  * to consortial subscriptions; they then get institution subscriptions. Basic members and single users may have institution subscriptions, but they have
  * reading rights only. Members may add notes to the subscriptions; single users may add above that own documents, tasks, notes and properties to the
  * institution subscription. Consortia have full writing rights for the parent and the member subscriptions as well. Consortia may also share attributes
- * with their members; properties may be inherited just as identifiers and documents and cost items may be shared with the consortia subscription members. Shared
- * items are thus visible on both levels - on parent and on member level. The inheritance may be configured to take effect automatically or only after accepting it -
- * this is controlled by the {@link #isSlaved} flag. Inheritance means that properties of the consortial parent entity are adopted by the member (= child) instances automatically.</p>
+ * with their members; properties may be inherited just as identifiers and documents and cost items may be shared with the consortia subscription members.
+ * Shared items are thus visible on both levels - on parent and on member level.
+ * Inheritance means that properties of the consortial parent entity are adopted by the member (= child) instances automatically.</p>
  * <p>Single users may manage their local subscriptions independently. Subscriptions have a wide range of functionality; costs and statistics may be managed via the
  * subscription or its holding and reporting is mainly fed by data from and around subscriptions</p>
  * @see SubscriptionProperty
@@ -96,8 +96,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     @RefdataInfo(cat = RDConstants.SUBSCRIPTION_HOLDING)
     RefdataValue holdingSelection
 
-    // If a subscription is slaved then any changes to instanceOf will automatically be applied to this subscription
-    boolean isSlaved = false
 	boolean isPublicForApi = false
     boolean hasPerpetualAccess = false
     boolean hasPublishComponent = false
@@ -206,7 +204,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         referenceYear            column:'sub_reference_year', index: 'sub_reference_year_idx'
         instanceOf              column:'sub_parent_sub_fk', index:'sub_parent_idx'
         administrative          column:'sub_is_administrative'
-        isSlaved        column:'sub_is_slaved'
         hasPerpetualAccess column: 'sub_has_perpetual_access'
         //hasPerpetualAccess column: 'sub_has_perpetual_access_rv_fk'
         hasPublishComponent column: 'sub_has_publish_component'
