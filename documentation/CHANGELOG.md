@@ -17,6 +17,14 @@
 
 6239    29.01.2025  rc-3.4  3.4.19      David   Bug         Beobachtungslisten bei Basic-Nutzenden
 
+6211    23.01.2024  rc-3.4  3.4.19      Andreas Bug         Kostenstatus gelöscht aus Inline-Bearbeitung entfernt
+
+6140    15.01.2024  rc-3.4  3.4.18      Moe     Bug         Informationen in Info-i zu Rechnungskontakten optimieren
+
+--      15.01.2024  rc-3.4  3.4.18      Moe     Bug         Title-Upload bei Titel-Umfrage
+
+6187    15.01.2024  rc-3.4  3.4.18      Andreas Feature     Schnitzer in der Statistiksicht behoben
+
 6211    23.01.2025  rc-3.4  3.4.19      Andreas Bug         Kostenstatus gelöscht aus Inline-Bearbeitung entfernt
 
 6140    15.01.2025  rc-3.4  3.4.18      Moe     Bug         Informationen in Info-i zu Rechnungskontakten optimieren

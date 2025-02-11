@@ -170,12 +170,14 @@
             </g:if>
         </g:if>
         <g:else>
-            <g:set var="numberOfProperties" value="${pdg.getCurrentPropertiesOfTenant(license,institution)}" />
+            <g:if test="${license}">
+                <g:set var="numberOfProperties" value="${pdg.getCurrentPropertiesOfTenant(license,institution)}" />
 
-            <g:if test="${numberOfProperties.size() > 0}">
-                <%
-                    hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [pdg.name, numberOfProperties.size()])}"
-                %>
+                <g:if test="${numberOfProperties.size() > 0}">
+                    <%
+                        hiddenPropertiesMessages << "${message(code:'propertyDefinitionGroup.info.existingItems', args: [pdg.name, numberOfProperties.size()])}"
+                    %>
+                </g:if>
             </g:if>
         </g:else>
     </section>

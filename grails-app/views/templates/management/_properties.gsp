@@ -677,6 +677,12 @@
         }
     });
 
+    $("input[name=selectedSubs]").checkbox({
+        onChange: function() {
+            $('#membersListToggler').prop('checked', false);
+        }
+    });
+
     $('.propertiesForm').form({
         on: 'blur',
         inline: true,

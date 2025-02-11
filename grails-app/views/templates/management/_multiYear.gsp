@@ -216,6 +216,12 @@
         }
     });
 
+    $("input[name=selectedSubs]").checkbox({
+        onChange: function() {
+            $('#membersListToggler').prop('checked', false);
+        }
+    });
+
     $('.propertiesSubscription').form({
         on: 'blur',
         inline: true,
