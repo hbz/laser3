@@ -7,19 +7,23 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-6263    11.02.2025  rc-3.4  3.4.19      Moe     Bug         Fehlermeldung beim PDF-Export in Lizenzen
+6267    10.02.2025  rc-3.4  3.4.19      Andreas Feature     Umstellung der Ausgabe "Lizenzen" beim Einrichtungs-Export
 
-6172    11.02.2025  rc-3.4  3.4.19      Moe     Bug         Enthacken von ausgewählten Einrichtungen nicht mehr möglich
+6249    10.02.2025  rc-3.4  3.4.19      Andreas Bug         weitere Filterung der angezeigten Kundennummern
 
-5871    11.02.2025  rc-3.4  3.4.19      Moe     Bug         Bei Umfrageelemente kopieren wird oberstes Feld nicht aut. markiert
+6235    10.02.2025  rc-3.4  3.4.19      Andreas Feature     Mailadressen können nun auch aus "Alle Einrichtungen" kopiert werden
 
-6118    11.02.2025  rc-3.4  3.4.19      Moe     Bug         Rechnungsstellungsabfrage: Button "öffentliche Kontakte anzeigen" umbennen
+6234    10.02.2025  rc-3.4  3.4.19      Andreas Bug         500er bei der Ausgabe von Lizenzen im Export der Einrichtungen behoben
 
-6002    11.02.2025  rc-3.4  3.4.19      Moe     Bug         Filtern der Lieferanten in der Umfrage funktioniert nicht
+6239    29.01.2025  rc-3.4  3.4.19      David   Bug         Beobachtungslisten bei Basic-Nutzenden
 
-6095    11.02.2025  rc-3.4  3.4.19      Moe     Bug         Kosten kopieren: Bei Statuswechsel wird Quelllizenz als ausgewählt angezeigt
+6211    23.01.2024  rc-3.4  3.4.19      Andreas Bug         Kostenstatus gelöscht aus Inline-Bearbeitung entfernt
 
-6202    11.02.2025  rc-3.4  3.4.19      Moe     Bug         Attribut "Paketzuschnitt" wird nicht übertragen bei Verlängerung in Umrage
+6140    15.01.2024  rc-3.4  3.4.18      Moe     Bug         Informationen in Info-i zu Rechnungskontakten optimieren
+
+--      15.01.2024  rc-3.4  3.4.18      Moe     Bug         Title-Upload bei Titel-Umfrage
+
+6187    15.01.2024  rc-3.4  3.4.18      Andreas Feature     Schnitzer in der Statistiksicht behoben
 
 6211    23.01.2025  rc-3.4  3.4.19      Andreas Bug         Kostenstatus gelöscht aus Inline-Bearbeitung entfernt
 
