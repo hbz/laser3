@@ -278,8 +278,8 @@ class ManagementService {
                     }
                 }
             }
-            else{
-                if (subscriptions.size() < 1) {
+            else {
+                if (subscriptions) {
                     flash.error = messageSource.getMessage('subscriptionsManagement.noSelectedSubscriptions', null, locale)
                 }
                 if (!selectedLicenseIDs[0]) {
@@ -387,11 +387,12 @@ class ManagementService {
                     permittedSubs << selectedSub
             }
             long userId = contextService.getUser().id
-            executorService.execute({
-                long start = System.currentTimeSeconds()
-                Thread.currentThread().setName(threadName)
-                pkgsToProcess.each { Package pkg ->
-                    permittedSubs.each { Subscription selectedSub ->
+            if(subscriptions) {
+                executorService.execute({
+                    long start = System.currentTimeSeconds()
+                    Thread.currentThread().setName(threadName)
+                    pkgsToProcess.each { Package pkg ->
+                        permittedSubs.each { Subscription selectedSub ->
                             SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(selectedSub, pkg)
                             if(params.processOption =~ /^link/) {
                                 if(!sp) {
@@ -420,12 +421,13 @@ class ManagementService {
                                 }
                             }
 
+                        }
                     }
-                }
-                if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
-                    globalService.notifyBackgroundProcessFinish(userId, threadName, messageSource.getMessage('subscription.details.linkPackage.thread.completed', [result.subscription.name] as Object[], LocaleUtils.getCurrentLocale()))
-                }
-            })
+                    if(System.currentTimeSeconds()-start >= GlobalService.LONG_PROCESS_LIMBO) {
+                        globalService.notifyBackgroundProcessFinish(userId, threadName, messageSource.getMessage('subscription.details.linkPackage.thread.completed', [result.subscription.name] as Object[], LocaleUtils.getCurrentLocale()))
+                    }
+                })
+            }
 
             /*
             dos:
