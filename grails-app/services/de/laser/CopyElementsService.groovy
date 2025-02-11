@@ -319,7 +319,6 @@ class CopyElementsService {
                         identifier: UUID.randomUUID().toString(),
                         instanceOf: targetObject,
                         //previousSubscription: subMember?.id,
-                        isSlaved: subMember.isSlaved,
                         resource: targetObject.resource ?: null,
                         form: targetObject.form ?: null,
                         isPublicForApi: targetObject.isPublicForApi,

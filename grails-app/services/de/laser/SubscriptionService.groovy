@@ -2943,8 +2943,7 @@ class SubscriptionService {
                 Org member = entry.member ? genericOIDService.resolveOID(entry.member) : null
                 Provider provider = entry.provider ? genericOIDService.resolveOID(entry.provider) : null
                 Vendor vendor = entry.vendor ? genericOIDService.resolveOID(entry.vendor) : null
-                if(sub.instanceOf && member)
-                    sub.isSlaved = RDStore.YN_YES
+
                 if(sub.save()) {
                     sub.refresh() //needed for dependency processing
                     //create the org role associations

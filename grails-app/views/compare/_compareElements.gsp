@@ -35,7 +35,7 @@
                         <div class="right aligned wide column">
                             <%
                                 if (AuditConfig.getConfig(object, objProperty)) {
-                                    if (object.isSlaved) {
+                                    if (object.instanceOf) {
                                         println ui.auditIcon(type: 'auto')
                                     } else {
                                         println ui.auditIcon(type: 'default')

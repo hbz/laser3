@@ -326,7 +326,7 @@
                                         </g:elseif>
 
                                         <g:if test="${participant.oldCustomProperty.hasProperty('instanceOf') && participant.oldCustomProperty.instanceOf && AuditConfig.getConfig(participant.oldCustomProperty.instanceOf)}">
-                                            <g:if test="${participant.oldSub.isSlaved}">
+                                            <g:if test="${participant.oldSub.instanceOf}">
                                                 <ui:auditIcon type="auto" />
                                             </g:if>
                                             <g:else>
@@ -488,7 +488,7 @@
                                         </g:elseif>
 
                                         <g:if test="${participant.newCustomProperty.hasProperty('instanceOf') && participant.newCustomProperty.instanceOf && AuditConfig.getConfig(participant.newCustomProperty.instanceOf)}">
-                                            <g:if test="${participant.newSub.isSlaved}">
+                                            <g:if test="${participant.newSub.instanceOf}">
                                                 <ui:auditIcon type="auto" />
                                             </g:if>
                                             <g:else>

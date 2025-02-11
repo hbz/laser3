@@ -204,7 +204,7 @@ class ApiOAMonitor {
             // RefdataValues
 
             result.form                 = sub.form?.value
-            result.isSlaved             = sub.isSlaved ? 'Yes' : 'No'
+            result.isSlaved             = sub.instanceOf ? 'Yes' : 'No' // todo: ERMS-6219
             result.isMultiYear          = sub.isMultiYear ? 'Yes' : 'No'
             result.resource             = sub.resource?.value
             result.status               = sub.status?.value

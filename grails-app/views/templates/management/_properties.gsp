@@ -173,7 +173,7 @@
 
                                                 <%
                                                     if (AuditConfig.getConfig(customProperty)) {
-                                                        if (subscription.isSlaved) {
+                                                        if (subscription.instanceOf) {
                                                             println '&nbsp;' + ui.auditIcon(type: 'auto')
                                                         } else {
                                                             println '&nbsp;' + ui.auditIcon(type: 'default')
@@ -250,7 +250,7 @@
 
                                                 <%
                                                     if (AuditConfig.getConfig(privateProperty)) {
-                                                        if (subscription.isSlaved) {
+                                                        if (subscription.instanceOf) {
                                                             println '&nbsp;' + ui.auditIcon(type: 'auto')
                                                         } else {
                                                             println '&nbsp;' + ui.auditIcon(type: 'default')
@@ -509,7 +509,7 @@
 
                                                     <%
                                                         if (customProperty.hasProperty('instanceOf') && customProperty.instanceOf && AuditConfig.getConfig(customProperty.instanceOf)) {
-                                                            if (sub.isSlaved) {
+                                                            if (sub.instanceOf) {
                                                                 println '&nbsp;' + ui.auditIcon(type: 'auto')
                                                             } else {
                                                                 println '&nbsp;' + ui.auditIcon(type: 'default')
@@ -582,7 +582,7 @@
 
                                                     <%
                                                         if (privateProperty.hasProperty('instanceOf') && privateProperty.instanceOf && AuditConfig.getConfig(privateProperty.instanceOf)) {
-                                                            if (sub.isSlaved) {
+                                                            if (sub.instanceOf) {
                                                                 println '&nbsp;' + ui.auditIcon(type: 'auto')
                                                             } else {
                                                                 println '&nbsp;' + ui.auditIcon(type: 'default')

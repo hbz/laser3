@@ -323,7 +323,7 @@ class UiTagLib {
                             hasAuditConfig = attrs.auditConfigs[objAttr]
                         else hasAuditConfig = auditService.getAuditConfig(obj.instanceOf, objAttr)
                         if (hasAuditConfig) {
-                            out << (obj.isSlaved ? ui.auditIcon(type: 'auto') : ui.auditIcon(type: 'default'))
+                            out << ui.auditIcon(type: 'auto')
                         }
                     }
                     // inherit (from)
@@ -396,13 +396,13 @@ class UiTagLib {
                     // inherited (to)
                     if (obj.instanceOf) {
                         if (auditService.getAuditConfig(obj.instanceOf, objAttr)) {
-                            out << (obj.isSlaved ? ui.auditIcon(type: 'auto') : ui.auditIcon(type: 'default'))
+                            out << ui.auditIcon(type: 'auto')
                         }
                     }
                     // inherit (from)
                     else if (obj?.showUIShareButton()) {
                         if (auditService.getAuditConfig(obj, objAttr)) {
-                            out << (obj.isSlaved ? ui.auditIcon(type: 'auto') : ui.auditIcon(type: 'default'))
+                            out << ui.auditIcon(type: 'default')
                         }
                         else {
                             out << '<span class="la-popup-tooltip" data-content="Wert wird nicht vererbt" data-position="top right">'

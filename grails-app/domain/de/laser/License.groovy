@@ -51,14 +51,8 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         public String code
     }
 
-
-
     License instanceOf
 
-    /**
-     * If a license is slaved then any changes to instanceOf will automatically be applied to this license
-     */
-    boolean isSlaved = false
     boolean isPublicForApi = false
 
     @RefdataInfo(cat = RDConstants.LICENSE_STATUS, i18n = 'license.status.label')
@@ -133,7 +127,6 @@ class License extends AbstractBaseWithCalculatedLastUpdated
              licenseUrl column:'lic_license_url'
              instanceOf column:'lic_parent_lic_fk', index:'lic_parent_idx'
          isPublicForApi column:'lic_is_public_for_api'
-               isSlaved column:'lic_is_slaved'
               openEnded column:'lic_open_ended_rv_fk', index:'lic_open_ended_idx'
               documents batchSize: 10
         licenseCategory column: 'lic_category_rdv_fk', index:'lic_category_idx'

@@ -273,7 +273,7 @@
                                     <g:set var="atSubscr" value="${ownobj._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION}"/>
                                 </g:elseif>
                                 <g:if test="${(prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)) || AuditConfig.getConfig(prop)}">
-                                    <g:if test="${ownobj.isSlaved}">
+                                    <g:if test="${ownobj.instanceOf}">
                                         <ui:auditIcon type="auto" />
                                     </g:if>
                                     <g:else>

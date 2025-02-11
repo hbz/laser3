@@ -52,16 +52,7 @@
             </g:elseif>
         </g:if>
 
-        <sec:ifAnyGranted roles="ROLE_ADMIN">
-            <g:if test="${actionName in ['show']}">
-                <div class="divider"></div>
-                <g:link class="item js-open-confirm-modal la-popup-tooltip" action="disableAllUsers" id="${params.id}"
-                        data-confirm-tokenMsg="${message(code: "confirm.dialog.disable.allInstUsers")}" data-confirm-term-how="ok">
-                    <i class="user lock icon"></i> ${message(code:'org.disableAllUsers.label')}
-                </g:link>
-                <g:link class="item" action="delete" id="${params.id}"><i class="${Icon.CMD.DELETE}"></i> ${message(code:'deletion.org')}</g:link>
-            </g:if>
-        </sec:ifAnyGranted>
+        <g:render template="actions_roleAdminOptions" />
     </ui:actionsDropdown>
 </g:if>
 

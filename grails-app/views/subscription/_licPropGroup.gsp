@@ -27,7 +27,7 @@
                         </g:else>
                         <%
                             if (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)) {
-                                if (ownObj.isSlaved) {
+                                if (ownObj.instanceOf) {
                                     println '&nbsp;' + ui.auditIcon(type: 'auto')
                                 }
                                 else {
