@@ -13,6 +13,7 @@ import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
+import org.springframework.transaction.TransactionStatus
 
 /**
  * This controller is responsible for contact address display and manipulation
@@ -305,16 +306,30 @@ class AddressbookController {
     })
     def deleteContact() {
         Contact obj = Contact.get(params.id)
+        Long prsId = obj.prs.id
         List args   = [message(code: 'contact.label'), params.id]
 
         if (accessService.hasAccessToContact(obj, AccessService.WRITE)) {
-            try {
+            Contact.withTransaction { TransactionStatus ts ->
                 obj.delete()
-                flash.message = message(code: 'default.deleted.message', args: args)
-            }
-            catch (Exception e) {
-                log.debug(e.getMessage())
-                flash.error = message(code: 'default.not.deleted.message', args: args)
+                ts.flush()
+                Person prs = Person.get(prsId)
+                int contactCount = Contact.countByPrs(prs)
+                try {
+                    if(contactCount == 0) {
+                        List changeList = SurveyOrg.findAllByPerson(prs)
+                        changeList.each { tmp2 ->
+                            tmp2.person = null
+                            tmp2.save()
+                        }
+                        prs.delete()
+                    }
+                    flash.message = message(code: 'default.deleted.message', args: args)
+                }
+                catch (Exception e) {
+                    log.debug(e.getMessage())
+                    flash.error = message(code: 'default.not.deleted.message', args: args)
+                }
             }
         }
         else {
@@ -639,7 +654,6 @@ class AddressbookController {
                     }
 
                     flash.message = message(code: 'default.updated.message', args: [message(code: 'person.label'), obj.toString()]) as String
-                    redirect(url: referer)
                 }
                 else {
                     flash.error = message(code: 'default.noPermissions')

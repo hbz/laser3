@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6257    11.02.2025  dev     3.5         Andreas Bug         Personen werden abgeräumt, wenn keine Kontakta mehr vorhanden sind
+
 --      10.02.2025  dev     3.5         Andreas Bug         veralteten Aufruf von list.size korrigiert
 
 6265    10.02.2025  dev     3.5         Andreas Bug         Regex-Validierung aus EZB-Lizenz-ID entfernt und Beispiellink aktualisiert
