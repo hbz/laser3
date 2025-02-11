@@ -42,6 +42,7 @@ import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.gsp.PageRenderer
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.time.TimeCategory
 import org.codehaus.groovy.runtime.InvokerHelper
@@ -59,6 +60,7 @@ import java.text.SimpleDateFormat
 class SurveyService {
 
     AddressbookService addressbookService
+    BatchQueryService batchQueryService
     CompareService compareService
     ComparisonService comparisonService
     ContextService contextService
@@ -2082,19 +2084,23 @@ class SurveyService {
     BigDecimal sumListPriceInCurrencyOfIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig, RefdataValue currency) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         if(issueEntitlementGroup) {
-            BigDecimal sumListPrice
+            BigDecimal sumListPrice = 0.0
             //sql bridge
             Sql sql = GlobalService.obtainSqlConnection()
             try {
-            sumListPrice = sql.rows("select sum(pi.pi_list_price) as sum_list_price from (select pi_tipp_fk, pi_list_price, row_number() over (partition by pi_tipp_fk order by pi_date_created desc) as rn, count(*) over (partition by pi_tipp_fk) as cn from price_item where pi_list_price is not null and pi_list_currency_rv_fk = :currency and pi_tipp_fk in (select ie_tipp_fk from issue_entitlement join issue_entitlement_group_item on ie_id = igi_ie_fk where igi_ie_group_fk = :ieGroup and ie_status_rv_fk <> :status)) as pi where pi.rn = 1", [ieGroup: issueEntitlementGroup.id, currency: currency.id, status: RDStore.TIPP_STATUS_REMOVED.id])[0]['sum_list_price']
-            sumListPrice ?: 0.0
-            /*
-            BigDecimal sumListPrice = issueEntitlementGroup ?
-                    IssueEntitlementGroupItem.executeQuery("select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency and p.tipp in (select igi.ie.tipp from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup and igi.ie.status != :status)",
-                            [ieGroup: issueEntitlementGroup, currency: currency, status: RDStore.TIPP_STATUS_REMOVED])[0]
-                    : 0.0
-            sumListPrice
-            */
+                List<GroovyRowResult> tippIdRows = sql.rows("select ie_tipp_fk from issue_entitlement join issue_entitlement_group_item on ie_id = igi_ie_fk where igi_ie_group_fk = :ieGroup and ie_status_rv_fk <> :status", [ieGroup: issueEntitlementGroup.id, status: RDStore.TIPP_STATUS_REMOVED.id])
+                if(tippIdRows) {
+                    List<GroovyRowResult> result = batchQueryService.longArrayQuery("select sum(pi.pi_list_price) as sum_list_price from (select pi_tipp_fk, pi_list_price, row_number() over (partition by pi_tipp_fk order by pi_date_created desc) as rn, count(*) over (partition by pi_tipp_fk) as cn from price_item where pi_list_price is not null and pi_list_currency_rv_fk = :currency and pi_tipp_fk = any(:tippIDs)) as pi where pi.rn = 1", [tippIDs: tippIdRows['ie_tipp_fk']], [currency: currency.id])
+                    if(result)
+                        sumListPrice = result[0]['sum_list_price']
+                }
+                /*
+                BigDecimal sumListPrice = issueEntitlementGroup ?
+                        IssueEntitlementGroupItem.executeQuery("select sum(p.listPrice) from PriceItem p where p.listPrice is not null and p.listCurrency = :currency and p.tipp in (select igi.ie.tipp from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup and igi.ie.status != :status)",
+                                [ieGroup: issueEntitlementGroup, currency: currency, status: RDStore.TIPP_STATUS_REMOVED])[0]
+                        : 0.0
+                sumListPrice
+                */
             }
             finally {
                 sql.close()

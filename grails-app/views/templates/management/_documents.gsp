@@ -173,11 +173,24 @@
             $("#allMembers").val(false);
         }
         JSPC.app.setSelectedSubscriptionIds();
+        $.ajax({
+            method: "post",
+            url: "<g:createLink controller="ajaxJson" action="updatePaginationCache" />",
+            data: {
+                allIds: [${subIDs.join(',')}],
+                cacheKeyReferer: "/${controllerName}/subscriptionManagement/${params.tab}/${user.id}"
+            }
+        }).done(function(result){
+            console.log("updated cache for all subscriptions: "+result.state);
+        }).fail(function(xhr,status,message){
+            console.log("error occurred, consult logs!");
+        });
     });
 
     $(".selectedSubs").change(function() {
         let selId = $(this).attr("id");
         $.ajax({
+            method: "post",
             url: "<g:createLink controller="ajaxJson" action="updatePaginationCache" />",
             data: {
                 selId: selId,
