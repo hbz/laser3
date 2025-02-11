@@ -205,24 +205,23 @@
                     </div>
                 </td>
             </tr>
-            <g:if test="${sourceSubscription.packages}">
-                <tr>
-                    <th>${message(code: 'subscription.holdingSelection.label.shy')}</th>
-                    <td>
-                        <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" class="ui dropdown"
-                                  optionKey="id"
-                                  optionValue="${{ it.getI10n('value') }}"
-                                  name="subHoldingSelection"
-                                  value="${permissionInfo.sub_holdingSelection}"
-                        />
-                    </td>
-                    <td class="center aligned">
-                        <div class="ui checkbox">
-                            <input type="checkbox" name="auditList" value="holdingSelection" ${AuditConfig.getConfig(sourceSubscription, 'holdingSelection') ? 'checked': ''} />
-                        </div>
-                    </td>
-                </tr>
-            </g:if>
+
+            <tr>
+                <th>${message(code: 'subscription.holdingSelection.label.shy')}</th>
+                <td>
+                    <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" class="ui dropdown"
+                              optionKey="id"
+                              optionValue="${{ it.getI10n('value') }}"
+                              name="subHoldingSelection"
+                              value="${permissionInfo.sub_holdingSelection}"/>
+                </td>
+                <td class="center aligned">
+                    <div class="ui checkbox">
+                        <input type="checkbox" name="auditList"
+                               value="holdingSelection" ${AuditConfig.getConfig(sourceSubscription, 'holdingSelection') ? 'checked' : ''}/>
+                    </div>
+                </td>
+            </tr>
             </tbody>
         </table>
 

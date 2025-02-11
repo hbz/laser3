@@ -880,9 +880,9 @@
         var showConnectedObjs = $("input[name='show.connectedObjects']").prop('checked');
         var url = '<g:createLink controller="ajaxJson" action="adjustCompareSubscriptionList"/>?showSubscriber=' + showSubscriber + '&showConnectedObjs=' + showConnectedObjs
 
-        var status = $("select#status").serialize()
+        var status = $("select#status")
         if (status) {
-            url = url + '&' + status
+            url = url + '&' + status.serialize()
         }
 
         var dropdownSelectedSubs = $('#selectedSubs');
@@ -895,8 +895,8 @@
                 url: url,
                 success: function (data) {
                     $.each(data, function (key, entry) {
-                        if(entry.value == "${costItem?.sub?.id}"){
-                            //dropdownSelectedSubs.append($('<option></option>').attr('value', entry.value).attr('selected', 'selected').text(entry.text));
+                        if(entry.value == "${costItem?.sub?.id}" && status && status[0].value == "${costItem?.sub?.status?.id}"){
+                            dropdownSelectedSubs.append($('<option></option>').attr('value', entry.value).attr('selected', 'selected').text(entry.text));
                         }else{
                             dropdownSelectedSubs.append($('<option></option>').attr('value', entry.value).text(entry.text));
                             }
