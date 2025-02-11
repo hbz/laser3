@@ -229,6 +229,7 @@ class SubscriptionService {
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextOrg)
 
         prf.setBenchmark('end properties')
+        result.subIDs = subscriptions.collect { Subscription s -> s.id }
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
         prf.setBenchmark('fetch licenses')
         if(subscriptions)
@@ -1698,6 +1699,15 @@ class SubscriptionService {
             if(result.identifier) {
                 tippIDs = tippIDs.intersect(issueEntitlementService.getTippsByIdentifier(identifierConfigMap, result.identifier))
             }
+            EhcacheWrapper userCache = contextService.getUserCache("/subscription/renewEntitlementsWithSurvey/${result.subscription.id}?${params.tab}")
+            Map<String, Object> checkedCache = userCache.get('selectedTitles')
+
+            if (!checkedCache || !params.containsKey('pagination')) {
+                checkedCache = ["checked": [:]]
+            }
+
+            result.checkedCache = checkedCache.get('checked')
+            result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
             switch(params.tab) {
                 case 'allTipps':
                     Map<String, Object> listPriceSums = issueEntitlementService.calculateListPriceSumsForTitles(tippIDs)

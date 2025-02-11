@@ -570,13 +570,27 @@ class AjaxJsonController {
         if(params.containsKey('cacheKeyReferer')) {
             EhcacheWrapper cache = cacheService.getTTL1800Cache("${params.cacheKeyReferer}/pagination")
             Map<String, String> checkedMap = cache.get('checkedMap') ?: [:]
-            if(!checkedMap.containsKey(params.selId)) {
-                checkedMap.put(params.selId, params.selId.split('_')[1])
-                result.state = 'checked'
+            if(params.containsKey('selId')) {
+                if(!checkedMap.containsKey(params.selId)) {
+                    checkedMap.put(params.selId, params.selId.split('_')[1])
+                    result.state = 'checked'
+                }
+                else {
+                    checkedMap.remove(params.selId)
+                    result.state = 'unchecked'
+                }
             }
-            else {
-                checkedMap.remove(params.selId)
-                result.state = 'unchecked'
+            else if(params.containsKey('allIds[]')) {
+                List allIds = params.list('allIds[]')
+                allIds.each { String id ->
+                    String key = 'selectedSubs_'+id
+                    if(!checkedMap.containsKey(key)) {
+                        checkedMap.put(key, id)
+                    }
+                    else {
+                        checkedMap.remove(id)
+                    }
+                }
             }
             cache.put('checkedMap', checkedMap)
             render result as JSON

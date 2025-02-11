@@ -11,6 +11,8 @@
 
 6219    11.02.2025  dev     3.5         David   Feature     Subscription/License.isSlaved() überarbeiten
 
+6203    11.02.2025  dev     3.5         Andreas Feature     Absicherung gegen Leerformulare
+
 --      10.02.2025  dev     3.5         Andreas Bug         veralteten Aufruf von list.size korrigiert
 
 6265    10.02.2025  dev     3.5         Andreas Bug         Regex-Validierung aus EZB-Lizenz-ID entfernt und Beispiellink aktualisiert
