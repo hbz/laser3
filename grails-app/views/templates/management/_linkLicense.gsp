@@ -220,6 +220,12 @@
         }
     });
 
+    $("input[name=selectedSubs]").checkbox({
+        onChange: function() {
+            $('#membersListToggler').prop('checked', false);
+        }
+    });
+
     $('.licenseForm').form({
         on: 'blur',
         inline: true,
