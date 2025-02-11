@@ -7,19 +7,19 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-6263    11.02.2025  rc-3.4  3.4.20      Moe     Bug         Fehlermeldung beim PDF-Export in Lizenzen
+6263    11.02.2025  rc-3.4  3.4.19      Moe     Bug         Fehlermeldung beim PDF-Export in Lizenzen
 
-6172    11.02.2025  rc-3.4  3.4.20      Moe     Bug         Enthacken von ausgewählten Einrichtungen nicht mehr möglich
+6172    11.02.2025  rc-3.4  3.4.19      Moe     Bug         Enthacken von ausgewählten Einrichtungen nicht mehr möglich
 
-5871    11.02.2025  rc-3.4  3.4.20      Moe     Bug         Bei Umfrageelemente kopieren wird oberstes Feld nicht aut. markiert
+5871    11.02.2025  rc-3.4  3.4.19      Moe     Bug         Bei Umfrageelemente kopieren wird oberstes Feld nicht aut. markiert
 
-6118    11.02.2025  rc-3.4  3.4.20      Moe     Bug         Rechnungsstellungsabfrage: Button "öffentliche Kontakte anzeigen" umbennen
+6118    11.02.2025  rc-3.4  3.4.19      Moe     Bug         Rechnungsstellungsabfrage: Button "öffentliche Kontakte anzeigen" umbennen
 
-6002    11.02.2025  rc-3.4  3.4.20      Moe     Bug         Filtern der Lieferanten in der Umfrage funktioniert nicht
+6002    11.02.2025  rc-3.4  3.4.19      Moe     Bug         Filtern der Lieferanten in der Umfrage funktioniert nicht
 
-6095    11.02.2025  rc-3.4  3.4.20      Moe     Bug         Kosten kopieren: Bei Statuswechsel wird Quelllizenz als ausgewählt angezeigt
+6095    11.02.2025  rc-3.4  3.4.19      Moe     Bug         Kosten kopieren: Bei Statuswechsel wird Quelllizenz als ausgewählt angezeigt
 
-6202    11.02.2025  rc-3.4  3.4.20      Moe     Bug         Attribut "Paketzuschnitt" wird nicht übertragen bei Verlängerung in Umrage
+6202    11.02.2025  rc-3.4  3.4.19      Moe     Bug         Attribut "Paketzuschnitt" wird nicht übertragen bei Verlängerung in Umrage
 
 6211    23.01.2025  rc-3.4  3.4.19      Andreas Bug         Kostenstatus gelöscht aus Inline-Bearbeitung entfernt
 
