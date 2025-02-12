@@ -1804,6 +1804,10 @@ class AjaxController {
 
             }
 
+        } catch (NumberFormatException e) {
+            log.error("NumberFormatException @ editableSetValue()")
+            log.error(e.toString())
+            result = target_object ? target_object[params.name] : null
         } catch (Exception e) {
             log.error("@ editableSetValue()")
             log.error(e.toString())
