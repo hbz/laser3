@@ -7778,7 +7778,7 @@ class ExportClickMeService {
 
     Map getClickMeFields(ClickMeConfig clickMeConfig, Map fields){
         if (clickMeConfig){
-            Map clickMeConfigMap = JSON.parse(clickMeConfig.jsonConfig)
+            Map clickMeConfigMap = clickMeConfig.getClickMeConfigMap()
             Set clickMeConfigMapKeys = clickMeConfigMap.keySet()
 
             fields.each { def field ->
