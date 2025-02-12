@@ -4,7 +4,7 @@ import de.laser.addressbook.Address
 import de.laser.wekb.ElectronicBilling
 import de.laser.wekb.ElectronicDeliveryDelayNotification
 import de.laser.wekb.InvoiceDispatch
-import de.laser.LibrarySystem
+import de.laser.wekb.LibrarySystem
 import de.laser.License
 import de.laser.Org
 import de.laser.wekb.Package

@@ -16,6 +16,7 @@ import de.laser.utils.SwissKnife
 import de.laser.wekb.ElectronicBilling
 import de.laser.wekb.ElectronicDeliveryDelayNotification
 import de.laser.wekb.InvoiceDispatch
+import de.laser.wekb.LibrarySystem
 import de.laser.wekb.Package
 import de.laser.wekb.PackageVendor
 import de.laser.wekb.Platform
