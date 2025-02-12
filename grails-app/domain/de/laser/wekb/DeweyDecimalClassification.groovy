@@ -1,19 +1,18 @@
-package de.laser
+package de.laser.wekb
 
+import de.laser.RefdataValue
 import de.laser.annotations.RefdataInfo
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
-import de.laser.wekb.Package
-import de.laser.wekb.TitleInstancePackagePlatform
 import groovy.util.logging.Slf4j
 
 /**
  * A container class to retain Dewey decimal classifications of titles and packages.
- * The structure is the same as in {@link Language} just as the purpose is
+ * The structure is the same as in {@link de.laser.wekb.Language} just as the purpose is
  * @see de.laser.wekb.TitleInstancePackagePlatform
  * @see de.laser.wekb.Package
- * @see Language
+ * @see de.laser.wekb.Language
  */
 @Slf4j
 class DeweyDecimalClassification implements CalculatedLastUpdated, Comparable{

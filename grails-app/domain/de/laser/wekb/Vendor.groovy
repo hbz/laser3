@@ -4,7 +4,6 @@ import de.laser.addressbook.Address
 import de.laser.AlternativeName
 import de.laser.DocContext
 import de.laser.Identifier
-import de.laser.LibrarySystem
 import de.laser.Org
 import de.laser.addressbook.Person
 import de.laser.addressbook.PersonRole

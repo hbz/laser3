@@ -3,6 +3,8 @@ package de.laser
 import de.laser.addressbook.Person
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.survey.SurveyResult
+import de.laser.wekb.DeweyDecimalClassification
+import de.laser.wekb.Language
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider

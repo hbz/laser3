@@ -1,8 +1,8 @@
-package de.laser
+package de.laser.wekb
 
+import de.laser.RefdataValue
 import de.laser.annotations.RefdataInfo
 import de.laser.storage.RDConstants
-import de.laser.wekb.Vendor
 
 class LibrarySystem implements Comparable<LibrarySystem> {
 
