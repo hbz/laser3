@@ -51,7 +51,7 @@
         <%-- status is not nullable any more, see ERMS-4918 --%>
         <g:if test="${ie}">
             <div class="item">
-                <i class="grey key icon la-popup-tooltip" data-content="${message(code: 'default.status.label')}"></i>
+                <i class="${Icon.ATTR.TIPP_STATUS} la-popup-tooltip" data-content="${message(code: 'default.status.label')}"></i>
 
                 <div class="content">
                     <div class="header">
@@ -67,7 +67,7 @@
         <g:else>
             <%--<g:if test="${(tipp.status || showEmptyFields)}">--%>
                 <div class="item">
-                    <i class="grey key icon la-popup-tooltip" data-content="${message(code: 'default.status.label')}"></i>
+                    <i class="${Icon.ATTR.TIPP_STATUS} la-popup-tooltip" data-content="${message(code: 'default.status.label')}"></i>
 
                     <div class="content">
                         <div class="header">
