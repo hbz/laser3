@@ -526,7 +526,7 @@ class FinanceController  {
     Object copyCostItem() {
         Map<String, Object> result = financeControllerService.getResultGenerics(params)
         result.costItem = CostItem.get(params.id)
-        params.status = [result.costItem.sub.status.id.toString()]
+        params.status = result.costItem.sub ? [result.costItem.sub.status.id] : [RDStore.SUBSCRIPTION_CURRENT.id]
         result.modalText = message(code: 'financials.costItem.copy.tooltip')
         result.submitButtonLabel = message(code:'default.button.copy.label')
         result.copyCostsFromConsortia = result.costItem.owner == result.costItem.sub?.getConsortium() && contextService.getOrg().id != result.costItem.sub?.getConsortium().id

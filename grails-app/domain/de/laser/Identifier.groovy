@@ -118,10 +118,13 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         int result = aVal.compareToIgnoreCase(bVal)
         if(result == 0) {
             if(ns.nsType) {
-                result = ns.nsType.compareTo(o.ns.nsType)
+                result = ns.nsType <=> o.ns.nsType
             }
             if(result == 0 || !ns.nsType) {
-                result = value.compareTo(o.value)
+                result = value <=> o.value
+            }
+            if(result == 0) {
+                result = id <=> o.id
             }
         }
         result

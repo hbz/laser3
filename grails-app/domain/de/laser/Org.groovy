@@ -538,6 +538,19 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
+     * Gets all identifiers of this institution belonging to the given namespace
+     * @param idtype the namespace string to which the requested identifiers belong
+     * @return a {@link List} of {@link Identifier}s belonging to the given namespace
+     */
+    List<Identifier> getNonEmptyIdentifiersByType(String idtype) {
+
+        Identifier.executeQuery(
+                "select id from Identifier id join id.ns ns where id.org = :org and lower(ns.ns) = :idtype and id.value != null and id.value != '' and id.value != 'Unknown'",
+                [org: this, idtype: idtype.toLowerCase()]
+        )
+    }
+
+    /**
      * Gets all organisations matching at least partially to the given query string
      * @param params the parameter map containing the query string
      * @return a {@link Map} of query results in the structure [id: oid, text: org.name]
