@@ -98,18 +98,17 @@ class FinanceControllerService {
             else if(params.id)
                 subId = params.id
             result.subscription = Subscription.get(subId)
-            if (!(result.subscription instanceof Subscription))
-                throw new FinancialDataException("Invalid or no subscription found!")
+            if (result.subscription) {
+                Map navigation = linksGenerationService.generateNavigation(result.subscription)
+                result.navNextSubscription = navigation.nextLink
+                result.navPrevSubscription = navigation.prevLink
 
-            Map navigation = linksGenerationService.generateNavigation(result.subscription)
-            result.navNextSubscription = navigation.nextLink
-            result.navPrevSubscription = navigation.prevLink
-
-            Set<Long> excludes = [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id]
-            if(contextService.getOrg().isCustomerType_Consortium())
-                excludes << RDStore.OR_SUBSCRIPTION_CONSORTIUM.id
-            // restrict visible for templates/links/orgLinksAsList; done by Andreas Gálffy
-            result.visibleOrgRelations = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType.id in excludes) }
+                Set<Long> excludes = [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id]
+                if(contextService.getOrg().isCustomerType_Consortium())
+                    excludes << RDStore.OR_SUBSCRIPTION_CONSORTIUM.id
+                // restrict visible for templates/links/orgLinksAsList; done by Andreas Gálffy
+                result.visibleOrgRelations = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType.id in excludes) }
+            }
         }
         Locale locale = LocaleUtils.getCurrentLocale()
 

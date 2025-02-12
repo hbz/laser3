@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6271    12.02.2025  dev     3.5         Andreas Bug         falscher Umgang mit dubletten Identifikatoren
+
+6094    12.02.2025  dev     3.5         Andreas Feature     Wiederherstellung des Filters zu verknüpften Lizenzen
+
 6257    11.02.2025  dev     3.5         Andreas Bug         Personen werden abgeräumt, wenn keine Kontakta mehr vorhanden sind
 
 6219    11.02.2025  dev     3.5         David   Feature     Subscription/License.isSlaved() überarbeiten
