@@ -406,7 +406,7 @@
                                                                 recip_prop: 'license',
                                                                 tmplEntity: message(code:'license.details.tmplEntity'),
                                                                 tmplText: message(code:'license.details.tmplText'),
-                                                                tmplIcon        : 'add',
+                                                                tmplIcon        : 'large add',
                                                                 tmplTooltip     : message(code:'license.details.tmplLinkProviderText'),
                                                                 tmplModalID:'osel_add_modal_lizenzgeber',
                                                                 editmode: editable
@@ -433,7 +433,7 @@
                                                                 recip_prop: 'license',
                                                                 tmplEntity: message(code:'license.details.linkAgency.tmplEntity'),
                                                                 tmplText: message(code:'license.details.linkAgency.tmplText'),
-                                                                tmplIcon        : 'add',
+                                                                tmplIcon        : 'large add',
                                                                 tmplTooltip     : message(code:'license.details.tmplLinkAgencyText'),
                                                                 tmplModalID:'osel_add_modal_agency',
                                                                 editmode: editable
