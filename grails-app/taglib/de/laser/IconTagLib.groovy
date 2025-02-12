@@ -244,7 +244,7 @@ class IconTagLib {
                 break
         }
 
-        out << '<span class="la-popup-tooltip" data-content="' + msg + '" data-position="left center" data-variation="tiny">'
+        out << '<span style="align-self:center" class="la-popup-tooltip" data-content="' + msg + '" data-position="left center" data-variation="tiny">'
         out << '<i aria-hidden="true" class="' + icon + ' la-list-icon"></i>'
         out << '</span>'
     }
