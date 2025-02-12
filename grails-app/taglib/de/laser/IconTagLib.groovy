@@ -223,29 +223,29 @@ class IconTagLib {
     def contactIcon = { attrs, body ->
 
         String msg = message(code: 'contact.icon.label.contactinfo')
-        String icon = Icon.ACP_PUBLIC + ' la-list-icon'
+        String icon = Icon.ACP_PUBLIC
 
         switch (attrs.type) {
             case [ 'E-Mail', 'Mail' ]: // 'Mail' -> Deprecated
                 msg = message(code: 'contact.icon.label.email')
-                icon = Icon.SYM.EMAIL + ' la-list-icon la-js-copyTriggerIcon'
+                icon = Icon.SYM.EMAIL + ' la-js-copyTriggerIcon'
                 break
             case 'Fax':
                 msg = message(code: 'contact.icon.label.fax')
-                icon = Icon.SYM.FAX + ' la-list-icon'
+                icon = Icon.SYM.FAX
                 break
             case 'Phone':
                 msg = message(code: 'contact.icon.label.phone')
-                icon = 'icon la-phone la-list-icon la-js-copyTriggerIcon'
+                icon = 'icon la-phone la-js-copyTriggerIcon'
                 break
             case 'Url':
                 msg = message(code: 'contact.icon.label.url')
-                icon = Icon.SYM.URL + ' la-list-icon'
+                icon = Icon.SYM.URL
                 break
         }
 
         out << '<span class="la-popup-tooltip" data-content="' + msg + '" data-position="left center" data-variation="tiny">'
-        out << '<i aria-hidden="true" class="' + icon + '"></i>'
+        out << '<i aria-hidden="true" class="' + icon + ' la-list-icon"></i>'
         out << '</span>'
     }
 
