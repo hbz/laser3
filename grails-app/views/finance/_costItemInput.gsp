@@ -393,11 +393,11 @@
                             <label for="show.subscriber">${message(code: 'default.compare.show.subscriber.name')}</label>
                         </div><br />
                     </g:if>
-                   %{-- <div class="ui checkbox">
+                   <div class="ui checkbox">
                         <g:checkBox name="show.connectedObjects" value="true" checked="false"
                                     onchange="JSPC.app.adjustDropdown()"/>
                         <label for="show.connectedObjects">${message(code: 'default.compare.show.connectedObjects.name')}</label>
-                    </div>--}%
+                    </div>
                     <br />
                     <select id="selectedSubs" name="selectedSubs" multiple="" class="ui search selection fluid dropdown">
                         <option value="">${message(code: 'default.select.choose.label')}</option>
@@ -438,6 +438,7 @@
             });
         }
     }
+    //continue here for ERMS-6094: empty PRO-user cannot create cost items on global finance view because of a JS error
     JSPC.app.finance${idSuffix} = {
         userLang: "${contextService.getUser().getSettingsValue(UserSetting.KEYS.LANGUAGE,null)}",
         currentForm: $("#editCost_${idSuffix}"),
@@ -481,13 +482,13 @@
             newSubscription_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupSubscriptions"])}?query={query}",
         <g:if test="${costItem?.sub || subscription}">
             newPackage_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupSubscriptionPackages"])}?query={query}&ctx=${contextSub}",
-                newIE_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupIssueEntitlements"])}?query={query}&sub=${contextSub}",
-                newTitleGroup_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupTitleGroups"])}?query={query}&sub=${contextSub}"
+            newIE_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupIssueEntitlements"])}?query={query}&sub=${contextSub}",
+            newTitleGroup_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupTitleGroups"])}?query={query}&sub=${contextSub}"
         </g:if>
         <g:else>
             newPackage_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupSubscriptionPackages"])}?query={query}",
-                newIE_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupIssueEntitlements"])}?query={query}",
-                newTitleGroup_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupTitleGroups"])}?query={query}"
+            newIE_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupIssueEntitlements"])}?query={query}",
+            newTitleGroup_${idSuffix}: "${createLink([controller:"ajaxJson", action:"lookupTitleGroups"])}?query={query}"
         </g:else>
         },
         eurVal: "${RDStore.CURRENCY_EUR.id}",
@@ -544,7 +545,7 @@
                 if(!values[0].match(/:null|:for/)) {
                      context = values[0];
                 }
-                else context = ${contextSub};
+                else context = "${contextSub}";
             }
             else if(JSPC.app.finance${idSuffix}.newLicenseeTarget.length === 0)
                 context = JSPC.app.finance${idSuffix}.newSubscription.dropdown('get value');
