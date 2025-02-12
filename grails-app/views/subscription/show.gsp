@@ -619,7 +619,7 @@
                                                         recip_prop    : 'subscription',
                                                         tmplEntity    : message(code: 'subscription.details.linkProvider.tmplEntity'),
                                                         tmplText      : message(code: 'subscription.details.linkProvider.tmplText'),
-                                                        tmplIcon        : 'add',
+                                                        tmplIcon        : 'large add',
                                                         tmplTooltip     : message(code: 'subscription.details.linkProvider.tmplButtonText'),
                                                         tmplModalID   : 'modal_add_provider',
                                                         editmode      : editable
@@ -648,7 +648,7 @@
                                                         recip_prop    : 'subscription',
                                                         tmplEntity    : message(code: 'subscription.details.linkAgency.tmplEntity'),
                                                         tmplText      : message(code: 'subscription.details.linkAgency.tmplText'),
-                                                        tmplIcon      : 'add',
+                                                        tmplIcon      : 'large add',
                                                         tmplTooltip   : message(code: 'subscription.details.linkAgency.tmplButtonText'),
                                                         tmplModalID   : 'modal_add_agency',
                                                         editmode      : editable

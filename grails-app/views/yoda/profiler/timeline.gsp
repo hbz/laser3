@@ -35,7 +35,6 @@
         JSPC.app.yoda.chart_config= {
             xAxis: {
                type: 'category',
-               boundaryGap: false,
                data: []
             },
             yAxis: {
