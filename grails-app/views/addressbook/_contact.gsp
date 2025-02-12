@@ -6,7 +6,8 @@
             <ui:contactIcon type="${contact.contentType?.value}" />
             <div class="content js-copyTriggerParent la-space-right" >
                 <span class="js-copyTrigger js-copyTopic la-popup-tooltip" data-content="${message(code: 'tooltip.clickToCopySimple')}">
-                    <ui:xEditable owner="${contact}" field="content" overwriteEditable="${overwriteEditable}" />
+%{--                    <ui:xEditable owner="${contact}" field="content" overwriteEditable="${overwriteEditable}" />--}%
+                    ${contact.content}
                 </span>
                 <g:if test="${contact.language}">
                     <g:if test="${contact.language.value == 'ger'}">
