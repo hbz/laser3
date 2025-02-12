@@ -1,11 +1,11 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 <g:if test="${contact}">
-    <div class="ui  item contact-details" style="display: flex; flex-flow: row wrap;">
-        <div  style="display: flex; flex-flow: row wrap;">
+    <div class="ui  item contact-details js-copyTriggerParent " style="display: flex; flex-flow: row wrap;">
+        <div  class="js-copyTrigger" style="display: flex; flex-flow: row wrap;">
             <ui:contactIcon type="${contact.contentType?.value}" />
-            <div class="content js-copyTriggerParent la-space-right" >
-                <span class="js-copyTrigger js-copyTopic la-popup-tooltip" data-content="${message(code: 'tooltip.clickToCopySimple')}">
+            <div class="content la-space-right" >
+                <span class="j js-copyTopic la-popup-tooltip" data-content="${message(code: 'tooltip.clickToCopySimple')}">
 %{--                    <ui:xEditable owner="${contact}" field="content" overwriteEditable="${overwriteEditable}" />--}%
                     ${contact.content}
                 </span>
