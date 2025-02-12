@@ -1,9 +1,7 @@
 package de.laser.wekb
 
 import de.laser.AlternativeName
-import de.laser.DeweyDecimalClassification
 import de.laser.Identifier
-import de.laser.Language
 import de.laser.Org
 import de.laser.OrgRole
 import de.laser.addressbook.PersonRole
