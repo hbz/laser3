@@ -353,7 +353,7 @@ class PublicController {
                 version   : ApiManager.VERSION
         ]
         if (params.id) {
-            result.version = params.id.toString()
+            result.version = params.id
         }
         result
     }
@@ -369,7 +369,7 @@ class PublicController {
                 topic   : 'various'
         ]
         if (params.id) {
-            result.topic = params.id.toString()
+            result.topic = params.id
         }
         result
     }
@@ -386,7 +386,7 @@ class PublicController {
                 topic   : 'various'
         ]
         if (params.id) {
-            result.topic = params.id.toString()
+            result.topic = params.id
         }
         result
     }
