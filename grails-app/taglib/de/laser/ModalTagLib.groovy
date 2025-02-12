@@ -103,7 +103,9 @@ class ModalTagLib {
         String msgDelete   = attrs.msgDelete ?: "${g.message(code:'default.button.delete.label')}"
 
         out << '<div role="dialog" class="ui ' + refreshModal + ' modal ' + modalSize + '"' + id + ' aria-label="Modal">'
-        out << '<div class="header">' + title + '</div>'
+        if (title) {
+            out << '<div class="header">' + title + '</div>'
+        }
 
         if (attrs.contentClass) {
             out << '<div class="content ' + attrs.contentClass + '">'

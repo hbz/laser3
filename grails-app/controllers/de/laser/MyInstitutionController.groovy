@@ -2510,6 +2510,14 @@ class MyInstitutionController  {
             }
             */
 
+            if(surveyConfig.subSurveyUseForTransfer && noParticipation){
+                SurveyResult surveyResult = SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)
+                surveyResult.comment = params.surveyResultComment
+                surveyResult.save()
+            }
+
+
+
             if (!noParticipation && notProcessedMandatoryProperties.size() > 0) {
                 flash.error = message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')]) as String
             } else if ((noParticipation && !surveyConfig.invoicingInformation) || allResultHaveValue) {
