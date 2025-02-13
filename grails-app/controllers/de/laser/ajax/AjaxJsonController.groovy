@@ -1332,7 +1332,7 @@ class AjaxJsonController {
 
     @Secured(['ROLE_USER'])
     def checkSUSHIConnection() {
-        Map<String, Object> result = subscriptionService.checkSUSHIConnection(params.long('org'), params.long('platform'), params.customerId, params.requestorId)
+        Map<String, Object> result = subscriptionService.checkSUSHIConnection(params.platform, params.long('customerKey'))
         render result as JSON
     }
 }

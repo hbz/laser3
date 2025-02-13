@@ -1622,19 +1622,19 @@ class ExportService {
 							}
 						}
 						else {
-							Map sysEventPayload = [error: "platform has no SUSHI configuration", url: url]
+							Map sysEventPayload = [error: "platform has no SUSHI configuration", platform: platformRecord.uuid, url: url, callError: true]
 							SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
 						}
 					}
 				}
 				Closure failure = { resp, reader ->
-					Map sysEventPayload = [error: "error on call at COUNTER registry", url: url]
+					Map sysEventPayload = [error: "error on call at COUNTER registry", platform: platformRecord.uuid, url: url, callError: true]
 					SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
 				}
 				sushiRegistry.get(BasicHttpClient.ResponseType.JSON, success, failure)
 			}
 			catch (Exception e) {
-				Map sysEventPayload = [error: "invalid response returned for ${url} - ${e.getMessage()}!", url: url]
+				Map sysEventPayload = [error: "invalid response returned for ${url} - ${e.getMessage()}!", platform: platformRecord.uuid, url: url, callError: true]
 				SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
 				log.error("stack trace: ", e)
 			}

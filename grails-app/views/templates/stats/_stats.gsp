@@ -294,28 +294,11 @@
         }
     }).slider('set rangeValue', startIndex, endIndex);
 
-    $(".sushiConnectionCheck").each(function(i) {
-        let cell = $(this);
-        let data = {
-            org: cell.attr("data-org"),
-            platform: cell.attr("data-platform"),
-            customerId: cell.attr("data-customerId"),
-            requestorId: cell.attr("data-requestorId")
-        };
-            $.ajax({
-                url: "<g:createLink controller="ajaxJson" action="checkSUSHIConnection"/>",
-                        data: data
-                    }).done(function(response) {
-                        if(response.error === true) {
-                            cell.html('<span class="la-popup-tooltip" data-content="'+response.message+'"><i class="circular inverted icon red times"></i></span>');
-                            r2d2.initDynamicUiStuff('#'+cell.attr('id'));
-                        }
-                    });
-            });
-            $("#reportType").on('change', function() {
-    <g:applyCodec encodeAs="none">
-        let platforms = ${platformsJSON};
-    </g:applyCodec>
+
+    $("#reportType").on('change', function() {
+        <g:applyCodec encodeAs="none">
+            let platforms = ${platformsJSON};
+        </g:applyCodec>
     $.ajax({
         url: "<g:createLink controller="ajaxHtml" action="loadFilterList"/>",
                     data: {
