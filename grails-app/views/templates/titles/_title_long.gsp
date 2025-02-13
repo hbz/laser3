@@ -69,8 +69,7 @@
 
     <g:if test="${ie}">
         <div class="item">
-            <i class="grey key icon la-popup-tooltip"
-               data-content="${message(code: 'default.status.label')}"></i>
+            <i class="${Icon.ATTR.TIPP_STATUS} la-popup-tooltip" data-content="${message(code: 'default.status.label')}"></i>
 
             <div class="content">
                 ${showCompact ? '' : message(code: 'default.status.label') + ':'} ${ie.status.getI10n('value')}
@@ -80,8 +79,7 @@
     <g:else>
         <%--<g:if test="${(tipp.status || showEmptyFields)}">--%>
             <div class="item">
-                <i class="grey key icon la-popup-tooltip"
-                   data-content="${message(code: 'default.status.label')}"></i>
+                <i class="${Icon.ATTR.TIPP_STATUS} la-popup-tooltip" data-content="${message(code: 'default.status.label')}"></i>
 
                 <div class="content">
                     ${showCompact ? '' : message(code: 'default.status.label') + ':'} ${tipp.status.getI10n('value')}
@@ -115,8 +113,7 @@
 
     <g:if test="${(tipp.titleType == 'monograph') && (tipp.volume || showEmptyFields)}">
         <div class="item">
-            <i class="${Icon.ATTR.TIPP_COVERAGE} la-popup-tooltip"
-               data-content="${message(code: 'tipp.volume')}"></i>
+            <i class="${Icon.ATTR.TIPP_COVERAGE} la-popup-tooltip" data-content="${message(code: 'tipp.volume')}"></i>
 
             <div class="content">
                 ${showCompact ? '' : message(code: 'tipp.volume') + ':'} ${tipp.volume}

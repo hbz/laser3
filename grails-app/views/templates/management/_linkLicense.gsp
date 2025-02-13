@@ -209,11 +209,24 @@
         } else {
             $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', false)
         }
+        $.ajax({
+            method: "post",
+            url: "<g:createLink controller="ajaxJson" action="updatePaginationCache" />",
+            data: {
+                allIds: [${subIDs.join(',')}],
+                cacheKeyReferer: "/${controllerName}/subscriptionManagement/${params.tab}/${user.id}"
+            }
+        }).done(function(result){
+            console.log("updated cache for all subscriptions: "+result.state);
+        }).fail(function(xhr,status,message){
+            console.log("error occurred, consult logs!");
+        });
     });
 
     $(".selectedSubs").change(function() {
         let selId = $(this).attr("id");
         $.ajax({
+            method: "post",
             url: "<g:createLink controller="ajaxJson" action="updatePaginationCache" />",
             data: {
                 selId: selId,
@@ -224,6 +237,12 @@
         }).fail(function(xhr,status,message){
             console.log("error occurred, consult logs!");
         });
+    });
+
+    $("input[name=selectedSubs]").checkbox({
+        onChange: function() {
+            $('#membersListToggler').prop('checked', false);
+        }
     });
 
     /*

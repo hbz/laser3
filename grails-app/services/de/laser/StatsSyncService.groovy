@@ -1178,6 +1178,7 @@ class StatsSyncService {
             }
             Map sysEventPayload = result.clone()
             sysEventPayload.url = url
+            sysEventPayload.ci = ci.id
             SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
         }
         result
@@ -1259,6 +1260,7 @@ class StatsSyncService {
         if(result.containsKey('error')) {
             Map sysEventPayload = result.clone()
             sysEventPayload.url = url
+            sysEventPayload.ci = ci.id
             SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
         }
         result

@@ -1,9 +1,7 @@
 package de.laser.wekb
 
 import de.laser.AlternativeName
-import de.laser.DeweyDecimalClassification
 import de.laser.Identifier
-import de.laser.Language
 import de.laser.PendingChange
 import de.laser.addressbook.PersonRole
 import de.laser.RefdataValue
@@ -12,7 +10,6 @@ import de.laser.annotations.RefdataInfo
 import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.convenience.Marker
-import de.laser.ui.Icon
 import de.laser.interfaces.MarkerSupport
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore

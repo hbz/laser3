@@ -260,6 +260,12 @@
             $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', false)
         }
     });
+
+    $("input[name=selectedSubs]").checkbox({
+        onChange: function() {
+            $('#membersListToggler').prop('checked', false);
+        }
+    });
     </laser:script>
 
 </g:else>

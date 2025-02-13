@@ -28,6 +28,7 @@ import de.laser.survey.SurveyResult
 import de.laser.wekb.ElectronicBilling
 import de.laser.wekb.ElectronicDeliveryDelayNotification
 import de.laser.wekb.InvoiceDispatch
+import de.laser.wekb.LibrarySystem
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
@@ -984,12 +985,14 @@ class ExportClickMeService {
                         ]
                 ],
 
+                /*
                 participantIdentifiers: [
                         label  : 'Identifiers',
                         message: 'exportClickMe.participantIdentifiers',
                         fields : [:],
 
                 ],
+                */
 
                 licProperties         : [
                         label  : 'Public properties',
@@ -2690,9 +2693,11 @@ class ExportClickMeService {
             exportFields.put("identifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
 
+        /*
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
+        */
 
         Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc",
                 [ctx:contextOrg,availableTypes:[PropertyDefinition.LIC_PROP]])
@@ -2739,9 +2744,11 @@ class ExportClickMeService {
         IdentifierNamespace.executeQuery('select idns from IdentifierNamespace idns where idns.nsType = :nsType order by coalesce(idns.'+localizedName+', idns.ns)', [nsType: IdentifierNamespace.NS_LICENSE]).each {
             fields.identifiers.fields << ["identifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
+        /*
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
+        */
 
         Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc", [ctx:contextOrg,availableTypes:[PropertyDefinition.LIC_PROP]])
 

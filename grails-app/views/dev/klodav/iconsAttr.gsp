@@ -20,25 +20,25 @@
     <pre>&lt;button class=&quot;&dollar;{Btn.ICON.PRIMARY}&quot; id=&quot;metaToggle1&quot;&gt;&lt;i class=&quot;&dollar;{Icon.UI.INFO}&quot;&gt;&lt;/i&gt;&lt;/button&gt;</pre>
 </div>
 
-<div class="ui basic segment">
-    <p class="ui header">Icon.ATTR</p>
-    <div class="ui five cards">
-        <g:each in="${IconAttr.getDeclaredFields().findAll{ ! it.isSynthetic() }}" var="f" status="i">
-            <div class="ui mini card" data-cat="${f.name.split('\\.').last().split('_').first()}">
-                <div class="content">
-                    <div class="header">
-                        <i class="${IconAttr[f.name]} large"></i>
-                        ${f.name.split('\\.').last()}
-                    </div>
-                    <div class="meta hidden">${IconAttr[f.name]}</div>
-                    <g:if test="${f.getAnnotation(de.laser.annotations.UIDoc)}">
-                        <div class="description hidden">${f.getAnnotation(UIDoc).usage()}</div>
-                    </g:if>
-                </div>
-            </div>
-        </g:each>
-    </div>
-</div>
+%{--<div class="ui basic segment">--}%
+%{--    <p class="ui header">Icon.ATTR</p>--}%
+%{--    <div class="ui five cards">--}%
+%{--        <g:each in="${IconAttr.getDeclaredFields().findAll{ ! it.isSynthetic() }}" var="f" status="i">--}%
+%{--            <div class="ui mini card" data-cat="${f.name.split('\\.').last().split('_').first()}">--}%
+%{--                <div class="content">--}%
+%{--                    <div class="header">--}%
+%{--                        <i class="${IconAttr[f.name]} large"></i>--}%
+%{--                        ${f.name.split('\\.').last()}--}%
+%{--                    </div>--}%
+%{--                    <div class="meta hidden">${IconAttr[f.name]}</div>--}%
+%{--                    <g:if test="${f.getAnnotation(de.laser.annotations.UIDoc)}">--}%
+%{--                        <div class="description hidden">${f.getAnnotation(UIDoc).usage()}</div>--}%
+%{--                    </g:if>--}%
+%{--                </div>--}%
+%{--            </div>--}%
+%{--        </g:each>--}%
+%{--    </div>--}%
+%{--</div>--}%
 
 <g:each in="${IconAttr.getDeclaredClasses().findAll{ true }}" var="ic">
     <div class="ui basic segment">

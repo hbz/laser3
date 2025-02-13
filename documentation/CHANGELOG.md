@@ -7,9 +7,15 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6271    12.02.2025  dev     3.5         Andreas Bug         falscher Umgang mit dubletten Identifikatoren
+
+6094    12.02.2025  dev     3.5         Andreas Feature     Wiederherstellung des Filters zu verknüpften Lizenzen
+
 6257    11.02.2025  dev     3.5         Andreas Bug         Personen werden abgeräumt, wenn keine Kontakta mehr vorhanden sind
 
 6219    11.02.2025  dev     3.5         David   Feature     Subscription/License.isSlaved() überarbeiten
+
+6203    11.02.2025  dev     3.5         Andreas Feature     Absicherung gegen Leerformulare
 
 --      10.02.2025  dev     3.5         Andreas Bug         veralteten Aufruf von list.size korrigiert
 
@@ -46,6 +52,14 @@
 6216    23.01.2025  dev     3.5         Andreas Bug         vergessene Ringgold-ID in den Kernsatz der Einrichtungs-IDs aufgenommen
 
 6211    23.01.2025  rc-3.4  3.4.19      Andreas Bug         Kostenstatus gelöscht aus Inline-Bearbeitung entfernt
+
+6211    23.01.2024  rc-3.4  3.4.19      Andreas Bug         Kostenstatus gelöscht aus Inline-Bearbeitung entfernt
+
+6140    15.01.2024  rc-3.4  3.4.18      Moe     Bug         Informationen in Info-i zu Rechnungskontakten optimieren
+
+--      15.01.2024  rc-3.4  3.4.18      Moe     Bug         Title-Upload bei Titel-Umfrage
+
+6187    15.01.2024  rc-3.4  3.4.18      Andreas Feature     Schnitzer in der Statistiksicht behoben
 
 5673    21.01.2025  dev     3.5         David   Feature     We:kb-News / Titeländerungen
 

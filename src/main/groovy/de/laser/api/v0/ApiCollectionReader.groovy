@@ -2,12 +2,12 @@ package de.laser.api.v0
 
 import de.laser.ExportService
 import de.laser.AlternativeName
-import de.laser.DeweyDecimalClassification
+import de.laser.wekb.DeweyDecimalClassification
 import de.laser.DocContext
 import de.laser.Identifier
 import de.laser.IdentifierNamespace
 import de.laser.IssueEntitlement
-import de.laser.Language
+import de.laser.wekb.Language
 import de.laser.Org
 import de.laser.OrgRole
 import de.laser.addressbook.PersonRole

@@ -90,7 +90,7 @@
                                     <td>
                                         <ui:xEditable owner="${row.customerIdentifier}" field="requestorKey"/>
                                     </td>
-                                    <td id="${genericOIDService.getHtmlOID(row.customerIdentifier)}" class="sushiConnectionCheck" data-org="${row.memberId}" data-platform="${platform.id}" data-customerId="${row.customerIdentifier.value}" data-requestorId="${row.customerIdentifier.requestorKey}">
+                                    <td id="${genericOIDService.getHtmlOID(row.customerIdentifier)}" class="sushiConnectionCheck" data-platform="${platform.uuid}" data-customerKey="${row.customerIdentifier.id}">
 
                                     </td>
                                     <td>
@@ -109,12 +109,29 @@
     <laser:script file="${this.getGroovyPageFileName()}">
     $('.action .icon.button').click(function () {
          $(this).parent('.action').find('input:file').click();
-     });
+    });
 
-     $('input:file', '.ui.action.input').on('change', function (e) {
+    $('input:file', '.ui.action.input').on('change', function (e) {
          var name = e.target.files[0].name;
          $('input:text', $(e.target).parent()).val(name);
-     });
+    });
+
+    $(".sushiConnectionCheck").each(function(i) {
+        let cell = $(this);
+        let data = {
+            platform: cell.attr("data-platform"),
+            customerKey: cell.attr("data-customerKey")
+        };
+        $.ajax({
+            url: "<g:createLink controller="ajaxJson" action="checkSUSHIConnection"/>",
+            data: data
+        }).done(function(response) {
+            if(response.error === true) {
+               cell.html('<span class="la-popup-tooltip" data-content="'+response.message+'"><i class="circular inverted icon red times"></i></span>');
+               r2d2.initDynamicUiStuff('#'+cell.attr('id'));
+            }
+        });
+    });
     </laser:script>
 
 <laser:htmlEnd />

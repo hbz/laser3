@@ -4,10 +4,8 @@ import de.laser.annotations.UIDoc
 import de.laser.annotations.UnstableFeature
 
 @UnstableFeature
-class Icon {
+class Icon extends IconAttr {
     // please do not touch during refactoring ..
-
-    static def ATTR = IconAttr
 
     class AUTH {
         // please do not touch during refactoring ..

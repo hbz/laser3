@@ -128,7 +128,7 @@
 
         <div class="la-icon-list">
             <div class="item">
-                <i class="grey clipboard check clip icon la-popup-tooltip"
+                <i class="${Icon.ATTR.TIPP_ACCESS_DATE} la-popup-tooltip"
                    data-content="${message(code: 'tipp.accessStartDate.tooltip')}"></i>
 
                 <div class="content">
@@ -138,7 +138,7 @@
             </div>
 
             <div class="item">
-                <i class="grey clipboard check clip icon la-popup-tooltip"
+                <i class="${Icon.ATTR.TIPP_ACCESS_DATE} la-popup-tooltip"
                    data-content="${message(code: 'tipp.accessEndDate.tooltip')}"></i>
 
                 <div class="content">

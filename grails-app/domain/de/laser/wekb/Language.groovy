@@ -1,11 +1,10 @@
-package de.laser
+package de.laser.wekb
 
+import de.laser.RefdataValue
 import de.laser.annotations.RefdataInfo
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
-import de.laser.wekb.Package
-import de.laser.wekb.TitleInstancePackagePlatform
 import groovy.util.logging.Slf4j
 
 /**

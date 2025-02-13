@@ -23,6 +23,7 @@ import de.laser.stats.SushiCallError
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
+import de.laser.system.SystemEvent
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
@@ -34,6 +35,7 @@ import de.laser.wekb.TIPPCoverage
 import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import de.laser.wekb.VendorRole
+import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.BatchingPreparedStatementWrapper
@@ -229,6 +231,7 @@ class SubscriptionService {
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextOrg)
 
         prf.setBenchmark('end properties')
+        result.subIDs = subscriptions.collect { Subscription s -> s.id }
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
         prf.setBenchmark('fetch licenses')
         if(subscriptions)
@@ -1698,6 +1701,15 @@ class SubscriptionService {
             if(result.identifier) {
                 tippIDs = tippIDs.intersect(issueEntitlementService.getTippsByIdentifier(identifierConfigMap, result.identifier))
             }
+            EhcacheWrapper userCache = contextService.getUserCache("/subscription/renewEntitlementsWithSurvey/${result.subscription.id}?${params.tab}")
+            Map<String, Object> checkedCache = userCache.get('selectedTitles')
+
+            if (!checkedCache || !params.containsKey('pagination')) {
+                checkedCache = ["checked": [:]]
+            }
+
+            result.checkedCache = checkedCache.get('checked')
+            result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
             switch(params.tab) {
                 case 'allTipps':
                     Map<String, Object> listPriceSums = issueEntitlementService.calculateListPriceSumsForTitles(tippIDs)
@@ -2296,89 +2308,30 @@ class SubscriptionService {
         result
     }
 
-    /**
-     * currently unused, may become obsolete later
-     * @param ci
-     * @return
-     */
-    Map<String, Object> prepareSUSHIConnectionCheck(CustomerIdentifier ci) {
-        Map<String, Object> queryResult = gokbService.executeQuery(Wekb.getSushiSourcesURL(), [:])
-        Map platformRecord
-        if (queryResult) {
-            Map<String, Object> records = queryResult
-            /* COUNTER 4 SUSHI does not provide such an endpoint
-            if(records.counter4ApiSources.containsKey(platform.gokbId)) {
-                platformRecord = records.counter4ApiSources.get(platform.gokbId)
-            }
-            */
-            if(records.counter5ApiSources.containsKey(ci.platform.gokbId)) {
-                platformRecord = records.counter5ApiSources.get(ci.platform.gokbId)
-            }
+    Map<String, Object> checkSUSHIConnection(String platformUuid, Long customerKey) {
+        //continue here with global call defunct tests and by elaborating a method to eliminate the error once fixed
+        Map<String, Object> result = [:]
+        String platQuery = '%"platform":'+platformUuid+',"callError":true%', ciQuery = '%"ci":'+customerKey+'%'
+        Set<String> errMess = []
+        Set<SystemEvent> platformCallErrors = SystemEvent.executeQuery('select se from SystemEvent se where se.payload like :payload', [payload: platQuery]),
+        customerCallErrors = SystemEvent.executeQuery('select se from SystemEvent se where se.payload like :payload', [payload: ciQuery])
+        platformCallErrors.each { SystemEvent se ->
+            Map sePayload = JSON.parse(se.payload)
+            if(sePayload.error == null)
+                errMess += 'Unbekannter Fehler'
+            else
+                errMess += sePayload.error
         }
-        if(platformRecord) {
-            Map<String, String> sushiConfig = exportService.prepareSushiCall(platformRecord, 'status')
-            if(ci.value) {
-                checkSUSHIConnection(sushiConfig.statsUrl, exportService.buildQueryArguments(sushiConfig, platformRecord, ci), sushiConfig.revision)
-            }
+        customerCallErrors.each { SystemEvent se ->
+            Map sePayload = JSON.parse(se.payload)
+            if(sePayload.error == null)
+                errMess += 'Unbekannter Fehler'
+            else
+                errMess += sePayload.error
         }
-        else [success: false, code: -1]
-    }
-
-    Map<String, Object> checkSUSHIConnection(Long orgId, Long platformId, String customerId, String requestorId) {
-        Map<String, Object> connSuccessful = [:]
-        List<SushiCallError> sce = SushiCallError.executeQuery('select sce from SushiCallError sce where sce.org.id = :org and sce.platform.id = :platform and sce.customerId = :customerId and sce.requestorId = :requestorId', [org: orgId, platform: platformId, customerId: customerId, requestorId: requestorId])
-        sce.each {
-            connSuccessful.error = true
-            connSuccessful.message = sce.errMess
-        }
-        /*
-        if(revision == AbstractReport.COUNTER_5) {
-            String url = statsUrl+queryArguments
-            try {
-                Closure success = { resp, json ->
-                    if(resp.code() == 200) {
-                        if(json instanceof JSONObject && json.containsKey("Code")) {
-                            connSuccessful = [success: false, code: json.Code, message: json.Message]
-                        }
-                        else
-                            connSuccessful = [success: true]
-                    }
-                    else {
-                        log.error("server response: ${resp.status()}")
-                        connSuccessful = [success: false, code: resp.status()]
-                    }
-                }
-                Closure failure = { resp, reader ->
-                    if(reader?.containsKey("Code"))
-                        connSuccessful = [success: false, code: reader.Code, message: reader.Message]
-                    else {
-                        log.error("server response: ${resp?.status()} - ${reader}")
-                        connSuccessful = [success: false, code: 0]
-                    }
-                    Map sysEventPayload = [url: url]
-                    SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
-                }
-                HttpClientConfiguration config = new DefaultHttpClientConfiguration()
-                config.readTimeout = Duration.ofMinutes(5)
-                BasicHttpClient http = new BasicHttpClient(url, config)
-                http.get(BasicHttpClient.ResponseType.JSON, success, failure)
-                http.close()
-            }
-            catch (Exception e) {
-                connSuccessful = [success:false, code: 0, message: "invalid response returned for ${url} - ${e.getMessage()}!"]
-                log.error("stack trace: ", e)
-                Map sysEventPayload = [url: url]
-                SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
-            }
-        }
-        else if(revision == AbstractReport.COUNTER_4) {
-            Map<String, Object> result = statsSyncService.fetchXMLData(statsUrl, queryArguments)
-            if(result.code == 200)
-                connSuccessful = [success: true]
-            else connSuccessful = [success: false, code: result.code, message: result.error]
-        }
-        */
-        connSuccessful
+        result.error = errMess.size() > 0
+        result.message = errMess.join(', ')
+        result
     }
 
     /**
