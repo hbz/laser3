@@ -4,6 +4,7 @@ import de.laser.annotations.DebugInfo
 import de.laser.storage.BeanStore
 import de.laser.survey.SurveyConfig
 import de.laser.utils.DateUtils
+import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
 
@@ -52,11 +53,13 @@ class ClickMeController {
         result.enableClickMeConfigSave = BeanStore.getContextService().isInstEditor(CustomerTypeService.PERMS_PRO)
         result.multiMap = false
 
+        result.editExportConfig = params.editExportConfig
+
         if(params.clickMeConfigId)
         {
             result.clickMeConfig = ClickMeConfig.get(params.clickMeConfigId)
             result.modalText = result.clickMeConfig ? "Export: $result.clickMeConfig.name" : result.modalText
-            result.showClickMeConfigSave = result.clickMeConfig ? false : true
+            result.showClickMeConfigSave = result.clickMeConfig ? (result.editExportConfig ? true : false) : true
         }
 
 
@@ -175,6 +178,45 @@ class ClickMeController {
             result.formFields = exportClickMeService.getClickMeFields(result.clickMeConfig, result.formFields)
         }
 
+        if(result.editExportConfig){
+            result.exportController = 'clickMe'
+            result.exportAction = 'editExportConfig'
+        }
+
         render(template: templateName, model: result)
     }
+
+    @DebugInfo(isInstUser = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser()
+    })
+    Map<String,Object> editExportConfig() {
+        Map<String, Object> result = [:]
+
+        if(params.clickMeConfigId)
+        {
+            result.clickMeConfig = ClickMeConfig.get(params.clickMeConfigId)
+            result.modalText = result.clickMeConfig ? "Export: $result.clickMeConfig.name" : result.modalText
+            result.showClickMeConfigSave = result.clickMeConfig ? (result.editExportConfig ? true : false) : true
+        }
+
+        if(result.clickMeConfig && params.saveClickMeConfig){
+            Map<String, Object> selectedFields = [:]
+
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            selectedFieldsRaw.each { it ->
+                if(it.value == 'on')
+                selectedFields.put( it.key.replaceFirst('iex:', ''), it.value )
+            }
+            String jsonConfig = (new JSON(selectedFields)).toString()
+            result.clickMeConfig.jsonConfig = jsonConfig
+            result.clickMeConfig.name = params.clickMeConfigName
+            result.clickMeConfig.note = params.clickMeConfigNote
+            result.clickMeConfig.save()
+        }
+
+        redirect(url: request.getHeader('referer'))
+    }
+
+
 }

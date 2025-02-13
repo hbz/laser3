@@ -32,6 +32,7 @@
                     <th>${message(code: 'sidewide.number')}</th>
                     <th>${message(code: 'default.name.label')}</th>
                     <th>${message(code: 'default.note.label')}</th>
+                    <th>${message(code: 'default.count.label')}-${message(code: 'default.config.label')}</th>
                     <th>${message(code: 'clickMeConfig.configOrder')}</th>
                     <g:if test="${editable}">
                         <th>${message(code: 'default.actions.label')}</th>
@@ -49,6 +50,9 @@
                         </td>
                         <td>
                             <ui:xEditable owner="${clickMeConfig}" field="note" type="textarea"/>
+                        </td>
+                        <td>
+                            ${clickMeConfig.getClickMeConfigSize()}
                         </td>
                         <td>
                             <g:if test="${editable}">
@@ -74,6 +78,14 @@
                         </td>
                         <g:if test="${editable}">
                             <td>
+
+                                <g:link class="triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
+                                params="${params + [exportController: controllerName, exportAction: actionName, clickMeType: clickMeConfig.clickMeType, id: params.id, clickMeConfigId: clickMeConfig.id, exportFileName: 'EditExportConfig', editExportConfig: true]}"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                    <i class="${Icon.CMD.EDIT}"></i>
+                                </g:link>
+
                                 <g:link controller="myInstitution" action="exportConfigsActions"
                                         params="${[cmd: 'delete', id: clickMeConfig.id, tab: params.tab]}" class="${Btn.MODERN.NEGATIVE}"
                                         role="button"
@@ -89,5 +101,7 @@
         </div>
     </div>
 </div>
+
+<g:render template="/clickMe/export/js"/>
 
 <laser:htmlEnd/>
