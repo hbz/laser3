@@ -3,6 +3,7 @@ package de.laser.stats
 import de.laser.Org
 import de.laser.wekb.Platform
 
+@Deprecated
 class SushiCallError {
 
     String customerId
