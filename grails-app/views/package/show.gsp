@@ -552,10 +552,7 @@ making obsolete package/actions
                                                                         <div class="twelve wide column">
                                                                             <div class="ui label">${RDStore.PRS_FUNC_GASCO_CONTACT.getI10n('value')}</div>
                                                                             <div class="ui header">${person?.getFirst_name()} ${person?.getLast_name()}</div>
-                                                                            <g:each in ="${Contact.findAllByPrsAndContentType(
-                                                                                    person,
-                                                                                    RDStore.CCT_EMAIL
-                                                                            )}" var="prsContact">
+                                                                            <g:each in ="${Contact.findAllByPrsAndContentType(person, RDStore.CCT_EMAIL)}" var="prsContact">
                                                                                 <laser:render template="/addressbook/contact" model="${[
                                                                                         contact             : prsContact,
                                                                                         tmplShowDeleteButton: false,
