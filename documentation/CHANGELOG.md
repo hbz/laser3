@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5914    12.02.2025  dev     3.5         Moe     Feature     Export Konfiguration: Bearbeitungsbutton hinzufügen
+
+6025    12.02.2025  dev     3.5         Moe     Feature     Angabe des Kündigungsgrunds bei Verlängerungsumfragen durch Pop-Up
+
+6262    12.02.2025  dev     3.5         Moe     Feature     Eintrag Leitweg-ID unkomfortabel
+
+5906    12.02.2025  dev     3.5         Moe     Feature     Neues Umfragemerkmal "Teilnahme (mit Antwortoptionen)" zur Nutzung für nicht-verpflichtende Umfragen
+
 6271    12.02.2025  dev     3.5         Andreas Bug         falscher Umgang mit dubletten Identifikatoren
 
 6094    12.02.2025  dev     3.5         Andreas Feature     Wiederherstellung des Filters zu verknüpften Lizenzen
