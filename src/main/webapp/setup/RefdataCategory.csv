@@ -178,6 +178,7 @@ subscription.type,Subscription Type,Subscription Type
 subscription.kind,Lizenzart,Subscription Kind
 survey.status,Umfrage-Status,Survey Status
 survey.type,Umfrage-Typ,Survey Type
+survey.property.participation,Teilnahme (mit Antwortoptionen),Participation (with response options)
 task.priority,Aufgabenpriorität,Task Priority
 task.status,Aufgabenstatus,Task Status
 tax.type,TaxType,TaxType

@@ -87,18 +87,42 @@
 <br/>
 
 <g:if test="${editable}">
-        <g:link class="${Btn.POSITIVE_CONFIRM}"
-                data-confirm-messageUrl="${g.createLink(controller: 'ajaxHtml', action: 'getSurveyFinishMessage', params: [id: surveyInfo.id, surveyConfigID: surveyConfig.id])}"
-                data-confirm-term-how="concludeBinding"
-                data-confirm-replaceHeader="true"
-                controller="myInstitution"
-                action="surveyInfoFinish"
-                data-targetElement="surveyInfoFinish"
-                id="${surveyInfo.id}"
-                params="[surveyConfigID: surveyConfig.id]">
-            <g:message code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info2' : 'surveyResult.finish.info2'}"/>
-        </g:link>
+    <button class="${Btn.POSITIVE} triggerSurveyFinishModal"
+            data-href="${g.createLink(controller: 'ajaxHtml', action: 'getSurveyFinishModal', params: [id: surveyInfo.id, surveyConfigID: surveyConfig.id])}"
+            role="button"
+            aria-label="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info2' : 'surveyResult.finish.info2'}">
+        <g:message code="${surveyInfo.isMandatory ? 'surveyResult.finish.mandatory.info2' : 'surveyResult.finish.info2'}"/>
+    </button>
 </g:if>
 <br/>
 <br/>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('.triggerSurveyFinishModal').on('click', function(e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: $(this).attr('data-href')
+        }).done( function (data) {
+            $('.ui.dimmer.modals > #surveyFinishModal').remove();
+            $('#dynamicModalContainer').empty().html(data);
+
+            $('#dynamicModalContainer .ui.modal').modal({
+               onShow: function () {
+                    r2d2.initDynamicUiStuff('#surveyFinishModal');
+                    $("html").css("cursor", "auto");
+                },
+                detachable: true,
+                autofocus: false,
+                closable: false,
+                transition: 'scale',
+                onApprove : function() {
+                    $(this).find('#surveyFinishModal .ui.form').submit();
+                    return false;
+                }
+            }).modal('show');
+        })
+    });
+</laser:script>
+
 <laser:htmlEnd/>
