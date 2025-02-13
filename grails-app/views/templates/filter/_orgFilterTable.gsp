@@ -327,12 +327,16 @@
                                         personRole.getPrs(), RDStore.CCT_EMAIL
                                 )}" var="email">
                                     <div class="item js-copyTriggerParent">
-                                            <span data-position="right center"
-                                                  class="la-popup-tooltip js-copyTrigger"
-                                                  data-content="Mail senden an ${personRole.getPrs()?.getFirst_name()} ${personRole.getPrs()?.getLast_name()}">
-                                        <ui:contactIcon type="${email.contentType.value}"/>
-                                        <a class="js-copyTopic" href="mailto:${email.content}">${email.content}</a>
-                                        </span><br />
+                                            <span class="js-copyTrigger">
+                                                    <ui:contactIcon type="${email.contentType.value}"/>
+                                                    <a class="js-copyTopic">${email.content}</a>
+                                                    <span class="la-popup-tooltip" data-position="top right"  data-content="${message(code: 'tooltip.sendMailTo')} ${personRole.getPrs()?.getFirst_name()} ${personRole.getPrs()?.getLast_name()}">
+                                                        <a href="mailto:${email.content}"  class="${Btn.MODERN.SIMPLE} tiny">
+                                                            <i class="${Icon.LNK.MAIL_TO}"></i>
+                                                        </a>
+                                                    </span>
+                                            </span>
+                                        <br />
                                     </div>
                                 </g:each>
                                 <g:each in="${Contact.findAllByPrsAndContentType(
