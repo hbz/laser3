@@ -106,8 +106,8 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
      * @return true if there is any kind of value (= answer on behalf of the participant), false otherwise
      */
     boolean isResultProcessed() {
-        if (type.isIntegerType()) {
-            return intValue ? true : false
+        if (type.isLongType()) {
+            return longValue ? true : false
         }
         else if (type.isStringType()) {
             return stringValue ? true : false
@@ -141,8 +141,8 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
      * @see {@link AbstractPropertyWithCalculatedLastUpdated}
      */
     def getResult() {
-        if (type.isIntegerType()) {
-            return intValue.toString()
+        if (type.isLongType()) {
+            return longValue.toString()
         }
         else if (type.isStringType()) {
             return stringValue
@@ -175,7 +175,7 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
     @Override
     String toString(){
         if (stringValue)      { return stringValue }
-        if (intValue != null) { return intValue.toString() }
+        if (longValue != null) { return longValue.toString() }
         if (decValue != null) { return decValue.toString() }
         if (refValue)         { return refValue.toString() }
         if (dateValue)        { return dateValue.toString() }

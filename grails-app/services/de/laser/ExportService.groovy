@@ -370,8 +370,8 @@ class ExportService {
 						def value = ''
 						org.customProperties.each { prop ->
 							if (prop.type.descr == pd.descr && prop.type == pd) {
-								if (prop.type.isIntegerType()) {
-									value = prop.intValue.toString()
+								if (prop.type.isLongType()) {
+									value = prop.longValue.toString()
 								} else if (prop.type.isStringType()) {
 									value = prop.stringValue ?: ''
 								} else if (prop.type.isBigDecimalType()) {
@@ -386,8 +386,8 @@ class ExportService {
 
 						org.privateProperties.each { prop ->
 							if (prop.type.descr == pd.descr && prop.type == pd) {
-								if (prop.type.isIntegerType()) {
-									value = prop.intValue.toString()
+								if (prop.type.isLongType()) {
+									value = prop.longValue.toString()
 								} else if (prop.type.isStringType()) {
 									value = prop.stringValue ?: ''
 								} else if (prop.type.isBigDecimalType()) {
@@ -458,8 +458,8 @@ class ExportService {
 						def value = ''
 						org.customProperties.each{ prop ->
 							if(prop.type.descr == pd.descr && prop.type == pd) {
-								if(prop.type.isIntegerType()){
-									value = prop.intValue.toString()
+								if(prop.type.isLongType()){
+									value = prop.longValue.toString()
 								}
 								else if (prop.type.isStringType()){
 									value = prop.stringValue ?: ''
@@ -477,8 +477,8 @@ class ExportService {
 						}
 						org.privateProperties.each{ prop ->
 							if(prop.type.descr == pd.descr && prop.type == pd) {
-								if(prop.type.isIntegerType()){
-									value = prop.intValue.toString()
+								if(prop.type.isLongType()){
+									value = prop.longValue.toString()
 								}
 								else if (prop.type.isStringType()){
 									value = prop.stringValue ?: ''
