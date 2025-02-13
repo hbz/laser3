@@ -70,15 +70,11 @@
         <ui:securedSubNavItem instRole="INST_ADM" affiliationOrg="${orgInstance}"
                               controller="organisation" action="settings" params="${breadcrumbParams}" message="org.nav.dataTransfer.shy" />
     </g:if>
-    <g:elseif test="${contextService.getUser().isComboInstAdminOf(orgInstance)}">
-        <%-- to exclude other consortium admins --%>
-        <g:if test="${contextService.getUser().isAdmin() || contextService.getUser().isYoda() || !orgInstance.hasInstAdminEnabled()}">
-            <ui:subNavItem controller="organisation" action="settings" params="${breadcrumbParams}" message="org.nav.dataTransfer.shy"/>
-        </g:if>
+    <%-- to exclude other consortium admins --%>
+    <g:elseif test="${contextService.getUser().isComboInstAdminOf(orgInstance) && !orgInstance.hasInstAdminEnabled()}">
+        <ui:subNavItem controller="organisation" action="settings" params="${breadcrumbParams}" message="org.nav.dataTransfer.shy"/>
     </g:elseif>
-    <%-- sense???
-    <g:else>
-        <ui:subNavItem message="org.nav.dataTransfer.shy" disabled="disabled" />
-    </g:else>
-    --%>
+    <g:elseif test="${contextService.getUser().isAdmin() || contextService.getUser().isYoda()}">
+        <ui:subNavItem controller="organisation" action="settings" params="${breadcrumbParams}" message="org.nav.dataTransfer.shy"/>
+    </g:elseif>
 </ui:subNav>
