@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6278    13.02.2025  dev     3.5         Andreas Feature     Darstellung der Merkmale Vertrags-/Rechnungsabwicklung
+
+6276    13.02.2025  dev     3.5         Andreas Feature     Einbau der Merkmale und weiterer Referenzwerte für Rechnungs-/Vertragsabwicklung
+
 6271    12.02.2025  dev     3.5         Andreas Bug         falscher Umgang mit dubletten Identifikatoren
 
 6094    12.02.2025  dev     3.5         Andreas Feature     Wiederherstellung des Filters zu verknüpften Lizenzen

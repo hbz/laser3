@@ -418,6 +418,7 @@ class MyInstitutionController  {
         if (! contextService.getOrg().isCustomerType_Support()) {
             licenseFilterTable << "provider"
             licenseFilterTable << "vendor"
+            licenseFilterTable << "processing"
         }
 
         if (contextService.getOrg().isCustomerType_Inst_Pro()) {
@@ -1288,6 +1289,7 @@ class MyInstitutionController  {
             result.tableConfig << "showPackages"
             result.tableConfig << "showProviders"
             result.tableConfig << "showVendors"
+            result.tableConfig << "showInvoicing"
         }
 
         result.putAll(subscriptionService.getMySubscriptions(params, result.user, contextService.getOrg()))

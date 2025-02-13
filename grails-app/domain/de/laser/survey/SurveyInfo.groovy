@@ -115,7 +115,7 @@ class SurveyInfo {
                 }
             }
 
-            if(!(it.orgs.org.size > 0)){
+            if(!(it.orgs.org.size() > 0)){
                 check = false
             }
         }

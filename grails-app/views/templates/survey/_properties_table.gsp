@@ -49,12 +49,20 @@
                     ${PropertyDefinition.getLocalizedValue(surveyPropertyConfig.surveyProperty.type)}
                     <g:if test="${surveyPropertyConfig.surveyProperty.isRefdataValueType()}">
                         <g:set var="refdataValues" value="${[]}"/>
-                        <g:each in="${RefdataCategory.getAllRefdataValuesWithOrder(surveyPropertyConfig.surveyProperty.refdataCategory)}"
-                                var="refdataValue">
-                            <g:if test="${refdataValue.getI10n('value')}">
-                                <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
-                            </g:if>
-                        </g:each>
+                        <g:if test="${surveyPropertyConfig.surveyProperty == PropertyStore.SURVEY_PROPERTY_INVOICE_PROCESSING}">
+                            <g:each in="${[RDStore.INVOICE_PROCESSING_PROVIDER, RDStore.INVOICE_PROCESSING_VENDOR]}" var="refdataValue">
+                                <g:if test="${refdataValue.getI10n('value')}">
+                                    <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
+                                </g:if>
+                            </g:each>
+                        </g:if>
+                        <g:else>
+                            <g:each in="${RefdataCategory.getAllRefdataValuesWithOrder(surveyPropertyConfig.surveyProperty.refdataCategory)}" var="refdataValue">
+                                <g:if test="${refdataValue.getI10n('value')}">
+                                    <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
+                                </g:if>
+                            </g:each>
+                        </g:else>
                         <br/>
                         (${refdataValues.join('/')})
                     </g:if>
@@ -226,13 +234,20 @@
                         ${PropertyDefinition.getLocalizedValue(surveyResult.type.type)}
                         <g:if test="${surveyResult.type.isRefdataValueType()}">
                             <g:set var="refdataValues" value="${[]}"/>
-                            <g:each in="${RefdataCategory.getAllRefdataValuesWithOrder(surveyResult.type.refdataCategory)}"
-                                    var="refdataValue">
-                                <g:if test="${refdataValue.getI10n('value')}">
-                                    <g:set var="refdataValues"
-                                           value="${refdataValues + refdataValue.getI10n('value')}"/>
-                                </g:if>
-                            </g:each>
+                            <g:if test="${surveyResult.type == PropertyStore.SURVEY_PROPERTY_INVOICE_PROCESSING}">
+                                <g:each in="${[RDStore.INVOICE_PROCESSING_PROVIDER, RDStore.INVOICE_PROCESSING_VENDOR]}" var="refdataValue">
+                                    <g:if test="${refdataValue.getI10n('value')}">
+                                        <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
+                                    </g:if>
+                                </g:each>
+                            </g:if>
+                            <g:else>
+                                <g:each in="${RefdataCategory.getAllRefdataValuesWithOrder(surveyResult.type.refdataCategory)}" var="refdataValue">
+                                    <g:if test="${refdataValue.getI10n('value')}">
+                                        <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
+                                    </g:if>
+                                </g:each>
+                            </g:else>
                             <br/>
                             (${refdataValues.join('/')})
                         </g:if>
@@ -286,6 +301,10 @@
                                             id="participation"
                                             config="${surveyResult.type.refdataCategory}"/>
                                 </g:if>
+                                <g:elseif test="${surveyResult.type == PropertyStore.SURVEY_PROPERTY_INVOICE_PROCESSING}">
+                                    <ui:xEditableRefData owner="${surveyResult}" type="text" field="refValue" constraint="removeValues_invoiceProcessing"
+                                                         config="${surveyResult.type.refdataCategory}"/>
+                                </g:elseif>
                                 <g:else>
                                     <ui:xEditableRefData owner="${surveyResult}" type="text" field="refValue"
                                                          config="${surveyResult.type.refdataCategory}"/>

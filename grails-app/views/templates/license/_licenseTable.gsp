@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.License;de.laser.RefdataCategory;de.laser.interfaces.CalculatedType;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.RefdataValue;de.laser.Links;de.laser.Org" %>
+<%@ page import="de.laser.storage.PropertyStore; de.laser.properties.LicenseProperty; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.License;de.laser.RefdataCategory;de.laser.interfaces.CalculatedType;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.RefdataValue;de.laser.Links;de.laser.Org" %>
 <laser:serviceInjection />
 
 <g:form action="compareLicenses" controller="compare" method="post">
@@ -31,6 +31,9 @@
                       </g:if>
                       <g:if test="${'licensingConsortium' in licenseFilterTable}">
                           <th rowspan="2"><g:message code="consortium"/></th>
+                      </g:if>
+                      <g:if test="${'processing' in licenseFilterTable}">
+                          <th rowspan="2"><g:message code="license.processing"/></th>
                       </g:if>
                       <g:sortableColumn class="la-smaller-table-head" params="${params}" property="startDate" title="${message(code:'license.start_date')}" />
                       <g:if test="${'action' in licenseFilterTable}">
@@ -103,6 +106,25 @@
                         </g:if>
                           <g:if test="${'licensingConsortium' in licenseFilterTable}">
                               <td>${l.getLicensingConsortium()?.name}</td>
+                          </g:if>
+                          <g:if test="${'processing' in licenseFilterTable}">
+                              <td>
+                                  <% LicenseProperty processingProp = LicenseProperty.findByOwnerAndType(l, PropertyStore.LIC_PROCESSING) %>
+                                  <g:if test="${processingProp}">
+                                      <g:if test="${processingProp.refValue == RDStore.INVOICE_PROCESSING_CONSORTIUM}">
+                                          <span class="la-long-tooltip la-popup-tooltip" data-position="right center" data-content="${processingProp.getValueInI10n()}"><i class="${Icon.AUTH.ORG_CONSORTIUM}"></i></span>
+                                      </g:if>
+                                      <g:elseif test="${processingProp.refValue == RDStore.INVOICE_PROCESSING_PROVIDER}">
+                                          <span class="la-long-tooltip la-popup-tooltip" data-position="right center" data-content="${processingProp.getValueInI10n()}"><i class="${Icon.PROVIDER}"></i></span>
+                                      </g:elseif>
+                                      <g:elseif test="${processingProp.refValue == RDStore.INVOICE_PROCESSING_PROVIDER_OR_VENDOR}">
+                                          <span class="la-long-tooltip la-popup-tooltip" data-position="right center" data-content="${processingProp.getValueInI10n()}"><i class="${Icon.PROVIDER}"></i> / <i class="${Icon.VENDOR}"></i></span>
+                                      </g:elseif>
+                                      <g:elseif test="${processingProp.refValue == RDStore.INVOICE_PROCESSING_VENDOR}">
+                                          <span class="la-long-tooltip la-popup-tooltip" data-position="right center" data-content="${processingProp.getValueInI10n()}"><i class="${Icon.VENDOR}"></i></span>
+                                      </g:elseif>
+                                  </g:if>
+                              </td>
                           </g:if>
                           <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${l.startDate}"/><br />
                               <span class="la-secondHeaderRow" data-label="${message(code:'license.end_date')}:">
