@@ -379,56 +379,57 @@
                     <g:else>
                         <ui:h2AdminOnly />
                     </g:else>
-                    <g:if test="${orgInstance.createdBy}">
-                        <dl>
-                            <dt class="control-label">
+                    <div class="ui stackable grid two column">
+                        <div class="column">
+                            <div class="control-label" style="font-weight:700">
                                 <g:message code="org.createdBy.label" />
-                            </dt>
-                            <dd>
-                                <h5 class="ui header">
+                            </div>
+
+                            <g:if test="${createdByOrgGeneralContacts}">
+                                <p style="margin:1rem 0.5rem; font-weight:bold">
+                                    <ui:customerTypeIcon org="${orgInstance.createdBy}" />
                                     <g:link controller="organisation" action="show" id="${orgInstance.createdBy.id}">${orgInstance.createdBy.name}</g:link>
-                                </h5>
-                                <g:if test="${createdByOrgGeneralContacts}">
-                                    <g:each in="${createdByOrgGeneralContacts}" var="cbogc">
-                                        <laser:render template="/addressbook/person_full_details" model="${[
-                                                person              : cbogc,
-                                                personContext       : orgInstance.createdBy,
-                                                tmplShowFunctions       : true,
-                                                tmplShowPositions       : true,
-                                                tmplShowResponsiblities : true,
-                                                tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax'],
-                                                editable            : false
-                                        ]}"/>
-                                    </g:each>
-                                </g:if>
-                            </dd>
-                        </dl>
-                    </g:if>
-                    <g:if test="${orgInstance.legallyObligedBy}">
-                            <dl>
-                                <dt class="control-label">
-                                    <g:message code="org.legallyObligedBy.label" />
-                                </dt>
-                                <dd>
-                                    <h5 class="ui header">
-                                        <g:link controller="organisation" action="show" id="${orgInstance.legallyObligedBy.id}">${orgInstance.legallyObligedBy.name}</g:link>
-                                    </h5>
-                                    <g:if test="${legallyObligedByOrgGeneralContacts}">
-                                        <g:each in="${legallyObligedByOrgGeneralContacts}" var="lobogc">
-                                            <laser:render template="/addressbook/person_full_details" model="${[
-                                                    person              : lobogc,
-                                                    personContext       : orgInstance.legallyObligedBy,
-                                                    tmplShowFunctions       : true,
-                                                    tmplShowPositions       : true,
-                                                    tmplShowResponsiblities : true,
-                                                    tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax'],
-                                                    editable            : false
-                                            ]}"/>
-                                        </g:each>
-                                    </g:if>
-                                </dd>
-                            </dl>
-                        </g:if>
+                                </p>
+
+                                <g:each in="${createdByOrgGeneralContacts}" var="cbogc">
+                                    <laser:render template="/addressbook/person_full_details" model="${[
+                                            person              : cbogc,
+                                            personContext       : orgInstance.createdBy,
+                                            tmplShowFunctions       : true,
+                                            tmplShowPositions       : true,
+                                            tmplShowResponsiblities : true,
+                                            tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax'],
+                                            editable            : false
+                                    ]}"/>
+                                </g:each>
+                            </g:if>
+                        </div>
+                        <div class="column">
+                            <div class="control-label" style="font-weight:700">
+                                <g:message code="org.legallyObligedBy.label" />
+                            </div>
+
+                            <g:if test="${legallyObligedByOrgGeneralContacts}">
+                                <p style="margin:1rem 0.5rem; font-weight:bold">
+                                    <ui:customerTypeIcon org="${orgInstance.legallyObligedBy}" />
+                                    <g:link controller="organisation" action="show" id="${orgInstance.legallyObligedBy.id}">${orgInstance.legallyObligedBy.name}</g:link>
+                                </p>
+
+                                <g:each in="${legallyObligedByOrgGeneralContacts}" var="lobogc">
+                                    <laser:render template="/addressbook/person_full_details" model="${[
+                                            person              : lobogc,
+                                            personContext       : orgInstance.legallyObligedBy,
+                                            tmplShowFunctions       : true,
+                                            tmplShowPositions       : true,
+                                            tmplShowResponsiblities : true,
+                                            tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax'],
+                                            editable            : false
+                                    ]}"/>
+                                </g:each>
+                            </g:if>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </g:if>
