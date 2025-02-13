@@ -767,10 +767,11 @@ class AjaxHtmlController {
 
     /**
      * Checks if the preconditions for a survey submission are given
-     * @return the message depending on the survey's completion status
+     * @return the modal depending on the survey's completion status
      */
     @Secured(['ROLE_USER'])
-    def getSurveyFinishMessage() {
+    def getSurveyFinishModal() {
+        Map<String, Object> result = [:]
         SurveyInfo surveyInfo = SurveyInfo.get(params.id)
         SurveyConfig surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID) : surveyInfo.surveyConfigs[0]
         SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(contextService.getOrg(), surveyConfig)
@@ -788,20 +789,24 @@ class AjaxHtmlController {
                 }
             }
         }
-        /*
-        if(surveyInfo.isMandatory) {
-            if(surveyConfig && surveyConfig.subSurveyUseForTransfer){
-                noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
-            }
+
+        result.surveyInfo = surveyInfo
+        result.surveyConfig = surveyConfig
+        result.noParticipation = noParticipation
+        result.surveyResult = SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)
+
+        if (notProcessedMandatoryProperties.size() > 0) {
+            result.message = message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')])
+        } else if (surveyConfig.subSurveyUseForTransfer && noParticipation) {
+            result.message = message(code: "confirm.dialog.concludeBinding.survey")
+        } else if (noParticipation || allResultHaveValue) {
+            result.message = message(code: "confirm.dialog.concludeBinding.survey")
+        } else if (!noParticipation && !allResultHaveValue) {
+            result.message = message(code: "confirm.dialog.concludeBinding.surveyIncomplete")
         }
-        */
-        if(notProcessedMandatoryProperties.size() > 0){
-            render message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')])
-        }
-        else if(noParticipation || allResultHaveValue)
-            render message(code: "confirm.dialog.concludeBinding.survey")
-        else if(!noParticipation && !allResultHaveValue)
-            render message(code: "confirm.dialog.concludeBinding.surveyIncomplete")
+
+
+        render template: '/templates/survey/modalSurveyFinish', model: result
     }
 
     // ----- reporting -----

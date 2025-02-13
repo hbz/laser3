@@ -332,6 +332,9 @@ class AjaxController {
           if (it.value.equalsIgnoreCase('deleted') && params.constraint?.contains('removeValue_deleted')) {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
+          else if (it in [RDStore.INVOICE_PROCESSING_CONSORTIUM, RDStore.INVOICE_PROCESSING_NOT_SET, RDStore.INVOICE_PROCESSING_PROVIDER_OR_VENDOR] && params.constraint?.contains('removeValues_invoiceProcessing')) {
+              log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
+          }
           else if (it.value.equalsIgnoreCase('administrative subscription') && params.constraint?.contains('removeValue_administrativeSubscription')) {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
@@ -1804,6 +1807,10 @@ class AjaxController {
 
             }
 
+        } catch (NumberFormatException e) {
+            log.error("NumberFormatException @ editableSetValue()")
+            log.error(e.toString())
+            result = target_object ? target_object[params.name] : null
         } catch (Exception e) {
             log.error("@ editableSetValue()")
             log.error(e.toString())
