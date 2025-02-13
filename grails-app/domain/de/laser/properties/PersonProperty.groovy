@@ -16,6 +16,7 @@ class PersonProperty extends AbstractPropertyWithCalculatedLastUpdated {
 
     String           stringValue
     Integer          intValue
+    Long             longValue
     BigDecimal       decValue
     RefdataValue     refValue
     URL              urlValue
@@ -34,6 +35,7 @@ class PersonProperty extends AbstractPropertyWithCalculatedLastUpdated {
         version              column: 'pp_version'
         stringValue          column: 'pp_string_value', type: 'text'
         intValue             column: 'pp_int_value'
+        longValue            column: 'pp_long_value'
         decValue             column: 'pp_dec_value'
         refValue             column: 'pp_ref_value_rv_fk', index: 'pp_ref_value_idx'
         urlValue             column: 'pp_url_value'
@@ -51,6 +53,7 @@ class PersonProperty extends AbstractPropertyWithCalculatedLastUpdated {
     static constraints = {
         stringValue (nullable: true)
         intValue    (nullable: true)
+        longValue   (nullable: true)
         decValue    (nullable: true)
         refValue    (nullable: true)
         urlValue    (nullable: true)

@@ -638,6 +638,14 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     }
 
     /**
+     * Checks if the given property definition value type is long
+     * @return true if the value type is long, false otherwise
+     */
+    boolean isLongType() {
+        type == Long.class.name
+    }
+
+    /**
      * Checks if the given property definition value type is {@link RefdataValue}
      * @return true if the value type is {@link RefdataValue}, false otherwise
      */
@@ -666,6 +674,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
      * @return one of
      * <ul>
      *     <li>intValue</li>
+     *     <li>longValue</li>
      *     <li>stringValue</li>
      *     <li>decValue</li>
      *     <li>dateValue</li>
@@ -675,6 +684,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
      */
     String getImplClassValueProperty(){
         if( isIntegerType() )   { return "intValue" }
+        if( isLongType() )      { return "longValue" }
         if( isStringType() )    { return "stringValue" }
         if( isBigDecimalType() ){ return "decValue" }
         if( isDateType() )      { return "dateValue" }

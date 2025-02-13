@@ -17,6 +17,7 @@ class PlatformProperty extends AbstractPropertyWithCalculatedLastUpdated {
 
     String           stringValue
     Integer          intValue
+    Long             longValue
     BigDecimal       decValue
     RefdataValue     refValue
     URL              urlValue
@@ -35,6 +36,7 @@ class PlatformProperty extends AbstractPropertyWithCalculatedLastUpdated {
         version     column: 'plp_version'
         stringValue column: 'plp_string_value', type: 'text'
         intValue    column: 'plp_int_value'
+        longValue   column: 'plp_long_value'
         decValue    column: 'plp_dec_value'
         refValue    column: 'plp_ref_value_rv_fk', index: 'plp_ref_value_idx'
         urlValue    column: 'plp_url_value'
@@ -52,6 +54,7 @@ class PlatformProperty extends AbstractPropertyWithCalculatedLastUpdated {
     static constraints = {
         stringValue (nullable: true)
         intValue    (nullable: true)
+        longValue   (nullable: true)
         decValue    (nullable: true)
         refValue    (nullable: true)
         urlValue    (nullable: true)

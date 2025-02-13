@@ -20,6 +20,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
 
     String           stringValue
     Integer          intValue
+    Long             longValue
     BigDecimal       decValue
     RefdataValue     refValue
     URL              urlValue
@@ -40,6 +41,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
         version     column: 'lp_version'
         stringValue column: 'lp_string_value', type: 'text'
         intValue    column: 'lp_int_value'
+        longValue   column: 'lp_long_value'
         decValue    column: 'lp_dec_value'
         refValue    column: 'lp_ref_value_rv_fk', index: 'lp_ref_value_idx'
         urlValue    column: 'lp_url_value'
@@ -59,6 +61,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     static constraints = {
         stringValue (nullable: true)
         intValue    (nullable: true)
+        longValue   (nullable: true)
         decValue    (nullable: true)
         refValue    (nullable: true)
         urlValue    (nullable: true)
@@ -82,7 +85,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
      */
     @Override
     Collection<String> getLogIncluded() {
-        [ 'stringValue', 'intValue', 'decValue', 'refValue', 'paragraph', 'note', 'dateValue' ]
+        [ 'stringValue', 'intValue', 'longValue', 'decValue', 'refValue', 'paragraph', 'note', 'dateValue' ]
     }
 
     /**

@@ -17,6 +17,7 @@ class ProviderProperty extends AbstractPropertyWithCalculatedLastUpdated {
 
     String           stringValue
     Integer          intValue
+    Long             longValue
     BigDecimal       decValue
     RefdataValue     refValue
     URL              urlValue
@@ -35,6 +36,7 @@ class ProviderProperty extends AbstractPropertyWithCalculatedLastUpdated {
         version              column: 'prp_version'
         stringValue          column: 'prp_string_value', type: 'text'
         intValue             column: 'prp_int_value'
+        longValue            column: 'prp_long_value'
         decValue             column: 'prp_dec_value'
         refValue             column: 'prp_ref_value_rv_fk', index: 'prp_ref_value_idx'
         urlValue             column: 'prp_url_value'
@@ -52,6 +54,7 @@ class ProviderProperty extends AbstractPropertyWithCalculatedLastUpdated {
     static constraints = {
         stringValue (nullable: true)
         intValue    (nullable: true)
+        longValue   (nullable: true)
         decValue    (nullable: true)
         refValue    (nullable: true)
         urlValue    (nullable: true)

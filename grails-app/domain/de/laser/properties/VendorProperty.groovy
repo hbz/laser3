@@ -17,6 +17,7 @@ class VendorProperty extends AbstractPropertyWithCalculatedLastUpdated {
 
     String           stringValue
     Integer          intValue
+    Long             longValue
     BigDecimal       decValue
     RefdataValue     refValue
     URL              urlValue
@@ -35,6 +36,7 @@ class VendorProperty extends AbstractPropertyWithCalculatedLastUpdated {
         version              column: 'vp_version'
         stringValue          column: 'vp_string_value', type: 'text'
         intValue             column: 'vp_int_value'
+        longValue            column: 'vp_long_value'
         decValue             column: 'vp_dec_value'
         refValue             column: 'vp_ref_value_rv_fk', index: 'vp_ref_value_idx'
         urlValue             column: 'vp_url_value'
@@ -52,6 +54,7 @@ class VendorProperty extends AbstractPropertyWithCalculatedLastUpdated {
     static constraints = {
         stringValue (nullable: true)
         intValue    (nullable: true)
+        longValue   (nullable: true)
         decValue    (nullable: true)
         refValue    (nullable: true)
         urlValue    (nullable: true)
