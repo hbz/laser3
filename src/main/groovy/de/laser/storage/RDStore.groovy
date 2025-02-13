@@ -88,7 +88,10 @@ class RDStore {
     public final static RefdataValue EXISTENT                   = getRefdataValue('Existent', RDConstants.EXISTENCE)
     public final static RefdataValue NON_EXISTENT               = getRefdataValue('Nonexistend', RDConstants.EXISTENCE)
 
+    public final static RefdataValue INVOICE_PROCESSING_CONSORTIUM   = getRefdataValue('Consortium', RDConstants.INVOICE_PROCESSING)
+    public final static RefdataValue INVOICE_PROCESSING_NOT_SET   = getRefdataValue('Not set', RDConstants.INVOICE_PROCESSING)
     public final static RefdataValue INVOICE_PROCESSING_PROVIDER   = getRefdataValue('Provider', RDConstants.INVOICE_PROCESSING)
+    public final static RefdataValue INVOICE_PROCESSING_PROVIDER_OR_VENDOR   = getRefdataValue('Provider or Vendor', RDConstants.INVOICE_PROCESSING)
     public final static RefdataValue INVOICE_PROCESSING_VENDOR   = getRefdataValue('Vendor', RDConstants.INVOICE_PROCESSING)
 
     public final static RefdataValue IE_ACCESS_CURRENT                      = getRefdataValue('Current', RDConstants.IE_ACCESS_STATUS)

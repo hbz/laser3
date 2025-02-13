@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.finance.CostItem; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.License;de.laser.Links" %>
+<%@ page import="de.laser.storage.PropertyStore; de.laser.properties.SubscriptionProperty; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.finance.CostItem; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.License;de.laser.Links" %>
 <laser:serviceInjection />
 
 <g:form action="compareSubscriptions" controller="compare" method="post">
@@ -40,17 +40,20 @@
                                 ${message(code: 'license.details.linked_pkg')}
                             </th>
                         </g:if>
+                        <g:if test="${'showProviders' in tableConfig}">
+                            <g:sortableColumn scope="col" params="${params}" property="provider" title="${message(code: 'provider.label')}" rowspan="2" />
+                        </g:if>
+                        <g:if test="${'showVendors' in tableConfig}">
+                            <g:sortableColumn scope="col" params="${params}" property="vendor" title="${message(code: 'vendor.label')}" rowspan="2" />
+                        </g:if>
                         <g:if test="${params.orgRole in ['Subscriber'] && contextService.getOrg().isCustomerType_Inst()}">
                             <th scope="col" rowspan="2" >${message(code: 'consortium')}</th>
                         </g:if>
                         <g:elseif test="${params.orgRole == 'Subscriber'}">
                             <th rowspan="2">${message(code:'org.institution.label')}</th>
                         </g:elseif>
-                        <g:if test="${'showProviders' in tableConfig}">
-                            <g:sortableColumn scope="col" params="${params}" property="provider" title="${message(code: 'provider.label')}" rowspan="2" />
-                        </g:if>
-                        <g:if test="${'showVendors' in tableConfig}">
-                            <g:sortableColumn scope="col" params="${params}" property="vendor" title="${message(code: 'vendor.label')}" rowspan="2" />
+                        <g:if test="${'showInvoicing' in tableConfig}">
+                            <th rowspan="2">${message(code: 'subscription.invoice.processing')}</th>
                         </g:if>
                         <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label.shy')}"/>
                         <g:if test="${params.orgRole in ['Subscription Consortia']}">
@@ -165,13 +168,6 @@
                         <!-- packages -->
                         </td>
                         </g:if>
-                        <g:if test="${params.orgRole == 'Subscriber'}">
-                            <td>
-                                <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
-                                    ${s.getConsortium()?.name}
-                                </g:if>
-                            </td>
-                        </g:if>
                         <g:if test="${'showProviders' in tableConfig}">
                             <td>
                                 <g:each in="${s.providers}" var="provider">
@@ -195,15 +191,32 @@
                                 </g:each>
                             </td>
                         </g:if>
-                        <%--
+                        <g:if test="${params.orgRole == 'Subscriber'}">
                             <td>
-                                <g:if test="${params.orgRole == 'Subscription Consortia'}">
-                                   <g:each in="${s.getDerivedNonHiddenSubscribers()}" var="subscriber">
-                                        <g:link controller="organisation" action="show" id="${subscriber.id}">${subscriber.name}</g:link> <br />
-                                   </g:each>
+                                <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
+                                    ${s.getConsortium()?.name}
                                 </g:if>
                             </td>
-                        --%>
+                        </g:if>
+                        <g:if test="${'showInvoicing' in tableConfig}">
+                            <td>
+                                <% SubscriptionProperty invoicingProp = SubscriptionProperty.findByOwnerAndType(s, PropertyStore.SUB_PROP_INVOICE_PROCESSING) %>
+                                <g:if test="${invoicingProp}">
+                                    <g:if test="${invoicingProp.refValue == RDStore.INVOICE_PROCESSING_CONSORTIUM}">
+                                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center" data-content="${invoicingProp.getValueInI10n()}"><i class="${Icon.AUTH.ORG_CONSORTIUM}"></i></span>
+                                    </g:if>
+                                    <g:elseif test="${invoicingProp.refValue == RDStore.INVOICE_PROCESSING_PROVIDER}">
+                                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center" data-content="${invoicingProp.getValueInI10n()}"><i class="${Icon.PROVIDER}"></i></span>
+                                    </g:elseif>
+                                    <g:elseif test="${invoicingProp.refValue == RDStore.INVOICE_PROCESSING_PROVIDER_OR_VENDOR}">
+                                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center" data-content="${invoicingProp.getValueInI10n()}"><i class="${Icon.PROVIDER}"></i> / <i class="${Icon.VENDOR}"></i></span>
+                                    </g:elseif>
+                                    <g:elseif test="${invoicingProp.refValue == RDStore.INVOICE_PROCESSING_VENDOR}">
+                                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center" data-content="${invoicingProp.getValueInI10n()}"><i class="${Icon.VENDOR}"></i></span>
+                                    </g:elseif>
+                                </g:if>
+                            </td>
+                        </g:if>
                         <td>
                             <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/><br/>
                             <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label.shy')}:"><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></span>
