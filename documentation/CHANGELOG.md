@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6278    13.02.2025  dev     3.5         Andreas Feature     Darstellung der Merkmale Vertrags-/Rechnungsabwicklung
+
+6276    13.02.2025  dev     3.5         Andreas Feature     Einbau der Merkmale und weiterer Referenzwerte für Rechnungs-/Vertragsabwicklung
+
 5914    12.02.2025  dev     3.5         Moe     Feature     Export Konfiguration: Bearbeitungsbutton hinzufügen
 
 6025    12.02.2025  dev     3.5         Moe     Feature     Angabe des Kündigungsgrunds bei Verlängerungsumfragen durch Pop-Up
