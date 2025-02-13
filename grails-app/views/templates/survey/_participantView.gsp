@@ -79,234 +79,236 @@
 
         </div>
 
-
         <div class="ui bottom attached tab segment active">
+            <div class="ui grid">
+                <g:if test="${params.viewTab == 'invoicingInformation' && surveyConfig.invoicingInformation}">
+                    <div class="four wide column">
+                        <div class="ui fluid vertical tabular la-tab-with-js menu">
+                            <a class="${params.subTab ? (params.subTab == 'contacts' ? 'active' : '') : 'active'} item" data-tab="contacts">
+                                ${message(code: 'surveyOrg.person.label')}
+                                <ui:bubble float="true" count="${SurveyOrg.countByOrgAndSurveyConfigAndPersonIsNotNull(participant, surveyConfig)}"/>
+                            </a>
 
-            <g:if test="${params.viewTab == 'invoicingInformation' && surveyConfig.invoicingInformation}">
+                            <a class="${params.subTab == 'addresses' ? 'active' : ''} item" data-tab="addresses">
+                                ${message(code: 'surveyOrg.address.label')}
+                                <ui:bubble float="true" count="${SurveyOrg.countByOrgAndSurveyConfigAndAddressIsNotNull(participant, surveyConfig)}"/>
+                            </a>
 
-                <h3>
-                    ${message(code: 'surveyOrg.invoicingInformation')}
-                </h3>
+                            <a class="${params.subTab == 'xRechnung' ? 'active' : ''} item" data-tab="xRechnung">
+                                ${message(code: 'surveyOrg.eInvoice.label')}
+                            </a>
+                        </div>
+                    </div>
 
-                <div class="ui top attached stackable tabular la-tab-with-js menu">
-                    <a class="${params.subTab ? (params.subTab == 'contacts' ? 'active' : '') : 'active'} item" data-tab="contacts">
-                        ${message(code: 'surveyOrg.person.label')}
-                        <ui:bubble float="true" count="${SurveyOrg.countByOrgAndSurveyConfigAndPersonIsNotNull(participant, surveyConfig)}"/>
-                    </a>
-
-                    <a class="${params.subTab == 'addresses' ? 'active' : ''} item" data-tab="addresses">
-                        ${message(code: 'surveyOrg.address.label')}
-                        <ui:bubble float="true" count="${SurveyOrg.countByOrgAndSurveyConfigAndAddressIsNotNull(participant, surveyConfig)}"/>
-                    </a>
-
-                    <a class="${params.subTab == 'xRechnung' ? 'active' : ''} item" data-tab="xRechnung">
-                        ${message(code: 'surveyOrg.eInvoice.label')}
-                    </a>
-                </div>
-
-
-                <div class="ui bottom attached tab segment ${params.subTab ? (params.subTab == 'contacts' ? 'active' : '') : 'active'}" data-tab="contacts">
-
-                    <g:link controller="organisation" action="contacts" id="${participant.id}" class="${Btn.SIMPLE} right floated">
-                        <g:message code="survey.contacts.add"/>
-                    </g:link>
-                    <br>
-                    <br>
-
-                    <laser:render template="/addressbook/person_table" model="${[
-                            persons       : visiblePersons,
-                            participant   : participant,
-                            showContacts  : true,
-                            showOptions   : false,
-                            tmplConfigShow: ['lineNumber', 'function', 'position', 'name', 'showContacts', 'surveyInvoicingInformation']
-                    ]}"/>
-
-                </div>
-
-                <div class="ui bottom attached tab segment ${params.subTab == 'addresses' ? 'active' : ''}" data-tab="addresses">
-
-                    <g:link controller="organisation" action="contacts" id="${participant.id}" class="${Btn.SIMPLE} right floated">
-                        <g:message code="survey.contacts.add"/>
-                    </g:link>
-                    <br>
-                    <br>
-
-
-                    <laser:render template="/addressbook/address_table" model="${[
-                            addresses                     : addresses,
-                            editable                      : editable,
-                            showSurveyInvoicingInformation: true,
-                            showOptions                   : false,
-                            participant   : participant
-                    ]}"/>
-
-                </div>
-
-                <div class="ui bottom attached tab segment ${params.subTab == 'xRechnung' ? 'active' : ''}" data-tab="xRechnung">
-
-                    <ui:msg message="surveyOrg.eInvoice.expl" class="info" showIcon="true" hideClose="true"/>
-
-                    <div class="la-inline-lists">
-                        <div class="ui card">
-                            <div class="content">
-                                <dl>
-                                    <dt>
-                                        <g:message code="surveyOrg.eInvoicePortal.label"/>
-                                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
-                                              data-content="${message(code: 'surveyOrg.eInvoicePortal.expl')}">
-                                            <i class="${Icon.TOOLTIP.HELP}"></i>
-                                        </span>
-                                    </dt>
-                                    <dd>
-                                        <ui:xEditableRefData owner="${surveyOrg}" field="eInvoicePortal" config="${RDConstants.E_INVOICE_PORTAL}"/>
-                                    </dd>
-                                </dl>
-                            </div>
-
-                            <div class="content">
-                                <dl>
-                                    <dt>
-                                        <g:message code="surveyOrg.eInvoiceLeitwegId.label"/>
-                                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
-                                              data-content="${message(code: 'surveyOrg.eInvoiceLeitwegId.expl')}">
-                                            <i class="${Icon.TOOLTIP.HELP}"></i>
-                                        </span>
-                                    </dt>
-                                    <dd>
-                                        <ui:xEditable owner="${surveyOrg}" field="eInvoiceLeitwegId"/>
-                                    </dd>
-                                </dl>
-                            </div>
-
-                            <div class="content">
-                                <dl>
-                                    <dt>
-                                        <g:message code="surveyOrg.eInvoiceLeitkriterium.label"/>
-                                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
-                                              data-content="${message(code: 'surveyOrg.eInvoiceLeitkriterium.expl')}">
-                                            <i class="${Icon.TOOLTIP.HELP}"></i>
-                                        </span>
-                                    </dt>
-                                    <dd>
-                                        <ui:xEditable owner="${surveyOrg}" field="eInvoiceLeitkriterium"/>
-                                    </dd>
-                                </dl>
-                            </div>
-                        </div><!-- .card -->
-
-                        <g:if test="${editable}">
-                            <g:link controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
-                                    params="${parame + [viewTab: 'invoicingInformation', subTab: 'xRechnung', setEInvoiceValuesFromOrg: true, ]}" class="ui right floated blue button">
-                                <g:message code="surveyOrg.setEInvoiceValuesFromOrg"/>
+                    <div class="twelve wide column">
+                      <div class="ui bottom attached tab   ${params.subTab ? (params.subTab == 'contacts' ? 'active' : '') : 'active'}" data-tab="contacts">
+                          <h2 class="ui left floated aligned header">${message(code: 'surveyOrg.person.label.heading')}</h2>
+                            <g:link controller="organisation" action="contacts" id="${participant.id}" class="${Btn.SIMPLE} right floated">
+                                <g:message code="survey.contacts.add"/>
                             </g:link>
                             <br>
                             <br>
-                        </g:if>
+
+                            <laser:render template="/addressbook/person_table" model="${[
+                                    persons       : visiblePersons,
+                                    participant   : participant,
+                                    showContacts  : true,
+                                    showOptions   : false,
+                                    tmplConfigShow: ['lineNumber', 'function', 'position', 'name', 'showContacts', 'surveyInvoicingInformation']
+                            ]}"/>
+
+                        </div>
+
+                        <div class="ui bottom attached tab   ${params.subTab == 'addresses' ? 'active' : ''}" data-tab="addresses">
+                            <h2 class="ui left floated aligned header">${message(code: 'surveyOrg.address.label.heading')}</h2>
+                            <g:link controller="organisation" action="contacts" id="${participant.id}" class="${Btn.SIMPLE} right floated">
+                                <g:message code="survey.contacts.add"/>
+                            </g:link>
+                            <br>
+                            <br>
+
+
+                            <laser:render template="/addressbook/address_table" model="${[
+                                    addresses                     : addresses,
+                                    editable                      : editable,
+                                    showSurveyInvoicingInformation: true,
+                                    showOptions                   : false,
+                                    participant   : participant
+                            ]}"/>
+
+                        </div>
+
+                        <div class="ui bottom attached tab   ${params.subTab == 'xRechnung' ? 'active' : ''}" data-tab="xRechnung">
+
+                            <ui:msg message="surveyOrg.eInvoice.expl" class="info" showIcon="true" hideClose="true"/>
+
+                            <div class="la-inline-lists">
+                                <div class="ui card">
+                                    <div class="content">
+                                        <dl>
+                                            <dt>
+                                                <g:message code="surveyOrg.eInvoicePortal.label"/>
+                                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                                      data-content="${message(code: 'surveyOrg.eInvoicePortal.expl')}">
+                                                    <i class="${Icon.TOOLTIP.HELP}"></i>
+                                                </span>
+                                            </dt>
+                                            <dd>
+                                                <ui:xEditableRefData owner="${surveyOrg}" field="eInvoicePortal" config="${RDConstants.E_INVOICE_PORTAL}"/>
+                                            </dd>
+                                        </dl>
+                                    </div>
+
+                                    <div class="content">
+                                        <dl>
+                                            <dt>
+                                                <g:message code="surveyOrg.eInvoiceLeitwegId.label"/>
+                                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                                      data-content="${message(code: 'surveyOrg.eInvoiceLeitwegId.expl')}">
+                                                    <i class="${Icon.TOOLTIP.HELP}"></i>
+                                                </span>
+                                            </dt>
+                                            <dd>
+                                                <ui:xEditable owner="${surveyOrg}" field="eInvoiceLeitwegId"/>
+                                            </dd>
+                                        </dl>
+                                    </div>
+
+                                    <div class="content">
+                                        <dl>
+                                            <dt>
+                                                <g:message code="surveyOrg.eInvoiceLeitkriterium.label"/>
+                                                <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                                      data-content="${message(code: 'surveyOrg.eInvoiceLeitkriterium.expl')}">
+                                                    <i class="${Icon.TOOLTIP.HELP}"></i>
+                                                </span>
+                                            </dt>
+                                            <dd>
+                                                <ui:xEditable owner="${surveyOrg}" field="eInvoiceLeitkriterium"/>
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                </div><!-- .card -->
+
+                                <g:if test="${editable}">
+                                    <g:link controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
+                                            params="${parame + [viewTab: 'invoicingInformation', subTab: 'xRechnung', setEInvoiceValuesFromOrg: true, ]}" class="ui right floated blue button">
+                                        <g:message code="surveyOrg.setEInvoiceValuesFromOrg"/>
+                                    </g:link>
+                                    <br>
+                                    <br>
+                                </g:if>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-            </g:if>
-
-
-            <g:if test="${params.viewTab == 'additionalInformation' && surveyConfig.subscription}">
-                <div class="la-inline-lists">
-                    <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig    : surveyConfig,
-                                                                                          subscription    : subscription,
-                                                                                          visibleProviders: providerRoles,
-                                                                                          surveyResults   : surveyResults]"/>
-                </div>
-            </g:if>
+                </g:if>
 
 
-            <g:if test="${params.viewTab == 'overview'}">
-                    <laser:render template="/templates/survey/generalInfos"/>
-            </g:if>
-            <g:if test="${params.viewTab == 'stats' && surveyConfig.subscription && subscription}">
-                <g:render template="/templates/stats/stats"/>
-            </g:if>
-
-            <g:if test="${params.viewTab == 'packageSurvey' && surveyConfig.packageSurvey}">
-
-                <div class="la-inline-lists">
-                <g:render template="/templates/survey/costsWithSurveyPackages"/>
-                </div>
+                <g:if test="${params.viewTab == 'additionalInformation' && surveyConfig.subscription}">
+                    <div class="sixteen wide column">
+                        <div class="la-inline-lists">
+                            <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig    : surveyConfig,
+                                                                                                  subscription    : subscription,
+                                                                                                  visibleProviders: providerRoles,
+                                                                                                  surveyResults   : surveyResults]"/>
+                        </div>
+                    </div>
+                </g:if>
 
 
-                <div class="ui top attached stackable tabular menu">
-                    <g:link class="item ${params.viewTab == 'packageSurvey' && params.subTab == 'allPackages' ? 'active' : ''}"
-                            controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
-                            params="${parame + [viewTab: 'packageSurvey', subTab: 'allPackages']}">
-                        ${message(code: 'surveyPackages.all')}
-                        <ui:bubble float="true" count="${SurveyConfigPackage.countBySurveyConfig(surveyConfig)}"/>
-                    </g:link>
-                    <g:link class="item ${params.viewTab == 'packageSurvey' && params.subTab == 'selectPackages' ? 'active' : ''}"
-                            controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
-                            params="${parame + [viewTab: 'packageSurvey', subTab: 'selectPackages']}">
-                        ${message(code: 'surveyPackages.selectedPackages')}
-                        <ui:bubble float="true" count="${SurveyPackageResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}"/>
-                    </g:link>
-                </div>
+                <g:if test="${params.viewTab == 'overview'}">
+                        <laser:render template="/templates/survey/generalInfos"/>
+                </g:if>
+                <g:if test="${params.viewTab == 'stats' && surveyConfig.subscription && subscription}">
+                    <g:render template="/templates/stats/stats"/>
+                </g:if>
 
-                <div class="ui bottom attached tab segment active">
+                <g:if test="${params.viewTab == 'packageSurvey' && surveyConfig.packageSurvey}">
+                    <div class="sixteen wide column">
+                        <div class="la-inline-lists">
+                            <g:render template="/templates/survey/costsWithSurveyPackages"/>
+                        </div>
+                    </div>
 
-                    <h2 class="ui left floated aligned icon header la-clear-before">${message(code: params.subTab == 'selectPackages' ? 'surveyPackages.selectedPackages' : 'surveyPackages.all')}
-                    <ui:totalNumber total="${recordsCount}"/>
-                    </h2>
+                    <div class="four wide column">
+                        <div class="ui fluid vertical tabular menu">
+                            <g:link class="item ${params.viewTab == 'packageSurvey' && params.subTab == 'allPackages' ? 'active' : ''}"
+                                    controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
+                                    params="${parame + [viewTab: 'packageSurvey', subTab: 'allPackages']}">
+                                ${message(code: 'surveyPackages.all')}
+                                <ui:bubble float="true" count="${SurveyConfigPackage.countBySurveyConfig(surveyConfig)}"/>
+                            </g:link>
+                            <g:link class="item ${params.viewTab == 'packageSurvey' && params.subTab == 'selectPackages' ? 'active' : ''}"
+                                    controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
+                                    params="${parame + [viewTab: 'packageSurvey', subTab: 'selectPackages']}">
+                                ${message(code: 'surveyPackages.selectedPackages')}
+                                <ui:bubble float="true" count="${SurveyPackageResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}"/>
+                            </g:link>
+                        </div>
+                    </div>
+                    <div class="twelve wide column">
+                         <div class="ui tab active">
+                               <h2 class="ui left floated aligned icon header la-clear-before">${message(code: params.subTab == 'selectPackages' ? 'surveyPackages.selectedPackages' : 'surveyPackages.all')}
+                                    <ui:totalNumber total="${recordsCount}"/>
+                                </h2>
 
-                    <g:if test="${params.subTab == 'selectPackages'}">
-                        <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'status', 'titleCount', 'provider', 'automaticUpdates', 'lastUpdatedDisplay', 'surveyCostItemsPackages', 'surveyPackagesComments', 'removeSurveyPackageResult']}"/>
-                    </g:if>
-                    <g:else>
-                        <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'status', 'titleCount', 'provider', 'automaticUpdates', 'lastUpdatedDisplay', 'surveyCostItemsPackages', 'addSurveyPackageResult']}"/>
-                    </g:else>
+                                <g:if test="${params.subTab == 'selectPackages'}">
+                                    <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'status', 'titleCount', 'provider', 'automaticUpdates', 'lastUpdatedDisplay', 'surveyCostItemsPackages', 'surveyPackagesComments', 'removeSurveyPackageResult']}"/>
+                                </g:if>
+                                <g:else>
+                                    <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'status', 'titleCount', 'provider', 'automaticUpdates', 'lastUpdatedDisplay', 'surveyCostItemsPackages', 'addSurveyPackageResult']}"/>
+                                </g:else>
 
-                    <g:render template="/templates/survey/packages" model="[
-                            processController: controllerName,
-                            processAction    : actionName,
-                            tmplShowCheckbox : false,
-                            tmplConfigShow   : tmplConfigShowList]"/>
-                </div>
+                                <g:render template="/templates/survey/packages" model="[
+                                        processController: controllerName,
+                                        processAction    : actionName,
+                                        tmplShowCheckbox : false,
+                                        tmplConfigShow   : tmplConfigShowList]"/>
+                        </div>
+                    </div>
 
-            </g:if>
+                </g:if>
 
-            <g:if test="${params.viewTab == 'vendorSurvey' && surveyConfig.vendorSurvey}">
+                <g:if test="${params.viewTab == 'vendorSurvey' && surveyConfig.vendorSurvey}">
 
-                <div class="ui top attached stackable tabular menu">
-                    <g:link class="item ${params.viewTab == 'vendorSurvey' && params.subTab == 'allVendors' ? 'active' : ''}"
-                            controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
-                            params="${parame + [viewTab: 'vendorSurvey', subTab: 'allVendors']}">
-                        ${message(code: 'surveyVendors.all')}
-                        <ui:bubble float="true" count="${SurveyConfigVendor.countBySurveyConfig(surveyConfig)}"/>
-                    </g:link>
-                    <g:link class="item ${params.viewTab == 'vendorSurvey' && params.subTab == 'selectVendors' ? 'active' : ''}"
-                            controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
-                            params="${parame + [viewTab: 'vendorSurvey', subTab: 'selectVendors']}">
-                        ${message(code: 'surveyVendors.selectedVendor')}
-                        <ui:bubble float="true" count="${SurveyVendorResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}"/>
-                    </g:link>
-                </div>
+                    <div class="ui top attached stackable tabular menu">
+                        <g:link class="item ${params.viewTab == 'vendorSurvey' && params.subTab == 'allVendors' ? 'active' : ''}"
+                                controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
+                                params="${parame + [viewTab: 'vendorSurvey', subTab: 'allVendors']}">
+                            ${message(code: 'surveyVendors.all')}
+                            <ui:bubble float="true" count="${SurveyConfigVendor.countBySurveyConfig(surveyConfig)}"/>
+                        </g:link>
+                        <g:link class="item ${params.viewTab == 'vendorSurvey' && params.subTab == 'selectVendors' ? 'active' : ''}"
+                                controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
+                                params="${parame + [viewTab: 'vendorSurvey', subTab: 'selectVendors']}">
+                            ${message(code: 'surveyVendors.selectedVendor')}
+                            <ui:bubble float="true" count="${SurveyVendorResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}"/>
+                        </g:link>
+                    </div>
 
-                <div class="ui bottom attached tab segment active">
+                    <div class="ui bottom attached tab segment active">
 
-                    <h2 class="ui left floated aligned icon header la-clear-before">${message(code: params.subTab == 'selectVendors' ? 'surveyVendors.selectedVendors' : 'surveyVendors.all')}
-                    <ui:totalNumber total="${vendorListTotal}"/>
-                    </h2>
+                        <h2 class="ui left floated aligned icon header la-clear-before">${message(code: params.subTab == 'selectVendors' ? 'surveyVendors.selectedVendors' : 'surveyVendors.all')}
+                            <ui:totalNumber total="${vendorListTotal}"/>
+                        </h2>
 
-                    <g:if test="${params.subTab == 'selectVendors'}">
-                        <g:set var="tmplConfigShowList" value="${['lineNumber', 'sortname', 'name', 'isWekbCurated', 'surveyVendorsComments', 'removeSurveyVendorResult']}"/>
-                    </g:if>
-                    <g:else>
-                        <g:set var="tmplConfigShowList" value="${['lineNumber', 'sortname', 'name', 'isWekbCurated', 'addSurveyVendorResult']}"/>
-                    </g:else>
+                        <g:if test="${params.subTab == 'selectVendors'}">
+                            <g:set var="tmplConfigShowList" value="${['lineNumber', 'sortname', 'name', 'isWekbCurated', 'surveyVendorsComments', 'removeSurveyVendorResult']}"/>
+                        </g:if>
+                        <g:else>
+                            <g:set var="tmplConfigShowList" value="${['lineNumber', 'sortname', 'name', 'isWekbCurated', 'addSurveyVendorResult']}"/>
+                        </g:else>
 
-                    <g:render template="/templates/survey/vendors" model="[
-                            processController: controllerName,
-                            processAction    : actionName,
-                            tmplShowCheckbox : false,
-                            tmplConfigShow   : tmplConfigShowList]"/>
-                </div>
+                        <g:render template="/templates/survey/vendors" model="[
+                                processController: controllerName,
+                                processAction    : actionName,
+                                tmplShowCheckbox : false,
+                                tmplConfigShow   : tmplConfigShowList]"/>
+                    </div>
 
-            </g:if>
+                </g:if>
+            </div>
         </div>
     </div>
 </div>
