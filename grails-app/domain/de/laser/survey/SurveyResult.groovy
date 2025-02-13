@@ -21,6 +21,7 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
     boolean isRequired = false
 
     String           stringValue
+    @Deprecated
     Integer          intValue
     Long             longValue
     BigDecimal       decValue

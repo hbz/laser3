@@ -15,6 +15,7 @@ class OrgProperty extends AbstractPropertyWithCalculatedLastUpdated {
     boolean isPublic = false
 
     String           stringValue
+    @Deprecated
     Integer          intValue
     Long             longValue
     BigDecimal       decValue

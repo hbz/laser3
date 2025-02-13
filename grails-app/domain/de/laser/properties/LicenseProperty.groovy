@@ -19,6 +19,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     boolean isPublic = false
 
     String           stringValue
+    @Deprecated
     Integer          intValue
     Long             longValue
     BigDecimal       decValue
@@ -85,7 +86,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
      */
     @Override
     Collection<String> getLogIncluded() {
-        [ 'stringValue', 'intValue', 'longValue', 'decValue', 'refValue', 'paragraph', 'note', 'dateValue' ]
+        [ 'stringValue', 'longValue', 'decValue', 'refValue', 'paragraph', 'note', 'dateValue' ]
     }
 
     /**

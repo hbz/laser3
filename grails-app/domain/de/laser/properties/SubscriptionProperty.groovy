@@ -18,6 +18,7 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
     boolean isPublic = false
 
     String           stringValue
+    @Deprecated
     Integer          intValue
     Long             longValue
     BigDecimal       decValue
@@ -81,7 +82,7 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
      */
     @Override
     Collection<String> getLogIncluded() {
-        [ 'stringValue', 'intValue', 'longValue', 'decValue', 'refValue', 'note', 'dateValue' ]
+        [ 'stringValue', 'longValue', 'decValue', 'refValue', 'note', 'dateValue' ]
     }
 
     /**
