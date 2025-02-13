@@ -791,7 +791,7 @@
           description: Maps to the RefdataCategory "${RDConstants.Y_N}". If set to *No*, it is a private entry of the calling institution and only the caller can see the property.
           enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
           example: ${RDStore.YN_YES.value}
-        value: # mapping attr stringValue, intValue, decValue, refValue, urlValue, dateValue
+        value: # mapping attr stringValue, longValue, decValue, refValue, urlValue, dateValue
           type: string
           description: the property value
           example: "Zeidel'sches Recht"
