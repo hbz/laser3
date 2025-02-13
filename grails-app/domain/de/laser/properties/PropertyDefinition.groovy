@@ -665,7 +665,6 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
      * Returns the value column to be filled for the implementing property of this type
      * @return one of
      * <ul>
-     *     <li>intValue</li>
      *     <li>longValue</li>
      *     <li>stringValue</li>
      *     <li>decValue</li>

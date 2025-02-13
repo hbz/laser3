@@ -341,7 +341,7 @@
                                     <g:hiddenField name="propId${i}" value="${prop.id}"/>
                                     <td>${prop.getI10n('name')}</td>
                                     <td>
-                                        <g:if test="${prop.isIntegerType()}">
+                                        <g:if test="${prop.isLongType()}">
                                             <input type="number" name="propValue${i}" class="memberProperty" placeholder="${message(code:'default.value.label')}"/>
                                         </g:if>
                                         <g:elseif test="${prop.isBigDecimalType()}">

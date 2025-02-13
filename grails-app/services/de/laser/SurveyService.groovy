@@ -2207,7 +2207,7 @@ class SurveyService {
     int countSurveyPropertyWithValueByMembers(SurveyConfig surveyConfig, PropertyDefinition propertyDefinition, List<Org> orgs){
         return SurveyResult.executeQuery('select count(*) from SurveyResult as sr where sr.surveyConfig = :surveyConfig AND sr.type = :type AND sr.participant in (:orgs) AND ' +
                 '(stringValue is not null ' +
-                'OR intValue is not null ' +
+                'OR longValue is not null ' +
                 'OR decValue is not null ' +
                 'OR refValue is not null ' +
                 'OR urlValue is not null ' +

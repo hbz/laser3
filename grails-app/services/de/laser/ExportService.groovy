@@ -713,7 +713,7 @@ class ExportService {
 			//log.debug("now processing ${pd.name_de}")
 			List<String> value = [], note = []
 			String ownerClassName = target.class.name.substring(target.class.name.lastIndexOf(".") + 1)
-			List<AbstractPropertyWithCalculatedLastUpdated> propCheck = (new GroovyClassLoader()).loadClass("de.laser.properties.${ownerClassName}Property").executeQuery('select prop from '+ownerClassName+'Property prop where prop.owner = :owner and prop.type = :pd and (prop.stringValue != null or prop.intValue != null or prop.decValue != null or prop.refValue != null or prop.urlValue != null or prop.dateValue != null)', [pd: pd, owner: target])
+			List<AbstractPropertyWithCalculatedLastUpdated> propCheck = (new GroovyClassLoader()).loadClass("de.laser.properties.${ownerClassName}Property").executeQuery('select prop from '+ownerClassName+'Property prop where prop.owner = :owner and prop.type = :pd and (prop.stringValue != null or prop.longValue != null or prop.decValue != null or prop.refValue != null or prop.urlValue != null or prop.dateValue != null)', [pd: pd, owner: target])
 			AbstractPropertyWithCalculatedLastUpdated prop = null
 			if(propCheck)
 				prop = propCheck[0]
@@ -726,7 +726,7 @@ class ExportService {
 				if(target.hasProperty("propertySet")) {
 					//childObjects.get(target).each { childObj ->
 						//childObj.propertySet.findAll{ AbstractPropertyWithCalculatedLastUpdated childProp -> childProp.type.descr == pd.descr && childProp.type == pd && childProp.value && !childProp.instanceOf && (childProp.tenant == contextOrg || childProp.isPublic) }
-						(new GroovyClassLoader()).loadClass("de.laser.properties.${ownerClassName}Property").executeQuery('select prop from '+ownerClassName+'Property prop where prop.owner.instanceOf = :owner and prop.type = :pd and prop.instanceOf = null and (prop.tenant = :ctx or prop.isPublic = true) and (prop.stringValue != null or prop.intValue != null or prop.decValue != null or prop.refValue != null or prop.urlValue != null or prop.dateValue != null)', [pd: pd, ctx: contextOrg, owner: target]).each { AbstractPropertyWithCalculatedLastUpdated childProp ->
+						(new GroovyClassLoader()).loadClass("de.laser.properties.${ownerClassName}Property").executeQuery('select prop from '+ownerClassName+'Property prop where prop.owner.instanceOf = :owner and prop.type = :pd and prop.instanceOf = null and (prop.tenant = :ctx or prop.isPublic = true) and (prop.stringValue != null or prop.longValue != null or prop.decValue != null or prop.refValue != null or prop.urlValue != null or prop.dateValue != null)', [pd: pd, ctx: contextOrg, owner: target]).each { AbstractPropertyWithCalculatedLastUpdated childProp ->
 							if(childProp.getValue()) {
 								if(childProp.refValue)
 									value << "${childProp.refValue.getI10n('value')} (${objectNames.get(childProp.owner)})"
