@@ -220,10 +220,9 @@
 
 </g:each>
 
-<g:if test="${surveyInfo}">
-    <div class="field la-field-right-aligned">
+<div class="field la-field-right-aligned">
 
-        <g:link controller="${processController}" action="${processAction}" id="${surveyInfo.id}" params="[viewTab: params.viewTab, subTab: params.subTab]" class="ui reset secondary button">${message(code:'default.button.reset.label')}</g:link>
+        <g:link controller="${processController}" action="${processAction}" id="${surveyInfo?.id}" params="[viewTab: params.viewTab, subTab: params.subTab]" class="ui reset secondary button">${message(code:'default.button.reset.label')}</g:link>
 
         <input name="filterSet" type="hidden" value="true">
         <g:if test="${tmplConfigFormFilter}">
@@ -245,7 +244,6 @@
             <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui primary button"/>
         </g:else>
 
-    </div>
-</g:if>
+</div>
 
 
