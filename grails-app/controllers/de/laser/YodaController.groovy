@@ -1427,7 +1427,7 @@ class YodaController {
         List opp = OrgProperty.executeQuery(
                 "SELECT pp FROM OrgProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
                         "AND pp.isPublic = false " +
-                        "AND pp.stringValue IS null AND pp.intValue IS null AND pp.decValue IS null " +
+                        "AND pp.stringValue IS null AND pp.longValue IS null AND pp.decValue IS null " +
                         "AND pp.refValue IS null AND pp.urlValue IS null AND pp.dateValue IS null " +
                         "AND (pp.note IS null OR pp.note = '') "
         )
@@ -1435,7 +1435,7 @@ class YodaController {
         List spp = SubscriptionProperty.executeQuery(
                 "SELECT pp FROM SubscriptionProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
                 "AND pp.isPublic = false " +
-                "AND pp.stringValue IS null AND pp.intValue IS null AND pp.decValue IS null " +
+                "AND pp.stringValue IS null AND pp.longValue IS null AND pp.decValue IS null " +
                 "AND pp.refValue IS null AND pp.urlValue IS null AND pp.dateValue IS null " +
                 "AND (pp.note IS null OR pp.note = '') "
         )
@@ -1443,7 +1443,7 @@ class YodaController {
         List lpp = LicenseProperty.executeQuery(
                 "SELECT pp FROM LicenseProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
                         "AND pp.isPublic = false " +
-                        "AND pp.stringValue IS null AND pp.intValue IS null AND pp.decValue IS null " +
+                        "AND pp.stringValue IS null AND pp.longValue IS null AND pp.decValue IS null " +
                         "AND pp.refValue IS null AND pp.urlValue IS null AND pp.dateValue IS null " +
                         "AND (pp.note IS null OR pp.note = '') " +
                         "AND (pp.paragraph IS null OR pp.paragraph = '') "
@@ -1452,7 +1452,7 @@ class YodaController {
         List ppp = PersonProperty.executeQuery(
                 "SELECT pp FROM PersonProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
                         "AND pp.isPublic = false " +
-                        "AND pp.stringValue IS null AND pp.intValue IS null AND pp.decValue IS null " +
+                        "AND pp.stringValue IS null AND pp.longValue IS null AND pp.decValue IS null " +
                         "AND pp.refValue IS null AND pp.urlValue IS null AND pp.dateValue IS null " +
                         "AND (pp.note IS null OR pp.note = '') "
         )

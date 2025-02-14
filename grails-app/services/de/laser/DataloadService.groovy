@@ -923,8 +923,8 @@ class DataloadService {
                 result.visible = 'Private'
                 result.rectype = subProp.getClass().getSimpleName()
 
-                if (subProp.type.isIntegerType()) {
-                    result.description = subProp.intValue
+                if (subProp.type.isLongType()) {
+                    result.description = subProp.longValue
                 } else if (subProp.type.isStringType()) {
                     result.description = subProp.stringValue
                 } else if (subProp.type.isBigDecimalType()) {
@@ -986,8 +986,8 @@ class DataloadService {
                 result.visible = 'Private'
                 result.rectype = licProp.getClass().getSimpleName()
 
-                if (licProp.type.isIntegerType()) {
-                    result.description = licProp.intValue
+                if (licProp.type.isLongType()) {
+                    result.description = licProp.longValue
                 } else if (licProp.type.isStringType()) {
                     result.description = licProp.stringValue
                 } else if (licProp.type.isBigDecimalType()) {

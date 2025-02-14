@@ -84,11 +84,11 @@ class PropertyService {
                         }
                         base_qry += " ) "
                 }
-                else if (pd.isIntegerType()) {
+                else if (pd.isLongType()) {
                         if (!params.filterProp || params.filterProp.length() < 1) {
-                            base_qry += " and gProp.intValue = null ) "
+                            base_qry += " and gProp.longValue = null ) "
                         } else {
-                            base_qry += " and gProp.intValue = :prop ) "
+                            base_qry += " and gProp.longValue = :prop ) "
                             base_qry_params.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                         }
                 }
@@ -146,8 +146,8 @@ class PropertyService {
     boolean setPropValue(prop, String filterPropValue) {
         prop = (AbstractPropertyWithCalculatedLastUpdated) prop
 
-        if (prop.type.isIntegerType()) {
-            prop.intValue = Integer.parseInt(filterPropValue)
+        if (prop.type.isLongType()) {
+            prop.longValue = Long.parseLong(filterPropValue)
         }
         else if (prop.type.isStringType()) {
             prop.stringValue = filterPropValue

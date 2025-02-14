@@ -68,8 +68,8 @@
                         </g:if>
                     </td>
                     <td>
-                        <g:if test="${prop.type.isIntegerType()}">
-                            <ui:xEditable owner="${prop}" type="number" field="intValue" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
+                        <g:if test="${prop.type.isLongType()}">
+                            <ui:xEditable owner="${prop}" type="number" field="longValue" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                         </g:if>
                         <g:elseif test="${prop.type.isStringType()}">
                             <ui:xEditable owner="${prop}" type="text" field="stringValue" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>

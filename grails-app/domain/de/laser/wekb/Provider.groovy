@@ -324,9 +324,9 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
                 propParams.value = op.decValue
                 valueFilter = 'and pp.decValue = :value'
             }
-            if(op.intValue) {
-                propParams.value = op.intValue
-                valueFilter = 'and pp.intValue = :value'
+            if(op.longValue) {
+                propParams.value = op.longValue
+                valueFilter = 'and pp.longValue = :value'
             }
             if(op.refValue) {
                 propParams.value = op.refValue
@@ -346,8 +346,8 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
                     pp.dateValue = op.dateValue
                 if (op.decValue)
                     pp.decValue = op.decValue
-                if (op.intValue)
-                    pp.intValue = op.intValue
+                if (op.longValue)
+                    pp.longValue = op.longValue
                 if (op.refValue)
                     pp.refValue = op.refValue
                 if (op.stringValue)
