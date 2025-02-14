@@ -115,8 +115,8 @@
                             <div class="la-copyElements-flex-container la-multi-sources la-colorCode-source">
                                 <div class="la-copyElements-flex-item">
                                     <g:if test="${propValue.getValue() != "" && propValue.getValue() != null}">
-                                        <g:if test="${propValue.type.isIntegerType()}">
-                                            <ui:xEditable owner="${propValue}" type="text" field="intValue" overwriteEditable="${overwriteEditable}"/>
+                                        <g:if test="${propValue.type.isLongType()}">
+                                            <ui:xEditable owner="${propValue}" type="text" field="longValue" overwriteEditable="${overwriteEditable}"/>
                                         </g:if>
                                         <g:elseif test="${propValue.type.isStringType()}">
                                             <ui:xEditable owner="${propValue}" type="text" field="stringValue" overwriteEditable="${overwriteEditable}"/>
@@ -245,8 +245,8 @@
                                 <div class="la-copyElements-flex-container la-colorCode-target la-multi-sources">
                                     <div class="la-copyElements-flex-item">
                                         <g:if test="${propValue.getValue() != "" && propValue.getValue() != null}">
-                                        <g:if test="${propValue.type.isIntegerType()}">
-                                            <ui:xEditable owner="${propValue}" type="text" field="intValue" overwriteEditable="${overwriteEditable}"/>
+                                        <g:if test="${propValue.type.isLongType()}">
+                                            <ui:xEditable owner="${propValue}" type="text" field="longValue" overwriteEditable="${overwriteEditable}"/>
                                         </g:if>
                                         <g:elseif test="${propValue.type.isStringType()}">
                                             <ui:xEditable owner="${propValue}" type="text" field="stringValue" overwriteEditable="${overwriteEditable}"/>

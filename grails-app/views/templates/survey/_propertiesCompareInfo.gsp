@@ -37,8 +37,8 @@
                                             <div class="item">
                                             %{--SOURCE-SUBSCRIPTION--}%
 
-                                                <g:if test="${subProperty.type.isIntegerType()}">
-                                                    <ui:xEditable owner="${subProperty}" type="text" field="intValue"
+                                                <g:if test="${subProperty.type.isLongType()}">
+                                                    <ui:xEditable owner="${subProperty}" type="text" field="longValue"
                                                                      overwriteEditable="${overwriteEditable}"/>
                                                 </g:if>
                                                 <g:elseif test="${subProperty.type.isStringType()}">
@@ -100,8 +100,8 @@
                                     %{--TARGET-SUBSCRIPTION--}%
                                         <g:if test="${subProperty.owner.id == successorSubscriptionParent.id}">
                                             <div class="item">
-                                                <g:if test="${subProperty.type.isIntegerType()}">
-                                                    <ui:xEditable owner="${subProperty}" type="text" field="intValue"
+                                                <g:if test="${subProperty.type.isLongType()}">
+                                                    <ui:xEditable owner="${subProperty}" type="text" field="longValue"
                                                                      overwriteEditable="${overwriteEditable}"/>
                                                 </g:if>
 

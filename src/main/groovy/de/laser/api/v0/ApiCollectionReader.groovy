@@ -257,7 +257,7 @@ class ApiCollectionReader {
                 tmp.value   = ApiToolkit.formatInternalDate(it.dateValue)
             }
             else {
-                tmp.value   = (it.stringValue ?: (it.intValue ?: (it.decValue ?: (it.refValue?.value ?: (it.urlValue ?: null))))) // RefdataValue
+                tmp.value   = (it.stringValue ?: (it.longValue ?: (it.decValue ?: (it.refValue?.value ?: (it.urlValue ?: null))))) // RefdataValue
             }
 
             tmp.type = PropertyDefinition.validTypes[it.type.type]['en']
@@ -635,7 +635,7 @@ class ApiCollectionReader {
                 tmp.value   = ApiToolkit.formatInternalDate(it.dateValue)
             }
             else {
-                tmp.value   = (it.stringValue ?: (it.intValue ?: (it.decValue ?: (it.refValue?.value ?: (it.urlValue ?: null))))) // RefdataValue
+                tmp.value   = (it.stringValue ?: (it.longValue ?: (it.decValue ?: (it.refValue?.value ?: (it.urlValue ?: null))))) // RefdataValue
             }
 
             tmp.type = PropertyDefinition.validTypes[it.type.type]['en']

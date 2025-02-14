@@ -286,10 +286,10 @@
                                     </g:if>
                                     <g:elseif test="${participant.oldSub && participant.oldCustomProperty}">
 
-                                        <g:if test="${participant.oldCustomProperty.type.isIntegerType()}">
+                                        <g:if test="${participant.oldCustomProperty.type.isLongType()}">
                                             <ui:xEditable owner="${participant.oldCustomProperty}" type="number"
                                                              overwriteEditable="${false}"
-                                                             field="intValue"/>
+                                                             field="longValue"/>
                                         </g:if>
                                         <g:elseif test="${participant.oldCustomProperty.type.isStringType()}">
                                             <ui:xEditable owner="${participant.oldCustomProperty}" type="text"
@@ -353,10 +353,10 @@
                                     </g:if>
                                     <g:elseif test="${participant.oldSub && participant.oldPrivateProperty}">
 
-                                        <g:if test="${participant.oldPrivateProperty.type.isIntegerType()}">
+                                        <g:if test="${participant.oldPrivateProperty.type.isLongType()}">
                                             <ui:xEditable owner="${participant.oldPrivateProperty}" type="number"
                                                              overwriteEditable="${false}"
-                                                             field="intValue"/>
+                                                             field="longValue"/>
                                         </g:if>
                                         <g:elseif test="${participant.oldPrivateProperty.type.isStringType()}">
                                             <ui:xEditable owner="${participant.oldPrivateProperty}" type="text"
@@ -406,10 +406,10 @@
                                 <td class="center aligned">
                                     <g:if test="${participant.surveyProperty && participant.surveyProperty.getValue()}">
 
-                                        <g:if test="${participant.surveyProperty.type.isIntegerType()}">
+                                        <g:if test="${participant.surveyProperty.type.isLongType()}">
                                             <ui:xEditable owner="${participant.surveyProperty}" type="number"
                                                              overwriteEditable="${false}"
-                                                             field="intValue"/>
+                                                             field="longValue"/>
                                         </g:if>
                                         <g:elseif test="${participant.surveyProperty.type.isStringType()}">
                                             <ui:xEditable owner="${participant.surveyProperty}" type="text"
@@ -454,10 +454,10 @@
                                 <g:if test="${params.tab in ['surveyProperties', 'customProperties']}">
                                     <g:if test="${participant.newCustomProperty}">
 
-                                        <g:if test="${participant.newCustomProperty.type.isIntegerType()}">
+                                        <g:if test="${participant.newCustomProperty.type.isLongType()}">
                                             <ui:xEditable owner="${participant.newCustomProperty}" type="number"
                                                              overwriteEditable="${false}"
-                                                             field="intValue"/>
+                                                             field="longValue"/>
                                         </g:if>
                                         <g:elseif test="${participant.newCustomProperty.type.isStringType()}">
                                             <ui:xEditable owner="${participant.newCustomProperty}" type="text"
@@ -518,10 +518,10 @@
                                 <g:if test="${params.tab == 'privateProperties'}">
                                     <g:if test="${participant.newPrivateProperty}">
 
-                                        <g:if test="${participant.newPrivateProperty.type.isIntegerType()}">
+                                        <g:if test="${participant.newPrivateProperty.type.isLongType()}">
                                             <ui:xEditable owner="${participant.newPrivateProperty}" type="number"
                                                              overwriteEditable="${false}"
-                                                             field="intValue"/>
+                                                             field="longValue"/>
                                         </g:if>
                                         <g:elseif test="${participant.newPrivateProperty.type.isStringType()}">
                                             <ui:xEditable owner="${participant.newPrivateProperty}" type="text"

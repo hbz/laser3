@@ -470,9 +470,9 @@
                 </g:if>
                 <g:else>
                     <td>
-                        <g:if test="${surveyResult.type.isIntegerType()}">
+                        <g:if test="${surveyResult.type.isLongType()}">
                             <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="text"
-                                             field="intValue"/>
+                                             field="longValue"/>
                         </g:if>
                         <g:elseif test="${surveyResult.type.isStringType()}">
                             <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="text"

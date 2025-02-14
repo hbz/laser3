@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6274    14.02.2025  rc-3.4  3.4.19      David   Bug         Seltsames Verhalten von 11+ stelligen Zahlen in Merkmalen
+
 6267    10.02.2025  rc-3.4  3.4.19      Andreas Feature     Umstellung der Ausgabe "Lizenzen" beim Einrichtungs-Export
 
 6249    10.02.2025  rc-3.4  3.4.19      Andreas Bug         weitere Filterung der angezeigten Kundennummern
