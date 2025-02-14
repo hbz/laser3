@@ -55,7 +55,7 @@ class VendorController {
         ctx.contextService.isInstUser()
     })
     def index() {
-        redirect 'list'
+        redirect action: 'list'
     }
 
     @DebugInfo(isInstUser = [])
