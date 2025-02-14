@@ -337,7 +337,7 @@
             </p>
             <p>
                 Dabei sind folgende Varianten möglich: <br />
-                <i class="${Icon.SYM.CIRCLE} blue"></i> Die Plattform kann direkt über eine Referenz aus den lizenzierten Titel ermittelt werden, <br />
+                <i class="${Icon.SYM.CIRCLE} blue"></i> Die Plattform kann direkt über eine Referenz aus den lizenzierten Titeln ermittelt werden, <br />
                 <i class="${Icon.SYM.CIRCLE} green"></i> Der einer Lizenz zugeordnete Anbieter verweist auf eine Plattform <br />
             </p>
         </g:if>
