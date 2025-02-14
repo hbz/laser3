@@ -440,14 +440,41 @@
 
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.holdingSelection.label')}</dt>
-                                <dd><ui:xEditableRefData owner="${subscription}" field="holdingSelection"
-                                                         config="${RDConstants.SUBSCRIPTION_HOLDING}" overwriteEditable="${editable && !AuditConfig.getConfig(subscription.instanceOf, 'holdingSelection')}"/></dd>
+                                <dd>
+                                    <g:if test="${showConsortiaFunctions}">
+                                        <ui:xEditableRefData owner="${subscription}" field="holdingSelection" id="holdingSelection"
+                                                             data_confirm_tokenMsg="${message(code: 'confirm.dialog.holdingSelection')}"
+                                                             data_confirm_term_how="ok"
+                                                             class="js-open-confirm-modal-xEditableRefData"
+                                                             data_confirm_value="${RefdataValue.class.name}:${RDStore.SUBSCRIPTION_HOLDING_ENTIRE.id}"
+                                                             config="${RDConstants.SUBSCRIPTION_HOLDING}" overwriteEditable="${editable && !AuditConfig.getConfig(subscription.instanceOf, 'holdingSelection')}"/>
+                                    </g:if>
+                                    <g:else>
+                                        <ui:xEditableRefData owner="${subscription}" field="holdingSelection"
+                                                             config="${RDConstants.SUBSCRIPTION_HOLDING}" overwriteEditable="${editable && !AuditConfig.getConfig(subscription.instanceOf, 'holdingSelection')}"/>
+                                    </g:else>
+                                </dd>
                                 <g:if test="${editable}">
                                     <dd>
                                         <ui:auditButton auditable="[subscription, 'holdingSelection']"
                                                         auditConfigs="${auditConfigs}"/>
                                     </dd>
                                 </g:if>
+                            <%-- Extra Call from editable cause valiation needed only in Case of Selection "Ja" --%>
+                                <laser:script file="${this.getGroovyPageFileName()}">
+                                    //continue here
+                                    $('#holdingSelection').editable('destroy').editable({
+                                        tpl: '<select class="ui dropdown"></select>'
+                                    }).on('shown', function() {
+                                        r2d2.initDynamicUiStuff('body');
+                                        $(".table").trigger('reflow');
+                                        $('.ui.dropdown').dropdown({
+                                            clearable: true
+                                        });
+                                    }).on('hidden', function() {
+                                        $(".table").trigger('reflow')
+                                    });
+                                </laser:script>
                             </dl>
                         </g:if>
 
