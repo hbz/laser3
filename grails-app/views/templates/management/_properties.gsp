@@ -245,7 +245,7 @@
                                                     </g:if>
                                                 </g:elseif>
                                                 <g:elseif test="${privateProperty.type.isRefdataValueType()}">
-                                                    <ui:xEditableRefData owner="${privateProperty}" type="text" field="refValue" config="${privateProperty.type.refdataCategory}"/>
+                                                    <ui:xEditableRefData owner="${privateProperty}" type="text" field="refValue" config="${privateProperty.type.refdataCategory}" constraint="removeValues_processingProvOrVendor"/>
                                                 </g:elseif>
 
                                                 <%
@@ -504,7 +504,8 @@
                                                     <g:elseif test="${customProperty.type.isRefdataValueType()}">
                                                         <ui:xEditableRefData owner="${customProperty}" type="text"
                                                                                 field="refValue"
-                                                                                config="${customProperty.type.refdataCategory}"/>
+                                                                                config="${customProperty.type.refdataCategory}"
+                                                                             constraint="removeValues_processingProvOrVendor"/>
                                                     </g:elseif>
 
                                                     <%

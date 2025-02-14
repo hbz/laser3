@@ -966,7 +966,7 @@ class SubscriptionControllerService {
      * @see Subscription
      * @see Platform
      */
-    Set getAvailableReports(Map<String, Object> configMap, boolean withPlatformReports = true) {
+    Set getAvailableReports(Map<String, Object> configMap, boolean withPlatformReports = true, boolean surveySetting = false) {
         Set<String> allAvailableReports
         Set<Package> subscribedPackages = configMap.subscription.packages.pkg
         Map<RefdataValue, String> contentTypes = RefdataCategory.getAllRefdataValues([RDConstants.PACKAGE_CONTENT_TYPE, RDConstants.TITLE_MEDIUM]).collectEntries { RefdataValue rdv -> [rdv, rdv.value] }
@@ -993,6 +993,10 @@ class SubscriptionControllerService {
                 CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(configMap.subscription.getSubscriberRespConsortia(), platform)
                 configMap.putAll(exportService.prepareSushiCall(platformRecord))
                 if(configMap.revision && configMap.statsUrl && ci.value) {
+                    boolean addTitleReport = true
+                    if(surveySetting) {
+                        addTitleReport = configMap.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT || IssueEntitlement.countBySubscriptionAndStatus(configMap.subscription, RDStore.TIPP_STATUS_CURRENT)
+                    }
                     if(configMap.revision == AbstractReport.COUNTER_5) {
                         allAvailableReports = new TreeSet<String>()
                         String queryArguments = exportService.buildQueryArguments(configMap, platformRecord, ci)
@@ -1005,10 +1009,10 @@ class SubscriptionControllerService {
                                         allAvailableReports.add(reportType)
                                     else {
                                         switch(contentTypes.get(contentType)) {
-                                            case 'Book': if(reportType in Counter5Report.COUNTER_5_BOOK_REPORTS)
+                                            case 'Book': if(reportType in Counter5Report.COUNTER_5_BOOK_REPORTS && addTitleReport)
                                                 allAvailableReports.add(reportType)
                                                 break
-                                            case 'Journal': if(reportType in Counter5Report.COUNTER_5_JOURNAL_REPORTS)
+                                            case 'Journal': if(reportType in Counter5Report.COUNTER_5_JOURNAL_REPORTS && addTitleReport)
                                                 allAvailableReports.add(reportType)
                                                 break
                                             default: allAvailableReports.add(reportType)
@@ -1027,11 +1031,11 @@ class SubscriptionControllerService {
                             allAvailableReports.addAll(Counter4Report.COUNTER_4_DATABASE_REPORTS)
                         }
                         switch(contentTypes.get(contentType)) {
-                            case 'Book': allAvailableReports.addAll(Counter4Report.COUNTER_4_BOOK_REPORTS)
+                            case 'Book': if(addTitleReport) allAvailableReports.addAll(Counter4Report.COUNTER_4_BOOK_REPORTS)
                                 break
-                            case 'Journal': allAvailableReports.addAll(Counter4Report.COUNTER_4_JOURNAL_REPORTS)
+                            case 'Journal': if(addTitleReport) allAvailableReports.addAll(Counter4Report.COUNTER_4_JOURNAL_REPORTS)
                                 break
-                            default: allAvailableReports.addAll(Counter4Report.COUNTER_4_TITLE_REPORTS)
+                            default: if(addTitleReport) allAvailableReports.addAll(Counter4Report.COUNTER_4_TITLE_REPORTS)
                                 break
                         }
                     }
