@@ -72,9 +72,9 @@ BEGIN
 		loop
 		delete from org_property where op_dec_value = oprow3.op_dec_value and op_type_fk = oprow3.op_type_fk and op_owner_fk = old_key;
 		end loop;
-	for oprow4 in select op_int_value, op_type_fk from org_property join property_definition on op_type_fk = pd_id where op_owner_fk = new_key and pd_type = 'java.lang.Integer'
+	for oprow4 in select op_long_value, op_type_fk from org_property join property_definition on op_type_fk = pd_id where op_owner_fk = new_key and pd_type = 'java.lang.Integer'
 		loop
-		delete from org_property where op_int_value = oprow4.op_int_value and op_type_fk = oprow4.op_type_fk and op_owner_fk = old_key;
+		delete from org_property where op_long_value = oprow4.op_long_value and op_type_fk = oprow4.op_type_fk and op_owner_fk = old_key;
 		end loop;
 	for oprow5 in select op_ref_value_rv_fk, op_type_fk from org_property join property_definition on op_type_fk = pd_id where op_owner_fk = new_key and pd_type = 'de.laser.RefdataValue'
 		loop
