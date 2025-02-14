@@ -531,6 +531,16 @@ r2d2 = {
 
         $(ctxSel + ' .xEditableManyToOne').editable({
             tpl: '<select class="ui search selection dropdown"></select>',
+            validate: function(value) {
+                var dVal = $(this).attr('data-validation')
+                if (dVal) {
+                    if (dVal.includes('notEmpty')) {
+                        if($.trim(value) == '') {
+                            return "Das Feld darf nicht leer sein";
+                        }
+                    }
+                }
+            },
             success: function(response, newValue) {
                 if(response.status == 'error') return response.msg; //msg will be shown in editable form
             }
