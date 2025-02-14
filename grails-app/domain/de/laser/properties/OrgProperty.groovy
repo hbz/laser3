@@ -15,7 +15,9 @@ class OrgProperty extends AbstractPropertyWithCalculatedLastUpdated {
     boolean isPublic = false
 
     String           stringValue
+    @Deprecated
     Integer          intValue
+    Long             longValue
     BigDecimal       decValue
     RefdataValue     refValue
     URL              urlValue
@@ -34,6 +36,7 @@ class OrgProperty extends AbstractPropertyWithCalculatedLastUpdated {
         version              column: 'op_version'
         stringValue          column: 'op_string_value', type: 'text'
         intValue             column: 'op_int_value'
+        longValue            column: 'op_long_value'
         decValue             column: 'op_dec_value'
         refValue             column: 'op_ref_value_rv_fk', index: 'op_ref_value_idx'
         urlValue             column: 'op_url_value'
@@ -51,6 +54,7 @@ class OrgProperty extends AbstractPropertyWithCalculatedLastUpdated {
     static constraints = {
         stringValue (nullable: true)
         intValue    (nullable: true)
+        longValue   (nullable: true)
         decValue    (nullable: true)
         refValue    (nullable: true)
         urlValue    (nullable: true)

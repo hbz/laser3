@@ -133,7 +133,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     static def validTypes = [
             'java.util.Date'                : ['de': 'Datum', 'en': 'Date'],
             'java.math.BigDecimal'          : ['de': 'Dezimalzahl', 'en': 'Decimal'],
-            'java.lang.Integer'             : ['de': 'Ganzzahl', 'en': 'Number' ],
+            'java.lang.Long'                : ['de': 'Ganzzahl', 'en': 'Number' ],
             'de.laser.RefdataValue'         : ['de': 'Referenzwert', 'en': 'Refdata'],
             'java.lang.String'              : ['de': 'Text', 'en': 'Text'],
             'java.net.URL'                  : ['de': 'Url', 'en': 'Url']
@@ -146,7 +146,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             propDefGroupItems: 'propDef'
     ]
 
-    static transients = ['descrClass', 'bigDecimalType', 'dateType', 'integerType', 'refdataValueType', 'stringType', 'URLType', 'implClass', 'implClassValueProperty'] // mark read-only accessor methods
+    static transients = ['descrClass', 'bigDecimalType', 'dateType', 'longType', 'refdataValueType', 'stringType', 'URLType', 'implClass', 'implClassValueProperty'] // mark read-only accessor methods
 
     static mapping = {
                     cache  true
@@ -631,11 +631,11 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     }
 
     /**
-     * Checks if the given property definition value type is integer
-     * @return true if the value type is integer, false otherwise
+     * Checks if the given property definition value type is long
+     * @return true if the value type is long, false otherwise
      */
-    boolean isIntegerType() {
-        type == Integer.class.name
+    boolean isLongType() {
+        type == Long.class.name
     }
 
     /**
@@ -666,7 +666,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
      * Returns the value column to be filled for the implementing property of this type
      * @return one of
      * <ul>
-     *     <li>intValue</li>
+     *     <li>longValue</li>
      *     <li>stringValue</li>
      *     <li>decValue</li>
      *     <li>dateValue</li>
@@ -675,7 +675,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
      * </ul>
      */
     String getImplClassValueProperty(){
-        if( isIntegerType() )   { return "intValue" }
+        if( isLongType() )      { return "longValue" }
         if( isStringType() )    { return "stringValue" }
         if( isBigDecimalType() ){ return "decValue" }
         if( isDateType() )      { return "dateValue" }
