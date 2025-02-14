@@ -53,7 +53,7 @@ class ProviderController {
         ctx.contextService.isInstUser()
     })
     def index() {
-        redirect 'list'
+        redirect action: 'list'
     }
 
     /**

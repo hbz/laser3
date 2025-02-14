@@ -438,7 +438,6 @@
             });
         }
     }
-    //continue here for ERMS-6094: empty PRO-user cannot create cost items on global finance view because of a JS error
     JSPC.app.finance${idSuffix} = {
         userLang: "${contextService.getUser().getSettingsValue(UserSetting.KEYS.LANGUAGE,null)}",
         currentForm: $("#editCost_${idSuffix}"),

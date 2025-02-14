@@ -16,7 +16,7 @@
                     <th>TIPP ID</th>
                     <th>Titel</th>
                     <th>alternatives TIPP mit we:kb ID</th>
-                    <th>betroffener Lizenzbestand</th>
+                    <th>betroffene Titel in Lizenzen</th>
                 </tr>
             </thead>
             <tbody>

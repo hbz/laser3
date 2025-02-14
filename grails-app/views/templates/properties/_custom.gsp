@@ -81,7 +81,7 @@
                                 </g:if>
                             </g:elseif>
                             <g:elseif test="${prop.type.isRefdataValueType()}">
-                                <ui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
+                                <ui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}" overwriteEditable="${overwriteEditable}" class="la-dont-break-out" constraint="removeValues_processingProvOrVendor"/>
                             </g:elseif>
                         </td>
                         <g:if test="${ownobj instanceof License}">
