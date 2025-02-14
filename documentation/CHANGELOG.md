@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6274    14.02.2025  rc-3.4  3.4.19      David   Bug         Seltsames Verhalten von 11+ stelligen Zahlen in Merkmalen
+
 6278    13.02.2025  dev     3.5         Andreas Feature     Darstellung der Merkmale Vertrags-/Rechnungsabwicklung
 
 6276    13.02.2025  dev     3.5         Andreas Feature     Einbau der Merkmale und weiterer Referenzwerte für Rechnungs-/Vertragsabwicklung

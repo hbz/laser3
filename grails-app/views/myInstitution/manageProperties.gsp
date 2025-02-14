@@ -77,7 +77,7 @@
                               required=""
                               noSelection='["": "${message(code: 'default.select.choose.label')}"]'/>
                 </g:if>
-                <g:elseif test="${filterPropDef.isIntegerType()}">
+                <g:elseif test="${filterPropDef.isLongType()}">
                     <input id="filterPropValue" type="number" name="filterPropValue">
                 </g:elseif>
                 <g:elseif test="${filterPropDef.isBigDecimalType()}">
@@ -140,9 +140,9 @@
 
                                                 <div class="content">
                                                     <p>
-                                                        <g:if test="${customProperty.type.isIntegerType()}">
+                                                        <g:if test="${customProperty.type.isLongType()}">
                                                             <ui:xEditable owner="${customProperty}" type="number"
-                                                                             field="intValue"/>
+                                                                             field="longValue"/>
                                                         </g:if>
                                                         <g:elseif test="${customProperty.type.isStringType()}">
                                                             <ui:xEditable owner="${customProperty}" type="text"
@@ -206,9 +206,9 @@
                                                         <g:set var="editable" value="${!(AuditConfig.getConfig(privateProperty))}"
                                                                scope="request"/>
 
-                                                        <g:if test="${privateProperty.type.isIntegerType()}">
+                                                        <g:if test="${privateProperty.type.isLongType()}">
                                                             <ui:xEditable owner="${privateProperty}" type="number"
-                                                                             field="intValue"/>
+                                                                             field="longValue"/>
                                                         </g:if>
                                                         <g:elseif test="${privateProperty.type.isStringType()}">
                                                             <ui:xEditable owner="${privateProperty}" type="text"
@@ -315,7 +315,7 @@
                               name="filterPropValue" value=""
                               noSelection='["": "${message(code: 'default.select.choose.label')}"]'/>
                 </g:if>
-                <g:elseif test="${filterPropDef.isIntegerType()}">
+                <g:elseif test="${filterPropDef.isLongType()}">
                     <input id="filterPropValue" type="number" name="filterPropValue">
                 </g:elseif>
                 <g:elseif test="${filterPropDef.isBigDecimalType()}">
@@ -382,9 +382,9 @@
                                                 <div class="header">${message(code: 'subscriptionsManagement.CustomProperty')}: ${filterPropDef.getI10n('name')}</div>
 
                                                 <div class="content">
-                                                    <p><g:if test="${customProperty.type.isIntegerType()}">
+                                                    <p><g:if test="${customProperty.type.isLongType()}">
                                                         <ui:xEditable owner="${customProperty}" type="number"
-                                                                         field="intValue"/>
+                                                                         field="longValue"/>
                                                     </g:if>
                                                         <g:elseif test="${customProperty.type.isStringType()}">
                                                             <ui:xEditable owner="${customProperty}" type="text"
@@ -448,9 +448,9 @@
 
                                                 <div class="content">
                                                     <p>
-                                                        <g:if test="${privateProperty.type.isIntegerType()}">
+                                                        <g:if test="${privateProperty.type.isLongType()}">
                                                             <ui:xEditable owner="${privateProperty}" type="number"
-                                                                             field="intValue"/>
+                                                                             field="longValue"/>
                                                         </g:if>
                                                         <g:elseif test="${privateProperty.type.isStringType()}">
                                                             <ui:xEditable owner="${privateProperty}" type="text"

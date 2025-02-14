@@ -2,7 +2,7 @@
 
 Source: ${de.laser.config.ConfigMapper.getGrailsServerURL()} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
-#### 3.5 (preview)
+#### 4.0 (preview)
 
 - removed attribute: `EZBInstitutionStub.status`
 - removed attribute: `OrganisationStub.status`
@@ -10,20 +10,24 @@ Source: ${de.laser.config.ConfigMapper.getGrailsServerURL()} - Version: ${de.las
 - removed attribute: `Organisation.retirementDate`
 - removed new virtual object: `Link_Org`
 
-#### 3.4.1 (ERMS-6223, ERMS-6224, ERMS-6238)
+#### 3.6 (ERMS-6223, ERMS-6224, ERMS-6238)
 
 - internal refactoring: `EZBInstitutionStub.status`
 - internal refactoring: `OrganisationStub.status`
 - internal refactoring: `Organisation.retirementDate`
 - internal refactoring: `Organisation.links`
 
-#### 3.4
+#### 3.5
 
 - internal refactoring: `Org.type`
 
-#### 3.3
+#### 3.4
 
 - internal refactoring
+
+#### 3.3
+
+- internal refactoring: `Property.value`
 
 #### 3.2
 

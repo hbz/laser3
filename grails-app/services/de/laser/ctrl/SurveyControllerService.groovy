@@ -5112,8 +5112,8 @@ class SurveyControllerService {
 
         String field = null
 
-        if (property.type.isIntegerType()) {
-            field = "intValue"
+        if (property.type.isLongType()) {
+            field = "longValue"
         } else if (property.type.isStringType()) {
             field = "stringValue"
         } else if (property.type.isBigDecimalType()) {

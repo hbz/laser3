@@ -3455,9 +3455,9 @@ class SubscriptionService {
             //process custom property
             prop = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, sub, propDef, contextOrg)
         }
-        if (propDef.isIntegerType()) {
-            int intVal = Integer.parseInt(value)
-            prop.setIntValue(intVal)
+        if (propDef.isLongType()) {
+            long longVal = Long.parseLong(value)
+            prop.setLongValue(longVal)
         }
         else if (propDef.isBigDecimalType()) {
             BigDecimal decVal = new BigDecimal(value)
