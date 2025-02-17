@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.properties.SubscriptionProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.addressbook.Person; de.laser.storage.RDStore; de.laser.AuditConfig" %>
+<%@ page import="de.laser.interfaces.CalculatedType; de.laser.storage.PropertyStore; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.properties.SubscriptionProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.addressbook.Person; de.laser.storage.RDStore; de.laser.AuditConfig" %>
 <laser:serviceInjection/>
     <%
         SortedSet<PropertyDefinition> allProperties = new TreeSet<PropertyDefinition>()
@@ -321,6 +321,14 @@
         <div class="ui segments">
         <div class="ui segment">
             <div class="field required">
+                <%
+                    List<RefdataValue> propValues = []
+                    if(propertiesFilterPropDef.isRefdataValueType()) {
+                        propValues = RefdataCategory.getAllRefdataValuesWithOrder(propertiesFilterPropDef.refdataCategory)
+                        if(propertiesFilterPropDef == PropertyStore.SUB_PROP_INVOICE_PROCESSING && subscription)
+                            propValues.remove(RDStore.INVOICE_PROCESSING_PROVIDER_OR_VENDOR)
+                    }
+                %>
                 <div class="inline field">
                     <label>${message(code: 'subscriptionsManagement.propertySelected')}:</label>
 
@@ -335,7 +343,7 @@
                 ${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(propertiesFilterPropDef.type)}
                 <g:if test="${propertiesFilterPropDef.isRefdataValueType()}">
                     <g:set var="refdataValues" value="${[]}"/>
-                    <g:each in="${RefdataCategory.getAllRefdataValuesWithOrder(propertiesFilterPropDef.refdataCategory)}" var="refdataValue">
+                    <g:each in="${propValues}" var="refdataValue">
                         <g:if test="${refdataValue.getI10n('value')}">
                             <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
                         </g:if>
@@ -350,7 +358,7 @@
                 <g:if test="${propertiesFilterPropDef.isRefdataValueType()}">
                     <g:select class="ui search dropdown"
                               optionKey="id" optionValue="${{ it.getI10n('value') }}"
-                              from="${RefdataCategory.getAllRefdataValuesWithOrder(propertiesFilterPropDef.refdataCategory)}"
+                              from="${propValues}"
                               name="filterPropValue" value="${params.filterPropValue}"
                               required=""
                               noSelection='["": "${message(code: 'default.select.choose.label')}"]'/>
