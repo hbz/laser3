@@ -163,57 +163,47 @@
                         else return true
                     }
                     $('#create_task').form({
-                            inline: true,
-                            fields: {
-                                title: {
-                                    identifier: 'title',
-                                    rules: [
-                                        {
-                                            type: 'empty',
-                                            prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
-                                    }
-                                ]
+                        inline: true,
+                        fields: {
+                            title: {
+                                identifier: 'title',
+                                rules: [{
+                                    type:   'empty',
+                                    prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
+                                }]
                             },
                             endDate: {
                                 identifier: 'endDate',
-                                rules: [
-                                    {
-                                        type: 'empty',
-                                        prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
-                                    }
-                                ]
+                                rules: [{
+                                    type:   'empty',
+                                    prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
+                                }]
                             },
                             opt: {
                                 identifier: opt,
-                                rules: [
-                                    {
-                                        type: 'empty',
-                                        prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
-                                    }
-                                ]
+                                rules: [{
+                                    type:   'empty',
+                                    prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
+                                }]
                             },
                             responsible: {
-                                rules: [
-                                    {
-                                        type: 'checked',
-                                        prompt: '<g:message code="validation.needsToBeFilledOut" />'
-                                    }
-                                ]
+                                rules: [{
+                                    type:   'checked',
+                                    prompt: '<g:message code="validation.needsToBeFilledOut" />'
+                                }]
                             },
                             responsibleUserInput: {
                                 identifier: 'responsibleUserInput',
-                                rules: [
-                                    {
-                                        type: 'responsibleUserInput',
-                                        prompt: '<g:message code="validation.responsibleMustBeChecked" />'
-                                    }
-                                ]
+                                rules: [{
+                                    type:   'responsibleUserInput',
+                                    prompt: '<g:message code="validation.responsibleMustBeChecked" />'
+                                }]
                             }
                         }
                     });
-            })
-        }
-        JSPC.app.chooseRequiredDropdown('status.id');
+                })
+            }
+            JSPC.app.chooseRequiredDropdown('status.id');
         </laser:script>
 
     </ui:modal>
