@@ -1,9 +1,12 @@
 package de.laser
 
 import de.laser.auth.User
+import de.laser.utils.DateUtils
 import grails.plugin.asyncmail.AsynchronousMailMessage
 import grails.plugin.asyncmail.enums.MessageStatus
 import grails.plugin.springsecurity.annotation.Secured
+
+import java.text.SimpleDateFormat
 
 /**
  * This controller takes care of the asynchronously sent mails (or mails about to be sent)
@@ -28,7 +31,45 @@ class MailAsyncController {
         params.sort = params.sort ?: 'createDate'
         params.order = params.order ?: 'desc'
 
-        [resultList: AsynchronousMailMessage.list(params), resultCount: AsynchronousMailMessage.count()]
+        List resultListe = AsynchronousMailMessage.list(params)
+        int resultCount = AsynchronousMailMessage.count()
+
+        if(params.filter || params.createDate || params.sentDate){
+
+            List wherePa = []
+            Map whereMap = [:]
+            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+
+            if(params.filter){
+                wherePa << 'subject like :filter'
+                whereMap.filter = "%${params.filter}%"
+            }
+
+            if(params.filterBody){
+                wherePa << 'text like :filterBody'
+                whereMap.filterBody = "%${params.filterBody}%"
+            }
+
+            if(params.createDate){
+                wherePa << 'createDate = :createDate'
+                whereMap.createDate = sdf.parse(params.createDate)
+            }
+
+            if(params.sentDate){
+                wherePa << 'sentDate  = :sentDate'
+                whereMap.sentDate = sdf.parse(params.sentDate)
+            }
+
+            println(whereMap)
+
+            String query = "select amm from AsynchronousMailMessage as amm where ${wherePa.join(' and ')}"
+            String countQuery = "select count(*) from AsynchronousMailMessage as amm where ${wherePa.join(' and ')}"
+
+            resultListe = AsynchronousMailMessage.executeQuery(query, whereMap, params)
+            resultCount = AsynchronousMailMessage.executeQuery(countQuery, whereMap, params)[0]
+        }
+
+        [resultList: resultListe, resultCount: resultCount]
     }
 
     /**

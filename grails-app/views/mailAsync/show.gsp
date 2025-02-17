@@ -55,8 +55,14 @@
                             <dd>${message.subject?.encodeAsHTML()}</dd>
                         </dl>
                         <dl>
-                            <dt>Subject:</dt>
-                            <dd>${message.text?.encodeAsHTML()}</dd>
+                            <dt>
+                                Mail-Text:
+                            <br>
+                                <a class="ui button" href="mailto:?body=${message.text?.encodeAsHTML()}">Open in Mail</a>
+                            </dt>
+                            <dd>
+                                ${message.text?.encodeAsHTML()}
+                            </dd>
                         </dl>
                         <dl>
                             <dt>Attachments:</dt>
