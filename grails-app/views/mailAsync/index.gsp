@@ -47,11 +47,11 @@
 <table class="ui sortable celled la-js-responsive-table la-hover-table la-table compact table">
             <thead>
             <tr>
-                <g:sortableColumn property="id" title="Id"/>
-                <g:sortableColumn property="subject" title="Subject"/>
-                <g:sortableColumn property="to" title="To"/>
-                <g:sortableColumn property="createDate" title="Create Date"/>
-                <g:sortableColumn property="status" title="Status"/>
+                <g:sortableColumn property="id" title="Id" params="${params}" />
+                <g:sortableColumn property="subject" title="Subject"  params="${params}" />
+                <g:sortableColumn property="to" title="To"  params="${params}" />
+                <g:sortableColumn property="createDate" title="Create Date"  params="${params}" />
+                <g:sortableColumn property="status" title="Status"  params="${params}" />
                 <th>Actions</th>
             </tr>
             </thead>

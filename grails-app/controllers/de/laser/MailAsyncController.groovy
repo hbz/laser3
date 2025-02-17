@@ -60,13 +60,11 @@ class MailAsyncController {
                 whereMap.sentDate = sdf.parse(params.sentDate)
             }
 
-            println(whereMap)
-
             String query = "select amm from AsynchronousMailMessage as amm where ${wherePa.join(' and ')}"
             String countQuery = "select count(*) from AsynchronousMailMessage as amm where ${wherePa.join(' and ')}"
 
             resultListe = AsynchronousMailMessage.executeQuery(query, whereMap, params)
-            resultCount = AsynchronousMailMessage.executeQuery(countQuery, whereMap, params)[0]
+            resultCount = AsynchronousMailMessage.executeQuery(countQuery, whereMap)[0]
         }
 
         [resultList: resultListe, resultCount: resultCount]
