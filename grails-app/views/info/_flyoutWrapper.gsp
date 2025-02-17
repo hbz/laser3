@@ -11,7 +11,7 @@
             template: cell.attr('data-template')
         }
 
-        switch(data.template) {
+        switch (data.template) {
             case 'org':
                 data.id_org          = cell.attr('data-org')
                 data.id_subscription = cell.attr('data-sub')
@@ -24,7 +24,6 @@
                 data.id_platform     = cell.attr('data-platform')
                 break;
         }
-
 
         $.ajax ({
             url: "<g:createLink controller="info" action="flyout"/>",

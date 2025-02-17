@@ -600,7 +600,6 @@
                                                        data-content="${message(code: 'tipp.tooltip.myArea')}"></i>
 
                                                     <div class="ui la-segment-with-icon">
-
                                                         <laser:render template="/templates/tipps/coverages_accordion"
                                                                       model="${[ie: ie, tipp: ie.tipp]}"/>
 
@@ -664,6 +663,8 @@
                                                             <%-- GROUPS END--%>
                                                         </div>
                                                     </div>
+
+                                                    <laser:render template="/templates/titles/reportTitleToProvider_simple" model="${[tipp: ie.tipp]}"/>
                                                 </div><%-- My Area END --%>
                                             </div><%-- .grid --%>
                                         </div><%-- .segment --%>
@@ -688,16 +689,12 @@
     </div><%-- .ui.bottom.attached.tab.active.segment --%>
 </g:if>--}%
 
-
 <g:if test="${entitlements}">
-    <ui:paginate action="index" controller="subscription" params="${params}"
-                 max="${max}" total="${num_ies_rows}"/>
+    <ui:paginate action="index" controller="subscription" params="${params}" max="${max}" total="${num_ies_rows}"/>
 </g:if>
-
 
 <div id="magicArea">
 </div>
-
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.hideModal = function () {
@@ -862,5 +859,12 @@
 </laser:script>
 
 <g:render template="/clickMe/export/js"/>
+
+<laser:render template="/info/flyoutWrapper"/>%{-- reportTitleToProvider_simple --}%
+%{-- css workaround: reportTitleToProvider_simple --}%
+<style>
+.ui.form .info.message { display: flex; }
+</style>
+
 
 <laser:htmlEnd/>

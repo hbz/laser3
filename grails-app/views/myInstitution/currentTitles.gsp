@@ -364,6 +364,8 @@
                                                             </g:each>
                                                         </div>
                                                     </div>
+
+                                                    <laser:render template="/templates/titles/reportTitleToProvider_simple" model="${[tipp: tipp]}"/>
                                                 </div><%-- My Area END --%>
                                             </div><%-- .grid --%>
                                         </div><%-- .segment --%>
@@ -387,10 +389,10 @@
     </g:else>
 
 </div>
+
 <g:if test="${titles}">
     <ui:paginate action="currentTitles" controller="myInstitution" params="${params}" max="${max}" total="${num_ti_rows}"/>
 </g:if>
-
 
 <ui:debugInfo>
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
@@ -458,5 +460,11 @@
 </laser:script>
 
 <g:render template="/clickMe/export/js"/>
+
+<laser:render template="/info/flyoutWrapper"/>%{-- reportTitleToProvider_simple --}%
+%{-- css workaround: reportTitleToProvider_simple --}%
+<style>
+.ui.form .info.message { display: flex; }
+</style>
 
 <laser:htmlEnd/>

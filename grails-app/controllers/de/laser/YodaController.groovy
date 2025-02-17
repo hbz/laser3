@@ -1159,51 +1159,6 @@ class YodaController {
     }
 
     /**
-     * Moves the Nationaler Statistikserver credentials from the OrgProperty into the OrgSettings structure
-     */
-    @Secured(['ROLE_YODA'])
-    @Transactional
-    def migrateNatStatSettings() {
-        List<OrgProperty> opList = OrgProperty.executeQuery(
-                'select op from OrgProperty op join op.type pd where pd.descr = :orgConf and op.tenant = :context and op.isPublic = false', [
-                orgConf: PropertyDefinition.ORG_CONF,
-                context: contextService.getOrg()
-        ])
-
-        opList.each { OrgProperty op ->
-            if (op.type.name == 'API Key') {
-                def oss = OrgSetting.get(op.owner, OrgSetting.KEYS.NATSTAT_SERVER_API_KEY)
-
-                if (oss == OrgSetting.SETTING_NOT_FOUND) {
-                    OrgSetting.add(op.owner, OrgSetting.KEYS.NATSTAT_SERVER_API_KEY, op.getValue())
-                }
-                else {
-                    oss.setValue(op)
-                }
-            }
-            else if (op.type.name == 'RequestorID') {
-                def oss = OrgSetting.get(op.owner, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
-
-                if (oss == OrgSetting.SETTING_NOT_FOUND) {
-                    OrgSetting.add(op.owner, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID, op.getValue())
-                }
-                else {
-                    oss.setValue(op)
-                }
-            }
-        }
-
-        OrgProperty.executeQuery(
-                'select op from OrgProperty op join op.type pd where pd.descr = :orgConf '+
-                'and ( pd.name = \'API Key\' or pd.name = \'RequestorID\' ) and op.tenant = :context and op.isPublic = false',
-                [orgConf: PropertyDefinition.ORG_CONF, context: contextService.getOrg()]).each{
-            it.delete()
-        }
-
-        redirect action:'dashboard'
-    }
-
-    /**
      * Lists all system settings and their state
      * @see SystemSetting
      */

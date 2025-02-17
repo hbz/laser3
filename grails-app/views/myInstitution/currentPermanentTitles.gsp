@@ -155,7 +155,6 @@
                                                            data-content="${message(code: 'menu.my.subscriptions')}"></i>
 
                                                         <div class="ui la-segment-with-icon">
-
                                                             <div class="ui list">
                                                                 <g:each in="${ie_infos}" var="ie">
                                                                     <div class="item">
@@ -177,6 +176,8 @@
                                                                 </g:each>
                                                             </div>
                                                         </div>
+
+                                                        <laser:render template="/templates/titles/reportTitleToProvider_simple" model="${[tipp: tipp]}"/>
                                                     </div><%-- My Area END --%>
                                                 </div><%-- .grid --%>
                                             </div><%-- .segment --%>
@@ -207,5 +208,11 @@
 </g:if>
 
 </div>
+
+<laser:render template="/info/flyoutWrapper"/>%{-- reportTitleToProvider_simple --}%
+%{-- css workaround: reportTitleToProvider_simple --}%
+<style>
+.ui.form .info.message { display: flex; }
+</style>
 
 <laser:htmlEnd/>

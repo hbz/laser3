@@ -193,30 +193,6 @@
                     </div>
                     </g:if>
 
-                    <g:if test="${params.tab == 'general'}">
-                        <ui:flagDeprecated />
-
-                        <div class="ui card la-dl-no-table">
-                            <div class="content">
-                                <h2 class="ui header">
-                                    ${message(code:'org.confProperties')}
-                                </h2>
-
-                                <div id="custom_props_div_1">
-                                    <laser:render template="/templates/properties/custom" model="${[
-                                            prop_desc: PropertyDefinition.ORG_CONF,
-                                            ownobj: orgInstance,
-                                            orphanedProperties: orgInstance.propertySet,
-                                            custom_props_div: "custom_props_div_1" ]}"/>
-                                </div>
-                            </div><!-- .content -->
-                        </div><!-- .card -->
-
-                        <laser:script file="${this.getGroovyPageFileName()}">
-                            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_1");
-                        </laser:script>
-                    </g:if>
-
 
                 </div><!-- .la-inline-lists -->
 

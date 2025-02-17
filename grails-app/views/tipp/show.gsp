@@ -24,7 +24,7 @@
 
 <ui:messages data="${flash}"/>
 
-<laser:render template="/templates/tasks/reportTitleToProvider" model="${[tipp: tipp]}"/>
+<laser:render template="/templates/titles/reportTitleToProvider" model="${[tipp: tipp]}"/>
 
 <div class="la-inline-lists">
     <g:if test="${participantPerpetualAccessToTitle}">
