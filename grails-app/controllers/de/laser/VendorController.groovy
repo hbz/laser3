@@ -43,7 +43,7 @@ class VendorController {
         ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
     def index() {
-        redirect 'list'
+        redirect action: 'list'
     }
 
     @DebugInfo(isInstUser_denySupport_or_ROLEADMIN = [])

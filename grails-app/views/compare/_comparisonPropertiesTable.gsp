@@ -54,8 +54,8 @@
                         <div class="la-copyElements-flex-container la-colorCode-target la-multi-sources">
                         <div class="la-copyElements-flex-item">
                         <g:if test="${propValue.getValue() != "" && propValue.getValue() != null}">
-                            <g:if test="${propValue.type.isIntegerType()}">
-                                <ui:xEditable owner="${propValue}" type="text" field="intValue"
+                            <g:if test="${propValue.type.isLongType()}">
+                                <ui:xEditable owner="${propValue}" type="text" field="longValue"
                                                  overwriteEditable="${false}"/>
                             </g:if>
 

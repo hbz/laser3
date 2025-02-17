@@ -444,8 +444,8 @@ class AjaxJsonController {
                 }
                 if (values) {
                     //very ugly, needs a more elegant solution
-                    if (propDef.isIntegerType()) {
-                        values.intValue.findAll().unique().each { v ->
+                    if (propDef.isLongType()) {
+                        values.longValue.findAll().unique().each { v ->
                             result.add([value:v,text:v])
                         }
                         result = result.sort { x, y -> x.text.compareTo(y.text) }

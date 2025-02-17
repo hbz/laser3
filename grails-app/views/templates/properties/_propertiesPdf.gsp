@@ -120,8 +120,8 @@
                                     </g:if>--}%
                                 </td>
                                 <td>
-                                    <g:if test="${prop.type.isIntegerType()}">
-                                        ${prop.intValue}
+                                    <g:if test="${prop.type.isLongType()}">
+                                        ${prop.longValue}
                                     </g:if>
                                     <g:elseif test="${prop.type.isStringType()}">
                                         ${prop.stringValue}
@@ -231,8 +231,8 @@
                                     --%>
                                 </td>
                                 <td>
-                                    <g:if test="${prop.type.isIntegerType()}">
-                                        ${prop.intValue}
+                                    <g:if test="${prop.type.isLongType()}">
+                                        ${prop.longValue}
                                     </g:if>
                                     <g:elseif test="${prop.type.isStringType()}">
                                         ${prop.stringValue}
@@ -318,8 +318,8 @@
                                 </g:if>--}%
                             </td>
                             <td>
-                                <g:if test="${prop.type.isIntegerType()}">
-                                    ${prop.intValue}
+                                <g:if test="${prop.type.isLongType()}">
+                                    ${prop.longValue}
                                 </g:if>
                                 <g:elseif test="${prop.type.isStringType()}">
                                     ${prop.stringValue}

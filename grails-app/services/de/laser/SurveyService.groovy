@@ -347,8 +347,8 @@ class SurveyService {
 
                         String value = ""
 
-                        if (surResult.type.isIntegerType()) {
-                            value = surResult.intValue ? surResult.intValue.toString() : ""
+                        if (surResult.type.isLongType()) {
+                            value = surResult.longValue ? surResult.longValue.toString() : ""
                         } else if (surResult.type.isStringType()) {
                             value = surResult.stringValue ?: ""
                         } else if (surResult.type.isBigDecimalType()) {
@@ -498,8 +498,8 @@ class SurveyService {
 
                     String value = ""
 
-                    if (surResult.type.isIntegerType()) {
-                        value = surResult?.intValue ? surResult.intValue.toString() : ""
+                    if (surResult.type.isLongType()) {
+                        value = surResult?.longValue ? surResult.longValue.toString() : ""
                     } else if (surResult.type.isStringType()) {
                         value = surResult.stringValue ?: ""
                     } else if (surResult.type.isBigDecimalType()) {
@@ -927,8 +927,8 @@ class SurveyService {
 
                             String value = ""
 
-                            if (surveyResult.type.isIntegerType()) {
-                                value = surveyResult?.intValue ? surveyResult.intValue.toString() : ""
+                            if (surveyResult.type.isLongType()) {
+                                value = surveyResult?.longValue ? surveyResult.longValue.toString() : ""
                             } else if (surveyResult.type.isStringType()) {
                                 value = surveyResult.stringValue ?: ""
                             } else if (surveyResult.type.isBigDecimalType()) {
@@ -2207,7 +2207,7 @@ class SurveyService {
     int countSurveyPropertyWithValueByMembers(SurveyConfig surveyConfig, PropertyDefinition propertyDefinition, List<Org> orgs){
         return SurveyResult.executeQuery('select count(*) from SurveyResult as sr where sr.surveyConfig = :surveyConfig AND sr.type = :type AND sr.participant in (:orgs) AND ' +
                 '(stringValue is not null ' +
-                'OR intValue is not null ' +
+                'OR longValue is not null ' +
                 'OR decValue is not null ' +
                 'OR refValue is not null ' +
                 'OR urlValue is not null ' +
@@ -2346,8 +2346,8 @@ class SurveyService {
                     chartSource << ["${prop.getI10n('name')}: ${it.key}", it.value.size()]
                 }
             }
-            if (prop.isIntegerType()) {
-                chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.intValue is not null) and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]
+            if (prop.isLongType()) {
+                chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.longValue is not null) and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]
             }
             else if (prop.isStringType()) {
                 chartSource << ["${prop.getI10n('name')}", SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.participant in (:participants) and (sr.stringValue is not null or sr.stringValue != '') and sr.type = :propType", [propType: prop, surveyConfig: surveyConfig, participants: orgList])[0]]

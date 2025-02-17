@@ -23,9 +23,9 @@
                 </td>
                 <td>
                     <g:if test="${changedProperty.subscriptionProperty.getValue() != "" && changedProperty.subscriptionProperty.getValue() != null}">
-                        <g:if test="${changedProperty.subscriptionProperty.type.isIntegerType()}">
+                        <g:if test="${changedProperty.subscriptionProperty.type.isLongType()}">
                             <ui:xEditable owner="${changedProperty.subscriptionProperty}"
-                                             type="text" field="intValue"
+                                             type="text" field="longValue"
                                              overwriteEditable="${false}"/>
                         </g:if>
 

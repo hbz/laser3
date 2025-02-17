@@ -28,7 +28,7 @@
 			<g:each in="${propertyDefinitions}" var="entry">
                 <div class="title">
                     <i class="dropdown icon"></i>
-                    <g:message code="propertyDefinition.${entry.key}.label" />
+                    <g:message code="propertyDefinition.${entry.key}.label" /> (${entry.value.size()})
                 </div>
                 <div class="content">
                     <table class="ui celled la-js-responsive-table la-table compact table">
