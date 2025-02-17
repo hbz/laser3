@@ -366,10 +366,10 @@ class ExportService {
 			userCache.put('label', 'Hole Titel ...')
 			Map<String, Object> idSubsetQueryParams = [refSub: refSub, current: RDStore.TIPP_STATUS_CURRENT]
 			if(allTitles) {
-				titlesSorted = IssueEntitlement.executeQuery('select new map(tipp.id as tippID, tipp.name as tippName) from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :refSub and ie.status = :current order by tipp.sortname', idSubsetQueryParams)
+				titlesSorted = TitleInstancePackagePlatform.executeQuery('select new map(tipp.id as tippID, tipp.name as tippName) from TitleInstancePackagePlatform tipp, SubscriptionPackage sp where tipp.pkg = sp.pkg and sp.subscription = :refSub and tipp.status = :current order by tipp.sortname', idSubsetQueryParams)
 			}
 			else {
-				titlesSorted = TitleInstancePackagePlatform.executeQuery('select new map(tipp.id as tippID, tipp.name as tippName) from TitleInstancePackagePlatform tipp, SubscriptionPackage sp where tipp.pkg = sp.pkg and sp.subscription = :refSub and tipp.status = :current order by tipp.sortname', idSubsetQueryParams)
+				titlesSorted = IssueEntitlement.executeQuery('select new map(tipp.id as tippID, tipp.name as tippName) from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :refSub and ie.status = :current order by tipp.sortname', idSubsetQueryParams)
 			}
 			titles = subscriptionControllerService.fetchTitles(titlesSorted['tippID'].toArray())
 			userCache.put('progress', 20)

@@ -198,6 +198,7 @@ class ManagementService {
                     result.validLicenses.addAll(License.findAllByInstanceOfInList(result.parentLicenses))
                 }
                 result.filteredSubscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription)
+                result.subIDs = result.filteredSubscriptions.collect { Map row -> row.sub.id }
             }
 
             if(controller instanceof MyInstitutionController) {
@@ -306,6 +307,7 @@ class ManagementService {
                 result.validPackages = Package.executeQuery('select sp from SubscriptionPackage sp where sp.subscription = :subscription', [subscription: result.subscription])
                 result.filteredSubscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription)
                 if(result.filteredSubscriptions)
+                    result.subIDs = result.filteredSubscriptions.collect { Map row -> row.sub.id }
                     result.childWithCostItems = CostItem.executeQuery('select ci.pkg from CostItem ci where ci.pkg is not null and ci.sub in (:filteredSubChildren) and ci.costItemStatus != :deleted and ci.owner = :context',[context:result.institution, deleted:RDStore.COST_ITEM_DELETED, filteredSubChildren:result.filteredSubscriptions.collect { row -> row.sub }])
             }
 
@@ -530,6 +532,7 @@ class ManagementService {
         else {
             if(controller instanceof SubscriptionController) {
                 result.filteredSubscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription)
+                result.subIDs = result.filteredSubscriptions.collect { Map row -> row.sub.id }
             }
 
             if(controller instanceof MyInstitutionController) {
@@ -730,6 +733,7 @@ class ManagementService {
 
             if(controller instanceof SubscriptionController) {
                 result.filteredSubscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription)
+                result.subIDs = result.filteredSubscriptions.collect { Map row -> row.sub.id }
             }
 
             if(controller instanceof MyInstitutionController) {

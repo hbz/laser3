@@ -246,7 +246,7 @@
                                             <g:if test="${participant.oldSub?.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
                                                 <g:link controller="subscription" action="index" id="${participant.oldSub.id}"
                                                         params="[pkgfilter: sp.pkg.id]">
-                                                    ${sp.pkg.name}<br/>(Bestand der Elternlizenz wird übernommen)
+                                                    ${sp.pkg.name}<br/><i class="${Icon.SIG.INHERITANCE_AUTO}"></i>
                                                 </g:link>
                                             </g:if>
                                             <g:else>
@@ -268,7 +268,7 @@
                                             <g:if test="${participant.newSub.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
                                                 <g:link controller="subscription" action="index" id="${participant.newSub.id}"
                                                         params="[pkgfilter: sp.pkg.id]">
-                                                    ${sp.pkg.name}<br/>(Bestand der Elternlizenz wird übernommen)
+                                                    ${sp.pkg.name}<br/><i class="${Icon.SIG.INHERITANCE_AUTO}"></i>
                                                 </g:link>
                                             </g:if>
                                             <g:else>

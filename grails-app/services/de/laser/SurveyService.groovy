@@ -2612,7 +2612,7 @@ class SurveyService {
                         result.reportTypes = []
                         CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriberRespConsortia(), platformInstance)
                         if (ci?.value) {
-                            Set allAvailableReports = subscriptionControllerService.getAvailableReports(result)
+                            Set allAvailableReports = subscriptionControllerService.getAvailableReports(result, true, true)
                             if (allAvailableReports)
                                 result.reportTypes.addAll(allAvailableReports)
                             else {
