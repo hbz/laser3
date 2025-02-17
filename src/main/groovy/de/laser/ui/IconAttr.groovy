@@ -15,9 +15,11 @@ class IconAttr {
 
         @UIDoc(usage = 'Only for License attribute: licenseCategory')
         public static String LICENSE_CATEGORY           = 'stamp icon'
+        @UIDoc(usage = 'Only for License processing')
+        public static String LICENSE_PROCESSING         = 'file signature icon'
 
         @UIDoc(usage = 'Only for Org attributes: createdBy / legallyObligedBy')
-        public static String ORG_LEGAL_INFORMATION      = 'hands helping icon'
+        public static String ORG_LEGAL_INFORMATION      = 'key icon'
 
         @UIDoc(usage = 'Only for Org attributes: createdBy=true / legallyObligedBy=true (COLORED)')
         public static String ORG_LEGAL_INFORMATION_11   = 'green check circle icon'
@@ -39,6 +41,8 @@ class IconAttr {
         @UIDoc(usage = 'Only for Subscription attribute: holdingSelection')
         public static String SUBSCRIPTION_HOLDING_SELECTION     = 'cut icon'            // TODO
 
+        @UIDoc(usage = 'Only for Subscription invoice processing')
+        public static String SUBSCRIPTION_INVOICE_PROCESSING    = 'file invoice dollar icon'
         @UIDoc(usage = 'Only for Subscription attribute: isMultiYear')
         public static String SUBSCRIPTION_IS_MULTIYEAR      = 'forward icon'
         @UIDoc(usage = 'Only for Subscription attribute: kind')
