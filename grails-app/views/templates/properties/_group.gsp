@@ -70,8 +70,8 @@
                         </g:if>
                     </td>
                     <td>
-                        <g:if test="${prop.type.isIntegerType()}">
-                            <ui:xEditable owner="${prop}" type="number" field="intValue" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
+                        <g:if test="${prop.type.isLongType()}">
+                            <ui:xEditable owner="${prop}" type="number" field="longValue" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                         </g:if>
                         <g:elseif test="${prop.type.isStringType()}">
                             <ui:xEditable owner="${prop}" type="text" field="stringValue" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
@@ -83,7 +83,7 @@
                             <ui:xEditable owner="${prop}" type="date" field="dateValue" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                         </g:elseif>
                         <g:elseif test="${prop.type.isRefdataValueType()}">
-                            <ui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
+                            <ui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}" overwriteEditable="${overwriteEditable}" class="la-dont-break-out" constraint="removeValues_processingProvOrVendor"/>
                         </g:elseif>
                         <g:elseif test="${prop.type.isURLType()}">
                             <ui:xEditable owner="${prop}" type="url" field="urlValue" validation="maxlength" maxlength="255" overwriteEditable="${overwriteEditable}" class="la-overflow la-ellipsis" />

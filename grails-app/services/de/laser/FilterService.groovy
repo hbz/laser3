@@ -994,11 +994,11 @@ class FilterService {
                                 queryParams.put('prop', filterProp)
                             }
                     }
-                    else if (pd.isIntegerType()) {
+                    else if (pd.isLongType()) {
                             if (!params.filterProp || params.filterProp.length() < 1) {
-                                base_qry += " and surResult.intValue = null "
+                                base_qry += " and surResult.longValue = null "
                             } else {
-                                base_qry += " and surResult.intValue = :prop "
+                                base_qry += " and surResult.longValue = :prop "
                                 queryParams.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                             }
                     }

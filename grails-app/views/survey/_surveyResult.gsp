@@ -13,8 +13,8 @@
 </g:if>
 <g:else>
 
-    <g:if test="${surResult.type.isIntegerType()}">
-        <ui:xEditable owner="${surResult}" type="text" field="intValue"/>
+    <g:if test="${surResult.type.isLongType()}">
+        <ui:xEditable owner="${surResult}" type="text" field="longValue"/>
     </g:if>
     <g:elseif test="${surResult.type.isStringType()}">
         <ui:xEditable owner="${surResult}" type="text" field="stringValue"/>

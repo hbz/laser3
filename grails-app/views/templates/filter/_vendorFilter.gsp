@@ -222,7 +222,7 @@
 
 <div class="field la-field-right-aligned">
 
-    <g:link controller="${processController}" action="${processAction}" id="${surveyInfo.id}" params="[viewTab: params.viewTab, subTab: params.subTab]" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</g:link>
+    <g:link controller="${processController}" action="${processAction}" id="${surveyInfo?.id}" params="[viewTab: params.viewTab, subTab: params.subTab]" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</g:link>
 
         <input name="filterSet" type="hidden" value="true">
         <g:if test="${tmplConfigFormFilter}">

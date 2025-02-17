@@ -15,9 +15,11 @@ import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.MarkerSupport
 import de.laser.interfaces.ShareSupport
+import de.laser.properties.LicenseProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
+import de.laser.properties.SubscriptionProperty
 import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -292,6 +294,7 @@ class AjaxController {
         List result = []
         Map<String, Object> config = refdata_config.get(params.id?.toString()) //we call toString in case we got a GString
         boolean defaultOrder = true
+        def obj = genericOIDService.resolveOID(params.oid)
 
         if (config == null) {
             String lang = LocaleUtils.getCurrentLang()
@@ -330,6 +333,9 @@ class AjaxController {
 
           // handle custom constraint(s) ..
           if (it.value.equalsIgnoreCase('deleted') && params.constraint?.contains('removeValue_deleted')) {
+              log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
+          }
+          else if ((obj instanceof SubscriptionProperty || obj instanceof LicenseProperty) && obj.owner.instanceOf && it == RDStore.INVOICE_PROCESSING_PROVIDER_OR_VENDOR && params.constraint?.contains('removeValues_processingProvOrVendor')) {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
           else if (it in [RDStore.INVOICE_PROCESSING_CONSORTIUM, RDStore.INVOICE_PROCESSING_NOT_SET, RDStore.INVOICE_PROCESSING_PROVIDER_OR_VENDOR] && params.constraint?.contains('removeValues_invoiceProcessing')) {
@@ -1728,7 +1734,17 @@ class AjaxController {
                         if (target_object."${params.name}" instanceof BigDecimal) {
                             params.value = escapeService.parseFinancialValue(params.value)
                         }
-                        if (target_object."${params.name}" instanceof Boolean) {
+                        else if (target_object."${params.name}" instanceof Long) {
+                            if (params.long('value').toString() != params.value) {
+                                params.value = null // Hotfix: ERMS-6274 - Todo: ERMS-6285
+                            }
+                        }
+                        else if (target_object."${params.name}" instanceof Integer) {
+                            if (params.int('value').toString() != params.value) {
+                                params.value = null // Hotfix: ERMS-6274 - Todo: ERMS-6285
+                            }
+                        }
+                        else if (target_object."${params.name}" instanceof Boolean) {
                             params.value = params.value?.equals("1")
                         }
                         if (target_object instanceof AlternativeName) {
@@ -1772,7 +1788,9 @@ class AjaxController {
                                 render result as JSON
                                 return
                             }
-                        }else {
+                        }
+                        else { // -- default
+
                             bindData(target_object, binding_properties)
 
                             target_object.save(failOnError: true)

@@ -1588,37 +1588,25 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             setupPkgVendor(vendor, pkg)
                         }
                     }
-                    vendor.supportedLibrarySystems.each { LibrarySystem lsA ->
-                        if(!supportedLibrarySystemsB.contains(lsA.librarySystem.value))
-                            lsA.delete()
-                    }
+                    LibrarySystem.executeUpdate('delete from LibrarySystem lsA where lsA.vendor = :vendor and lsA.librarySystem not in (:lsB)', [vendor: vendor, lsB: RefdataValue.findAllByValueInListAndOwner(supportedLibrarySystemsB, RefdataCategory.findByDesc(RDConstants.SUPPORTED_LIBRARY_SYSTEM))])
                     supportedLibrarySystemsB.each { String lsB ->
                         if(!vendor.isLibrarySystemSupported(lsB)) {
                             new LibrarySystem(vendor: vendor, librarySystem: RefdataValue.getByValueAndCategory(lsB, RDConstants.SUPPORTED_LIBRARY_SYSTEM)).save()
                         }
                     }
-                    vendor.electronicBillings.each { ElectronicBilling ebA ->
-                        if(!electronicBillingsB.contains(ebA.invoicingFormat.value))
-                            ebA.delete()
-                    }
+                    ElectronicBilling.executeUpdate('delete from ElectronicBilling ebA where ebA.vendor = :vendor and ebA.invoicingFormat not in (:ebB)', [vendor: vendor, ebB: RefdataValue.findAllByValueInListAndOwner(electronicBillingsB, RefdataCategory.findByDesc(RDConstants.VENDOR_INVOICING_FORMAT))])
                     electronicBillingsB.each { String ebB ->
                         if(!vendor.hasElectronicBilling(ebB)) {
                             new ElectronicBilling(vendor: vendor, invoicingFormat: RefdataValue.getByValueAndCategory(ebB, RDConstants.VENDOR_INVOICING_FORMAT)).save()
                         }
                     }
-                    vendor.invoiceDispatchs.each { InvoiceDispatch idiA ->
-                        if(!invoiceDispatchsB.contains(idiA.invoiceDispatch.value))
-                            idiA.delete()
-                    }
+                    InvoiceDispatch.executeUpdate('delete from InvoiceDispatch idA where idA.vendor = :vendor and idA.invoiceDispatch not in (:idB)', [vendor: vendor, idB: RefdataValue.findAllByValueInListAndOwner(invoiceDispatchsB, RefdataCategory.findByDesc(RDConstants.VENDOR_INVOICING_DISPATCH))])
                     invoiceDispatchsB.each { String idiB ->
                         if(!vendor.hasInvoiceDispatch(idiB)) {
                             new InvoiceDispatch(vendor: vendor, invoiceDispatch: RefdataValue.getByValueAndCategory(idiB, RDConstants.VENDOR_INVOICING_DISPATCH)).save()
                         }
                     }
-                    vendor.electronicDeliveryDelays.each { ElectronicDeliveryDelayNotification eddnA ->
-                        if(!electronicDeliveryDelaysB.contains(eddnA.delayNotification.value))
-                            eddnA.delete()
-                    }
+                    ElectronicDeliveryDelayNotification.executeUpdate('delete from ElectronicDeliveryDelayNotification eddnA where eddnA.vendor = :vendor and eddnA.delayNotification not in (:eddnB)', [vendor: vendor, eddnB: RefdataValue.findAllByValueInListAndOwner(electronicDeliveryDelaysB, RefdataCategory.findByDesc(RDConstants.VENDOR_ELECTRONIC_DELIVERY_DELAY))])
                     electronicDeliveryDelaysB.each { String eddnB ->
                         if(!vendor.hasElectronicDeliveryDelayNotification(eddnB)) {
                             new ElectronicDeliveryDelayNotification(vendor: vendor, delayNotification: RefdataValue.getByValueAndCategory(eddnB, RDConstants.VENDOR_ELECTRONIC_DELIVERY_DELAY)).save()
