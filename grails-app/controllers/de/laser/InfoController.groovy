@@ -8,6 +8,7 @@ import de.laser.remote.Wekb
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
 import de.laser.wekb.Platform
+import de.laser.wekb.Provider
 import de.laser.wekb.TitleInstancePackagePlatform
 import grails.plugin.springsecurity.annotation.Secured
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -72,19 +73,24 @@ ${custId ? ('Customer Identifier: ' + custId.value) : ''}
         ]
     }
 
-    private static Map<String, Object> _reportTitleToProvider(GrailsParameterMap params) {
+    private static List<Contact> _getProviderContacts(Provider provider, List<RefdataValue> order) {
+        List<Contact> ccList = []
+        order.each { rdv ->
+            if (!ccList) {
+                List<Person> ppList = BeanStore.getProviderService().getContactPersonsByFunctionType(provider, false, rdv)
+                ccList = ppList.contacts.flatten().findAll { it.contentType?.value in ['E-Mail', 'Mail'] } as List<Contact>
+            }
+        }
+        ccList
+    }
 
+    private static Map<String, Object> _reportTitleToProvider(GrailsParameterMap params) {
         Map<String, Object> result = [:]
 
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(params.id_tipp)
+        Provider provider = tipp.platform.provider
 
-        List<Person> ppList = BeanStore.getProviderService().getContactPersonsByFunctionType(tipp.platform.provider, false, RDStore.PRS_FUNC_SERVICE_SUPPORT)
-
-        if (!ppList) {
-            ppList = BeanStore.getProviderService().getContactPersonsByFunctionType(tipp.platform.provider, false, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS)
-        }
-        List<Contact> ccList = ppList.contacts.flatten().findAll { it.contentType?.value in ['E-Mail', 'Mail'] } as List<Contact>
-
+        List<Contact> ccList = _getProviderContacts(provider, [RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS])
         User user = BeanStore.getContextService().getUser()
 
         result = [
@@ -92,8 +98,8 @@ ${custId ? ('Customer Identifier: ' + custId.value) : ''}
                 mailcc : user.email
         ]
         result.mailSubject = [
-                de: "Fehlerhafte Titel-Daten in der We:kb - ${tipp.platform.provider.name}",
-                en: "Incorrect title information in the We:kb - ${tipp.platform.provider.name}"
+                de: "Fehlerhafte Titel-Daten in der We:kb - ${provider.name}",
+                en: "Incorrect title information in the We:kb - ${provider.name}"
         ]
 
         Map sig = _getEmailSignature(tipp)
@@ -136,14 +142,12 @@ Thank you
         Map<String, Object> result
         User user = BeanStore.getContextService().getUser()
         Platform platform = Platform.get(params.id_platform)
-        List<Person> ppList = BeanStore.getProviderService().getContactPersonsByFunctionType(platform.provider, false, RDStore.PRS_FUNC_STATS_SUPPORT)
-        if (!ppList) {
-            ppList = BeanStore.getProviderService().getContactPersonsByFunctionType(platform.provider, false, RDStore.PRS_FUNC_SERVICE_SUPPORT)
-        }
-        if (!ppList) {
-            ppList = BeanStore.getProviderService().getContactPersonsByFunctionType(platform.provider, false, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS)
-        }
-        List<Contact> ccList = ppList.contacts.flatten().findAll { it.contentType?.value in ['E-Mail', 'Mail'] } as List<Contact>
+
+        List<Contact> ccList = _getProviderContacts(
+                platform.provider,
+                [RDStore.PRS_FUNC_STATS_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
+        )
+
         result = [
                 mailto : ccList.collect { it.content }.sort().join(','),
                 mailcc : user.email
