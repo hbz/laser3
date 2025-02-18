@@ -125,7 +125,7 @@
                         </dd>
                         <dd>
                             <g:if test="${editable}">
-                                <button  data-content="${message(code: 'altname.add')}" data-objtype="altname" id="addAltname"  class="${Btn.MODERN.POSITIVE} la-js-addItem blue la-popup-tooltip">
+                                <button data-content="${message(code: 'altname.add')}" data-objtype="altname" id="addAltname" class="${Btn.MODERN.POSITIVE} la-js-addItem blue la-popup-tooltip">
                                     <i class="${Icon.CMD.ADD}"></i>
                                 </button>
                             </g:if>
@@ -366,6 +366,20 @@
                         </dl>
                     </div>
                 </div>
+            </g:if>
+
+            <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
+                <div class="ui card">
+                    <div class="content">
+                        <ui:h2AdminOnly />
+                        <dl>
+                            <dt class="control-label"><g:message code="org.isBetaTester.label" /></dt>
+                            <dd>
+                                <ui:xEditableBoolean owner="${orgInstance}" field="isBetaTester" />
+                            </dd>
+                        </dl>
+                    </div>
+                </div><!-- .card -->
             </g:if>
 
         <g:set var="showAdminTab" value="${(SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || institution.isCustomerType_Consortium()) && (institution != orgInstance)}" />

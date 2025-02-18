@@ -13,7 +13,7 @@
         <g:form action="manageOrganisations" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow: [['name', 'identifier', 'customerType'],
+                              tmplConfigShow: [['name', 'identifier', 'customerType', 'isBetaTester'],
                                                ['discoverySystemsFrontend', 'discoverySystemsIndex', 'apiLevel', 'serverAccess'],
                                                ['country&region', 'libraryNetwork', 'libraryType']],
                               tmplConfigFormFilter: true
@@ -29,22 +29,37 @@
                 <th>${message(code:'sidewide.number')}</th>
                 <th>${message(code: 'org.sortname.label')}</th>
                 <th>${message(code: 'org.fullName.label')}</th>
-                <th>${message(code:'org.customerType.label')}</th>
+                <th class="center aligned">
+%{--                    ${message(code:'org.customerType.label')}--}%
+                    <span class="la-popup-tooltip la-no-uppercase" data-position="left center" data-content="${message(code:'org.customerType.label')}">
+                        <i class="${Icon.ATTR.ORG_CUSTOMER_TYPE} popup"></i>
+                    </span>
+                </th>
+                <th class="center aligned">
+                    <span class="la-popup-tooltip" data-position="left center" data-content="${message(code:'org.gascoEntry.label')}">
+                        <i class="${Icon.GASCO}"></i>
+                    </span>
+                </th>
+                <th class="center aligned">
+                    <span class="la-popup-tooltip" data-position="left center" data-content="${message(code:'org.isBetaTester.label')}">
+                        <i class="${Icon.ATTR.ORG_IS_BETA_TESTER}"></i>
+                    </span>
+                </th>
+                <th class="center aligned">
+                    <span class="la-popup-tooltip" data-position="left center" data-content="${message(code:'org.legalInformation.tooltip')}">
+                        <i class="${Icon.ATTR.ORG_LEGAL_INFORMATION}"></i>
+                    </span>
+                </th>
                 <th>
                     ${message(code:'org.apiLevel.label')}
                     <span class="la-popup-tooltip la-no-uppercase" data-position="right center" data-content="${message(code:'org.apiLevel.tooltip')}">
-                        <i class="${Icon.TOOLTIP.HELP} icon popup"></i>
+                        <i class="${Icon.TOOLTIP.HELP} popup"></i>
                     </span>
                 </th>
                 <th>
                     ${message(code:'org.serverAccess.label')}
                     <span class="la-popup-tooltip la-no-uppercase" data-position="right center" data-content="${message(code:'org.serverAccess.tooltip')}">
-                        <i class="${Icon.TOOLTIP.HELP} icon popup"></i>
-                    </span>
-                </th>
-                <th class="la-no-uppercase">
-                    <span class="la-popup-tooltip" data-position="left center" data-content="${message(code:'org.legalInformation.tooltip')}">
-                        <i class="${Icon.ATTR.ORG_LEGAL_INFORMATION}"></i>
+                        <i class="${Icon.TOOLTIP.HELP} popup"></i>
                     </span>
                 </th>
                 <th>${message(code:'org.hasAccessOrg')}</th>
@@ -69,12 +84,26 @@
                                 (${fieldValue(bean: org, field: "sortname")})
                             </g:if>
                         </g:link>
+                    </td>
 
+                    <td>
+                        <%
+                            def customerType = OrgSetting.get(org, OrgSetting.KEYS.CUSTOMER_TYPE)
+                            if (customerType != OrgSetting.SETTING_NOT_FOUND) {
+                                customerType = customerType.getRoleValue().id
+                            } else {
+                                customerType = null
+                            }
+                        %>
+                        <ui:customerTypeIcon org="${org}" option="tooltip" />
+                    </td>
+
+                    <td>
                         <%
                             def gascoEntry = OrgSetting.get(org, OrgSetting.KEYS.GASCO_ENTRY)
                             if (gascoEntry != OrgSetting.SETTING_NOT_FOUND && gascoEntry.getValue()?.value == 'Yes') {
                                 println ' <span class="la-popup-tooltip" data-position="top right" data-content="' + message(code:'org.gascoEntry.label') + '">'
-                                println ' <i class="' + Icon.GASCO + ' blue"></i>'
+                                println ' <i class="' + Icon.GASCO + ' grey"></i>'
                                 println ' </span>'
                                 gascoEntry = gascoEntry.getValue()
                             } else {
@@ -84,49 +113,11 @@
                     </td>
 
                     <td>
-%{--                        <ui:customerTypeIcon org="${org}" />--}%
-
-                        <%
-                            def customerType = OrgSetting.get(org, OrgSetting.KEYS.CUSTOMER_TYPE)
-                            if (customerType != OrgSetting.SETTING_NOT_FOUND) {
-                                println customerType.getRoleValue()?.getI10n('authority')
-                                customerType = customerType.getRoleValue().id
-                            }
-                            else {
-                                customerType = null
-                            }
-                        %>
-                    </td>
-
-                    <td>
-                        <%
-                            def apiLevel = OrgSetting.get(org, OrgSetting.KEYS.API_LEVEL)
-                            if (apiLevel != OrgSetting.SETTING_NOT_FOUND) {
-                                println '<div>' + apiLevel.getValue() + '</div>'
-                                apiLevel = apiLevel.getValue()
-                            }
-                            else {
-                                apiLevel = 'Kein Zugriff'
-                            }
-                        %>
-                    </td>
-                    <td>
-                        <%
-                            def accessStatistics = OrgSetting.get(org, OrgSetting.KEYS.NATSTAT_SERVER_ACCESS)
-                            if (accessStatistics != OrgSetting.SETTING_NOT_FOUND && accessStatistics.getValue()?.value == 'Yes') {
-                                println '<div><i class="' + Icon.SYM.IS_PUBLIC + '"></i> Statistikserver</div>'
-                            }
-
-                            def accessOA = OrgSetting.get(org, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS)
-                            if (accessOA!= OrgSetting.SETTING_NOT_FOUND && accessOA.getValue()?.value == 'Yes') {
-                                println '<div><i class="' + Icon.SYM.IS_PUBLIC + '"></i> OAMonitor</div>'
-                            }
-
-                            def accessEZB = OrgSetting.get(org, OrgSetting.KEYS.EZB_SERVER_ACCESS)
-                            if (accessEZB!= OrgSetting.SETTING_NOT_FOUND && accessEZB.getValue()?.value == 'Yes') {
-                                println '<div><i class="' + Icon.SYM.IS_PUBLIC + '"></i> EZB</div>'
-                            }
-                        %>
+                        <g:if test="${org.isBetaTester}">
+                            <span class="la-popup-tooltip" data-position="top right" data-content="${message(code:'org.isBetaTester.label')}" >
+                                <i class="${Icon.ATTR.ORG_IS_BETA_TESTER} grey"></i>
+                            </span>
+                        </g:if>
                     </td>
 
                     <td>
@@ -151,6 +142,38 @@
                     </td>
 
                     <td>
+                        <%
+                            def apiLevel = OrgSetting.get(org, OrgSetting.KEYS.API_LEVEL)
+                            if (apiLevel != OrgSetting.SETTING_NOT_FOUND) {
+                                println '<div>' + apiLevel.getValue() + '</div>'
+                                apiLevel = apiLevel.getValue()
+                            }
+                            else {
+                                apiLevel = 'Kein Zugriff'
+                            }
+                        %>
+                    </td>
+
+                    <td>
+                        <%
+                            def accessStatistics = OrgSetting.get(org, OrgSetting.KEYS.NATSTAT_SERVER_ACCESS)
+                            if (accessStatistics != OrgSetting.SETTING_NOT_FOUND && accessStatistics.getValue()?.value == 'Yes') {
+                                println '<div>Statistikserver</div>'
+                            }
+
+                            def accessOA = OrgSetting.get(org, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS)
+                            if (accessOA!= OrgSetting.SETTING_NOT_FOUND && accessOA.getValue()?.value == 'Yes') {
+                                println '<div>OAMonitor</div>'
+                            }
+
+                            def accessEZB = OrgSetting.get(org, OrgSetting.KEYS.EZB_SERVER_ACCESS)
+                            if (accessEZB!= OrgSetting.SETTING_NOT_FOUND && accessEZB.getValue()?.value == 'Yes') {
+                                println '<div>EZB</div>'
+                            }
+                        %>
+                    </td>
+
+                    <td>
                         <g:set var="userMap" value="${org.getUserMap()}"/>
 
                         <g:if test="${userMap.instAdms.size() > 0}">
@@ -164,14 +187,21 @@
                         <g:if test="${userMap.instUsers.size() > 0}">
                             Inst_Users: ${userMap.instUsers.size()}<br />
                         </g:if>
-
                     </td>
 
                     <td class="x">
+                        <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}"
+                                data-ctTarget="${org.id}"
+                                data-customerType="${customerType}"
+                                data-orgName="${org.name}"
+                                data-ui="modal"
+                                data-href="#customerTypeModal"
+                                data-content="Kundentyp ändern" data-position="top left"><i class="${Icon.ATTR.ORG_CUSTOMER_TYPE}"></i></button>
+
                         <g:if test="${org.isCustomerType_Consortium() || org.isCustomerType_Support()}">
                             <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}"
                                     data-gascoTarget="${org.id}"
-                                    data-gascoEntry="${gascoEntry.class.name}:${gascoEntry.id}"
+                                    data-gascoEntry="${gascoEntry.id}"
                                     data-orgName="${org.name}"
                                     data-ui="modal"
                                     data-href="#gascoEntryModal"
@@ -188,14 +218,6 @@
                                     data-href="#legalInformationModal"
                                     data-content="Rechtl. Informationen ändern" data-position="top left"><i class="${Icon.ATTR.ORG_LEGAL_INFORMATION}"></i></button>
                         </g:if>
-
-                        <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}"
-                                data-ctTarget="${org.id}"
-                                data-customerType="${customerType}"
-                                data-orgName="${org.name}"
-                                data-ui="modal"
-                                data-href="#customerTypeModal"
-                                data-content="Kundentyp ändern" data-position="top left"><i class="trophy icon"></i></button>
 
                         <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}"
                                 data-alTarget="${org.id}"

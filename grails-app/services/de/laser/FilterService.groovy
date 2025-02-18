@@ -156,6 +156,14 @@ class FilterService {
             queryParams << [serverAccessYes  : RDStore.YN_YES]
         }
 
+        if (params.isBetaTester) {
+            if (params.long('isBetaTester') == RDStore.YN_YES.id) {
+                query << "o.isBetaTester is true"
+            } else {
+                query << "o.isBetaTester is false"
+            }
+        }
+
         if (params.isLegallyObliged in ['yes', 'no']) {
             query << "o.legallyObligedBy " + (params.isLegallyObliged == 'yes' ? "is not null" : "is null")
         }

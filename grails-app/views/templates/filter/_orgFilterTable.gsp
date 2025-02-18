@@ -181,6 +181,12 @@
                 </th>
             </g:if>
 
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('isBetaTester')}">
+                <th class="center aligned">
+                    todo
+                </th>
+            </g:if>
+
             <g:if test="${tmplConfigItem.equalsIgnoreCase('marker')}">
                 <th class="center aligned">
                     <ui:markerIcon type="WEKB_CHANGES" />
