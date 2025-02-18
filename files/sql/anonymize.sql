@@ -11,7 +11,7 @@ WHERE usr_id NOT IN (
     SELECT u.usr_id
     FROM "user" u
          JOIN org o ON o.org_id = u.usr_formal_org_fk
-    WHERE o.org_name ILIKE 'hbz%' OR o.org_name ILIKE '%backoffice'
+    WHERE o.org_is_beta_tester = true
     UNION
     SELECT u.usr_id from "user" u where u.usr_username = 'anonymous'
 );
@@ -24,7 +24,7 @@ WHERE us_string_value != ''
         SELECT u.usr_id
         FROM "user" u
              JOIN org o ON o.org_id = u.usr_formal_org_fk
-        WHERE o.org_name ILIKE 'hbz%' OR o.org_name ILIKE '%backoffice'
+        WHERE o.org_is_beta_tester = true
         UNION
         SELECT u.usr_id from "user" u where u.usr_username = 'anonymous'
     );
@@ -35,7 +35,7 @@ WHERE
     ci_cost_in_billing_currency IS NOT NULL AND
     ci_currency_rate IS NOT NULL AND
         ci_owner NOT IN (
-            SELECT org_id FROM org WHERE org_name ILIKE 'hbz%' OR org_name ILIKE '%backoffice'
+            SELECT org_id FROM org WHERE org_is_beta_tester = true
         );
 
 UPDATE cost_item SET
@@ -44,5 +44,5 @@ WHERE
     ci_cost_in_billing_currency IS NOT NULL AND
     ci_currency_rate IS NOT NULL AND
         ci_owner NOT IN (
-            SELECT org_id FROM org WHERE org_name ILIKE 'hbz%' OR org_name ILIKE '%backoffice'
+            SELECT org_id FROM org WHERE org_is_beta_tester = true
         );
