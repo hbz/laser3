@@ -58,6 +58,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     String categoryId
 
     boolean eInvoice = false
+    boolean isBetaTester = false
 
     Date archiveDate
 
@@ -155,6 +156,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         eInvoicePortal      column:'org_e_invoice_portal_fk', lazy: false
      supportedLibrarySystem column:'org_supported_library_system_rv_fk'
         gokbId              column:'org_gokb_id', type:'text'
+        isBetaTester        column:'org_is_beta_tester'
        archiveDate          column:'org_archive_date'
            country          column:'org_country_rv_fk'
             region          column:'org_region_rv_fk'
