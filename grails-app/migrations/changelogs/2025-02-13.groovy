@@ -148,4 +148,27 @@ databaseChangeLog = {
             }
         }
     }
+
+
+    changeSet(author: "klober (generated)", id: "1739437462869-25") {
+        addColumn(tableName: "org") {
+            column(name: "org_is_beta_tester", type: "boolean")
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1739437462869-26") {
+        grailsChange {
+            change {
+                sql.executeUpdate("update org set org_is_beta_tester = false")
+                sql.executeUpdate("update org set org_is_beta_tester = true where org_name ilike 'hbz%' or org_name ilike '%backoffice'")
+                String c = "set org_is_beta_tester = true -> ${sql.getUpdateCount()}"
+                confirm(c)
+                changeSet.setComments(c)
+            }
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1739437462869-27") {
+        addNotNullConstraint(columnDataType: "boolean", columnName: "org_is_beta_tester", tableName: "org", validate: "true")
+    }
 }
