@@ -590,7 +590,8 @@ r2d2 = {
 
         // close ui:messages alerts
         $(ctxSel + ' .close.icon').click(function() {
-            $(this).parent().hide();
+            $(this).parent().transition('fade');
+
         });
 
         // modals

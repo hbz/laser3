@@ -2,10 +2,10 @@
 
 <div class="ui fluid card" id="dashboard-topmenu">
     <div class="content">
-        <div class="ui four column grid">
+        <div class="ui four column stackable grid">
 
             <div class="column">
-                <div class="ui vertical fluid secondary compact menu">
+                <div class="ui relaxed selection list la-dashboard">
                     <g:link class="item" controller="myInstitution" action="currentSubscriptions">
                         <i class="${Icon.SUBSCRIPTION} la-list-icon"></i> ${message(code:'menu.my.subscriptions')}
                     </g:link>
@@ -26,7 +26,7 @@
                 </div>
             </div><!-- .column -->
             <div class="column">
-                <div class="ui vertical fluid secondary compact menu">
+                <div class="ui relaxed selection list la-dashboard">
                     <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="tasks" message="menu.my.tasks" icon="${Icon.TASK} la-list-icon" />
 
                     <g:if test="${contextService.getOrg().isCustomerType_Support()}">
@@ -49,7 +49,7 @@
                 </div>
             </div><!-- .column -->
             <div class="column">
-                <div class="ui vertical fluid secondary compact menu">
+                <div class="ui relaxed selection list la-dashboard">
 
                     <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                         <g:link class="item" controller="org" action="show" id="${contextService.getOrg().id}">
@@ -76,7 +76,7 @@
                 </div>
             </div><!-- .column -->
             <div class="column">
-                <div class="ui vertical fluid secondary compact menu">
+                <div class="ui relaxed selection list la-dashboard">
                     <g:if test="${contextService.getOrg().isCustomerType_Support()}">
                         <ui:securedMainNavItem specRole="ROLE_ADMIN" controller="myInstitution" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" icon="${Icon.AUTH.ORG_INST} la-list-icon" />
                         <ui:securedMainNavItem controller="myInstitution" action="subscriptionsManagement" message="menu.institutions.subscriptionsManagement" icon="${Icon.SUBSCRIPTION} la-list-icon" />

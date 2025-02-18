@@ -354,9 +354,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         }
 
         if (this.ns?.ns == IdentifierNamespace.ISIL) {
-            if( (this.value != IdentifierNamespace.UNKNOWN) &&
-                    ((!(this.value =~ /^DE-/ || this.value =~ /^[A-Z]{2,3}-/) && this.value != '')))
-            {
+            if( (this.value != IdentifierNamespace.UNKNOWN) && ((!(this.value =~ /^DE-/ || this.value =~ /^[A-Z]{2,3}-/) && this.value != ''))) {
                 this.value = 'DE-'+this.value.trim()
             }
         }
@@ -390,7 +388,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
               }
           }
           if(this.ns?.ns == 'ISIL') {
-              if(!(this.value =~ /^DE-/ || this.value =~ /^[A-Z]{2}-/) && this.value != '') {
+              if((this.value != IdentifierNamespace.UNKNOWN) && (!(this.value =~ /^DE-/ || this.value =~ /^[A-Z]{2}-/) && this.value != '')) {
                   this.value = 'DE-'+this.value.trim()
               }
           }
