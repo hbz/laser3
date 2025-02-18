@@ -474,8 +474,8 @@
                                 </div>
                                 <div class="right aligned four wide column">
                                     <g:if test="${inContextOrg && contextService.isInstEditor()}">
-                                        <a href="#createPersonModal" class="${Btn.MODERN.SIMPLE} createContact" id="contactPersonForPublic" data-ui="modal">
-                                            <i aria-hidden="true" class="large ${Icon.CMD.ADD}"></i>
+                                        <a href="#createPersonModal" class="large ${Btn.MODERN.SIMPLE} createContact" id="contactPersonForPublic" data-ui="modal">
+                                            <i aria-hidden="true" class="${Icon.CMD.ADD}"></i>
                                         </a>
                                     </g:if>
 %{--                                    <g:elseif test="${isProviderOrAgency}">--}%

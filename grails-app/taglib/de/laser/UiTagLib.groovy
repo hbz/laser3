@@ -295,7 +295,7 @@ class UiTagLib {
             out << '        <h2>'+ title + '</h2>'
             if (attrs.editable && attrs.href) {
                 out << '        <div class="right aligned four wide column">'
-                out << '            <button type="button" class="' + Btn.MODERN.SIMPLE + '" data-ui="modal" data-href="' + attrs.href + '" ><i aria-hidden="true" class="large ' + Icon.CMD.ADD + '"></i></button>'
+                out << '            <button type="button" class="large ' + Btn.MODERN.SIMPLE + '" data-ui="modal" data-href="' + attrs.href + '" ><i aria-hidden="true" class="' + Icon.CMD.ADD + '"></i></button>'
                 out << '        </div>'
             }
             out << '   </div>'
