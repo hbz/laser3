@@ -4,7 +4,7 @@
     <thead>
         <tr>
             <g:if test="${tmplShowCheckbox}">
-                <th>
+                <th class="la-th-wrap">
                     <g:if test="${records}">
                         <g:checkBox name="pkgListToggler" id="pkgListToggler" checked="false"/>
                     </g:if>
@@ -13,7 +13,7 @@
 
             <g:each in="${tmplConfigShow}" var="tmplConfigItem" status="i">
                 <g:if test="${tmplConfigItem == 'lineNumber'}">
-                    <th>${message(code: 'sidewide.number')}</th>
+                    <th class="la-th-wrap">>${message(code: 'sidewide.number')}</th>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'name'}">
                     <g:sortableColumn property="name" title="${message(code: 'package.show.pkg_name')}" params="${params}"/>
@@ -33,39 +33,39 @@
                     <th>Wekb <br>${message(code: 'package.show.nav.expired')}</th>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'provider'}">
-                    <g:sortableColumn property="provider.name" title="${message(code: 'provider.label')}" params="${params}"/>
+                    <g:sortableColumn class="la-th-wrap" property="provider.name" title="${message(code: 'provider.label')}" params="${params}"/>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'vendor'}">
-                    <g:sortableColumn property="vendor.name" title="${message(code: 'vendor.label')}" params="${params}"/>
+                    <g:sortableColumn class="la-th-wrap" property="vendor.name" title="${message(code: 'vendor.label')}" params="${params}"/>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'platform'}">
-                    <g:sortableColumn property="nominalPlatform.name" title="${message(code: 'platform.label')}" params="${params}"/>
+                    <g:sortableColumn class="la-th-wrap" property="nominalPlatform.name" title="${message(code: 'platform.label')}" params="${params}"/>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'curatoryGroup'}">
-                    <th>${message(code: 'package.curatoryGroup.label')}</th>
+                    <th class="la-th-wrap">${message(code: 'package.curatoryGroup.label')}</th>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'automaticUpdates'}">
-                    <th>${message(code: 'package.source.automaticUpdates')}</th>
+                    <th class="la-th-wrap">${message(code: 'package.source.automaticUpdates')}</th>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'lastUpdatedDisplay'}">
-                    <g:sortableColumn property="lastUpdatedDisplay" title="${message(code: 'package.lastUpdated.label')}" params="${params}" defaultOrder="desc"/>
+                    <g:sortableColumn class="la-th-wrap" property="lastUpdatedDisplay" title="${message(code: 'package.lastUpdated.label')}" params="${params}" defaultOrder="desc"/>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'subscription'}">
-                    <th>${message(code:'myinst.currentPackages.assignedSubscriptions')}</th>
+                    <th class="la-th-wrap" >${message(code:'myinst.currentPackages.assignedSubscriptions')}</th>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'my'}">
-                    <th class="center aligned">
+                    <th class="la-th-wrap center aligned">
                         <ui:myXIcon tooltip="${message(code: 'menu.my.packages')}" />
                     </th>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'marker'}">
-                    <th class="center aligned"><ui:markerIcon type="WEKB_CHANGES" /></th>
+                    <th class="la-th-wrap center aligned"><ui:markerIcon type="WEKB_CHANGES" /></th>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'surveyCostItemsPackages'}">
-                    <th>${message(code:'surveyCostItemsPackages.label')}</th>
+                    <th class="la-th-wrap">${message(code:'surveyCostItemsPackages.label')}</th>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'surveyPackagesComments'}">
-                    <th>
+                    <th class="la-th-wrap">
                         <g:if test="${contextService.isInstUser(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
                             ${message(code: 'surveyResult.participantComment')}
                         </g:if>
@@ -77,7 +77,7 @@
                             </span>
                         </g:else>
                     </th>
-                    <th>
+                    <th class="la-th-wrap">
                         <g:if test="${contextService.isInstUser(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
                             ${message(code: 'surveyResult.commentOnlyForOwner')}
                             <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
@@ -95,13 +95,13 @@
                     </th>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'linkPackage' || tmplConfigItem == 'linkSurveyPackage' || tmplConfigItem == 'unLinkSurveyPackage' || tmplConfigItem == 'removeSurveyPackageResult' || tmplConfigItem == 'addSurveyPackageResult'}">
-                    <th class="center aligned">${message(code: 'default.actions.label')}</th>
+                    <th class="la-th-wrap center aligned">${message(code: 'default.actions.label')}</th>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'markPerpetualAccess'}">
-                    <th class="x center aligned">${message(code: 'subscription.hasPerpetualAccess.label')}</th>
+                    <th class="la-th-wrap x center aligned">${message(code: 'subscription.hasPerpetualAccess.label')}</th>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'yodaActions'}">
-                    <th class="x center aligned">
+                    <th class="la-th-wrap x center aligned">
                         <span class="la-long-tooltip la-popup-tooltip" data-position="left center" data-content="${message(code: 'menu.yoda.reloadPackages')}">
                             <g:link class="ui icon button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: 'menu.yoda.reloadPackages.confirm')}"
