@@ -80,7 +80,7 @@
         </div>
 
         <div class="ui bottom attached tab segment active">
-            <div class="ui grid">
+            <div class="ui stackable grid">
                 <g:if test="${params.viewTab == 'invoicingInformation' && surveyConfig.invoicingInformation}">
                     <div class="two wide column">
                         <div class="ui fluid vertical tabular la-tab-with-js menu">
