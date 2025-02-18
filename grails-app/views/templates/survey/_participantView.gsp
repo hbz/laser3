@@ -80,9 +80,9 @@
         </div>
 
         <div class="ui bottom attached tab segment active">
-            <div class="ui grid">
+            <div class="ui stackable grid">
                 <g:if test="${params.viewTab == 'invoicingInformation' && surveyConfig.invoicingInformation}">
-                    <div class="three wide column">
+                    <div class="two wide column">
                         <div class="ui fluid vertical tabular la-tab-with-js menu">
                             <a class="${params.subTab ? (params.subTab == 'contacts' ? 'active' : '') : 'active'} item" data-tab="contacts">
                                 ${message(code: 'surveyOrg.person.label')}
@@ -100,7 +100,7 @@
                         </div>
                     </div>
 
-                    <div class="thirteen wide column">
+                    <div class="fourteen wide column">
                       <div class="ui bottom attached tab   ${params.subTab ? (params.subTab == 'contacts' ? 'active' : '') : 'active'}" data-tab="contacts">
                           <h2 class="ui left floated aligned header">${message(code: 'surveyOrg.person.label.heading')}</h2>
                             <g:link controller="organisation" action="contacts" id="${participant.id}" class="${Btn.SIMPLE} right floated">
@@ -231,7 +231,7 @@
                         </div>
                     </div>
 
-                    <div class="three wide column">
+                    <div class="two wide column">
                         <div class="ui fluid vertical tabular menu">
                             <g:link class="item ${params.viewTab == 'packageSurvey' && params.subTab == 'allPackages' ? 'active' : ''}"
                                     controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
@@ -247,7 +247,7 @@
                             </g:link>
                         </div>
                     </div>
-                    <div class="thirteen wide column">
+                    <div class="fourteen wide column">
                          <div class="ui tab active">
                                <h2 class="ui left floated aligned icon header la-clear-before">${message(code: params.subTab == 'selectPackages' ? 'surveyPackages.selectedPackages' : 'surveyPackages.all')}
                                     <ui:totalNumber total="${recordsCount}"/>
