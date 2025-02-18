@@ -158,3 +158,8 @@ dd {
         list-style-type: square;
     }
 }
+
+.ui.selection.list.la-dashboard .list>.item,
+.ui.selection.list.la-dashboard>.item {
+        color: @linkColor;
+}

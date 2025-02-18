@@ -346,6 +346,7 @@
                 }).done(function(response){
                     $("#reportWrapper").html(response).show();
                     $('#progressIndicator').hide();
+                    r2d2.initDynamicUiStuff('body');
                 });
                 checkProgress();
             });
