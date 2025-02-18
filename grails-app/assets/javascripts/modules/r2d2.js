@@ -557,16 +557,6 @@ r2d2 = {
         }).on('shown', function(e, obj) {
             obj.input.$input.dropdown({clearable: false}) // reference to current dropdown
         });
-
-        $(ctxSel + ' .simpleHiddenValue').editable({
-            language: JSPC.config.language,
-            format:   JSPC.config.dateFormat,
-            url: function(params) {
-                var hidden_field_id = $(this).data('hidden-id');
-                $("#" + hidden_field_id).val(params.value);
-                // Element has a data-hidden-id which is the hidden form property that should be set to the appropriate value
-            }
-        });
     },
 
 
