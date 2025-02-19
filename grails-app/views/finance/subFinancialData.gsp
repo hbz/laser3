@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ExportClickMeService; de.laser.storage.RDStore; de.laser.Subscription" %>
+<%@ page import="de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.storage.RDStore; de.laser.Subscription" %>
 <laser:htmlStart message="subscription.details.financials.label" />
 
 <laser:render template="/templates/flyouts/dateCreatedLastUpdated" model="[obj: subscription]"/>
@@ -64,6 +64,12 @@
                     <g:if test="${customerTypeService.isConsortium( institution.getCustomerType() ) && !subscription.instanceOf}">
                         <ui:actionsDropdownItem data-ui="modal" id="generateFinanceImportWorksheet" href="#financeImportTemplate" message="myinst.financeImport.subscription.template"/>
                         <ui:actionsDropdownItem controller="myInstitution" action="financeImport" params="${[id:subscription.id]}" message="menu.institutions.financeImport" />
+                        <g:if test="${costItemElements}">
+                            <ui:actionsDropdownItem data-ui="modal" id="openFinanceEnrichment" href="#financeEnrichment" message="financials.enrichment.menu" />
+                        </g:if>
+                        <g:else>
+                            <ui:actionsDropdownItemDisabled message="financials.enrichment.menu" tooltip="${message(code:'financials.enrichment.menu.disabled')}" />
+                        </g:else>
                         <ui:actionsDropdownItem controller="subscription" action="compareSubMemberCostItems" params="${[id:subscription.id]}" message="subscription.details.compareSubMemberCostItems.label" />
                     </g:if>
                 </ui:actionsDropdown>
@@ -106,9 +112,26 @@
             <laser:render template="/subscription/message" model="${[subscription: subscription]}"/>%{-- ERMS-6070 --}%
         </g:if>
 
-        <laser:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets,fixedSubscription:subscription,ciTitles:ciTitles]" />
+        <g:if test="${afterEnrichment}">
+            <ui:msg showIcon="true" class="success" message="financials.enrichment.result" args="[matchCounter, totalRows, noRecordCounter]"/>
+            <g:if test="${wrongIdentifierCounter > 0 && wrongRecords}">
+                <div class="ui warning message icon la-clear-before">
+                    <i class="${Icon.UI.WARNING}"></i>
+                    <g:message code="financials.enrichment.invalidIDs" args="[wrongIdentifierCounter]"/>
+                    <ul>
+                        <g:each in="${wrongRecords}" var="row">
+                            <li>${row}</li>
+                        </g:each>
+                    </ul>
+                </div>
+            </g:if>
+        </g:if>
+
+        <laser:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets,fixedSubscription:subscription,ciTitles:ciTitles,missing:missing]" />
 
         <laser:render template="/subscription/financeImportTemplate" />
+
+        <laser:render template="/finance/financeEnrichment" />
 
         <g:render template="/clickMe/export/js"/>
 
