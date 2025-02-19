@@ -24,26 +24,28 @@
             if (subscriptionLicenseLink) {
                 model = [tmplText               : addLink,
                          tmplID                 : 'addLicenseLink',
-                         tmplIcon               : 'large add',
+                         tmplIcon               : 'add',
                          tmplTooltip            : addLink,
                          tmplModalID            : 'sub_add_license_link',
                          editmode               : editable,
                          subscriptionLicenseLink: true,
                          atConsortialParent     : contextService.getOrg() == subscription.getConsortium(),
                          context                : subscription,
-                         linkInstanceType       : Links.class.name
+                         linkInstanceType       : Links.class.name,
+                         tmplCss                : 'large'
                 ]
             } else {
                 model = [tmplText          : addLink,
                          tmplID            : 'addLink',
-                         tmplIcon          : 'large add',
+                         tmplIcon          : 'add',
                          tmplTooltip        :addLink,
 //                             tmplButtonText    : addLink,
                          tmplModalID       : 'sub_add_link',
                          editmode          : editable,
                          atConsortialParent: atConsortialParent,
                          context           : entry,
-                         linkInstanceType  : Links.class.name
+                         linkInstanceType  : Links.class.name,
+                         tmplCss       : 'large'
                 ]
             }
         %>

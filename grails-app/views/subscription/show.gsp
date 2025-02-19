@@ -646,10 +646,11 @@
                                                         recip_prop    : 'subscription',
                                                         tmplEntity    : message(code: 'subscription.details.linkProvider.tmplEntity'),
                                                         tmplText      : message(code: 'subscription.details.linkProvider.tmplText'),
-                                                        tmplIcon        : 'large add',
+                                                        tmplIcon        : 'add',
                                                         tmplTooltip     : message(code: 'subscription.details.linkProvider.tmplButtonText'),
                                                         tmplModalID   : 'modal_add_provider',
-                                                        editmode      : editable
+                                                        editmode      : editable,
+                                                        tmplCss       : 'large'
                                               ]}"/>
                             </div>
                             <laser:render template="/templates/links/providerLinksAsList"
@@ -675,10 +676,12 @@
                                                         recip_prop    : 'subscription',
                                                         tmplEntity    : message(code: 'subscription.details.linkAgency.tmplEntity'),
                                                         tmplText      : message(code: 'subscription.details.linkAgency.tmplText'),
-                                                        tmplIcon      : 'large add',
+                                                        tmplIcon      : 'add',
                                                         tmplTooltip   : message(code: 'subscription.details.linkAgency.tmplButtonText'),
                                                         tmplModalID   : 'modal_add_agency',
-                                                        editmode      : editable
+                                                        editmode      : editable,
+                                                        tmplCss       : 'large'
+
                                               ]}"/>
                             </div>
                             <laser:render template="/templates/links/vendorLinksAsList"
@@ -686,7 +689,8 @@
                                                     roleObject   : subscription,
                                                     roleRespValue: RDStore.PRS_RESP_SPEC_SUB_EDITOR.value,
                                                     editmode     : editable,
-                                                    showPersons  : true
+                                                    showPersons  : true,
+                                                    tmplCss      : 'large'
                                           ]}"/>
                         </div>
                     </div>
