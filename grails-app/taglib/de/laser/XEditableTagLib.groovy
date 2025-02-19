@@ -218,6 +218,10 @@ class XEditableTagLib {
                     out << "data-confirm-tokenmsg=\"${data_confirm_tokenMsg}\" "
                 }
 
+                if (attrs.validation) {
+                    out << ' data-validation="' + attrs.validation + '"'
+                }
+
                 out << "data-type=\"select\" data-name=\"${field}\" " +
                         "data-source=\"${data_link}\" data-url=\"${update_link}\" ${emptyText}>"
 
@@ -367,6 +371,10 @@ class XEditableTagLib {
 
                 out <<  " data-value=\"${oldValue}\" data-pk=\"${oid}\" data-type=\"select\" " +
                         " data-name=\"${field}\" data-source=\"${data_link}\" data-url=\"${update_link}\" ${emptyText}>"
+
+                if (attrs.validation) {
+                    out << ' data-validation="' + attrs.validation + '"'
+                }
 
                 out << "${oldValue}</a></span>"
             }
