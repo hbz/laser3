@@ -137,7 +137,7 @@
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItem.bulk")}"
                                             data-confirm-term-how="delete">${message(code: 'financials.bulkCostItems.delete')}</button>
                                 </div>
-                                <laser:render template="result_tab_cons" model="[tmplShowCheckbox: true, fixedSubscription: fixedSubscription, editable: editable, data: cons, customerType: 'CONS', showView: view, offset: offsets.consOffset]"/>
+                                <laser:render template="result_tab_cons" model="[tmplShowCheckbox: true, fixedSubscription: fixedSubscription, editable: editable, data: cons, customerType: 'CONS', showView: view, offset: offsets.consOffset, missing: missing]"/>
                             </g:form>
                         </g:if>
                         <g:else>
