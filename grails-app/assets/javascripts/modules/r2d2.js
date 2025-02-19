@@ -569,7 +569,7 @@ r2d2 = {
         //tooltip
         tooltip.init(ctxSel);
 
-        $(ctxSel + " a[href], " + ctxSel + " input.js-wait-wheel").not("a[href^='#'], a[href*='ajax'], a[target='_blank'], .js-open-confirm-modal, a[data-tab], a[data-content], .close, .js-no-wait-wheel, .trigger-modal").click(function() {
+        $(ctxSel + " a[href], " + ctxSel + " input.js-wait-wheel").not("a[href^='#'], a[href*='ajax'], a[href*='mailto'], a[target='_blank'], .js-open-confirm-modal, a[data-tab], a[data-content], .close, .js-no-wait-wheel, .trigger-modal").click(function() {
             $('html').css('cursor', 'wait');
         });
 
