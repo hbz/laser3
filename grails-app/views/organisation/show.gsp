@@ -463,6 +463,7 @@
             <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
                 <div class="ui card">
                     <div class="content">
+                        <h2 class="ui header">Nur für Administratoren</h2>
                         <dl>
                             <dt class="control-label"><g:message code="org.isBetaTester.label" /></dt>
                             <dd>
