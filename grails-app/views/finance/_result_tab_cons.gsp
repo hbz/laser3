@@ -127,7 +127,7 @@
         </g:if>
         <g:else>
             <g:each in="${data.costItems}" var="ci" status="jj">
-                <tr id="bulkdelete-b${ci.id}">
+                <tr id="bulkdelete-b${ci.id}" class="<g:if test="${missing && ci.id in missing}">negative</g:if>">
                     <g:if test="${tmplShowCheckbox && editable}">
                         <td>
                             <g:checkBox id="selectedCostItems_${ci.id}" name="selectedCostItems" value="${ci.id}" checked="false"/>

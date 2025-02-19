@@ -784,15 +784,14 @@ class SubscriptionController {
         List<Org> consortiaMembers = result.subscription.getDerivedNonHiddenSubscribers()
         Platform platform = Platform.get(params.platform)
 
-        ArrayList titles = [message(code: 'org.sortname.label'), 'Customer ID', 'Requestor ID']
+        ArrayList titles = ['Customer ID', 'Requestor ID']
 
         ArrayList rowData = []
         ArrayList row
         consortiaMembers.each { Org org ->
             CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(org, platform)
             if(ci?.value) {
-                row = [org.sortname, ci.value]
-                rowData.add(row)
+                rowData.add([ci.value])
             }
         }
 

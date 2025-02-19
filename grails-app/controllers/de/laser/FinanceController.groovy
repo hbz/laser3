@@ -15,8 +15,9 @@ import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
-import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
+import org.mozilla.universalchardet.UniversalDetector
+import org.springframework.web.multipart.MultipartFile
 
 import javax.servlet.ServletOutputStream
 import java.math.RoundingMode
@@ -91,6 +92,18 @@ class FinanceController  {
         log.debug("FinanceController::subFinancialData() ${params}")
         try {
             Map<String,Object> result = financeControllerService.getResultGenerics(params)
+            if(params.containsKey('costInformation')) {
+                CostItem.withTransaction {
+                    MultipartFile inputFile = request.getFile("costInformation")
+                    if(inputFile && inputFile.size > 0) {
+                        RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
+                        String encoding = UniversalDetector.detectCharset(inputFile.getInputStream())
+                        if(encoding in ["UTF-8", "WINDOWS-1252"]) {
+                            result.putAll(financeService.financeEnrichment(inputFile, encoding, pickedElement, result.subscription))
+                        }
+                    }
+                }
+            }
             result.financialData = financeService.getCostItemsForSubscription(params,result)
             result.currentTitlesCounts = IssueEntitlement.executeQuery("select count(*) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :status  ", [sub: result.subscription, status: RDStore.TIPP_STATUS_CURRENT])[0]
             if (contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()) {
