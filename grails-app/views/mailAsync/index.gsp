@@ -65,9 +65,6 @@
                     <td><g:formatDate date="${message.createDate}" format="yyyy-MM-dd HH:mm:ss"/></td>
                     <td>${fieldValue(bean: message, field: 'status')}</td>
                     <td>
-                        todo
-                        <g:link class="${Btn.SIMPLE}" action="show" id="${message.id}"><g:message code="default.show.label" args="['Mail']"/></g:link>
-                        todo
                         <a class="${Btn.SIMPLE}" href="mailto:?body=${message.text?.encodeAsHTML()}"><g:message code="default.show.label" args="['Mail']"/></a>
                         <g:if test="${message.abortable}">
                             <g:link class="${Btn.SIMPLE}" action="abort" id="${message.id}"
