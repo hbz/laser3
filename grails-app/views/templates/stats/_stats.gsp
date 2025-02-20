@@ -1,7 +1,7 @@
 <%@ page import="de.laser.storage.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.base.AbstractReport; de.laser.finance.CostItem; de.laser.properties.SubscriptionProperty; de.laser.storage.PropertyStore" %>
-
+<laser:serviceInjection/>
 <g:if test="${platformInstanceRecords.values().statisticsFormat.contains('COUNTER')}">
-    <laser:serviceInjection/>
+
     <ui:tabs>
         <g:each in="${platformInstanceRecords.values()}" var="platform">
             <ui:tabsItem controller="$controllerName" action="$actionName" tab="${platform.id.toString()}"
@@ -15,6 +15,7 @@
             <g:if test="${statsInfo}">
                 <ui:msg icon="ui info icon" class="info" noClose="true"><%-- on remerge to DEV: header="${message(code: 'default.stats.info.header')}" --%>
                     ${statsInfo[0]}<br>
+                    <g:message code="default.stats.noCounterSupport"/><br>
                     <g:message code="default.stats.wekbContact"/><ui:wekbIconLink type="org" gokbId="${platform.providerUuid}"/>
                 </ui:msg>
             </g:if>
@@ -178,7 +179,6 @@
     </g:elseif>
 </g:if>
 <g:elseif test="${platformInstanceRecords.values().statisticsFormat.contains('Document') || platformInstanceRecords.values().statisticsFormat.contains('Diagram')}">
-    <laser:serviceInjection/>
     <ui:tabs>
         <g:each in="${platformInstanceRecords.values()}" var="platform">
             <ui:tabsItem controller="${controllerName}" action="${actionName}" tab="${platform.id.toString()}"
