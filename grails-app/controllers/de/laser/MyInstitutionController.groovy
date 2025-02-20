@@ -2501,7 +2501,7 @@ class MyInstitutionController  {
                         flash.error = g.message(code: 'surveyResult.finish.vendorSurvey')
                     }else if(!vendorInvoicing && vendorCount > 0){
                         allResultHaveValue = false
-                        flash.error = g.message(code: 'surveyResult.finish.wrongVendor')
+                        flash.error = g.message(code: 'surveyResult.finish.vendorSurvey.wrongVendor')
                     }
                 }
 
