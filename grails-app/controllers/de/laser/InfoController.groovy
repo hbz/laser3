@@ -90,7 +90,10 @@ ${custId ? ('Customer Identifier: ' + custId.value) : ''}
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(params.id_tipp)
         Provider provider = tipp.platform.provider
 
-        List<Contact> ccList = _getProviderContacts(provider, [RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS])
+        List<Contact> ccList = _getProviderContacts(
+                provider,
+                [RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
+        )
         User user = BeanStore.getContextService().getUser()
 
         result = [
@@ -145,7 +148,7 @@ Thank you
 
         List<Contact> ccList = _getProviderContacts(
                 platform.provider,
-                [RDStore.PRS_FUNC_STATS_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
+                [RDStore.PRS_FUNC_STATS_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
         )
 
         result = [
