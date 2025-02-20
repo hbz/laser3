@@ -33,7 +33,7 @@ import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyLinks
 import de.laser.survey.SurveyOrg
-import de.laser.survey.SurveyPackageResult
+import de.laser.survey.SurveyVendorResult
 import de.laser.survey.SurveyResult
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
@@ -2694,7 +2694,7 @@ class MyInstitutionController  {
                     flash.error = g.message(code: 'surveyResult.finish.invoicingInformation')
                 }else if(surveyConfig.surveyInfo.isMandatory && surveyConfig.vendorSurvey) {
                     boolean vendorInvoicing = SurveyResult.findByParticipantAndSurveyConfigAndType(result.institution, surveyConfig, PropertyStore.SURVEY_PROPERTY_INVOICE_PROCESSING)?.refValue == RDStore.INVOICE_PROCESSING_VENDOR
-                    if (vendorInvoicing && SurveyPackageResult.executeQuery('select count (*) from SurveyPackageResult spr ' +
+                    if (vendorInvoicing && SurveyVendorResult.executeQuery('select count (*) from SurveyVendorResult spr ' +
                             'where spr.surveyConfig = :surveyConfig and spr.participant = :participant', [surveyConfig: surveyConfig, participant: result.institution])[0] == 0) {
                         allResultHaveValue = false
                         flash.error = g.message(code: 'surveyResult.finish.vendorSurvey')
