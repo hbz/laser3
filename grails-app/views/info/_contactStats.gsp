@@ -12,12 +12,22 @@
         <g:if test="${mailtoList}">
             <div class="field">
                 <label for="mailto">${message(code: 'mail.to')}</label>
-                <g:select class="ui dropdown la-not-clearable"
-                          name="mailto"
-                          from="${mailtoList}"
-                          value=""
-                          optionKey="${{ it.content }}"
-                          optionValue="${{ it.content + (it.language ? ' (' + it.language.getI10n('value') + ')' : '') + (it.prs.isPublic ? '' : ' (Mein Adressbuch)') }}" />
+                <div class="ui fluid selection dropdown">
+                    <input type="hidden" name="mailto" id="mailto">
+                    <i class="dropdown icon"></i>
+                    <div class="default text">Bitte auswählen</div>
+                    <div class="menu">
+                        <g:each in="${mailtoList}" var="mt">
+                            <div class="item" data-value="${mt.content}">
+                                <g:if test="${!mt.language}"><i class="flag x"></i></g:if>
+                                <g:if test="${mt.language?.value == 'ger'}"><i class="flag de"></i></g:if>
+                                <g:if test="${mt.language?.value == 'eng'}"><i class="flag gb"></i></g:if>
+                                <span class="description">${mt.prs.IsPublic ? '' : ' (Mein Adressbuch)'}</span>
+                                <span class="text">${mt.content}</span>
+                            </div>
+                        </g:each>
+                    </div>
+                </div>
             </div>
         </g:if>
         <g:else>
