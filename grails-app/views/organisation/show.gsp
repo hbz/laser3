@@ -467,7 +467,7 @@
                         <dl>
                             <dt class="control-label"><g:message code="org.isBetaTester.label" /></dt>
                             <dd>
-                                <ui:xEditableBoolean owner="${orgInstance}" field="isBetaTester" />
+                                <ui:xEditableBoolean owner="${orgInstance}" field="isBetaTester" overwriteEditable="true"/>
                             </dd>
                         </dl>
                     </div>
