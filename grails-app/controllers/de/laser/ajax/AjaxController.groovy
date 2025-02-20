@@ -335,7 +335,7 @@ class AjaxController {
           if (it.value.equalsIgnoreCase('deleted') && params.constraint?.contains('removeValue_deleted')) {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
-          else if ((obj instanceof SubscriptionProperty || obj instanceof LicenseProperty) && obj.owner.instanceOf && it == RDStore.INVOICE_PROCESSING_PROVIDER_OR_VENDOR && params.constraint?.contains('removeValues_processingProvOrVendor')) {
+          else if ((obj instanceof SubscriptionProperty || obj instanceof LicenseProperty) && obj.owner._getCalculatedType() != CalculatedType.TYPE_CONSORTIAL && it == RDStore.INVOICE_PROCESSING_PROVIDER_OR_VENDOR && params.constraint?.contains('removeValues_processingProvOrVendor')) {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
           else if (it in [RDStore.INVOICE_PROCESSING_CONSORTIUM, RDStore.INVOICE_PROCESSING_NOT_SET, RDStore.INVOICE_PROCESSING_PROVIDER_OR_VENDOR] && params.constraint?.contains('removeValues_invoiceProcessing')) {
