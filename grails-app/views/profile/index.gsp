@@ -454,19 +454,19 @@
                         <div class="field">
                             <label>${message(code: 'profile.dashboardTab')}</label>
                             <g:set var="US_DASHBOARD_TAB" value="${user.getSetting(KEYS.DASHBOARD_TAB, RDStore.US_DASHBOARD_TAB_DUE_DATES)}" />
-                            <ui:xEditableRefData owner="${US_DASHBOARD_TAB}" field="rdValue" config="${US_DASHBOARD_TAB.key.rdc}" />
+                            <ui:xEditableRefData owner="${US_DASHBOARD_TAB}" field="rdValue" config="${US_DASHBOARD_TAB.key.rdc}" validation="notEmpty"/>
                         </div>
                         <div class="field">
                             <label>${message(code: 'profile.language')}</label>
                             <g:set var="US_LANGUAGE" value="${user.getSetting(KEYS.LANGUAGE, RDStore.LANGUAGE_DE)}" />
-                            <ui:xEditableRefData owner="${US_LANGUAGE}" field="rdValue" config="${US_LANGUAGE.key.rdc}" />
+                            <ui:xEditableRefData owner="${US_LANGUAGE}" field="rdValue" config="${US_LANGUAGE.key.rdc}" validation="notEmpty"/>
                             &nbsp;
                             <g:link controller="profile" action="index" class="${Btn.ICON.SIMPLE}" style="float:right"><i class="icon sync"></i></g:link>
                         </div>
                         <div class="field">
                             <label>${message(code: 'profile.emailLanguage')}</label>
                             <g:set var="US_EMAIL_LANGUAGE" value="${user.getSetting(KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE)}" />
-                            <ui:xEditableRefData owner="${US_EMAIL_LANGUAGE}" field="rdValue" config="${US_EMAIL_LANGUAGE.key.rdc}" />
+                            <ui:xEditableRefData owner="${US_EMAIL_LANGUAGE}" field="rdValue" config="${US_EMAIL_LANGUAGE.key.rdc}" validation="notEmpty"/>
                         </div>
 
                         <div class="field">
@@ -488,7 +488,7 @@
 
                         <div class="field">
                             <label>${message(code: 'profile.pagesize')}</label>
-                            <ui:xEditableDropDown owner="${user.getSetting(KEYS.PAGE_SIZE, 10)}" field="strValue" dataLink="getProfilPageSizeList"/>
+                            <ui:xEditableDropDown owner="${user.getSetting(KEYS.PAGE_SIZE, 10)}" field="strValue" dataLink="getProfilPageSizeList" validation="notEmpty"/>
                         </div>
 
                     </div><!-- .form -->

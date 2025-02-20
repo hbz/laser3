@@ -540,6 +540,16 @@ r2d2 = {
 
         $(ctxSel + ' .xEditableManyToOne').editable({
             tpl: '<select class="ui search selection dropdown"></select>',
+            validate: function(value) {
+                var dVal = $(this).attr('data-validation')
+                if (dVal) {
+                    if (dVal.includes('notEmpty')) {
+                        if($.trim(value) == '') {
+                            return "Das Feld darf nicht leer sein";
+                        }
+                    }
+                }
+            },
             success: function(response, newValue) {
                 if(response.status == 'error') return response.msg; //msg will be shown in editable form
             }
@@ -556,16 +566,6 @@ r2d2 = {
             }
         }).on('shown', function(e, obj) {
             obj.input.$input.dropdown({clearable: false}) // reference to current dropdown
-        });
-
-        $(ctxSel + ' .simpleHiddenValue').editable({
-            language: JSPC.config.language,
-            format:   JSPC.config.dateFormat,
-            url: function(params) {
-                var hidden_field_id = $(this).data('hidden-id');
-                $("#" + hidden_field_id).val(params.value);
-                // Element has a data-hidden-id which is the hidden form property that should be set to the appropriate value
-            }
         });
     },
 
