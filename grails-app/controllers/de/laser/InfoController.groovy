@@ -75,10 +75,14 @@ ${custId ? ('Customer Identifier: ' + custId.value) : ''}
 
     private static List<Contact> _getProviderContacts(Provider provider, List<RefdataValue> order) {
         List<Contact> ccList = []
+
         order.each { rdv ->
             if (!ccList) {
                 List<Person> ppList = BeanStore.getProviderService().getContactPersonsByFunctionType(provider, false, rdv)
-                ccList = ppList.contacts.flatten().findAll { it.contentType?.value in ['E-Mail', 'Mail'] } as List<Contact>
+                List<Contact> matches = ppList.contacts.flatten().findAll { it.contentType?.value in ['E-Mail', 'Mail'] } as List<Contact>
+                if (matches) {
+                    ccList.addAll(matches)
+                }
             }
         }
         ccList
@@ -97,7 +101,9 @@ ${custId ? ('Customer Identifier: ' + custId.value) : ''}
         User user = BeanStore.getContextService().getUser()
 
         result = [
-                mailto : ccList.collect { it.content }.sort().join(','),
+                // mailto : ccList.collect { it.content }.sort().join(','),
+                mailtoList : ccList,
+                mailto: 'Bitte ausfüllen',
                 mailcc : user.email
         ]
         result.mailSubject = [
@@ -152,7 +158,9 @@ Thank you
         )
 
         result = [
-                mailto : ccList.collect { it.content }.sort().join(','),
+                // mailto : ccList.collect { it.content }.sort().join(','),
+                mailtoList : ccList,
+                mailto: 'Bitte ausfüllen',
                 mailcc : user.email
         ]
         result.mailSubject = [
