@@ -14,7 +14,7 @@ buildscript {
         classpath 'org.grails:grails-gradle-plugin:' + grailsGradlePluginVersion                // 2024
         classpath 'org.grails.plugins:hibernate5:' + gormVersion                                // 2024
         classpath 'org.grails.plugins:database-migration:' + databaseMigrationVersion           // 2024
-        classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:4.4.0'                         // 2024 : [freeze] 4.5.* fails
+        classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:' + assetPipelineVersion       // 2024
         classpath 'com.gorylenko.gradle-git-properties:gradle-git-properties:2.4.2'             // 2024
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.52.0'                          // 2025
 
@@ -125,7 +125,7 @@ dependencies {
 
     // --------------------------------------------------
 
-    runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-gradle:4.4.0'                       // 2024 : [freeze] 4.5.* fails
+    runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-gradle:' + assetPipelineVersion     // 2024
     runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-core:' + assetPipelineVersion       // 2024
     runtimeOnly 'com.bertramlabs.plugins:asset-pipeline-grails:' + assetPipelineVersion     // 2024
 
@@ -214,15 +214,28 @@ assets {
     minifyOptions = [
             languageMode:   'ES6',
             targetLanguage: 'ES6',
-            optimizationLevel: 'SIMPLE'
+            optimizationLevel: 'SIMPLE',
+
+            // workaround: js compiler error
+            excludes: [
+                    'swagger-ui/swagger-ui-bundle.js',
+                    'swagger-ui/swagger-ui-standalone-preset.js',
+            ]
     ]
     enableSourceMaps = false
     skipNonDigests = true
     maxThreads = 8
-    // developmentRuntime = false
 
     from '/themes'
+
+    // workaround: js compiler error
+    includes = [
+            'swagger-ui/swagger-ui-bundle.js',
+            'swagger-ui/swagger-ui-standalone-preset.js',
+    ]
+
     excludes = [
+            '**/*.map',
             // images/*
             // javascripts/*
             'libs/**',

@@ -107,7 +107,7 @@
 #dashboard-topmenu > .content {
     padding-bottom: 0;
 }
-#dashboard-topmenu .menu .item {
-    margin-bottom: 0;
+#dashboard-topmenu .list .item .la-list-icon {
+    margin: .1rem .5rem 0 0;
 }
 </style>

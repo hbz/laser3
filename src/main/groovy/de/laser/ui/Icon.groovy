@@ -107,7 +107,7 @@ class Icon extends IconAttr {
         @UIDoc(usage = 'Only for Property attribute: isHardData (COLORED)')
         public static String HARDDATA       = 'database icon green'
         @UIDoc(usage = 'Only for Property attribute: !isHardData (COLORED)')
-        public static String HARDDATA_NOT   = 'times icon grey'
+        public static String HARDDATA_NOT   = 'times icon red'
         @UIDoc(usage = 'Only for Property attribute: isUsedForLogic (COLORED)')
         public static String LOGIC          = 'cube icon red'
         @UIDoc(usage = 'Only for Property attribute: mandatory (COLORED)')
