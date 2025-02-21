@@ -91,7 +91,7 @@
                                     <td>
                                         <ui:xEditable owner="${row.customerIdentifier}" field="requestorKey"/>
                                     </td>
-                                    <td id="${genericOIDService.getHtmlOID(row.customerIdentifier)}" class="sushiConnectionCheck" data-platform="${platform.uuid}" data-customerKey="${row.customerIdentifier.id}">
+                                    <td id="${genericOIDService.getHtmlOID(row.customerIdentifier)}" class="counterApiConnectionCheck" data-platform="${platform.uuid}" data-customerId="${row.customerIdentifier.value}" data-requestorId="${row.customerIdentifier.requestorKey}">
 
                                     </td>
                                     <td>
@@ -117,14 +117,15 @@
          $('input:text', $(e.target).parent()).val(name);
     });
 
-    $(".sushiConnectionCheck").each(function(i) {
+    $(".counterApiConnectionCheck").each(function(i) {
         let cell = $(this);
         let data = {
             platform: cell.attr("data-platform"),
-            customerKey: cell.attr("data-customerKey")
+            customerId: cell.attr("data-customerId"),
+            requestorId: cell.attr("data-requestorId")
         };
         $.ajax({
-            url: "<g:createLink controller="ajaxJson" action="checkSUSHIConnection"/>",
+            url: "<g:createLink controller="ajaxJson" action="checkCounterAPIConnection"/>",
             data: data
         }).done(function(response) {
             if(response.error === true) {

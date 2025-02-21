@@ -19,11 +19,10 @@ import de.laser.properties.SubscriptionProperty
 import de.laser.remote.Wekb
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
-import de.laser.stats.SushiCallError
+import de.laser.stats.CounterCheck
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
-import de.laser.system.SystemEvent
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
@@ -35,7 +34,6 @@ import de.laser.wekb.TIPPCoverage
 import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import de.laser.wekb.VendorRole
-import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.BatchingPreparedStatementWrapper
@@ -62,7 +60,6 @@ class SubscriptionService {
     AuditService auditService
     BatchQueryService batchQueryService
     CacheService cacheService
-    ComparisonService comparisonService
     ContextService contextService
     EscapeService escapeService
     ExecutorService executorService
@@ -2308,26 +2305,16 @@ class SubscriptionService {
         result
     }
 
-    Map<String, Object> checkSUSHIConnection(String platformUuid, Long customerKey) {
-        //continue here with global call defunct tests and by elaborating a method to eliminate the error once fixed
+    Map<String, Object> checkCounterAPIConnection(String platformUuid, String customerId, String requestorId) {
         Map<String, Object> result = [:]
-        String platQuery = '%"platform":'+platformUuid+',"callError":true%', ciQuery = '%"ci":'+customerKey+'%'
+        Set<CounterCheck> platformCallErrors = CounterCheck.executeQuery('select cc from CounterCheck cc where cc.platform.gokbId = :platformUuid and cc.callError = true', [platformUuid: platformUuid]),
+        customerCallErrors = CounterCheck.findAllByCustomerIdAndRequestorId(customerId, requestorId)
         Set<String> errMess = []
-        Set<SystemEvent> platformCallErrors = SystemEvent.executeQuery('select se from SystemEvent se where se.payload like :payload', [payload: platQuery]),
-        customerCallErrors = SystemEvent.executeQuery('select se from SystemEvent se where se.payload like :payload', [payload: ciQuery])
-        platformCallErrors.each { SystemEvent se ->
-            Map sePayload = JSON.parse(se.payload)
-            if(sePayload.error == null)
-                errMess += 'Unbekannter Fehler'
-            else
-                errMess += sePayload.error
+        platformCallErrors.each { CounterCheck cc ->
+            errMess << cc.errMess
         }
-        customerCallErrors.each { SystemEvent se ->
-            Map sePayload = JSON.parse(se.payload)
-            if(sePayload.error == null)
-                errMess += 'Unbekannter Fehler'
-            else
-                errMess += sePayload.error
+        customerCallErrors.each { CounterCheck cc ->
+            errMess << messageSource.getMessage(cc.errToken, null, LocaleUtils.getCurrentLocale())
         }
         result.error = errMess.size() > 0
         result.message = errMess.join(', ')
