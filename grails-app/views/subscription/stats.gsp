@@ -29,6 +29,7 @@
                     <g:if test="${statsInfo}">
                         <ui:msg showIcon="true" class="warning" noClose="true" header="${message(code: 'default.stats.info.header')}">
                             ${statsInfo[0]}<br>
+                            <g:message code="default.stats.noCounterSupport"/>
                         </ui:msg>
                     </g:if>
                     <ui:msg showIcon="true" class="info" noClose="true" header="${message(code: 'default.stats.contact.header')}">

@@ -2,7 +2,6 @@
 <laser:serviceInjection/>
 
 <g:if test="${platformInstanceRecords.values().statisticsFormat.contains('COUNTER')}">
-    <laser:serviceInjection/>
     <ui:tabs>
         <g:each in="${platformInstanceRecords.values()}" var="platform">
             <ui:tabsItem controller="$controllerName" action="$actionName" tab="${platform.id.toString()}"
@@ -16,6 +15,7 @@
             <g:if test="${statsInfo}">
                 <ui:msg showIcon="true" class="warning" noClose="true" header="${message(code: 'default.stats.info.header')}">
                     ${statsInfo[0]}<br>
+                    <g:message code="default.stats.noCounterSupport"/>
                 </ui:msg>
             </g:if>
             <ui:msg showIcon="true" class="info" noClose="true" header="${message(code: 'default.stats.contact.header')}">
@@ -178,7 +178,6 @@
     </g:elseif>
 </g:if>
 <g:elseif test="${platformInstanceRecords.values().statisticsFormat.contains('Document') || platformInstanceRecords.values().statisticsFormat.contains('Diagram')}">
-    <laser:serviceInjection/>
     <ui:tabs>
         <g:each in="${platformInstanceRecords.values()}" var="platform">
             <ui:tabsItem controller="${controllerName}" action="${actionName}" tab="${platform.id.toString()}"
@@ -188,6 +187,13 @@
     <g:each in="${platformInstanceRecords.values()}" var="platform">
         <div class="ui bottom attached tab active segment" id="customerIdWrapper">
             <laser:render template="/platform/platformStatsDetails" model="[wekbServerUnavailable: wekbServerUnavailable, platformInstanceRecord: platform]"/>
+            <g:set var="statsInfo" value="${SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp where (sp.owner = :subscription or sp.owner = (select s.instanceOf from Subscription s where s = :subscription)) and sp.type = :statsAccess', [statsAccess: PropertyStore.SUB_PROP_STATS_ACCESS, subscription: subscription])}"/>
+            <g:if test="${statsInfo}">
+                <ui:msg icon="ui info icon" class="info" noClose="true" header="${message(code: 'default.stats.info.header')}">
+                    ${statsInfo[0]}<br>
+                    <g:message code="default.stats.noCounterSupport"/><br>
+                </ui:msg>
+            </g:if>
         </div>
     </g:each>
 </g:elseif>
