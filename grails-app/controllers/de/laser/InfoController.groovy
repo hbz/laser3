@@ -75,10 +75,14 @@ ${custId ? ('Customer Identifier: ' + custId.value) : ''}
 
     private static List<Contact> _getProviderContacts(Provider provider, List<RefdataValue> order) {
         List<Contact> ccList = []
+
         order.each { rdv ->
             if (!ccList) {
                 List<Person> ppList = BeanStore.getProviderService().getContactPersonsByFunctionType(provider, false, rdv)
-                ccList = ppList.contacts.flatten().findAll { it.contentType?.value in ['E-Mail', 'Mail'] } as List<Contact>
+                List<Contact> matches = ppList.contacts.flatten().findAll { it.contentType?.value in ['E-Mail', 'Mail'] } as List<Contact>
+                if (matches) {
+                    ccList.addAll(matches)
+                }
             }
         }
         ccList
@@ -90,11 +94,16 @@ ${custId ? ('Customer Identifier: ' + custId.value) : ''}
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(params.id_tipp)
         Provider provider = tipp.platform.provider
 
-        List<Contact> ccList = _getProviderContacts(provider, [RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS])
+        List<Contact> ccList = _getProviderContacts(
+                provider,
+                [RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
+        )
         User user = BeanStore.getContextService().getUser()
 
         result = [
-                mailto : ccList.collect { it.content }.sort().join(','),
+                // mailto : ccList.collect { it.content }.sort().join(','),
+                mailtoList : ccList,
+                mailto: 'Bitte ausfüllen',
                 mailcc : user.email
         ]
         result.mailSubject = [
@@ -145,11 +154,13 @@ Thank you
 
         List<Contact> ccList = _getProviderContacts(
                 platform.provider,
-                [RDStore.PRS_FUNC_STATS_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
+                [RDStore.PRS_FUNC_STATS_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
         )
 
         result = [
-                mailto : ccList.collect { it.content }.sort().join(','),
+                // mailto : ccList.collect { it.content }.sort().join(','),
+                mailtoList : ccList,
+                mailto: 'Bitte ausfüllen',
                 mailcc : user.email
         ]
         result.mailSubject = [

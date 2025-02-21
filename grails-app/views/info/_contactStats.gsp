@@ -9,10 +9,23 @@
 
         <g:render template="flyoutLanguageSelector" />
 
-        <div class="field">
-            <label for="mailto">${message(code: 'mail.to')}</label>
-            <input type="text" name="mailto" id="mailto" readonly="readonly" value="${mailto}"/>
-        </div>
+        <g:if test="${mailtoList}">
+            <div class="field">
+                <label for="mailto">${message(code: 'mail.to')}</label>
+                <g:select class="ui dropdown la-not-clearable"
+                          name="mailto"
+                          from="${mailtoList}"
+                          value=""
+                          optionKey="${{ it.content }}"
+                          optionValue="${{ it.content + (it.language ? ' (' + it.language.getI10n('value') + ')' : '') + (it.prs.isPublic ? '' : ' (Mein Adressbuch)') }}" />
+            </div>
+        </g:if>
+        <g:else>
+            <div class="field">
+                <label for="mailto">${message(code: 'mail.to')}</label>
+                <input type="text" name="mailto" id="mailto" value="${mailto}"/>
+            </div>
+        </g:else>
 
         <div class="field">
             <label for="mailcc">${message(code: 'mail.cc')}</label>

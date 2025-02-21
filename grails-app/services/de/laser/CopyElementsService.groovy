@@ -18,7 +18,9 @@ import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyOrg
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Provider
 import de.laser.wekb.ProviderRole
+import de.laser.wekb.Vendor
 import de.laser.wekb.VendorRole
 import de.laser.workflow.WfChecklist
 import grails.gorm.transactions.Transactional
@@ -1691,7 +1693,8 @@ class CopyElementsService {
 
         toCopyPersonRoles.each { PersonRole prRole ->
             if(prRole.provider) {
-                if (!(prRole.provider in targetObject.providerRelations.provider) && (prRole.provider in sourceObject.providerRelations.provider)) {
+                Set<Provider> sourceProviderRelations = ProviderRole.findAllBySubscription(sourceObject)?.provider, targetProviderRelations = ProviderRole.findAllBySubscription(targetObject)?.provider
+                if (!(prRole.provider in targetProviderRelations) && (prRole.provider in sourceProviderRelations)) {
                     ProviderRole pvr = ProviderRole.findByProviderAndSubscription(prRole.provider, sourceObject)
                     def newProperties = pvr.properties
 
@@ -1701,15 +1704,18 @@ class CopyElementsService {
                     newProviderRole.sharedFrom = null
                     newProviderRole.isShared = false
                     newProviderRole.subscription = targetObject
+                    _save(newProviderRole, flash)
+                    targetProviderRelations << newProviderRole
                 }
 
-                if ((prRole.provider in targetObject.providerRelations.provider) && !PersonRole.findWhere(prs: prRole.prs, provider: prRole.provider, responsibilityType: prRole.responsibilityType, sub: targetObject)) {
+                if ((prRole.provider in targetProviderRelations) && !PersonRole.findByPrsAndProviderAndResponsibilityTypeAndSub(prRole.prs, prRole.provider, prRole.responsibilityType, targetObject)) {
                     PersonRole newPrsRole = new PersonRole(prs: prRole.prs, provider: prRole.provider, sub: targetObject, responsibilityType: prRole.responsibilityType)
                     _save(newPrsRole, flash)
                 }
             }
             else if(prRole.vendor) {
-                if (!(prRole.vendor in targetObject.vendorRelations.vendor) && (prRole.vendor in sourceObject.vendorRelations.vendor)) {
+                Set<Vendor> sourceVendorRelations = VendorRole.findAllBySubscription(sourceObject)?.vendor, targetVendorRelations = VendorRole.findAllBySubscription(targetObject)?.vendor
+                if (!(prRole.vendor in targetVendorRelations) && (prRole.vendor in sourceVendorRelations)) {
                     VendorRole vr = VendorRole.findByVendorAndSubscription(prRole.vendor, sourceObject)
                     def newProperties = vr.properties
 
@@ -1719,9 +1725,11 @@ class CopyElementsService {
                     newVendorRole.sharedFrom = null
                     newVendorRole.isShared = false
                     newVendorRole.subscription = targetObject
+                    _save(newVendorRole, flash)
+                    targetVendorRelations << newVendorRole
                 }
 
-                if ((prRole.vendor in targetObject.vendorRelations.vendor) && !PersonRole.findWhere(prs: prRole.prs, vendor: prRole.vendor, responsibilityType: prRole.responsibilityType, sub: targetObject)) {
+                if ((prRole.vendor in targetVendorRelations) && !PersonRole.findByPrsAndVendorAndResponsibilityTypeAndSub(prRole.prs, prRole.vendor, prRole.responsibilityType, targetObject)) {
                     PersonRole newPrsRole = new PersonRole(prs: prRole.prs, vendor: prRole.vendor, sub: targetObject, responsibilityType: prRole.responsibilityType)
                     _save(newPrsRole, flash)
                 }

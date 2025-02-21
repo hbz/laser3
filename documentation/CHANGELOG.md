@@ -7,6 +7,15 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6308    21.02.2025  dev     3.5         Andreas Bug         falsche Ausgabe der Entknüpfungsknöpfe
+
+6307    21.02.2025  dev     3.5         Andreas Bug         Absturz bei Kopie von speziellen Lizenzkontakten
+
+6273    21.02.2025  dev     3.5         Andreas Feature     Auswertung der Statistik-Fehlermeldungen vollständig implementiert
+
+6303    20.02.2025  rc-3.4  3.4.19      Andreas Feature     Erweiterter Hinweistext bei fehlenden COUNTER-Statistiken
+
+6300    19.02.2025  dev     3.5         Andreas Bug         Umstellung der Jahressummierung (weitere Commits zu diesem Ticket siehe git-Commithistory)
 
 6292    19.02.2025  dev     3.5         Andreas Feature     Entfernen der Spalte "Sortiername"
 
