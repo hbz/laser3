@@ -16,8 +16,6 @@ import de.laser.License
 import de.laser.LicenseService
 import de.laser.LinksGenerationService
 import de.laser.PendingChange
-import de.laser.system.SystemMessage
-import de.laser.system.SystemMessageCondition
 import de.laser.wekb.Package
 import de.laser.wekb.Provider
 import de.laser.ProviderService
@@ -40,7 +38,6 @@ import de.laser.properties.LicenseProperty
 import de.laser.Org
 import de.laser.properties.OrgProperty
 import de.laser.properties.PersonProperty
-import de.laser.wekb.Platform
 import de.laser.properties.PlatformProperty
 import de.laser.Subscription
 import de.laser.SubscriptionPackage
@@ -1331,8 +1328,8 @@ class AjaxJsonController {
     }
 
     @Secured(['ROLE_USER'])
-    def checkSUSHIConnection() {
-        Map<String, Object> result = subscriptionService.checkSUSHIConnection(params.platform, params.long('customerKey'))
+    def checkCounterAPIConnection() {
+        Map<String, Object> result = subscriptionService.checkCounterAPIConnection(params.platform, params.customerId, params.requestorId)
         render result as JSON
     }
 }

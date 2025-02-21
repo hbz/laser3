@@ -6,7 +6,7 @@ import de.laser.http.BasicHttpClient
 import de.laser.config.ConfigMapper
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
-import de.laser.stats.SushiCallError
+import de.laser.stats.CounterCheck
 import de.laser.utils.DateUtils
 import de.laser.remote.Wekb
 import de.laser.stats.Fact
@@ -1111,7 +1111,7 @@ class StatsSyncService {
      * @return the JSON response map
      */
     Map<String, Object> fetchJSONData(String url, CustomerIdentifier ci, boolean requestList = false) {
-        Map<String, Object> result = [:]
+        Map<String, Object> result = [:], checkParams = [customerId: ci.value, requestorId: ci.requestorKey, platform: ci.platform]
         try {
             Closure success = { resp, json ->
                 if(resp.code() == 200) {
@@ -1131,6 +1131,7 @@ class StatsSyncService {
                         else {
                             result.header = json["Report_Header"]
                             result.items = json["Report_Items"]
+                            CounterCheck.executeUpdate('delete from CounterCheck cc where cc.customerId = :customerId and cc.requestorId = :requestorId and cc.platform = :platform', checkParams)
                         }
                     }
                     else if(json != null) {
@@ -1156,7 +1157,10 @@ class StatsSyncService {
                     result.header = reader["Report_Header"]
                 else {
                     log.error("server response: ${resp?.status()} - ${reader}")
-                    result.error = resp?.status()
+                    if(reader?.containsKey('Code'))
+                        result.error = reader["Code"]
+                    else
+                        result.error = resp?.status()
                 }
             }
             HttpClientConfiguration config = new DefaultHttpClientConfiguration()
@@ -1171,14 +1175,11 @@ class StatsSyncService {
             log.error("stack trace: ", e)
         }
         if(result.containsKey('error')) {
-            if(result.error.hasProperty('code') && result.error in ([2000 ,2010, 2020])) {
-                SushiCallError sce = new SushiCallError(platform: ci.platform, org: ci.customer, customerId: ci.value, requestorId: ci.requestorKey, errMess: 'key pair error')
-                if(!sce.save())
-                    log.error(sce.getErrors().getAllErrors().toListString())
+            if(result.error && result.error in ([2000 ,2010, 2020])) {
+                CounterCheck.construct([platform: ci.platform, url: url, org: ci.customer, customerId: ci.value, requestorId: ci.requestorKey, errMess: result.error, errToken: "default.stats.error.${result.error}"])
             }
             Map sysEventPayload = result.clone()
             sysEventPayload.url = url
-            sysEventPayload.ci = ci.id
             SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
         }
         result
@@ -1192,7 +1193,7 @@ class StatsSyncService {
      * @return the response body or an error map upon failure
      */
     Map<String, Object> fetchXMLData(String url, CustomerIdentifier ci, requestBody) {
-        Map<String, Object> result = [:]
+        Map<String, Object> result = [:], checkParams = [customerId: ci.value, requestorId: ci.requestorKey, platform: ci.platform]
 
         BasicHttpClient http
         try  {
@@ -1208,9 +1209,7 @@ class StatsSyncService {
                                           ns3       : "http://www.niso.org/schemas/sushi/counter"])
                     if (xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text() == '2010') {
                         log.warn("wrong key pair")
-                        SushiCallError sce = new SushiCallError(platform: ci.platform, org: ci.customer, customerId: ci.value, requestorId: ci.requestorKey, errMess: xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Message'?.text())
-                        if(!sce.save())
-                            log.error(sce.getErrors().getAllErrors().toListString())
+                        CounterCheck.construct([platform: ci.platform, org: ci.customer, customerId: ci.value, requestorId: ci.requestorKey, errMess: xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Message'?.text(), errToken: '401'])
                         result = [error: xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text(), code: 401]
                     }
                     else if (['3000', '3020'].any { String errorCode -> errorCode == xml.'SOAP-ENV:Body'.'ReportResponse'?.'Exception'?.'Number'?.text() }) {
