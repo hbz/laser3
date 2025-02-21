@@ -7,19 +7,6 @@
 			<ui:crumb message="menu.admin.managePropertyDefinitions" class="active"/>
 		</ui:breadcrumbs>
 
-%{--
-        <ui:controlButtons>
-            <laser:render template="actions"/>
-            <button class="${Btn.SIMPLE}" value="" data-href="#addPropertyDefinitionModal" data-ui="modal" >${message(code:'propertyDefinition.create_new.label')}</button>
-            <%-- included in case someone of the admins wishes this export
-            <ui:exportDropdown>
-                <ui:exportDropdownItem>
-                    <g:link class="item" action="managePropertyDefinitions" params="[cmd: 'exportXLS']">${message(code: 'default.button.export.xls')}</g:link>
-                </ui:exportDropdownItem>
-            </ui:exportDropdown>--%>
-        </ui:controlButtons>
---}%
-
         <ui:h1HeaderWithIcon message="menu.admin.managePropertyDefinitions" type="admin"/>
 
 		<ui:messages data="${flash}" />
@@ -131,29 +118,32 @@
                                         <g:if test="${pd.mandatory}">
                                             <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMandatory.label')}" data-position="top left"
                                                     params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">
-                                                <i class="${Icon.PROP.MANDATORY_NOT}"></i>
+                                                <i class="${Icon.PROP.MANDATORY_NOT.replaceAll('yellow', '')}"></i>
                                             </g:link>
                                         </g:if>
                                         <g:else>
                                             <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMandatory.label')}" data-position="top left"
                                                     params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">
-                                                <i class="${Icon.PROP.MANDATORY}"></i>
+                                                <i class="${Icon.PROP.MANDATORY.replaceAll('yellow', '')}"></i>
                                             </g:link>
                                         </g:else>
                                         <g:if test="${!multiplePdList?.contains(pd.id)}">
                                             <g:if test="${pd.multipleOccurrence}">
                                                 <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="top left"
                                                         params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">
-                                                    <i class="${Icon.PROP.MULTIPLE_NOT}"></i>
+                                                    <i class="${Icon.PROP.MULTIPLE_NOT.replaceAll('teal', '')}"></i>
                                                 </g:link>
                                             </g:if>
                                             <g:else>
                                                 <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMultiple.label')}" data-position="top left"
                                                         params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">
-                                                    <i class="${Icon.PROP.MULTIPLE}"></i>
+                                                    <i class="${Icon.PROP.MULTIPLE.replaceAll('teal', '')}"></i>
                                                 </g:link>
                                             </g:else>
                                         </g:if>
+                                        <g:else>
+                                            <div class="${Btn.MODERN.SIMPLE} disabled"><icon:placeholder/></div>
+                                        </g:else>
 
                                         <g:if test="${(pd.descr == PropertyDefinition.SUB_PROP) && !PropertyDefinition.findByNameAndDescrAndTenant(pd.name, PropertyDefinition.SVY_PROP, null)}">
                                                 <g:link action="transferSubPropToSurProp" data-content="${message(code:'propertyDefinition.copySubPropToSurProp.label')}" data-position="top left"
@@ -161,6 +151,9 @@
                                                     <i class="${Icon.CMD.COPY}"></i>
                                                 </g:link>
                                         </g:if>
+                                        <g:else>
+                                            <div class="${Btn.MODERN.SIMPLE} disabled"><icon:placeholder/></div>
+                                        </g:else>
 
                                         <sec:ifAnyGranted roles="ROLE_YODA">
                                             <g:if test="${usedPdList?.contains(pd.id)}">
@@ -173,6 +166,9 @@
                                                     ><i class="${Icon.CMD.REPLACE}"></i></button>
                                                 </span>
                                             </g:if>
+                                            <g:else>
+                                                <div class="${Btn.MODERN.SIMPLE} disabled"><icon:placeholder/></div>
+                                            </g:else>
                                         </sec:ifAnyGranted>
 
                                         <g:if test="${! pd.isHardData && ! usedPdList?.contains(pd.id)}">
