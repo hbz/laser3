@@ -13,6 +13,7 @@ import de.laser.storage.PropertyStore
 import de.laser.survey.SurveyConfigPackage
 import de.laser.survey.SurveyConfigVendor
 import de.laser.survey.SurveyPackageResult
+import de.laser.survey.SurveyPersonResult
 import de.laser.survey.SurveyVendorResult
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
@@ -112,6 +113,7 @@ class ExportClickMeService {
                         fields : [
                                 'participant.sortname'                  : [field: 'participant.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
                                 'participant.name'                      : [field: 'participant.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true'],
+                                'survey.surveyPerson'                   : [field: null, label: 'Survey Contact', message: 'surveyOrg.surveyContacts', defaultChecked: 'true'],
                                 'survey.period'                         : [field: null, label: 'Period', message: 'renewalEvaluation.period', defaultChecked: 'true'],
                                 'survey.periodComment'                  : [field: null, label: 'Period Comment', message: 'renewalEvaluation.periodComment', defaultChecked: 'true'],
                                 'costItem.costPeriod'                   : [field: null, label: 'Cost Period', message: 'renewalEvaluation.costPeriod', defaultChecked: 'true'],
@@ -1630,6 +1632,7 @@ class ExportClickMeService {
                         fields : [
                                 'participant.sortname'   : [field: 'participant.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
                                 'participant.name'       : [field: 'participant.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true'],
+                                'survey.surveyPerson'    : [field: null, label: 'Survey Contact', message: 'surveyOrg.surveyContacts', defaultChecked: 'true'],
                                 'survey.ownerComment'    : [field: null, label: 'Owner Comment', message: 'surveyResult.commentOnlyForOwner', defaultChecked: 'true'],
                                 'survey.finishDate'      : [field: null, label: 'Finish Date', message: 'surveyInfo.finishedDate', defaultChecked: 'true'],
                                 'survey.reminderMailDate': [field: null, label: 'Reminder Mail Date', message: 'surveyOrg.reminderMailDate'],
@@ -5232,16 +5235,34 @@ class ExportClickMeService {
                     row.add(createTableCell(format, reminderMailDate))
                 }
                 else if (fieldKey == 'survey.person') {
-                    String person = ""
-                    if (surveyOrg && surveyOrg.person && surveyOrg.person.contacts) {
+                    String personString = ""
+                    if (surveyOrg) {
                         List emails = []
-                        surveyOrg.person.contacts.each {
-                            if(it.contentType == RDStore.CCT_EMAIL)
-                                emails << it.content
+                        List<SurveyPersonResult> personResults = SurveyPersonResult.findAllByParticipantAndSurveyConfigAndBillingPerson(surveyOrg.org, surveyOrg.surveyConfig, true)
+                        personResults.each { SurveyPersonResult personResult ->
+                            personResult.person.contacts.each {
+                                if (it.contentType == RDStore.CCT_EMAIL)
+                                    emails << it.content
+                            }
                         }
-                        person = emails.join('; ')
+                        personString = emails.join('; ')
                     }
-                    row.add(createTableCell(format, person, surveyOrg && surveyService.modificationToContactInformation(surveyOrg) ? 'negative' : ''))
+                    row.add(createTableCell(format, personString, surveyOrg && surveyService.modificationToContactInformation(surveyOrg) ? 'negative' : ''))
+                }
+                else if (fieldKey == 'survey.surveyPerson') {
+                    String personString = ""
+                    if (surveyOrg) {
+                        List emails = []
+                        List<SurveyPersonResult> personResults = SurveyPersonResult.findAllByParticipantAndSurveyConfigAndSurveyPersonPerson(surveyOrg.org, surveyOrg.surveyConfig, true)
+                        personResults.each { SurveyPersonResult personResult ->
+                            personResult.person.contacts.each {
+                                if (it.contentType == RDStore.CCT_EMAIL)
+                                    emails << it.content
+                            }
+                        }
+                        personString = emails.join('; ')
+                    }
+                    row.add(createTableCell(format, personString, surveyOrg && surveyService.modificationToContactInformation(surveyOrg) ? 'negative' : ''))
                 }
                 else if (fieldKey == 'survey.address') {
                     String address = ""
@@ -6358,18 +6379,36 @@ class ExportClickMeService {
                         reminderMailDate = sdf.format(participantResult.surveyOrg.reminderMailDate)
                     }
                     row.add(createTableCell(format, reminderMailDate))
-                }  else if (fieldKey == 'survey.person') {
-                    String person = ""
-                    if (participantResult.surveyOrg && participantResult.surveyOrg.person && participantResult.surveyOrg.person.contacts) {
+                }
+                else if (fieldKey == 'survey.person') {
+                    String personString = ""
+                    if (participantResult.surveyOrg) {
                         List emails = []
-                        participantResult.surveyOrg.person.contacts.each {
-                            if(it.contentType == RDStore.CCT_EMAIL)
-                                emails << it.content
+                        List<SurveyPersonResult> personResults = SurveyPersonResult.findAllByParticipantAndSurveyConfigAndBillingPerson(participantResult.surveyOrg.org, participantResult.surveyOrg.surveyConfig, true)
+                        personResults.each { SurveyPersonResult personResult ->
+                            personResult.person.contacts.each {
+                                if (it.contentType == RDStore.CCT_EMAIL)
+                                    emails << it.content
+                            }
                         }
-                        person = emails.join('; ')
+                        personString = emails.join('; ')
                     }
-
-                    row.add(createTableCell(format, person, participantResult.surveyOrg && surveyService.modificationToContactInformation(participantResult.surveyOrg) ? 'negative' : ''))
+                    row.add(createTableCell(format, personString, participantResult.surveyOrg && surveyService.modificationToContactInformation(participantResult.surveyOrg) ? 'negative' : ''))
+                }
+                else if (fieldKey == 'survey.surveyPerson') {
+                    String personString = ""
+                    if (participantResult.surveyOrg) {
+                        List emails = []
+                        List<SurveyPersonResult> personResults = SurveyPersonResult.findAllByParticipantAndSurveyConfigAndSurveyPerson(participantResult.surveyOrg.org, participantResult.surveyOrg.surveyConfig, true)
+                        personResults.each { SurveyPersonResult personResult ->
+                            personResult.person.contacts.each {
+                                if (it.contentType == RDStore.CCT_EMAIL)
+                                    emails << it.content
+                            }
+                        }
+                        personString = emails.join('; ')
+                    }
+                    row.add(createTableCell(format, personString, participantResult.surveyOrg && surveyService.modificationToContactInformation(participantResult.surveyOrg) ? 'negative' : ''))
                 }
                 else if (fieldKey == 'survey.address') {
                     String address = ""

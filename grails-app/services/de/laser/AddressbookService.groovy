@@ -65,6 +65,10 @@ class AddressbookService {
             sort = 'coalesce(org.sortname, vendor.sortname, provider.sortname) as sortname'
         else sort = params.sort
 
+        if (params.preferredForSurvey) {
+            qParts << "pr.preferredForSurvey = true"
+        }
+
         if (params.prs) {
             qParts << "( genfunc_filter_matcher(p.last_name, :prsName) = true OR genfunc_filter_matcher(p.middle_name, :prsName) = true OR genfunc_filter_matcher(p.first_name, :prsName) = true )"
             qParams << [prsName: "${params.prs}"]

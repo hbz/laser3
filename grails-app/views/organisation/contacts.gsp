@@ -78,7 +78,7 @@
               model="${[persons       : visiblePersons,
                         showContacts  : true,
                         showOptions : true,
-                        tmplConfigShow: ['lineNumber', 'name', 'showContacts', 'function', 'position']
+                        tmplConfigShow: ['lineNumber', 'name', 'showContacts', 'function', 'position', 'preferredForSurvey']
               ]}"/>
 
     <ui:paginate action="contacts" controller="organisation" params="${params}"
@@ -95,7 +95,8 @@
             addresses           : addresses,
             tmplShowDeleteButton: true,
             editable            : editable,
-            showOptions : true
+            showOptions : true,
+            showPreferredForSurvey: true
     ]}"/>
 
 </div>
