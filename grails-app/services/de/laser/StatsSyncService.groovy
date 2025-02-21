@@ -1111,7 +1111,7 @@ class StatsSyncService {
      * @return the JSON response map
      */
     Map<String, Object> fetchJSONData(String url, CustomerIdentifier ci, boolean requestList = false) {
-        Map<String, Object> result = [:], checkParams = [customerId: ci.value, requestorId: ci.requestorKey, platform: ci.platform]
+        Map<String, Object> result = [:], checkParams = [org: ci.customer, platform: ci.platform]
         try {
             Closure success = { resp, json ->
                 if(resp.code() == 200) {
@@ -1131,7 +1131,7 @@ class StatsSyncService {
                         else {
                             result.header = json["Report_Header"]
                             result.items = json["Report_Items"]
-                            CounterCheck.executeUpdate('delete from CounterCheck cc where cc.customerId = :customerId and cc.requestorId = :requestorId and cc.platform = :platform', checkParams)
+                            CounterCheck.executeUpdate('delete from CounterCheck cc where cc.org = :org and cc.platform = :platform', checkParams)
                         }
                     }
                     else if(json != null) {
@@ -1193,7 +1193,7 @@ class StatsSyncService {
      * @return the response body or an error map upon failure
      */
     Map<String, Object> fetchXMLData(String url, CustomerIdentifier ci, requestBody) {
-        Map<String, Object> result = [:], checkParams = [customerId: ci.value, requestorId: ci.requestorKey, platform: ci.platform]
+        Map<String, Object> result = [:], checkParams = [org: ci.customer, platform: ci.platform]
 
         BasicHttpClient http
         try  {
@@ -1229,6 +1229,7 @@ class StatsSyncService {
                         //lsc.missingPeriods.remove(wasMissing)
                         GPathResult reportItems = reportData.'ns2:Report'.'ns2:Customer'.'ns2:ReportItems'
                         result = [reports: reportItems, reportName: reportData.'ns2:Report'.'@Name'.text(), code: resp.code()]
+                        CounterCheck.executeUpdate('delete from CounterCheck cc where cc.org = :org and cc.platform = :platform', checkParams)
                     }
                 }
                 else {
