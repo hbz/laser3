@@ -336,12 +336,13 @@ class SubscriptionControllerService {
             }
             else refSub = result.subscription.instanceOf
             Map<String, Object> c4counts = [:], c4allYearCounts = [:], c5counts = [:]//, c5allYearCounts = [:], countSumsPerYear = [:]
-            SortedSet datePoints = new TreeSet()
+            Map<String, SortedSet> datePoints = [:]
             String sort, groupKey
             Org customer = result.subscription.getSubscriberRespConsortia()
             result.customer = customer
             if(platform && refSub) {
                 Set<Subscription> subscriptions = linksGenerationService.getSuccessionChain(result.subscription, 'sourceSubscription')
+                subscriptions.addAll(linksGenerationService.getSuccessionChain(result.subscription, 'destinationSubscription'))
                 subscriptions << result.subscription
                 result.subscriptions = subscriptions
                 Set<CostItem> refCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.sub in (:subscriptions) and ci.costItemElementConfiguration = :positive order by ci.startDate asc', [subscriptions: subscriptions, positive: RDStore.CIEC_POSITIVE])
@@ -361,7 +362,12 @@ class SubscriptionControllerService {
                     result.startDate = dateRanges.startDate
                     result.endDate = dateRanges.endDate
                     if (!(params.reportType in [Counter4Report.JOURNAL_REPORT_5, Counter5Report.JOURNAL_REQUESTS_BY_YOP])) {
-                        datePoints.addAll(dateRanges.monthsInRing.collect { Date month -> monthFormat.format(month) })
+                        dateRanges.monthRings.each { Date month ->
+                            String year = yearFormat.format(month)
+                            SortedSet datePointsYear = datePoints.containsKey(year) ? datePoints.get(year) : new TreeSet()
+                            datePointsYear << monthFormat.format(month)
+                            datePoints.put(year, datePointsYear)
+                        }
                     }
                 }
                 //Counter5Report.withTransaction {
@@ -405,17 +411,23 @@ class SubscriptionControllerService {
                                         for(Map instance: performance.Instance) {
                                             String metricType = instance.Metric_Type
                                             metricTypes << metricType
-                                            Map<String, Object> metricDatePointSums = c5counts.containsKey(metricType) ? c5counts.get(metricType) : [total: 0]
+                                            Map<String, Object> metricDatePointSums = c5counts.containsKey(metricType) ? c5counts.get(metricType) : [:]
                                             //if((!dateRanges.startDate || reportFrom >= dateRanges.startDate) && (!dateRanges.endDate || reportFrom <= dateRanges.endDate)) {
-                                            String datePoint
+                                            String datePoint, currYear
                                             if(params.reportType == Counter5Report.JOURNAL_REQUESTS_BY_YOP) {
                                                 datePoint = "YOP ${performance.YOP}"
+                                                currYear = performance.YOP
                                             }
                                             else {
                                                 datePoint = monthFormat.format(reportFrom)
+                                                currYear = yearFormat.format(reportFrom)
                                             }
-                                            datePoints << datePoint
-                                            metricDatePointSums.total += instance.Count
+                                            SortedSet datePointsYear = datePoints.containsKey(currYear) ? datePoints.get(currYear) : new TreeSet()
+                                            datePointsYear << datePoint
+                                            datePoints.put(currYear, datePointsYear)
+                                            if(!metricDatePointSums.containsKey(currYear+'-total'))
+                                                metricDatePointSums[currYear+'-total'] = 0
+                                            metricDatePointSums[currYear+'-total'] += instance.Count
                                             int monthCount = metricDatePointSums.get(datePoint) ?: 0
                                             monthCount += instance.Count
                                             metricDatePointSums.put(datePoint, monthCount)
@@ -440,16 +452,22 @@ class SubscriptionControllerService {
                                                 String metricType = instance.getKey()
                                                 metricTypes << metricType
                                                 for (Map.Entry reportRow : instance.getValue()) {
-                                                    Map<String, Object> metricDatePointSums = c5counts.containsKey(metricType) ? c5counts.get(metricType) : [total: 0]
-                                                    String datePoint
+                                                    Map<String, Object> metricDatePointSums = c5counts.containsKey(metricType) ? c5counts.get(metricType) : [:]
+                                                    String datePoint, currYear
                                                     if(params.reportType == Counter5Report.JOURNAL_REQUESTS_BY_YOP) {
                                                         datePoint = "YOP ${performance.YOP}"
+                                                        currYear = performance.YOP
                                                     }
                                                     else {
                                                         datePoint = reportRow.getKey()
+                                                        currYear = reportRow.getKey().split('-')[0]
                                                     }
-                                                    datePoints << datePoint
-                                                    metricDatePointSums.total += reportRow.getValue()
+                                                    SortedSet datePointsYear = datePoints.containsKey(currYear) ? datePoints.get(currYear) : new TreeSet()
+                                                    datePointsYear << datePoint
+                                                    datePoints.put(currYear, datePointsYear)
+                                                    if(!metricDatePointSums.containsKey(currYear+'-total'))
+                                                        metricDatePointSums[currYear+'-total'] = 0
+                                                    metricDatePointSums[currYear+'-total'] += reportRow.getValue()
                                                     int monthCount = metricDatePointSums.get(datePoint) ?: 0
                                                     monthCount += reportRow.getValue()
                                                     metricDatePointSums.put(datePoint, monthCount)
@@ -465,6 +483,7 @@ class SubscriptionControllerService {
                         //result.allYears = allYears
                         result.sums = c5counts
                         result.datePoints = datePoints
+                        result.yearsInRing = dateRanges.yearsInRing
                     }
                     else if(requestResponse.containsKey('error')) {
                         result.error = requestResponse.error
@@ -503,17 +522,21 @@ class SubscriptionControllerService {
                                     for(GPathResult instance: performance.'ns2:Instance') {
                                         String metricType = instance.'ns2:MetricType'.text()
                                         Integer count = Integer.parseInt(instance.'ns2:Count'.text())
-                                        Map<String, Object> metricDatePointSums = c4counts.get(metricType) ?: [total: 0], metricYearSums = c4allYearCounts.get(metricType) ?: [:]
+                                        Map<String, Object> metricDatePointSums = c4counts.get(metricType) ?: [:], metricYearSums = c4allYearCounts.get(metricType) ?: [:]
                                         //if((!dateRanges.startDate || reportFrom >= dateRanges.startDate) && (!dateRanges.endDate || reportFrom <= dateRanges.endDate)) {
-                                            String datePoint
+                                            String datePoint, currYear
                                             if(params.reportType == Counter4Report.JOURNAL_REPORT_5) {
                                                 datePoint = "YOP ${performance.'@PubYr'.text()}"
+                                                currYear = performance.'@PubYr'.text()
                                             }
                                             else {
                                                 datePoint = monthFormat.format(reportFrom)
+                                                currYear = yearFormat.format(reportFrom)
                                             }
                                             datePoints << datePoint
-                                            metricDatePointSums.total += count
+                                            if(!metricDatePointSums.containsKey(currYear+'-total'))
+                                                metricDatePointSums[currYear+'-total'] = 0
+                                            metricDatePointSums[currYear+'-total'] += count
                                             int monthCount = metricDatePointSums.get(datePoint) ?: 0
                                             monthCount += count
                                             metricDatePointSums.put(datePoint, monthCount)
@@ -536,9 +559,11 @@ class SubscriptionControllerService {
                         //result.allYears = allYears
                         result.sums = c4counts
                         result.datePoints = datePoints
+                        result.yearsInRing = dateRanges.yearsInRing
                     }
                     else {
                         result.datePoints = []
+                        result.yearsInRing = []
                         result.error = requestResponse.error
                         [result: result, status: STATUS_ERROR]
                     }
@@ -548,6 +573,7 @@ class SubscriptionControllerService {
                 result.metricTypes = []
                 result.reportTypes = []
                 result.datePoints = []
+                result.yearsInRing = []
                 result.platforms = [] as JSON
             }
             //result.countSumsPerYear = countSumsPerYear
@@ -604,12 +630,14 @@ class SubscriptionControllerService {
          */
         //calculate 100% for each year - works only iff costs have been defined in year rings!
         Map<String, Map<String, Object>> costsAllYears = [:]
-        Calendar costYear = GregorianCalendar.getInstance(), startYear = GregorianCalendar.getInstance()
+        Calendar costYear = GregorianCalendar.getInstance(), startYear = GregorianCalendar.getInstance(), endYear = GregorianCalendar.getInstance()
         startYear.setTime(statsData.startDate)
+        if(statsData.containsKey('endDate'))
+            endYear.setTime(statsData.endDate)
         allCostItems.each { CostItem ci ->
             costYear.setTime(ci.startDate)
             Integer year = costYear.get(Calendar.YEAR)
-            if(year >= startYear.get(Calendar.YEAR)) {
+            if(year >= startYear.get(Calendar.YEAR) && year <= endYear.get(Calendar.YEAR)) {
                 String yearKey = year.toString()
                 Map<String, Object> costsInYear = costsAllYears.containsKey(yearKey) ? costsAllYears.get(yearKey) : [total: 0.0, startDate: ci.startDate, endDate: ci.endDate]
                 if(ci.startDate < costsInYear.startDate)
@@ -627,14 +655,15 @@ class SubscriptionControllerService {
                 costsAllYears.put(yearKey,costsInYear)
             }
         }
-        BigDecimal allYearsTotal = 0.0
+        //allYearsTotal does not make sense, I have to restrict total usage sum on the respective cost item; it is meaningless to accumulate all sums!
+        //BigDecimal allYearsTotal = 0.0
         costsAllYears.each { String year, Map<String, Object> costsInYear ->
             Calendar stCal = GregorianCalendar.getInstance(), endCal = GregorianCalendar.getInstance()
             stCal.setTime(costsInYear.startDate)
             endCal.setTime(costsInYear.endDate)
             int monthsCount = (endCal.get(Calendar.MONTH)+1) - (stCal.get(Calendar.MONTH)+1)
             costsInYear.partial = costsInYear.total / monthsCount
-            allYearsTotal += costsInYear.total
+            //allYearsTotal += costsInYear.total
             costsAllYears.put(year, costsInYear)
         }
         //log.debug("total cost for year: ${costForYear}, partial amount: ${partialCostForYear} for ${monthsCount} months total")
@@ -646,8 +675,8 @@ class SubscriptionControllerService {
                 reportYearMetrics.each { String date, Integer count ->
                     BigDecimal metricSum = 0.0
                     if(count > 0) {
-                        if(date == 'total') {
-                            metricSum = (allYearsTotal / count).setScale(2, RoundingMode.HALF_UP)
+                        if(date.contains('total')) {
+                            metricSum = (costsAllYears.get(date.split('-')[0]).total / count).setScale(2, RoundingMode.HALF_UP)
                         }
                         else {
                             metricSum = (costsAllYears.get(date.split('-')[0]).partial / count).setScale(2, RoundingMode.HALF_UP)
@@ -832,6 +861,7 @@ class SubscriptionControllerService {
         */
         if(params.containsKey('startDate') && params.containsKey('endDate')) {
             SortedSet<Date> monthsInRing = new TreeSet<Date>()
+            SortedSet<String> yearsInRing = new TreeSet<String>()
             Map<String, Object> dateRangeParams = [:]
             /*
             possible cases:
@@ -873,12 +903,15 @@ class SubscriptionControllerService {
                 currMonth.setTime(startDate)
                 while(currMonth.getTime() < endDate) {
                     monthsInRing << currMonth.getTime()
+                    yearsInRing << DateUtils.getSDF_yyyy().format(currMonth.getTime())
                     currMonth.set(Calendar.MONTH, currMonth.get(Calendar.MONTH)+1)
                 }
                 dateRangeParams.startDate = startDate
                 dateRangeParams.endDate = endDate
             }
-            dateRangeParams+[monthsInRing: monthsInRing]
+            dateRangeParams.monthsInRing = monthsInRing
+            dateRangeParams.yearsInRing = yearsInRing
+            dateRangeParams
         }
         else [error: 'noDatesSelected']
     }

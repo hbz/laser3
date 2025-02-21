@@ -75,20 +75,21 @@
         </g:each>
     </div>
 
-    <table class="ui compact celled table">
-        <thead>
-        <tr>
-            <th><g:message code="default.usage.reportType"/></th>
-            <th><g:message code="default.usage.metricType"/></th>
-            <th><g:message code="default.usage.allUsageGrid.header"/></th>
-            <g:each in="${datePoints}" var="datePoint">
-                <th>
-                    ${datePoint}
-                </th>
-            </g:each>
-        </tr>
-        </thead>
-        <tbody>
+    <g:each in="${yearsInRing}" var="currYear">
+        <table class="ui compact celled table">
+            <thead>
+            <tr>
+                <th><g:message code="default.usage.reportType"/></th>
+                <th><g:message code="default.usage.metricType"/></th>
+                <th><g:message code="default.usage.allUsageGrid.header"/></th>
+                <g:each in="${datePoints.get(currYear)}" var="datePoint">
+                    <th>
+                        ${datePoint}
+                    </th>
+                </g:each>
+            </tr>
+            </thead>
+            <tbody>
             <g:each in="${costPerUse}" var="institutionalUsage">
                 <g:each in="${institutionalUsage.getValue()}" var="costPerMetric">
                     <%
@@ -113,10 +114,9 @@
                             ${costString} (${metricType})
                         </td>
                         <td>
-                            <g:message code="default.usage.costPerUse.result" args="${[formatNumber(number: costs.get('total'), type: "currency", currencySymbol:"EUR"), sums.get(metricType).total]}"/>
-
+                            <g:message code="default.usage.costPerUse.result" args="${[formatNumber(number: costs.get(currYear+'-total'), type: "currency", currencySymbol:"EUR"), sums.get(metricType).get(currYear+'-total')]}"/>
                         </td>
-                        <g:each in="${datePoints}" var="datePoint">
+                        <g:each in="${datePoints.get(currYear)}" var="datePoint">
                             <td>
                                 <g:if test="${costs.containsKey(datePoint)}">
                                     <g:message code="default.usage.costPerUse.result" args="${[formatNumber(number: costs.get(datePoint), type:"currency", currencySymbol:"EUR"), sums.(metricType).get(datePoint)]}"/>
@@ -129,8 +129,10 @@
                     </tr>
                 </g:each>
             </g:each>
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </g:each>
+
     <laser:script file="${this.getGroovyPageFileName()}">
         function format(data) {
             data = parseFloat(data);
@@ -171,7 +173,7 @@
             },
             xAxis: {
                 type: 'category',
-                data: ['Gesamtzeitraum', <g:applyCodec encodeAs="none">'${datePoints.join("','")}'</g:applyCodec>]
+                data: [<g:applyCodec encodeAs="none">'${yearsInRing.collect { String yr -> "${yr} gesamt"}.join("','")}', <g:each in="${datePoints.values()}" var="dpyAxis" status="dpyCt">'${dpyAxis.join("','")}'<g:if test="${dpyCt < datePoints.values().size()-1}">,</g:if></g:each></g:applyCodec>]
             },
             yAxis: [
                 {
@@ -210,12 +212,19 @@
                         name: <% print "'${costString} (${metricType})'" %>,
                         type: 'bar',
                         data: <% print '['
-                            print costs.get('total')+','
-                            datePoints.eachWithIndex { String datePoint, int i ->
-                                if(costs.containsKey(datePoint))
-                                    print costs.get(datePoint)
-                                else print 0.0
-                                if(i < datePoints.size()-1)
+                            yearsInRing.each { String year ->
+                                print costs.get(year+'-total')+','
+                            }
+                            yearsInRing.eachWithIndex { String year, int h ->
+                                SortedSet datePointsYear = datePoints.get(year)
+                                datePointsYear.eachWithIndex { String datePoint, int i ->
+                                    if(costs.containsKey(datePoint))
+                                        print costs.get(datePoint)
+                                    else print 0.0
+                                    if(i < datePointsYear.size()-1)
+                                        print ','
+                                }
+                                if(h < yearsInRing.size()-1)
                                     print ','
                             }
                         print ']'%>
@@ -225,12 +234,19 @@
                         type: 'bar',
                         yAxisIndex: 1,
                         data: <% print '['
-                            print sums.get(metricType).get('total')+','
-                            datePoints.eachWithIndex { String datePoint, int i ->
-                                if(sums.get(metricType).containsKey(datePoint))
-                                    print sums.get(metricType).get(datePoint)
-                                else print 0
-                                if(i < datePoints.size()-1)
+                            yearsInRing.each { String year ->
+                                print sums.get(metricType).get(year+'-total')+','
+                            }
+                            yearsInRing.eachWithIndex { String year, int h ->
+                                SortedSet datePointsYear = datePoints.get(year)
+                                datePointsYear.eachWithIndex { String datePoint, int i ->
+                                    if(sums.get(metricType).containsKey(datePoint))
+                                        print sums.get(metricType).get(datePoint)
+                                    else print 0
+                                    if(i < datePointsYear.size()-1)
+                                        print ','
+                                }
+                                if(h < yearsInRing.size()-1)
                                     print ','
                             }
                         print ']'%>

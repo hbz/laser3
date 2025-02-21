@@ -32,7 +32,7 @@ import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyLinks
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
-import de.laser.survey.SurveyPackageResult
+import de.laser.survey.SurveyVendorResult
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.PdfUtils
@@ -2494,10 +2494,14 @@ class MyInstitutionController  {
                     flash.error = g.message(code: 'surveyResult.finish.invoicingInformation')
                 }else if(surveyConfig.surveyInfo.isMandatory && surveyConfig.vendorSurvey) {
                     boolean vendorInvoicing = SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_INVOICE_PROCESSING)?.refValue == RDStore.INVOICE_PROCESSING_VENDOR
-                    if (vendorInvoicing && SurveyPackageResult.executeQuery('select count (*) from SurveyPackageResult spr ' +
-                            'where spr.surveyConfig = :surveyConfig and spr.participant = :participant', [surveyConfig: surveyConfig, participant: contextService.getOrg()])[0] == 0) {
+                    int vendorCount = SurveyVendorResult.executeQuery('select count (*) from SurveyVendorResult spr ' +
+                            'where spr.surveyConfig = :surveyConfig and spr.participant = :participant', [surveyConfig: surveyConfig, participant: contextService.getOrg()])[0]
+                    if (vendorInvoicing && vendorCount == 0) {
                         allResultHaveValue = false
                         flash.error = g.message(code: 'surveyResult.finish.vendorSurvey')
+                    }else if(!vendorInvoicing && vendorCount > 0){
+                        allResultHaveValue = false
+                        flash.error = g.message(code: 'surveyResult.finish.wrongVendor')
                     }
                 }
 
