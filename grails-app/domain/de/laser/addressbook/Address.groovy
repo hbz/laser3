@@ -28,6 +28,8 @@ class Address {
     Date dateCreated
     Date lastUpdated
 
+    boolean preferredForSurvey  = false
+
     /**
      * The region may be located in Germany, Austria, Switzerland; since multi-annotation is not supported and the annotation is used by logic, the categories are being named only in Groovydoc
      * @see RDConstants#REGIONS_DE
@@ -73,6 +75,8 @@ class Address {
         provider column:'adr_provider_fk', index: 'adr_provider_idx'
         vendor   column:'adr_vendor_fk', index: 'adr_vendor_idx'
         tenant   column:'adr_tenant_fk', index: 'adr_tenant_idx'
+
+        preferredForSurvey column: 'adr_preferred_for_survey'
 
         lastUpdated     column: 'adr_last_updated'
         dateCreated     column: 'adr_date_created'

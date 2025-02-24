@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyPackageResult; de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyConfigVendor; de.laser.survey.SurveyConfigPackage; de.laser.storage.RDConstants; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.properties.PropertyDefinition;" %>
+<%@ page import="de.laser.survey.SurveyPersonResult; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyPackageResult; de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyConfigVendor; de.laser.survey.SurveyConfigPackage; de.laser.storage.RDConstants; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.properties.PropertyDefinition;" %>
 
 
 <div class="ui stackable grid">
@@ -22,6 +22,13 @@
                 ${message(code: 'default.overview.label')}
             </g:link>
 
+            <g:link class="item ${params.viewTab == 'surveyContacts' ? 'active' : ''}"
+                    controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
+                    params="${parame+[viewTab: 'surveyContacts']}">
+                ${message(code: 'surveyOrg.surveyContacts')}
+                <ui:bubble float="true" count="${SurveyPersonResult.countByParticipantAndSurveyConfigAndPersonIsNotNullAndSurveyPerson(participant, surveyConfig, true)}"/>
+            </g:link>
+
             <g:if test="${surveyConfig.subscription}">
                         <g:link class="item ${params.viewTab == 'additionalInformation' ? 'active' : ''}"
                                 controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
@@ -36,7 +43,7 @@
                         controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
                         params="${parame+[viewTab: 'invoicingInformation']}">
                     ${message(code: 'surveyOrg.invoicingInformation.short')}
-                    <ui:bubble float="true" count="${SurveyOrg.countByOrgAndSurveyConfigAndPersonIsNotNull(participant, surveyConfig)}/${SurveyOrg.countByOrgAndSurveyConfigAndAddressIsNotNull(participant, surveyConfig)}"/>
+                    <ui:bubble float="true" count="${SurveyPersonResult.countByParticipantAndSurveyConfigAndPersonIsNotNullAndBillingPerson(participant, surveyConfig, true)}/${SurveyOrg.countByOrgAndSurveyConfigAndAddressIsNotNull(participant, surveyConfig)}"/>
                 </g:link>
             </g:if>
 
@@ -81,12 +88,31 @@
 
         <div class="ui bottom attached tab segment active">
             <div class="ui stackable grid">
+                <g:if test="${params.viewTab == 'surveyContacts'}">
+                    <div class="sixteen wide column">
+                            <h2 class="ui left floated aligned header">${message(code: 'surveyOrg.surveyContacts')}</h2>
+                            <g:link controller="organisation" action="contacts" id="${participant.id}" class="${Btn.SIMPLE} right floated">
+                                <g:message code="survey.contacts.surveyContact.add"/>
+                            </g:link>
+                            <br>
+                            <br>
+
+                            <laser:render template="/addressbook/person_table" model="${[
+                                    persons       : visiblePersons,
+                                    participant   : participant,
+                                    showContacts  : true,
+                                    showOptions   : false,
+                                    tmplConfigShow: ['lineNumber', 'function', 'position', 'name', 'showContacts', 'surveyInvoicingInformation']
+                            ]}"/>
+                    </div>
+                </g:if>
+
                 <g:if test="${params.viewTab == 'invoicingInformation' && surveyConfig.invoicingInformation}">
                     <div class="two wide column">
                         <div class="ui fluid vertical tabular la-tab-with-js menu">
                             <a class="${params.subTab ? (params.subTab == 'contacts' ? 'active' : '') : 'active'} item" data-tab="contacts">
                                 ${message(code: 'surveyOrg.person.label')}
-                                <ui:bubble float="true" count="${SurveyOrg.countByOrgAndSurveyConfigAndPersonIsNotNull(participant, surveyConfig)}"/>
+                                <ui:bubble float="true" count="${SurveyPersonResult.countByParticipantAndSurveyConfigAndPersonIsNotNullAndBillingPerson(participant, surveyConfig, true)}"/>
                             </a>
 
                             <a class="${params.subTab == 'addresses' ? 'active' : ''} item" data-tab="addresses">

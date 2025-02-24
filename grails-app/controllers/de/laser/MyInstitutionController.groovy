@@ -31,6 +31,7 @@ import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyLinks
 import de.laser.survey.SurveyOrg
+import de.laser.survey.SurveyPersonResult
 import de.laser.survey.SurveyResult
 import de.laser.survey.SurveyVendorResult
 import de.laser.utils.DateUtils
@@ -2489,10 +2490,14 @@ class MyInstitutionController  {
                         notProcessedMandatoryProperties << surre.type.getI10n('name')
                     }
                 }
-                if(surveyConfig.surveyInfo.isMandatory && surveyConfig.invoicingInformation && (!surveyOrg.address || !surveyOrg.person)){
+                if(surveyConfig.surveyInfo.isMandatory && surveyConfig.invoicingInformation && (!surveyOrg.address || (SurveyPersonResult.countByParticipantAndSurveyConfigAndBillingPerson(contextService.getOrg(), surveyConfig, true) == 0))){
                     allResultHaveValue = false
                     flash.error = g.message(code: 'surveyResult.finish.invoicingInformation')
-                }else if(surveyConfig.surveyInfo.isMandatory && surveyConfig.vendorSurvey) {
+                }else if(SurveyPersonResult.countByParticipantAndSurveyConfigAndSurveyPerson(contextService.getOrg(), surveyConfig, true) == 0){
+                    allResultHaveValue = false
+                    flash.error = g.message(code: 'surveyResult.finish.surveyContact')
+                }
+                else if(surveyConfig.surveyInfo.isMandatory && surveyConfig.vendorSurvey) {
                     boolean vendorInvoicing = SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_INVOICE_PROCESSING)?.refValue == RDStore.INVOICE_PROCESSING_VENDOR
                     int vendorCount = SurveyVendorResult.executeQuery('select count (*) from SurveyVendorResult spr ' +
                             'where spr.surveyConfig = :surveyConfig and spr.participant = :participant', [surveyConfig: surveyConfig, participant: contextService.getOrg()])[0]
@@ -2501,7 +2506,7 @@ class MyInstitutionController  {
                         flash.error = g.message(code: 'surveyResult.finish.vendorSurvey')
                     }else if(!vendorInvoicing && vendorCount > 0){
                         allResultHaveValue = false
-                        flash.error = g.message(code: 'surveyResult.finish.wrongVendor')
+                        flash.error = g.message(code: 'surveyResult.finish.vendorSurvey.wrongVendor')
                     }
                 }
 
@@ -2658,9 +2663,9 @@ class MyInstitutionController  {
                                 surveyService.emailsToSurveyUsersOfOrg(surveyInfo, org, false)
                                 //flash.message = message(code: 'surveyLinks.participateToSurvey.success')
 
-                                /*if(surveyConfig.invoicingInformation){
-                                    surveyService.setDefaultInvoiceInformation(surveyConfig, org)
-                                }*/
+
+                                surveyService.setDefaultPreferredConcatsForSurvey(surveyConfig, org)
+
                             }
                         }
                     }

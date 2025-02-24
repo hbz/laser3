@@ -28,6 +28,7 @@ import de.laser.survey.SurveyConfigVendor
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyPackageResult
+import de.laser.survey.SurveyPersonResult
 import de.laser.survey.SurveyResult
 import de.laser.survey.SurveyUrl
 import de.laser.config.ConfigMapper
@@ -1191,9 +1192,9 @@ class SurveyService {
                                     emailsToSurveyUsersOfOrg(surveyConfig.surveyInfo, org, false)
                                 }
 
-                               /* if(surveyConfig.invoicingInformation){
-                                    setDefaultInvoiceInformation(surveyConfig, org)
-                                }*/
+
+                                setDefaultPreferredConcatsForSurvey(surveyConfig, org)
+
 
                                 if(surveyConfig.pickAndChoose){
                                     Subscription participantSub = surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(org)
@@ -2314,15 +2315,14 @@ class SurveyService {
             if(renewalDate) {
                 countModification = SurveyOrg.executeQuery('select count(*) from SurveyOrg as surOrg where surOrg = :surOrg ' +
                         'and (exists(select addr from Address as addr where addr = surOrg.address and addr.lastUpdated > :renewalDate) ' +
-                        'or exists(select ct from Contact as ct where ct.prs = surOrg.person and ct.lastUpdated > :renewalDate) ' +
-                        'or exists(select pr from Person as pr where pr = surOrg.person and pr.lastUpdated > :renewalDate))', [renewalDate: renewalDate, surOrg: surveyOrg])[0]
+                        'or exists(select ct from Contact as ct where ct.prs in (select spr.person from SurveyPersonResult as spr where spr.participant = surOrg.org and spr.surveyConfig = surOrg.surveyConfig and spr.billingPerson = true) and ct.lastUpdated > :renewalDate) ' +
+                        'or exists(select pr from Person as pr where pr in (select spr.person from SurveyPersonResult as spr where spr.participant = surOrg.org and spr.surveyConfig = surOrg.surveyConfig and spr.billingPerson = true) and pr.lastUpdated > :renewalDate))', [renewalDate: renewalDate, surOrg: surveyOrg])[0]
                 modification = countModification > 0 ? true : false
             }
         }
 
         return modification
     }
-
     int countModificationToContactInformationAfterRenewalDoc(Subscription subscription){
         int countModification = 0
         SurveyConfig surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(subscription, true)
@@ -2332,8 +2332,8 @@ class SurveyService {
             if(renewalDate) {
                 countModification = SurveyOrg.executeQuery('select count(*) from SurveyOrg as surOrg where surveyConfig = :surveyConfig ' +
                         'and (exists(select addr from Address as addr where addr = surOrg.address and addr.lastUpdated > :renewalDate) ' +
-                        'or exists(select ct from Contact as ct where ct.prs = surOrg.person and ct.lastUpdated > :renewalDate) ' +
-                        'or exists(select pr from Person as pr where pr = surOrg.person and pr.lastUpdated > :renewalDate))', [renewalDate: renewalDate, surveyConfig: surveyConfig])[0]
+                        'or exists(select ct from Contact as ct where ct.prs in (select spr.person from SurveyPersonResult as spr where spr.participant = surOrg.org and spr.surveyConfig = surOrg.surveyConfig and spr.billingPerson = true) and ct.lastUpdated > :renewalDate) ' +
+                        'or exists(select pr from Person as pr where pr in (select spr.person from SurveyPersonResult as spr where spr.participant = surOrg.org and spr.surveyConfig = surOrg.surveyConfig and spr.billingPerson = true) and pr.lastUpdated > :renewalDate))', [renewalDate: renewalDate, surveyConfig: surveyConfig])[0]
             }
 
         }
@@ -2512,12 +2512,18 @@ class SurveyService {
                 if(params.setSurveyInvoicingInformation) {
                     if (params.personId) {
                         if (params.setConcact == 'true') {
-                            result.surveyOrg.person = Person.get(Long.valueOf(params.personId))
+                            Person person = Person.get(Long.valueOf(params.personId))
+                            if(person && !SurveyPersonResult.findByParticipantAndSurveyConfigAndPersonAndBillingPerson(participant, result.surveyConfig, person, true)){
+                                new SurveyPersonResult(participant: participant, surveyConfig: result.surveyConfig, person: person, billingPerson: true, owner: result.surveyInfo.owner).save()
+                            }
                         }
                         if (params.setConcact == 'false') {
-                            result.surveyOrg.person = null
+                            Person person = Person.get(Long.valueOf(params.personId))
+                            SurveyPersonResult surveyPersonResult = SurveyPersonResult.findByParticipantAndSurveyConfigAndPersonAndBillingPerson(participant, result.surveyConfig, person, true)
+                            if(person && surveyPersonResult){
+                                surveyPersonResult.delete()
+                            }
                         }
-                        result.surveyOrg.save()
                     }
 
                     if (params.addressId) {
@@ -2542,11 +2548,38 @@ class SurveyService {
 
             params.sort = params.sort ?: 'sortname'
             params.org = participant
-            params.function = [RDStore.PRS_FUNC_INVOICING_CONTACT.id, RDStore.PRS_FUNC_INVOICING_CONTACT.id]
+            params.function = [RDStore.PRS_FUNC_INVOICING_CONTACT.id]
             result.visiblePersons = addressbookService.getVisiblePersons("contacts", params)
 
             params.type = RDStore.ADDRESS_TYPE_BILLING.id
             result.addresses = addressbookService.getVisibleAddresses("contacts", params)
+
+        }
+        else if (params.viewTab == 'surveyContacts') {
+            if (result.editable) {
+                if(params.setSurveyInvoicingInformation) {
+                    if (params.personId) {
+                        if (params.setConcact == 'true') {
+                            Person person = Person.get(Long.valueOf(params.personId))
+                            if(person && !SurveyPersonResult.findByParticipantAndSurveyConfigAndPersonAndSurveyPerson(participant, result.surveyConfig, person, true)){
+                                new SurveyPersonResult(participant: participant, surveyConfig: result.surveyConfig, person: person, surveyPerson: true, owner: result.surveyInfo.owner).save()
+                            }
+                        }
+                        if (params.setConcact == 'false') {
+                            Person person = Person.get(Long.valueOf(params.personId))
+                            SurveyPersonResult surveyPersonResult = SurveyPersonResult.findByParticipantAndSurveyConfigAndPersonAndSurveyPerson(participant, result.surveyConfig, person, true)
+                            if(person && surveyPersonResult){
+                                surveyPersonResult.delete()
+                            }
+                        }
+                    }
+                }
+            }
+
+            params.sort = params.sort ?: 'sortname'
+            params.org = participant
+            params.function = [RDStore.PRS_FUNC_SURVEY_CONTACT.id]
+            result.visiblePersons = addressbookService.getVisiblePersons("contacts", params)
 
         }
         else if (params.viewTab == 'stats') {
@@ -2719,31 +2752,46 @@ class SurveyService {
 
     }
 
-    void setDefaultInvoiceInformation(SurveyConfig surveyConfig, Org org){
+    void setDefaultPreferredConcatsForSurvey(SurveyConfig surveyConfig, Org org){
         SurveyOrg surOrg = SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org)
         if(surOrg) {
             Map parameterMap = [:]
             parameterMap.org = org
 
-            if(!surOrg.person) {
-                parameterMap.sort = 'sortname'
-                parameterMap.function = [RDStore.PRS_FUNC_INVOICING_CONTACT.id, RDStore.PRS_FUNC_INVOICING_CONTACT.id]
-                List visiblePersons = addressbookService.getVisiblePersons("contacts", parameterMap)
-
-                if(visiblePersons.size() > 0){
-                    surOrg.person = visiblePersons[0]
-                    surOrg.save()
+            parameterMap.sort = 'sortname'
+            parameterMap.preferredForSurvey = true
+            parameterMap.function = [RDStore.PRS_FUNC_INVOICING_CONTACT.id]
+            List<Person> visiblePersons = addressbookService.getVisiblePersons("contacts", parameterMap)
+            if(surveyConfig.invoicingInformation) {
+                visiblePersons.each { Person person ->
+                    if (person.preferredForSurvey && !SurveyPersonResult.findByParticipantAndSurveyConfigAndPersonAndBillingPerson(org, surveyConfig, person, true)) {
+                        new SurveyPersonResult(participant: org, surveyConfig: surveyConfig, person: person, billingPerson: true, owner: surveyConfig.surveyInfo.owner).save()
+                    }
                 }
             }
-            if(!surOrg.address) {
-                parameterMap.sort = 'sortname'
-                parameterMap.type = RDStore.ADDRESS_TYPE_BILLING.id
-                List addresses = addressbookService.getVisibleAddresses("contacts", parameterMap)
 
-                if(addresses.size() > 0){
-                    surOrg.address = addresses[0]
-                    surOrg.save()
+            parameterMap.function = [RDStore.PRS_FUNC_SURVEY_CONTACT.id]
+            visiblePersons = addressbookService.getVisiblePersons("contacts", parameterMap)
+            visiblePersons.each { Person person ->
+                if(person.preferredForSurvey && !SurveyPersonResult.findByParticipantAndSurveyConfigAndPersonAndSurveyPerson(org, surveyConfig, person, true)){
+                    new SurveyPersonResult(participant: org, surveyConfig: surveyConfig, person: person, surveyPerson: true, owner: surveyConfig.surveyInfo.owner).save()
                 }
+            }
+
+            if(!surOrg.address && surveyConfig.invoicingInformation) {
+                Map parameterMap2 = [:]
+                parameterMap2.org = org
+                parameterMap2.sort = 'sortname'
+                parameterMap2.type = RDStore.ADDRESS_TYPE_BILLING.id
+                List<Address> addresses = addressbookService.getVisibleAddresses("contacts", parameterMap2)
+
+                addresses.each { Address address ->
+                    if (address.preferredForSurvey) {
+                        surOrg.address = address
+                        surOrg.save()
+                    }
+                }
+
             }
         }
     }

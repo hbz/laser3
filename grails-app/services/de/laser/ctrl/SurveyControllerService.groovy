@@ -2603,9 +2603,9 @@ class SurveyControllerService {
                                             surveyService.emailsToSurveyUsersOfOrg(result.surveyInfo, org, false)
                                         }
 
-                                        /*if(result.surveyConfig.invoicingInformation){
-                                            surveyService.setDefaultInvoiceInformation(result.surveyConfig, org)
-                                        }*/
+
+                                        surveyService.setDefaultPreferredConcatsForSurvey(result.surveyConfig, org)
+
 
                                         if(result.surveyConfig.pickAndChoose){
                                             Subscription participantSub = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(org)
@@ -2804,9 +2804,9 @@ class SurveyControllerService {
                                     }
                                 }
 
-                               /* if(config.invoicingInformation){
-                                    surveyService.setDefaultInvoiceInformation(config, org)
-                                }*/
+
+                                surveyService.setDefaultPreferredConcatsForSurvey(config, org)
+
 
                                 if(config.pickAndChoose){
                                     Subscription participantSub = config.subscription.getDerivedSubscriptionForNonHiddenSubscriber(org)

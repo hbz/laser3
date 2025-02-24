@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyOrg;" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyOrg;" %>
 <laser:serviceInjection/>
 <table class="ui table la-js-responsive-table la-table">
     <colgroup>
@@ -10,6 +10,9 @@
         <col style="width:  82px;">
         <g:if test="${showSurveyInvoicingInformation}">
                 <col style="width:  82px;">
+        </g:if>
+        <g:if test="${showPreferredForSurvey && contextService.getOrg().isCustomerType_Inst()}">
+            <col style="width:  82px;">
         </g:if>
         <g:if test="${showOptions}">
             <col style="width:  82px;">
@@ -29,6 +32,9 @@
         </th>
         <g:if test="${showSurveyInvoicingInformation}">
             <th class="center aligned">${message(code: 'surveyOrg.address.selected')}</th>
+        </g:if>
+        <g:if test="${showPreferredForSurvey && contextService.getOrg().isCustomerType_Inst()}">
+            <th class="center aligned">${message(code: 'address.preferredForSurvey')}</th>
         </g:if>
         <g:if test="${showOptions}">
             <th class="la-action-info">${message(code: 'default.actions.label')}</th>
@@ -148,6 +154,24 @@
                 </g:else>
             </td>
         </g:if>
+            <g:if test="${showPreferredForSurvey && contextService.getOrg().isCustomerType_Inst()}">
+                <td class="center aligned">
+                <g:if test="${address.type && RDStore.ADDRESS_TYPE_BILLING.id in address.type.id}">
+                    <g:if test="${address.preferredForSurvey}">
+                        <g:link controller="ajax" action="editPreferredConcatsForSurvey"
+                                params="[id: contextService.getOrg().id, setPreferredForSurvey: false, addressId: address.id]">
+                            <i class="${Icon.SYM.CHECKBOX_CHECKED} large"></i>
+                        </g:link>
+                    </g:if>
+                    <g:else>
+                        <g:link controller="ajax" action="editPreferredConcatsForSurvey"
+                                params="[id: contextService.getOrg().id, setPreferredForSurvey: true, addressId: address.id]">
+                            <i class="${Icon.SYM.CHECKBOX} large"></i>
+                        </g:link>
+                    </g:else>
+                </g:if>
+                </td>
+            </g:if>
             <g:if test="${showOptions}">
                 <td class="x">
                     <g:if test="${editable && tmplShowDeleteButton}">
