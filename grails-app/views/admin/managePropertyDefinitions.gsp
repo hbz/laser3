@@ -33,7 +33,7 @@
                         </thead>
                         <tbody>
                             <g:each in="${entry.value}" var="pd">
-                                <tr>
+                                <tr class="${multiplePdList && multiplePdList.contains(pd.id) && !pd.multipleOccurrence ? 'warning' : ''}">
                                     <td>
                                         <g:if test="${!pd.isHardData}">
                                             <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.not.tooltip')}">

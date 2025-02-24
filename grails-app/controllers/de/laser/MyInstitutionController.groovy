@@ -4242,7 +4242,7 @@ join sub.orgRelations or_sub where
         }
         SwissKnife.setPaginationParams(result, params, result.user)
 
-        result.availableDescrs = [PropertyDefinition.PRS_PROP,PropertyDefinition.PRV_PROP,PropertyDefinition.VEN_PROP,PropertyDefinition.SUB_PROP,PropertyDefinition.ORG_PROP,PropertyDefinition.PLA_PROP,PropertyDefinition.LIC_PROP]
+        result.availableDescrs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR - PropertyDefinition.SVY_PROP
 
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
         Set<PropertyDefinition> propList = []
@@ -4538,7 +4538,7 @@ join sub.orgRelations or_sub where
         result.languageSuffix = LocaleUtils.getCurrentLang()
 
         Map<String,Set<PropertyDefinition>> propDefs = [:]
-        PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
+        PropertyDefinition.AVAILABLE_PUBLIC_DESCR.each { it ->
             Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name_'+result.languageSuffix]) // NO private properties!
             propDefs[it] = itResult
         }

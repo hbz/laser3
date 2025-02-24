@@ -764,7 +764,7 @@
         scope: # mapping attr descr
           type: string
           description: The type of object to which the property may be attached to.
-          enum: [${ PropertyDefinition.AVAILABLE_CUSTOM_DESCR.toList().plus(PropertyDefinition.AVAILABLE_PRIVATE_DESCR.toList()).unique().join(', ') }]
+          enum: [${ PropertyDefinition.AVAILABLE_PUBLIC_DESCR.toList().plus(PropertyDefinition.AVAILABLE_PRIVATE_DESCR.toList()).unique().join(', ') }]
           example: Subscription Property
         paragraph:
           type: string
@@ -1587,7 +1587,7 @@
           scope:
             type: string
             description: The type of object to which the property may be attached to.
-            enum: [${ PropertyDefinition.AVAILABLE_CUSTOM_DESCR.toList().plus(PropertyDefinition.AVAILABLE_PRIVATE_DESCR.toList()).unique().join(', ') }]
+            enum: [${ PropertyDefinition.AVAILABLE_PUBLIC_DESCR.toList().plus(PropertyDefinition.AVAILABLE_PRIVATE_DESCR.toList()).unique().join(', ') }]
             example: Subscription Property
           type:
             type: string
