@@ -30,7 +30,7 @@
                         <ui:msg icon="ui info icon" class="info" noClose="true"><%-- on remerge to DEV: header="${message(code: 'default.stats.info.header')}" --%>
                             ${statsInfo[0]}<br>
                             <g:message code="default.stats.noCounterSupport"/><br>
-                            <g:message code="default.stats.wekbContact"/><ui:wekbIconLink type="org" gokbId="${platform.providerUuid}"/>
+                            <%--<g:message code="default.stats.wekbContact"/><ui:wekbIconLink type="org" gokbId="${platform.providerUuid}"/>--%>
                         </ui:msg>
                     </g:if>
                     <g:if test="${platform.statisticsFormat.contains('COUNTER')}">
