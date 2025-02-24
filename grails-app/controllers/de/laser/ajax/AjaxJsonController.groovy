@@ -585,7 +585,7 @@ class AjaxJsonController {
                         checkedMap.put(key, id)
                     }
                     else {
-                        checkedMap.remove(id)
+                        checkedMap.remove(key)
                     }
                 }
             }
