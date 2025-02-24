@@ -107,7 +107,7 @@
 
                 <div class="ui bottom attached tab segment ${params.subTab ? (params.subTab == 'contacts' ? 'active' : '') : 'active'}" data-tab="contacts">
 
-                    <g:link controller="organisation" action="contacts" id="${participant.id}" class="ui right floated blue button">
+                    <g:link controller="organisation" action="contacts" id="${participant.id}" params="[tab: contacts]" class="ui right floated blue button">
                         <g:message code="survey.contacts.add"/>
                     </g:link>
                     <br>
@@ -126,7 +126,7 @@
 
                 <div class="ui bottom attached tab segment ${params.subTab == 'addresses' ? 'active' : ''}" data-tab="addresses">
 
-                    <g:link controller="organisation" action="contacts" id="${participant.id}" class="ui right floated blue button">
+                    <g:link controller="organisation" action="contacts" id="${participant.id}"  params="[tab: addresses]" class="ui right floated blue button">
                         <g:message code="survey.contacts.add"/>
                     </g:link>
                     <br>
