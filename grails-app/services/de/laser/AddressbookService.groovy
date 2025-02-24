@@ -66,7 +66,7 @@ class AddressbookService {
         else sort = params.sort
 
         if (params.preferredForSurvey) {
-            qParts << "pr.preferredForSurvey = true"
+            qParts << "p.preferredForSurvey = true"
         }
 
         if (params.prs) {
