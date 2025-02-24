@@ -242,7 +242,8 @@ class PropertyService {
                     usedPdList << pd.id
                 }
 
-                String query2 = "select p.type.id from ${dc.name} p where p.type.tenant = null or p.type.tenant = :ctx group by p.type.id, p.owner having count(p) > 1"
+//                String query2 = "select p.type.id from ${dc.name} p where p.type.tenant = null or p.type.tenant = :ctx group by p.type.id, p.owner having count(p) > 1"
+                String query2 = "select xp.type.id from ${dc.name} xp where xp.type.tenant = null or xp.type.tenant = :ctx group by xp.type.id, xp.tenant, xp.owner having count(xp) > 1"
                 multiplePdList.addAll(PropertyDefinition.executeQuery( query2, [ctx: contextService.getOrg()] ))
             }
             else if(SurveyResult.class.name.contains(dc.name)) {
@@ -251,7 +252,8 @@ class PropertyService {
                 pds.each { PropertyDefinition pd ->
                     usedPdList << pd.id
                 }
-                String query2 = "select p.type.id from SurveyResult p where p.type.tenant = null or p.type.tenant = :ctx group by p.type.id, p.owner having count(p) > 1"
+//                String query2 = "select p.type.id from SurveyResult p where p.type.tenant = null or p.type.tenant = :ctx group by p.type.id, p.owner having count(p) > 1"
+                String query2 = "select xp.type.id from SurveyResult xp where xp.type.tenant = null or xp.type.tenant = :ctx group by xp.type.id, xp.tenant, xp.owner having count(xp) > 1"
                 multiplePdList.addAll(PropertyDefinition.executeQuery( query2, [ctx: contextService.getOrg()] ))
             }
         }

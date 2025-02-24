@@ -982,8 +982,6 @@ SELECT * FROM (
                                     switch(pdFrom.descr) {
                                         case PropertyDefinition.LIC_PROP: instanceType = message(code: 'menu.institutions.replace_prop.licenses')
                                             break
-                                        case PropertyDefinition.PRS_PROP: instanceType = message(code: 'menu.institutions.replace_prop.persons')
-                                            break
                                         case PropertyDefinition.SUB_PROP: instanceType = message(code: 'menu.institutions.replace_prop.subscriptions')
                                             break
                                         case PropertyDefinition.SVY_PROP: instanceType = message(code: 'menu.institutions.replace_prop.surveys')
@@ -1009,7 +1007,7 @@ SELECT * FROM (
         Map<String,Object> propDefs = [:]
         String sort = params.containsKey('sort') ? params.sort : 'name_de',
         order = params.containsKey('order') ? params.order : 'asc'
-        PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { String it ->
+        PropertyDefinition.AVAILABLE_PUBLIC_DESCR.each { String it ->
             Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: sort, order: order]) // NO private properties!
             propDefs.putAt( it, itResult )
         }

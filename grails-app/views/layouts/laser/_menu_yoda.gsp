@@ -51,6 +51,10 @@
                 <ui:link addItemAttributes="true" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</ui:link>
                 <div class="divider"></div>
 
+                <ui:link addItemAttributes="true" controller="yoda" action="manageWekbNews" params="[cmd:'update']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateWekbNews')}</ui:link>
+                <ui:link addItemAttributes="true" controller="yoda" action="manageWekbNews" params="[cmd:'clear']" onclick="return confirm('${message(code:'confirm.start.clear')}')">${message(code:'menu.yoda.clearWekbNews')}</ui:link>
+                <div class="divider"></div>
+
 %{--                <div class="item" role="menuitem" aria-haspopup="true">--}%
 %{--                    <div class="title">--}%
 %{--                        ${message(code:'menu.admin.syncManagement.reload')} <i class="dropdown icon"></i>--}%
@@ -71,9 +75,6 @@
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'openAccess']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateOpenAccess')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'titleNamespace']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateTitleNamespace')}</ui:link>
 
-                        <div class="divider"></div>
-                        <ui:link addItemAttributes="true" controller="yoda" action="manageWekbNews" params="[cmd:'update']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateWekbNews')}</ui:link>
-                        <ui:link addItemAttributes="true" controller="yoda" action="manageWekbNews" params="[cmd:'clear']" onclick="return confirm('${message(code:'confirm.start.clear')}')">${message(code:'menu.yoda.clearWekbNews')}</ui:link>
 %{--                    </div>--}%
 %{--                </div>--}%
 
