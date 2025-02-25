@@ -32,7 +32,7 @@
                          atConsortialParent     : contextService.getOrg() == subscription.getConsortium(),
                          context                : subscription,
                          linkInstanceType       : Links.class.name,
-                         tmplCss                : 'large'
+                         tmplCss                : ''
                 ]
             } else {
                 model = [tmplText          : addLink,
@@ -45,7 +45,7 @@
                          atConsortialParent: atConsortialParent,
                          context           : entry,
                          linkInstanceType  : Links.class.name,
-                         tmplCss       : 'large'
+                         tmplCss       : ''
                 ]
             }
         %>
