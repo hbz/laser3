@@ -16,7 +16,7 @@
                     if (formattedMessage.contains("HHH90001005")) return true;
                     <!-- warn -->
                     if (formattedMessage.contains("Replaced rule for '")) return true;
-                    if (formattedMessage.contains("299 Elasticsearch-7.16.3-4e6e4eab2297e949ec994e688dad46290d018022")) return true;
+                    if (formattedMessage.contains("299 Elasticsearch-7.17.")) return true;
                     <!-- info -->
                     if (formattedMessage.contains("(for example: not eligible for auto-proxying)")) return true;
                     if (formattedMessage.contains("As of Liquibase 4.0, cannot set resource accessor on")) return true;
@@ -59,8 +59,8 @@
                     if (formattedMessage.contains("HHH90001005")) return true;
                     <!-- WARN: Replaced rule for '[..]' and ConfigAttributes [..] with ConfigAttributes [..] -->
                     if (formattedMessage.contains("Replaced rule for '")) return true;
-                    <!-- WARN: request [..] returned 1 warnings: [299 Elasticsearch-7.16.3 ..] -->
-                    if (formattedMessage.contains("299 Elasticsearch-7.16.3-4e6e4eab2297e949ec994e688dad46290d018022")) return true;
+                    <!-- WARN: request [..] returned 1 warnings: [299 Elasticsearch-7.17.27 ..] -->
+                    if (formattedMessage.contains("299 Elasticsearch-7.17.")) return true;
                     <!-- INFO: Bean '[..]' of type [..] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying) -->
                     if (formattedMessage.contains("(for example: not eligible for auto-proxying)")) return true;
                     <!-- INFO: As of Liquibase 4.0, cannot set resource accessor on [..]. Must add it to the Scope -->
