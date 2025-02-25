@@ -82,12 +82,12 @@ class ClickMeController {
                 result.exportFileName = result.exportFileName ?: message(code: 'consortium.member.plural')
                 break
             case ExportClickMeService.COST_ITEMS:
-                result.subscription = Subscription.get(params.id)
+                result.subscription = Subscription.get(params.sub)
                 result.formFields = exportClickMeService.getExportCostItemFieldsForUI(result.subscription)
                 result.exportController = 'finance'
                 result.exportAction = 'financialsExport'
                 result.contactSwitch = true
-                result.exportFileName = result.exportFileName ?: (result.subscription ? (escapeService.escapeString(subscription.name) + "_" + message(code:'subscription.details.financials.label')) : message(code:'subscription.details.financials.label'))
+                result.exportFileName = result.exportFileName ?: (result.subscription ? (escapeService.escapeString(result.subscription.name) + "_" + message(code:'subscription.details.financials.label')) : message(code:'subscription.details.financials.label'))
                 result.overrideFormat = [xlsx: 'XLSX']
                 result.multiMap = true
                 break
