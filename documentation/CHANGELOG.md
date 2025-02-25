@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6306    25.02.2025  dev     3.5         David   Feature     Allgemeine Merkmale - Logik: mandatory/multiple
+
+6261    25.02.2025  dev     3.5         David   Feature     Allgemeine Merkmale aufräumen
+
 6303    20.02.2025  rc-3.4  3.4.19      Andreas Feature     Erweiterter Hinweistext bei fehlenden COUNTER-Statistiken
 
 6300    19.02.2025  dev     3.5         Andreas Bug         Umstellung der Jahressummierung (weitere Commits zu diesem Ticket siehe git-Commithistory)
