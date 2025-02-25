@@ -1413,7 +1413,13 @@ class CopyElementsService {
                         }
                     }
                 }
+            }
+        }
 
+        todoAuditProperties.each { Map todoAuditPro ->
+            AbstractPropertyWithCalculatedLastUpdated sourceProp = SubscriptionProperty.get(todoAuditPro.sourcePropId)
+            targetProp = SubscriptionProperty.get(todoAuditPro.targetPropId)
+            if(sourceProp && targetProp) {
                 def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(targetProp.class.name, sourceProp.id)
                 auditConfigs.each {
                     AuditConfig ac ->
