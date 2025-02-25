@@ -1189,6 +1189,14 @@ class ManagementService {
         grailsWebRequest.attributes.getFlashScope(request)
     }
 
+    String checkTogglerState(List<Long> subIDs, String cacheKeyReferer) {
+        EhcacheWrapper cache = cacheService.getTTL1800Cache("${cacheKeyReferer}/pagination")
+        Map<String, String> checkedMap = cache.get('checkedMap') ?: [:]
+        Set<String> subKeys = subIDs.collect { Long subId -> 'selectedSubs_'+subId }
+        boolean toggle = checkedMap.keySet().containsAll(subKeys) && checkedMap.keySet().size() > 0
+        toggle ? 'true' : 'false'
+    }
+
     /**
      * Sets generic parameters used in the methods and checks whether the given user may access the view
      * @param controller the controller instance

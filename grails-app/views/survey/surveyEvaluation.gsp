@@ -144,6 +144,11 @@
   ]
 };
 surveyEvChart.setOption(option);
+surveyEvChart.on('click', function(params) {
+  window.open(
+    "<g:createLink controller="survey" action="surveyEvaluation" params="[id: params.id, surveyConfigID: surveyConfig.id, tab: params.tab]"/>"+'&chartFilter=' + encodeURIComponent(params.name)
+  );
+});
 </laser:script>
 
     </g:else>

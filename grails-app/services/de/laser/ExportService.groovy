@@ -17,6 +17,7 @@ import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
+import de.laser.stats.CounterCheck
 import de.laser.utils.LocaleUtils
 import de.laser.wekb.Platform
 import de.laser.wekb.TitleInstancePackagePlatform
@@ -66,7 +67,6 @@ class ExportService {
 
 	BatchQueryService batchQueryService
 	ContextService contextService
-	FilterService filterService
 	GokbService gokbService
 	IssueEntitlementService issueEntitlementService
 	MessageSource messageSource
@@ -1593,21 +1593,21 @@ class ExportService {
 		String revision = null, statsUrl = null, sushiApiAuthenticationMethod = null
 		if(platformRecord.counterRegistryApiUuid) {
 			String url = "${ConfigMapper.getSushiCounterRegistryUrl()}/${platformRecord.counterRegistryApiUuid}${ConfigMapper.getSushiCounterRegistryDataSuffix()}"
-			BasicHttpClient sushiRegistry = new BasicHttpClient(url)
+			BasicHttpClient counterApiRegistry = new BasicHttpClient(url)
 			try {
 				Closure success = { resp, json ->
 					if(resp.code() == 200) {
 						if(json.containsKey('sushi_services')) {
-							Map sushiConfig = json.sushi_services[0]
-							if(sushiConfig.counter_release in ['5', '5.1'])
+							Map counterApiConfig = json.sushi_services[0]
+							if(counterApiConfig.counter_release in ['5', '5.1'])
 								revision = "counter5"
-							statsUrl = sushiConfig.url
-							if (!sushiConfig.url.contains(connectionMethod)) {
-								if (sushiConfig.url.endsWith('/'))
-									statsUrl = sushiConfig.url + connectionMethod
-								else statsUrl = sushiConfig.url + '/'+connectionMethod
+							statsUrl = counterApiConfig.url
+							if (!counterApiConfig.url.contains(connectionMethod)) {
+								if (counterApiConfig.url.endsWith('/'))
+									statsUrl = counterApiConfig.url + connectionMethod
+								else statsUrl = counterApiConfig.url + '/'+connectionMethod
 							}
-							boolean withRequestorId = Boolean.valueOf(sushiConfig.requestor_id_required), withApiKey = Boolean.valueOf(sushiConfig.api_key_required), withIpWhitelisting = Boolean.valueOf(sushiConfig.ip_address_authorization)
+							boolean withRequestorId = Boolean.valueOf(counterApiConfig.requestor_id_required), withApiKey = Boolean.valueOf(counterApiConfig.api_key_required), withIpWhitelisting = Boolean.valueOf(counterApiConfig.ip_address_authorization)
 							if(withRequestorId) {
 								if(withApiKey) {
 									sushiApiAuthenticationMethod = AbstractReport.API_AUTH_CUSTOMER_REQUESTOR_API
@@ -1622,24 +1622,27 @@ class ExportService {
 							}
 						}
 						else {
-							Map sysEventPayload = [error: "platform has no SUSHI configuration", platform: platformRecord.uuid, url: url, callError: true]
+							Map sysEventPayload = [errToken: "noCounterApiConfiguration", errMess: "platform has no COUNTER API configuration", platform: platformRecord.uuid, url: url, callError: true]
+							CounterCheck.construct(sysEventPayload)
 							SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
 						}
 					}
 				}
 				Closure failure = { resp, reader ->
-					Map sysEventPayload = [error: "error on call at COUNTER registry", platform: platformRecord.uuid, url: url, callError: true]
+					Map sysEventPayload = [errToken: "counterRegistryError", errMess: "error on call at COUNTER registry", platform: platformRecord.uuid, url: url, callError: true]
+					CounterCheck.construct(sysEventPayload)
 					SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
 				}
-				sushiRegistry.get(BasicHttpClient.ResponseType.JSON, success, failure)
+				counterApiRegistry.get(BasicHttpClient.ResponseType.JSON, success, failure)
 			}
 			catch (Exception e) {
-				Map sysEventPayload = [error: "invalid response returned for ${url} - ${e.getMessage()}!", platform: platformRecord.uuid, url: url, callError: true]
+				Map sysEventPayload = [errToken: "invalidResponse", errMess: "invalid response returned for ${url} - ${e.getMessage()}!", platform: platformRecord.uuid, url: url, callError: true]
+				CounterCheck.construct(sysEventPayload)
 				SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
 				log.error("stack trace: ", e)
 			}
 			finally {
-				sushiRegistry.close()
+				counterApiRegistry.close()
 			}
 		}
 		//fallback configuration

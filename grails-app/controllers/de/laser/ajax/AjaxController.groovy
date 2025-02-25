@@ -1,6 +1,7 @@
 package de.laser.ajax
 
-
+import de.laser.addressbook.Address
+import de.laser.addressbook.Person
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserRole
@@ -60,6 +61,7 @@ import java.util.concurrent.ExecutorService
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxController {
 
+    AccessService accessService
     ContextService contextService
     DashboardDueDatesService dashboardDueDatesService
     EscapeService escapeService
@@ -290,7 +292,7 @@ class AjaxController {
     @Secured(['ROLE_USER'])
     def remoteRefdataSearch() {
         log.debug("remoteRefdataSearch params: ${params}")
-    
+
         List result = []
         Map<String, Object> config = refdata_config.get(params.id?.toString()) //we call toString in case we got a GString
         boolean defaultOrder = true
@@ -1928,5 +1930,43 @@ class AjaxController {
             render template: "/templates/stats/costPerUse", model: ctrlResult.result
         }
         else [error: ctrlResult.error]
+    }
+
+    @Secured(['ROLE_USER'])
+    @Transactional
+    def editPreferredConcatsForSurvey() {
+        Address  addressInstance = params.addressId ? Address.get(params.addressId) : null
+        Person personInstance = params.personId ? Person.get(params.personId) : null
+
+        if (addressInstance && accessService.hasAccessToAddress(addressInstance as Address, AccessService.WRITE)) {
+            if (params.setPreferredForSurvey == 'false') {
+                addressInstance.preferredForSurvey = false
+            }
+            if (params.setPreferredForSurvey == 'true') {
+                addressInstance.preferredForSurvey = true
+                List<Address> addressList = Address.findAllByOrgAndTenantIsNull(contextService.getOrg())
+                addressList.each {
+                    if(it != addressInstance) {
+                        it.preferredForSurvey = false
+                        it.save()
+                    }
+                }
+            }
+
+            addressInstance.save()
+        }
+
+        if (personInstance && accessService.hasAccessToPerson(personInstance as Person, AccessService.WRITE)) {
+            if (params.setPreferredForSurvey == 'false') {
+                personInstance.preferredForSurvey = false
+            }
+            if (params.setPreferredForSurvey == 'true') {
+                personInstance.preferredForSurvey = true
+            }
+
+            personInstance.save()
+        }
+
+        redirect(controller: 'organisation', action: 'contacts', id: params.id, params: [tab: addressInstance ? 'addresses' : 'contacts'])
     }
 }
