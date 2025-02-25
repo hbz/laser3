@@ -221,8 +221,15 @@
     limit.setMilliseconds(0);
     let currDate = new Date(limit.getFullYear()-1, 0, 1, 0, 0, 0, 0);
     let startDate;
-    <g:if test="${subscription.startDate}">
-        let start = new Date(<g:formatDate date="${subscription.startDate}" format="yyyy, M, d"/>, 0, 0, 0, 0);
+    <%
+        Set<Subscription> precedingSubs = linksGenerationService.getSuccessionChain(subscription, 'sourceSubscription')
+        Subscription startSub
+        if(precedingSubs)
+            startSub = precedingSubs.first()
+        else startSub = subscription
+    %>
+    <g:if test="${startSub?.startDate}">
+        let start = new Date(<g:formatDate date="${startSub.startDate}" format="yyyy, M, d"/>, 0, 0, 0, 0);
         start.setMonth(start.getMonth()-1); //correction because month is 0-based
         if(start.getTime() < currDate.getTime())
             currDate = start;

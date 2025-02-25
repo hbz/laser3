@@ -50,13 +50,10 @@
                             </thead>
                             <tbody>
                                 <g:each in="${entry.value}" var="pd">
+                                    <g:set var="multipleOccurrenceError" value="${multiplePdList && multiplePdList.contains(pd.id) && !pd.multipleOccurrence}" />
+
                                     <tr>
                                         <td>
-%{--                                            <g:if test="${!pd.isHardData}">--}%
-%{--                                                <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.not.tooltip')}">--}%
-%{--                                                    <i class="${Icon.PROP.HARDDATA_NOT}"></i>--}%
-%{--                                                </span>--}%
-%{--                                            </g:if>--}%
                                             <g:if test="${pd.mandatory}">
                                                 <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.mandatory.tooltip')}">
                                                     <i class="${Icon.PROP.MANDATORY}"></i>
@@ -70,6 +67,11 @@
                                             <g:if test="${pd.isUsedForLogic}">
                                                 <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
                                                     <i class="${Icon.PROP.LOGIC}"></i>
+                                                </span>
+                                            </g:if>
+                                            <g:if test="${multipleOccurrenceError}">
+                                                <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.multipleOccurrenceError.tooltip', args:[pd.id])}">
+                                                    <i class="icon exclamation circle red"></i>
                                                 </span>
                                             </g:if>
                                         </td>
