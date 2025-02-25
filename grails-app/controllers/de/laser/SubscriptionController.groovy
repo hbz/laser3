@@ -1183,6 +1183,7 @@ class SubscriptionController {
                 if(!configMap.order)
                     configMap.order = "asc"
                 Map<String, Object> keys = issueEntitlementService.getKeys(configMap)
+                result.putAll(issueEntitlementService.getCounts(keys.ieIDs))
                 Set<Long> ieSubset = keys.ieIDs.drop(configMap.offset).take(configMap.max)
                 result.entitlements = IssueEntitlement.findAllByIdInList(ieSubset, [sort: configMap.sort, order: configMap.order])
                 result.num_ies_rows = keys.ieIDs.size()
