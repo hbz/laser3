@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6092    21.02.2025  dev     3.5         Moe     Feature     Textänderung: (Nicht)-Verbindliche Umfragen werden (Nicht-)verpflichtende Umfragen
+
 6313    25.02.2025  dev     3.5         Andreas Bug         Bubbles mit Titelzahlen reimplementiert
 
 6306    25.02.2025  dev     3.5         David   Feature     Allgemeine Merkmale - Logik: mandatory/multiple

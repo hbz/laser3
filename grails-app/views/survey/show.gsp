@@ -97,7 +97,7 @@
 
                         </dl>
                         <dl>
-                            <dt class="control-label">${message(code: 'surveyInfo.isMandatory.label')}</dt>
+                            <dt class="control-label">${message(code: 'surveyInfo.isMandatory')}</dt>
                             <dd>
                                 ${surveyInfo.isMandatory ? message(code: 'refdata.Yes') : message(code: 'refdata.No')}
                             </dd>
