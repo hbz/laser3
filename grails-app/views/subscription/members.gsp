@@ -100,7 +100,7 @@
                                 List<Contact> generalContactMails = Contact.executeQuery('select cct.content from Contact cct join cct.prs p join p.roleLinks pr where (p.isPublic = true or p.tenant = :context) and pr.org = :subscr and pr.functionType = :generalContact and cct.contentType = :mail', [context: contextService.getOrg(), subscr: subscr, generalContact: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, mail: RDStore.CCT_EMAIL])
                             %>
                             <g:if test="${generalContactMails}">
-                                <button class="ui icon button la-modern-button la-popup-tooltip js-copyTrigger tiny" data-content="${message(code: 'tooltip.clickToCopySimple')}">
+                                <button class="ui icon button la-modern-button  js-copyTrigger tiny" >
                                     <i  class="${Icon.SYM.EMAIL} la-js-copyTriggerIcon"></i>
                                 </button>
 

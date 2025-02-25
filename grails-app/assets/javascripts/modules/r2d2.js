@@ -210,34 +210,22 @@ r2d2 = {
         // universal copy item
         $('.js-copyTrigger').click(function(){
             var element = $(this).parents('.js-copyTriggerParent').find('.js-copyTopic');
-            var trigger = $(this).parents('.js-copyTriggerParent').find('.js-copyTrigger');
             var html = $(element).html();
             var $temp = $("<input>");
+            var dontShow;
+            $(element).hasClass('la-display-none') ? dontShow = true : dontShow = false;
+            console.log(dontShow)
             $("body").append($temp);
             $temp.val($.trim($(element).text())).select();
             document.execCommand("copy");
             clearTimeout(timeout);
-            var dontShow;
-            if($(element).hasClass('la-display-none')) {
-                $(element).removeClass('la-display-none');
-                console.log(dontShow);
-                 dontShow = true;
-            }
-            else{
-                 dontShow = false;
-            }
-            $(trigger).popup({
-                title : 'kopiert'
-            })
-
-            //$(element).html(JSPC.dict.get('copied', JSPC.config.language));
+            dontShow ?  $(element).css('display','inline'): $(element).addClass('');
+            $(element).html(JSPC.dict.get('copied', JSPC.config.language));
             var timeout = setTimeout(function() {
                 $(element).html(html);
+                dontShow ? $(element).css('display','none') : $(element).addClass('');
             }, 2000); // change the HTML after 2 seconds
-            console.log(dontShow);
-            dontShow ? $(element).addClass('la-display-none') : $(element).addClass('test');
             $temp.remove();
-
         });
         $('.js-copyTrigger').hover(
             function(){ $(this).parent().find('.la-js-copyTriggerIcon').addClass('open') },
@@ -248,6 +236,7 @@ r2d2 = {
             function(){ $(this).removeClass('alternate') },
             function(){ $(this).addClass('alternate') }
         )
+
         //JS Library readmore.js
         $('.la-readmore').readmore({
             speed: 75,
