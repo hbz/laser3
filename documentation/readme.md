@@ -12,7 +12,7 @@
 - Gradle 8.12.1
 - Groovy 3.0.23
 - Java 17
-- PostgreSQL 13+
+- PostgreSQL 16+
 
 See [details.md](./details.md) for detailed information.
 

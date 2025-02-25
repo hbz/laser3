@@ -33,7 +33,9 @@
                         </thead>
                         <tbody>
                             <g:each in="${entry.value}" var="pd">
-                                <tr class="${multiplePdList && multiplePdList.contains(pd.id) && !pd.multipleOccurrence ? 'warning' : ''}">
+                                <g:set var="multipleOccurrenceError" value="${multiplePdList && multiplePdList.contains(pd.id) && !pd.multipleOccurrence}" />
+
+                                <tr>
                                     <td>
                                         <g:if test="${!pd.isHardData}">
                                             <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.hardData.not.tooltip')}">
@@ -51,11 +53,17 @@
                                             </span>
                                         </g:if>
 
-                                        <g:if test="${usedPdList?.contains(pd.id)}">
+                                        <g:if test="${multipleOccurrenceError}">
+                                            <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.multipleOccurrenceError.tooltip', args:[pd.id])}">
+                                                <i class="icon exclamation circle red"></i>
+                                            </span>
+                                        </g:if>
+                                        <g:elseif test="${usedPdList?.contains(pd.id)}">
                                             <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.dataIsUsed.tooltip', args:[pd.id])}">
                                                 <i class="${Icon.PROP.IN_USE}"></i>
                                             </span>
-                                        </g:if>
+                                        </g:elseif>
+
                                         <g:if test="${pd.isUsedForLogic}">
                                             <span data-position="top left" class="la-popup-tooltip" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
                                                 <i class="${Icon.PROP.LOGIC}"></i>
@@ -114,37 +122,6 @@
                                         </g:else>
                                     </td>
                                     <td class="x">
-
-                                        <g:if test="${pd.mandatory}">
-                                            <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMandatory.label')}" data-position="top left"
-                                                    params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">
-                                                <i class="${Icon.PROP.MANDATORY_NOT.replaceAll('yellow', '')}"></i>
-                                            </g:link>
-                                        </g:if>
-                                        <g:else>
-                                            <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMandatory.label')}" data-position="top left"
-                                                    params="${[cmd: 'toggleMandatory', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">
-                                                <i class="${Icon.PROP.MANDATORY.replaceAll('yellow', '')}"></i>
-                                            </g:link>
-                                        </g:else>
-                                        <g:if test="${!multiplePdList?.contains(pd.id)}">
-                                            <g:if test="${pd.multipleOccurrence}">
-                                                <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="top left"
-                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">
-                                                    <i class="${Icon.PROP.MULTIPLE_NOT.replaceAll('teal', '')}"></i>
-                                                </g:link>
-                                            </g:if>
-                                            <g:else>
-                                                <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMultiple.label')}" data-position="top left"
-                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: pd.id]}" class="${Btn.MODERN.SIMPLE_TOOLTIP}">
-                                                    <i class="${Icon.PROP.MULTIPLE.replaceAll('teal', '')}"></i>
-                                                </g:link>
-                                            </g:else>
-                                        </g:if>
-                                        <g:else>
-                                            <div class="${Btn.MODERN.SIMPLE} disabled"><icon:placeholder/></div>
-                                        </g:else>
-
                                         <g:if test="${(pd.descr == PropertyDefinition.SUB_PROP) && !PropertyDefinition.findByNameAndDescrAndTenant(pd.name, PropertyDefinition.SVY_PROP, null)}">
                                                 <g:link action="transferSubPropToSurProp" data-content="${message(code:'propertyDefinition.copySubPropToSurProp.label')}" data-position="top left"
                                                         params="[propertyDefinition: pd.id]" class="${Btn.MODERN.SIMPLE_TOOLTIP}" >
@@ -156,7 +133,7 @@
                                         </g:else>
 
                                         <sec:ifAnyGranted roles="ROLE_YODA">
-                                            <g:if test="${usedPdList?.contains(pd.id)}">
+                                            <g:if test="${usedPdList?.contains(pd.id) && !multipleOccurrenceError}">
                                                 <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'propertyDefinition.exchange.label')}">
                                                     <button class="${Btn.MODERN.SIMPLE}" data-href="#replacePropertyDefinitionModal" data-ui="modal"
                                                             data-xcg-pd="${pd.class.name}:${pd.id}"
