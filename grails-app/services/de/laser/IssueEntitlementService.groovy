@@ -19,8 +19,28 @@ class IssueEntitlementService {
         else s
     }
 
+    Map<String, Object> getCounts(Set<Long> ieIDs) {
+        int currentIECounts = 0, plannedIECounts = 0, expiredIECounts = 0, deletedIECounts = 0, allIECounts = 0
+        ieIDs.collate(65000).each { List<Long> subset ->
+            List counts = IssueEntitlement.executeQuery('select count(*), rv.id from IssueEntitlement ie join ie.status rv where ie.id in (:subset) group by rv.id', [subset: subset])
+            counts.each { row ->
+                switch(row[1]) {
+                    case RDStore.TIPP_STATUS_CURRENT.id: currentIECounts += row[0]
+                        break
+                    case RDStore.TIPP_STATUS_EXPECTED.id: plannedIECounts += row[0]
+                        break
+                    case RDStore.TIPP_STATUS_RETIRED.id: expiredIECounts += row[0]
+                        break
+                    case RDStore.TIPP_STATUS_DELETED.id: deletedIECounts += row[0]
+                        break
+                }
+                allIECounts += row[0]
+            }
+        }
+        [currentIECounts: currentIECounts, plannedIECounts: plannedIECounts, expiredIECounts: expiredIECounts, deletedIECounts: deletedIECounts, allIECounts: allIECounts]
+    }
+
     Map<String, Object> getKeys(Map configMap) {
-        //continue with testing: sub/index, sub export index, sub/addEntitlements; migrate then copying of subscription holdings
         Map<String, Object> parameterGenerics = getParameterGenerics(configMap)
         Map<String, Object> titleConfigMap = parameterGenerics.titleConfigMap,
                             identifierConfigMap = parameterGenerics.identifierConfigMap,
