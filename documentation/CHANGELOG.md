@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6306    25.02.2025  dev     3.5         David   Feature     Allgemeine Merkmale - Logik: mandatory/multiple
+
+6261    25.02.2025  dev     3.5         David   Feature     Allgemeine Merkmale aufräumen
+
 6227    21.02.2025  dev     3.5         Moe     Feature     "Standardauswahl" für Rechnungskontakte/-adressen sowie bei neuem Kontakttyp Umfragekontakt
 
 6308    21.02.2025  dev     3.5         Andreas Bug         falsche Ausgabe der Entknüpfungsknöpfe

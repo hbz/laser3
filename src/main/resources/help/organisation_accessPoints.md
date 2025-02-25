@@ -1,6 +1,7 @@
-Der Zugriff auf elektronische Produkte wird über diverse **Zugangskonfigurationen** verwaltet.
-Die Vermittlung dieser dient dazu den Anbietern schnell die verhandelten Zugriffe auf entsprechende Lizenzen/Plattformen/Pakete mitzuteilen.
-Da die Anbieter unterschiedliche Formate für Freischaltung des Nutzungszugriffes nutzen, bietet LAS:eR diese an. 
-Der gängigste Zugriff auf elektronische Ressourcen erfolgt über **IP-Adressen**. Bitte tragen Sie diese ein und halten sie aktuell. 
+Hier hinterlegen Sie spezielle Angaben zu den in Ihrer Einrichtung verwendeten **Authentifizierungsmethoden** für den Zugang zu elektronischen Ressourcen. 
+Standard ist die Freischaltung Ihrer **IP-Adressen** für den Zugriff auf lizenzierte Inhalte. Hierfür müssen Ihre IP-Adressbereiche entsprechend hinterlegt sein. 
 
-Informieren Sie **bei Änderungen** in Ihrem Zugangskonfigurationen nach Möglichkeit Ihre Anbieter darüber. Den jeweiligen Kontakt sehen Sie in der Lizenz unter dem Kasten **Anbieter**. 
+Abhängig von der Anbieterplattform werden weitere Authentifizierungsoptionen unterstützt (Shibboleth, EZproxy etc.). 
+Die zentrale Hinterlegung der jeweiligen Zugangskonfiguration ermöglich den Konsortialstellen, diese zusammen mit Ihrem Lizenzierungswunsch an den Anbieter zu melden. 
+
+Zukünftig soll auch eine durch Sie gesteuerte **Meldung von Konfigurationsänderungen** direkt an die Anbieter möglich sein, aktuell ist dies noch selbständig **via E-Mail** zu erledigen.
