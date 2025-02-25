@@ -410,7 +410,7 @@
                                                                 tmplTooltip     : message(code:'license.details.tmplLinkProviderText'),
                                                                 tmplModalID:'osel_add_modal_lizenzgeber',
                                                                 editmode: editable,
-                                                                tmplCss       : 'large'
+                                                                tmplCss       : ''
                                                       ]}" />
                                     </div>
                                     <laser:render template="/templates/links/providerLinksAsList"
@@ -438,7 +438,7 @@
                                                                 tmplTooltip     : message(code:'license.details.tmplLinkAgencyText'),
                                                                 tmplModalID:'osel_add_modal_agency',
                                                                 editmode: editable,
-                                                                tmplCss       : 'large'
+                                                                tmplCss       : ''
                                                       ]}" />
                                     </div>
                                     <laser:render template="/templates/links/vendorLinksAsList"

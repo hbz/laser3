@@ -650,7 +650,7 @@
                                                         tmplTooltip     : message(code: 'subscription.details.linkProvider.tmplButtonText'),
                                                         tmplModalID   : 'modal_add_provider',
                                                         editmode      : editable,
-                                                        tmplCss       : 'large'
+                                                        tmplCss       : ''
                                               ]}"/>
                             </div>
                             <laser:render template="/templates/links/providerLinksAsList"
@@ -680,7 +680,7 @@
                                                         tmplTooltip   : message(code: 'subscription.details.linkAgency.tmplButtonText'),
                                                         tmplModalID   : 'modal_add_agency',
                                                         editmode      : editable,
-                                                        tmplCss       : 'large'
+                                                        tmplCss       : ''
 
                                               ]}"/>
                             </div>
@@ -690,7 +690,7 @@
                                                     roleRespValue: RDStore.PRS_RESP_SPEC_SUB_EDITOR.value,
                                                     editmode     : editable,
                                                     showPersons  : true,
-                                                    tmplCss      : 'large'
+                                                    tmplCss      : ''
                                           ]}"/>
                         </div>
                     </div>
