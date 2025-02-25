@@ -1344,32 +1344,37 @@ class CopyElementsService {
         ownerClassName = "de.laser.properties.${ownerClassName}Property"
         def targetProp
         List todoAuditProperties = []
+        List todoProperties = []
         properties.each { AbstractPropertyWithCalculatedLastUpdated sourceProp ->
             targetProp = targetObject.propertySet.find { it.type.id == sourceProp.type.id && it.tenant == sourceProp.tenant }
-            boolean isAddNewProp = sourceProp.type?.multipleOccurrence
-            if ((!targetProp) || isAddNewProp) {
-                targetProp = (new GroovyClassLoader()).loadClass(ownerClassName).newInstance(type: sourceProp.type, owner: targetObject, tenant: sourceProp.tenant)
-                targetProp = sourceProp.copyInto(targetProp)
-                targetProp.isPublic = sourceProp.isPublic
-                //provisoric, should be moved into copyInto once migration is complete
-                _save(targetProp, flash)
-                if (sourceProp.id.toString() in auditProperties) {
-                    //copy audit
-                    if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
-                        todoAuditProperties << [sourcePropId: sourceProp.id, targetPropId: targetProp.id]
-                    }
-                }
-            } else {
-                //Replace
-                targetProp = sourceProp.copyInto(targetProp)
-                targetProp.save()
 
-                if (sourceProp.id.toString() in auditProperties) {
-                    //copy audit
-                    if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
-                        todoAuditProperties << [sourcePropId: sourceProp.id, targetPropId: targetProp.id]
+            if(!(sourceProp.type.id in todoProperties)) {
+                boolean isAddNewProp = sourceProp.type?.multipleOccurrence
+                if ((!targetProp) || isAddNewProp) {
+                    targetProp = (new GroovyClassLoader()).loadClass(ownerClassName).newInstance(type: sourceProp.type, owner: targetObject, tenant: sourceProp.tenant)
+                    targetProp = sourceProp.copyInto(targetProp)
+                    targetProp.isPublic = sourceProp.isPublic
+                    //provisoric, should be moved into copyInto once migration is complete
+                    _save(targetProp, flash)
+                    if (sourceProp.id.toString() in auditProperties) {
+                        //copy audit
+                        if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
+                            todoAuditProperties << [sourcePropId: sourceProp.id, targetPropId: targetProp.id]
+                        }
+                    }
+                } else {
+                    //Replace
+                    targetProp = sourceProp.copyInto(targetProp)
+                    targetProp.save()
+
+                    if (sourceProp.id.toString() in auditProperties) {
+                        //copy audit
+                        if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
+                            todoAuditProperties << [sourcePropId: sourceProp.id, targetPropId: targetProp.id]
+                        }
                     }
                 }
+                todoProperties << sourceProp.id
             }
         }
 
