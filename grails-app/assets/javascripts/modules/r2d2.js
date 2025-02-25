@@ -214,7 +214,6 @@ r2d2 = {
             var $temp = $("<input>");
             var dontShow;
             $(element).hasClass('la-display-none') ? dontShow = true : dontShow = false;
-            console.log(dontShow)
             $("body").append($temp);
             $temp.val($.trim($(element).text())).select();
             document.execCommand("copy");
