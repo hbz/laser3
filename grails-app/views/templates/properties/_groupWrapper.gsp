@@ -20,12 +20,11 @@
                 </g:if>
             </h2>
             <div class="right aligned four wide column">
-                <button type="button" class="ui button icon la-modern-button" data-ui="modal" data-href="#myID">
-                    <i aria-hidden="true" class="plus icon"></i>
+                <button type="button"  class="" data-ui="modal" data-href="#modalAddProperty_${propDefGroup.id}">
+                    <i class="${Icon.CMD.ADD}"></i>
                 </button>
             </div>
         </div>
-
         <div id="grouped_custom_props_div_${propDefGroup.id}">
              <%--!!!!Die Editable Prüfung dient dazu, dass für die Umfrag Lizenz-Merkmal nicht editierbar sind !!!!--%>
             <laser:render template="/templates/properties/group" model="${[
