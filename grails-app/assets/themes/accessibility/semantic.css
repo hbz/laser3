@@ -1956,6 +1956,10 @@ i.icon.la-list-icon:before {
   width: 1px;
   overflow: hidden;
 }
+
+.la-display-none {
+  display: none;
+}
 /*!
  * # Fomantic-UI 2.9.3 - Button
  * https://github.com/fomantic/Fomantic-UI/
