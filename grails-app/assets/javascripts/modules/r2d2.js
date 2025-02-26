@@ -212,13 +212,17 @@ r2d2 = {
             var element = $(this).parents('.js-copyTriggerParent').find('.js-copyTopic');
             var html = $(element).html();
             var $temp = $("<input>");
+            var dontShow;
+            $(element).hasClass('la-display-none') ? dontShow = true : dontShow = false;
             $("body").append($temp);
             $temp.val($.trim($(element).text())).select();
             document.execCommand("copy");
             clearTimeout(timeout);
+            dontShow ?  $(element).css('display','inline'): $(element).addClass('');
             $(element).html(JSPC.dict.get('copied', JSPC.config.language));
             var timeout = setTimeout(function() {
                 $(element).html(html);
+                dontShow ? $(element).css('display','none') : $(element).addClass('');
             }, 2000); // change the HTML after 2 seconds
             $temp.remove();
         });
@@ -231,6 +235,7 @@ r2d2 = {
             function(){ $(this).removeClass('alternate') },
             function(){ $(this).addClass('alternate') }
         )
+
         //JS Library readmore.js
         $('.la-readmore').readmore({
             speed: 75,

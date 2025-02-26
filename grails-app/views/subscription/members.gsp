@@ -93,24 +93,23 @@
                         <td>
                             <ui:archiveIcon org="${subscr}" /> ${subscr.sortname}
                         </td>
-                        <td>
+                        <td class="js-copyTriggerParent">
                             <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
                             <ui:customerTypeOnlyProIcon org="${subscr}" />
                             <%
                                 List<Contact> generalContactMails = Contact.executeQuery('select cct.content from Contact cct join cct.prs p join p.roleLinks pr where (p.isPublic = true or p.tenant = :context) and pr.org = :subscr and pr.functionType = :generalContact and cct.contentType = :mail', [context: contextService.getOrg(), subscr: subscr, generalContact: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, mail: RDStore.CCT_EMAIL])
                             %>
                             <g:if test="${generalContactMails}">
-                                <span class="la-popup-tooltip js-copyTrigger" data-content="${message(code: 'tooltip.clickToCopySimple')}">
-                                    <i class="${Icon.SYM.EMAIL}"></i>
-                                </span>
-                                <span class="js-copyTopic">
+                                <button class="ui icon button la-modern-button js-copyTrigger tiny la-popup-tooltip" data-content="${message(code: 'tooltip.clickToCopyMainContacts')}">
+                                    <i  class="${Icon.SYM.EMAIL} la-js-copyTriggerIcon"></i>
+                                </button>
+
+                                <span class="js-copyTopic la-display-none">
                                     ${generalContactMails.join(';')}
                                 </span>
-                                <span class="la-popup-tooltip" data-position="top right" data-content="${message(code: 'tooltip.sendMail')}">
-                                    <a href="mailto:${generalContactMails.join(';')}" class="${Btn.MODERN.SIMPLE} tiny">
-                                        <i class="${Icon.LNK.MAIL_TO}"></i>
-                                    </a>
-                                </span>
+                                <a href="mailto:${generalContactMails.join(';')}" class="${Btn.MODERN.SIMPLE} tiny la-popup-tooltip" data-content="${message(code: 'tooltip.sendMailtoMainContacts')}">
+                                    <i class="${Icon.LNK.MAIL_TO}"></i>
+                                </a>
                             </g:if>
                         </td>
                     <%--</g:each>--%>
@@ -186,7 +185,7 @@
                             <ui:multiYearIcon isConsortial="true" color="orange" />
                         </g:if>
                     </td>
-                    <td class="center aligned" ">
+                    <td class="center aligned">
                         <ui:xEditableAsIcon owner="${sub}" class="ui icon center aligned" iconClass="sticky note circular inverted" field="comment" type="textarea" emptyTooltip="${message(code: 'subscription.details.internalComment')}"/>
                     </td>
                     <td class="x">
