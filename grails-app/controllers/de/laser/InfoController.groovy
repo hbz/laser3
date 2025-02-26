@@ -1,7 +1,6 @@
 package de.laser
 
-import de.laser.addressbook.Contact
-import de.laser.addressbook.Person
+import de.laser.addressbook.PersonRole
 import de.laser.auth.User
 import de.laser.ctrl.OrganisationControllerService
 import de.laser.remote.Wekb
@@ -73,19 +72,21 @@ ${custId ? ('Customer Identifier: ' + custId.value) : ''}
         ]
     }
 
-    private static List<Contact> _getProviderContacts(Provider provider, List<RefdataValue> order) {
-        List<Contact> ccList = []
+    private static List<List> _getProviderContacts(Provider provider, List<RefdataValue> order) {
+        List<List> result = [] // [Person, RefdataValue, Contact]
 
         order.each { rdv ->
-            if (!ccList) {
-                List<Person> ppList = BeanStore.getProviderService().getContactPersonsByFunctionType(provider, false, rdv)
-                List<Contact> matches = ppList.contacts.flatten().findAll { it.contentType?.value in ['E-Mail', 'Mail'] } as List<Contact>
-                if (matches) {
-                    ccList.addAll(matches)
-                }
-            }
+            List match = PersonRole.executeQuery(
+                    "select p, pr.functionType, c from Person p inner join p.roleLinks pr inner join p.contacts c " +
+                            "where pr.provider = :provider and pr.functionType = :ft " +
+                            "and ((p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true)) " +
+                            "and c.contentType.value in ('Mail', 'E-Mail')",
+                    [provider: provider, ft: rdv, ctx: BeanStore.getContextService().getOrg()]
+            )
+            //println match
+            if (match) { result.addAll( match.sort{ it[2].language?.getI10n('value') } ) }
         }
-        ccList
+        result
     }
 
     private static Map<String, Object> _reportTitleToProvider(GrailsParameterMap params) {
@@ -94,15 +95,14 @@ ${custId ? ('Customer Identifier: ' + custId.value) : ''}
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(params.id_tipp)
         Provider provider = tipp.platform.provider
 
-        List<Contact> ccList = _getProviderContacts(
+        List<List> prcList = _getProviderContacts(
                 provider,
                 [RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
         )
         User user = BeanStore.getContextService().getUser()
 
         result = [
-                // mailto : ccList.collect { it.content }.sort().join(','),
-                mailtoList : ccList,
+                mailtoList : prcList,
                 mailto: 'Bitte ausfüllen',
                 mailcc : user.email
         ]
@@ -152,14 +152,13 @@ Thank you
         User user = BeanStore.getContextService().getUser()
         Platform platform = Platform.get(params.id_platform)
 
-        List<Contact> ccList = _getProviderContacts(
+        List<List> prcList = _getProviderContacts(
                 platform.provider,
                 [RDStore.PRS_FUNC_STATS_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
         )
 
         result = [
-                // mailto : ccList.collect { it.content }.sort().join(','),
-                mailtoList : ccList,
+                mailtoList : prcList,
                 mailto: 'Bitte ausfüllen',
                 mailcc : user.email
         ]

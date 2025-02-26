@@ -12,18 +12,22 @@
         <g:if test="${mailtoList}">
             <div class="field">
                 <label for="mailto">${message(code: 'mail.to')}</label>
-                <div class="ui fluid selection dropdown">
-                    <input type="hidden" name="mailto" id="mailto">
+                <div class="ui fluid selection dropdown la-not-clearable">
+                    <input type="hidden" name="mailto" id="mailto" value="${mailtoList[0][2].content}">
                     <i class="dropdown icon"></i>
                     <div class="default text">Bitte auswählen</div>
                     <div class="menu">
-                        <g:each in="${mailtoList}" var="mt">
-                            <div class="item" data-value="${mt.content}">
-                                <g:if test="${!mt.language}"><i class="flag x"></i></g:if>
-                                <g:if test="${mt.language?.value == 'ger'}"><i class="flag de"></i></g:if>
-                                <g:if test="${mt.language?.value == 'eng'}"><i class="flag gb"></i></g:if>
-                                <span class="description">${mt.prs.IsPublic ? '' : ' (Mein Adressbuch)'}</span>
-                                <span class="text">${mt.content}</span>
+                        <g:each in="${mailtoList}" var="prc" status="i">
+                            <div class="item" data-value="${prc[2].content}">
+                                <span class="description">
+                                    <g:if test="${prc[2].language?.value == 'ger'}"><i class="flag de"></i></g:if>
+                                    <g:if test="${prc[2].language?.value == 'eng'}"><i class="flag gb"></i></g:if>
+                                    <i class="${prc[0].isPublic ? Icon.ACP_PUBLIC : Icon.ACP_PRIVATE}"></i>
+                                    ${prc[1].getI10n('value')}
+                                </span>
+                                <span class="text">
+                                    ${prc[2].content}
+                                </span>
                             </div>
                         </g:each>
                     </div>
