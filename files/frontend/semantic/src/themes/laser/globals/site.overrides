@@ -503,3 +503,6 @@ i.icon.la-list-icon{
     width: 1px;
     overflow: hidden;
 }
+.la-display-none {
+    display: none;
+}
