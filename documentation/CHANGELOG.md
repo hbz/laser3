@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6317    26.02.2025  rc-3.4  3.4.19      Andreas Bug         Rekursionsfehler im Sync behoben
+
 6293    25.02.2025  rc-3.4  3.4.19      Moe     Bug        Merkmale kopieren n andere Lizenz
 
 6311    25.02.2025  rc-3.4  3.4.19      Moe     Bug         Merkmale werden beim Kopieren gedoppelt
