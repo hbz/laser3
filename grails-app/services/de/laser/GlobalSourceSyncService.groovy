@@ -685,7 +685,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 result.records.each { record ->
                                     record.packages.eachWithIndex { Map packageData, int i ->
                                         try {
-                                            log.debug("now processing vendor package ${i} out of ${record.packages.size()} packages")
+                                            //log.debug("now processing vendor package ${i} out of ${record.packages.size()} packages")
                                             Package pkg = Package.findByGokbId(packageData.packageUuid)
                                             if(!pkg)
                                                 createOrUpdatePackage(packageData.packageUuid)
@@ -782,7 +782,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     result.records.each { record ->
                         record.packages.eachWithIndex { Map packageData, int i ->
                             try {
-                                log.debug("now processing vendor package ${i} out of ${record.packages.size()} packages")
+                                //log.debug("now processing vendor package ${i} out of ${record.packages.size()} packages")
                                 Package pkg = Package.findByGokbId(packageData.packageUuid)
                                 if(!pkg)
                                     createOrUpdatePackage(packageData.packageUuid)
