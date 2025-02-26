@@ -273,7 +273,7 @@
                         <g:each in="${person.contacts?.toSorted()}" var="contact">
                             <laser:render template="/addressbook/contact" model="${[
                                     contact             : contact,
-                                    tmplShowDeleteButton: true,
+                                    tmplShowDeleteButton: showOptions && editable,
                                     overwriteEditable   : false
                             ]}" />
                         </g:each>
