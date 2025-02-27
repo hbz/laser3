@@ -4,12 +4,14 @@ package de.laser.ctrl
 import de.laser.*
 import de.laser.addressbook.Address
 import de.laser.addressbook.Contact
+import de.laser.addressbook.Person
 import de.laser.auth.User
 import de.laser.oap.OrgAccessPoint
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyOrg
+import de.laser.survey.SurveyPersonResult
 import de.laser.utils.LocaleUtils
 import de.laser.wekb.Platform
 import grails.gorm.transactions.Transactional
@@ -183,11 +185,12 @@ class OrganisationControllerService {
                         billingPostBoxes = postBoxSurveyList.collect { Address address -> address.getAddressForExport() }
                     }
 
-                    if(surveyOrg.person) {
-                        billingContactsList = Contact.executeQuery("select c.content, p.title, p.first_name, p.middle_name, p.last_name from PersonRole pr " +
-                                "join pr.prs p join p.contacts c where pr.prs.id = :personId and c.contentType = :type",
-                                [personId: surveyOrg.person.id, type: RDStore.CCT_EMAIL])
-                    }
+
+                    List<Person> billingPersons = SurveyPersonResult.executeQuery('select spr.person from SurveyPersonResult spr where spr.billingPerson = true and spr.participant = :participant and spr.surveyConfig = :surveyConfig', [participant: surveyOrg.org, surveyConfig: surveyOrg.surveyConfig])
+                    billingContactsList = billingPersons ? Contact.executeQuery("select c.content, p.title, p.first_name, p.middle_name, p.last_name from PersonRole pr " +
+                            "join pr.prs p join p.contacts c where pr.prs in (:persons) and c.contentType = :type",
+                            [persons: billingPersons, type: RDStore.CCT_EMAIL]) : []
+
                 }
             }
 
