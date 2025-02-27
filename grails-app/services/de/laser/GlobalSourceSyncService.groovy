@@ -1271,33 +1271,16 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 throw e
                             }
                         }
-                        /*
                         if(packageRecord.vendors) {
-                            try {
-                                List<String> packageVendorsB = packageRecord.vendors.collect { Map vendorData -> vendorData.vendorUuid }
-                                PackageVendor.executeUpdate('delete from PackageVendor pv where pv.pkg = :pkg and pv.vendor not in (select v from Vendor v where v.gokbId in (:pvB))', [pkg: result, pvB: packageVendorsB])
-                                packageVendorsB.each { String vendorUuid ->
-                                    Vendor vendor = Vendor.findByGokbId(vendorUuid)
-                                    if(!vendor) {
-                                        Map<String, Object> vendorRecord = fetchRecordJSON(false,[uuid:vendorUuid])
-                                        if(vendorRecord && !vendorRecord.error) {
-                                            vendor = createOrUpdateVendor(vendorRecord)
-                                            setupPkgVendor(vendor, result)
-                                        }
-                                        else if(vendorRecord && vendorRecord.error == 404) {
-                                            log.error("we:kb server is down")
-                                            throw new SyncException("we:kb server is unvailable")
-                                        }
-                                        else
-                                            throw new SyncException("Provider loading failed for UUID ${vendorUuid}!")
-                                    }
+                            List<String> packageVendorsB = packageRecord.vendors.collect { Map vendorData -> vendorData.vendorUuid }
+                            PackageVendor.executeUpdate('delete from PackageVendor pv where pv.pkg = :pkg and pv.vendor not in (select v from Vendor v where v.gokbId in (:pvB))', [pkg: result, pvB: packageVendorsB])
+                            packageVendorsB.each { String vendorUuid ->
+                                Vendor vendor = Vendor.findByGokbId(vendorUuid)
+                                if(vendor) {
+                                    setupPkgVendor(vendor, result)
                                 }
                             }
-                            catch (SyncException e) {
-                                throw e
-                            }
                         }
-                        */
                         if(packageRecord.identifiers) {
                             if(result.ids) {
                                 Identifier.executeUpdate('delete from Identifier i where i.pkg = :pkg',[pkg:result]) //damn those wrestlers ...
