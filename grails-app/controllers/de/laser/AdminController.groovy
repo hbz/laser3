@@ -765,22 +765,6 @@ class AdminController  {
                 ApiToolkit.removeApiLevel(target)
             }
         }
-        else if (params.cmd == 'changeGascoEntry') {
-            RefdataValue option = RefdataValue.get(params.long('gascoEntry'))
-
-            if (target && option) {
-                def oss = OrgSetting.get(target, OrgSetting.KEYS.GASCO_ENTRY)
-
-                if (oss != OrgSetting.SETTING_NOT_FOUND) {
-                    oss.rdValue = option
-                    oss.save()
-                } else {
-                    OrgSetting.add(target, OrgSetting.KEYS.GASCO_ENTRY, option)
-                }
-            }
-            target.lastUpdated = new Date()
-            target.save()
-        }
         else if (params.cmd == 'changeLegalInformation') {
             if (target) {
                 target.createdBy = Org.get(params.createdBy)

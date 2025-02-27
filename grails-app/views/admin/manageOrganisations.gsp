@@ -36,11 +36,6 @@
                     </span>
                 </th>
                 <th class="center aligned">
-                    <span class="la-popup-tooltip" data-position="left center" data-content="${message(code:'org.gascoEntry.label')}">
-                        <i class="${Icon.GASCO}"></i>
-                    </span>
-                </th>
-                <th class="center aligned">
                     <span class="la-popup-tooltip" data-position="left center" data-content="${message(code:'org.isBetaTester.label')}">
                         <i class="${Icon.ATTR.ORG_IS_BETA_TESTER}"></i>
                     </span>
@@ -102,20 +97,6 @@
                             }
                         %>
                         <ui:customerTypeIcon org="${org}" option="tooltip" />
-                    </td>
-
-                    <td>
-                        <%
-                            def gascoEntry = OrgSetting.get(org, OrgSetting.KEYS.GASCO_ENTRY)
-                            if (gascoEntry != OrgSetting.SETTING_NOT_FOUND && gascoEntry.getValue()?.value == 'Yes') {
-                                println ' <span class="la-popup-tooltip" data-position="top right" data-content="' + message(code:'org.gascoEntry.label') + '">'
-                                println ' <i class="' + Icon.GASCO + ' grey"></i>'
-                                println ' </span>'
-                                gascoEntry = gascoEntry.getValue()
-                            } else {
-                                gascoEntry = RDStore.YN_NO
-                            }
-                        %>
                     </td>
 
                     <td>
@@ -204,15 +185,13 @@
                                 data-href="#customerTypeModal"
                                 data-content="Kundentyp ändern" data-position="top left"><i class="${Icon.ATTR.ORG_CUSTOMER_TYPE}"></i></button>
 
-                        <g:if test="${org.isCustomerType_Consortium() || org.isCustomerType_Support()}">
-                            <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}"
-                                    data-gascoTarget="${org.id}"
-                                    data-gascoEntry="${gascoEntry.id}"
-                                    data-orgName="${org.name}"
-                                    data-ui="modal"
-                                    data-href="#gascoEntryModal"
-                                    data-content="GASCO-Eintrag ändern" data-position="top left"><i class="${Icon.GASCO}"></i></button>
-                        </g:if>
+%{--                        <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}"--}%
+%{--                                data-ibtTarget="${org.id}"--}%
+%{--                                data-isBetaTester="${org.isBetaTester}"--}%
+%{--                                data-orgName="${org.name}"--}%
+%{--                                data-ui="modal"--}%
+%{--                                data-href="#isBetaTesterModal"--}%
+%{--                                data-content="${message(code:'org.isBetaTester.label')} ändern" data-position="top left"><i class="${Icon.ATTR.ORG_IS_BETA_TESTER}"></i></button>--}%
 
                         <g:if test="${org.isCustomerType_Inst()}">
                             <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}"
@@ -224,6 +203,9 @@
                                     data-href="#legalInformationModal"
                                     data-content="Rechtl. Informationen ändern" data-position="top left"><i class="${Icon.ATTR.ORG_LEGAL_INFORMATION}"></i></button>
                         </g:if>
+                        <g:else>
+                            <div class="${Btn.MODERN.SIMPLE} disabled"><icon:placeholder/></div>
+                        </g:else>
 
                         <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}"
                                 data-alTarget="${org.id}"
@@ -240,39 +222,42 @@
 
     <ui:paginate action="manageOrganisations" controller="admin" params="${params}" max="${max}" total="${orgListTotal}" />
 
-    <%-- changing gasco entry --%>
+    <%-- changing isBetaTester--%>
+    %{-- TODO --}%
+    %{-- TODO --}%
+    %{-- TODO --}%
 
-    <ui:modal id="gascoEntryModal" message="org.gascoEntry.label" isEditModal="isEditModal">
+%{--    <ui:modal id="isBetaTesterModal" message="org.isBetaTester.label" isEditModal="isEditModal">--}%
 
-        <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
-            <input type="hidden" name="cmd" value="changeGascoEntry"/>
-            <input type="hidden" name="target" value="" />
+%{--        <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">--}%
+%{--            <input type="hidden" name="cmd" value="changeIsBetaTester"/>--}%
+%{--            <input type="hidden" name="target" value="" />--}%
 
-            <div class="field">
-                <label for="orgName_gasco">${message(code:'org.label')}</label>
-                <input type="text" id="orgName_gasco" name="orgName" value="" readonly />
-            </div>
+%{--            <div class="field">--}%
+%{--                <label for="orgName_gasco">${message(code:'org.label')}</label>--}%
+%{--                <input type="text" id="orgName_gasco" name="orgName" value="" readonly />--}%
+%{--            </div>--}%
 
-            <div class="field">
-                <label for="gascoEntry">${message(code:'org.gascoEntry.label')}</label>
-                <ui:select id="gascoEntry" name="gascoEntry"
-                              from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
-                              optionKey="id"
-                              optionValue="value"
-                              class="ui dropdown"
-                />
-            </div>
-        </g:form>
+%{--            <div class="field">--}%
+%{--                <label for="isBetaTester">${message(code:'org.isBetaTester.label')}</label>--}%
+%{--                <ui:select id="isBetaTester" name="isBetaTester"--}%
+%{--                              from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"--}%
+%{--                              optionKey="id"--}%
+%{--                              optionValue="value"--}%
+%{--                              class="ui dropdown"--}%
+%{--                />--}%
+%{--            </div>--}%
+%{--        </g:form>--}%
 
-        <laser:script file="${this.getGroovyPageFileName()}">
-            JSPC.callbacks.modal.onShow.gascoEntryModal = function(trigger) {
-                $('#gascoEntryModal #orgName_gasco').attr('value', $(trigger).attr('data-orgName'))
-                $('#gascoEntryModal input[name=target]').attr('value', $(trigger).attr('data-gascoTarget'))
-                $('#gascoEntryModal select[name=gascoEntry]').dropdown('set selected', $(trigger).attr('data-gascoEntry'))
-            }
-        </laser:script>
+%{--        <laser:script file="${this.getGroovyPageFileName()}">--}%
+%{--            JSPC.callbacks.modal.onShow.isBetaTesterModal = function(trigger) {--}%
+%{--                $('#isBetaTesterModal #orgName_gasco').attr('value', $(trigger).attr('data-orgName'))--}%
+%{--                $('#isBetaTesterModal input[name=target]').attr('value', $(trigger).attr('data-ibtTarget'))--}%
+%{--                $('#isBetaTesterModal select[name=isBetaTester]').dropdown('set selected', $(trigger).attr('data-isBetaTester'))--}%
+%{--            }--}%
+%{--        </laser:script>--}%
 
-    </ui:modal>
+%{--    </ui:modal>--}%
 
     <%-- changing legal information --%>
 
