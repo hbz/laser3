@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6323    27.02.2025  dev     3.5         David   Feature     Gasco-Eintrag automatisch für Konsortialmanager
+
+6281    27.02.2025  dev     3.5         David   Feature     Sortierung der Kontakte in Anbietermails
+
 6313    25.02.2025  dev     3.5         Andreas Bug         Bubbles mit Titelzahlen reimplementiert
 
 6306    25.02.2025  dev     3.5         David   Feature     Allgemeine Merkmale - Logik: mandatory/multiple

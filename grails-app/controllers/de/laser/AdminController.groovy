@@ -750,6 +750,7 @@ class AdminController  {
                 oss.roleValue = customerType
                 oss.save()
 
+                // todo: ERMS-6325
                 params.remove('customerType') // unwanted parameter for filter query
             }
             else {
@@ -770,6 +771,7 @@ class AdminController  {
                 target.isBetaTester = (params.long('isBetaTester') == RDStore.YN_YES.id)
             }
 
+            // todo: ERMS-6325
             params.remove('isBetaTester') // unwanted parameter for filter query
 
             target.lastUpdated = new Date()
