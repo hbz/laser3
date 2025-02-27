@@ -217,31 +217,38 @@ class MyInstitutionController  {
 
         if(contextService.getOrg().isCustomerType_Consortium())
             instanceFilter += " and s2.instanceOf = null "
-        String subscriptionQuery = 'select s2 from OrgRole oo join oo.sub s2 where oo.org = :contextOrg and oo.roleType in (:roleTypes) and ('+subFilter+')'+instanceFilter
+        String subscriptionQuery = 'select s2.id from OrgRole oo join oo.sub s2 where oo.org = :contextOrg and oo.roleType in (:roleTypes) and ('+subFilter+')'+instanceFilter
+        Set<Long> subIds = []
+        String subQueryFilter = ""
+        if(subFilter) {
+            subIds.addAll(Subscription.executeQuery(subscriptionQuery, subscriptionParams))
+            subQueryFilter = " and s.id in (:subIds)"
+        }
 
         result.subscriptionMap = [:]
         result.platformInstanceList = []
 
-        //if (subscriptionQuery) {
-        String qry3 = "select distinct p, s, ${params.sort ?: 'p.name'} from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg " +
-                "join pkg.nominalPlatform p left join p.org o " +
-                "where s in (${subscriptionQuery}) and p.gokbId in (:wekbIds) and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
+        String qry3 = "select distinct plat, s, ${params.sort ?: 'plat.name'} from Platform plat join plat.provider p, SubscriptionPackage sp join sp.subscription s join sp.pkg pkg where plat = pkg.nominalPlatform " +
+                "and plat.gokbId in (:wekbIds) and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted)) ${subQueryFilter}"
 
         Map qryParams3 = [
-                pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED
+                pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED,
         ]
-        qryParams3.putAll(subscriptionParams)
+        if(subFilter)
+            qryParams3.subIds = subIds
 
         Map<String, Object> queryParams = [componentType: "Platform"]
 
         if (params.q?.length() > 0) {
             result.filterSet = true
-            queryParams.q = params.q
+            queryParams.name = params.q
+            /*
             qry3 += "and ("
             qry3 += "   genfunc_filter_matcher(o.name, :query) = true"
             qry3 += "   or genfunc_filter_matcher(o.sortname, :query) = true"
             qry3 += ")"
-            qryParams3.put('query', "${params.q}")
+            qryParams3.put('query', params.q)
+            */
         }
 
         if (params.filterPropDef) {
@@ -312,10 +319,10 @@ class MyInstitutionController  {
         ]
         qryParams3.wekbIds = wekbIds
 
-        qry3 += " group by p, s"
+        qry3 += " group by plat, s"
         if(params.sort)
             qry3 += " order by ${params.sort} ${params.order}"
-        else qry3 += " order by p.name, s.name, s.startDate desc"
+        else qry3 += " order by plat.name, s.name, s.startDate desc"
 
         List platformSubscriptionList = []
         if(wekbIds)
