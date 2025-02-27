@@ -125,7 +125,7 @@ class Icon extends IconAttr {
         // finance, costs
 
         @UIDoc(usage = 'Only for Cost items')
-        public static String COST           = 'money bill icon'
+        public static String COST           = 'euro sign icon'
         @UIDoc(usage = 'Only for Cost item configurations')
         public static String COST_CONFIG    = 'money bill alternate icon'
 
