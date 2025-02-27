@@ -218,7 +218,7 @@
 
                                 <g:if test="${editable}">
                                     <g:link controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
-                                            params="${parame + [viewTab: 'invoicingInformation', subTab: 'xRechnung', setEInvoiceValuesFromOrg: true, ]}" class="ui right floated blue button">
+                                            params="${parame + [viewTab: 'invoicingInformation', subTab: 'xRechnung', setEInvoiceValuesFromOrg: true, ]}" class="${Btn.SIMPLE} right floated">
                                         <g:message code="surveyOrg.setEInvoiceValuesFromOrg"/>
                                     </g:link>
                                     <br>
