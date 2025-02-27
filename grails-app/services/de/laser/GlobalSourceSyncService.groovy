@@ -624,6 +624,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         switch (source.rectype) {
                             case RECTYPE_PROVIDER:
                                 result.records.each { record ->
+                                    /*
+                                    structure not existing in we:kb
                                     record.platforms.each { Map platformData ->
                                         try {
                                             createOrUpdatePlatform(platformData.uuid)
@@ -633,6 +635,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                             SystemEvent.createEvent("GSSS_JSON_WARNING",[platformRecordKey:platformData.uuid])
                                         }
                                     }
+                                    */
                                     createOrUpdateProvider(record)
                                 }
                                 break
@@ -680,9 +683,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 break
                             case RECTYPE_VENDOR:
                                 result.records.each { record ->
-                                    record.packages.each { Map packageData ->
+                                    record.packages.eachWithIndex { Map packageData, int i ->
                                         try {
-                                            createOrUpdatePackage(packageData.packageUuid)
+                                            //log.debug("now processing vendor package ${i} out of ${record.packages.size()} packages")
+                                            Package pkg = Package.findByGokbId(packageData.packageUuid)
+                                            if(!pkg)
+                                                createOrUpdatePackage(packageData.packageUuid)
                                         }
                                         catch (SyncException e) {
                                             log.error("Error on updating package ${packageData.uuid}: ",e)
@@ -713,6 +719,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
             switch (source.rectype) {
                 case RECTYPE_PROVIDER:
                     result.records.each { record ->
+                        /*
+                        structure not existing in we:kb
                         record.platforms.each { Map platformData ->
                             try {
                                 createOrUpdatePlatform(platformData.uuid)
@@ -722,6 +730,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 SystemEvent.createEvent("GSSS_JSON_WARNING",[platformRecordKey:platformData.uuid])
                             }
                         }
+                        */
                         createOrUpdateProvider(record)
                     }
                     break
@@ -771,9 +780,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     break
                 case RECTYPE_VENDOR:
                     result.records.each { record ->
-                        record.packages.each { Map packageData ->
+                        record.packages.eachWithIndex { Map packageData, int i ->
                             try {
-                                createOrUpdatePackage(packageData.packageUuid)
+                                //log.debug("now processing vendor package ${i} out of ${record.packages.size()} packages")
+                                Package pkg = Package.findByGokbId(packageData.packageUuid)
+                                if(!pkg)
+                                    createOrUpdatePackage(packageData.packageUuid)
                             }
                             catch (SyncException e) {
                                 log.error("Error on updating package ${packageData.uuid}: ",e)
@@ -1260,28 +1272,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             }
                         }
                         if(packageRecord.vendors) {
-                            try {
-                                List<String> packageVendorsB = packageRecord.vendors.collect { Map vendorData -> vendorData.vendorUuid }
-                                PackageVendor.executeUpdate('delete from PackageVendor pv where pv.pkg = :pkg and pv.vendor not in (select v from Vendor v where v.gokbId in (:pvB))', [pkg: result, pvB: packageVendorsB])
-                                packageVendorsB.each { String vendorUuid ->
-                                    Vendor vendor = Vendor.findByGokbId(vendorUuid)
-                                    if(!vendor) {
-                                        Map<String, Object> vendorRecord = fetchRecordJSON(false,[uuid:vendorUuid])
-                                        if(vendorRecord && !vendorRecord.error) {
-                                            vendor = createOrUpdateVendor(vendorRecord)
-                                            setupPkgVendor(vendor, result)
-                                        }
-                                        else if(vendorRecord && vendorRecord.error == 404) {
-                                            log.error("we:kb server is down")
-                                            throw new SyncException("we:kb server is unvailable")
-                                        }
-                                        else
-                                            throw new SyncException("Provider loading failed for UUID ${vendorUuid}!")
-                                    }
+                            List<String> packageVendorsB = packageRecord.vendors.collect { Map vendorData -> vendorData.vendorUuid }
+                            PackageVendor.executeUpdate('delete from PackageVendor pv where pv.pkg = :pkg and pv.vendor not in (select v from Vendor v where v.gokbId in (:pvB))', [pkg: result, pvB: packageVendorsB])
+                            packageVendorsB.each { String vendorUuid ->
+                                Vendor vendor = Vendor.findByGokbId(vendorUuid)
+                                if(vendor) {
+                                    setupPkgVendor(vendor, result)
                                 }
-                            }
-                            catch (SyncException e) {
-                                throw e
                             }
                         }
                         if(packageRecord.identifiers) {
@@ -1629,19 +1626,19 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             }
                         }
                     }
-                    //List<String> vendorPackagesB = vendorRecord.packages.collect { pvB -> pvB.packageUuid },
-                    List<String> supportedLibrarySystemsB = vendorRecord.supportedLibrarySystems.collect { slsB -> slsB.supportedLibrarySystem },
+                    List<String> vendorPackagesB = vendorRecord.packages.collect { pvB -> pvB.packageUuid },
+                                 supportedLibrarySystemsB = vendorRecord.supportedLibrarySystems.collect { slsB -> slsB.supportedLibrarySystem },
                                  electronicBillingsB = vendorRecord.electronicBillings.collect { ebB -> ebB.electronicBilling },
                                  invoiceDispatchsB = vendorRecord.invoiceDispatchs.collect { idiB -> idiB.invoiceDispatch },
                                  electronicDeliveryDelaysB = vendorRecord.electronicDeliveryDelays.collect { eddnB -> eddnB.electronicDeliveryDelay }
-                    /* danger of infinite loop
                     if(vendor.packages) {
                         PackageVendor.executeUpdate('delete from PackageVendor pv where pv.vendor = :vendor and pv.pkg not in (select pkg from Package pkg where pkg.gokbId in (:pvB))', [vendor: vendor, pvB: vendorPackagesB]) //cascading ...
-
+                        /*
                         vendor.packages.each { PackageVendor pvA ->
-                            if(!(pvA.pkg.gokbId in packagesB))
+                            if(!(pvA.pkg.gokbId in vendorPackagesB))
                                 pvA.delete()
                         }
+                        */
                     }
                     vendorPackagesB.each { String packageUuid ->
                         Package pkg = Package.findByGokbId(packageUuid)
@@ -1649,7 +1646,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             setupPkgVendor(vendor, pkg)
                         }
                     }
-                    */
                     vendor.supportedLibrarySystems.each { LibrarySystem lsA ->
                         if(!supportedLibrarySystemsB.contains(lsA.librarySystem.value))
                             lsA.delete()
