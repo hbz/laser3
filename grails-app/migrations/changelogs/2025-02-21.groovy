@@ -97,4 +97,16 @@ databaseChangeLog = {
     changeSet(author: "galffy (generated)", id: "1740132278348-11") {
         dropTable(tableName: "sushi_call_error")
     }
+
+    changeSet(author: "klober (modified)", id: "1740132278348-12") {
+        grailsChange {
+            change {
+                String query = "delete from org_setting where os_key_enum = 'GASCO_ENTRY';"
+                sql.executeUpdate(query)
+                String c = query + ' -> ' + sql.getUpdateCount()
+                confirm(c)
+                changeSet.setComments(c)
+            }
+        }
+    }
 }

@@ -165,17 +165,9 @@
                                             </g:if>
                                             <g:else>
 
-                                                <g:if test="${OrgSetting.KEYS.GASCO_ENTRY == os.key}">
-                                                    <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
-                                                        <ui:xEditableRefData owner="${os}" field="rdValue" config="${os.key.rdc}" />
-                                                    </g:if>
-                                                    <g:else>
-                                                        ${os.getValue()?.getI10n('value')}
-                                                    </g:else>
-                                                </g:if>
-                                                <g:elseif test="${os.key.type == RefdataValue}">
+                                                <g:if test="${os.key.type == RefdataValue}">
                                                     ${os.getValue()?.getI10n('value')}
-                                                </g:elseif>
+                                                </g:if>
                                                 <g:elseif test="${os.key.type == Role}">
                                                     ${os.getValue()?.getI10n('authority')}
                                                 </g:elseif>

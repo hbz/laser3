@@ -232,7 +232,7 @@
                 </div>
 
                 <div class="description">
-                    <i class="${Icon.FNC.COST} alternate outline"></i>${message(code: 'copySurveyCostItems.surveyCostItem')}
+                    <i class="money bill alternate outline icon"></i>${message(code: 'copySurveyCostItems.surveyCostItem')}
                 </div>
             </div>
 
@@ -265,7 +265,7 @@
                 </div>
 
                 <div class="description">
-                    <i class="${Icon.FNC.COST} alternate outline"></i>${message(code: 'surveyCostItemsPackages.label')}
+                    <i class="money bill alternate outline icon"></i>${message(code: 'surveyCostItemsPackages.label')}
                 </div>
             </div>
 
