@@ -765,6 +765,16 @@ class AdminController  {
                 ApiToolkit.removeApiLevel(target)
             }
         }
+        else if (params.cmd == 'changeIsBetaTester') {
+            if (target) {
+                target.isBetaTester = (params.long('isBetaTester') == RDStore.YN_YES.id)
+            }
+
+            params.remove('isBetaTester') // unwanted parameter for filter query
+
+            target.lastUpdated = new Date()
+            target.save()
+        }
         else if (params.cmd == 'changeLegalInformation') {
             if (target) {
                 target.createdBy = Org.get(params.createdBy)

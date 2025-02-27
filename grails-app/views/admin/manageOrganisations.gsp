@@ -80,11 +80,11 @@
                             </g:if>
                         </g:link>
 
-                        <g:if test="${org.isBetaTester}">
-                            <span class="la-popup-tooltip" data-position="top right" data-content="${message(code:'org.isBetaTester.label')}" >
-                                <i class="bug icon red"></i>
-                            </span>
-                        </g:if>
+%{--                        <g:if test="${org.isBetaTester}">--}%
+%{--                            <span class="la-popup-tooltip" data-position="top right" data-content="${message(code:'org.isBetaTester.label')}" >--}%
+%{--                                <i class="bug icon red"></i>--}%
+%{--                            </span>--}%
+%{--                        </g:if>--}%
                     </td>
 
                     <td>
@@ -102,7 +102,7 @@
                     <td>
                         <g:if test="${org.isBetaTester}">
                             <span class="la-popup-tooltip" data-position="top right" data-content="${message(code:'org.isBetaTester.label')}" >
-                                <i class="${Icon.ATTR.ORG_IS_BETA_TESTER} grey"></i>
+                                <i class="${Icon.ATTR.ORG_IS_BETA_TESTER} red"></i>
                             </span>
                         </g:if>
                     </td>
@@ -185,13 +185,13 @@
                                 data-href="#customerTypeModal"
                                 data-content="Kundentyp ändern" data-position="top left"><i class="${Icon.ATTR.ORG_CUSTOMER_TYPE}"></i></button>
 
-%{--                        <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}"--}%
-%{--                                data-ibtTarget="${org.id}"--}%
-%{--                                data-isBetaTester="${org.isBetaTester}"--}%
-%{--                                data-orgName="${org.name}"--}%
-%{--                                data-ui="modal"--}%
-%{--                                data-href="#isBetaTesterModal"--}%
-%{--                                data-content="${message(code:'org.isBetaTester.label')} ändern" data-position="top left"><i class="${Icon.ATTR.ORG_IS_BETA_TESTER}"></i></button>--}%
+                        <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}"
+                                data-ibtTarget="${org.id}"
+                                data-isBetaTester="${org.isBetaTester ? RDStore.YN_YES.id : RDStore.YN_NO.id}"
+                                data-orgName="${org.name}"
+                                data-ui="modal"
+                                data-href="#isBetaTesterModal"
+                                data-content="${message(code:'org.isBetaTester.label')} ändern" data-position="top left"><i class="${Icon.ATTR.ORG_IS_BETA_TESTER}"></i></button>
 
                         <g:if test="${org.isCustomerType_Inst()}">
                             <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}"
@@ -223,41 +223,38 @@
     <ui:paginate action="manageOrganisations" controller="admin" params="${params}" max="${max}" total="${orgListTotal}" />
 
     <%-- changing isBetaTester--%>
-    %{-- TODO --}%
-    %{-- TODO --}%
-    %{-- TODO --}%
 
-%{--    <ui:modal id="isBetaTesterModal" message="org.isBetaTester.label" isEditModal="isEditModal">--}%
+    <ui:modal id="isBetaTesterModal" message="org.isBetaTester.label" isEditModal="isEditModal">
 
-%{--        <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">--}%
-%{--            <input type="hidden" name="cmd" value="changeIsBetaTester"/>--}%
-%{--            <input type="hidden" name="target" value="" />--}%
+        <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
+            <input type="hidden" name="cmd" value="changeIsBetaTester"/>
+            <input type="hidden" name="target" value="" />
 
-%{--            <div class="field">--}%
-%{--                <label for="orgName_gasco">${message(code:'org.label')}</label>--}%
-%{--                <input type="text" id="orgName_gasco" name="orgName" value="" readonly />--}%
-%{--            </div>--}%
+            <div class="field">
+                <label for="orgName_ibt">${message(code:'org.label')}</label>
+                <input type="text" id="orgName_ibt" name="orgName" value="" readonly />
+            </div>
 
-%{--            <div class="field">--}%
-%{--                <label for="isBetaTester">${message(code:'org.isBetaTester.label')}</label>--}%
-%{--                <ui:select id="isBetaTester" name="isBetaTester"--}%
-%{--                              from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"--}%
-%{--                              optionKey="id"--}%
-%{--                              optionValue="value"--}%
-%{--                              class="ui dropdown"--}%
-%{--                />--}%
-%{--            </div>--}%
-%{--        </g:form>--}%
+            <div class="field">
+                <label for="cmd_isBetaTester">${message(code:'org.isBetaTester.label')}</label>
+                <ui:select id="cmd_isBetaTester" name="isBetaTester"
+                              from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                              optionKey="id"
+                              optionValue="value"
+                              class="ui dropdown la-not-clearable"
+                />
+            </div>
+        </g:form>
 
-%{--        <laser:script file="${this.getGroovyPageFileName()}">--}%
-%{--            JSPC.callbacks.modal.onShow.isBetaTesterModal = function(trigger) {--}%
-%{--                $('#isBetaTesterModal #orgName_gasco').attr('value', $(trigger).attr('data-orgName'))--}%
-%{--                $('#isBetaTesterModal input[name=target]').attr('value', $(trigger).attr('data-ibtTarget'))--}%
-%{--                $('#isBetaTesterModal select[name=isBetaTester]').dropdown('set selected', $(trigger).attr('data-isBetaTester'))--}%
-%{--            }--}%
-%{--        </laser:script>--}%
+        <laser:script file="${this.getGroovyPageFileName()}">
+            JSPC.callbacks.modal.onShow.isBetaTesterModal = function(trigger) {
+                $('#isBetaTesterModal #orgName_ibt').attr('value', $(trigger).attr('data-orgName'))
+                $('#isBetaTesterModal input[name=target]').attr('value', $(trigger).attr('data-ibtTarget'))
+                $('#isBetaTesterModal select[name=isBetaTester]').dropdown('set selected', $(trigger).attr('data-isBetaTester'))
+            }
+        </laser:script>
 
-%{--    </ui:modal>--}%
+    </ui:modal>
 
     <%-- changing legal information --%>
 
@@ -331,8 +328,8 @@
             </div>
 
             <div class="field">
-                <label for="customerType">${message(code:'org.customerType.label')}</label>
-                <ui:select id="customerType" name="customerType"
+                <label for="cmd_customerType">${message(code:'org.customerType.label')}</label>
+                <ui:select id="cmd_customerType" name="customerType"
                           from="${[Role.findByAuthority('FAKE')] + Role.findAllByRoleType('org')}"
                           optionKey="id"
                           optionValue="authority"
