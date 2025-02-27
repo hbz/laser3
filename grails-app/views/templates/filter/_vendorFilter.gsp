@@ -222,7 +222,7 @@
 
 <div class="field la-field-right-aligned">
 
-        <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
+        <g:link controller="${processController}" action="${processAction}" id="${surveyInfo?.id}" params="[viewTab: params.viewTab, subTab: params.subTab]" class="ui reset secondary button">${message(code:'default.button.reset.label')}</g:link>
 
         <input name="filterSet" type="hidden" value="true">
         <g:if test="${tmplConfigFormFilter}">

@@ -357,6 +357,7 @@ class OrganisationController  {
             }
         }
         else {
+            result.totalOrgs = availableOrgs
             result.availableOrgs = availableOrgs.drop(result.offset).take(result.max)
             result
         }
@@ -994,43 +995,53 @@ class OrganisationController  {
             organisationService.initMandatorySettings(result.orgInstance)
             if(params.tab == 'customerIdentifiers') {
                 result.allPlatforms = organisationService.getAllPlatformsForContextOrg(result.institution)
-                Map<String, Object> queryParams = [customer: result.orgInstance, context: result.institution]
-                String query = "select ci from CustomerIdentifier ci join ci.platform platform where ci.customer = :customer and platform in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription in (select oo.sub from OrgRole oo where oo.org = :context))"
-                if(params.customerIdentifier) {
-                    query += " and ci.value like (:customerIdentifier)"
-                    queryParams.customerIdentifier = "%${params.customerIdentifier.toLowerCase()}%"
+                Map<String, Object> queryParams = [customer: result.orgInstance]
+                String validSubsQuery = "select oo.sub from OrgRole oo where oo.org = :customer", consortiaRelationFilter = "and exists(select ooo from OrgRole ooo where ooo.sub = oo.sub and ooo.org = :context)"
+                Set<Subscription> validSubs
+                if(result.institution.isCustomerType_Consortium()) {
+                    validSubsQuery = "${validSubsQuery} ${consortiaRelationFilter}"
+                    validSubs = Subscription.executeQuery(validSubsQuery, queryParams+[context: result.institution])
                 }
-                if(params.requestorKey) {
-                    query += " and ci.requestorKey like (:requestorKey)"
-                    queryParams.requestorKey = "%${params.requestorKey.toLowerCase()}%"
-                }
-                if(params.ciPlatform) {
-                    query += " and platform.id = :platform"
-                    queryParams.platform = params.long("ciPlatform")
-                }
-                else {
-                    query += " and platform in (:wekbPlatforms)"
-                    queryParams.wekbPlatforms = result.allPlatforms
-                }
-                String sort = " order by platform.provider.name asc"
-                if(params.sort) {
-                    sort = " order by ${params.sort} ${params.order}"
-                }
-                if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-                    result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
-                } else if (inContextOrg) {
-
-                    if (result.institution.isCustomerType_Consortium()) {
+                else
+                    validSubs = Subscription.executeQuery(validSubsQuery, queryParams)
+                if(validSubs) {
+                    String query = "select ci from CustomerIdentifier ci join ci.platform platform where ci.customer = :customer and platform in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription in (:validSubs))"
+                    queryParams.validSubs = validSubs
+                    if(params.customerIdentifier) {
+                        query += " and ci.value like (:customerIdentifier)"
+                        queryParams.customerIdentifier = "%${params.customerIdentifier.toLowerCase()}%"
+                    }
+                    if(params.requestorKey) {
+                        query += " and ci.requestorKey like (:requestorKey)"
+                        queryParams.requestorKey = "%${params.requestorKey.toLowerCase()}%"
+                    }
+                    if(params.ciPlatform) {
+                        query += " and platform.id = :platform"
+                        queryParams.platform = params.long("ciPlatform")
+                    }
+                    else {
+                        query += " and platform in (:wekbPlatforms)"
+                        queryParams.wekbPlatforms = result.allPlatforms
+                    }
+                    String sort = " order by platform.provider.name asc"
+                    if(params.sort) {
+                        sort = " order by ${params.sort} ${params.order}"
+                    }
+                    if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
                         result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
-                    } else if (result.institution.isCustomerType_Inst()) {
+                    } else if (inContextOrg) {
+
+                        if (result.institution.isCustomerType_Consortium()) {
+                            result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
+                        } else if (result.institution.isCustomerType_Inst()) {
+                            result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
+                        }
+                    } else if (isComboRelated) {
+                        log.debug('settings for combo related org: consortia')
                         result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
                     }
-                } else if (isComboRelated) {
-                    log.debug('settings for combo related org: consortia')
-                    result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
                 }
             }
-
         }
         result
     }

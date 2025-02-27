@@ -346,11 +346,11 @@ class AjaxController {
           if (it.value.equalsIgnoreCase('deleted') && params.constraint?.contains('removeValue_deleted')) {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
-          if (it.value.equalsIgnoreCase('administrative subscription') && params.constraint?.contains('removeValue_administrativeSubscription')) {
+          else if (it.value.equalsIgnoreCase('administrative subscription') && params.constraint?.contains('removeValue_administrativeSubscription')) {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
           //value is correct incorrectly translated!
-          if (it.value.equalsIgnoreCase('local subscription') && contextService.getOrg().isCustomerType_Consortium() && params.constraint?.contains('removeValue_localSubscription')) {
+          else if (it.value.equalsIgnoreCase('local subscription') && contextService.getOrg().isCustomerType_Consortium() && params.constraint?.contains('removeValue_localSubscription')) {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
           // default ..
@@ -1893,7 +1893,17 @@ class AjaxController {
                         if (target_object."${params.name}" instanceof BigDecimal) {
                             params.value = escapeService.parseFinancialValue(params.value)
                         }
-                        if (target_object."${params.name}" instanceof Boolean) {
+                        else if (target_object."${params.name}" instanceof Long) {
+                            if (params.long('value').toString() != params.value) {
+                                params.value = null // Hotfix: ERMS-6274 - Todo: ERMS-6285
+                            }
+                        }
+                        else if (target_object."${params.name}" instanceof Integer) {
+                            if (params.int('value').toString() != params.value) {
+                                params.value = null // Hotfix: ERMS-6274 - Todo: ERMS-6285
+                            }
+                        }
+                        else if (target_object."${params.name}" instanceof Boolean) {
                             params.value = params.value?.equals("1")
                         }
                         if (target_object instanceof AlternativeName) {
@@ -1937,7 +1947,9 @@ class AjaxController {
                                 render result as JSON
                                 return
                             }
-                        }else {
+                        }
+                        else { // -- default
+
                             bindData(target_object, binding_properties)
 
                             target_object.save(failOnError: true)

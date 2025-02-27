@@ -7,19 +7,53 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6317    26.02.2025  rc-3.4  3.4.19      Andreas Bug         Rekursionsfehler im Sync behoben
+
+6293    25.02.2025  rc-3.4  3.4.19      Moe     Bug        Merkmale kopieren n andere Lizenz
+
+6311    25.02.2025  rc-3.4  3.4.19      Moe     Bug         Merkmale werden beim Kopieren gedoppelt
+
+6316    25.02.2025  rc-3.4  3.4.19      Andreas Bug         Schnitzer im Kostenexport behoben
+
+6303    20.02.2025  rc-3.4  3.4.19      Andreas Feature     Erweiterter Hinweistext bei fehlenden COUNTER-Statistiken
+
+6289    18.02.2025  rc-3.4  3.4.19      David   Feature     Anonymisierung auf QA erweitern wegen ext. Testnutzern
+
+6274    14.02.2025  rc-3.4  3.4.19      David   Bug         Seltsames Verhalten von 11+ stelligen Zahlen in Merkmalen
+
+6267    10.02.2025  rc-3.4  3.4.19      Andreas Feature     Umstellung der Ausgabe "Lizenzen" beim Einrichtungs-Export
+
+6249    10.02.2025  rc-3.4  3.4.19      Andreas Bug         weitere Filterung der angezeigten Kundennummern
+
+6235    10.02.2025  rc-3.4  3.4.19      Andreas Feature     Mailadressen können nun auch aus "Alle Einrichtungen" kopiert werden
+
+6234    10.02.2025  rc-3.4  3.4.19      Andreas Bug         500er bei der Ausgabe von Lizenzen im Export der Einrichtungen behoben
+
+6239    29.01.2025  rc-3.4  3.4.19      David   Bug         Beobachtungslisten bei Basic-Nutzenden
+
+6211    23.01.2024  rc-3.4  3.4.19      Andreas Bug         Kostenstatus gelöscht aus Inline-Bearbeitung entfernt
+
 6140    15.01.2024  rc-3.4  3.4.18      Moe     Bug         Informationen in Info-i zu Rechnungskontakten optimieren
 
 --      15.01.2024  rc-3.4  3.4.18      Moe     Bug         Title-Upload bei Titel-Umfrage
 
 6187    15.01.2024  rc-3.4  3.4.18      Andreas Feature     Schnitzer in der Statistiksicht behoben
 
---      13.01.2024  rc-3.4  3.4.18      Andreas Bug         Hinzufügen von Titel in Umfrage lief unperformant
+6211    23.01.2025  rc-3.4  3.4.19      Andreas Bug         Kostenstatus gelöscht aus Inline-Bearbeitung entfernt
 
-6002    07.01.2024  rc-3.4  3.4.17      Moe     Bug         Filtern der Lieferanten in der Umfrage funktioniert nicht
+6140    15.01.2025  rc-3.4  3.4.18      Moe     Bug         Informationen in Info-i zu Rechnungskontakten optimieren
 
---      07.01.2024  rc-3.4  3.4.17      Moe     Bug         Export funktioniert nicht mehr bei Titel-Umfrage mit Statistik
+--      15.01.2025  rc-3.4  3.4.18      Moe     Bug         Title-Upload bei Titel-Umfrage
 
-6095    07.01.2024  rc-3.4  3.4.17      Moe     Bug         Kosten kopieren: Bei Statuswechsel wird Quelllizenz als ausgewählt angezeigt
+6187    15.01.2025  rc-3.4  3.4.18      Andreas Feature     Schnitzer in der Statistiksicht behoben
+
+--      13.01.2025  rc-3.4  3.4.18      Andreas Bug         Hinzufügen von Titel in Umfrage lief unperformant
+
+6002    07.01.2025  rc-3.4  3.4.17      Moe     Bug         Filtern der Lieferanten in der Umfrage funktioniert nicht
+
+--      07.01.2025  rc-3.4  3.4.17      Moe     Bug         Export funktioniert nicht mehr bei Titel-Umfrage mit Statistik
+
+6095    07.01.2025  rc-3.4  3.4.17      Moe     Bug         Kosten kopieren: Bei Statuswechsel wird Quelllizenz als ausgewählt angezeigt
 
 6159    19.12.2024  rc-3.4  3.4.16      David   Feature     Anzahl der Datenbankverbindungen erhöhen
 

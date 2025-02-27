@@ -285,13 +285,13 @@
                         <g:if test="${editable && controllerName == 'myInstitution'}">
                             <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndPerson(participant, surveyConfig, person)}">
                                 <g:link controller="myInstitution" action="surveyInfos"
-                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: false, personId: person.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation']">
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: false, personId: person.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation', subTab: 'contacts']">
                                     <i class="check bordered large green icon"></i>
                                 </g:link>
                             </g:if>
                             <g:else>
                                 <g:link controller="myInstitution" action="surveyInfos"
-                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: true, personId: person.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation']">
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: true, personId: person.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation', subTab: 'contacts']">
                                     <i class="close bordered large red icon"></i>
                                 </g:link>
                             </g:else>
@@ -299,13 +299,13 @@
                         <g:elseif test="${editable && controllerName == 'survey'}">
                             <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndPerson(participant, surveyConfig, person)}">
                                 <g:link controller="survey" action="evaluationParticipant"
-                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: false, personId: person.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation', participant: participant.id]">
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: false, personId: person.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation', subTab: 'contacts', participant: participant.id]">
                                     <i class="check bordered large green icon"></i>
                                 </g:link>
                             </g:if>
                             <g:else>
                                 <g:link controller="survey" action="evaluationParticipant"
-                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: true, personId: person.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation', participant: participant.id]">
+                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: true, personId: person.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation', subTab: 'contacts', participant: participant.id]">
                                     <i class="close bordered large red icon"></i>
                                 </g:link>
                             </g:else>

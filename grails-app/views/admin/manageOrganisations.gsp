@@ -76,6 +76,12 @@
                                 (${fieldValue(bean: org, field: "sortname")})
                             </g:if>
                         </g:link>
+
+                        <g:if test="${org.isBetaTester}">
+                            <span class="la-popup-tooltip" data-position="top right" data-content="${message(code:'org.isBetaTester.label')}" >
+                                <i class="bug icon red"></i>
+                            </span>
+                        </g:if>
                     </td>
 
                     <td>

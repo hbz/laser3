@@ -185,6 +185,13 @@
         JSPC.app.setSelectedSubscriptionIds();
     });
 
+
+    $("input[name=selectedSubs]").checkbox({
+        onChange: function() {
+            $('#membersListToggler').prop('checked', false);
+        }
+    });
+
     $("tr[class!=disabled] input[name=selectedSubs]").on ('change', function () {
         JSPC.app.setSelectedSubscriptionIds();
     });

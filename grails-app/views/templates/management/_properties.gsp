@@ -141,9 +141,9 @@
                                                 %{-- <g:set var="editable" value="${!(AuditConfig.getConfig(customProperty))}"
                                                         scope="request"/>--}%
 
-                                                <g:if test="${customProperty.type.isIntegerType()}">
+                                                <g:if test="${customProperty.type.isLongType()}">
                                                     <ui:xEditable owner="${customProperty}" type="number"
-                                                                     field="intValue"/>
+                                                                     field="longValue"/>
                                                 </g:if>
                                                 <g:elseif test="${customProperty.type.isStringType()}">
                                                     <ui:xEditable owner="${customProperty}" type="text"
@@ -227,8 +227,8 @@
                                                 <g:set var="editable"
                                                        value="${!(AuditConfig.getConfig(privateProperty))}" scope="request"/>
 
-                                                <g:if test="${privateProperty.type.isIntegerType()}">
-                                                    <ui:xEditable owner="${privateProperty}" type="number" field="intValue"/>
+                                                <g:if test="${privateProperty.type.isLongType()}">
+                                                    <ui:xEditable owner="${privateProperty}" type="number" field="longValue"/>
                                                 </g:if>
                                                 <g:elseif test="${privateProperty.type.isStringType()}">
                                                     <ui:xEditable owner="${privateProperty}" type="text" field="stringValue"/>
@@ -493,8 +493,8 @@
                                                 <div class="header">${message(code: 'subscriptionsManagement.CustomProperty')}: ${propertiesFilterPropDef.getI10n('name')}</div>
 
                                                 <div class="content">
-                                                    <g:if test="${customProperty.type.isIntegerType()}">
-                                                        <ui:xEditable owner="${customProperty}" type="number" field="intValue"/>
+                                                    <g:if test="${customProperty.type.isLongType()}">
+                                                        <ui:xEditable owner="${customProperty}" type="number" field="longValue"/>
                                                     </g:if>
                                                     <g:elseif test="${customProperty.type.isStringType()}">
                                                         <ui:xEditable owner="${customProperty}" type="text" field="stringValue"/>
@@ -566,8 +566,8 @@
                                                 <div class="header">${message(code: 'subscriptionsManagement.PrivateProperty')} ${contextService.getOrg()}: ${propertiesFilterPropDef.getI10n('name')}</div>
 
                                                 <div class="content">
-                                                    <g:if test="${privateProperty.type.isIntegerType()}">
-                                                        <ui:xEditable owner="${privateProperty}" type="number" field="intValue"/>
+                                                    <g:if test="${privateProperty.type.isLongType()}">
+                                                        <ui:xEditable owner="${privateProperty}" type="number" field="longValue"/>
                                                     </g:if>
                                                     <g:elseif test="${privateProperty.type.isStringType()}">
                                                         <ui:xEditable owner="${privateProperty}" type="text" field="stringValue"/>
@@ -674,6 +674,12 @@
             $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', true)
         } else {
             $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', false)
+        }
+    });
+
+    $("input[name=selectedSubs]").checkbox({
+        onChange: function() {
+            $('#membersListToggler').prop('checked', false);
         }
     });
 

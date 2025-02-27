@@ -287,9 +287,9 @@ class SurveyConfig {
         } else {
 
             int countFinish = SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surConf and sr.participant = :org and " +
-                    "(sr.intValue != null or sr.stringValue != null or sr.decValue != null or sr.urlValue != null or sr.refValue != null or sr.dateValue != null)", [surConf: this, org: org])[0]
+                    "(sr.longValue != null or sr.stringValue != null or sr.decValue != null or sr.urlValue != null or sr.refValue != null or sr.dateValue != null)", [surConf: this, org: org])[0]
             int countNotFinish = SurveyResult.executeQuery("select count(*) from SurveyResult sr where sr.surveyConfig = :surConf and sr.participant = :org and " +
-                    "(sr.intValue = null and sr.stringValue = null and sr.decValue = null and sr.urlValue = null and sr.refValue = null and sr.dateValue = null)", [surConf: this, org: org])[0]
+                    "(sr.longValue = null and sr.stringValue = null and sr.decValue = null and sr.urlValue = null and sr.refValue = null and sr.dateValue = null)", [surConf: this, org: org])[0]
 
             /*List<SurveyResult> surveyResult = SurveyResult.findAllBySurveyConfigAndParticipant(this, org)
 

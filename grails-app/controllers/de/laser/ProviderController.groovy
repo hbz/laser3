@@ -46,7 +46,7 @@ class ProviderController {
         ctx.contextService.isInstUser_denySupport_or_ROLEADMIN()
     })
     def index() {
-        redirect 'list'
+        redirect action: 'list'
     }
 
     /**

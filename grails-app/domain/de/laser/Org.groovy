@@ -53,6 +53,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     String categoryId
 
     boolean eInvoice = false
+    boolean isBetaTester = false
 
     Date retirementDate
     Date dateCreated
@@ -151,6 +152,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         gokbId              column:'org_gokb_id', type:'text'
             status          column:'org_status_rv_fk'
     retirementDate          column:'org_retirement_date'
+        isBetaTester        column:'org_is_beta_tester'
            country          column:'org_country_rv_fk'
             region          column:'org_region_rv_fk'
     libraryNetwork          column:'org_library_network_rv_fk'

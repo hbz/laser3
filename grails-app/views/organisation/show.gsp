@@ -460,6 +460,20 @@
                 </div><!-- .card -->
             </g:if>
 
+            <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
+                <div class="ui card">
+                    <div class="content">
+                        <h2 class="ui header">Nur für Administratoren</h2>
+                        <dl>
+                            <dt class="control-label"><g:message code="org.isBetaTester.label" /></dt>
+                            <dd>
+                                <ui:xEditableBoolean owner="${orgInstance}" field="isBetaTester" overwriteEditable="true"/>
+                            </dd>
+                        </dl>
+                    </div>
+                </div><!-- .card -->
+            </g:if>
+
                 <g:if test="${(SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || institution.isCustomerType_Consortium()) && (institution != orgInstance)}">
                     <g:if test="${orgInstance.createdBy || orgInstance.legallyObligedBy}">
                         <div class="ui card">

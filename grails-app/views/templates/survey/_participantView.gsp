@@ -89,25 +89,25 @@
                 </h3>
 
                 <div class="ui top attached stackable tabular la-tab-with-js menu">
-                    <a class="active item" data-tab="contacts">
+                    <a class="${params.subTab ? (params.subTab == 'contacts' ? 'active' : '') : 'active'} item" data-tab="contacts">
                         ${message(code: 'surveyOrg.person.label')}
                         <span class="ui floating blue circular label">${SurveyOrg.countByOrgAndSurveyConfigAndPersonIsNotNull(participant, surveyConfig)}</span>
                     </a>
 
-                    <a class="item" data-tab="addresses">
+                    <a class="${params.subTab == 'addresses' ? 'active' : ''} item" data-tab="addresses">
                         ${message(code: 'surveyOrg.address.label')}
                         <span class="ui floating blue circular label">${SurveyOrg.countByOrgAndSurveyConfigAndAddressIsNotNull(participant, surveyConfig)}</span>
                     </a>
 
-                    <a class="item" data-tab="xRechnung">
+                    <a class="${params.subTab == 'xRechnung' ? 'active' : ''} item" data-tab="xRechnung">
                         ${message(code: 'surveyOrg.eInvoice.label')}
                     </a>
                 </div>
 
 
-                <div class="ui bottom attached tab segment active" data-tab="contacts">
+                <div class="ui bottom attached tab segment ${params.subTab ? (params.subTab == 'contacts' ? 'active' : '') : 'active'}" data-tab="contacts">
 
-                    <g:link controller="organisation" action="contacts" id="${participant.id}" class="ui right floated blue button">
+                    <g:link controller="organisation" action="contacts" id="${participant.id}" params="[tab: contacts]" class="ui right floated blue button">
                         <g:message code="survey.contacts.add"/>
                     </g:link>
                     <br>
@@ -124,9 +124,9 @@
 
                 </div>
 
-                <div class="ui bottom attached tab segment" data-tab="addresses">
+                <div class="ui bottom attached tab segment ${params.subTab == 'addresses' ? 'active' : ''}" data-tab="addresses">
 
-                    <g:link controller="organisation" action="contacts" id="${participant.id}" class="ui right floated blue button">
+                    <g:link controller="organisation" action="contacts" id="${participant.id}"  params="[tab: addresses]" class="ui right floated blue button">
                         <g:message code="survey.contacts.add"/>
                     </g:link>
                     <br>
@@ -143,7 +143,7 @@
 
                 </div>
 
-                <div class="ui bottom attached tab segment" data-tab="xRechnung">
+                <div class="ui bottom attached tab segment ${params.subTab == 'xRechnung' ? 'active' : ''}" data-tab="xRechnung">
 
                     <ui:msg message="surveyOrg.eInvoice.expl" icon="info" noClose="true"/>
 
@@ -197,7 +197,7 @@
 
                         <g:if test="${editable}">
                             <g:link controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
-                                    params="${parame + [viewTab: 'invoicingInformation', setEInvoiceValuesFromOrg: true]}" class="ui right floated blue button">
+                                    params="${parame + [viewTab: 'invoicingInformation', subTab: 'xRechnung', setEInvoiceValuesFromOrg: true, ]}" class="ui right floated blue button">
                                 <g:message code="surveyOrg.setEInvoiceValuesFromOrg"/>
                             </g:link>
                             <br>

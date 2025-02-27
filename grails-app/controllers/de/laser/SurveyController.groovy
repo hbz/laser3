@@ -1113,7 +1113,7 @@ class SurveyController {
             row.add(org.name)
             row.add(org.libraryType?.getI10n('value'))
 
-            SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(org, result.surveyConfig)
+            SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(org, ctrlResult.surveyConfig)
             if(surveyOrg){
                 row.add(RDStore.YN_YES.getI10n('value'))
             }
