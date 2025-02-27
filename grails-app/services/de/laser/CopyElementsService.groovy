@@ -1374,7 +1374,7 @@ class CopyElementsService {
                         }
                     }
                 }
-                todoProperties << sourceProp.id
+                todoProperties << sourceProp.type.id
             }
         }
 
