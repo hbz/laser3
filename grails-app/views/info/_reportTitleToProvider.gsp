@@ -20,9 +20,10 @@
                         <g:each in="${mailtoList}" var="prc" status="i">
                             <div class="item" data-value="${prc[2].content}">
                                 <span class="description">
+                                    <i class="${prc[0].isPublic ? Icon.WEKB : Icon.ACP_PRIVATE}"></i>
                                     <g:if test="${prc[2].language?.value == 'ger'}"><i class="flag de"></i></g:if>
                                     <g:if test="${prc[2].language?.value == 'eng'}"><i class="flag gb"></i></g:if>
-                                    <i class="${prc[0].isPublic ? Icon.ACP_PUBLIC : Icon.ACP_PRIVATE}"></i>
+
                                     ${prc[1].getI10n('value')}
                                 </span>
                                 <span class="text">
