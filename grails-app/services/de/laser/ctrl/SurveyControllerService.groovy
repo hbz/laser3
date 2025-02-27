@@ -654,8 +654,6 @@ class SurveyControllerService {
                 params.remove("removeVendor")
             }
 
-            result.putAll(vendorService.getWekbVendors(params))
-
 
             if(params.vendorListToggler == 'on') {
                 SurveyConfigVendor.executeUpdate("delete from SurveyConfigVendor scp where scp.surveyConfig = :surveyConfig", [surveyConfig: result.surveyConfig])
@@ -678,6 +676,7 @@ class SurveyControllerService {
 
             result.selectedVendorIdList = SurveyConfigVendor.executeQuery("select scv.vendor.id from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
             params.ids = result.selectedVendorIdList
+            result.putAll(vendorService.getWekbVendors(params))
 
             [result: result, status: STATUS_OK]
         }
