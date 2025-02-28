@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6324    28.02.2025  dev     3.5         Andreas Feature     Umbenennungen bei Identifikatoren
+
 6323    27.02.2025  dev     3.5         David   Feature     Gasco-Eintrag automatisch für Konsortialmanager
 
 6281    27.02.2025  dev     3.5         David   Feature     Sortierung der Kontakte in Anbietermails

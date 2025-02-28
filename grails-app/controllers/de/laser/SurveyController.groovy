@@ -1011,7 +1011,7 @@ class SurveyController {
 
         String filename = "template_cost_import"
 
-        ArrayList titles = ["WIB-ID", "ISIL", "ROR-ID", "GND-NR", "DEAL-ID"]
+        ArrayList titles = ["WIB-ID", "ISIL", "ROR-ID", "GND-ID", "DEAL-ID"]
         titles.addAll([message(code: 'org.customerIdentifier'),
                        message(code: 'org.sortname.label'), message(code: 'default.name.label'),
                        message(code: 'financials.costItemElement'),
@@ -1090,7 +1090,7 @@ class SurveyController {
 
         List<Org> members = Org.executeQuery(fsr.query, fsr.queryParams, params)
 
-        ArrayList titles = ["WIB-ID", "ISIL", "ROR-ID", "GND-NR", "DEAL-ID", message(code: 'org.sortname.label'), message(code: 'default.name.label'), message(code: 'org.libraryType.label'), message(code: 'surveyconfig.orgs.label')]
+        ArrayList titles = ["WIB-ID", "ISIL", "ROR-ID", "GND-ID", "DEAL-ID", message(code: 'org.sortname.label'), message(code: 'default.name.label'), message(code: 'org.libraryType.label'), message(code: 'surveyconfig.orgs.label')]
 
         ArrayList rowData = []
         ArrayList row

@@ -2244,7 +2244,7 @@ class SurveyService {
         List titleRow = rows.remove(0).split('\t'), wrongOrgs = [], truncatedRows = []
         titleRow.eachWithIndex { headerCol, int c ->
             switch (headerCol.toLowerCase().trim()) {
-                case "gnd-nr": colMap.gndCol = c
+                case "gnd-id": colMap.gndCol = c
                     break
                 case "isil": colMap.isilCol = c
                     break
