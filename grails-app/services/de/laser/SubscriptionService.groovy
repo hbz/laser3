@@ -3968,7 +3968,7 @@ class SubscriptionService {
             switch (headerCol.toLowerCase().trim()) {
                 case ["laser-uuid", "las:er-uuid (einrichtung)", "las:er-uuid (institution)"]: colMap.uuidCol = c
                     break
-                case "gnd-nr": colMap.gndCol = c
+                case "gnd-id": colMap.gndCol = c
                     break
                 case "isil": colMap.isilCol = c
                     break
