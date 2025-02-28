@@ -7,6 +7,20 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6324    28.02.2025  dev     3.5         Andreas Feature     Umbenennungen bei Identifikatoren
+
+6323    27.02.2025  dev     3.5         David   Feature     Gasco-Eintrag automatisch für Konsortialmanager
+
+6281    27.02.2025  dev     3.5         David   Feature     Sortierung der Kontakte in Anbietermails
+
+6317    26.02.2025  rc-3.4  3.4.19      Andreas Bug         Rekursionsfehler im Sync behoben
+
+6293    25.02.2025  rc-3.4  3.4.19      Moe     Bug        Merkmale kopieren n andere Lizenz
+
+6311    25.02.2025  rc-3.4  3.4.19      Moe     Bug         Merkmale werden beim Kopieren gedoppelt
+
+6316    25.02.2025  rc-3.4  3.4.19      Andreas Bug         Schnitzer im Kostenexport behoben
+
 6305:   25.02.2025  dev     3.5         Moe Bug         einzelner Kontakt Löschbutton löscht nicht
 
 6092    25.02.2025  dev     3.5         Moe     Feature     Textänderung: (Nicht)-Verbindliche Umfragen werden (Nicht-)verpflichtende Umfragen

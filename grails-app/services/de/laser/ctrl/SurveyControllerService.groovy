@@ -939,7 +939,7 @@ class SurveyControllerService {
                         if (headerCol.startsWith("\uFEFF"))
                             headerCol = headerCol.substring(1)
                         switch (headerCol.toLowerCase().trim()) {
-                            case "gnd-nr": colMap.gndCol = c
+                            case "gnd-id": colMap.gndCol = c
                                 break
                             case "isil": colMap.isilCol = c
                                 break

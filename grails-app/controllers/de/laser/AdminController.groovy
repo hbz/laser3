@@ -750,6 +750,7 @@ class AdminController  {
                 oss.roleValue = customerType
                 oss.save()
 
+                // todo: ERMS-6325
                 params.remove('customerType') // unwanted parameter for filter query
             }
             else {
@@ -765,19 +766,14 @@ class AdminController  {
                 ApiToolkit.removeApiLevel(target)
             }
         }
-        else if (params.cmd == 'changeGascoEntry') {
-            RefdataValue option = RefdataValue.get(params.long('gascoEntry'))
-
-            if (target && option) {
-                def oss = OrgSetting.get(target, OrgSetting.KEYS.GASCO_ENTRY)
-
-                if (oss != OrgSetting.SETTING_NOT_FOUND) {
-                    oss.rdValue = option
-                    oss.save()
-                } else {
-                    OrgSetting.add(target, OrgSetting.KEYS.GASCO_ENTRY, option)
-                }
+        else if (params.cmd == 'changeIsBetaTester') {
+            if (target) {
+                target.isBetaTester = (params.long('isBetaTester') == RDStore.YN_YES.id)
             }
+
+            // todo: ERMS-6325
+            params.remove('isBetaTester') // unwanted parameter for filter query
+
             target.lastUpdated = new Date()
             target.save()
         }

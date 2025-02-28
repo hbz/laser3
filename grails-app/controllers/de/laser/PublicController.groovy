@@ -132,8 +132,7 @@ class PublicController {
       try {
 
         result.allConsortia = Org.executeQuery(
-                """select o from Org o, OrgSetting os_gs, OrgSetting os_ct where 
-                        os_gs.org = o and os_gs.key = 'GASCO_ENTRY' and os_gs.rdValue.value = 'Yes' and 
+                """select o from Org o, OrgSetting os_ct where 
                         os_ct.org = o and os_ct.key = 'CUSTOMER_TYPE' and 
                         os_ct.roleValue in (select r from Role r where authority in ('ORG_CONSORTIUM_PRO','ORG_CONSORTIUM_BASIC'))
                         order by lower(o.name)"""

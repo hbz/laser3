@@ -38,7 +38,7 @@
                 <select name="ipSupport" id="ipSupport" multiple="" class="ui search selection dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
-                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.IP_AUTHENTICATION)}" var="ip">
+                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.IP_AUTHENTICATION)+ RDStore.GENERIC_NULL_VALUE}" var="ip">
                         <option <%=Params.getLongList(params, 'ipSupport').contains(ip.id) ? 'selected="selected"' : ''%>
                                 value="${ip.id}">
                             ${ip.getI10n("value")}

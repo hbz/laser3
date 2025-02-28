@@ -22,7 +22,7 @@
                 <div class="ui action input">
                     <input type="text" readonly="readonly"
                            placeholder="${message(code: 'template.addDocument.selectFile')}">
-                    <input type="file" id="costInformation" name="costInformation" accept="text/tab-separated-values"
+                    <input type="file" id="costInformation" name="costInformation" accept=".txt,.csv,.tsv,text/tab-separated-values,text/csv,text/plain"
                            style="display: none;">
                     <div class="${Btn.ICON.SIMPLE}">
                         <i class="${Icon.CMD.ATTACHMENT}"></i>

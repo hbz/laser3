@@ -129,7 +129,7 @@
                     <div class="fourteen wide column">
                       <div class="ui bottom attached tab   ${params.subTab ? (params.subTab == 'contacts' ? 'active' : '') : 'active'}" data-tab="contacts">
                           <h2 class="ui left floated aligned header">${message(code: 'surveyOrg.person.label.heading')}</h2>
-                            <g:link controller="organisation" action="contacts" id="${participant.id}" class="${Btn.SIMPLE} right floated">
+                            <g:link controller="organisation" action="contacts" id="${participant.id}" params="[tab: contacts]" class="${Btn.SIMPLE} right floated">
                                 <g:message code="survey.contacts.add"/>
                             </g:link>
                             <br>
@@ -147,7 +147,7 @@
 
                         <div class="ui bottom attached tab   ${params.subTab == 'addresses' ? 'active' : ''}" data-tab="addresses">
                             <h2 class="ui left floated aligned header">${message(code: 'surveyOrg.address.label.heading')}</h2>
-                            <g:link controller="organisation" action="contacts" id="${participant.id}" class="${Btn.SIMPLE} right floated">
+                            <g:link controller="organisation" action="contacts" id="${participant.id}" params="[tab: addresses]" class="${Btn.SIMPLE} right floated">
                                 <g:message code="survey.contacts.add"/>
                             </g:link>
                             <br>

@@ -1,7 +1,5 @@
 package changelogs
 
-import de.laser.RefdataValue
-import de.laser.addressbook.Address
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyPersonResult
 

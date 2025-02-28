@@ -186,7 +186,9 @@ class MyInstitutionController  {
         result.flagContentGokb = true // gokbService.doQuery
         SwissKnife.setPaginationParams(result, params, contextService.getUser())
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.PLA_PROP], contextService.getOrg())
-        Map<String, Object> subscriptionParams = [contextOrg:contextService.getOrg(), roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIUM]]
+        Map<String, Object> baseSubscriptionParams = [contextOrg:contextService.getOrg(), roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIUM]]
+        Map<String, Object> subscriptionParams = baseSubscriptionParams.clone()
+        baseSubscriptionParams.current = RDStore.SUBSCRIPTION_CURRENT
 
         String instanceFilter = "", subFilter = ""
         if (! params.status) {
@@ -200,48 +202,55 @@ class MyInstitutionController  {
         }
         boolean withPerpetualAccess = params.long('hasPerpetualAccess') == RDStore.YN_YES.id
         if(params.status != 'FETCH_ALL') {
-            subFilter += "s2.status.id in (:status)"
+            subFilter += "s.status.id in (:status)"
             subscriptionParams.status = Params.getLongList(params, 'status')
             if(withPerpetualAccess) {
                 if(RDStore.SUBSCRIPTION_CURRENT.id in subscriptionParams.status) {
                     subscriptionParams.expired = RDStore.SUBSCRIPTION_EXPIRED.id
-                    subFilter += " or (s2.status.id = :expired and s2.hasPerpetualAccess = true) "
+                    subFilter += " or (s.status.id = :expired and s.hasPerpetualAccess = true) "
                 }
-                else subFilter += " and s2.hasPerpetualAccess = true "
+                else subFilter += " and s.hasPerpetualAccess = true "
             }
             else if(params.long('hasPerpetualAccess') == RDStore.YN_NO.id) {
-                subFilter += " and s2.hasPerpetualAccess = false "
+                subFilter += " and s.hasPerpetualAccess = false "
             }
         }
 
 
         if(contextService.getOrg().isCustomerType_Consortium())
-            instanceFilter += " and s2.instanceOf = null "
-        String subscriptionQuery = 'select s2 from OrgRole oo join oo.sub s2 where oo.org = :contextOrg and oo.roleType in (:roleTypes) and ('+subFilter+')'+instanceFilter
+            instanceFilter += " and s.instanceOf = null "
+        String subscriptionQuery = 'select s.id from OrgRole oo join oo.sub s where oo.org = :contextOrg and oo.roleType in (:roleTypes) and ('+subFilter+')'+instanceFilter
+        Set<Long> subIds = []
+        String subQueryFilter = ""
+        if(subFilter) {
+            subIds.addAll(Subscription.executeQuery(subscriptionQuery, subscriptionParams))
+            subQueryFilter = " and s.id in (:subIds)"
+        }
 
         result.subscriptionMap = [:]
         result.platformInstanceList = []
 
-        //if (subscriptionQuery) {
-        String qry3 = "select distinct p, s, ${params.sort ?: 'p.name'} from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg " +
-                "join pkg.nominalPlatform p left join p.org o " +
-                "where s in (${subscriptionQuery}) and p.gokbId in (:wekbIds) and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
+        String qry3 = "select distinct plat, s, ${params.sort ?: 'plat.name'} from Platform plat join plat.provider p, SubscriptionPackage sp join sp.subscription s join sp.pkg pkg where plat = pkg.nominalPlatform " +
+                "and plat.gokbId in (:wekbIds) and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted)) ${subQueryFilter}"
 
         Map qryParams3 = [
-                pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED
+                pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED,
         ]
-        qryParams3.putAll(subscriptionParams)
+        if(subFilter)
+            qryParams3.subIds = subIds
 
         Map<String, Object> queryParams = [componentType: "Platform"]
 
         if (params.q?.length() > 0) {
             result.filterSet = true
-            queryParams.q = params.q
+            queryParams.name = params.q
+            /*
             qry3 += "and ("
             qry3 += "   genfunc_filter_matcher(o.name, :query) = true"
             qry3 += "   or genfunc_filter_matcher(o.sortname, :query) = true"
             qry3 += ")"
-            qryParams3.put('query', "${params.q}")
+            qryParams3.put('query', params.q)
+            */
         }
 
         if (params.filterPropDef) {
@@ -294,14 +303,22 @@ class MyInstitutionController  {
         Map<String, Object> wekbParams = params.clone()
         if(!wekbParams.containsKey('sort'))
             wekbParams.sort = 'name'
-        Map queryCuratoryGroups = gokbService.executeQuery(Wekb.getGroupsURL(), [:])
+        Map queryCuratoryGroups = gokbService.executeQuery(Wekb.getGroupsURL(), [componentType: "Platform"])
         if(queryCuratoryGroups.code == 404) {
             result.error = message(code: 'wekb.error.'+queryCuratoryGroups.error) as String
         }
         else {
             if (queryCuratoryGroups) {
                 List recordsCuratoryGroups = queryCuratoryGroups.result
-                result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
+                Set<String> myPlatformWekbIds = Platform.executeQuery('select plat.gokbId from Platform plat where plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo join sp.pkg pkg where oo.org = :contextOrg and oo.roleType in (:roleTypes) and s.status = :current '+instanceFilter+')', baseSubscriptionParams)
+                List myCuratoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" && it.platformUuid in myPlatformWekbIds }
+                //post-filter because we:kb delivers the platform UUID in the map as well ==> uniqueness is explicitly given!
+                Set curatoryGroupSet = []
+                myCuratoryGroups.each { Map myCG ->
+                    myCG.remove('platformUuid')
+                    curatoryGroupSet << myCG
+                }
+                result.curatoryGroups = curatoryGroupSet
             }
             wekbIds.addAll(gokbService.doQuery([max:10000, offset:0], wekbParams, queryParams).records.collect { Map hit -> hit.uuid })
         }
@@ -312,10 +329,10 @@ class MyInstitutionController  {
         ]
         qryParams3.wekbIds = wekbIds
 
-        qry3 += " group by p, s"
+        qry3 += " group by plat, s"
         if(params.sort)
             qry3 += " order by ${params.sort} ${params.order}"
-        else qry3 += " order by p.name, s.name, s.startDate desc"
+        else qry3 += " order by plat.name, s.name, s.startDate desc"
 
         List platformSubscriptionList = []
         if(wekbIds)
@@ -2002,7 +2019,9 @@ class MyInstitutionController  {
             wekbQryParams.uuids = currentPackageUuids
             wekbQryParams.max = currentPackageUuids.size()
             wekbQryParams.offset = 0
+            wekbQryParams.my = true
             Map<String, Object> remote = packageService.getWekbPackages(wekbQryParams)
+            result.curatoryGroups = remote.curatoryGroups
             result.curatoryGroupTypes = remote.curatoryGroupTypes
             result.automaticUpdates = remote.automaticUpdates
             result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
