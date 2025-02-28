@@ -8,6 +8,7 @@ import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import de.laser.wekb.Package
+import de.laser.wekb.Platform
 import de.laser.wekb.TitleInstancePackagePlatform
 import grails.gorm.transactions.Transactional
 import grails.web.mapping.LinkGenerator
@@ -152,7 +153,10 @@ class PackageService {
         if(params.uuids)
             queryParams.uuids = params.uuids
 
-        Map queryCuratoryGroups = gokbService.executeQuery(Wekb.getGroupsURL(), [:])
+        Map<String, Object> args = [:]
+        if(params.containsKey('my'))
+            args.componentType = "Package"
+        Map queryCuratoryGroups = gokbService.executeQuery(Wekb.getGroupsURL(), args)
         if(!params.sort)
             params.sort = 'name'
         if(queryCuratoryGroups.code == 404) {
@@ -161,7 +165,20 @@ class PackageService {
         else {
             if (queryCuratoryGroups) {
                 List recordsCuratoryGroups = queryCuratoryGroups.result
-                result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
+                if(params.containsKey('my')) {
+                    Org contextOrg = contextService.getOrg()
+                    String instanceFilter = contextOrg.isCustomerType_Consortium() ? 'and s.instanceOf = null' : ''
+                    Set<String> myPackageWekbIds = Package.executeQuery('select pkg.gokbId from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo join sp.pkg pkg where oo.org = :contextOrg and oo.roleType in (:roleTypes) and s.status = :current ' + instanceFilter, [contextOrg: contextOrg, roleTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIUM], current: RDStore.SUBSCRIPTION_CURRENT])
+                    List myCuratoryGroups = recordsCuratoryGroups?.findAll { it.status == 'Current' && it.packageUuid in myPackageWekbIds }
+                    //post-filter because we:kb delivers the package UUID in the map as well ==> uniqueness is explicitly given!
+                    Set curatoryGroupSet = []
+                    myCuratoryGroups.each { Map myCG ->
+                        myCG.remove('packageUuid')
+                        curatoryGroupSet << myCG
+                    }
+                    result.curatoryGroups = curatoryGroupSet
+                }
+                else result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
             }
             result.putAll(gokbService.doQuery(result, params, queryParams))
         }
