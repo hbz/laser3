@@ -107,11 +107,11 @@ class PlatformController  {
 
         if (params.ipSupport) {
             result.filterSet = true
-            queryParams.ipAuthentication = Params.getRefdataList(params, 'ipSupport').collect{ it.value }
+            queryParams.qp_ipAuthentication = Params.getRefdataList(params, 'ipSupport').collect{ it.value }
         }
         if (params.shibbolethSupport) {
             result.filterSet = true
-            queryParams.shibbolethAuthentication = Params.getRefdataList(params, 'shibbolethSupport').collect{ (it == RDStore.GENERIC_NULL_VALUE) ? 'null' : it.value }
+            queryParams.qp_shibbolethAuthentication = Params.getRefdataList(params, 'shibbolethSupport').collect{ (it == RDStore.GENERIC_NULL_VALUE) ? 'null' : it.value }
         }
         if (params.counterCertified) {
             result.filterSet = true

@@ -21,7 +21,7 @@ class IconTagLib {
         if (attrs.type) {
         switch (attrs.type.toLowerCase()) {
             case 'addressbook':
-                icon = Icon.ACP_PUBLIC + ' bordered inverted teal la-object-extended'
+                icon = Icon.ACP_PRIVATE + ' bordered inverted teal la-object-extended'
                 break
             case 'admin':
                 icon = Icon.AUTH.ROLE_ADMIN + ' la-object'

@@ -140,10 +140,6 @@ class OrganisationController  {
                 OrgSetting.KEYS.API_KEY,
                 OrgSetting.KEYS.API_PASSWORD
         ]
-//        List<OrgSetting.KEYS> generalSet = [
-//                OrgSetting.KEYS.CUSTOMER_TYPE,
-//                OrgSetting.KEYS.GASCO_ENTRY
-//        ]
         List<OrgSetting.KEYS> ezbSet = [
                 OrgSetting.KEYS.EZB_SERVER_ACCESS
         ]
