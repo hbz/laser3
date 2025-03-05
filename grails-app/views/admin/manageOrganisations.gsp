@@ -79,12 +79,6 @@
                                 (${fieldValue(bean: org, field: "sortname")})
                             </g:if>
                         </g:link>
-
-%{--                        <g:if test="${org.isBetaTester}">--}%
-%{--                            <span class="la-popup-tooltip" data-position="top right" data-content="${message(code:'org.isBetaTester.label')}" >--}%
-%{--                                <i class="bug icon red"></i>--}%
-%{--                            </span>--}%
-%{--                        </g:if>--}%
                     </td>
 
                     <td>
@@ -178,27 +172,27 @@
 
                     <td class="x">
                         <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}"
-                                data-ctTarget="${org.id}"
+                                data-target="${org.id}"
+                                data-targetName="${org.name}"
                                 data-customerType="${customerType}"
-                                data-orgName="${org.name}"
                                 data-ui="modal"
                                 data-href="#customerTypeModal"
                                 data-content="Kundentyp ändern" data-position="top left"><i class="${Icon.ATTR.ORG_CUSTOMER_TYPE}"></i></button>
 
                         <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}"
-                                data-ibtTarget="${org.id}"
+                                data-target="${org.id}"
+                                data-targetName="${org.name}"
                                 data-isBetaTester="${org.isBetaTester ? RDStore.YN_YES.id : RDStore.YN_NO.id}"
-                                data-orgName="${org.name}"
                                 data-ui="modal"
                                 data-href="#isBetaTesterModal"
                                 data-content="${message(code:'org.isBetaTester.label')} ändern" data-position="top left"><i class="${Icon.ATTR.ORG_IS_BETA_TESTER}"></i></button>
 
                         <g:if test="${org.isCustomerType_Inst()}">
                             <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}"
-                                    data-liTarget="${org.id}"
+                                    data-target="${org.id}"
+                                    data-targetName="${org.name}"
                                     data-createdBy="${org.createdBy?.id}"
                                     data-legallyObligedBy="${org.legallyObligedBy?.id}"
-                                    data-orgName="${org.name}"
                                     data-ui="modal"
                                     data-href="#legalInformationModal"
                                     data-content="Rechtl. Informationen ändern" data-position="top left"><i class="${Icon.ATTR.ORG_LEGAL_INFORMATION}"></i></button>
@@ -208,9 +202,9 @@
                         </g:else>
 
                         <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}"
-                                data-alTarget="${org.id}"
+                                data-target="${org.id}"
+                                data-targetName="${org.name}"
                                 data-apiLevel="${apiLevel}"
-                                data-orgName="${org.name}"
                                 data-ui="modal"
                                 data-href="#apiLevelModal"
                                 data-content="API-Zugriff ändern" data-position="top left"><i class="${Icon.SYM.IS_PUBLIC}"></i></button>
@@ -222,22 +216,29 @@
 
     <ui:paginate action="manageOrganisations" controller="admin" params="${params}" max="${max}" total="${orgListTotal}" />
 
+    <laser:script file="${this.getGroovyPageFileName()}">
+        JSPC.app.setModalTarget = function(ctx, $trigger) {
+            $(ctx + ' input[name=cmd_target]').attr('value', $trigger.attr('data-target'))
+            $(ctx + ' input[name=cmd_targetName]').attr('value', $trigger.attr('data-targetName'))
+        }
+    </laser:script>
+
     <%-- changing isBetaTester--%>
 
     <ui:modal id="isBetaTesterModal" message="org.isBetaTester.label" isEditModal="isEditModal">
 
-        <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
+        <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations', params: filterParams]">
             <input type="hidden" name="cmd" value="changeIsBetaTester"/>
-            <input type="hidden" name="target" value="" />
+            <input type="hidden" name="cmd_target" value="" />
 
             <div class="field">
-                <label for="orgName_ibt">${message(code:'org.label')}</label>
-                <input type="text" id="orgName_ibt" name="orgName" value="" readonly />
+                <label for="cmd_targetName_isBetaTester">${message(code:'org.label')}</label>
+                <input type="text" id="cmd_targetName_isBetaTester" name="cmd_targetName" value="" readonly />
             </div>
 
             <div class="field">
                 <label for="cmd_isBetaTester">${message(code:'org.isBetaTester.label')}</label>
-                <ui:select id="cmd_isBetaTester" name="isBetaTester"
+                <ui:select id="cmd_isBetaTester" name="cmd_isBetaTester"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                               optionKey="id"
                               optionValue="value"
@@ -248,9 +249,8 @@
 
         <laser:script file="${this.getGroovyPageFileName()}">
             JSPC.callbacks.modal.onShow.isBetaTesterModal = function(trigger) {
-                $('#isBetaTesterModal #orgName_ibt').attr('value', $(trigger).attr('data-orgName'))
-                $('#isBetaTesterModal input[name=target]').attr('value', $(trigger).attr('data-ibtTarget'))
-                $('#isBetaTesterModal select[name=isBetaTester]').dropdown('set selected', $(trigger).attr('data-isBetaTester'))
+                JSPC.app.setModalTarget('#isBetaTesterModal', $(trigger))
+                $('#isBetaTesterModal select[name=cmd_isBetaTester]').dropdown('set selected', $(trigger).attr('data-isBetaTester'))
             }
         </laser:script>
 
@@ -260,18 +260,18 @@
 
     <ui:modal id="legalInformationModal" message="org.legalInformation.label" isEditModal="isEditModal">
 
-        <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
+        <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations', params: filterParams]">
             <input type="hidden" name="cmd" value="changeLegalInformation"/>
-            <input type="hidden" name="target" value="" />
+            <input type="hidden" name="cmd_target" value="" />
 
             <div class="field">
-                <label for="orgName_li">${message(code:'org.label')}</label>
-                <input type="text" id="orgName_li" name="orgName" value="" readonly />
+                <label for="cmd_targetName_legalInformation">${message(code:'org.label')}</label>
+                <input type="text" id="cmd_targetName_legalInformation" name="cmd_targetName" value="" readonly />
             </div>
 
             <div class="field">
-                <label for="createdBy">${message(code:'org.createdBy.label')}</label>
-                <g:select id="createdBy" name="createdBy"
+                <label for="cmd_createdBy">${message(code:'org.createdBy.label')}</label>
+                <g:select id="cmd_createdBy" name="cmd_createdBy"
                               from="${allConsortia}"
                               optionKey="id"
                               optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"
@@ -280,8 +280,8 @@
             </div>
 
             <div class="field">
-                <label for="legallyObligedBy">${message(code:'org.legallyObligedBy.label')}</label>
-                <g:select id="legallyObligedBy" name="legallyObligedBy"
+                <label for="cmd_legallyObligedBy">${message(code:'org.legallyObligedBy.label')}</label>
+                <g:select id="cmd_legallyObligedBy" name="cmd_legallyObligedBy"
                               from="${allConsortia}"
                               optionKey="id"
                               optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"
@@ -293,20 +293,22 @@
 
         <laser:script file="${this.getGroovyPageFileName()}">
             JSPC.callbacks.modal.onShow.legalInformationModal = function(trigger) {
-                $('#legalInformationModal input[name=target]').attr('value', $(trigger).attr('data-liTarget'))
-                $('#legalInformationModal #orgName_li').attr('value', $(trigger).attr('data-orgName'))
+                JSPC.app.setModalTarget('#legalInformationModal', $(trigger))
 
-                var createdBy = $(trigger).attr('data-createdBy')
+                let $cmd1 = $('#legalInformationModal select[name=cmd_createdBy]')
+                let createdBy = $(trigger).attr('data-createdBy')
                 if (createdBy) {
-                    $('#legalInformationModal select[name=createdBy]').dropdown('set selected', createdBy)
+                    $cmd1.dropdown('set selected', createdBy)
                 } else {
-                    $('#legalInformationModal select[name=createdBy]').dropdown('clear')
+                    $cmd1.dropdown('clear')
                 }
-                var legallyObligedBy = $(trigger).attr('data-legallyObligedBy')
+
+                let $cmd2 = $('#legalInformationModal select[name=cmd_legallyObligedBy]')
+                let legallyObligedBy = $(trigger).attr('data-legallyObligedBy')
                 if (legallyObligedBy) {
-                    $('#legalInformationModal select[name=legallyObligedBy]').dropdown('set selected', legallyObligedBy)
+                    $cmd2.dropdown('set selected', legallyObligedBy)
                 } else {
-                    $('#legalInformationModal select[name=legallyObligedBy]').dropdown('clear')
+                    $cmd2.dropdown('clear')
                 }
             }
         </laser:script>
@@ -320,16 +322,16 @@
 
         <g:form id="customerTypeChangeForm" class="ui form" url="[controller: 'admin', action: 'manageOrganisations', params: filterParams]">
             <input type="hidden" name="cmd" value="changeCustomerType"/>
-            <input type="hidden" name="target" value="" />
+            <input type="hidden" name="cmd_target" value="" />
 
             <div class="field">
-                <label for="orgName_ct">${message(code:'org.label')}</label>
-                <input type="text" id="orgName_ct" name="orgName" value="" readonly />
+                <label for="cmd_targetName_customerType">${message(code:'org.label')}</label>
+                <input type="text" id="cmd_targetName_customerType" name="cmd_targetName" value="" readonly />
             </div>
 
             <div class="field">
                 <label for="cmd_customerType">${message(code:'org.customerType.label')}</label>
-                <ui:select id="cmd_customerType" name="customerType"
+                <ui:select id="cmd_customerType" name="cmd_customerType"
                           from="${[Role.findByAuthority('FAKE')] + Role.findAllByRoleType('org')}"
                           optionKey="id"
                           optionValue="authority"
@@ -340,19 +342,19 @@
 
         <g:form id="customerTypeDeleteForm" class="ui form" url="[controller: 'admin', action: 'manageOrganisations', params: filterParams]">
             <input type="hidden" name="cmd" value="deleteCustomerType"/>
-            <input type="hidden" name="target" value=""/>
+            <input type="hidden" name="cmd_target" value=""/>
         </g:form>
 
         <laser:script file="${this.getGroovyPageFileName()}">
             JSPC.callbacks.modal.onShow.customerTypeModal = function(trigger) {
-                $('#customerTypeModal #orgName_ct').attr('value', $(trigger).attr('data-orgName'))
-                $('#customerTypeModal input[name=target]').attr('value', $(trigger).attr('data-ctTarget'))
+                JSPC.app.setModalTarget('#customerTypeModal', $(trigger))
 
-                var customerType = $(trigger).attr('data-customerType')
+                let $cmd = $('#customerTypeModal select[name=cmd_customerType]')
+                let customerType = $(trigger).attr('data-customerType')
                 if (customerType) {
-                    $('#customerTypeModal select[name=customerType]').dropdown('set selected', customerType)
+                    $cmd.dropdown('set selected', customerType)
                 } else {
-                    $('#customerTypeModal select[name=customerType]').dropdown('clear')
+                    $cmd.dropdown('clear')
                 }
             }
         </laser:script>
@@ -365,16 +367,16 @@
 
         <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations', params: filterParams]">
             <input type="hidden" name="cmd" value="changeApiLevel"/>
-            <input type="hidden" name="target" value=""/>
+            <input type="hidden" name="cmd_target" value=""/>
 
             <div class="field">
-                <label for="orgName_al">${message(code:'org.label')}</label>
-                <input type="text" id="orgName_al" name="orgName" value="" readonly />
+                <label for="cmd_targetName_apiLevel">${message(code:'org.label')}</label>
+                <input type="text" id="cmd_targetName_apiLevel" name="cmd_targetName" value="" readonly />
             </div>
 
             <div class="field">
-                <label for="apiLevel">${message(code:'org.apiLevel.label')}</label>
-                <g:select id="apiLevel" name="apiLevel"
+                <label for="cmd_apiLevel">${message(code:'org.apiLevel.label')}</label>
+                <g:select id="cmd_apiLevel" name="cmd_apiLevel"
                           from="${['Kein Zugriff'] + ApiToolkit.getAllApiLevels()}"
                           class="ui dropdown la-not-clearable"
                 />
@@ -383,14 +385,14 @@
 
         <laser:script file="${this.getGroovyPageFileName()}">
             JSPC.callbacks.modal.onShow.apiLevelModal = function(trigger) {
-                $('#apiLevelModal #orgName_al').attr('value', $(trigger).attr('data-orgName'))
-                $('#apiLevelModal input[name=target]').attr('value', $(trigger).attr('data-alTarget'))
+                JSPC.app.setModalTarget('#apiLevelModal', $(trigger))
 
-                var apiLevel = $(trigger).attr('data-apiLevel')
+                let $cmd = $('#apiLevelModal select[name=cmd_apiLevel]')
+                let apiLevel = $(trigger).attr('data-apiLevel')
                 if (apiLevel) {
-                    $('#apiLevelModal select[name=apiLevel]').dropdown('set selected', apiLevel)
+                    $cmd.dropdown('set selected', apiLevel)
                 } else {
-                    $('#apiLevelModal select[name=apiLevel]').dropdown('clear')
+                    $cmd.dropdown('clear')
                 }
             }
         </laser:script>

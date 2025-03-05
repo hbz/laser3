@@ -719,12 +719,13 @@ class AdminController  {
         }
         SwissKnife.setPaginationParams(result, params, contextService.getUser())
 
-        Org target = params.target ? Org.get(params.long('target')) : null
+        Org target = params.cmd_target ? Org.get(params.cmd_target) : null
+
         if (params.cmd == 'changeApiLevel') {
-            if (ApiToolkit.getAllApiLevels().contains(params.apiLevel)) {
-                ApiToolkit.setApiLevel(target, params.apiLevel)
+            if (ApiToolkit.getAllApiLevels().contains(params.cmd_apiLevel)) {
+                ApiToolkit.setApiLevel(target, params.cmd_apiLevel)
             }
-            else if (params.apiLevel == 'Kein Zugriff') {
+            else if (params.cmd_apiLevel == 'Kein Zugriff') {
                 ApiToolkit.removeApiLevel(target)
             }
             target.lastUpdated = new Date()
@@ -741,7 +742,7 @@ class AdminController  {
             ApiToolkit.removeApiLevel(target)
         }
         else if (params.cmd == 'changeCustomerType') {
-            Role customerType = Role.get(params.customerType)
+            Role customerType = Role.get(params.cmd_customerType)
 
             def osObj = OrgSetting.get(target, OrgSetting.KEYS.CUSTOMER_TYPE)
 
@@ -749,9 +750,6 @@ class AdminController  {
                 OrgSetting oss = (OrgSetting) osObj
                 oss.roleValue = customerType
                 oss.save()
-
-                // todo: ERMS-6325
-                params.remove('customerType') // unwanted parameter for filter query
             }
             else {
                 OrgSetting.add(target, OrgSetting.KEYS.CUSTOMER_TYPE, customerType)
@@ -768,19 +766,15 @@ class AdminController  {
         }
         else if (params.cmd == 'changeIsBetaTester') {
             if (target) {
-                target.isBetaTester = (params.long('isBetaTester') == RDStore.YN_YES.id)
+                target.isBetaTester = (params.long('cmd_isBetaTester') == RDStore.YN_YES.id)
             }
-
-            // todo: ERMS-6325
-            params.remove('isBetaTester') // unwanted parameter for filter query
-
             target.lastUpdated = new Date()
             target.save()
         }
         else if (params.cmd == 'changeLegalInformation') {
             if (target) {
-                target.createdBy = Org.get(params.createdBy)
-                target.legallyObligedBy = Org.get(params.legallyObligedBy)
+                target.createdBy = Org.get(params.cmd_createdBy)
+                target.legallyObligedBy = Org.get(params.cmd_legallyObligedBy)
             }
             target.lastUpdated = new Date()
             target.save()
