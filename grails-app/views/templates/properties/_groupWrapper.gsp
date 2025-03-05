@@ -1,24 +1,30 @@
 <!-- A: templates/properties/_groupWrapper -->
-<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.Subscription; de.laser.License; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.*" %>
+<%@ page import="de.laser.ui.Icon; de.laser.ui.Btn; de.laser.CustomerTypeService; de.laser.Subscription; de.laser.License; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.*" %>
 <laser:serviceInjection />
 <%-- SHOW --%>
 <%--<div class="ui card la-dl-no-table">--%>
     <div class="content">
-        <h2 class="ui header">
-            ${message(code: 'subscription.properties.public')}
-            (${propDefGroup.name})
+        <div class="ui header la-flexbox la-justifyContent-spaceBetween">
+            <h2 class="ui header">
+                ${message(code: 'subscription.properties.public')}
+                (${propDefGroup.name})
 
-            <g:if test="${showConsortiaFunctions}">
-                <g:if test="${propDefGroup.ownerType in [License.class.name, Subscription.class.name]}">
-                    <g:if test="${propDefGroupBinding?.isVisibleForConsortiaMembers}">
-                        <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
-                            <i class="${Icon.SIG.VISIBLE_ON} orange"></i>
-                        </span>
+                <g:if test="${showConsortiaFunctions}">
+                    <g:if test="${propDefGroup.ownerType in [License.class.name, Subscription.class.name]}">
+                        <g:if test="${propDefGroupBinding?.isVisibleForConsortiaMembers}">
+                            <span data-position="top right" class="la-popup-tooltip" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
+                                <i class="${Icon.SIG.VISIBLE_ON} orange"></i>
+                            </span>
+                        </g:if>
                     </g:if>
                 </g:if>
-            </g:if>
-        </h2>
-
+            </h2>
+            <div class="right aligned four wide column">
+                <button type="button"  class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-content="${message(code:'license.button.addProperty')}" data-ui="modal" data-href="#modalAddProperty_${propDefGroup.id}">
+                    <i class="${Icon.CMD.ADD}"></i>
+                </button>
+            </div>
+        </div>
         <div id="grouped_custom_props_div_${propDefGroup.id}">
              <%--!!!!Die Editable Prüfung dient dazu, dass für die Umfrag Lizenz-Merkmal nicht editierbar sind !!!!--%>
             <laser:render template="/templates/properties/group" model="${[
