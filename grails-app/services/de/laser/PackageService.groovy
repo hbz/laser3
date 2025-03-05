@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.finance.CostItem
+import de.laser.helper.Params
 import de.laser.oap.OrgAccessPointLink
 import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
@@ -114,11 +115,12 @@ class PackageService {
 
         if(params.pkgStatus) {
             result.filterSet = true
+            queryParams.status = params.list('pkgStatus')
         }
         else if(!params.pkgStatus) {
             params.pkgStatus = [RDStore.TIPP_STATUS_CURRENT.value, RDStore.TIPP_STATUS_EXPECTED.value, RDStore.TIPP_STATUS_RETIRED.value, RDStore.TIPP_STATUS_DELETED.value]
+            queryParams.status = params.pkgStatus
         }
-        queryParams.status = params.pkgStatus
 
         if (params.provider) {
             result.filterSet = true
