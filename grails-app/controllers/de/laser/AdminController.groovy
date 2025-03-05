@@ -25,6 +25,7 @@ import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugins.mail.MailService
+import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.Sql
 import org.grails.web.json.JSONElement
 import org.hibernate.SessionFactory
@@ -706,18 +707,13 @@ class AdminController  {
     @Transactional
     def manageOrganisations() {
         Map<String, Object> result = [:]
-        EhcacheWrapper cache = cacheService.getTTL300Cache("/admin/manageOrganisations/")
 
-        if(!params.containsKey('cmd')) {
-            result.filterParams = params.clone()
-            cache.put('orgFilterCache', result.filterParams)
-        }
-        else {
-            if(cache && cache.get('orgFilterCache')) {
-                result.filterParams = cache.get('orgFilterCache')
-            }
-        }
-        SwissKnife.setPaginationParams(result, params, contextService.getUser())
+        // modal params removed
+        GrailsParameterMap fp = params.clone() as GrailsParameterMap
+        fp.removeAll { it.key.startsWith('cmd') }
+        result.filteredParams = fp
+
+        SwissKnife.setPaginationParams(result, fp, contextService.getUser())
 
         Org target = params.cmd_target ? Org.get(params.cmd_target) : null
 
@@ -780,7 +776,7 @@ class AdminController  {
             target.save()
         }
 
-        FilterService.Result fsr = filterService.getOrgQuery(params)
+        FilterService.Result fsr = filterService.getOrgQuery(fp)
         List<Org> orgList = Org.executeQuery(fsr.query, fsr.queryParams)
         result.orgList = orgList.drop(result.offset).take(result.max)
         result.orgListTotal = orgList.size()

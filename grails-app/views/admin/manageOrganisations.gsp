@@ -214,7 +214,7 @@
         </tbody>
     </table>
 
-    <ui:paginate action="manageOrganisations" controller="admin" params="${params}" max="${max}" total="${orgListTotal}" />
+    <ui:paginate action="manageOrganisations" controller="admin" params="${filteredParams}" max="${max}" total="${orgListTotal}" />
 
     <laser:script file="${this.getGroovyPageFileName()}">
         JSPC.app.setModalTarget = function(ctx, $trigger) {
@@ -227,7 +227,7 @@
 
     <ui:modal id="isBetaTesterModal" message="org.isBetaTester.label" isEditModal="isEditModal">
 
-        <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations', params: filterParams]">
+        <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations', params: filteredParams]">
             <input type="hidden" name="cmd" value="changeIsBetaTester"/>
             <input type="hidden" name="cmd_target" value="" />
 
@@ -260,7 +260,7 @@
 
     <ui:modal id="legalInformationModal" message="org.legalInformation.label" isEditModal="isEditModal">
 
-        <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations', params: filterParams]">
+        <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations', params: filteredParams]">
             <input type="hidden" name="cmd" value="changeLegalInformation"/>
             <input type="hidden" name="cmd_target" value="" />
 
@@ -320,7 +320,7 @@
     <ui:modal id="customerTypeModal" message="org.customerType.label" isEditModal="isEditModal" formID="customerTypeChangeForm"
                  showDeleteButton="showDeleteButton" deleteFormID="customerTypeDeleteForm" msgDelete="Kundentyp löschen">
 
-        <g:form id="customerTypeChangeForm" class="ui form" url="[controller: 'admin', action: 'manageOrganisations', params: filterParams]">
+        <g:form id="customerTypeChangeForm" class="ui form" url="[controller: 'admin', action: 'manageOrganisations', params: filteredParams]">
             <input type="hidden" name="cmd" value="changeCustomerType"/>
             <input type="hidden" name="cmd_target" value="" />
 
@@ -340,7 +340,7 @@
             </div>
         </g:form>
 
-        <g:form id="customerTypeDeleteForm" class="ui form" url="[controller: 'admin', action: 'manageOrganisations', params: filterParams]">
+        <g:form id="customerTypeDeleteForm" class="ui form" url="[controller: 'admin', action: 'manageOrganisations', params: filteredParams]">
             <input type="hidden" name="cmd" value="deleteCustomerType"/>
             <input type="hidden" name="cmd_target" value=""/>
         </g:form>
@@ -365,7 +365,7 @@
 
     <ui:modal id="apiLevelModal" message="org.apiLevel.label" isEditModal="isEditModal">
 
-        <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations', params: filterParams]">
+        <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations', params: filteredParams]">
             <input type="hidden" name="cmd" value="changeApiLevel"/>
             <input type="hidden" name="cmd_target" value=""/>
 
