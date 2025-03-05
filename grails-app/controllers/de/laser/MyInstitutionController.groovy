@@ -239,18 +239,13 @@ class MyInstitutionController  {
         if(subFilter)
             qryParams3.subIds = subIds
 
+        Map<String, Object> queryParams = filterService.getWekbPlatformFilterParams(params)
+        /*
         Map<String, Object> queryParams = [componentType: "Platform"]
 
         if (params.q?.length() > 0) {
             result.filterSet = true
             queryParams.name = params.q
-            /*
-            qry3 += "and ("
-            qry3 += "   genfunc_filter_matcher(o.name, :query) = true"
-            qry3 += "   or genfunc_filter_matcher(o.sortname, :query) = true"
-            qry3 += ")"
-            qryParams3.put('query', params.q)
-            */
         }
 
         if (params.filterPropDef) {
@@ -299,6 +294,7 @@ class MyInstitutionController  {
             result.filterSet = true
             queryParams.curatoryGroupType = params.curatoryGroupType
         }
+        */
         List wekbIds = []
         Map<String, Object> wekbParams = params.clone()
         if(!wekbParams.containsKey('sort'))
