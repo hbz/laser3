@@ -20,7 +20,7 @@
                 </g:if>
             </h2>
             <div class="right aligned four wide column">
-                <button type="button"  class="" data-ui="modal" data-href="#modalAddProperty_${propDefGroup.id}">
+                <button type="button"  class="ui icon button la-modern-button la-popup-tooltip" data-content="${message(code:'license.button.addProperty')}" data-ui="modal" data-href="#modalAddProperty_${propDefGroup.id}">
                     <i class="${Icon.CMD.ADD}"></i>
                 </button>
             </div>

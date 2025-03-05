@@ -268,50 +268,34 @@
     </tbody>
 </table>
 
-    <g:if test="${editable && isGroupVisible}">
-        <ui:modal  modalSize="medium" id="myID" text="test ist der Text" isEditModal="editable">
-%{--            <table>
-                <tr>--}%
-                    <g:if test="${propDefGroup}">
-                        <g:if test="${propDefGroup.ownerType == License.class.name}">
-%{--                            <td colspan="6">--}%
-                        </g:if>
-                        <g:else>
-%{--                            <td colspan="5">--}%
-                        </g:else>
-                    </g:if>
-                    <g:else>
-%{--                        <td>--}%
-                    </g:else>
-                        <ui:remoteForm url="[controller: 'ajax', action: 'addCustomPropertyValue']"
-                                      name="cust_prop_add_value_group_${propDefGroup.id}"
-                                      class="ui properties form"
-                                      data-update="${custom_props_div}"
-                                      data-done="c3po.initGroupedProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')">
+<g:if test="${editable && isGroupVisible}">
+    <ui:modal id="modalAddProperty_${propDefGroup.id}"
+              text="${message(code: 'subscription.properties.public')} (${propDefGroup.name}) ${message(code: 'default.copy.label')}"
+              isEditModal="editable">
+        <ui:remoteForm url="[controller: 'ajax', action: 'addCustomPropertyValue']"
+                       name="cust_prop_add_value_group_${propDefGroup.id}"
+                       class="ui properties form"
+                       data-update="${custom_props_div}"
+                       data-done="c3po.initGroupedProperties('${createLink(controller: 'ajaxJson', action: 'lookup')}', '#${custom_props_div}')">
 
-                            <div class="two fields" style="margin-bottom:0">
-                                <div class="field" style="margin-bottom:0">
-                                    <select class="ui search selection dropdown remotePropertySearch" name="propIdent" data-desc="${prop_desc}" data-oid="${genericOIDService.getOID(propDefGroup)}"></select>
-                                </div>
-                                <div class="field" style="margin-bottom:0">
-                                    <input type="submit" value="${message(code:'default.button.add.label')}" class="${Btn.SIMPLE} js-wait-wheel"/>
-                                </div>
-                            </div>
+            <div class="two fields" style="margin-bottom:0">
+                <div class="field" style="margin-bottom:0">
+                    <select class="ui search selection dropdown remotePropertySearch" name="propIdent"
+                            data-desc="${prop_desc}" data-oid="${genericOIDService.getOID(propDefGroup)}"></select>
+                </div>
+            </div>
 
-                            <input type="hidden" name="ownerId" value="${ownobj.id}"/>
-                            <input type="hidden" name="editable" value="${editable}"/>
-                            <input type="hidden" name="showConsortiaFunctions" value="${showConsortiaFunctions}"/>
-                            <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
-                            <input type="hidden" name="propDefGroup" value="${genericOIDService.getOID(propDefGroup)}"/>
-                            <input type="hidden" name="propDefGroupBinding" value="${genericOIDService.getOID(propDefGroupBinding)}"/>
-                            <input type="hidden" name="custom_props_div" value="${custom_props_div}"/>
-                        </ui:remoteForm>
+            <input type="hidden" name="ownerId" value="${ownobj.id}"/>
+            <input type="hidden" name="editable" value="${editable}"/>
+            <input type="hidden" name="showConsortiaFunctions" value="${showConsortiaFunctions}"/>
+            <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
+            <input type="hidden" name="propDefGroup" value="${genericOIDService.getOID(propDefGroup)}"/>
+            <input type="hidden" name="propDefGroupBinding" value="${genericOIDService.getOID(propDefGroupBinding)}"/>
+            <input type="hidden" name="custom_props_div" value="${custom_props_div}"/>
 
-%{--                    </td>
-                </tr>
-            </table>--}%
-        </ui:modal>
-    </g:if>
+        </ui:remoteForm>
+    </ui:modal>
+</g:if>
 
 
 <g:if test="${error}">
