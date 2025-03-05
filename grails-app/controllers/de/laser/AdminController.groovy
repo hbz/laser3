@@ -25,6 +25,7 @@ import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugins.mail.MailService
+import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.Sql
 import org.grails.web.json.JSONElement
 import org.hibernate.SessionFactory
@@ -706,25 +707,21 @@ class AdminController  {
     @Transactional
     def manageOrganisations() {
         Map<String, Object> result = [:]
-        EhcacheWrapper cache = cacheService.getTTL300Cache("/admin/manageOrganisations/")
 
-        if(!params.containsKey('cmd')) {
-            result.filterParams = params.clone()
-            cache.put('orgFilterCache', result.filterParams)
-        }
-        else {
-            if(cache && cache.get('orgFilterCache')) {
-                result.filterParams = cache.get('orgFilterCache')
-            }
-        }
-        SwissKnife.setPaginationParams(result, params, contextService.getUser())
+        // modal params removed
+        GrailsParameterMap fp = params.clone() as GrailsParameterMap
+        fp.removeAll { it.key.startsWith('cmd') }
+        result.filteredParams = fp
 
-        Org target = params.target ? Org.get(params.long('target')) : null
+        SwissKnife.setPaginationParams(result, fp, contextService.getUser())
+
+        Org target = params.cmd_target ? Org.get(params.cmd_target) : null
+
         if (params.cmd == 'changeApiLevel') {
-            if (ApiToolkit.getAllApiLevels().contains(params.apiLevel)) {
-                ApiToolkit.setApiLevel(target, params.apiLevel)
+            if (ApiToolkit.getAllApiLevels().contains(params.cmd_apiLevel)) {
+                ApiToolkit.setApiLevel(target, params.cmd_apiLevel)
             }
-            else if (params.apiLevel == 'Kein Zugriff') {
+            else if (params.cmd_apiLevel == 'Kein Zugriff') {
                 ApiToolkit.removeApiLevel(target)
             }
             target.lastUpdated = new Date()
@@ -741,7 +738,7 @@ class AdminController  {
             ApiToolkit.removeApiLevel(target)
         }
         else if (params.cmd == 'changeCustomerType') {
-            Role customerType = Role.get(params.customerType)
+            Role customerType = Role.get(params.cmd_customerType)
 
             def osObj = OrgSetting.get(target, OrgSetting.KEYS.CUSTOMER_TYPE)
 
@@ -749,9 +746,6 @@ class AdminController  {
                 OrgSetting oss = (OrgSetting) osObj
                 oss.roleValue = customerType
                 oss.save()
-
-                // todo: ERMS-6325
-                params.remove('customerType') // unwanted parameter for filter query
             }
             else {
                 OrgSetting.add(target, OrgSetting.KEYS.CUSTOMER_TYPE, customerType)
@@ -768,25 +762,21 @@ class AdminController  {
         }
         else if (params.cmd == 'changeIsBetaTester') {
             if (target) {
-                target.isBetaTester = (params.long('isBetaTester') == RDStore.YN_YES.id)
+                target.isBetaTester = (params.long('cmd_isBetaTester') == RDStore.YN_YES.id)
             }
-
-            // todo: ERMS-6325
-            params.remove('isBetaTester') // unwanted parameter for filter query
-
             target.lastUpdated = new Date()
             target.save()
         }
         else if (params.cmd == 'changeLegalInformation') {
             if (target) {
-                target.createdBy = Org.get(params.createdBy)
-                target.legallyObligedBy = Org.get(params.legallyObligedBy)
+                target.createdBy = Org.get(params.cmd_createdBy)
+                target.legallyObligedBy = Org.get(params.cmd_legallyObligedBy)
             }
             target.lastUpdated = new Date()
             target.save()
         }
 
-        FilterService.Result fsr = filterService.getOrgQuery(params)
+        FilterService.Result fsr = filterService.getOrgQuery(fp)
         List<Org> orgList = Org.executeQuery(fsr.query, fsr.queryParams)
         result.orgList = orgList.drop(result.offset).take(result.max)
         result.orgListTotal = orgList.size()

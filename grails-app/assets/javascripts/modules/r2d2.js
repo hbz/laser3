@@ -1034,7 +1034,7 @@ r2d2 = {
     helper : {
 
         focusFirstFormElement: function (elem) {
-            console.log('r2d2.helper.focusFirstFormElement: #' + $(elem).attr('id') + ' .(' + $(elem).attr('class') + ')');
+            // console.log('r2d2.helper.focusFirstFormElement: #' + $(elem).attr('id') + ' .(' + $(elem).attr('class') + ')');
 
             let ffe = $(elem).find('input:not([disabled]):not([type=hidden]), textarea:not([disabled]):not([type=hidden])').first();
             if (ffe) {

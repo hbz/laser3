@@ -3,7 +3,8 @@
 
 ### Database Migration Plugin
 
-Dependency *org.grails:grails-shell:6.1.2* added -> TODO: remove workaround
+ * Dependency *org.grails:grails-shell:6.1.2* added -> TODO: remove workaround
+ * Database Migration Plugin will be merged into **gorm-hibernate5**  (9.0.0-M3)
 
 ### Asset Pipeline Plugin
 
