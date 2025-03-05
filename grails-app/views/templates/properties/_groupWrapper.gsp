@@ -1,5 +1,5 @@
 <!-- A: templates/properties/_groupWrapper -->
-<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.Subscription; de.laser.License; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.*" %>
+<%@ page import="de.laser.ui.Icon; de.laser.ui.Btn; de.laser.CustomerTypeService; de.laser.Subscription; de.laser.License; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.*" %>
 <laser:serviceInjection />
 <%-- SHOW --%>
 <%--<div class="ui card la-dl-no-table">--%>
@@ -20,7 +20,7 @@
                 </g:if>
             </h2>
             <div class="right aligned four wide column">
-                <button type="button"  class="ui icon button la-modern-button la-popup-tooltip" data-content="${message(code:'license.button.addProperty')}" data-ui="modal" data-href="#modalAddProperty_${propDefGroup.id}">
+                <button type="button"  class="${Btn.MODERN.SIMPLE_TOOLTIP}" content="${message(code:'license.button.addProperty')}" data-ui="modal" data-href="#modalAddProperty_${propDefGroup.id}">
                     <i class="${Icon.CMD.ADD}"></i>
                 </button>
             </div>
