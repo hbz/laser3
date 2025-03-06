@@ -931,7 +931,7 @@ class SurveyControllerService {
                                                                dealId : IdentifierNamespace.findByNsAndNsType('deal_id', Org.class.name)]
                 String encoding = UniversalDetector.detectCharset(importFile.getInputStream())
 
-                if(encoding in ["UTF-8", "WINDOWS-1252"]) {
+                if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
                     List<String> rows = importFile.getInputStream().getText(encoding).split('\n')
                     List<String> headerRow = rows.remove(0).split('\t')
                     Map<String, Integer> colMap = [:]
