@@ -1773,7 +1773,7 @@ class FinanceService {
         List<String> rows = tsvFile.getInputStream().getText(encoding).split('\n')
         List<String> headerRow = rows.remove(0).split('\t')
         //preparatory for an eventual variable match; for the moment: hard coded to 0 and 1
-        int idCol = 0, valueCol = 1, noRecordCounter = 0, wrongIdentifierCounter = 0, matchCounter = 0, totalRows = rows.size()
+        int idCol = 0, valueCol = 1, noRecordCounter = 0, wrongIdentifierCounter = 0, missingCurrencyCounter = 0, matchCounter = 0, totalRows = rows.size()
         Set<IdentifierNamespace> namespaces = [IdentifierNamespace.findByNs('deal_id'), IdentifierNamespace.findByNs('ISIL'), IdentifierNamespace.findByNs('wibid')]
         rows.each { String row ->
             List<String> cols = row.split('\t')
@@ -1802,7 +1802,7 @@ class FinanceService {
                             CostItem ci = CostItem.findBySubAndOwnerAndCostItemElement(memberSub, contextOrg, pickedElement)
                             if(ci) {
                                 //Regex to parse different sum entries
-                                Pattern nonNumericRegex = Pattern.compile("([\$€£])"), numericRegex = Pattern.compile("([\\d'.,]+)")
+                                Pattern nonNumericRegex = Pattern.compile("([\$€£]|EUR|USD|GBP)"), numericRegex = Pattern.compile("([\\d'.,]+)")
                                 //step 1: strip the non-numerical part and try to parse a currency
                                 Matcher costMatch = numericRegex.matcher(valueStr), billingCurrencyMatch = nonNumericRegex.matcher(valueStr)
                                 //step 2: pass the numerical part to the value parser
@@ -1818,11 +1818,13 @@ class FinanceService {
                                         case ['$', 'USD']: ci.billingCurrency = RDStore.CURRENCY_USD
                                             break
                                     }
+                                    if(ci.save())
+                                        matchCounter++
+                                    else
+                                        log.error(ci.getErrors().getAllErrors().toListString())
                                 }
-                                if(ci.save())
-                                    matchCounter++
-                                else
-                                    log.error(ci.getErrors().getAllErrors().toListString())
+                                else if(!billingCurrencyMatch.find())
+                                    missingCurrencyCounter++
                             }
                             else {
                                 noRecordCounter++
@@ -1836,8 +1838,9 @@ class FinanceService {
                 }
             }
         }
-        missing.addAll(CostItem.executeQuery('select ci.id from CostItem ci where ci.sub.instanceOf = :parent and ci.owner = :owner and ci.costItemElement = :element and ci.costInBillingCurrency = 0', [parent: subscription, owner: contextOrg, element: pickedElement]))
+        missing.addAll(CostItem.executeQuery('select ci.id from CostItem ci where ci.sub.instanceOf = :parent and ci.owner = :owner and ci.costItemElement = :element and (ci.costInBillingCurrency = 0 or ci.costInBillingCurrency = null)', [parent: subscription, owner: contextOrg, element: pickedElement]))
         result.missing = missing
+        result.missingCurrencyCounter = missingCurrencyCounter
         result.wrongRecords = wrongRecords
         result.matchCounter = matchCounter
         result.wrongIdentifierCounter = wrongIdentifierCounter
