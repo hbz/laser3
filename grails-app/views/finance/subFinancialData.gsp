@@ -113,7 +113,7 @@
         </g:if>
 
         <g:if test="${afterEnrichment}">
-            <ui:msg showIcon="true" class="success" message="financials.enrichment.result" args="[matchCounter, totalRows, noRecordCounter]"/>
+            <ui:msg showIcon="true" class="success" message="financials.enrichment.result" args="[matchCounter, totalRows, noRecordCounter, missingCurrencyCounter]"/>
             <g:if test="${wrongIdentifierCounter > 0 && wrongRecords}">
                 <div class="ui warning message icon la-clear-before">
                     <i class="${Icon.UI.WARNING}"></i>

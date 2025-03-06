@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6332    05.03.2025  rc-3.4  3.4.20      Andreas Bug         Filter unter "Paket verknüpfen" nicht einsetzbar
+
+6325    05.03.2025  dev     3.5         David   Bug         Organisationen verwalten (Admin): Filter- und Formular-Parameter
+
 6324    28.02.2025  dev     3.5         Andreas Feature     Umbenennungen bei Identifikatoren
 
 6323    27.02.2025  dev     3.5         David   Feature     Gasco-Eintrag automatisch für Konsortialmanager

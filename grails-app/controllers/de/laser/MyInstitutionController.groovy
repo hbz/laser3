@@ -2205,7 +2205,7 @@ class MyInstitutionController  {
             MultipartFile tsvFile = request.getFile("tsvFile") //this makes the withTransaction closure necessary
             if(tsvFile && tsvFile.size > 0) {
                 String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
-                if(encoding in ["UTF-8", "WINDOWS-1252"]) {
+                if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
                     result.filename = tsvFile.originalFilename
                     Map<String,Map> financialData = financeService.financeImport(tsvFile, encoding)
                     result.headerRow = financialData.headerRow
@@ -2281,7 +2281,7 @@ class MyInstitutionController  {
             MultipartFile tsvFile = request.getFile("tsvFile") //this makes the transaction closure necessary
             if(tsvFile && tsvFile.size > 0) {
                 String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
-                if(encoding in ["UTF-8", "WINDOWS-1252"]) {
+                if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
                     result.filename = tsvFile.originalFilename
                     Map subscriptionData = subscriptionService.subscriptionImport(tsvFile, encoding)
                     if(subscriptionData.globalErrors) {
