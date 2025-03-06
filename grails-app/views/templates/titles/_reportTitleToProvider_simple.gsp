@@ -4,41 +4,41 @@
 <g:if test="${contextService.isInstEditor()}">
 
     <g:if test="${tipp.platform?.provider}">
-%{--        <g:set var="currentTasks" value="${taskService.getTasks(BeanStore.getContextService().getUser(), tipp)}" />--}%
+        <g:set var="currentTasks" value="${taskService.getTasks(BeanStore.getContextService().getUser(), tipp)}" />
 
-%{--        <g:if test="${contextService.getOrg().isCustomerType_Basic()}">--}%
+        <g:if test="${contextService.getOrg().isCustomerType_Basic()}">
 
-            <ui:msg class="info" showIcon="true" hideClose="true">
+            <ui:msg class="info" hideClose="true">
                 ${message(code:'tipp.reportTitleToProvider.info1')}
-%{--                <br />--}%
+                <br />
                 <a href="#" class="infoFlyout-trigger" data-template="reportTitleToProvider" data-tipp="${tipp.id}">${message(code:'tipp.reportTitleToProvider.mailto')}</a>
-%{--                <br />--}%
-%{--                ${message(code:'tipp.reportTitleToProvider.proHint')}--}%
+                <br />
+                ${message(code:'tipp.reportTitleToProvider.proHint')}
             </ui:msg>
 
-%{--        </g:if>--}%%{-- BASIC --}%
-%{--        <g:elseif test="${contextService.getOrg().isCustomerType_Pro()}">--}%
+        </g:if>
+        <g:elseif test="${contextService.getOrg().isCustomerType_Pro()}">
 
-%{--            <ui:msg class="info" showIcon="true">--}%
-%{--                ${message(code:'tipp.reportTitleToProvider.info1')}--}%
-%{--                <br />--}%
-%{--                <a href="#" class="infoFlyout-trigger" data-template="reportTitleToProvider" data-tipp="${tipp.id}">${message(code:'tipp.reportTitleToProvider.mailto')}</a>--}%
+            <ui:msg class="info" hideClose="true">
+                ${message(code:'tipp.reportTitleToProvider.info1')}
+                <br />
+                <a href="#" class="infoFlyout-trigger" data-template="reportTitleToProvider" data-tipp="${tipp.id}">${message(code:'tipp.reportTitleToProvider.mailto')}</a>
 %{--                und <a href="#modalCreateTask" data-ui="modal">erstellen Sie sich ggf. eine Aufgabe</a> zur Erinnerung.--}%
-%{--                <br />--}%
+                <br />
 
-%{--                <g:if test="${currentTasks.cmbTaskInstanceList}">--}%
-%{--                        <br />--}%
-%{--                        ${message(code:'tipp.reportTitleToProvider.info2')} <br />--}%
+                <g:if test="${currentTasks.cmbTaskInstanceList}">
+                        <br />
+                        ${message(code:'tipp.reportTitleToProvider.info2')} <br />
 
-%{--                        <g:each in="${currentTasks.myTaskInstanceList.sort{ it.dateCreated }.reverse()}" var="tt">--}%
-%{--                            <i class="${Icon.TASK}"></i>--}%
-%{--                            <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tt.dateCreated}"/> ---}%
-%{--                            <a href="#" onclick="JSPC.app.editTask(${tt.id});">${tt.title}</a> <br />--}%
-%{--                        </g:each>--}%
-%{--                </g:if>--}%
-%{--            </ui:msg>--}%
+                        <g:each in="${currentTasks.myTaskInstanceList.sort{ it.dateCreated }.reverse()}" var="tt">
+                            <i class="${Icon.TASK}"></i>
+                            <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tt.dateCreated}"/> -
+                            <a href="#" onclick="JSPC.app.editTask(${tt.id});">${tt.title}</a> <br />
+                        </g:each>
+                </g:if>
+            </ui:msg>
 
-%{--        </g:elseif>--}%%{-- PRO --}%
+        </g:elseif>
 
     </g:if>
 
