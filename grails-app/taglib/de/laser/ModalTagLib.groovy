@@ -101,6 +101,7 @@ class ModalTagLib {
         String msgClose    = attrs.msgClose  ?: "${g.message(code:'default.button.close.label')}"
         String msgSave     = attrs.msgSave   ?: (isEditModal ? "${g.message(code:'default.button.save_changes')}" : "${g.message(code:'default.button.create.label')}")
         String msgDelete   = attrs.msgDelete ?: "${g.message(code:'default.button.delete.label')}"
+        String modalHide   = attrs.modalHide ? '\$(\'.ui.modal\').modal(\'hide\');return false;' : ''
 
         out << '<div role="dialog" class="ui ' + refreshModal + ' modal ' + modalSize + '"' + id + ' aria-label="Modal">'
         if (title) {
@@ -131,10 +132,10 @@ class ModalTagLib {
         else {
             if (attrs.formID) {
                 // todo: Btn.POSITIVE = JS-Trigger
-                out << '<input type="submit" class="ui button green" name="save" value="' + msgSave + '" onclick="event.preventDefault(); $(\'#' + attrs.id + '\').find(\'#' + attrs.formID + '\').submit()"/>'
+                out << '<input type="submit" class="ui button green" name="save" value="' + msgSave + '" onclick="event.preventDefault(); $(\'#' + attrs.id + '\').find(\'#' + attrs.formID + '\').submit();' +modalHide +'"/>'
             } else {
                 // todo: Btn.POSITIVE = JS-Trigger
-                out << '<input type="submit" class="ui button green" name="save" value="' + msgSave + '" onclick="event.preventDefault(); $(\'#' + attrs.id + '\').find(\'form\').submit()"/>'
+                out << '<input type="submit" class="ui button green" name="save" value="' + msgSave + '" onclick="event.preventDefault(); $(\'#' + attrs.id + '\').find(\'form\').submit();'  +modalHide + '"/>'
             }
         }
 

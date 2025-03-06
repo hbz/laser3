@@ -5,7 +5,9 @@
 <g:if test="${newProp}">
     <ui:errors bean="${newProp}" />
 </g:if>
-
+<g:if test="${error}">
+    <ui:msg class="error" header="${message(code: 'myinst.message.attention')}" text="${error}"/>
+</g:if>
 <table class="ui compact la-js-responsive-table la-table-inCard table">
     <g:if test="${propDefGroup}">
         <colgroup>
@@ -271,7 +273,8 @@
 <g:if test="${editable && isGroupVisible}">
     <ui:modal id="modalAddProperty_${propDefGroup.id}"
               text="${message(code: 'subscription.properties.public')} (${propDefGroup.name}) ${message(code: 'default.copy.label')}"
-              isEditModal="editable">
+              isEditModal="editable"
+              modalHide="true">
         <ui:remoteForm url="[controller: 'ajax', action: 'addCustomPropertyValue']"
                        name="cust_prop_add_value_group_${propDefGroup.id}"
                        class="ui properties form"
@@ -297,26 +300,5 @@
 </g:if>
 
 
-<g:if test="${error}">
-    <ui:msg class="error" header="${message(code: 'myinst.message.attention')}" text="${error}"/>
-</g:if>
+
 <!-- O: templates/properties/_group -->
-
-
-<laser:script file="${this.getGroovyPageFileName()}">
-    JSPC.app.checkRequired = function () {
-    $('#modalAddProperty_${propDefGroup.id}').form({
-        inline: true,
-        fields: {
-        propIdent: {
-                        identifier: 'propIdent',
-                        rules: [{
-                                type: 'empty',
-                                prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
-                        }]
-                    },
-                }
-            });
-    }
-    JSPC.app.checkRequired();
-    </laser:script>
