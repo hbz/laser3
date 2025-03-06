@@ -280,7 +280,7 @@
 
             <div class="two fields" style="margin-bottom:0">
                 <div class="field" style="margin-bottom:0">
-                    <select class="ui search selection dropdown remotePropertySearch" name="propIdent"
+                    <select class="ui search selection dropdown remotePropertySearch"  name="propIdent"
                             data-desc="${prop_desc}" data-oid="${genericOIDService.getOID(propDefGroup)}"></select>
                 </div>
             </div>
@@ -292,7 +292,6 @@
             <input type="hidden" name="propDefGroup" value="${genericOIDService.getOID(propDefGroup)}"/>
             <input type="hidden" name="propDefGroupBinding" value="${genericOIDService.getOID(propDefGroupBinding)}"/>
             <input type="hidden" name="custom_props_div" value="${custom_props_div}"/>
-
         </ui:remoteForm>
     </ui:modal>
 </g:if>
@@ -302,3 +301,22 @@
     <ui:msg class="error" header="${message(code: 'myinst.message.attention')}" text="${error}"/>
 </g:if>
 <!-- O: templates/properties/_group -->
+
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    JSPC.app.checkRequired = function () {
+    $('#modalAddProperty_${propDefGroup.id}').form({
+        inline: true,
+        fields: {
+        propIdent: {
+                        identifier: 'propIdent',
+                        rules: [{
+                                type: 'empty',
+                                prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
+                        }]
+                    },
+                }
+            });
+    }
+    JSPC.app.checkRequired();
+    </laser:script>
