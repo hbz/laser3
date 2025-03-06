@@ -25,6 +25,10 @@
 
 6316    25.02.2025  rc-3.4  3.4.19      Andreas Bug         Schnitzer im Kostenexport behoben
 
+6305:   25.02.2025  dev     3.5         Moe Bug         einzelner Kontakt Löschbutton löscht nicht
+
+6092    25.02.2025  dev     3.5         Moe     Feature     Textänderung: (Nicht)-Verbindliche Umfragen werden (Nicht-)verpflichtende Umfragen
+
 6313    25.02.2025  dev     3.5         Andreas Bug         Bubbles mit Titelzahlen reimplementiert
 
 6306    25.02.2025  dev     3.5         David   Feature     Allgemeine Merkmale - Logik: mandatory/multiple

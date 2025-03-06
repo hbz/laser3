@@ -9,6 +9,11 @@
                     ${person.middle_name}
                     ${person.last_name}
             </div>
+        <g:if test="${showFunction && person.roleLinks}">
+            <div class="content la-space-right">
+                (${person.roleLinks.findAll {it.functionType != null}.collect {it.functionType?.getI10n('value')}.join(', ')})
+            </div>
+        </g:if>
 
             <g:if test="${overwriteEditable}">
                 <div class="content la-space-right">

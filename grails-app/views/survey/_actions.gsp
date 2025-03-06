@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.Org" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.Org" %>
 <laser:serviceInjection/>
 
 <g:if test="${contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
@@ -28,6 +28,14 @@
                                     message="survey.copyElementsIntoSurvey"/>
             <div class="ui divider"></div>
 
+            <g:if test="${actionName == 'surveyCostItems' && participants.size() > 0}">
+
+                <ui:actionsDropdownItem onclick="JSPC.app.addForAllSurveyCostItem([${(participants?.id)}])" controller="survey" message="surveyCostItems.createInitialCostItem"/>
+                <ui:actionsDropdownItem data-ui="modal" href="#bulkCostItemsUpload" message="menu.institutions.financeImport"/>
+
+                <div class="ui divider"></div>
+            </g:if>
+
 
                 <g:if test="${surveyInfo && (surveyInfo.status.id == RDStore.SURVEY_READY.id) && surveyInfo.checkOpenSurvey()}">
                     <ui:actionsDropdownItem controller="survey" action="setStatus" params="[id: params.id, newStatus: 'processBackInProcessingSurvey']"
@@ -37,6 +45,15 @@
                 </g:if>
 
                 <g:if test="${surveyInfo && (surveyInfo.status.id == RDStore.SURVEY_IN_PROCESSING.id) && surveyInfo.checkOpenSurvey()}">
+                    <ui:actionsDropdownItem controller="survey" action="addSurveyParticipants" params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                                            text="${message(code: 'default.add.label', args: [message(code: 'surveyParticipants.label')])}"/>
+
+                    <g:if test="${surveyConfig.subscription}">
+                            <ui:actionsDropdownItem action="actionSurveyParticipants"
+                                    params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, actionSurveyParticipants: 'addSubMembersToSurvey']"
+                                                    message="surveyParticipants.addSubMembersToSurvey"/>
+                    </g:if>
+
                     <ui:actionsDropdownItem controller="survey" action="setStatus" params="[id: params.id, newStatus: 'processOpenSurvey']"
                                                message="openSurvey.button"
                                                tooltip="${message(code: "openSurvey.button.info2")}"/>
@@ -196,3 +213,94 @@
     <laser:render template="/templates/tasks/modal_create" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
     <laser:render template="/templates/documents/modal" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
 </g:if>
+
+<g:if test="${actionName == 'surveyCostItems'}">
+<ui:modal id="bulkCostItemsUpload" message="menu.institutions.financeImport"
+          refreshModal="true"
+          msgSave="${g.message(code: 'menu.institutions.financeImport')}">
+
+    <g:form action="processSurveyCostItemsBulkWithUpload" controller="survey" method="post" class="ui form" enctype="multipart/form-data"
+            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">
+        <br>
+        <g:link class="item" controller="profile" action="importManuel" target="_blank">${message(code: 'help.technicalHelp.uploadFile.manuel')}</g:link>
+        <br>
+
+        <g:link controller="survey" action="templateForSurveyCostItemsBulkWithUpload" params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">
+            <p>${message(code: 'myinst.financeImport.template')}</p>
+        </g:link>
+
+        <br>
+
+        <div class="ui field">
+            <div class="ui action input">
+                <input type="text" readonly="readonly"
+                       placeholder="${message(code: 'template.addDocument.selectFile')}">
+                <input type="file" name="costItemsFile" accept=".txt,.csv,.tsv,text/tab-separated-values,text/csv,text/plain"
+                       style="display: none;">
+
+                <div class="${Btn.ICON.SIMPLE}">
+                    <i class="${Icon.CMD.ATTACHMENT}"></i>
+                </div>
+            </div>
+        </div>
+    </g:form>
+</ui:modal>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+
+    JSPC.app.isClicked = false;
+
+    JSPC.app.addForAllSurveyCostItem = function(orgsIDs) {
+                            event.preventDefault();
+
+                            // prevent 2 Clicks open 2 Modals
+                            if (!JSPC.app.isClicked) {
+                                JSPC.app.isClicked = true;
+                                $('.ui.dimmer.modals > #modalSurveyCostItem').remove();
+                                $('#dynamicModalContainer').empty()
+
+                               $.ajax({
+                                    url: "<g:createLink controller='survey' action='addForAllSurveyCostItem'/>",
+                                traditional: true,
+                                data: {
+                                    id: "${params.id}",
+                                    surveyConfigID: "${surveyConfig.id}",
+                                    orgsIDs: orgsIDs,
+                                    selectedCostItemElementID: "${selectedCostItemElementID}"
+
+                                }
+                            }).done(function (data) {
+                                $('.ui.dimmer.modals > #addForAllSurveyCostItem').remove();
+                                $('#dynamicModalContainer').empty().html(data);
+
+                                $('#dynamicModalContainer .ui.modal').modal({
+                                    onShow: function () {
+                                        r2d2.initDynamicUiStuff('#addForAllSurveyCostItem');
+                                        r2d2.initDynamicXEditableStuff('#addForAllSurveyCostItem');
+
+                                    },
+                                    detachable: true,
+                                    closable: false,
+                                    transition: 'scale',
+                                    onApprove: function () {
+                                        $(this).find('#addForAllSurveyCostItem .ui.form').submit();
+                                        return false;
+                                    }
+                                }).modal('show');
+                            })
+                            setTimeout(function () {
+                                JSPC.app.isClicked = false;
+                            }, 800);
+                        }
+                    };
+        $('.action .icon.button').click(function () {
+             $(this).parent('.action').find('input:file').click();
+         });
+
+         $('input:file', '.ui.action.input').on('change', function (e) {
+             var name = e.target.files[0].name;
+             $('input:text', $(e.target).parent()).val(name);
+         });
+
+</laser:script>
+    </g:if>

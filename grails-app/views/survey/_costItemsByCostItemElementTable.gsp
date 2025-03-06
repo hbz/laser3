@@ -47,13 +47,13 @@
                     <g:if test="${selectedCostItemElementID == costItemElement.id}">
                         <g:link controller="survey" action="$actionName"
                                 params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, selectedCostItemElementID: costItemElement.id]}">
-                            <i class="${Icon.SYM.YES} bordered large green"></i>
+                            <i class="${Icon.SYM.CHECKBOX_CHECKED} large "></i>
                         </g:link>
                     </g:if>
                     <g:else>
                         <g:link controller="survey" action="$actionName"
                                 params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, selectedCostItemElementID: costItemElement.id]}">
-                            <i class="${Icon.SYM.NO} bordered large red"></i>
+                            <i class="${Icon.SYM.CHECKBOX} large "></i>
                         </g:link>
                     </g:else>
                 </td>

@@ -749,6 +749,20 @@ class SurveyController {
         }
     }
 
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    def editComment() {
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        if(result.status == SurveyControllerService.STATUS_ERROR) {
+            render template: "/templates/generic_modal403", model: result
+        }else {
+            result.commentTyp   = params.commentTyp
+            render template: "modal_comment_edit", model: result
+        }
+    }
+
     /**
      * Lists the titles subject of the given survey
      * @return a list view of the issue entitlements linked to the given survey
@@ -801,6 +815,23 @@ class SurveyController {
     })
     def surveyParticipants() {
         Map<String,Object> ctrlResult = surveyControllerService.surveyParticipants(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+        }else {
+            ctrlResult.result
+        }
+
+    }
+
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    def addSurveyParticipants() {
+        Map<String,Object> ctrlResult = surveyControllerService.addSurveyParticipants(params)
         if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
@@ -2734,6 +2765,8 @@ class SurveyController {
         result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID) : null
         result.selectedPackageID = params.selectedPackageID ? Long.valueOf(params.selectedPackageID) : null
 
+        result.modalID = 'addForAllSurveyCostItem'
+        result.idSuffix = 'addForAllSurveyCostItem'
         render(template: "/survey/costItemModal", model: result)
     }
 

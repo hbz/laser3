@@ -52,9 +52,6 @@ class SurveyConfig {
 
     SurveyInfo surveyInfo
 
-    Date scheduledStartDate
-    Date scheduledEndDate
-
     String type
     String header
     String comment
@@ -102,8 +99,6 @@ class SurveyConfig {
         commentForNewParticipants(nullable: true, blank: true)
         documents   (nullable: true)
         orgs        (nullable: true)
-        scheduledStartDate  (nullable: true)
-        scheduledEndDate    (nullable: true)
         internalComment(nullable: true, blank: true)
         propertySet (nullable: true)
         transferWorkflow (nullable: true, blank: false)
@@ -133,9 +128,6 @@ class SurveyConfig {
         packageSurvey column: 'surconf_package_survey'
         invoicingInformation column: 'surconf_invoicing_information'
         vendorSurvey column: 'surconf_vendor_survey'
-
-        scheduledStartDate column: 'surconf_scheduled_startdate'
-        scheduledEndDate column: 'surconf_scheduled_enddate'
 
         dateCreated column: 'surconf_date_created'
         lastUpdated column: 'surconf_last_updated'
