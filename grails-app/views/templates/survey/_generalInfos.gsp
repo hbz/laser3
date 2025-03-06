@@ -19,25 +19,6 @@
             <div class="ui card">
                 <div class="content">
 
-                    <g:if test="${surveyConfig.subSurveyUseForTransfer}">
-                        <dl>
-                            <dt class="control-label">
-                                ${message(code: 'surveyconfig.scheduledStartDate.label')}
-                            </dt>
-                            <dd><ui:xEditable owner="${surveyConfig}" field="scheduledStartDate" type="date"
-                                              overwriteEditable="${false}"/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt class="control-label">
-                                ${message(code: 'surveyconfig.scheduledEndDate.label')}
-                            </dt>
-                            <dd><ui:xEditable owner="${surveyConfig}" field="scheduledEndDate" type="date"
-                                              overwriteEditable="${false}"/></dd>
-
-                        </dl>
-                    </g:if>
-
                     <g:each in="${surveyConfig.surveyUrls}" var="surveyUrl" status="i">
                         <dl>
                             <dt class="control-label">

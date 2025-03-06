@@ -194,7 +194,7 @@
             <div class="title">
                 <g:link controller="survey" action="copyProperties"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, tab: 'privateProperties', targetSubscriptionId: targetSubscription?.id]">
-                    ${message(code: 'copyProperties.privateProperties.short')}
+                    ${message(code: 'copyProperties.privateProperties')}
                 </g:link>
             </div>
 

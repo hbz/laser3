@@ -33,22 +33,6 @@
 
 <br />
 
-<h2 class="ui icon header la-clear-before la-noMargin-top">
-    <g:if test="${surveyConfig.subscription}">
-        <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
-        <g:link controller="subscription" action="show" id="${surveyConfig.subscription.id}">
-            ${surveyConfig.getConfigNameShort()}
-        </g:link>
-
-    </g:if>
-    <g:else>
-        ${surveyConfig.getConfigNameShort()}
-    </g:else>
-    : ${message(code: 'surveyCostItemsPackages.label')}
-</h2>
-
-<br />
-
 <g:if test="${surveyConfig}">
     <div class="ui grid">
 
@@ -107,7 +91,7 @@
                 params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab, selectedCostItemElementID: selectedCostItemElementID, selectedPackageID: selectedPackageID]">
                 <laser:render template="/templates/filter/orgFilter"
                 model="[
-                                  tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['discoverySystemsFrontend', 'discoverySystemsIndex']],
+                                  tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['discoverySystemsFrontend', 'discoverySystemsIndex'], ['subStatus', surveyConfig.subscription ? 'hasSubscription' : '']],
                                   tmplConfigFormFilter: true
                           ]"/>
                 </g:form>
@@ -236,18 +220,18 @@
                                   ]"/>
 
                     </div>
-
+                    <g:if test="${surveyParticipantsHasNotAccess}">
                     <h3 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h3>
 
                     <g:set var="surveyParticipantsHasNotAccess"
                            value="${selectedSubParticipants?.findAll { !it.hasInstAdmin() }}"/>
 
                     <div class="four wide column">
-                    <g:if test="${surveyParticipantsHasNotAccess}">
+
                         <a data-ui="modal" class="${Btn.SIMPLE} right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
                             <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
                         </a>
-                    </g:if>
+
 
                         <br />
                         <br />
@@ -260,7 +244,7 @@
                                   ]"/>
 
                     </div>
-
+                    </g:if>
                 </g:if>
 
 
@@ -292,17 +276,18 @@
                               ]"/>
 
 
-                    <h3 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h3>
-
                     <g:set var="surveyParticipantsHasNotAccess"
                            value="${selectedParticipants?.findAll { !it.hasInstAdmin() }}"/>
 
-                    <div class="four wide column">
                     <g:if test="${surveyParticipantsHasNotAccess}">
+
+                    <h3 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h3>
+
+                    <div class="four wide column">
+
                         <a data-ui="modal" class="${Btn.SIMPLE} right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
                             <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
                         </a>
-                    </g:if>
                     </div>
 
 
@@ -315,6 +300,8 @@
                                       tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'surveyCostItemPackage'],
                                       tableID         : 'costTable'
                               ]"/>
+
+                    </g:if>
 
                 </g:if>
 

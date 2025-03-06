@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyConfig;de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.Org" %>
+<%@ page import="de.laser.survey.SurveyPersonResult; de.laser.ui.Icon; de.laser.survey.SurveyConfig;de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.Org" %>
 
 <laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyResult.label')}-${message(code: 'surveyParticipants.label')})" />
 
@@ -62,7 +62,8 @@
     <ui:greySegment>
     <g:set var="choosenOrg" value="${Org.findById(participant.id)}"/>
     <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}"/>
-
+    <g:set var="surveyPersons"
+               value="${SurveyPersonResult.executeQuery('select spr.person from SurveyPersonResult spr where spr.surveyPerson = true and spr.participant = :participant and spr.surveyConfig = :surveyConfig', [participant: choosenOrg, surveyConfig: surveyConfig])}"/>
     <table class="ui table la-js-responsive-table la-table compact">
         <tbody>
         <tr>
@@ -72,15 +73,24 @@
                 ${choosenOrg.libraryType?.getI10n('value')}
             </td>
             <td>
-                <g:if test="${choosenOrgCPAs}">
+                <g:if test="${surveyPersons}">
                     <g:set var="oldEditable" value="${editable}"/>
                     <g:set var="editable" value="${false}" scope="request"/>
                     <g:each in="${choosenOrgCPAs}" var="gcp">
                         <laser:render template="/addressbook/person_details"
-                                  model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
+                                      model="${[person: gcp, tmplHideLinkToAddressbook: true, showFunction: true]}"/>
                     </g:each>
                     <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
                 </g:if>
+                <g:elseif test="${choosenOrgCPAs}">
+                    <g:set var="oldEditable" value="${editable}"/>
+                    <g:set var="editable" value="${false}" scope="request"/>
+                    <g:each in="${choosenOrgCPAs}" var="gcp">
+                        <laser:render template="/addressbook/person_details"
+                                  model="${[person: gcp, tmplHideLinkToAddressbook: true, showFunction: true]}"/>
+                    </g:each>
+                    <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
+                </g:elseif>
             </td>
         </tr>
         </tbody>
