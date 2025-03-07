@@ -9,11 +9,11 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class RDConstants {
 
-    public static final String ACCESS_CHOICE_REMOTE   = 'access.choice.remote'
-    public static final String ACCESS_POINT_TYPE      = 'access.point.type'
-    public static final String ADDRESS_TYPE           = 'address.type'
-    public static final String ARCHIVING_AGENCY       = 'archiving.agency'
-    public static final String AUTHORITY              = 'authority'
+    public static final String ACCESS_POINT_TYPE         = 'access.point.type'
+    public static final String ACCESSIBILITY_COMPLIANCE  = 'accessibility.compliance'
+    public static final String ADDRESS_TYPE              = 'address.type'
+    public static final String ARCHIVING_AGENCY          = 'archiving.agency'
+    public static final String AUTHORITY                 = 'authority'
 
     public static final String CATEGORY_A_F           = 'category.a.f'
     public static final String CATEGORY_BAUTABELLEN   = 'category.bautabellen'

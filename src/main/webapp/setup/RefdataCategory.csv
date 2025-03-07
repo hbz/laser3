@@ -2,6 +2,7 @@ token,value_de,value_en
 access.choice.remote,Zugangswahl Remote,Access choice remote
 access.limitation,Zugangsbegrenzung,Access limitation
 access.point.type,Access Point Type,Access Point Type
+accessibility.compliance,Accessibility Compliance,Grad der Barrierefreiheit
 address.type,Art der Adresse,Address Type
 archiving.agency,Archivierungsplattform,Archiving Agency
 authority,Autorität,Authority

@@ -4,6 +4,7 @@ package de.laser
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.Params
 import de.laser.storage.PropertyStore
+import de.laser.storage.RDConstants
 import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
@@ -34,6 +35,29 @@ class FilterService {
 
     // FilterService.Result fsr = filterService.getXQuery(paramsClone, ..)
     // if (fsr.isFilterSet) { paramsClone.filterSet = true }
+
+    static Map<String, Map> PLATFORM_FILTER_AUTH_FIELDS = ['shibbolethAuthentication': [rdcat: RDConstants.Y_N, label: 'platform.auth.shibboleth.supported'],
+                                                              'openAthens': [rdcat: RDConstants.Y_N, label: 'platform.auth.openathens.supported'],
+                                                              'ipAuthentication': [rdcat: RDConstants.IP_AUTHENTICATION, label: 'platform.auth.ip.supported'],
+                                                              'passwordAuthentication': [rdcat: RDConstants.Y_N, label: 'platform.auth.userPass.supported'],
+                                                              'mailDomain': [rdcat: RDConstants.Y_N, label: 'platform.auth.mailDomain.supported'],
+                                                              'refererAuthentication': [rdcat: RDConstants.Y_N, label: 'platform.auth.referer.supported'],
+                                                              'ezProxy': [rdcat: RDConstants.Y_N, label: 'platform.auth.ezProxy.supported'],
+                                                              'hanServer': [rdcat: RDConstants.Y_N, label: 'platform.auth.hanServer.supported'],
+                                                              'otherProxies': [rdcat: RDConstants.Y_N, label: 'platform.auth.other.proxies']]
+    static Map<String, Map> PLATFORM_FILTER_ACCESSIBILITY_FIELDS = ['accessPlatform': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.accessPlatform'],
+                                                                    'viewerForPdf': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.viewerForPdf'],
+                                                                    'viewerForEpub': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.viewerForEpub'],
+                                                                    'playerForAudio': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.playerForAudio'],
+                                                                    'playerForVideo': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.playerForVideo'],
+                                                                    'accessibilityStatementAvailable': [rdcat: RDConstants.Y_N, label: 'platform.accessibility.accessibilityStatementAvailable'],
+                                                                    'accessEPub': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.accessEPub'],
+                                                                    'accessPdf': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.accessPdf'],
+                                                                    'accessAudio': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.accessAudio'],
+                                                                    'accessVideo': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.accessVideo'],
+                                                                    'accessDatabase': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.accessDatabase']]
+    static Map<String, Map> PLATFORM_FILTER_ADDITIONAL_SERVICE_FIELDS = ['individualDesignLogo': [rdcat: RDConstants.Y_N, label: 'platform.additional.individualDesignLogo'],
+                                                                         'fullTextSearch': [rdcat: RDConstants.Y_N, label: 'platform.additional.fullTextSearch']]
 
     /**
      * Subclass for generic parameter containing:
@@ -2292,6 +2316,47 @@ class FilterService {
             */
         //}
         [query: query, join: join, where: whereClauses.join(' and '), order: orderClause, params: params, subJoin: subJoin]
+    }
+
+    Map<String, Object> getWekbPlatformFilterParams(GrailsParameterMap params) {
+        Map<String, Object> queryParams = [componentType: "Platform"]
+
+        if(params.q) {
+            queryParams.name = params.q
+        }
+
+        if(params.provider) {
+            queryParams.provider = params.provider
+        }
+
+        if(Params.getLongList(params, 'platStatus')) {
+            queryParams.status = RefdataValue.findAllByIdInList(Params.getLongList(params, 'platStatus')).value
+        }
+        else if(!params.filterSet) {
+            queryParams.status = "Current"
+            params.platStatus = RDStore.PLATFORM_STATUS_CURRENT.id
+        }
+
+        Set<String> refdataListParams = PLATFORM_FILTER_ACCESSIBILITY_FIELDS.keySet()+PLATFORM_FILTER_ADDITIONAL_SERVICE_FIELDS.keySet()+PLATFORM_FILTER_AUTH_FIELDS.keySet()+['statisticsFormat']
+        refdataListParams.each { String refdataListParam ->
+            if (params.containsKey(refdataListParam)) {
+                queryParams.put(refdataListParam, Params.getRefdataList(params, refdataListParam).collect{ (it == RDStore.GENERIC_NULL_VALUE) ? 'null' : it.value })
+            }
+        }
+        if (params.counterSupport) {
+            queryParams.counterSupport = params.list('counterSupport')
+        }
+        if(params.counterAPISupport) {
+            queryParams.counterAPISupport = params.list('counterAPISupport')
+        }
+        if (params.curatoryGroup) {
+            queryParams.curatoryGroupExact = params.curatoryGroup
+        }
+
+        if (params.curatoryGroupType) {
+            queryParams.curatoryGroupType = params.curatoryGroupType
+        }
+        queryParams
     }
 
     /**

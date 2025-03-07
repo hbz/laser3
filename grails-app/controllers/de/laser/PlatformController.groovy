@@ -21,6 +21,7 @@ import grails.plugin.springsecurity.annotation.Secured
 class PlatformController  {
 
     ContextService contextService
+    FilterService filterService
     GokbService gokbService
     PlatformControllerService platformControllerService
     PropertyService propertyService
@@ -83,53 +84,7 @@ class PlatformController  {
                 [value: 'Vendor', name: message(code: 'package.curatoryGroup.vendor')],
                 [value: 'Other', name: message(code: 'package.curatoryGroup.other')]
         ]
-        Map queryParams = [componentType: "Platform"]
-
-        if(params.q) {
-            result.filterSet = true
-            queryParams.name = params.q
-        }
-
-        if(params.provider) {
-            result.filterSet = true
-            queryParams.provider = params.provider
-        }
-
-        if(params.status) {
-            result.filterSet = true
-            queryParams.status = RefdataValue.get(params.status).value
-        }
-        else if(!params.filterSet) {
-            result.filterSet = true
-            queryParams.status = "Current"
-            params.platStatus = RDStore.PLATFORM_STATUS_CURRENT.id
-        }
-
-        if (params.ipSupport) {
-            result.filterSet = true
-            queryParams.qp_ipAuthentication = Params.getRefdataList(params, 'ipSupport').collect{ it.value }
-        }
-        if (params.shibbolethSupport) {
-            result.filterSet = true
-            queryParams.qp_shibbolethAuthentication = Params.getRefdataList(params, 'shibbolethSupport').collect{ (it == RDStore.GENERIC_NULL_VALUE) ? 'null' : it.value }
-        }
-        if (params.counterCertified) {
-            result.filterSet = true
-            queryParams.counterCertified = Params.getRefdataList(params, 'counterCertified').collect{ (it == RDStore.GENERIC_NULL_VALUE) ? 'null' : it.value }
-        }
-        if(params.counterSushiSupport) {
-            result.filterSet = true
-            queryParams.counterSushiSupport = params.list('counterSushiSupport') //ask David about proper convention
-        }
-        if (params.curatoryGroup) {
-            result.filterSet = true
-            queryParams.curatoryGroupExact = params.curatoryGroup
-        }
-
-        if (params.curatoryGroupType) {
-            result.filterSet = true
-            queryParams.curatoryGroupType = params.curatoryGroupType
-        }
+        Map<String, Object> queryParams = filterService.getWekbPlatformFilterParams(params)
 
         // overridden pagination - all uuids are required
         Map wekbResultMap = gokbService.doQuery(result, [offset:0, max:10000, status: params.status], queryParams)
