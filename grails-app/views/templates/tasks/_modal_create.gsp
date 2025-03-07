@@ -1,9 +1,9 @@
-<%@ page import="org.apache.commons.lang3.RandomStringUtils; java.sql.Timestamp; de.laser.Org; de.laser.License; de.laser.Subscription; de.laser.Task; de.laser.storage.RDStore;de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.utils.SwissKnife; java.sql.Timestamp; de.laser.Org; de.laser.License; de.laser.Subscription; de.laser.Task; de.laser.storage.RDStore;de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory" %>
 <laser:serviceInjection />
 
 <ui:modal id="modalCreateTask" message="task.create.new">
 
-    <g:set var="preID" value="${RandomStringUtils.randomAlphabetic(6)}" />
+    <g:set var="preID" value="${SwissKnife.getRandomID()}" />
 
     <g:form id="${preID}_form" class="ui form" url="[controller: 'task', action: 'createTask']" method="post">
         <g:hiddenField id="${preID}_preID" name="preID" value="${preID}" />
@@ -161,7 +161,7 @@
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
                                   optionValue="value" optionKey="id" required=""
                                   value="${taskInstance?.status?.id ?: RDStore.TASK_STATUS_OPEN.id}"
-                                  class="ui dropdown search many-to-one la-not-clearable"
+                                  class="ui dropdown many-to-one la-not-clearable"
                                   noSelection="${['' : message(code:'default.select.choose.label')]}"
                     />
                 </div>
@@ -248,6 +248,9 @@
     <laser:script file="${this.getGroovyPageFileName()}">
 
         JSPC.callbacks.modal.onShow.modalCreateTask = function (trigger) {
+            let preID = '#' + $('#modalCreateTask form input[name=preID]').val()
+            console.log ( 'modalCreateTask / preID: ' + preID )
+
             r2d2.helper.resetModalForm ('#modalCreateTask');
 
             $('#${preID}_radioresponsibleUser').prop ('checked', true);

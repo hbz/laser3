@@ -49,7 +49,6 @@
 
         <g:form id="${preID}_form" class="ui form" url="[controller: 'task', action: 'createTask']" method="post">
             <g:hiddenField id="${preID}_preID" name="preID" value="${preID}" />
-
             <g:hiddenField name="tipp" value="${tipp.id}"/>
             <g:hiddenField name="linkto" value="tipp"/>
 
