@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6342    07.03.2025  dev     3.5         Andreas Bug         Weiterer Bezeichner "Bestand" entfernt
+
 6330    07.03.2025  dev     3.5         Andreas Feature     Angleichung der Plattform-Filter an aktuellen we:kb-Stand
 
 6212    07.03.2025  dev     3.5         Andreas Bug         verschiedene Bugfixes und Verbesserung der Plattform-Filter
