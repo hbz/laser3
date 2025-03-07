@@ -1,9 +1,13 @@
-<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Task;de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
+<%@ page import="org.apache.commons.lang3.RandomStringUtils; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Task;de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
 <laser:serviceInjection />
 
 <ui:modal id="modalEditTask" message="task.edit" isEditModal="true" >
 
-    <g:form class="ui form" id="edit_task" url="[controller:'task', action:'editTask', id:taskInstance.id]" method="post">
+    <g:set var="preID" value="${RandomStringUtils.randomAlphabetic(6)}" />
+
+    <g:form id="${preID}_form" class="ui form" url="[controller:'task', action:'editTask', id:taskInstance.id]" method="post">
+        <g:hiddenField id="${preID}_preID" name="preID" value="${preID}" />
+
         <g:hiddenField name="version" value="${taskInstance.version}" />
         <div class="field ${hasErrors(bean: taskInstance, field: 'title', 'error')} required">
             <label for="title">
@@ -121,8 +125,7 @@
                 }
                 else return true
             }
-            $('#edit_task')
-                .form({
+            $('#${preID}_form').form({
                     on: 'blur',
                     inline: true,
                     fields: {

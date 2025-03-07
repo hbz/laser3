@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.addressbook.Person; de.laser.addressbook.Contact; de.laser.CustomerTypeService; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.storage.BeanStore; de.laser.Task; grails.plugin.springsecurity.SpringSecurityUtils;" %>
+<%@ page import="org.apache.commons.lang3.RandomStringUtils; de.laser.ui.Icon; de.laser.addressbook.Person; de.laser.addressbook.Contact; de.laser.CustomerTypeService; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.storage.BeanStore; de.laser.Task; grails.plugin.springsecurity.SpringSecurityUtils;" %>
 <laser:serviceInjection />
 
 <g:if test="${contextService.isInstEditor()}">
@@ -45,7 +45,11 @@
 
     <ui:modal id="modalCreateTask" message="task.create.reportTitleToProvider">
 
-        <g:form class="ui form" id="create_task" url="[controller: 'task', action: 'createTask']" method="post">
+        <g:set var="preID" value="${RandomStringUtils.randomAlphabetic(6)}" />
+
+        <g:form id="${preID}_form" class="ui form" url="[controller: 'task', action: 'createTask']" method="post">
+            <g:hiddenField id="${preID}_preID" name="preID" value="${preID}" />
+
             <g:hiddenField name="tipp" value="${tipp.id}"/>
             <g:hiddenField name="linkto" value="tipp"/>
 
@@ -162,7 +166,7 @@
                         }
                         else return true
                     }
-                    $('#create_task').form({
+                    $('#${preID}_form').form({
                         inline: true,
                         fields: {
                             title: {
