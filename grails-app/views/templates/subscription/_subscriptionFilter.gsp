@@ -14,8 +14,7 @@
             <input type="hidden" name="tab" value="${params.tab}"/>
             <input type="hidden" name="propertiesFilterPropDef" value="${propertiesFilterPropDef}"/>
         </g:if>
-        <div class="five fields">
-            %{--<div class="four fields">--}%
+        <div class="four fields">
             <% /* 1-1 */ %>
             <div class="field">
                 <label for="search-title">${message(code: 'default.search.text')}
@@ -46,9 +45,39 @@
             </div>
             <% /* 1-3 */ %>
             <div class="field">
-                <ui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
+                <label for="provider"><g:message code="provider.label"/></label>
+                <select id="provider" name="provider" multiple="" class="ui search selection fluid dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${providerService.getCurrentProviders(contextService.getOrg())}" var="provider">
+                        <option <%=Params.getLongList(params, 'provider').contains(provider.id) ? 'selected="selected"' : ''%>
+                                value="${provider.id}">
+                            ${provider.name}
+                        </option>
+                    </g:each>
+                </select>
             </div>
             <% /* 1-4 */ %>
+            <div class="field">
+                <label for="vendor"><g:message code="vendor.label"/></label>
+                <select id="vendor" name="vendor" multiple="" class="ui search selection fluid dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${vendorService.getCurrentVendors(contextService.getOrg())}" var="vendor">
+                        <option <%=Params.getLongList(params, 'vendor').contains(vendor.id) ? 'selected="selected"' : ''%>
+                                value="${vendor.id}">
+                            ${vendor.name}
+                        </option>
+                    </g:each>
+                </select>
+            </div>
+        </div>
+        <div class="three fields">
+            <% /* 2-1 */ %>
+            <div class="field">
+                <ui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
+            </div>
+            <% /* 2-2 */ %>
             <div class="field">
                 <label for="referenceYears">${message(code: 'subscription.referenceYear.label')}</label>
                 <select id="referenceYears" name="referenceYears" multiple="" class="ui search selection fluid dropdown">
@@ -61,19 +90,7 @@
                     </g:each>
                 </select>
             </div>
-            <% /*
-            <!-- 1-4 -->
-            <div class="field disabled">
-                <ui:datepicker label="myinst.currentSubscriptions.filter.renewalDate.label"  id="renewalDate" name="renewalDate"
-                                  placeholder="filter.placeholder" value="${params.renewalDate}"/>
-            </div>
-            <!-- 1-5 -->
-            <div class="field disabled">
-                <ui:datepicker label="myinst.currentSubscriptions.filter.durationDateEnd.label"
-                                  id="durationDate" name="durationDate" placeholder="filter.placeholder" value="${params.durationDate}"/>
-            </div>
-            */ %>
-            <% /* 1-5 */ %>
+            <% /* 2-3 */ %>
             <div class="field">
                 <label for="status"><g:message code="default.status.label"/></label>
                 <select id="status" name="status" multiple="" class="ui search selection fluid dropdown">
@@ -91,7 +108,7 @@
 
         <div class="four fields">
 
-            <% /* 2-1 and 2-2 */ %>
+            <% /* 3-1 and 3-2 */ %>
             <laser:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
             <%--
                         <!-- 2-1 -->
@@ -117,7 +134,7 @@
                         </div>
 
                        --%>
-            <% /* 2-3 */ %>
+            <% /* 3-3 */ %>
             <div class="field">
                 <label for="form"><g:message code="subscription.form.label"/></label>
                 <select id="form" name="form" multiple="" class="ui search selection fluid dropdown">
@@ -131,7 +148,7 @@
                     </g:each>
                 </select>
             </div>
-            <% /* 2-4 */ %>
+            <% /* 3-4 */ %>
             <div class="field">
                 <label for="resource"><g:message code="subscription.resource.label"/></label>
                 <select id="resource" name="resource" multiple="" class="ui search selection fluid dropdown">
@@ -149,7 +166,7 @@
         </div>
 
         <div class="four fields">
-            <% /* 3-1 */ %>
+            <% /* 4-1 */ %>
             <div class="field">
                 <label for="subKinds">${message(code: 'myinst.currentSubscriptions.subscription_kind')}</label>
                 <select id="subKinds" name="subKinds" multiple="" class="ui search selection fluid dropdown">
@@ -164,7 +181,7 @@
                 </select>
 
             </div>
-            <% /* 3-2 */ %>
+            <% /* 4-2 */ %>
             <div class="field">
                 <label>${message(code:'subscription.isPublicForApi.label')}</label>
                 <ui:select class="ui fluid dropdown" name="isPublicForApi"
@@ -174,7 +191,7 @@
                               value="${params.isPublicForApi}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
-            <% /* 3-3 */ %>
+            <% /* 4-3 */ %>
             <div class="field">
                 <label>${message(code:'subscription.hasPerpetualAccess.label')}</label>
                 <ui:select class="ui fluid dropdown" name="hasPerpetualAccess"
@@ -184,7 +201,7 @@
                               value="${params.hasPerpetualAccess}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
-            <% /* 3-4 */ %>
+            <% /* 4-4 */ %>
             <div class="field">
                 <label>${message(code:'subscription.hasPublishComponent.label')}</label>
                 <ui:select class="ui fluid dropdown" name="hasPublishComponent"
@@ -197,6 +214,7 @@
         </div>
 
         <div class="four fields">
+            <% /* 5-1 */ %>
             <div class="field">
                 <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')}</label>
                 <select id="holdingSelection" name="holdingSelection" multiple="" class="ui search selection fluid dropdown">
@@ -210,6 +228,7 @@
                     </g:each>
                 </select>
             </div>
+            <% /* 5-2 */ %>
             <div class="field">
                 <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
                 <div class="inline fields la-filter-inline">
@@ -229,8 +248,7 @@
                     </div>
                 </div>
             </div>
-            <% /* 4-2 */ %>
-        <%-- TODO [ticket=2276] provisoric, name check is in order to prevent id mismatch --%>
+            <% /* 5-3 */ %>
             <g:if test="${contextService.getOrg().isCustomerType_Inst_Pro()}">
                 <div class="field">
                     <label></label>
@@ -255,6 +273,7 @@
                 <div class="field"></div>
             </g:else>
 
+            <% /* 5-4 */ %>
             <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
                 <div class="field">
                     <fieldset>
