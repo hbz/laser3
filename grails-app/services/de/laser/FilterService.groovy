@@ -36,7 +36,6 @@ class FilterService {
     // FilterService.Result fsr = filterService.getXQuery(paramsClone, ..)
     // if (fsr.isFilterSet) { paramsClone.filterSet = true }
 
-    //continue here: K-V-map of platform filter params; key: filter param name, value: refdata category; copy refdata category UYNP from we:kb with reordering command!
     static Map<String, Map> PLATFORM_FILTER_AUTH_FIELDS = ['shibbolethAuthentication': [rdcat: RDConstants.Y_N, label: 'platform.auth.shibboleth.supported'],
                                                               'openAthens': [rdcat: RDConstants.Y_N, label: 'platform.auth.openathens.supported'],
                                                               'ipAuthentication': [rdcat: RDConstants.IP_AUTHENTICATION, label: 'platform.auth.ip.supported'],
@@ -2330,15 +2329,15 @@ class FilterService {
             queryParams.provider = params.provider
         }
 
-        if(params.status) {
-            queryParams.status = RefdataValue.get(params.status).value
+        if(Params.getLongList(params, 'platStatus')) {
+            queryParams.status = RefdataValue.findAllByIdInList(Params.getLongList(params, 'platStatus')).value
         }
         else if(!params.filterSet) {
             queryParams.status = "Current"
             params.platStatus = RDStore.PLATFORM_STATUS_CURRENT.id
         }
 
-        Set<String> refdataListParams = ['ipAuthentication', 'shibbolethAuthentication', 'openAthens', 'passwordAuthentication', 'mailDomain', 'refererAuthentication', 'ezProxy', 'hanServer', 'otherProxies', 'statisticsFormat']
+        Set<String> refdataListParams = PLATFORM_FILTER_ACCESSIBILITY_FIELDS.keySet()+PLATFORM_FILTER_ADDITIONAL_SERVICE_FIELDS.keySet()+PLATFORM_FILTER_AUTH_FIELDS.keySet()+['statisticsFormat']
         refdataListParams.each { String refdataListParam ->
             if (params.containsKey(refdataListParam)) {
                 queryParams.put(refdataListParam, Params.getRefdataList(params, refdataListParam).collect{ (it == RDStore.GENERIC_NULL_VALUE) ? 'null' : it.value })

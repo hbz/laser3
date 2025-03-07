@@ -23,7 +23,7 @@
                 <label for="platStatus">${message(code: 'default.status.label')}</label>
                 <select name="platStatus" id="platStatus" multiple="multiple" class="ui search selection dropdown">
                     <option value="">${message(code:'default.select.choose.label')}</option>
-                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.PLATFORM_STATUS)}" var="platStatus">
+                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.PLATFORM_STATUS)-RDStore.PLATFORM_STATUS_REMOVED}" var="platStatus">
                         <option <%=Params.getLongList(params, 'platStatus').contains(platStatus.id) ? 'selected=selected"' : ''%> value="${platStatus.id}">
                             ${platStatus.getI10n("value")}
                         </option>
@@ -58,7 +58,7 @@
         <div class="ui accordion">
             <div class="title">
                 <i class="icon dropdown"></i>
-                <g:message code="platform.filter.auth.title"/>
+                <g:message code="platform.filter.auth.title"/> <g:if test="${params.keySet().intersect(FilterService.PLATFORM_FILTER_AUTH_FIELDS.keySet()).size()}"><span class="ui circular label yellow">${params.keySet().intersect(FilterService.PLATFORM_FILTER_AUTH_FIELDS.keySet()).size()}</span></g:if>
             </div>
             <div class="content">
                 <g:each in="${FilterService.PLATFORM_FILTER_AUTH_FIELDS}" var="authField" status="ia">
@@ -88,7 +88,7 @@
         <div class="ui accordion">
             <div class="title">
                 <i class="icon dropdown"></i>
-                <g:message code="platform.filter.stats.title"/>
+                <g:message code="platform.filter.stats.title"/> <g:if test="${params.keySet().intersect(['statisticsFormat', 'counterSupport', 'counterAPISupport']).size()}"><span class="ui circular label yellow">${params.keySet().intersect(['statisticsFormat', 'counterSupport', 'counterAPISupport']).size()}</span></g:if>
             </div>
             <div class="content">
                 <div class="three fields">
@@ -136,7 +136,7 @@
         <div class="ui accordion">
             <div class="title">
                 <i class="icon dropdown"></i>
-                <g:message code="platform.filter.accessibility.title"/>
+                <g:message code="platform.filter.accessibility.title"/> <g:if test="${params.keySet().intersect(FilterService.PLATFORM_FILTER_ACCESSIBILITY_FIELDS.keySet()).size()}"><span class="ui circular label yellow">${params.keySet().intersect(FilterService.PLATFORM_FILTER_ACCESSIBILITY_FIELDS.keySet()).size()}</span></g:if>
             </div>
             <div class="content">
                 <g:each in="${FilterService.PLATFORM_FILTER_ACCESSIBILITY_FIELDS}" var="accessibilityField" status="ib">
@@ -164,7 +164,7 @@
         <div class="ui accordion">
             <div class="title">
                 <i class="icon dropdown"></i>
-                <g:message code="platform.filter.additional.title"/>
+                <g:message code="platform.filter.additional.title"/> <g:if test="${params.keySet().intersect(FilterService.PLATFORM_FILTER_ADDITIONAL_SERVICE_FIELDS.keySet()).size()}"><span class="ui circular label yellow">${params.keySet().intersect(FilterService.PLATFORM_FILTER_ADDITIONAL_SERVICE_FIELDS.keySet()).size()}</span></g:if>
             </div>
             <div class="content">
                 <g:each in="${FilterService.PLATFORM_FILTER_ADDITIONAL_SERVICE_FIELDS}" var="additionalServiceField" status="is">
