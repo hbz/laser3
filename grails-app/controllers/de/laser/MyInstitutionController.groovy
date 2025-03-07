@@ -594,8 +594,8 @@ class MyInstitutionController  {
         prf.setBenchmark('get licensors')
         Map<String,Set<Org>> orgs = [consortia:consortia]
         result.orgs = orgs
-        result.providers = Provider.findAll([sort: 'sortname'])
-        result.vendors = Vendor.findAll([sort: 'sortname'])
+        result.providers = providerService.getCurrentProviders(contextService.getOrg())
+        result.vendors = vendorService.getCurrentVendors(contextService.getOrg())
 
 		List bm = prf.stopBenchmark()
 		result.benchMark = bm

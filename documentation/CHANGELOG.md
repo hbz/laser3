@@ -9,6 +9,8 @@
 
 6342    07.03.2025  dev     3.5         Andreas Bug         Weiterer Bezeichner "Bestand" entfernt
 
+6337    07.03.2025  dev     3.5         Andreas Feature     Erweiterung des Filters unter "Meine Lizenzen" und "Meine Verträge"
+
 6330    07.03.2025  dev     3.5         Andreas Feature     Angleichung der Plattform-Filter an aktuellen we:kb-Stand
 
 6320    07.03.2025  dev     3.5         Andreas Feature     Entfernen der Spalte "Plattform" aus der Sicht "Meine Lieferanten"

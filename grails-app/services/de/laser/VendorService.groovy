@@ -483,9 +483,11 @@ class VendorService {
 
     }
 
-    Set<Long> getCurrentVendorIds(Org context) {
-        Set<Long> result = VendorRole.executeQuery("select vr.id from VendorRole vr join vr.vendor as v where vr.subscription in (select sub from OrgRole where org = :context and roleType in (:roleTypes))",
-                [context:context,roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIUM,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]])
+    Set<Vendor> getCurrentVendors(Org context) {
+        Set<Vendor> result = VendorRole.executeQuery("select v from VendorRole vr join vr.vendor as v where (vr.subscription in (select sub from OrgRole where org = :context and roleType in (:subRoleTypes)) or vr.license in (select lic from OrgRole where org = :context and roleType in (:licRoleTypes))) order by v.name, v.sortname",
+                [context:context,
+                 subRoleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIUM,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER],
+                 licRoleTypes:[RDStore.OR_LICENSING_CONSORTIUM,RDStore.OR_LICENSEE_CONS,RDStore.OR_LICENSEE]])
         result
     }
 
