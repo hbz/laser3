@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6330    07.03.2025  dev     3.5         Andreas Feature     Angleichung der Plattform-Filter an aktuellen we:kb-Stand
+
+6212    07.03.2025  dev     3.5         Andreas Bug         verschiedene Bugfixes und Verbesserung der Plattform-Filter
+
 6332    05.03.2025  rc-3.4  3.4.20      Andreas Bug         Filter unter "Paket verknüpfen" nicht einsetzbar
 
 6325    05.03.2025  dev     3.5         David   Bug         Organisationen verwalten (Admin): Filter- und Formular-Parameter
@@ -25,7 +29,7 @@
 
 6316    25.02.2025  rc-3.4  3.4.19      Andreas Bug         Schnitzer im Kostenexport behoben
 
-6305:   25.02.2025  dev     3.5         Moe Bug         einzelner Kontakt Löschbutton löscht nicht
+6305    25.02.2025  dev     3.5         Moe Bug         einzelner Kontakt Löschbutton löscht nicht
 
 6092    25.02.2025  dev     3.5         Moe     Feature     Textänderung: (Nicht)-Verbindliche Umfragen werden (Nicht-)verpflichtende Umfragen
 
