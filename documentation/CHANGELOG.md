@@ -11,6 +11,8 @@
 
 6330    07.03.2025  dev     3.5         Andreas Feature     Angleichung der Plattform-Filter an aktuellen we:kb-Stand
 
+6320    07.03.2025  dev     3.5         Andreas Feature     Entfernen der Spalte "Plattform" aus der Sicht "Meine Lieferanten"
+
 6212    07.03.2025  dev     3.5         Andreas Bug         verschiedene Bugfixes und Verbesserung der Plattform-Filter
 
 6332    05.03.2025  rc-3.4  3.4.20      Andreas Bug         Filter unter "Paket verknüpfen" nicht einsetzbar
