@@ -108,6 +108,7 @@
         JSPC.callbacks.modal.onVisible.modalEditTask = function (trigger) {
             let preID = '#' + $('#modalEditTask form input[name=preID]').val()
             console.log ( 'modalEditTask / preID: ' + preID )
+            console.log ( trigger )
 
             let $radRespOrg         = $(preID + '_radioresponsibleOrg')
             let $radRespUser        = $(preID + '_radioresponsibleUser')

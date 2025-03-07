@@ -34,7 +34,7 @@
                         <g:message code="task.typ" /> <g:message code="messageRequiredField" />
                     </legend>
                     <div class="ui radio checkbox">
-                        <input id="${preID}_generalradio" type="radio" value="general" name="linkto" tabindex="0" class="hidden" checked="">
+                        <input id="${preID}_generalradio" type="radio" value="general" name="linkto" tabindex="0" class="hidden" checked="checked">
                         <label for="${preID}_generalradio">${message(code: 'task.general')}</label>
                     </div>
                     &nbsp; &nbsp;
@@ -75,7 +75,7 @@
                 </fieldset>
             </div>
 
-            <div id="${preID}_licensediv" class="field ${hasErrors(bean: taskInstance, field: 'license', 'error')} required">
+            <div id="${preID}_licensediv" class="field ${hasErrors(bean: taskInstance, field: 'license', 'error')} required" style="display: none">
                 <label for="${preID}_license">
                     <g:message code="task.linkto" /> <g:message code="license.label" /> <g:message code="messageRequiredField" />
                 </label>
@@ -90,7 +90,7 @@
                 />
             </div>
 
-            <div id="${preID}_orgdiv" class="field ${hasErrors(bean: taskInstance, field: 'org', 'error')} required">
+            <div id="${preID}_orgdiv" class="field ${hasErrors(bean: taskInstance, field: 'org', 'error')} required" style="display: none">
             <label for="${preID}_org">
                 <g:message code="task.linkto" /> <g:message code="task.org.label" /> <g:message code="messageRequiredField" />
             </label>
@@ -105,10 +105,10 @@
                 />
             </div>
 
-            <div id="${preID}_providerdiv" class="field ${hasErrors(bean: taskInstance, field: 'provider', 'error')} required">
-            <label for="${preID}_provider">
-                <g:message code="task.linkto" /> <g:message code="task.provider.label" /> <g:message code="messageRequiredField" />
-            </label>
+            <div id="${preID}_providerdiv" class="field ${hasErrors(bean: taskInstance, field: 'provider', 'error')} required" style="display: none">
+                <label for="${preID}_provider">
+                    <g:message code="task.linkto" /> <g:message code="task.provider.label" /> <g:message code="messageRequiredField" />
+                </label>
                 <g:select id="${preID}_provider"
                           name="provider"
                           from="${validProvidersDropdown}"
@@ -120,10 +120,10 @@
                 />
             </div>
 
-            <div id="${preID}_vendordiv" class="field ${hasErrors(bean: taskInstance, field: 'vendor', 'error')} required">
-            <label for="${preID}_vendor">
-                <g:message code="task.linkto" /> <g:message code="task.vendor.label" /> <g:message code="messageRequiredField" />
-            </label>
+            <div id="${preID}_vendordiv" class="field ${hasErrors(bean: taskInstance, field: 'vendor', 'error')} required" style="display: none">
+                <label for="${preID}_vendor">
+                    <g:message code="task.linkto" /> <g:message code="task.vendor.label" /> <g:message code="messageRequiredField" />
+                </label>
                 <g:select id="${preID}_vendor"
                           name="vendor"
                           from="${validVendorsDropdown}"
@@ -135,7 +135,7 @@
                 />
             </div>
 
-            <div id="${preID}_subscriptiondiv" class="field ${hasErrors(bean: taskInstance, field: 'subscription', 'error')} required">
+            <div id="${preID}_subscriptiondiv" class="field ${hasErrors(bean: taskInstance, field: 'subscription', 'error')} required" style="display: none">
                 <label for="${preID}_subscription">
                     <g:message code="task.linkto" /> <g:message code="default.subscription.label" /> <g:message code="messageRequiredField" />
                 </label>
@@ -214,118 +214,106 @@
         </div>
 
     </g:form>
-    <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajaxHtml'}">
-        <laser:script file="${this.getGroovyPageFileName()}">
-            $('#${preID}_generalradio').prop( 'checked', true );
-            $('#${preID}_licensediv, #${preID}_orgdiv, #${preID}_subscriptiondiv').hide();
-
-            JSPC.app.showHideRequire = function (taskType) {
-                var arr = [ 'license', 'org', 'provider', 'vendor', 'subscription' ];
-                $('#${preID}_' + taskType + 'radio').change(function () {
-
-                    var hideArray = arr.filter(function(val, index, arr) {
-                        return val != taskType;
-                    });
-                    var hide = hideArray.map(function(val, index, arr) {
-                        return '#${preID}_' + val + 'div';
-                    }).join(', ');
-
-                    $(hide).hide();
-                    $('#${preID}_' + taskType + 'div').show();
-                    JSPC.app.chooseRequiredDropdown(taskType);
-                });
-            }
-
-            JSPC.app.showHideRequire ( 'general' );
-            JSPC.app.showHideRequire ( 'license' );
-            JSPC.app.showHideRequire ( 'subscription' );
-            JSPC.app.showHideRequire ( 'org' );
-            JSPC.app.showHideRequire ( 'provider' );
-            JSPC.app.showHideRequire ( 'vendor' );
-        </laser:script>
-    </g:if>
 
     <laser:script file="${this.getGroovyPageFileName()}">
 
         JSPC.callbacks.modal.onShow.modalCreateTask = function (trigger) {
             let preID = '#' + $('#modalCreateTask form input[name=preID]').val()
             console.log ( 'modalCreateTask / preID: ' + preID )
+            console.log ( trigger )
 
             r2d2.helper.resetModalForm ('#modalCreateTask');
 
-            $('#${preID}_radioresponsibleUser').prop ('checked', true);
+            let $radRespOrg         = $(preID + '_radioresponsibleOrg')
+            let $radRespUser        = $(preID + '_radioresponsibleUser')
+            let $respUserInput      = $(preID + '_responsibleUserInput')
+            let $respUserWrapper    = $(preID + '_responsibleUserWrapper')
+
+            $radRespOrg.change(function ()  { JSPC.app.toggleResponsibleUser() });
+            $radRespUser.change(function () { JSPC.app.toggleResponsibleUser() });
+
+            JSPC.app.toggleResponsibleUser = function () {
+                if ($radRespUser.is(':checked')) {
+                    $respUserWrapper.show()
+                } else {
+                    $respUserWrapper.hide()
+                }
+            }
+
+            $.fn.form.settings.rules.responsibleUserInput = function() {
+                if($radRespUser.is(':checked')) {
+                    return $respUserInput.val()
+                }
+                else return true
+            }
+
+            $(preID + '_form').form({
+                inline: true,
+                fields: {
+                    title: {
+                        identifier: preID.replace('#', '') + '_title',
+                        rules: [{
+                                type: 'empty',
+                                prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
+                        }]
+                    },
+                    endDate: {
+                        identifier: preID.replace('#', '') + '_endDate',
+                        rules: [{
+                                type: 'empty',
+                                prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
+                        }]
+                    },
+                    responsible: {
+                        rules: [{
+                                type: 'checked',
+                                prompt: '<g:message code="validation.needsToBeFilledOut" />'
+                        }]
+                    },
+                    responsibleUserInput: {
+                        identifier: preID.replace('#', '') + '_responsibleUserInput',
+                        rules: [{
+                                type: 'responsibleUserInput',
+                                prompt: '<g:message code="validation.responsibleMustBeChecked" />'
+                        }]
+                    }
+                }
+            });
+
+            $radRespOrg.prop ('checked', true);
             JSPC.app.toggleResponsibleUser();
 
-            // myInstitution
-            $('#${preID}_generalradio').prop ('checked', true);
-            $('#${preID}_licensediv, #${preID}_orgdiv, #${preID}_subscriptiondiv, #${preID}_providerdiv, #${preID}_vendordiv').hide();
-        };
+            <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajaxHtml'}">
 
-        $('#${preID}_radioresponsibleOrg').change(function () { JSPC.app.toggleResponsibleUser() });
-        $('#${preID}_radioresponsibleUser').change(function () { JSPC.app.toggleResponsibleUser() });
+                JSPC.app.taskTypes = ['general', 'license', 'org', 'provider', 'subscription', 'vendor']
 
-        JSPC.app.toggleResponsibleUser = function () {
-            if ($('#${preID}_radioresponsibleUser').is(':checked')) {
-                $('#${preID}_responsibleUserWrapper').show()
-            } else {
-                $('#${preID}_responsibleUserWrapper').hide()
-            }
-        }
+                $.each(JSPC.app.taskTypes, function(i, taskType) {
 
-        JSPC.app.toggleResponsibleUser();
+                    $(preID + '_' + taskType + 'radio').change(function () {
+                        let toHide = JSPC.app.taskTypes.map( function(tt) { return preID + '_' + tt + 'div'; } ).join(', ');
+                        $(toHide).hide();
 
-        JSPC.app.chooseRequiredDropdown = function (opt) {
-            $(document).ready(function () {
+                        $(preID + '_' + taskType + 'div').show();
 
-                $.fn.form.settings.rules.responsibleUserInput = function() {
-                    if($('#${preID}_radioresponsibleUser').is(':checked')) {
-                        return $('#${preID}_responsibleUserInput').val()
-                    }
-                    else return true
-                }
-                $('#${preID}_form').form({
-                        inline: true,
-                        fields: {
-                            title: {
-                                identifier: '${preID}_title',
-                                rules: [{
-                                        type: 'empty',
-                                        prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
-                                }]
-                            },
-                            endDate: {
-                                identifier: '${preID}_endDate',
-                                rules: [{
-                                        type: 'empty',
-                                        prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
-                                }]
-                            },
-                            opt: {
-                                identifier: '${preID}_' + opt,
-                                rules: [{
-                                        type: 'empty',
-                                        prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
-                                }]
-                            },
-                            responsible: {
-                                rules: [{
-                                        type: 'checked',
-                                        prompt: '<g:message code="validation.needsToBeFilledOut" />'
-                                }]
-                            },
-                            responsibleUserInput: {
-                                identifier: '${preID}_responsibleUserInput',
-                                rules: [{
-                                        type: 'responsibleUserInput',
-                                        prompt: '<g:message code="validation.responsibleMustBeChecked" />'
-                                }]
-                            }
+                        if (taskType != 'general') {
+                            $(preID + '_form').form({
+                                on: 'blur',
+                                inline: true,
+                                fields: {
+                                    taskType : {
+                                        identifier: preID.replace('#', '') + '_' + taskType,
+                                        rules: [{
+                                                type: 'empty',
+                                                prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
+                                        }]
+                                    }
+                                }
+                            });
                         }
                     });
-            })
-        }
-
-        JSPC.app.chooseRequiredDropdown('status'); // todo remove, but init
+                });
+            </g:if>
+        };
     </laser:script>
 
 </ui:modal>
