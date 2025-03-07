@@ -248,8 +248,7 @@ assets {
             'crypto-js-4.1.1/**',
             'echarts/**',
             'spring-websocket/**', // tmp deactivated
-            'swagger-ui/**',
-            'trumbowyg/**'
+            'swagger-ui/**'
     ]
 }
 

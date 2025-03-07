@@ -860,11 +860,19 @@
 
 <g:render template="/clickMe/export/js"/>
 
-<laser:render template="/info/flyoutWrapper"/>%{-- reportTitleToProvider_simple --}%
-%{-- css workaround: reportTitleToProvider_simple --}%
+%{-- reportTitleToProvider_simple - start --}%
+<laser:render template="/info/flyoutWrapper"/>
+
 <style>
-.ui.form .info.message { display: flex; }
+    .ui.form .info.message { display: flex; }
 </style>
 
+<laser:script file="${this.getGroovyPageFileName()}">
+    JSPC.app.editTask = function (id) {
+        var func = bb8.ajax4SimpleModalFunction("#modalEditTask", "<g:createLink controller="ajaxHtml" action="editTask"/>?id=" + id);
+        func();
+    }
+</laser:script>
+%{-- reportTitleToProvider_simple - end --}%
 
 <laser:htmlEnd/>

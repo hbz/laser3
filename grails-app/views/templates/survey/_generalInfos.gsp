@@ -19,25 +19,6 @@
             <div class="ui card">
                 <div class="content">
 
-                    <g:if test="${surveyConfig.subSurveyUseForTransfer}">
-                        <dl>
-                            <dt class="control-label">
-                                ${message(code: 'surveyconfig.scheduledStartDate.label')}
-                            </dt>
-                            <dd><ui:xEditable owner="${surveyConfig}" field="scheduledStartDate" type="date"
-                                              overwriteEditable="${false}"/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt class="control-label">
-                                ${message(code: 'surveyconfig.scheduledEndDate.label')}
-                            </dt>
-                            <dd><ui:xEditable owner="${surveyConfig}" field="scheduledEndDate" type="date"
-                                              overwriteEditable="${false}"/></dd>
-
-                        </dl>
-                    </g:if>
-
                     <g:each in="${surveyConfig.surveyUrls}" var="surveyUrl" status="i">
                         <dl>
                             <dt class="control-label">
@@ -166,16 +147,19 @@
                 <laser:render template="/templates/survey/properties" model="${[surveyConfig: surveyConfig]}"/>
             </g:if>
         </div>
+
+        <g:if test="${surveyConfig.invoicingInformation}">
+            <g:link class="${Btn.SIMPLE} left floated"
+                    controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
+                    params="${parame+[viewTab: 'invoicingInformation']}">
+                ${message(code: 'default.edit.label', args:  [message(code: 'surveyOrg.invoicingInformation')])}
+            </g:link>
+        </g:if>
+
     </div>
 </div>
 
-<g:if test="${surveyConfig.invoicingInformation}">
-    <g:link class="${Btn.SIMPLE}"
-            controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
-            params="${parame+[viewTab: 'invoicingInformation']}">
-        ${message(code: 'default.edit.label', args:  [message(code: 'surveyOrg.invoicingInformation')])}
-    </g:link>
-</g:if>
+
 
 <laser:script file="${this.getGroovyPageFileName()}">
 

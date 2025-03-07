@@ -281,10 +281,6 @@ class SurveyService {
                                    messageSource.getMessage('subscription.resource.label', null, locale),
                                    messageSource.getMessage('subscription.isPublicForApi.label', null, locale),
                                    messageSource.getMessage('subscription.hasPerpetualAccess.label', null, locale)])
-                    if (surveyConfig.subSurveyUseForTransfer) {
-                        titles.addAll([messageSource.getMessage('surveyconfig.scheduledStartDate.label', null, locale),
-                                       messageSource.getMessage('surveyconfig.scheduledEndDate.label', null, locale)])
-                    }
                 }
                 if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY) {
                     titles.add(messageSource.getMessage('surveyInfo.name.label', null, locale))
@@ -448,11 +444,6 @@ class SurveyService {
                         row.add([field: '', style: null])
                         row.add([field: '', style: null])
                         row.add([field: '', style: null])
-                    }
-
-                    if (surveyConfig.subSurveyUseForTransfer) {
-                        row.add([field: surveyConfig.scheduledStartDate ? DateUtils.getSDF_ddMMyyy().format( DateUtils.getSDF_yyyyMMdd_hhmmSSS().parse(surveyConfig.scheduledStartDate.toString()) ): '', style: null])
-                        row.add([field: surveyConfig.scheduledEndDate ? DateUtils.getSDF_ddMMyyy().format( DateUtils.getSDF_yyyyMMdd_hhmmSSS().parse(surveyConfig.scheduledEndDate.toString()) ): '', style: null])
                     }
 
                     CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, contextOrg), RDStore.COST_ITEM_DELETED).each { CostItem surveyCostItem ->

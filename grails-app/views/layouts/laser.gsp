@@ -147,7 +147,7 @@
         <div class="pusher">
             <main id="mainContent" class="ui main container hidden">
                 <sec:ifAnyGranted roles="ROLE_ADMIN">%{-- TMP ONLY --}%
-                    <g:if test="${institution || contextOrg || orgInstance}">
+                    <g:if test="${AppUtils.getCurrentServer() in [AppUtils.LOCAL, AppUtils.DEV] && (institution || contextOrg || orgInstance)}">
                         <div id="dev-tmp-help">
                             institution               : ${institution?.getName()} <br />
                             contextOrg                : ${contextOrg?.getName()} <br />

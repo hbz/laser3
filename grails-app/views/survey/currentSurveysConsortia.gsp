@@ -130,7 +130,7 @@
                 <div class="inline fields la-filter-inline">
                     <div class="inline field">
                         <div class="ui checkbox">
-                            <label for="checkMandatory">${message(code: 'surveyInfo.isMandatory.label')}</label>
+                            <label for="checkMandatory">${message(code: 'surveyInfo.isMandatory.filter')}</label>
                             <input id="checkMandatory" name="mandatory" type="checkbox"
                                    <g:if test="${params.mandatory}">checked=""</g:if>
                                    tabindex="0">
@@ -139,7 +139,7 @@
 
                     <div class="inline field">
                         <div class="ui checkbox">
-                            <label for="checkNoMandatory">${message(code: 'surveyInfo.isNotMandatory.label')}</label>
+                            <label for="checkNoMandatory">${message(code: 'surveyInfo.isNotMandatory.filter')}</label>
                             <input id="checkNoMandatory" name="noMandatory" type="checkbox"
                                    <g:if test="${params.noMandatory}">checked=""</g:if>
                                    tabindex="0">
