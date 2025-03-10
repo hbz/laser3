@@ -73,7 +73,8 @@
                     </td>
                     <td>
                         <ui:xEditableRefData owner="${subscription}" field="holdingSelection" config="${RDConstants.SUBSCRIPTION_HOLDING}"/>
-                        <ui:auditButton auditable="[subscription, 'holdingSelection']"/>
+                        <%-- implicitly defined by value
+                        <ui:auditButton auditable="[subscription, 'holdingSelection']"/>--%>
                     </td>
 
                     <td class="x">
