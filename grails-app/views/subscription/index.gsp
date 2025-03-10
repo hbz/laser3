@@ -664,7 +664,7 @@
                                                         </div>
                                                     </div>
 
-                                                    <laser:render template="/templates/titles/reportTitleToProvider_simple" model="${[tipp: ie.tipp]}"/>
+                                                    <laser:render template="/templates/titles/reportTitleToProvider_multiple" model="${[tipp: ie.tipp]}"/>
                                                 </div><%-- My Area END --%>
                                             </div><%-- .grid --%>
                                         </div><%-- .segment --%>
@@ -860,19 +860,6 @@
 
 <g:render template="/clickMe/export/js"/>
 
-%{-- reportTitleToProvider_simple - start --}%
-<laser:render template="/info/flyoutWrapper"/>
-
-<style>
-    .ui.form .info.message { display: flex; }
-</style>
-
-<laser:script file="${this.getGroovyPageFileName()}">
-    JSPC.app.editTask = function (id) {
-        var func = bb8.ajax4SimpleModalFunction("#modalEditTask", "<g:createLink controller="ajaxHtml" action="editTask"/>?id=" + id);
-        func();
-    }
-</laser:script>
-%{-- reportTitleToProvider_simple - end --}%
+<g:render template="/templates/titles/reportTitleToProvider_multiple_precon"/>
 
 <laser:htmlEnd/>
