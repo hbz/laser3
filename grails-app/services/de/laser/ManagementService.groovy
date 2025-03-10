@@ -1197,6 +1197,46 @@ class ManagementService {
         toggle ? 'true' : 'false'
     }
 
+    Set<Subscription> loadSubscriptions(GrailsParameterMap params, Subscription owner) {
+        Set<Subscription> subscriptions = []
+        EhcacheWrapper paginationCache
+        if(params.controller == 'ajax' && params.action in ['addProviderRole', 'delAllProviderRoles', 'addVendorRole', 'delAllVendorRoles'])
+            paginationCache = cacheService.getTTL1800Cache("/myInstitution/subscriptionManagement/providerAgency/${contextService.getUser().id}/pagination")
+        else
+            paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/providerAgency/${contextService.getUser().id}/pagination")
+        if(paginationCache.get('membersListToggler')) {
+            if(params.takeSelectedSubs.contains('/subscription/')) {
+                subscriptions = subscriptionControllerService.getFilteredSubscribers(params,owner).sub
+            }
+            else if(params.takeSelectedSubs.contains('/myInstitution/')) {
+                subscriptions = subscriptionService.getMySubscriptions(params,contextService.getUser(),contextService.getOrg()).allSubscriptions
+            }
+        }
+        else {
+            List selectionCache = []
+            if(paginationCache.get('checkedMap')) {
+                selectionCache.addAll(paginationCache.get('checkedMap').values())
+                paginationCache.remove('checkedMap')
+            }
+            else selectionCache.addAll(params.list('selectedSubs'))
+            if(selectionCache) {
+                subscriptions = Subscription.findAllByIdInList(selectionCache)
+            }
+        }
+        subscriptions
+    }
+
+    void clearSubscriptionCache(GrailsParameterMap params) {
+        EhcacheWrapper paginationCache
+        if(params.controller == 'ajax' && params.action in ['addProviderRole', 'delAllProviderRoles', 'addVendorRole', 'delAllVendorRoles']) {
+            paginationCache = cacheService.getTTL1800Cache("/myInstitution/subscriptionManagement/providerAgency/${contextService.getUser().id}/pagination")
+        }
+        else {
+            paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/providerAgency/${contextService.getUser().id}/pagination")
+        }
+        paginationCache.clear()
+    }
+
     /**
      * Sets generic parameters used in the methods and checks whether the given user may access the view
      * @param controller the controller instance

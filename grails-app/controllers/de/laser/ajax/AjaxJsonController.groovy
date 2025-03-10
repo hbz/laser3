@@ -573,11 +573,20 @@ class AjaxJsonController {
                     result.state = 'checked'
                 }
                 else {
+                    cache.remove('membersListToggler')
                     checkedMap.remove(params.selId)
                     result.state = 'unchecked'
                 }
             }
             else if(params.containsKey('allIds[]')) {
+                if(!cache.get('membersListToggler')) {
+                    cache.put('membersListToggler', 'checked')
+                    result.state = 'checked'
+                }
+                else {
+                    cache.remove('membersListToggler')
+                    result.state = 'unchecked'
+                }
                 List allIds = params.list('allIds[]')
                 allIds.each { String id ->
                     String key = 'selectedSubs_'+id
