@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6335    10.03.2025  dev     3.5         Andreas Feature     Massenver-/Entknüpfung von Lizenzen mit Anbietern und Lieferanten implementiert
+
 6342    07.03.2025  dev     3.5         Andreas Bug         Weiterer Bezeichner "Bestand" entfernt
 
 6337    07.03.2025  dev     3.5         Andreas Feature     Erweiterung des Filters unter "Meine Lizenzen" und "Meine Verträge"

@@ -18,10 +18,14 @@
     <div class="ui info message">
         <i class="${Icon.UI.INFO}"></i> ${message(code: 'subscription.details.linkProvider.minTwoLetters')}
     </div>
-    <g:form id="create_provider_role_link_${tmplModalID}" class="ui form" url="[controller:'ajax', action:'addProviderRole']" method="post">
-        <input type="hidden" name="parent" value="${parent}" />
-        <input type="hidden" name="recip_prop" value="${recip_prop}" />
-        <input type="hidden" name="orm_orgRole" value="${tmplRole?.id}" />
+    <g:form id="create_provider_role_unlink_${tmplModalID}" class="ui form" url="[controller:'ajax', action:'addProviderRole']" method="post">
+        <g:if test="${parent}">
+            <input type="hidden" name="parent" value="${parent}" />
+        </g:if>
+        <g:else test="${myInstitutionController}">
+            <input type="hidden" name="takeSelectedSubs" value="/${controllerName}/subscriptionManagement/${params.tab}/${user.id}" />
+            <input type="hidden" name="membersListToggler" class="membersListToggler_modal" value="false" />
+        </g:else>
         <input type="hidden" name="linkType" value="${linkType}" />
 
         <label for="${tmplModalID}_orgSearch">${message(code: 'title.search')}</label>

@@ -1,7 +1,7 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <g:if test="${editmode}">
     <a role="button"
-       class="ui icon button la-modern-button la-popup-tooltip ${tmplCss}"
+       class="ui icon negative button la-modern-button la-popup-tooltip ${tmplCss}"
        data-ui="modal"
        href="#${tmplModalID}"
        data-content="${tmplTooltip}">
@@ -18,7 +18,7 @@
     <div class="ui info message">
         <i class="${Icon.UI.INFO}"></i> ${message(code: 'subscription.details.linkAgency.minTwoLetters')}
     </div>
-    <g:form id="create_vendor_role_link_${tmplModalID}" class="ui form" url="[controller:'ajax', action:'addVendorRole']" method="post">
+    <g:form id="create_vendor_role_unlink_${tmplModalID}" class="ui form" url="[controller:'ajax', action:'delAllVendorRoles']" method="post">
         <g:if test="${parent}">
             <input type="hidden" name="parent" value="${parent}" />
         </g:if>

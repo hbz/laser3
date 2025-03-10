@@ -62,6 +62,7 @@ import java.util.concurrent.ExecutorService
 class AjaxController {
 
     AccessService accessService
+    CacheService cacheService
     ContextService contextService
     DashboardDueDatesService dashboardDueDatesService
     EscapeService escapeService
@@ -70,6 +71,7 @@ class AjaxController {
     FormService formService
     GenericOIDService genericOIDService
     IdentifierService identifierService
+    ManagementService managementService
     PackageService packageService
     PropertyService propertyService
     SubscriptionControllerService subscriptionControllerService
@@ -639,34 +641,62 @@ class AjaxController {
     @Transactional
     def addVendorRole() {
         def owner  = genericOIDService.resolveOID(params.parent)
-
         Set<Vendor> vendors = Vendor.findAllByIdInList(params.list('selectedVendors'))
-        vendors.each{ vendorToLink ->
-            boolean duplicateVendorRole = false
+        if(params.containsKey('takeSelectedSubs')) {
+            Set<Subscription> subscriptions = managementService.loadSubscriptions(params, owner)
+            vendors.each { Vendor vendorToLink ->
+                List<VendorRole> duplicateVendorRoles = VendorRole.findAllBySubscriptionInListAndVendor(subscriptions, vendorToLink)
+                if(duplicateVendorRoles)
+                    subscriptions.removeAll(duplicateVendorRoles.subscription)
+                subscriptions.each { Subscription subToLink ->
+                    VendorRole new_link = new VendorRole(vendor: vendorToLink, subscription: subToLink)
 
-            if(params.recip_prop == 'subscription') {
-                duplicateVendorRole = VendorRole.findAllBySubscriptionAndVendor(owner, vendorToLink) ? true : false
-            }
-            else if(params.recip_prop == 'license') {
-                duplicateVendorRole = VendorRole.findAllByLicenseAndVendor(owner, vendorToLink) ? true : false
-            }
+                    if (new_link.save()) {
+                        if (subToLink.checkSharePreconditions(new_link)) {
+                            new_link.isShared = true
+                            new_link.save()
 
-            if(! duplicateVendorRole) {
-                VendorRole new_link = new VendorRole(vendor: vendorToLink)
-                new_link[params.recip_prop] = owner
-
-                if (new_link.save()) {
-                    // log.debug("Org link added")
-                    if (owner.checkSharePreconditions(new_link)) {
-                        new_link.isShared = true
-                        new_link.save()
-
-                        owner.updateShare(new_link)
+                            subToLink.updateShare(new_link)
+                        }
+                    } else {
+                        log.error("Problem saving new vendor link ..")
+                        new_link.errors.each { e ->
+                            log.error( e.toString() )
+                        }
                     }
-                } else {
-                    log.error("Problem saving new vendor link ..")
-                    new_link.errors.each { e ->
-                        log.error( e.toString() )
+                }
+            }
+            managementService.clearSubscriptionCache(params)
+        }
+        else if(owner) {
+
+            vendors.each{ Vendor vendorToLink ->
+                boolean duplicateVendorRole = false
+
+                if(params.recip_prop == 'subscription') {
+                    duplicateVendorRole = VendorRole.findAllBySubscriptionAndVendor(owner, vendorToLink) ? true : false
+                }
+                else if(params.recip_prop == 'license') {
+                    duplicateVendorRole = VendorRole.findAllByLicenseAndVendor(owner, vendorToLink) ? true : false
+                }
+
+                if(! duplicateVendorRole) {
+                    VendorRole new_link = new VendorRole(vendor: vendorToLink)
+                    new_link[params.recip_prop] = owner
+
+                    if (new_link.save()) {
+                        // log.debug("Org link added")
+                        if (owner.checkSharePreconditions(new_link)) {
+                            new_link.isShared = true
+                            new_link.save()
+
+                            owner.updateShare(new_link)
+                        }
+                    } else {
+                        log.error("Problem saving new vendor link ..")
+                        new_link.errors.each { e ->
+                            log.error( e.toString() )
+                        }
                     }
                 }
             }
@@ -705,36 +735,66 @@ class AjaxController {
         def owner  = genericOIDService.resolveOID(params.parent)
 
         Set<Provider> providers = Provider.findAllByIdInList(params.list('selectedProviders'))
-        providers.each{ providerToLink ->
-            boolean duplicateProviderRole = false
+        if(params.containsKey('takeSelectedSubs')) {
+            Set<Subscription> subscriptions = managementService.loadSubscriptions(params, owner)
+            providers.each { Provider providerToLink ->
+                List<ProviderRole> duplicateProviderRoles = ProviderRole.findAllBySubscriptionInListAndProvider(subscriptions, providerToLink)
+                if(duplicateProviderRoles)
+                    subscriptions.removeAll(duplicateProviderRoles.subscription)
+                subscriptions.each { Subscription subToLink ->
+                    ProviderRole new_link = new ProviderRole(provider: providerToLink, subscription: subToLink)
 
-            if(params.recip_prop == 'subscription') {
-                duplicateProviderRole = ProviderRole.findAllBySubscriptionAndProvider(owner, providerToLink) ? true : false
-            }
-            else if(params.recip_prop == 'license') {
-                duplicateProviderRole = ProviderRole.findAllByLicenseAndProvider(owner, providerToLink) ? true : false
-            }
+                    if (new_link.save()) {
+                        // log.debug("Org link added")
+                        if (subToLink.checkSharePreconditions(new_link)) {
+                            new_link.isShared = true
+                            new_link.save()
 
-            if(! duplicateProviderRole) {
-                ProviderRole new_link = new ProviderRole(provider: providerToLink)
-                new_link[params.recip_prop] = owner
-
-                if (new_link.save()) {
-                    // log.debug("Org link added")
-                    if (owner.checkSharePreconditions(new_link)) {
-                        new_link.isShared = true
-                        new_link.save()
-
-                        owner.updateShare(new_link)
+                            subToLink.updateShare(new_link)
+                        }
+                    } else {
+                        log.error("Problem saving new provider link ..")
+                        new_link.errors.each { e ->
+                            log.error( e.toString() )
+                        }
                     }
-                } else {
-                    log.error("Problem saving new provider link ..")
-                    new_link.errors.each { e ->
-                        log.error( e.toString() )
+                }
+            }
+            managementService.clearSubscriptionCache(params)
+        }
+        else if(owner) {
+            providers.each{ Provider providerToLink ->
+                boolean duplicateProviderRole = false
+
+                if(params.recip_prop == 'subscription') {
+                    duplicateProviderRole = ProviderRole.findAllBySubscriptionAndProvider(owner, providerToLink) ? true : false
+                }
+                else if(params.recip_prop == 'license') {
+                    duplicateProviderRole = ProviderRole.findAllByLicenseAndProvider(owner, providerToLink) ? true : false
+                }
+
+                if(! duplicateProviderRole) {
+                    ProviderRole new_link = new ProviderRole(provider: providerToLink)
+                    new_link[params.recip_prop] = owner
+
+                    if (new_link.save()) {
+                        // log.debug("Org link added")
+                        if (owner.checkSharePreconditions(new_link)) {
+                            new_link.isShared = true
+                            new_link.save()
+
+                            owner.updateShare(new_link)
+                        }
+                    } else {
+                        log.error("Problem saving new provider link ..")
+                        new_link.errors.each { e ->
+                            log.error( e.toString() )
+                        }
                     }
                 }
             }
         }
+
         redirect(url: request.getHeader('referer'))
     }
 
@@ -757,6 +817,46 @@ class AjaxController {
         }
         pvr.delete()
 
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_USER'])
+    @Transactional
+    def delAllProviderRoles() {
+        Subscription owner = genericOIDService.resolveOID(params.parent)
+        Set<Subscription> subscriptions = managementService.loadSubscriptions(params, owner)
+        Set<Provider> providers = Provider.findAllByIdInList(params.list('selectedProviders'))
+        if(subscriptions && providers) {
+            List<ProviderRole> providerRolesToProcess = ProviderRole.executeQuery('select pvr from ProviderRole pvr where pvr.provider in (:providers) and pvr.subscription in (:subscriptions)', [providers: providers, subscriptions: subscriptions])
+            providerRolesToProcess.each { ProviderRole pvr ->
+                if (pvr.isShared) {
+                    pvr.isShared = false
+                    pvr.subscription.updateShare(pvr)
+                }
+                pvr.delete()
+            }
+        }
+        managementService.clearSubscriptionCache(params)
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_USER'])
+    @Transactional
+    def delAllVendorRoles() {
+        Subscription owner = genericOIDService.resolveOID(params.parent)
+        Set<Subscription> subscriptions = managementService.loadSubscriptions(params, owner)
+        Set<Vendor> vendors = Provider.findAllByIdInList(params.list('selectedVendors'))
+        if(subscriptions && vendors) {
+            List<VendorRole> vendorRolesToProcess = VendorRole.executeQuery('select vr from VendorRole vr where vr.vendor in (:vendors) and vr.subscription in (:subscriptions)', [vendors: vendors, subscriptions: subscriptions])
+            vendorRolesToProcess.each { VendorRole vr ->
+                if (vr.isShared) {
+                    vr.isShared = false
+                    vr.subscription.updateShare(vr)
+                }
+                vr.delete()
+            }
+        }
+        managementService.clearSubscriptionCache(params)
         redirect(url: request.getHeader('referer'))
     }
 
