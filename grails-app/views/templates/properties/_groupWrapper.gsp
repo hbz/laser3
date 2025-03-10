@@ -19,11 +19,11 @@
                     </g:if>
                 </g:if>
             </h2>
-            <div class="right aligned four wide column">
+%{--            <div class="right aligned four wide column">
                 <button type="button"  class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-content="${message(code:'license.button.addProperty')}" data-ui="modal" data-href="#modalAddProperty_${propDefGroup.id}">
                     <i class="${Icon.CMD.ADD}"></i>
                 </button>
-            </div>
+            </div>--}%
         </div>
         <div id="grouped_custom_props_div_${propDefGroup.id}">
              <%--!!!!Die Editable Prüfung dient dazu, dass für die Umfrag Lizenz-Merkmal nicht editierbar sind !!!!--%>
