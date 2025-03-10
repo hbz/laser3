@@ -1,53 +1,29 @@
 <%@ page import="de.laser.ui.Icon" %>
-<h2 class="ui dividing header">Icons<a class="anchor" id="icons"></a></h2>
-<h4 class="ui header">Zusätzliche Icons</h4>
+<h2 class="ui dividing header">Nicht oder wenig benutzte Icons<a class="anchor" id="icons"></a></h2>
+<h4 class="ui header"Im Iconfont "icomoon.woff2" vorhanden und im Code von LAS:eR bereits eingebunden</h4>
 <div class="html ui top attached segment example">
 
     <div class="ui doubling five column grid">
         <div class="column"><i aria-hidden="true" class="hand pointer outline slash icon"></i>hand pointer outline slash</div>
-
-        <div class="column"><i aria-hidden="true" class="${Icon.CMD.EDIT} slash"></i>write slash</div>
-
-        <div class="column"><i aria-hidden="true" class="la-thumbtack slash icon"></i>la-thumbtack slash</div>
-
-        <div class="column"><i aria-hidden="true" class="plus square slash icon"></i>plus square slash</div>
-
         <div class="column"><i aria-hidden="true" class="la-chain broken icon"></i>la-chain broken</div>
-
         <div class="column"><i aria-hidden="true" class="la-chain icon"></i>la-chain</div>
-
-        <div class="column"><i aria-hidden="true" class="${Icon.SIG.SHARED_OBJECT_ON}"></i>la-share</div>
-
-        <div class="column"><i aria-hidden="true" class="${Icon.SIG.SHARED_OBJECT_OFF}"></i>la-share slash</div>
-
-        <div class="column"><i aria-hidden="true" class="la-copySend icon"></i>la-copySend</div>
-
-        <div class="column"><i aria-hidden="true" class="la-notebook icon"></i>la-notebook</div>
-
-        <div class="column"><i aria-hidden="true" class="la-books icon"></i>la-books</div>
-
-        <div class="column"><i aria-hidden="true" class="la-gokb icon"></i>la-gokb</div>
-
-        <div class="column"><i aria-hidden="true" class="la-laser icon"></i>la-laser</div>
-
-        <div class="column"><i aria-hidden="true" class="la-less-than icon"></i>la-less-than </div>
-        <div class="column"><i aria-hidden="true" class="la-greater-than icon"></i>la-greater-than</div>
-        <div class="column"><i aria-hidden="true" class="la-equals icon"></i>la-equals</div>
-        <div class="column"><i aria-hidden="true" class="la-less-than-equal icon"></i>la-less-than-equal</div>
-        <div class="column"><i aria-hidden="true" class="la-greater-than-equal icon"></i>la-greater-than-equal</div>
-
-        <div class="column"><i aria-hidden="true" class="la-open icon"></i>la-open</div>
         <div class="column"><i aria-hidden="true" class="la-consortia icon"></i>la-consortia</div>
-
-        <div class="column"><i aria-hidden="true" class="la-star slash icon"></i>la-star slash</div>
         <div class="column"><i aria-hidden="true" class="la-redo slash icon"></i>la-redo slash</div>
         <div class="column"><i aria-hidden="true" class="la-exchange slash icon"></i>la-exchange slash</div>
         <div class="column"><i aria-hidden="true" class="la-sort-jan-dec icon"></i>la-sort-jan-dec</div>
         <div class="column"><i aria-hidden="true" class="la-sort-dec-jan icon"></i>la-sort-dec-jan</div>
-        <div class="column"><i aria-hidden="true" class="la-basket-shopping slash icon"></i>la-basket-shopping slash</div>
     </div>
 
-    <div class="ui top attached label">Zusätzliche Icons in Laser</div>
+    <div class="ui top attached label">Im Moment nicht benutzte Icons</div>
+</div>
+
+<div class="html ui top attached segment example">
+    <div class="ui doubling five column grid">
+        <div class="column"><i aria-hidden="true" class="plus square slash icon"></i>plus square slash</div>
+        <div class="column"><i aria-hidden="true" class="la-copySend icon"></i>la-copySend</div>
+        <div class="column"><i aria-hidden="true" class="la-basket-shopping slash icon"></i>la-basket-shopping slash</div>
+    </div>
+    <div class="ui top attached label">Im Moment wenig benutzte Icons</div>
 </div>
 <h4 class="ui header">Icons und Farben von Objekten</h4>
 <p>Die Größe der Icons ist von der Umgebung abhängig (durch Größenangabe in em, die sich nach der Fontgröße des Elternelements richtet)</p>
