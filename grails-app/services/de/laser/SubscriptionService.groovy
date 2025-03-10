@@ -1333,22 +1333,32 @@ class SubscriptionService {
         RefdataValue value = configMap.value
         sub.holdingSelection = value
         sub.save()
-        if(value == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
-            if(! AuditConfig.getConfig(sub, prop)) {
-                AuditConfig.addConfig(sub, prop)
+        Set<Subscription> members = Subscription.findAllByInstanceOf(sub)
+        switch(value) {
+            case RDStore.SUBSCRIPTION_HOLDING_ENTIRE:
+                if(! AuditConfig.getConfig(sub, prop)) {
+                    AuditConfig.addConfig(sub, prop)
 
-                Subscription.findAllByInstanceOf(sub).each { Subscription m ->
+                    members.each { Subscription m ->
+                        m.setProperty(prop, sub.getProperty(prop))
+                        m.save()
+                    }
+                }
+                break
+            case RDStore.SUBSCRIPTION_HOLDING_PARTIAL:
+                /*members.each { Subscription m ->
                     m.setProperty(prop, sub.getProperty(prop))
                     m.save()
-                }
-            }
-        }
-        else {
-            AuditConfig.removeConfig(sub, prop)
-            Subscription.findAllByInstanceOf(sub).each { Subscription m ->
-                m.setProperty(prop, null)
-                m.save()
-            }
+                }*/
+                AuditConfig.removeConfig(sub, prop)
+                break
+            default:
+                /*members.each { Subscription m ->
+                    m.setProperty(prop, null)
+                    m.save()
+                }*/
+                AuditConfig.removeConfig(sub, prop)
+                break
         }
     }
 
