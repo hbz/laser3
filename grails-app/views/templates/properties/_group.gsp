@@ -5,9 +5,6 @@
 <g:if test="${newProp}">
     <ui:errors bean="${newProp}" />
 </g:if>
-<g:if test="${error}">
-    <ui:msg class="error" header="${message(code: 'myinst.message.attention')}" text="${error}"/>
-</g:if>
 <table class="ui compact la-js-responsive-table la-table-inCard table">
     <g:if test="${propDefGroup}">
         <colgroup>
