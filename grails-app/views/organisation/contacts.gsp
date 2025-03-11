@@ -31,7 +31,7 @@
 
     <laser:render template="/templates/copyFilteredEmailAddresses" model="[emailAddresses: emailAddresses]"/>
 
-    <ui:filter simple="true">
+    <ui:filter simple="false" extended="false">
         <g:form action="${actionName}" controller="organisation" method="get" params="${params}" class="ui small form">
             <div class="three fields">
                 <div class="field">
