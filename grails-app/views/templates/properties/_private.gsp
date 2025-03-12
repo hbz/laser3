@@ -3,7 +3,7 @@
 %{-- on head of container page, and on window load execute  --}%
 %{-- c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#private-property-wrapper-xxx"); --}%
 
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.LocaleUtils; de.laser.CustomerTypeService; de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; java.net.URL" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.LocaleUtils; de.laser.CustomerTypeService; de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; java.net.URL; de.laser.addressbook.Person" %>
 <laser:serviceInjection />
 
 
@@ -124,7 +124,7 @@
         </g:each>
     </tbody>
 
-    <g:if test="${overwriteEditable}">
+    <g:if test="${overwriteEditable && ownobj instanceof Person}">
         <tfoot>
             <tr>
                 <g:if test="${privateProperties}">

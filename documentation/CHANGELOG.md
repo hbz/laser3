@@ -7,7 +7,11 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6327    12.03.2025  dev     3.5         Moe     Feature     Umfrage verbessern Teil 1
+
 6115    12.03.2025  dev     3.5         Andreas Feature     neue Merkmale und Referenzwertkategorien incl. Werte aufgenommen
+
+6353    11.03.2025  dev     3.5         Moe     Feature     Umbau: Merkmale hinzufügen
 
 6351    11.03.2025  dev     3.5         Andreas Bug         Fehlender Import sorgte für 500er beim Aufruf eines Lieferanten
 
