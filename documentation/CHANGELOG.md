@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6327    12.03.2025  dev     3.5         Moe     Feature     Umfrage verbessern Teil 1
+
+6353    11.03.2025  dev     3.5         Moe     Feature     Umbau: Merkmale hinzufügen
+
 6351    11.03.2025  dev     3.5         Andreas Bug         Fehlender Import sorgte für 500er beim Aufruf eines Lieferanten
 
 6335    10.03.2025  dev     3.5         Andreas Feature     Massenver-/Entknüpfung von Lizenzen mit Anbietern und Lieferanten implementiert
