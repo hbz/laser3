@@ -7,8 +7,8 @@ import de.laser.auth.User
 import de.laser.convenience.Marker
 import de.laser.helper.Params
 import de.laser.properties.ProviderProperty
-import de.laser.remote.Wekb
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyInfo
 import de.laser.traces.DeletedObject
 import de.laser.wekb.ElectronicBilling
 import de.laser.wekb.InvoiceDispatch
@@ -125,6 +125,7 @@ class ProviderService {
         List tasks          = Task.findAllByProvider(provider)
         List platforms      = new ArrayList(provider.packages)
         List packages       = new ArrayList(provider.platforms)
+        List surveys        = SurveyInfo.findAllByProvider(provider)
 
         List customProperties       = new ArrayList(provider.propertySet.findAll { it.type.tenant == null })
         List privateProperties      = new ArrayList(provider.propertySet.findAll { it.type.tenant != null })
@@ -146,6 +147,7 @@ class ProviderService {
         result.info << ['Dokumente', docContexts]
         result.info << ['Plattformen', platforms]
         result.info << ['Pakete', packages]
+        result.info << ['Umfragen', surveys]
 
         result.info << ['Allgemeine Merkmale', customProperties]
         result.info << ['Private Merkmale', privateProperties]
@@ -223,6 +225,7 @@ class ProviderService {
 
                     markers.each { Marker mkr ->
                         mkr.prov = replacement
+                        mkr.save()
                     }
 
                     // persons
@@ -258,6 +261,9 @@ class ProviderService {
 
                     // packages
                     log.debug("${Package.executeUpdate('update Package pkg set pkg.provider = :target where pkg.provider = :source', genericParams)} packages updated")
+
+                    // surveys
+                    log.debug("${SurveyInfo.executeUpdate('update SurveyInfo surin set surin.provider = :target where surin.provider = :source', genericParams)} surveys updated")
 
                     // alternative names
                     provider.altnames.clear()
