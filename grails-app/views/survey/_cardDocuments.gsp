@@ -18,7 +18,7 @@
 %>
 
 <g:if test="${(contextService.getOrg().isCustomerType_Inst() || contextService.getOrg().isCustomerType_Consortium_Pro())}">
-    <ui:card message="${controllerName == 'survey' ? 'surveyConfigsInfo.docs' : 'license.documents'}" class="documents ${css_class}" href="${controllerName == 'survey' ? '#modalCreateDocument' : ''}" editable="${(controllerName == 'survey')  ? (actionName == 'show') : (editable || editable2)}">
+    <ui:card message="${controllerName == 'survey' ? 'surveyConfigsInfo.docs' : 'license.documents'}" class="documents ${css_class}" href="${controllerName == 'survey' ? '#modalCreateDocument' : ''}" editable="${(controllerName == 'survey' && actionName == 'show' && (editable || editable2)) ?: false}">
         <g:each in="${baseItems}" var="docctx">
            <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
                 <div class="ui small feed content">
@@ -98,7 +98,7 @@
                                 </g:if>
                             </g:if>
 %{--                            <g:if test="${(ownobj instanceof SurveyConfig)}"> -- erms-4627 --}%
-                            <g:if test="${(ownobj instanceof SurveyConfig && docctx.owner.owner.id == contextService.getOrg().id)}">
+                            <g:if test="${(editable || editable2) && (ownobj instanceof SurveyConfig && docctx.owner.owner.id == contextService.getOrg().id)}">
                                 <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
                                 <button type="button" class="${Btn.MODERN.SIMPLE}"
                                         data-ui="modal"

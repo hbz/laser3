@@ -51,9 +51,9 @@
                 <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyProperties', 'commentOnlyForOwner', 'reminderMailDate']}"/>
             </g:else>
 
-                <laser:render template="evaluationParticipantsView" model="[showCheckboxForParticipantsHasAccess: true,
+                <laser:render template="evaluationParticipantsView" model="[showCheckboxForParticipantsHasAccess: editable,
                                                                             showCheckboxForParticipantsHasNoAccess: false,
-                                                                        showOpenParticipantsAgainButtons: true,
+                                                                        showOpenParticipantsAgainButtons: editable,
                                                                         processAction: 'createOwnMail',
                                                                         processController: 'mail',
                                                                         tmplConfigShow   : tmplConfigShowList]"/>
