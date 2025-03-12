@@ -3176,24 +3176,13 @@ class SubscriptionService {
                                         PriceItem priceItem
                                         try {
                                             switch (colName) {
-                                            /*
-                                            case "listPriceEurCol": priceItem = ieMatch.priceItems ? ieMatch.priceItems.find { PriceItem pi -> pi.listCurrency == RDStore.CURRENCY_EUR } : new PriceItem(issueEntitlement: ieMatch, listCurrency: RDStore.CURRENCY_EUR)
-                                                priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
-                                                break
-                                            case "listPriceUsdCol": priceItem = ieMatch.priceItems ? ieMatch.priceItems.find { PriceItem pi -> pi.listCurrency == RDStore.CURRENCY_USD } : new PriceItem(issueEntitlement: ieMatch, listCurrency: RDStore.CURRENCY_USD)
-                                                priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
-                                                break
-                                            case "listPriceGbpCol": priceItem = ieMatch.priceItems ? ieMatch.priceItems.find { PriceItem pi -> pi.listCurrency == RDStore.CURRENCY_GBP } : new PriceItem(issueEntitlement: ieMatch, listCurrency: RDStore.CURRENCY_GBP)
-                                                priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
-                                                break
-                                            */
-                                                case "localPriceEurCol": priceItem = ieMatch.priceItems ? ieMatch.priceItems.find { PriceItem pi -> pi.localCurrency == RDStore.CURRENCY_EUR } : new PriceItem(issueEntitlement: ieMatch, localCurrency: RDStore.CURRENCY_EUR)
+                                                case ["listPriceEurCol", "localPriceEurCol"]: priceItem = ieMatch.priceItems ? ieMatch.priceItems.find { PriceItem pi -> pi.localCurrency == RDStore.CURRENCY_EUR } : new PriceItem(issueEntitlement: ieMatch, localCurrency: RDStore.CURRENCY_EUR)
                                                     priceItem.localPrice = escapeService.parseFinancialValue(cellEntry)
                                                     break
-                                                case "localPriceUsdCol": priceItem = ieMatch.priceItems ? ieMatch.priceItems.find { PriceItem pi -> pi.localCurrency == RDStore.CURRENCY_USD } : new PriceItem(issueEntitlement: ieMatch, localCurrency: RDStore.CURRENCY_USD)
+                                                case ["listPriceUsdCol", "localPriceUsdCol"]: priceItem = ieMatch.priceItems ? ieMatch.priceItems.find { PriceItem pi -> pi.localCurrency == RDStore.CURRENCY_USD } : new PriceItem(issueEntitlement: ieMatch, localCurrency: RDStore.CURRENCY_USD)
                                                     priceItem.localPrice = escapeService.parseFinancialValue(cellEntry)
                                                     break
-                                                case "localPriceGbpCol": priceItem = ieMatch.priceItems ? ieMatch.priceItems.find { PriceItem pi -> pi.localCurrency == RDStore.CURRENCY_GBP } : new PriceItem(issueEntitlement: ieMatch, localCurrency: RDStore.CURRENCY_GBP)
+                                                case ["listPriceGbpCol", "localPriceGbpCol"]: priceItem = ieMatch.priceItems ? ieMatch.priceItems.find { PriceItem pi -> pi.localCurrency == RDStore.CURRENCY_GBP } : new PriceItem(issueEntitlement: ieMatch, localCurrency: RDStore.CURRENCY_GBP)
                                                     priceItem.localPrice = escapeService.parseFinancialValue(cellEntry)
                                                     break
                                             }
