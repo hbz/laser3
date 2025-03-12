@@ -269,7 +269,7 @@
                 </div>
 
                 <div class="ui bottom attached tab segment active">
-                    <g:if test="${params.viewTab == 'overview' && surveyConfig.subscription}">
+                    <g:if test="${params.viewTab == 'overview'}">
                         <div class="ui stackable grid">
                             <div class="eleven wide column">
 
