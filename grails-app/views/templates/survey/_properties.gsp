@@ -147,7 +147,8 @@
     </g:else>
 
 </div><!--.card -->
-
-<laser:render template="/templates/properties/createProperty_js"/>
+<g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
+    <laser:render template="/templates/properties/createProperty_js"/>
+</g:if>
 
 <!-- _properties -->

@@ -18,7 +18,7 @@
 
 <div class="ui card la-dl-no-table">
 
-    <g:if test="${editable}">
+    <g:if test="${editable || contextService.isInstEditor(CustomerTypeService.ORG_INST_PRO) || contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
         <div class="right aligned four wide column">
             <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-content="${message(code:'license.button.addProperty')}" onclick="JSPC.app.createProperty(${orgInstance.id}, '${orgInstance.class.simpleName}');">
                 <i class="${Icon.CMD.ADD}"></i>

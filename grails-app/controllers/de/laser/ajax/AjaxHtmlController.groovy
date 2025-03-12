@@ -11,6 +11,7 @@ import de.laser.GenericOIDService
 import de.laser.HelpService
 import de.laser.IssueEntitlementService
 import de.laser.OrgSetting
+import de.laser.OrganisationController
 import de.laser.PendingChangeService
 import de.laser.AddressbookService
 import de.laser.AccessService
@@ -1443,52 +1444,84 @@ class AjaxHtmlController {
     def createPropertiesModal() {
         Map<String, Object> result = [:]
         Org contextOrg = contextService.getOrg()
+        User user = contextService.getUser()
 
         String lang = LocaleUtils.getCurrentLang()
         switch (params.objectTyp) {
             case SurveyInfo.class.simpleName:
                 SurveyInfo surveyInfo = SurveyInfo.get(params.id)
-                result.allPropDefGroups = PropertyDefinitionGroup.executeQuery('select pdg from PropertyDefinitionGroup pdg where pdg.ownerType = :ownerType and pdg.tenant = :tenant order by pdg.order asc', [tenant: contextOrg, ownerType: PropertyDefinition.getDescrClass(PropertyDefinition.SVY_PROP)])
-                result.orphanedProperties = propertyService.getOrphanedPropertyDefinition(PropertyDefinition.SVY_PROP)
-                result.privateProperties = PropertyDefinition.findAllByDescrAndTenant(PropertyDefinition.SVY_PROP, contextService.getOrg(), [sort: 'name_' + lang])
+                result.editable = surveyService.isEditableSurvey(contextService.getOrg(), surveyInfo)
+                if (surveyConfig && result.editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING) {
+                    result.allPropDefGroups = PropertyDefinitionGroup.executeQuery('select pdg from PropertyDefinitionGroup pdg where pdg.ownerType = :ownerType and pdg.tenant = :tenant order by pdg.order asc', [tenant: contextOrg, ownerType: PropertyDefinition.getDescrClass(PropertyDefinition.SVY_PROP)])
+                    result.orphanedProperties = propertyService.getOrphanedPropertyDefinition(PropertyDefinition.SVY_PROP)
+                    result.privateProperties = PropertyDefinition.findAllByDescrAndTenant(PropertyDefinition.SVY_PROP, contextService.getOrg(), [sort: 'name_' + lang])
+                }
                 result.propertyCreateUrl = createLink(controller: 'ajaxHtml', action: 'processCreateProperties', params: [objectClass: SurveyInfo.class.name, objectId: surveyInfo.id])
                 result.object = surveyInfo
                 break
             case Subscription.class.simpleName:
                 Subscription subscription = Subscription.get(params.id)
-                result.allPropDefGroups = PropertyDefinitionGroup.executeQuery('select pdg from PropertyDefinitionGroup pdg where pdg.ownerType = :ownerType and pdg.tenant = :tenant order by pdg.order asc', [tenant: contextOrg, ownerType: PropertyDefinition.getDescrClass(PropertyDefinition.SUB_PROP)])
-                result.orphanedProperties = propertyService.getOrphanedPropertyDefinition(PropertyDefinition.SUB_PROP)
-                result.privateProperties = PropertyDefinition.findAllByDescrAndTenant(PropertyDefinition.SUB_PROP, contextService.getOrg(), [sort: 'name_' + lang])
+                result.editable = subscription.isEditableBy(user)
+                if(result.editable) {
+                    result.allPropDefGroups = PropertyDefinitionGroup.executeQuery('select pdg from PropertyDefinitionGroup pdg where pdg.ownerType = :ownerType and pdg.tenant = :tenant order by pdg.order asc', [tenant: contextOrg, ownerType: PropertyDefinition.getDescrClass(PropertyDefinition.SUB_PROP)])
+                    result.orphanedProperties = propertyService.getOrphanedPropertyDefinition(PropertyDefinition.SUB_PROP)
+                }
+
+                if(result.editable || contextService.isInstEditor( CustomerTypeService.ORG_INST_PRO ) || contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_BASIC )) {
+                    result.privateProperties = PropertyDefinition.findAllByDescrAndTenant(PropertyDefinition.SUB_PROP, contextService.getOrg(), [sort: 'name_' + lang])
+                }
+
                 result.propertyCreateUrl = createLink(controller: 'ajaxHtml', action: 'processCreateProperties', params: [objectClass: Subscription.class.name, objectId: subscription.id])
                 result.object = subscription
                 break
             case License.class.simpleName:
                 License license = License.get(params.id)
-                result.allPropDefGroups = PropertyDefinitionGroup.executeQuery('select pdg from PropertyDefinitionGroup pdg where pdg.ownerType = :ownerType and pdg.tenant = :tenant order by pdg.order asc', [tenant: contextOrg, ownerType: PropertyDefinition.getDescrClass(PropertyDefinition.LIC_PROP)])
-                result.orphanedProperties = propertyService.getOrphanedPropertyDefinition(PropertyDefinition.LIC_PROP)
-                result.privateProperties = PropertyDefinition.findAllByDescrAndTenant(PropertyDefinition.LIC_PROP, contextService.getOrg(), [sort: 'name_' + lang])
+                result.editable = license.isEditableBy(user)
+                if(result.editable) {
+                    result.allPropDefGroups = PropertyDefinitionGroup.executeQuery('select pdg from PropertyDefinitionGroup pdg where pdg.ownerType = :ownerType and pdg.tenant = :tenant order by pdg.order asc', [tenant: contextOrg, ownerType: PropertyDefinition.getDescrClass(PropertyDefinition.LIC_PROP)])
+                    result.orphanedProperties = propertyService.getOrphanedPropertyDefinition(PropertyDefinition.LIC_PROP)
+                }
+
+                if(result.editable || contextService.isInstEditor( CustomerTypeService.ORG_INST_PRO ) || contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_BASIC )) {
+                    result.privateProperties = PropertyDefinition.findAllByDescrAndTenant(PropertyDefinition.LIC_PROP, contextService.getOrg(), [sort: 'name_' + lang])
+                }
                 result.propertyCreateUrl = createLink(controller: 'ajaxHtml', action: 'processCreateProperties', params: [objectClass: License.class.name, objectId: license.id])
                 result.object = license
                 break
             case Org.class.simpleName:
                 Org org = Org.get(params.id)
-                result.privateProperties = PropertyDefinition.findAllByDescrAndTenant(PropertyDefinition.ORG_PROP, contextService.getOrg(), [sort: 'name_' + lang])
+                OrganisationController organisationController
+                result.editable = organisationController._checkIsEditable(org)
+                if(result.editable || contextService.isInstEditor( CustomerTypeService.ORG_INST_PRO ) || contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_BASIC )) {
+                    result.privateProperties = PropertyDefinition.findAllByDescrAndTenant(PropertyDefinition.ORG_PROP, contextService.getOrg(), [sort: 'name_' + lang])
+                }
                 result.propertyCreateUrl = createLink(controller: 'ajaxHtml', action: 'processCreateProperties', params: [objectClass: Org.class.name, objectId: org.id])
                 result.object = org
+                break
             case Provider.class.simpleName:
                 Provider provider = Provider.get(params.id)
-                result.privateProperties = PropertyDefinition.findAllByDescrAndTenant(PropertyDefinition.PRV_PROP, contextService.getOrg(), [sort: 'name_' + lang])
+                result.editable = contextService.isInstEditor()
+                if(result.editable || contextService.isInstEditor( CustomerTypeService.ORG_INST_PRO ) || contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_BASIC )) {
+                    result.privateProperties = PropertyDefinition.findAllByDescrAndTenant(PropertyDefinition.PRV_PROP, contextService.getOrg(), [sort: 'name_' + lang])
+                }
                 result.propertyCreateUrl = createLink(controller: 'ajaxHtml', action: 'processCreateProperties', params: [objectClass: Provider.class.name, objectId: provider.id])
                 result.object = provider
+                break
             case Platform.class.simpleName:
                 Platform platform = Platform.get(params.id)
-                result.privateProperties = PropertyDefinition.findAllByDescrAndTenant(PropertyDefinition.PLA_PROP, contextService.getOrg(), [sort: 'name_' + lang])
+                result.editable = contextService.isInstEditor()
+                if(result.editable || contextService.isInstEditor( CustomerTypeService.ORG_INST_PRO ) || contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_BASIC )) {
+                    result.privateProperties = PropertyDefinition.findAllByDescrAndTenant(PropertyDefinition.PLA_PROP, contextService.getOrg(), [sort: 'name_' + lang])
+                }
                 result.propertyCreateUrl = createLink(controller: 'ajaxHtml', action: 'processCreateProperties', params: [objectClass: Platform.class.name, objectId: platform.id])
                 result.object = platform
                 break
             case Vendor.class.simpleName:
                 Vendor vendor = Vendor.get(params.id)
-                result.privateProperties = PropertyDefinition.findAllByDescrAndTenant(PropertyDefinition.VEN_PROP, contextService.getOrg(), [sort: 'name_' + lang])
+                result.editable = contextService.isInstEditor()
+                if(result.editable || contextService.isInstEditor( CustomerTypeService.ORG_INST_PRO ) || contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_BASIC )) {
+                    result.privateProperties = PropertyDefinition.findAllByDescrAndTenant(PropertyDefinition.VEN_PROP, contextService.getOrg(), [sort: 'name_' + lang])
+                }
                 result.propertyCreateUrl = createLink(controller: 'ajaxHtml', action: 'processCreateProperties', params: [objectClass: Vendor.class.name, objectId: vendor.id])
                 result.object = vendor
                 break
@@ -1506,7 +1539,8 @@ class AjaxHtmlController {
             case SurveyInfo.class.name:
                 SurveyInfo surveyInfo = SurveyInfo.get(params.objectId)
                 SurveyConfig surveyConfig = surveyInfo.surveyConfigs[0]
-                if (surveyConfig) {
+                boolean editable = surveyService.isEditableSurvey(contextService.getOrg(), surveyInfo)
+                if (surveyConfig && editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING) {
                     params.list('propertyDefinition').each { pd ->
                         PropertyDefinition property = PropertyDefinition.get(Long.parseLong(pd))
                         if (!surveyService.addSurPropToSurvey(surveyConfig, property)) {
