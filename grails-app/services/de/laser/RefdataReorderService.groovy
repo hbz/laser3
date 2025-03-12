@@ -64,6 +64,21 @@ class RefdataReorderService {
             }
             compliance.save()
         }
+        //invoicing interval: order by duration
+        List invoicingIntervals = RefdataCategory.getAllRefdataValues(RDConstants.INVOICE_INTERVAL)
+        invoicingIntervals.eachWithIndex { RefdataValue interval, int i ->
+            switch(interval.value) {
+                case 'monthly': interval.order = 0
+                    break
+                case 'quarterly': interval.order = 10
+                    break
+                case 'half-yearly': interval.order = 20
+                    break
+                case 'yearly': interval.order = 30
+                    break
+            }
+            interval.save()
+        }
         //semesters
         Calendar limit = GregorianCalendar.getInstance(), start0 = GregorianCalendar.getInstance(), start1 = GregorianCalendar.getInstance()
         limit.add(Calendar.YEAR, 6)
