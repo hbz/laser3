@@ -1,4 +1,4 @@
-<%@ page import="de.laser.wekb.Platform; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.CustomerTypeService" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.wekb.Platform; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.CustomerTypeService" %>
 <laser:serviceInjection />
 <!-- _properties -->
 %{--
@@ -56,6 +56,14 @@ deactivated as of ERMS-4837
 <g:if test="${contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro()}">
 
         <div class="ui card la-dl-no-table">
+            <g:if test="${editable}">
+                <div class="right aligned four wide column">
+                    <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-content="${message(code:'license.button.addProperty')}" onclick="JSPC.app.createProperty(${platform.id}, '${platform.class.simpleName}');">
+                        <i class="${Icon.CMD.ADD}"></i>
+                    </button>
+                </div>
+            </g:if>
+
             <div class="content">
                 <h2 class="ui header">${message(code:'subscription.properties.private')} ${contextService.getOrg().name}</h2>
                 <g:set var="propertyWrapper" value="private-property-wrapper-${contextService.getOrg().id}" />
@@ -74,6 +82,6 @@ deactivated as of ERMS-4837
                 </div>
             </div>
         </div><!--.card-->
-
+    <laser:render template="/templates/properties/createProperty_js"/>
 </g:if>
 <!-- _properties -->

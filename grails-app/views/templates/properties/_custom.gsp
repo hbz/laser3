@@ -291,7 +291,7 @@
         </g:each>
     </tbody>
 
-    <g:if test="${editable}">
+%{--    <g:if test="${editable}">
         <tfoot>
             <tr>
             <g:if test="${orphanedProperties}">
@@ -329,7 +329,7 @@
                 </td>
             </tr>
         </tfoot>
-    </g:if>
+    </g:if>--}%
 </table>
 <g:if test="${error}">
     <ui:msg class="error" header="${message(code: 'myinst.message.attention')}" text="${error}"/>

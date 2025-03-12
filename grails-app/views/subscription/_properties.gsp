@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.Subscription; de.laser.properties.PropertyDefinitionGroupBinding; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.properties.SubscriptionProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.Subscription; de.laser.properties.PropertyDefinitionGroupBinding; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.properties.SubscriptionProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection />
 <!-- _properties -->
 
@@ -35,6 +35,15 @@
 
 <!-- TODO div class="ui card la-dl-no-table" -->
 <div class="ui card la-dl-no-table">
+
+<g:if test="${editable}">
+    <div class="right aligned four wide column">
+        <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-content="${message(code:'license.button.addProperty')}" onclick="JSPC.app.createProperty(${subscription.id}, '${subscription.class.simpleName}');">
+            <i class="${Icon.CMD.ADD}"></i>
+        </button>
+    </div>
+</g:if>
+
 <%-- grouped custom properties --%>
 
     <g:set var="allPropDefGroups" value="${subscription.getCalculatedPropDefGroups(contextService.getOrg())}" />
@@ -147,4 +156,5 @@
     </div>
 </div>
 
+<laser:render template="/templates/properties/createProperty_js"/>
 <!-- _properties -->

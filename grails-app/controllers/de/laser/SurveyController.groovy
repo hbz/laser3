@@ -1205,7 +1205,7 @@ class SurveyController {
             }
         }else {
 
-            if(params.actionForSurveyProperty in ['addSurveyPropToConfig', 'deleteSurveyPropFromConfig', 'moveUp', 'moveDown']) {
+            if(params.actionForSurveyProperty in ['deleteSurveyPropFromConfig', 'moveUp', 'moveDown']) {
                 ctrlResult.result.surveyConfig.refresh()
 
                 Map<String, Object> modelMap = [

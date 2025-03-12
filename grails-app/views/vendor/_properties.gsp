@@ -1,9 +1,18 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.Org; de.laser.properties.PropertyDefinitionGroupBinding; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.Org; de.laser.properties.PropertyDefinitionGroupBinding; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory;" %>
 <laser:serviceInjection />
 <!-- _properties -->
 
 <%-- private properties --%>
 <div class="ui card la-dl-no-table">
+
+    <g:if test="${editable}">
+        <div class="right aligned four wide column">
+            <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-content="${message(code:'license.button.addProperty')}" onclick="JSPC.app.createProperty(${provider.id}, '${provider.class.simpleName}');">
+                <i class="${Icon.CMD.ADD}"></i>
+            </button>
+        </div>
+    </g:if>
+
     <div class="content">
         <h2 class="ui header">${message(code:'org.properties.private')} ${contextService.getOrg().name}</h2>
         <g:set var="propertyWrapper" value="private-property-wrapper-${contextService.getOrg().id}" />
@@ -20,5 +29,5 @@
         </div>
     </div>
 </div><!--.card-->
-
+<laser:render template="/templates/properties/createProperty_js"/>
 <!-- _properties -->

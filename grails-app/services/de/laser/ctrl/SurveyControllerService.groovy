@@ -2343,21 +2343,6 @@ class SurveyControllerService {
                             result.error = messageSource.getMessage('survey.change.fail', null, result.locale)
                         }
                         break
-                    case "addSurveyPropToConfig":
-                        if (params.selectedProperty) {
-                            PropertyDefinition property = PropertyDefinition.get(params.long('selectedProperty'))
-                            //Config is Sub
-                            if (result.surveyConfig) {
-                                if (surveyService.addSurPropToSurvey(result.surveyConfig, property)) {
-
-                                    //result.message = messageSource.getMessage("surveyConfigs.property.add.successfully", null, result.locale)
-
-                                } else {
-                                    result.error = messageSource.getMessage("surveyConfigs.property.exists", null, result.locale)
-                                }
-                            }
-                        }
-                        break
                     case "deleteSurveyPropFromConfig":
                         if (params.surveyPropertyConfigId) {
                             SurveyConfigProperties surveyConfigProp = SurveyConfigProperties.get(params.surveyPropertyConfigId)

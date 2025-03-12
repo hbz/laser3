@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.Org; de.laser.properties.PropertyDefinitionGroupBinding; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.Org; de.laser.properties.PropertyDefinitionGroupBinding; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory;" %>
 <laser:serviceInjection />
 <!-- _properties -->
 
@@ -17,6 +17,14 @@
 </ui:modal>
 
 <div class="ui card la-dl-no-table">
+
+    <g:if test="${editable}">
+        <div class="right aligned four wide column">
+            <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-content="${message(code:'license.button.addProperty')}" onclick="JSPC.app.createProperty(${orgInstance.id}, '${orgInstance.class.simpleName}');">
+                <i class="${Icon.CMD.ADD}"></i>
+            </button>
+        </div>
+    </g:if>
 
 <%-- grouped custom properties --%>
 
@@ -124,5 +132,6 @@
     </g:if>
 
 </g:if>
+<laser:render template="/templates/properties/createProperty_js"/>
 
 <!-- _properties -->

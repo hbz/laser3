@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.survey.SurveyResult; de.laser.CustomerTypeService; de.laser.Subscription; de.laser.properties.PropertyDefinitionGroupBinding; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.properties.SubscriptionProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.survey.SurveyResult; de.laser.CustomerTypeService; de.laser.Subscription; de.laser.properties.PropertyDefinitionGroupBinding; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.properties.SubscriptionProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection/>
 <!-- _properties -->
 <%
@@ -8,6 +8,14 @@
 <div class="ui card la-dl-no-table">
 
     <div class="content">
+        <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
+            <div class="right aligned four wide column">
+                <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-content="${message(code: 'license.button.addProperty')}"
+                        onclick="JSPC.app.createProperty(${surveyInfo.id}, '${surveyInfo.class.simpleName}');">
+                    <i class="${Icon.CMD.ADD}"></i>
+                </button>
+            </div>
+        </g:if>
         <div class="header">
             <h3 class="ui header"><g:message code="surveyConfigsInfo.properties"/>
             <ui:totalNumber total="${surveyConfig.surveyProperties.size()}"/>
@@ -129,5 +137,7 @@
 
 
 </div><!--.card -->
+
+<laser:render template="/templates/properties/createProperty_js"/>
 
 <!-- _properties -->
