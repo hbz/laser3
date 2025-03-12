@@ -156,7 +156,7 @@
                             %{--<h2 class="ui left floated aligned header">${message(code: 'surveyOrg.address.label.heading')}</h2>--}%
                             <g:link controller="organisation" action="contacts" id="${participant.id}" params="[tab: 'addresses']" target="_blank"
                                     class="${Btn.SIMPLE} right floated">
-                                <g:message code="survey.contacts.add"/>
+                                <g:message code="survey.address.add"/>
                             </g:link>
                             <br>
                             <br>
