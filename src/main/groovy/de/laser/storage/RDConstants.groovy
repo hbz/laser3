@@ -70,7 +70,7 @@ class RDConstants {
     public static final String IE_MEDIUM              = 'ie.medium'
     public static final String ILL_CODE               = 'ill.code'
     public static final String INDEMNIFICATION        = 'indemnification'
-    public static final String INVOICING              = 'invoicing'
+    public static final String INVOICE_INTERVAL       = 'invoice.interval'
     public static final String IP_AUTHENTICATION      = 'ip.authentication'
     public static final String IPV4_ADDRESS_FORMAT    = 'ipv4.address.format'
     public static final String IPV6_ADDRESS_FORMAT    = 'ipv6.address.format'
