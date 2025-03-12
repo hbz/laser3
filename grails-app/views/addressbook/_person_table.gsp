@@ -46,7 +46,7 @@
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
         <g:sortableColumn params="${params}" property="p.last_name"
-                              title="${message(code: 'person.name.label')}"/>
+                              title="${message(code: 'contact.surname')}/${message(code: 'contact.functionName')}"/>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('organisation')}">
         <g:sortableColumn params="${params}" property="sortname"
