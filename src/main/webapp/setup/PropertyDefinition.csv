@@ -368,6 +368,7 @@ Subscription Property,Subscription number of editor,Subskriptionsnummer des Verl
 Subscription Property,Subscription number of provider,Subskriptionsnummer des Lieferanten,Subscription number of provider,java.lang.String,,,true,,Subskriptionsnummer des Lieferanten.,,
 Subscription Property,Take Over Titles,Take-Over-Titel,Take Over Titles,java.lang.String,,,,,Bedingungen für während der Vertragslaufzeit vom Verlag übernommene oder neu veröffentlichte Titel.,,
 Subscription Property,Tax exemption,Steuerbefreiung,Tax exemption,de.laser.RefdataValue,y.n,,,,Liegt eine Steuerbefreiung für die Lizenz vor?,,
+Subscription Property,Tax rate,Steuersatz,Tax rate,java.lang.Long,,,,,,,
 Subscription Property,Term of notice,Kündigungsfrist,Term of notice,de.laser.RefdataValue,y.n,,,,Kündigungsfrist.,,
 Subscription Property,Terms and conditions relevance,AGBs relevant,Terms and conditions relevance,de.laser.RefdataValue,y.n,,,,AGBs relevant?,,
 Subscription Property,Possible time of billing, möglicher Rechnungszeitpunkt,Possible time of billing,java.lang.String,,,,,möglicher Zeitpunkt der Rechnung,possible time of billing,

@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6361    12.03.2025  dev     3.5         Andreas Feature     Trennung des Namensraumes EZB-Anker
+
+6360    12.03.2025  dev     3.5         Andreas Feature     Löschung des falschen Lizenz-Identifier-Namensraumes emerald
+
 6327    12.03.2025  dev     3.5         Moe     Feature     Umfrage verbessern Teil 1
 
 6115    12.03.2025  dev     3.5         Andreas Feature     neue Merkmale und Referenzwertkategorien incl. Werte aufgenommen
