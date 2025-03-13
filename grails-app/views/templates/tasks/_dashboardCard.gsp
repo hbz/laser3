@@ -27,20 +27,19 @@
         </div>
     </div>
     <div class="extra content">
-        <g:if test="${tsk.getObjects()}">
-            <g:each in="${tsk.getObjects()}" var="tskObj">
-                <div class="item">
-                    <span class="la-popup-tooltip" data-content="${message(code: 'task.' + tskObj.controller)}" data-position="left center" data-variation="tiny">
-                        <i class="${tskObj.icon}"></i>
-                    </span>
-                    <g:if test="${tskObj.controller.contains('survey')}">
-                        <g:link controller="${tskObj.controller}" action="show" params="${[id: tskObj.object?.surveyInfo.id, surveyConfigID:tskObj.object?.id]}">${tskObj.object.getSurveyName()}</g:link>
-                    </g:if>
-                    <g:else>
-                        <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>
-                    </g:else>
-                </div>
-            </g:each>
+        <g:if test="${tsk.getObjectInfo()}">
+            <g:set var="tskObj" value="${tsk.getObjectInfo()}" />
+            <div class="item">
+                <span class="la-popup-tooltip" data-content="${message(code: 'task.' + tskObj.controller)}" data-position="left center" data-variation="tiny">
+                    <i class="${tskObj.icon}"></i>
+                </span>
+                <g:if test="${tskObj.controller.contains('survey')}">
+                    <g:link controller="${tskObj.controller}" action="show" params="${[id: tskObj.object.surveyInfo.id, surveyConfigID:tskObj.object.id]}">${tskObj.object.getSurveyName()}</g:link>
+                </g:if>
+                <g:else>
+                    <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object.id]}">${tskObj.object}</g:link>
+                </g:else>
+            </div>
         </g:if>
         <g:else>
             <i class="${Icon.TASK}"></i> ${message(code: 'task.general')}
