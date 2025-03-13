@@ -13,18 +13,18 @@
             <g:hiddenField id="${preID}_linkto" name="linkto" value="${owntp}"/>
         </g:if>
 
-        <div class="field ${hasErrors(bean: taskInstance, field: 'title', 'error')} required">
+        <div class="field required">
             <label for="${preID}_title">
                 <g:message code="default.title.label" /> <g:message code="messageRequiredField" />
             </label>
-            <g:textField id="${preID}_title" name="title" required="" value="${taskInstance?.title}"/>
+            <g:textField id="${preID}_title" name="title" required="" value=""/>
         </div>
 
-        <div class="field ${hasErrors(bean: taskInstance, field: 'description', 'error')}">
+        <div class="field">
             <label for="${preID}_description">
                 <g:message code="default.description.label" />
             </label>
-            <g:textArea id="${preID}_description" name="description" value="${taskInstance?.description}" rows="5" cols="40"/>
+            <g:textArea id="${preID}_description" name="description" value="" rows="5" cols="40"/>
         </div>
 
         <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajaxHtml'}">
@@ -75,7 +75,7 @@
                 </fieldset>
             </div>
 
-            <div id="${preID}_licensediv" class="field ${hasErrors(bean: taskInstance, field: 'license', 'error')} required" style="display: none">
+            <div id="${preID}_licensediv" class="field required" style="display: none">
                 <label for="${preID}_license">
                     <g:message code="task.linkto" /> <g:message code="license.label" /> <g:message code="messageRequiredField" />
                 </label>
@@ -90,7 +90,7 @@
                 />
             </div>
 
-            <div id="${preID}_orgdiv" class="field ${hasErrors(bean: taskInstance, field: 'org', 'error')} required" style="display: none">
+            <div id="${preID}_orgdiv" class="field required" style="display: none">
             <label for="${preID}_org">
                 <g:message code="task.linkto" /> <g:message code="task.org.label" /> <g:message code="messageRequiredField" />
             </label>
@@ -105,7 +105,7 @@
                 />
             </div>
 
-            <div id="${preID}_providerdiv" class="field ${hasErrors(bean: taskInstance, field: 'provider', 'error')} required" style="display: none">
+            <div id="${preID}_providerdiv" class="field required" style="display: none">
                 <label for="${preID}_provider">
                     <g:message code="task.linkto" /> <g:message code="task.provider.label" /> <g:message code="messageRequiredField" />
                 </label>
@@ -120,7 +120,7 @@
                 />
             </div>
 
-            <div id="${preID}_vendordiv" class="field ${hasErrors(bean: taskInstance, field: 'vendor', 'error')} required" style="display: none">
+            <div id="${preID}_vendordiv" class="field required" style="display: none">
                 <label for="${preID}_vendor">
                     <g:message code="task.linkto" /> <g:message code="task.vendor.label" /> <g:message code="messageRequiredField" />
                 </label>
@@ -135,7 +135,7 @@
                 />
             </div>
 
-            <div id="${preID}_subscriptiondiv" class="field ${hasErrors(bean: taskInstance, field: 'subscription', 'error')} required" style="display: none">
+            <div id="${preID}_subscriptiondiv" class="field required" style="display: none">
                 <label for="${preID}_subscription">
                     <g:message code="task.linkto" /> <g:message code="default.subscription.label" /> <g:message code="messageRequiredField" />
                 </label>
@@ -153,22 +153,21 @@
 
         <div class="field">
             <div class="two fields">
-                <div class="field wide eight ${hasErrors(bean: taskInstance, field: 'status', 'error')} required">
+                <div class="field wide eight required">
                     <label for="${preID}_status">
                         <g:message code="task.status.label" /> <g:message code="messageRequiredField" />
                     </label>
                     <ui:select id="${preID}_status" name="status.id"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
                                   optionValue="value" optionKey="id" required=""
-                                  value="${taskInstance?.status?.id ?: RDStore.TASK_STATUS_OPEN.id}"
+                                  value="${RDStore.TASK_STATUS_OPEN.id}"
                                   class="ui dropdown many-to-one la-not-clearable"
                                   noSelection="${['' : message(code:'default.select.choose.label')]}"
                     />
                 </div>
 
                 <ui:datepicker class="wide eight" label="task.endDate.label" id="${preID}_endDate" name="endDate"
-                                  placeholder="default.date.label" value="${taskInstance?.endDate}" required=""
-                                  bean="${taskInstance}"/>
+                                  placeholder="default.date.label" value="" required="" />
             </div>
         </div>
 
@@ -177,7 +176,7 @@
                 <g:message code="task.responsible.label" />
             </strong></span>
             <div class="two fields">
-                <div class="field wide eight ${hasErrors(bean: taskInstance, field: 'responsible', 'error')} required">
+                <div class="field wide eight required">
                     <fieldset>
                         <div class="field">
                             <div class="ui radio checkbox">
@@ -196,7 +195,7 @@
                 </div>
 
                 <div id="${preID}_responsibleUserWrapper"
-                     class="field wide eight ${hasErrors(bean: taskInstance, field: 'responsibleUser', 'error')} required">
+                     class="field wide eight required">
                     <label for="${preID}_responsibleUserInput">
                         <g:message code="task.responsibleUser.label" />
                     </label>
@@ -205,8 +204,8 @@
                               from="${taskService.getUserDropdown()}"
                               optionKey="id"
                               optionValue="display"
-                              value="${taskInstance?.responsibleUser?.id}"
-                              class="ui dropdown search many-to-one"
+                              value="${contextService.getUser().id}"
+                              class="ui dropdown search many-to-one la-not-clearable"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"
                     />
                 </div>
