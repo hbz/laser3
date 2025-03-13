@@ -6831,7 +6831,7 @@ i.icon.la-list-icon:before {
   color: #1B1C1D;
 }
 
-a i.circular.la-gokb:hover {
+a i.circular.la-wekb:hover {
   color: #FFFFFF;
   text-decoration: none;
   background-color: #004678;
@@ -37826,7 +37826,7 @@ i.icon.la-noChange {
 
 /**/
 
-i.icon.la-gokb {
+i.icon.la-wekb {
   font-family: 'icomoon';
 }
 
@@ -37992,7 +37992,7 @@ i.icon.la-replace:before {
 
 /**/
 
-i.icon.la-gokb:before {
+i.icon.la-wekb:before {
   content: "\e90e";
 }
 
