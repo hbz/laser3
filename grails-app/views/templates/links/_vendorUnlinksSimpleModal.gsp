@@ -22,7 +22,8 @@
         <g:if test="${parent}">
             <input type="hidden" name="parent" value="${parent}" />
         </g:if>
-        <g:if test="${myInstitutionController}">
+        <g:if test="${withToggler}">
+            <input type="hidden" name="refererController" value="${controllerName}" />
             <input type="hidden" name="takeSelectedSubs" value="/${controllerName}/subscriptionManagement/${params.tab}/${user.id}" />
             <input type="hidden" name="membersListToggler" class="membersListToggler_modal" value="false" />
         </g:if>
