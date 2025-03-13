@@ -31,19 +31,6 @@
 <ui:messages data="${flash}"/>
 
 <br />
-<h2 class="ui icon header la-clear-before la-noMargin-top">
-    <g:if test="${surveyConfig.subscription}">
-        <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
-        <g:link controller="subscription" action="show" id="${surveyConfig.subscription.id}">
-            ${surveyConfig.getConfigNameShort()}
-        </g:link>
-
-    </g:if>
-    <g:else>
-        ${surveyConfig.getConfigNameShort()}
-    </g:else>
-    : ${message(code: 'surveyInfo.transfer')}
-</h2>
 
 <g:if test="${(surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED, RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED])}">
     <ui:greySegment>

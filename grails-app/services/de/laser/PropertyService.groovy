@@ -3,6 +3,8 @@ package de.laser
 import de.laser.addressbook.Person
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.survey.SurveyConfig
+import de.laser.survey.SurveyConfigProperties
+import de.laser.survey.SurveyInfo
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
@@ -755,5 +757,65 @@ class PropertyService {
          result.withProp = filteredObjs
          result
      }
+
+     boolean checkPropertyExists(Object object, PropertyDefinition type){
+         boolean exists = true
+             switch (object.class.name) {
+                 case SurveyInfo.class.name:
+                     SurveyConfig surveyConfig = object.surveyConfigs[0]
+                     if (surveyConfig && !SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, type)) {
+                         exists = false
+                     }
+                     break
+                 case [License.class.name, Subscription.class.name, Org.class.name, Provider.class.name, Platform.class.name, Vendor.class.name]:
+                     def existingProp
+                     Org contextOrg = contextService.getOrg()
+                     if(type.tenant){
+                         existingProp = object.propertySet.find { it.type.id == type.id && it.tenant?.id == contextOrg.id && !it.isPublic}
+                     }else {
+                         existingProp = object.propertySet.find { it.type.id == type.id && it.tenant?.id == contextOrg.id }
+                     }
+
+                     if (existingProp == null || type.multipleOccurrence) {
+                         exists = false
+                     }
+                     break
+             }
+         exists
+     }
+
+    boolean addPropertyToObject(Object object, PropertyDefinition type) {
+        boolean propertyCreated = false
+        def newProp
+        def existingProp
+        Org contextOrg = contextService.getOrg()
+
+        if(type.tenant){
+            existingProp = object.propertySet.find { it.type.id == type.id && it.tenant?.id == contextOrg.id && !it.isPublic}
+        }else {
+            existingProp = object.propertySet.find { it.type.id == type.id && it.tenant?.id == contextOrg.id }
+        }
+
+        if (existingProp == null || type.multipleOccurrence) {
+            String propDefConst = type.tenant ? PropertyDefinition.PRIVATE_PROPERTY : PropertyDefinition.CUSTOM_PROPERTY
+            newProp = PropertyDefinition.createGenericProperty(propDefConst, object, type, contextOrg)
+            if (newProp.hasErrors()) {
+                log.error(newProp.errors.toString())
+            } else {
+                log.debug("New property created: " + newProp.type.name)
+                propertyCreated = true
+            }
+        }
+
+        propertyCreated
+    }
+
+    List<PropertyDefinition> getOrphanedPropertyDefinition(String descr) {
+
+        List<PropertyDefinition> propertyDefinitions = PropertyDefinition.executeQuery('select pd from PropertyDefinition pd where pd.descr = :descr and pd.tenant = null and pd NOT in (select pgi.propDef from PropertyDefinitionGroupItem pgi join pgi.propDefGroup pdg where pdg.ownerType = :ownerType and pdg.tenant = :tenant)', [descr: descr, tenant: contextService.getOrg(), ownerType: PropertyDefinition.getDescrClass(descr)])
+        propertyDefinitions
+    }
+
+
 }
 

@@ -244,6 +244,7 @@ class FinanceService {
         List<Long> selectedCostItems = []
         Boolean billingSumRounding = params.newBillingSumRounding == 'on'
         Boolean finalCostRounding = params.newFinalCostRounding == 'on'
+        //continue here with bugfixing: why is bulk deletion deleting way too many cost items?!
         if(params.containsKey('costItemListToggler')) {
             if(result.subscription) {
                 Map costItems = getCostItemsForSubscription(params, result)
@@ -252,9 +253,6 @@ class FinanceService {
                 }
                 if (costItems.cons) {
                     selectedCostItems = costItems.cons.ids
-                }
-                if(costItems.coll) {
-                    selectedCostItems = costItems.coll.ids
                 }
                 if (costItems.subscr) {
                     selectedCostItems = costItems.subscr.ids
@@ -376,14 +374,16 @@ class FinanceService {
                             costItem.costInLocalCurrency = configMap.currencyRate * costItem.costInBillingCurrency
                             costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * taxRate))
                         }
-                        if(configMap.costBillingCurrency) {
+                        //0.0 must be considered as well
+                        if(configMap.costBillingCurrency != null) {
                             costItem.costInBillingCurrency = configMap.costBillingCurrency
                             costItem.costInBillingCurrencyAfterTax = configMap.costBillingCurrency * (1.0 + (0.01 * taxRate))
                             costItem.costInLocalCurrency = costItem.currencyRate * configMap.costBillingCurrency
                             costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * taxRate))
                         }
                         costItem.billingCurrency = configMap.billingCurrency ?: costItem.billingCurrency
-                        if(configMap.costLocalCurrency) {
+                        //0.0 must be considered as well
+                        if(configMap.costLocalCurrency != null) {
                             costItem.costInLocalCurrency = configMap.costLocalCurrency
                             costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * taxRate))
                             costItem.costInBillingCurrency = configMap.costLocalCurrency / costItem.currencyRate
@@ -1771,9 +1771,11 @@ class FinanceService {
         List<String> wrongRecords = [] // wrongRecords: display in ui table
         Org contextOrg = contextService.getOrg()
         List<String> rows = tsvFile.getInputStream().getText(encoding).split('\n')
-        List<String> headerRow = rows.remove(0).split('\t')
+        rows.remove(0).split('\t')
+        //needed because cost item updates are not flushed immediately
+        Set<Long> updatedIDs = []
         //preparatory for an eventual variable match; for the moment: hard coded to 0 and 1
-        int idCol = 0, valueCol = 1, noRecordCounter = 0, wrongIdentifierCounter = 0, matchCounter = 0, totalRows = rows.size()
+        int idCol = 0, valueCol = 1, noRecordCounter = 0, wrongIdentifierCounter = 0, missingCurrencyCounter = 0, totalRows = rows.size()
         Set<IdentifierNamespace> namespaces = [IdentifierNamespace.findByNs('deal_id'), IdentifierNamespace.findByNs('ISIL'), IdentifierNamespace.findByNs('wibid')]
         rows.each { String row ->
             List<String> cols = row.split('\t')
@@ -1802,7 +1804,7 @@ class FinanceService {
                             CostItem ci = CostItem.findBySubAndOwnerAndCostItemElement(memberSub, contextOrg, pickedElement)
                             if(ci) {
                                 //Regex to parse different sum entries
-                                Pattern nonNumericRegex = Pattern.compile("([\$€£])"), numericRegex = Pattern.compile("([\\d'.,]+)")
+                                Pattern nonNumericRegex = Pattern.compile("([\$€£]|EUR|USD|GBP)"), numericRegex = Pattern.compile("([\\d'.,]+)")
                                 //step 1: strip the non-numerical part and try to parse a currency
                                 Matcher costMatch = numericRegex.matcher(valueStr), billingCurrencyMatch = nonNumericRegex.matcher(valueStr)
                                 //step 2: pass the numerical part to the value parser
@@ -1818,11 +1820,14 @@ class FinanceService {
                                         case ['$', 'USD']: ci.billingCurrency = RDStore.CURRENCY_USD
                                             break
                                     }
+                                    if(ci.save()) {
+                                        updatedIDs << ci.id
+                                    }
+                                    else
+                                        log.error(ci.getErrors().getAllErrors().toListString())
                                 }
-                                if(ci.save())
-                                    matchCounter++
-                                else
-                                    log.error(ci.getErrors().getAllErrors().toListString())
+                                else if(!billingCurrencyMatch.find())
+                                    missingCurrencyCounter++
                             }
                             else {
                                 noRecordCounter++
@@ -1836,10 +1841,11 @@ class FinanceService {
                 }
             }
         }
-        missing.addAll(CostItem.executeQuery('select ci.id from CostItem ci where ci.sub.instanceOf = :parent and ci.owner = :owner and ci.costItemElement = :element and ci.costInBillingCurrency = 0', [parent: subscription, owner: contextOrg, element: pickedElement]))
+        missing.addAll(CostItem.executeQuery('select ci.id from CostItem ci where ci.sub.instanceOf = :parent and ci.owner = :owner and ci.costItemElement = :element and (ci.costInBillingCurrency = 0 or ci.costInBillingCurrency = null) and ci.id not in (:updatedIDs)', [parent: subscription, owner: contextOrg, element: pickedElement, updatedIDs: updatedIDs]))
         result.missing = missing
+        result.missingCurrencyCounter = missingCurrencyCounter
         result.wrongRecords = wrongRecords
-        result.matchCounter = matchCounter
+        result.matchCounter = updatedIDs.size()
         result.wrongIdentifierCounter = wrongIdentifierCounter
         result.noRecordCounter = noRecordCounter
         result.totalRows = totalRows

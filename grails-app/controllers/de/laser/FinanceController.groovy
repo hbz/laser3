@@ -98,9 +98,10 @@ class FinanceController  {
                     if(inputFile && inputFile.size > 0) {
                         RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
                         String encoding = UniversalDetector.detectCharset(inputFile.getInputStream())
-                        if(encoding in ["UTF-8", "WINDOWS-1252"]) {
+                        if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
                             result.putAll(financeService.financeEnrichment(inputFile, encoding, pickedElement, result.subscription))
                         }
+                        params.remove("costInformation")
                     }
                 }
             }

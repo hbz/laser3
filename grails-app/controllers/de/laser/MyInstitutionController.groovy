@@ -239,18 +239,13 @@ class MyInstitutionController  {
         if(subFilter)
             qryParams3.subIds = subIds
 
+        Map<String, Object> queryParams = filterService.getWekbPlatformFilterParams(params)
+        /*
         Map<String, Object> queryParams = [componentType: "Platform"]
 
         if (params.q?.length() > 0) {
             result.filterSet = true
             queryParams.name = params.q
-            /*
-            qry3 += "and ("
-            qry3 += "   genfunc_filter_matcher(o.name, :query) = true"
-            qry3 += "   or genfunc_filter_matcher(o.sortname, :query) = true"
-            qry3 += ")"
-            qryParams3.put('query', params.q)
-            */
         }
 
         if (params.filterPropDef) {
@@ -299,6 +294,7 @@ class MyInstitutionController  {
             result.filterSet = true
             queryParams.curatoryGroupType = params.curatoryGroupType
         }
+        */
         List wekbIds = []
         Map<String, Object> wekbParams = params.clone()
         if(!wekbParams.containsKey('sort'))
@@ -598,8 +594,8 @@ class MyInstitutionController  {
         prf.setBenchmark('get licensors')
         Map<String,Set<Org>> orgs = [consortia:consortia]
         result.orgs = orgs
-        result.providers = Provider.findAll([sort: 'sortname'])
-        result.vendors = Vendor.findAll([sort: 'sortname'])
+        result.providers = providerService.getCurrentProviders(contextService.getOrg())
+        result.vendors = vendorService.getCurrentVendors(contextService.getOrg())
 
 		List bm = prf.stopBenchmark()
 		result.benchMark = bm
@@ -2205,7 +2201,7 @@ class MyInstitutionController  {
             MultipartFile tsvFile = request.getFile("tsvFile") //this makes the withTransaction closure necessary
             if(tsvFile && tsvFile.size > 0) {
                 String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
-                if(encoding in ["UTF-8", "WINDOWS-1252"]) {
+                if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
                     result.filename = tsvFile.originalFilename
                     Map<String,Map> financialData = financeService.financeImport(tsvFile, encoding)
                     result.headerRow = financialData.headerRow
@@ -2281,7 +2277,7 @@ class MyInstitutionController  {
             MultipartFile tsvFile = request.getFile("tsvFile") //this makes the transaction closure necessary
             if(tsvFile && tsvFile.size > 0) {
                 String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
-                if(encoding in ["UTF-8", "WINDOWS-1252"]) {
+                if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
                     result.filename = tsvFile.originalFilename
                     Map subscriptionData = subscriptionService.subscriptionImport(tsvFile, encoding)
                     if(subscriptionData.globalErrors) {

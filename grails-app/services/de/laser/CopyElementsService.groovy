@@ -84,11 +84,7 @@ class CopyElementsService {
                 result = ['startDate', 'endDate', 'comment']
                 break
             case SurveyConfig.class.simpleName:
-                if(obj.subSurveyUseForTransfer) {
-                    result = ['scheduledStartDate', 'scheduledEndDate', 'comment', 'internalComment']
-                }else {
                     result = ['comment', 'internalComment']
-                }
                 break
         }
 

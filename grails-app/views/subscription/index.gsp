@@ -488,7 +488,7 @@
                                                         <div class="${Btn.MODERN.SIMPLE}">
                                                             <i class="${Icon.CMD.SHOW_MORE}"></i>
                                                         </div>
-                                                        <g:if test="${editable}">
+                                                        <g:if test="${editable && subscription.holdingSelection != RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
                                                             <g:if test="${subscription.ieGroups.size() > 0}">
                                                                 <g:link action="removeEntitlementWithIEGroups"
                                                                         class="${Btn.MODERN.NEGATIVE_CONFIRM}"

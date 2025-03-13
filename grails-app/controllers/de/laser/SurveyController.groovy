@@ -535,7 +535,13 @@ class SurveyController {
 
         result.subscription = Subscription.get( params.long('sub') )
         result.pickAndChoose = true
-        if (!result.subscription) {
+        //double-check needed because menu is not being refreshed after xEditable change on sub/show
+        if(result.subscription?.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+            flash.error = message(code: 'subscription.details.addEntitlements.holdingInherited')
+            redirect controller: 'subscription', action: 'show', params: [id: params.long('sub')]
+            return
+        }
+        else if (!result.subscription) {
             redirect action: 'createIssueEntitlementsSurvey'
             return
         }
@@ -749,6 +755,20 @@ class SurveyController {
         }
     }
 
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    def editComment() {
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        if(result.status == SurveyControllerService.STATUS_ERROR) {
+            render template: "/templates/generic_modal403", model: result
+        }else {
+            result.commentTyp   = params.commentTyp
+            render template: "modal_comment_edit", model: result
+        }
+    }
+
     /**
      * Lists the titles subject of the given survey
      * @return a list view of the issue entitlements linked to the given survey
@@ -801,6 +821,23 @@ class SurveyController {
     })
     def surveyParticipants() {
         Map<String,Object> ctrlResult = surveyControllerService.surveyParticipants(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+        }else {
+            ctrlResult.result
+        }
+
+    }
+
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    def addSurveyParticipants() {
+        Map<String,Object> ctrlResult = surveyControllerService.addSurveyParticipants(params)
         if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
@@ -1174,7 +1211,7 @@ class SurveyController {
             }
         }else {
 
-            if(params.actionForSurveyProperty in ['addSurveyPropToConfig', 'deleteSurveyPropFromConfig', 'moveUp', 'moveDown']) {
+            if(params.actionForSurveyProperty in ['deleteSurveyPropFromConfig', 'moveUp', 'moveDown']) {
                 ctrlResult.result.surveyConfig.refresh()
 
                 Map<String, Object> modelMap = [
@@ -2734,6 +2771,8 @@ class SurveyController {
         result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID) : null
         result.selectedPackageID = params.selectedPackageID ? Long.valueOf(params.selectedPackageID) : null
 
+        result.modalID = 'addForAllSurveyCostItem'
+        result.idSuffix = 'addForAllSurveyCostItem'
         render(template: "/survey/costItemModal", model: result)
     }
 

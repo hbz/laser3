@@ -131,7 +131,7 @@ class ModalTagLib {
         else {
             if (attrs.formID) {
                 // todo: Btn.POSITIVE = JS-Trigger
-                out << '<input type="submit" class="ui button green" name="save" value="' + msgSave + '" onclick="event.preventDefault(); $(\'#' + attrs.id + '\').find(\'#' + attrs.formID + '\').submit()"/>'
+                out << '<input type="submit" class="ui button green" name="save" value="' + msgSave + '" onclick="event.preventDefault(); $(\'#' + attrs.id + '\').find(\'#' + attrs.formID + '\').submit();"/>'
             } else {
                 // todo: Btn.POSITIVE = JS-Trigger
                 out << '<input type="submit" class="ui button green" name="save" value="' + msgSave + '" onclick="event.preventDefault(); $(\'#' + attrs.id + '\').find(\'form\').submit()"/>'

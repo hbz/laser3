@@ -7,6 +7,30 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6361    12.03.2025  dev     3.5         Andreas Feature     Trennung des Namensraumes EZB-Anker
+
+6360    12.03.2025  dev     3.5         Andreas Feature     Löschung des falschen Lizenz-Identifier-Namensraumes emerald
+
+6327    12.03.2025  dev     3.5         Moe     Feature     Umfrage verbessern Teil 1
+
+6115    12.03.2025  dev     3.5         Andreas Feature     neue Merkmale und Referenzwertkategorien incl. Werte aufgenommen
+
+6353    11.03.2025  dev     3.5         Moe     Feature     Umbau: Merkmale hinzufügen
+
+6351    11.03.2025  dev     3.5         Andreas Bug         Fehlender Import sorgte für 500er beim Aufruf eines Lieferanten
+
+6335    10.03.2025  dev     3.5         Andreas Feature     Massenver-/Entknüpfung von Lizenzen mit Anbietern und Lieferanten implementiert
+
+6342    07.03.2025  dev     3.5         Andreas Bug         Weiterer Bezeichner "Bestand" entfernt
+
+6337    07.03.2025  dev     3.5         Andreas Feature     Erweiterung des Filters unter "Meine Lizenzen" und "Meine Verträge"
+
+6330    07.03.2025  dev     3.5         Andreas Feature     Angleichung der Plattform-Filter an aktuellen we:kb-Stand
+
+6320    07.03.2025  dev     3.5         Andreas Feature     Entfernen der Spalte "Plattform" aus der Sicht "Meine Lieferanten"
+
+6212    07.03.2025  dev     3.5         Andreas Bug         verschiedene Bugfixes und Verbesserung der Plattform-Filter
+
 6332    05.03.2025  rc-3.4  3.4.20      Andreas Bug         Filter unter "Paket verknüpfen" nicht einsetzbar
 
 6325    05.03.2025  dev     3.5         David   Bug         Organisationen verwalten (Admin): Filter- und Formular-Parameter
@@ -24,6 +48,10 @@
 6311    25.02.2025  rc-3.4  3.4.19      Moe     Bug         Merkmale werden beim Kopieren gedoppelt
 
 6316    25.02.2025  rc-3.4  3.4.19      Andreas Bug         Schnitzer im Kostenexport behoben
+
+6305    25.02.2025  dev     3.5         Moe Bug         einzelner Kontakt Löschbutton löscht nicht
+
+6092    25.02.2025  dev     3.5         Moe     Feature     Textänderung: (Nicht)-Verbindliche Umfragen werden (Nicht-)verpflichtende Umfragen
 
 6313    25.02.2025  dev     3.5         Andreas Bug         Bubbles mit Titelzahlen reimplementiert
 

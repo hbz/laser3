@@ -167,20 +167,6 @@
                         </g:if>
                     </td>
                 </tr>
-                <g:if test="${surveyInfo.type in [RDStore.SURVEY_TYPE_SUBSCRIPTION, RDStore.SURVEY_TYPE_RENEWAL, RDStore.SURVEY_TYPE_TITLE_SELECTION]}">
-                <tr>
-                    <td><g:checkBox name="copySurvey.copyScheduledDates" value="${true}"/></td>
-                    <td>${message(code: 'copySurvey.copyScheduledDates')}</td>
-                    <td>
-                        ${message(code: 'copySurvey.copyScheduledDates.startDate')}:&nbsp;<g:if
-                                test="${!surveyConfig.scheduledStartDate}">-</g:if><g:formatDate date="${surveyConfig.scheduledStartDate}"
-                                                                                      format="${message(code: 'default.date.format.notime')}"/> &nbsp
-                        ${message(code: 'copySurvey.copyScheduledDates.endDate')}:&nbsp;<g:if
-                                test="${!surveyConfig.scheduledEndDate}">-</g:if><g:formatDate date="${surveyConfig.scheduledEndDate}"
-                                                                                    format="${message(code: 'default.date.format.notime')}"/>
-                    </td>
-                </tr>
-                </g:if>
 
                 <g:if test="${surveyInfo.type == RDStore.SURVEY_TYPE_INTEREST}">
                 <tr>

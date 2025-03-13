@@ -20,7 +20,7 @@
 
 <div class="ui stackable grid">
     <div class="sixteen wide column">
-        <g:render template="/templates/info/org"/>
+        <g:render template="/info/org"/>
     </div>
 </div>
 

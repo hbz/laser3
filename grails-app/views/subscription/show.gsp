@@ -454,15 +454,16 @@
                                                              config="${RDConstants.SUBSCRIPTION_HOLDING}" overwriteEditable="${editable && !AuditConfig.getConfig(subscription.instanceOf, 'holdingSelection')}"/>
                                     </g:else>
                                 </dd>
+                                <%-- not needed because inheritance is defined implicitly by value
                                 <g:if test="${editable}">
                                     <dd>
                                         <ui:auditButton auditable="[subscription, 'holdingSelection']"
                                                         auditConfigs="${auditConfigs}"/>
                                     </dd>
                                 </g:if>
-                            <%-- Extra Call from editable cause valiation needed only in Case of Selection "Ja" --%>
+                                --%>
+                            <%-- Extra Call from editable cause validation needed only in Case of Selection "Ja" --%>
                                 <laser:script file="${this.getGroovyPageFileName()}">
-                                    //continue here
                                     $('#holdingSelection').editable('destroy').editable({
                                         tpl: '<select class="ui dropdown"></select>'
                                     }).on('shown', function() {
