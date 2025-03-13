@@ -124,6 +124,8 @@
 </div>
 <br />
 
+<g:render template="/survey/participantMessage" model="[participant: subscriber]"/>
+
 <g:if test="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, subscriber).finishDate != null}">
     <ui:msg class="success" showIcon="true" hideClose="true" message="renewEntitlementsWithSurvey.finish.info" />
 </g:if>
