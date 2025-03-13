@@ -826,17 +826,23 @@ class AjaxController {
         Subscription owner = genericOIDService.resolveOID(params.parent)
         Set<Subscription> subscriptions = managementService.loadSubscriptions(params, owner)
         Set<Provider> providers = Provider.findAllByIdInList(params.list('selectedProviders'))
+        int sharedProviderRoles = 0
         if(subscriptions && providers) {
             List<ProviderRole> providerRolesToProcess = ProviderRole.executeQuery('select pvr from ProviderRole pvr where pvr.provider in (:providers) and pvr.subscription in (:subscriptions)', [providers: providers, subscriptions: subscriptions])
             providerRolesToProcess.each { ProviderRole pvr ->
-                if (pvr.isShared) {
-                    pvr.isShared = false
-                    pvr.subscription.updateShare(pvr)
+                if (!pvr.sharedFrom) {
+                    if (pvr.isShared) {
+                        pvr.isShared = false
+                        pvr.subscription.updateShare(pvr)
+                    }
+                    pvr.delete()
                 }
-                pvr.delete()
+                else sharedProviderRoles++
             }
         }
         managementService.clearSubscriptionCache(params)
+        if(sharedProviderRoles > 0)
+            flash.error = message(code: 'subscription.details.linkProvider.sharedLinks.error', args: [sharedProviderRoles])
         redirect(url: request.getHeader('referer'))
     }
 
@@ -846,17 +852,23 @@ class AjaxController {
         Subscription owner = genericOIDService.resolveOID(params.parent)
         Set<Subscription> subscriptions = managementService.loadSubscriptions(params, owner)
         Set<Vendor> vendors = Provider.findAllByIdInList(params.list('selectedVendors'))
+        int sharedVendorRoles = 0
         if(subscriptions && vendors) {
             List<VendorRole> vendorRolesToProcess = VendorRole.executeQuery('select vr from VendorRole vr where vr.vendor in (:vendors) and vr.subscription in (:subscriptions)', [vendors: vendors, subscriptions: subscriptions])
             vendorRolesToProcess.each { VendorRole vr ->
-                if (vr.isShared) {
-                    vr.isShared = false
-                    vr.subscription.updateShare(vr)
+                if (!vr.sharedFrom) {
+                    if (vr.isShared) {
+                        vr.isShared = false
+                        vr.subscription.updateShare(vr)
+                    }
+                    vr.delete()
                 }
-                vr.delete()
+                else sharedVendorRoles++
             }
         }
         managementService.clearSubscriptionCache(params)
+        if(sharedVendorRoles > 0)
+            flash.error = message(code: 'subscription.details.linkProvider.sharedLinks.error', args: [sharedVendorRoles])
         redirect(url: request.getHeader('referer'))
     }
 
