@@ -33,6 +33,14 @@
                     id="${subscription.id}"
                     params="${[surveyConfigID: surveyConfig.id,
                                exportConfig   : ExportService.KBART,
+                               tab           : 'selectableTipps']}">${message(code: 'renewEntitlementsWithSurvey.selectableTipps')}</g:link>
+        </ui:exportDropdownItem>
+
+        <ui:exportDropdownItem>
+            <g:link class="item normalExport" action="exportRenewalEntitlements"
+                    id="${subscription.id}"
+                    params="${[surveyConfigID: surveyConfig.id,
+                               exportConfig   : ExportService.KBART,
                                tab           : 'selectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}</g:link>
         </ui:exportDropdownItem>
 
@@ -57,6 +65,14 @@
                     params="${[surveyConfigID: surveyConfig.id,
                                exportConfig     : ExportService.EXCEL,
                                tab           : 'allTipps']}">${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}</g:link>
+        </ui:exportDropdownItem>
+
+        <ui:exportDropdownItem>
+            <g:link class="item normalExport" action="exportRenewalEntitlements"
+                    id="${subscription.id}"
+                    params="${[surveyConfigID: surveyConfig.id,
+                               exportConfig     : ExportService.EXCEL,
+                               tab           : 'selectableTipps']}">${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}</g:link>
         </ui:exportDropdownItem>
 
         <ui:exportDropdownItem>
@@ -135,7 +151,7 @@
 <g:if test="${editable}">
     <laser:render template="KBARTSelectionUploadFormModal"/>
 </g:if>
-        <laser:render template="/templates/filter/tipp_ieFilter" model="[notShow: params.tab == 'allTipps', fillDropdownsWithPackage: params.tab == 'allTipps']"/>
+        <laser:render template="/templates/filter/tipp_ieFilter" model="[notShow: params.tab == 'allTipps' || params.tab == 'selectableTipps', fillDropdownsWithPackage: params.tab == 'allTipps' || params.tab == 'selectableTipps']"/>
 
 <h3 class="ui icon header la-clear-before la-noMargin-top">
     <ui:bubble count="${num_rows}" grey="true"/> <g:message code="title.filter.result"/>
@@ -147,9 +163,9 @@
 
     <ui:tabs actionName="${actionName}">
         <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
-                        params="[id: subscription.id, surveyConfigID: surveyConfig.id, tab: 'allTipps']"
-                        text="${message(code: "renewEntitlementsWithSurvey.selectableTitles")}" tab="allTipps"
-                        counts="${countAllTipps}"/>
+                     params="[id: subscription.id, surveyConfigID: surveyConfig.id, tab: 'selectableTipps']"
+                     text="${message(code: "renewEntitlementsWithSurvey.selectableTipps")}" tab="selectableTipps"
+                     counts="${countselectableTipps}"/>
         <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                          params="[id: subscription.id, surveyConfigID: surveyConfig.id, tab: 'selectedIEs']"
                          text="${message(code: "renewEntitlementsWithSurvey.currentTitlesSelect")}" tab="selectedIEs"
@@ -164,6 +180,10 @@
                 </span>
             <div class="ui circular label">${countCurrentPermanentTitles}</div>
         </g:link>
+        <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
+                     params="[id: subscription.id, surveyConfigID: surveyConfig.id, tab: 'allTipps']"
+                     text="${message(code: "renewEntitlementsWithSurvey.selectableTitles")}" tab="allTipps"
+                     counts="${countAllTipps}"/>
 </ui:tabs>
 
     <div class="ui bottom attached tab active segment">
@@ -200,7 +220,7 @@
         <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
         <g:hiddenField name="tab" value="${params.tab}"/>
         <g:hiddenField name="subTab" value="${params.subTab}"/>
-        <g:if test="${params.tab == 'allTipps' || params.tab == 'selectedIEs' || params.tab == 'currentPerpetualAccessIEs'}">
+        <g:if test="${params.tab == 'allTipps' || params.tab == 'selectableTipps' || params.tab == 'selectedIEs' || params.tab == 'currentPerpetualAccessIEs'}">
 
                 <div class="ui form">
                     <div class="two wide fields">
@@ -215,7 +235,7 @@
 
         </g:if>
 
-        <g:if test="${params.tab == 'allTipps'}">
+        <g:if test="${params.tab == 'allTipps' || params.tab == 'selectableTipps'}">
             <laser:render template="/templates/survey/tippTableSurvey" model="${[titlesList: titlesList, showPackage: true, showPlattform: true]}"/>
         </g:if>
         <g:else>
@@ -227,7 +247,7 @@
             <div class="two fields">
             <g:if test="${params.tab != 'stats'}">
                 <div class="eight wide field" style="text-align: left;">
-                    <g:if test="${editable && params.tab == 'allTipps'}">
+                    <g:if test="${editable && params.tab == 'allTipps' || params.tab == 'selectableTipps'}">
                         <button type="submit" name="process" id="processButton" value="add" class="${Btn.POSITIVE}">
                             ${checkedCount} <g:message code="renewEntitlementsWithSurvey.preliminary"/></button>
                     </g:if>
@@ -343,7 +363,7 @@
 
                 },
                 success: function (data) {
-                    <g:if test="${editable && params.tab == 'allTipps'}">
+                    <g:if test="${editable && (params.tab == 'allTipps' || params.tab == 'selectableTipps' )}">
                         $("#processButton").html(data.checkedCount + " ${g.message(code: 'renewEntitlementsWithSurvey.preliminary')}");
                     </g:if>
 
@@ -375,7 +395,7 @@
                 $("div[data-index='" + index + "']").removeClass("positive");
             }
 
-    <g:if test="${editable && params.tab == 'allTipps'}">
+    <g:if test="${editable && params.tab == 'allTipps' || params.tab == 'selectableTipps'}">
         JSPC.app.updateSelectionCache($(this).parents(".la-js-checkItem").attr("data-tippId"), $(this).prop('checked'));
     </g:if>
 
