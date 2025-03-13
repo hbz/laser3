@@ -179,7 +179,7 @@
 
             <laser:render template="/templates/filter/orgFilterTable"
                           model="[orgList         : surveyParticipantsHasAccess,
-                                  tmplShowCheckbox: true,
+                                  tmplShowCheckbox: editable,
                                   tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'surveySubInfo', (surveyConfig.subscription ? 'surveySubCostItem' : ''), 'surveyCostItem'],
                                   tableID         : 'costTable'
                           ]"/>
@@ -205,7 +205,7 @@
 
                 <laser:render template="/templates/filter/orgFilterTable"
                               model="[orgList         : surveyParticipantsHasNotAccess,
-                                      tmplShowCheckbox: true,
+                                      tmplShowCheckbox: editable,
                                       tmplConfigShow  : ['lineNumber', 'sortname', 'name', (surveyConfig.subscription ? 'surveySubInfo' : ''), (surveyConfig.subscription ? 'surveySubCostItem' : ''), 'surveyCostItem'],
                                       tableID         : 'costTable'
                               ]"/>
@@ -218,32 +218,36 @@
 
         <br/>
         <br/>
-        <button name="deleteCostItems" value="true" type="submit"
-                class="${Btn.NEGATIVE_CONFIRM}"
-                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyCostItems")}"
-                data-confirm-term-how="delete"
-                data-confirm-id="processSurveyCostItemsBulk"
-                role="button"
-                aria-label="${message(code: 'ariaLabel.delete.universal')}">
-            <i class="${Icon.CMD.DELETE}"></i> ${message(code: "surveyCostItems.bulkOption.delete")}
-        </button>
+        <g:if test="${editable}">
+            <button name="deleteCostItems" value="true" type="submit"
+                    class="${Btn.NEGATIVE_CONFIRM}"
+                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyCostItems")}"
+                    data-confirm-term-how="delete"
+                    data-confirm-id="processSurveyCostItemsBulk"
+                    role="button"
+                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                <i class="${Icon.CMD.DELETE}"></i> ${message(code: "surveyCostItems.bulkOption.delete")}
+            </button>
+        </g:if>
 
     </g:form>
     <br/>
     <br/>
 
-    <g:form action="setSurveyWorkFlowInfos" method="post" class="ui form"
-            params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setSurveyWorkFlowInfo: 'workflowCostItemsFinish']">
+    <g:if test="${editable}">
+        <g:form action="setSurveyWorkFlowInfos" method="post" class="ui form"
+                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setSurveyWorkFlowInfo: 'workflowCostItemsFinish']">
 
-        <div class="ui right floated compact segment">
-            <div class="ui checkbox">
-                <input type="checkbox" onchange="this.form.submit()"
-                       name="costItemsFinish" ${surveyConfig.costItemsFinish ? 'checked' : ''}>
-                <label><g:message code="surveyconfig.costItemsFinish.label"/></label>
+            <div class="ui right floated compact segment">
+                <div class="ui checkbox">
+                    <input type="checkbox" onchange="this.form.submit()"
+                           name="costItemsFinish" ${surveyConfig.costItemsFinish ? 'checked' : ''}>
+                    <label><g:message code="surveyconfig.costItemsFinish.label"/></label>
+                </div>
             </div>
-        </div>
 
-    </g:form>
+        </g:form>
+    </g:if>
 
     </div>
     </div>

@@ -41,12 +41,14 @@
 
         <ui:greySegment>
 
-            <div class="four wide column">
-                <button type="button" class="${Btn.MODERN.SIMPLE} right floated" data-ui="modal"
-                        data-href="#modalCreateDocument"><i class="${Icon.CMD.ADD}"></i></button>
-%{--                <laser:render template="/templates/documents/modal"--}%
-%{--                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>--}%
-            </div>
+            <g:if test="${editable}">
+                <div class="four wide column">
+                    <button type="button" class="${Btn.MODERN.SIMPLE} right floated" data-ui="modal"
+                            data-href="#modalCreateDocument"><i class="${Icon.CMD.ADD}"></i></button>
+                    %{--                <laser:render template="/templates/documents/modal"--}%
+                    %{--                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>--}%
+                </div>
+            </g:if>
             <br /><br />
 
 

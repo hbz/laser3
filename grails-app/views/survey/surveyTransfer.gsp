@@ -78,9 +78,9 @@
             </g:else>
 
 
-            <laser:render template="evaluationParticipantsView" model="[showCheckboxForParticipantsHasAccess: true,
-                                                                        showCheckboxForParticipantsHasNoAccess: true,
-                                                                        showTransferFields: true,
+            <laser:render template="evaluationParticipantsView" model="[showCheckboxForParticipantsHasAccess: editable,
+                                                                        showCheckboxForParticipantsHasNoAccess: editable,
+                                                                        showTransferFields: editable,
                                                                         processAction: 'processTransferParticipants',
                                                                         tmplConfigShow   : tmplConfigShowList]"/>
         </div>

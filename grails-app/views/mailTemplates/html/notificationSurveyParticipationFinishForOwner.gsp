@@ -42,7 +42,7 @@
 
 <g:set var="surveyPersons"
        value="${SurveyPersonResult.executeQuery('select spr.person from SurveyPersonResult spr where spr.surveyPerson = true and spr.participant = :participant and spr.surveyConfig = :surveyConfig', [participant: org, surveyConfig: survey.surveyConfigs[0]])}"/>
-<g:set var="surveyContacts" value="${Contact.executeQuery("select c.content, p.title, p.first_name, p.middle_name, p.last_name from Person p " +
+<g:set var="surveyContactMails" value="${Contact.executeQuery("select c.content from Person p " +
         "join p.contacts c where p in (:persons) and c.contentType = :type",
         [persons: surveyPersons, type: RDStore.CCT_EMAIL])}"/>
 
@@ -53,7 +53,7 @@
 <br/>
 <br/>
 <g:message code="email.survey.finish.text"
-           args="${[orgName, survey.name, formatDate(format: message(code: 'default.date.format.notime'), date: survey.startDate), formatDate(format: message(code: 'default.date.format.notime'), date: survey.endDate)]}"
+           args="${[orgName, survey.type.getI10n('value', language), survey.name, formatDate(format: message(code: 'default.date.format.notime'), date: survey.startDate), formatDate(format: message(code: 'default.date.format.notime'), date: survey.endDate)]}"
            locale="${language}"/>
 <br/>
 <br/>
@@ -149,36 +149,40 @@
 </g:if>
 
 <strong>${RDStore.PRS_FUNC_SURVEY_CONTACT.getI10n('value', language)}:</strong><br/>
-<g:if test="${surveyContacts}">
-    E-Mails: ${surveyContacts.collect{it[0]}.join('; ')}<br/>
+<g:if test="${surveyContactMails}">
+    E-Mails: ${surveyContactMails.join('; ')}<br/>
     <br/>
-    <g:each in="${surveyContacts}" var="contcat">
-        Name: ${contcat[1]} ${contcat[2]} ${contcat[3]} ${contcat[4]} <br/>
-        <g:message code="contact" locale="${language}"/>: ${contcat[0]}
-        <br/>
+</g:if>
+<g:each in="${surveyPersons}" var="person">
+    Name: ${person.title} ${person.first_name} ${person.middle_name} ${person.last_name} <br/>
+    <g:each in="${person.contacts}" var="contact">
+        <g:message code="contact" locale="${language}"/> (${contact.contentType ? contact.contentType.getI10n('value', language) :''}): ${contact.content}
         <br/>
     </g:each>
     <br/>
+</g:each>
     <br/>
-</g:if>
+    <br/>
 
 <g:if test="${survey.surveyConfigs[0].invoicingInformation}">
     <g:set var="billingPersons"
            value="${SurveyPersonResult.executeQuery('select spr.person from SurveyPersonResult spr where spr.billingPerson = true and spr.participant = :participant and spr.surveyConfig = :surveyConfig', [participant: org, surveyConfig: survey.surveyConfigs[0]])}"/>
-    <g:set var="billingContacts" value="${Contact.executeQuery("select c.content, p.title, p.first_name, p.middle_name, p.last_name from Person p " +
+    <g:set var="billingContactEmails" value="${Contact.executeQuery("select c.content, p.title, p.first_name, p.middle_name, p.last_name from Person p " +
             "join p.contacts c where p in (:persons) and c.contentType = :type",
             [persons: billingPersons, type: RDStore.CCT_EMAIL])}"/>
     <strong>${RDStore.PRS_FUNC_INVOICING_CONTACT.getI10n('value', language)}:</strong><br/>
-    <g:if test="${billingContacts}">
-        E-Mails: ${billingContacts.collect{it[0]}.join('; ')}<br/>
+    <g:if test="${billingContactEmails}">
+        E-Mails: ${billingContactEmails.join('; ')}<br/>
         <br/>
-        <g:each in="${billingContacts}" var="contcat">
-            Name: ${contcat[1]} ${contcat[2]} ${contcat[3]} ${contcat[4]} <br/>
-            <g:message code="contact" locale="${language}"/>: ${contcat[0]}
-            <br/>
+    </g:if>
+    <g:each in="${billingPersons}" var="person">
+        Name: ${person.title} ${person.first_name} ${person.middle_name} ${person.last_name} <br/>
+        <g:each in="${person.contacts}" var="contact">
+            <g:message code="contact" locale="${language}"/> (${contact.contentType ? contact.contentType.getI10n('value', language) :''}): ${contact.content}
             <br/>
         </g:each>
-    </g:if>
+        <br/>
+    </g:each>
     <br/>
     <br/>
     <strong>${RDStore.ADDRESS_TYPE_BILLING.getI10n('value', language)}:</strong><br/>

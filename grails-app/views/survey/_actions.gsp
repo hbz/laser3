@@ -44,16 +44,19 @@
                     <div class="ui divider"></div>
                 </g:if>
 
+
+            <g:if test="${surveyInfo && (surveyInfo.status.id == RDStore.SURVEY_IN_PROCESSING.id)}">
+                <ui:actionsDropdownItem controller="survey" action="addSurveyParticipants" params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                                        text="${message(code: 'default.add.label', args: [message(code: 'surveyParticipants.label')])}"/>
+
+                <g:if test="${surveyConfig.subscription}">
+                    <ui:actionsDropdownItem action="actionSurveyParticipants"
+                                            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, actionSurveyParticipants: 'addSubMembersToSurvey']"
+                                            message="surveyParticipants.addSubMembersToSurvey"/>
+                </g:if>
+                <div class="ui divider"></div>
+            </g:if>
                 <g:if test="${surveyInfo && (surveyInfo.status.id == RDStore.SURVEY_IN_PROCESSING.id) && surveyInfo.checkOpenSurvey()}">
-                    <ui:actionsDropdownItem controller="survey" action="addSurveyParticipants" params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
-                                            text="${message(code: 'default.add.label', args: [message(code: 'surveyParticipants.label')])}"/>
-
-                    <g:if test="${surveyConfig.subscription}">
-                            <ui:actionsDropdownItem action="actionSurveyParticipants"
-                                    params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, actionSurveyParticipants: 'addSubMembersToSurvey']"
-                                                    message="surveyParticipants.addSubMembersToSurvey"/>
-                    </g:if>
-
                     <ui:actionsDropdownItem controller="survey" action="setStatus" params="[id: params.id, newStatus: 'processOpenSurvey']"
                                                message="openSurvey.button"
                                                tooltip="${message(code: "openSurvey.button.info2")}"/>
