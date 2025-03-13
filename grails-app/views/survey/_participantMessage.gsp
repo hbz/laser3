@@ -1,5 +1,5 @@
 <laser:serviceInjection/>
-<g:if test="${contextService.getOrg().id == surveyInfo.owner.id}">
+<g:if test="${contextService.getOrg().id == surveyInfo.owner.id && participant}">
     <div class="ui error message">
         <div class="header">
             <g:message code="myinst.message.attention"/>
