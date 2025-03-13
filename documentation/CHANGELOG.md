@@ -7,13 +7,17 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-6344    12.03.2025  dev     3.5         Moe     Feature     Verbesserung der XRechnung bei Rechnungsstellung in Umfragen
+6361    12.03.2025  dev     3.5         Andreas Feature     Trennung des Namensraumes EZB-Anker
 
-6253    12.03.2025  dev     3.5         Moe     Bug         Rechteprobleme bei Nutzenden mit Leser-Zugriff auf DEV
+6360    12.03.2025  dev     3.5         Andreas Feature     Löschung des falschen Lizenz-Identifier-Namensraumes emerald
+
+6347    12.03.2025  dev     3.5         Moe     Feature     Spaltenüberschrift bei Kontakten: "Name" soll zu "Nachname / Funktionsbezeichnung" werden (wie beim Anlegen)
+
+6344    12.03.2025  dev     3.5         Moe     Feature     Verbesserung der XRechnung bei Rechnungsstellung in Umfragen
 
 6327    12.03.2025  dev     3.5         Moe     Feature     Umfrage verbessern Teil 1
 
-6347    12.03.2025  dev     3.5         Moe     Feature     Spaltenüberschrift bei Kontakten: "Name" soll zu "Nachname / Funktionsbezeichnung" werden (wie beim Anlegen)
+6253    12.03.2025  dev     3.5         Moe     Bug         Rechteprobleme bei Nutzenden mit Leser-Zugriff auf DEV
 
 6119    12.03.2025  dev     3.5         Moe     Feature    Benachrichtigung abgeschlossene Umfrage: zusätzliche Infos aufnehmen
 
