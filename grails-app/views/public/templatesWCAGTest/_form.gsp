@@ -63,7 +63,7 @@
         <label for="license">
             Art der Lizenz <g:message code="messageRequiredField" />
         </label>
-        <select id="license" class="ui dropdown search many-to-one required "  required="required" name="license">
+        <select id="license" class="ui dropdown search required"  required="required" name="license">
             <option value="">Bitte auswählen</option>
 
 

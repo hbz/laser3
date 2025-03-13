@@ -23,7 +23,7 @@
                 ${message(code:'tipp.reportTitleToProvider.info1')}
                 <br />
                 <a href="#" class="infoFlyout-trigger" data-template="reportTitleToProvider" data-tipp="${tipp.id}">${message(code:'tipp.reportTitleToProvider.mailto')}</a>
-%{--                und <a href="#modalCreateTask" data-ui="modal">erstellen Sie sich ggf. eine Aufgabe</a> zur Erinnerung.--}%
+%{--                und <a href="#modalRttpCreateTask" data-ui="modal" data-tipp="${tipp.id}">erstellen Sie sich ggf. eine Aufgabe</a> zur Erinnerung.--}%
                 <br />
 
                 <g:if test="${currentTasks.cmbTaskInstanceList}">
