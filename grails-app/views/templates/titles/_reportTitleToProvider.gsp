@@ -77,7 +77,7 @@
                                    from="${RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
                                    optionValue="value" optionKey="id" required=""
                                    value="${RDStore.TASK_STATUS_OPEN.id}"
-                                   class="ui dropdown search many-to-one"
+                                   class="ui dropdown search"
                                    noSelection="${['' : message(code:'default.select.choose.label')]}"
                         />
                     </div>
@@ -120,7 +120,7 @@
                                   optionKey="id"
                                   optionValue="display"
                                   value="${contextService.getUser().id}"
-                                  class="ui dropdown search many-to-one"
+                                  class="ui dropdown search"
                                   noSelection="${['' : message(code:'default.select.choose.label')]}"
                         />
                     </div>

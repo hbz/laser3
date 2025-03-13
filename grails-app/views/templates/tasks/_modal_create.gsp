@@ -79,7 +79,7 @@
                 <label for="${preID}_license">
                     <g:message code="task.linkto" /> <g:message code="license.label" /> <g:message code="messageRequiredField" />
                 </label>
-                <g:select class="ui dropdown search many-to-one"
+                <g:select class="ui dropdown search"
                           id="${preID}_license"
                           name="license"
                           from="${validLicensesDropdown}"
@@ -100,7 +100,7 @@
                           optionKey="${{it.optionKey}}"
                           optionValue="${{it.optionValue}}"
                           value="${ownobj?.id}"
-                          class="ui dropdown search many-to-one"
+                          class="ui dropdown search"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                 />
             </div>
@@ -115,7 +115,7 @@
                           optionKey="${{it.optionKey}}"
                           optionValue="${{it.optionValue}}"
                           value="${ownobj?.id}"
-                          class="ui dropdown search many-to-one"
+                          class="ui dropdown search"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                 />
             </div>
@@ -130,7 +130,7 @@
                           optionKey="${{it.optionKey}}"
                           optionValue="${{it.optionValue}}"
                           value="${ownobj?.id}"
-                          class="ui dropdown search many-to-one"
+                          class="ui dropdown search"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                 />
             </div>
@@ -139,7 +139,7 @@
                 <label for="${preID}_subscription">
                     <g:message code="task.linkto" /> <g:message code="default.subscription.label" /> <g:message code="messageRequiredField" />
                 </label>
-                <g:select class="ui dropdown search many-to-one"
+                <g:select class="ui dropdown search"
                           id="${preID}_subscription"
                           name="subscription"
                           from="${validSubscriptionsDropdown}"
@@ -161,7 +161,7 @@
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
                                   optionValue="value" optionKey="id" required=""
                                   value="${RDStore.TASK_STATUS_OPEN.id}"
-                                  class="ui dropdown many-to-one la-not-clearable"
+                                  class="ui dropdown la-not-clearable"
                                   noSelection="${['' : message(code:'default.select.choose.label')]}"
                     />
                 </div>
@@ -205,7 +205,7 @@
                               optionKey="id"
                               optionValue="display"
                               value="${contextService.getUser().id}"
-                              class="ui dropdown search many-to-one la-not-clearable"
+                              class="ui dropdown search la-not-clearable"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"
                     />
                 </div>

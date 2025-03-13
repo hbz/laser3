@@ -48,7 +48,7 @@
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
                                   optionValue="value" optionKey="id" required=""
                                   value="${taskInstance.status?.id ?: RDStore.TASK_STATUS_OPEN.id}"
-                                  class="ui dropdown many-to-one la-not-clearable"/>
+                                  class="ui dropdown la-not-clearable"/>
                 </div>
 
                 <ui:datepicker class="wide eight" label="task.endDate.label" id="${preID}_endDate" name="endDate"
@@ -93,7 +93,7 @@
                               optionKey="id"
                               optionValue="display"
                               value="${taskInstance.responsibleUser?.id}"
-                              class="ui dropdown search many-to-one la-not-clearable"
+                              class="ui dropdown search la-not-clearable"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"
                     />
                 </div>
