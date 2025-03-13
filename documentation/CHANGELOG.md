@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6356    13.03.2025  dev     3.5         Moe     Feature     Informationskasten anzeigen, wenn man sich in den "Kindumfragen" befindet
+
 6364    13.03.2025  dev     3.5         Moe     Feature     Änderung der Reihenfolge der Funktionen im Zauberstab
 
 6361    12.03.2025  dev     3.5         Andreas Feature     Trennung des Namensraumes EZB-Anker
