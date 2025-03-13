@@ -222,6 +222,8 @@
     let currDate = new Date(limit.getFullYear()-1, 0, 1, 0, 0, 0, 0);
     let startDate;
     <%
+        Calendar lowerLimit = GregorianCalendar.getInstance()
+        lowerLimit.add(Calendar.YEAR, -2)
         Set<Subscription> precedingSubs = linksGenerationService.getSuccessionChain(subscription, 'sourceSubscription')
         Subscription startSub
         if(precedingSubs)
@@ -229,7 +231,12 @@
         else startSub = subscription
     %>
     <g:if test="${startSub?.startDate}">
-        let start = new Date(<g:formatDate date="${startSub.startDate}" format="yyyy, M, d"/>, 0, 0, 0, 0);
+        <g:if test="${startSub?.startDate >= lowerLimit.getTime()}">
+            let start = new Date(<g:formatDate date="${startSub.startDate}" format="yyyy, M, d"/>, 0, 0, 0, 0);
+        </g:if>
+        <g:else>
+            let start = new Date(<g:formatDate date="${lowerLimit.getTime()}" format="yyyy, M, d"/>, 0, 0, 0, 0);
+        </g:else>
         start.setMonth(start.getMonth()-1); //correction because month is 0-based
         if(start.getTime() < currDate.getTime())
             currDate = start;
