@@ -1,7 +1,7 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore" %>
 <ui:modal id="KBARTUploadForm" message="subscription.details.addEntitlements.header" msgSave="${message(code: 'subscription.details.addEntitlements.preselect')}">
     <%-- double-check needed because menu is not being refreshed after xEditable change on sub/show --%>
-    <g:if test="${subscription.holding != RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+    <g:if test="${subscription.holdingSelection != RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
         <ui:msg header="${message(code:"message.attention")}" message="subscription.details.addEntitlements.warning" />
 
         <g:form class="ui form" method="post" enctype="multipart/form-data">
