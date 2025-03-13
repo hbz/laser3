@@ -269,7 +269,7 @@
                 </div>
 
                 <div class="ui bottom attached tab segment active">
-                    <g:if test="${params.viewTab == 'overview' && surveyConfig.subscription}">
+                    <g:if test="${params.viewTab == 'overview'}">
                         <div class="ui stackable grid">
                             <div class="eleven wide column">
 
@@ -507,19 +507,20 @@
 
         <br/>
         <br/>
+        <g:if test="${editable}">
+            <g:form action="setSurveyWorkFlowInfos" method="post" class="ui form"
+                    params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, setSurveyWorkFlowInfo: 'setSurveyConfigFinish']">
 
-        <g:form action="setSurveyWorkFlowInfos" method="post" class="ui form"
-                params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, setSurveyWorkFlowInfo: 'setSurveyConfigFinish']">
-
-            <div class="ui right floated compact segment">
-                <div class="ui checkbox">
-                    <input type="checkbox" onchange="this.form.submit()"
-                           name="configFinish" ${surveyConfig.configFinish ? 'checked' : ''}>
-                    <label><g:message code="surveyconfig.configFinish.label"/></label>
+                <div class="ui right floated compact segment">
+                    <div class="ui checkbox">
+                        <input type="checkbox" onchange="this.form.submit()"
+                               name="configFinish" ${surveyConfig.configFinish ? 'checked' : ''}>
+                        <label><g:message code="surveyconfig.configFinish.label"/></label>
+                    </div>
                 </div>
-            </div>
 
-        </g:form>
+            </g:form>
+        </g:if>
 
     </div><!-- .twelve -->
 

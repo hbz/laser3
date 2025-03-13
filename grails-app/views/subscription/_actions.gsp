@@ -91,7 +91,12 @@
                         <ui:actionsDropdownItemDisabled message="subscription.details.addEntitlements.menu" tooltip="${message(code:'subscription.details.addEntitlements.holdingEntire')}"/>
                     </g:else>
                     <ui:actionsDropdownItem controller="subscription" action="manageEntitlementGroup" params="${[id:params.id]}" message="subscription.details.manageEntitlementGroup.label" />
-                    <ui:actionsDropdownItem controller="subscription" action="index" notActive="true" params="${[id:params.id, issueEntitlementEnrichment: true]}" message="subscription.details.issueEntitlementEnrichment.label" />
+                    <g:if test="${titleManipulation}">
+                        <ui:actionsDropdownItem controller="subscription" action="index" notActive="true" params="${[id:params.id, issueEntitlementEnrichment: true]}" message="subscription.details.issueEntitlementEnrichment.label" />
+                    </g:if>
+                    <g:else>
+                        <ui:actionsDropdownItemDisabled message="subscription.details.issueEntitlementEnrichment.label" tooltip="${message(code:'subscription.details.addEntitlements.holdingEntire')}"/>
+                    </g:else>
                 </g:if>
                 <g:else>
                     <ui:actionsDropdownItemDisabled message="subscription.details.addEntitlements.label" tooltip="${message(code:'subscription.details.addEntitlements.noPackagesYetAdded')}"/>

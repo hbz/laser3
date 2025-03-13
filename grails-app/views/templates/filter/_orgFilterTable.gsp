@@ -799,18 +799,20 @@
                                         </td>
 
                                         <td>
-                                            <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
-                                                    data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                  : params.id,
-                                                                                                                surveyConfigID: surveyConfig.id,
-                                                                                                                participant              : org.id,
-                                                                                                                costItem                 : costItem.id,
-                                                                                                                selectedCostItemElementID: selectedCostItemElementID,
-                                                                                                                selectedPackageID        : selectedPackageID,
-                                                                                                                selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
-                                                    role="button"
-                                                    aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
-                                            </button>
+                                            <g:if test="${editable}">
+                                                <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
+                                                        data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                       : params.id,
+                                                                                                                         surveyConfigID           : surveyConfig.id,
+                                                                                                                         participant              : org.id,
+                                                                                                                         costItem                 : costItem.id,
+                                                                                                                         selectedCostItemElementID: selectedCostItemElementID,
+                                                                                                                         selectedPackageID        : selectedPackageID,
+                                                                                                                         selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
+                                                        role="button"
+                                                        aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
+                                                </button>
+                                            </g:if>
                                         </td>
                                         <td>
                                             <g:if test="${costItem && costItem.costDescription}">
@@ -827,17 +829,19 @@
 
                         </g:if>
                         <g:else>
-                            <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
-                                    data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                  : params.id,
-                                                                                                surveyConfigID: surveyConfig.id,
-                                                                                                participant              : org.id,
-                                                                                                selectedCostItemElementID: selectedCostItemElementID,
-                                                                                                selectedPackageID        : selectedPackageID,
-                                                                                                selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
-                                    role="button"
-                                    aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
-                            </button>
+                            <g:if test="${editable}">
+                                <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
+                                        data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                       : params.id,
+                                                                                                         surveyConfigID           : surveyConfig.id,
+                                                                                                         participant              : org.id,
+                                                                                                         selectedCostItemElementID: selectedCostItemElementID,
+                                                                                                         selectedPackageID        : selectedPackageID,
+                                                                                                         selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
+                                </button>
+                            </g:if>
                         </g:else>
 
                     </g:else>
@@ -896,18 +900,20 @@
                                         </td>
 
                                         <td>
-                                            <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
-                                                    data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                  : params.id,
-                                                                                                                surveyConfigID: surveyConfig.id,
-                                                                                                                participant              : org.id,
-                                                                                                                costItem                 : costItem.id,
-                                                                                                                selectedCostItemElementID: selectedCostItemElementID,
-                                                                                                                selectedPackageID        : selectedPackageID,
-                                                                                                                selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
-                                                    role="button"
-                                                    aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
-                                            </button>
+                                            <g:if test="${editable}">
+                                                <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
+                                                        data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                       : params.id,
+                                                                                                                         surveyConfigID           : surveyConfig.id,
+                                                                                                                         participant              : org.id,
+                                                                                                                         costItem                 : costItem.id,
+                                                                                                                         selectedCostItemElementID: selectedCostItemElementID,
+                                                                                                                         selectedPackageID        : selectedPackageID,
+                                                                                                                         selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
+                                                        role="button"
+                                                        aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
+                                                </button>
+                                            </g:if>
                                         </td>
                                         <td>
                                             <g:if test="${costItem && costItem.costDescription}">
@@ -924,17 +930,19 @@
 
                         </g:if>
                         <g:else>
-                            <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
-                                    data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                  : params.id,
-                                                                                                surveyConfigID: surveyConfig.id,
-                                                                                                participant              : org.id,
-                                                                                                selectedCostItemElementID: selectedCostItemElementID,
-                                                                                                selectedPackageID        : selectedPackageID,
-                                                                                                selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
-                                    role="button"
-                                    aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
-                            </button>
+                            <g:if test="${editable}">
+                                <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
+                                        data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                       : params.id,
+                                                                                                         surveyConfigID           : surveyConfig.id,
+                                                                                                         participant              : org.id,
+                                                                                                         selectedCostItemElementID: selectedCostItemElementID,
+                                                                                                         selectedPackageID        : selectedPackageID,
+                                                                                                         selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
+                                </button>
+                            </g:if>
                         </g:else>
                     </g:if>
                 </td>
@@ -1051,7 +1059,7 @@
     </laser:script>
 
 </g:if>
-<g:if test="${(tmplConfigShow?.contains('surveyCostItem') || tmplConfigShow?.contains('surveyCostItemPackage')) && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
+<g:if test="${(tmplConfigShow?.contains('surveyCostItem') || tmplConfigShow?.contains('surveyCostItemPackage')) && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id && editable}">
     <laser:script file="${this.getGroovyPageFileName()}">
         $('.triggerSurveyCostItemModal').on('click', function(e) {
             e.preventDefault();

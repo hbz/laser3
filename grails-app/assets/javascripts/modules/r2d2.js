@@ -473,6 +473,13 @@ r2d2 = {
                             return  JSPC.dict.get('xEditable.validation.mail', JSPC.config.language)
                         }
                     }
+                    if (dVal.includes('leitwegID')) {
+                        let regex = /^([0-9]{2,12})+-+([a-zA-Z0-9]{0,30})+-+([0-9]{2,2})+$/
+                        let test = regex.test($.trim(value)) || $.trim(value) === ''
+                        if(!test) {
+                            return  JSPC.dict.get('xEditable.validation.leit', JSPC.config.language)
+                        }
+                    }
                     if (dVal.includes('number')) {
                         let regex =  /^[0-9]+$/;
                         let test = regex.test($.trim(value)) || $.trim(value) === ''
@@ -606,6 +613,11 @@ r2d2 = {
             if (! href) {
                 href = $(this).attr('href')
             }
+            let keyboardHandler = function(e) {
+                if (e.keyCode === 27) {
+                    $(href + '.ui.modal').modal('hide');
+                }
+            };
             $(href + '.ui.modal').modal({
                 onVisible: function() {
                     $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
@@ -615,8 +627,8 @@ r2d2 = {
 
                     let modalCallbackFunction = JSPC.callbacks.modal.onVisible[$(this).attr('id')];
                     if (typeof modalCallbackFunction === "function") {
-                        console.debug('%cJSPC.callbacks.modal.onVisible found: #' + $(this).attr('id') + ' - trigger: ' + $triggerElement.attr('id'), 'color:grey')
-                        modalCallbackFunction($triggerElement)
+                        console.debug('%cJSPC.callbacks.modal.onVisible found: #' + $(this).attr('id') + ' - trigger: ' + $triggerElement.attr('id'), 'color:grey');
+                        modalCallbackFunction($triggerElement);
                     }
                 },
                 detachable: true,
@@ -633,21 +645,16 @@ r2d2 = {
                         focusElement: '',
                         escCallback:''
                     });
-                    keyboardHandler = function (e) {
-                        if (e.keyCode === 27) {
-                            $(this).modal('hide');
-                        }
-                    }
-                    this.addEventListener('keyup', keyboardHandler);
+                    document.addEventListener('keyup', keyboardHandler);
 
                     let modalCallbackFunction = JSPC.callbacks.modal.onShow[$(this).attr('id')];
                     if (typeof modalCallbackFunction === "function") {
-                        console.debug('%cJSPC.callbacks.modal.onShow found: #' + $(this).attr('id') + ' - trigger: ' + $triggerElement.attr('id'), 'color:grey')
-                        modalCallbackFunction($triggerElement)
+                        console.debug('%cJSPC.callbacks.modal.onShow found: #' + $(this).attr('id') + ' - trigger: ' + $triggerElement.attr('id'), 'color:grey');
+                        modalCallbackFunction($triggerElement);
                     }
                 },
                 onHide : function() {
-                    this.removeEventListener('keyup', keyboardHandler);
+                    document.removeEventListener('keyup', keyboardHandler);
                 }
             }).modal('show')
         });

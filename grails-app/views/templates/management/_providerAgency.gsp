@@ -3,7 +3,7 @@
 
     <g:if test="${controllerName == "subscription"}">
         <div class="ui segment">
-%{--            <h3 class="ui header"><g:message code="consortium.superSubscriptionType"/></h3>--}%
+            <h3 class="ui header"><g:message code="consortium.superSubscriptionType"/></h3>
 
 
                             <laser:render template="/templates/links/providerLinksAsList"
@@ -45,52 +45,55 @@
                             </div>
         </div>
     </g:if>
-    <g:elseif test="${controllerName == "myInstitution"}">
         <div class="ui segment">
+            <h3 class="ui header"><g:message code="subscription.details.linkProvider.all.header"/></h3>
             <div class="ui la-vertical buttons">
                 <laser:render template="/templates/links/providerLinksSimpleModal"
                               model="${[linkType      : Subscription.class.name,
-                                        myInstitutionController: true,
+                                        parent        : genericOIDService.getOID(subscription),
+                                        withToggler   : true,
                                         recip_prop    : 'subscription',
                                         tmplEntity    : message(code: 'subscription.details.linkProvider.tmplEntity'),
                                         tmplText      : message(code: 'subscription.details.linkProvider.all.tmplText'),
                                         tmplButtonText: message(code: 'subscription.details.linkProvider.all.tmplButtonText'),
-                                        tmplModalID   : 'modal_add_provider',
+                                        tmplModalID   : 'modal_add_all_provider',
                                         editmode      : editable
                               ]}"/>
                 <laser:render template="/templates/links/vendorLinksSimpleModal"
                               model="${[linkType      : Subscription.class.name,
-                                        myInstitutionController: true,
+                                        parent        : genericOIDService.getOID(subscription),
+                                        withToggler   : true,
                                         recip_prop    : 'subscription',
                                         tmplEntity    : message(code: 'subscription.details.linkAgency.tmplEntity'),
                                         tmplText      : message(code: 'subscription.details.linkAgency.all.tmplText'),
                                         tmplButtonText: message(code: 'subscription.details.linkAgency.all.tmplButtonText'),
-                                        tmplModalID   : 'modal_add_agency',
+                                        tmplModalID   : 'modal_add_all_agency',
                                         editmode      : editable
                               ]}"/>
             </div>
             <div class="ui la-vertical buttons">
                 <laser:render template="/templates/links/providerUnlinksSimpleModal"
                               model="${[linkType      : Subscription.class.name,
-                                        myInstitutionController: true,
+                                        parent        : genericOIDService.getOID(subscription),
+                                        withToggler   : true,
                                         tmplEntity    : message(code: 'subscription.details.linkProvider.tmplEntity'),
                                         tmplText      : message(code: 'subscription.details.unlinkProvider.all.tmplText'),
                                         tmplButtonText: message(code: 'subscription.details.unlinkProvider.all.tmplButtonText'),
-                                        tmplModalID   : 'modal_del_provider',
+                                        tmplModalID   : 'modal_del_all_provider',
                                         editmode      : editable
                               ]}"/>
                 <laser:render template="/templates/links/vendorUnlinksSimpleModal"
                               model="${[linkType      : Subscription.class.name,
-                                        myInstitutionController: true,
+                                        parent        : genericOIDService.getOID(subscription),
+                                        withToggler   : true,
                                         tmplEntity    : message(code: 'subscription.details.linkAgency.tmplEntity'),
                                         tmplText      : message(code: 'subscription.details.unlinkAgency.all.tmplText'),
                                         tmplButtonText: message(code: 'subscription.details.unlinkAgency.all.tmplButtonText'),
-                                        tmplModalID   : 'modal_del_agency',
+                                        tmplModalID   : 'modal_del_all_agency',
                                         editmode      : editable
                               ]}"/>
             </div>
         </div>
-    </g:elseif>
     <div class="ui segment">
 
         <h3 class="ui header">

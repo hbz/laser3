@@ -266,7 +266,7 @@
         </g:each>
     </tbody>
 
-    <g:if test="${editable && isGroupVisible}">
+%{--    <g:if test="${editable && isGroupVisible}">
         <tfoot>
             <tr>
                 <g:if test="${propDefGroup}">
@@ -307,7 +307,7 @@
                 </td>
             </tr>
         </tfoot>
-    </g:if>
+    </g:if>--}%
 
 </table>
 <g:if test="${error}">

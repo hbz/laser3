@@ -1362,6 +1362,11 @@ class SubscriptionController {
                 result
             }
         }
+        else if(result.subscription?.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+            flash.error = message(code: 'subscription.details.addEntitlements.holdingEntire')
+            redirect controller: 'subscription', action: 'show', params: [id: params.id]
+            return
+        }
         else {
             Map<String, Object> configMap = params.clone()
             if(subscriptionService.checkThreadRunning('PackageSync_'+result.subscription.id)) {

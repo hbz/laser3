@@ -107,7 +107,8 @@ JSPC = {
             'xEditable.validation.mail',
             'xEditable.validation.number',
             'xEditable.validation.endDateNotBeforStartDate',
-            'xEditable.validation.tooLong'
+            'xEditable.validation.tooLong',
+            'xEditable.validation.leit'
 
     ]
     translations.eachWithIndex { it, index ->

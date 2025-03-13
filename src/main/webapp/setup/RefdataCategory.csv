@@ -67,6 +67,7 @@ ie.medium,IEMedium,IEMedium
 ill.code,Fernleihindikator,Ill code
 indemnification,Entschädigung Auswahl,Indemnification Choice
 invoicing,Rechnungsstellung,Invoicing
+invoice.interval,Rechnungsintervall,Invoicing interval
 invoice.processing,Rechnungsabwicklung,Invoice Processing
 ip.authentication,IP-Authentifizierung,IP Authentication
 ipv4.address.format,IPv4 Address Format,IPv4 Address Format
@@ -137,6 +138,7 @@ person.responsibility,Verantwortlich,Person Responsibility
 platform.status,Platform Status,Platform Status
 provider.status,Anbieter-Status,Provider Status
 provider.link.type,Verknüpfungstyp (Anbieter/Lieferant),Link type (provider/vendor)
+publish.option,Publishoption,publish option
 regions.at,Österreichische Länder,States of Austria
 regions.de,Bundesländer Deutschlands,Federal States of Germany
 regions.ch,Kantone der Schweiz,Cantons of Switzerland

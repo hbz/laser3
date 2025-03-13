@@ -5247,7 +5247,7 @@ class ExportClickMeService {
                     String personString = ""
                     if (surveyOrg) {
                         List emails = []
-                        List<SurveyPersonResult> personResults = SurveyPersonResult.findAllByParticipantAndSurveyConfigAndSurveyPersonPerson(surveyOrg.org, surveyOrg.surveyConfig, true)
+                        List<SurveyPersonResult> personResults = SurveyPersonResult.findAllByParticipantAndSurveyConfigAndSurveyPerson(surveyOrg.org, surveyOrg.surveyConfig, true)
                         personResults.each { SurveyPersonResult personResult ->
                             personResult.person.contacts.each {
                                 if (it.contentType == RDStore.CCT_EMAIL)

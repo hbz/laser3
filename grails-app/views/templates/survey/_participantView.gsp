@@ -128,6 +128,7 @@
 
                             <a class="${params.subTab == 'xRechnung' ? 'active' : ''} item" data-tab="xRechnung">
                                 ${message(code: 'surveyOrg.eInvoice.label')}
+                                <ui:bubble float="true" count="${surveyOrg.eInvoicePortal ? '1' : '0'}/${surveyOrg.eInvoiceLeitwegId ? '1' : '0'}/${surveyOrg.eInvoiceLeitkriterium ? '1' : '0'}"/>
                             </a>
                         </div>
                     </div>
@@ -135,7 +136,7 @@
                     <div class="fourteen wide column">
                         <div class="ui bottom attached tab   ${params.subTab ? (params.subTab == 'contacts' ? 'active' : '') : 'active'}" data-tab="contacts">
                            %{-- <h2 class="ui left floated aligned header">${message(code: 'surveyOrg.person.label.heading')}</h2>--}%
-                            <g:link controller="organisation" action="contacts" id="${participant.id}" params="[tab: contacts]" target="_blank"
+                            <g:link controller="organisation" action="contacts" id="${participant.id}" params="[tab: 'contacts']" target="_blank"
                                     class="${Btn.SIMPLE} right floated">
                                 <g:message code="survey.contacts.add"/>
                             </g:link>
@@ -154,9 +155,9 @@
 
                         <div class="ui bottom attached tab   ${params.subTab == 'addresses' ? 'active' : ''}" data-tab="addresses">
                             %{--<h2 class="ui left floated aligned header">${message(code: 'surveyOrg.address.label.heading')}</h2>--}%
-                            <g:link controller="organisation" action="contacts" id="${participant.id}" params="[tab: addresses]" target="_blank"
+                            <g:link controller="organisation" action="contacts" id="${participant.id}" params="[tab: 'addresses']" target="_blank"
                                     class="${Btn.SIMPLE} right floated">
-                                <g:message code="survey.contacts.add"/>
+                                <g:message code="survey.address.add"/>
                             </g:link>
                             <br>
                             <br>
@@ -173,6 +174,16 @@
                         </div>
 
                         <div class="ui bottom attached tab   ${params.subTab == 'xRechnung' ? 'active' : ''}" data-tab="xRechnung">
+
+                            <g:if test="${editable}">
+                                <g:link controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
+                                        params="${parame + [viewTab: 'invoicingInformation', subTab: 'xRechnung', setEInvoiceValuesFromOrg: true,]}"
+                                        class="${Btn.SIMPLE} right floated">
+                                    <g:message code="surveyOrg.setEInvoiceValuesFromOrg"/>
+                                </g:link>
+                                <br>
+                                <br>
+                            </g:if>
 
                             <ui:msg message="surveyOrg.eInvoice.expl" class="info" showIcon="true" hideClose="true"/>
 
@@ -203,7 +214,7 @@
                                                 </span>
                                             </dt>
                                             <dd>
-                                                <ui:xEditable owner="${surveyOrg}" field="eInvoiceLeitwegId"/>
+                                                <ui:xEditable owner="${surveyOrg}" field="eInvoiceLeitwegId" validation="leitwegID"/>
                                             </dd>
                                         </dl>
                                     </div>
@@ -223,16 +234,6 @@
                                         </dl>
                                     </div>
                                 </div><!-- .card -->
-
-                                <g:if test="${editable}">
-                                    <g:link controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
-                                            params="${parame + [viewTab: 'invoicingInformation', subTab: 'xRechnung', setEInvoiceValuesFromOrg: true,]}"
-                                            class="${Btn.SIMPLE} right floated">
-                                        <g:message code="surveyOrg.setEInvoiceValuesFromOrg"/>
-                                    </g:link>
-                                    <br>
-                                    <br>
-                                </g:if>
                             </div>
                         </div>
                     </div>

@@ -1,77 +1,79 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore" %>
 <ui:modal id="KBARTUploadForm" message="subscription.details.addEntitlements.header" msgSave="${message(code: 'subscription.details.addEntitlements.preselect')}">
-    <ui:msg header="${message(code:"message.attention")}" message="subscription.details.addEntitlements.warning" />
+    <%-- double-check needed because menu is not being refreshed after xEditable change on sub/show --%>
+    <g:if test="${subscription.holdingSelection != RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+        <ui:msg header="${message(code:"message.attention")}" message="subscription.details.addEntitlements.warning" />
 
-    <g:form class="ui form" method="post" enctype="multipart/form-data">
-        <g:hiddenField name="id" value="${subscription.id}"/>
-        <g:if test="${surveyConfig}">
-            <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
-            <g:hiddenField name="tab" value="${tab}"/>
-        </g:if>
-        <div class="field">
-            <div class="ui action input">
-                <input type="text" readonly="readonly"
-                       placeholder="${message(code: 'template.addDocument.selectFile')}">
-                <input type="file" id="kbartPreselect" name="kbartPreselect" accept=".txt,.csv,.tsv,text/tab-separated-values,text/csv,text/plain"
-                       style="display: none;">
-                <div class="${Btn.ICON.SIMPLE}">
-                    <i class="${Icon.CMD.ATTACHMENT}"></i>
+        <g:form class="ui form" method="post" enctype="multipart/form-data">
+            <g:hiddenField name="id" value="${subscription.id}"/>
+            <g:if test="${surveyConfig}">
+                <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
+                <g:hiddenField name="tab" value="${tab}"/>
+            </g:if>
+            <div class="field">
+                <div class="ui action input">
+                    <input type="text" readonly="readonly"
+                           placeholder="${message(code: 'template.addDocument.selectFile')}">
+                    <input type="file" id="kbartPreselect" name="kbartPreselect" accept=".txt,.csv,.tsv,text/tab-separated-values,text/csv,text/plain"
+                           style="display: none;">
+                    <div class="${Btn.ICON.SIMPLE}">
+                        <i class="${Icon.CMD.ATTACHMENT}"></i>
+                    </div>
                 </div>
             </div>
-        </div>
-        <g:if test="${actionName == 'addEntitlements'}">
-            <g:if test="${institution.isCustomerType_Consortium()}">
-                <div class="field">
-                    <div class="ui right floated checkbox toggle">
-                        <g:checkBox name="withChildrenKBART"/>
-                        <label><g:message code="subscription.details.addEntitlements.withChildren"/></label>
+            <g:if test="${actionName == 'addEntitlements'}">
+                <g:if test="${institution.isCustomerType_Consortium()}">
+                    <div class="field">
+                        <div class="ui right floated checkbox toggle">
+                            <g:checkBox name="withChildrenKBART"/>
+                            <label><g:message code="subscription.details.addEntitlements.withChildren"/></label>
+                        </div>
+                    </div>
+                </g:if>
+                <div class="ui two fields">
+                    <g:if test="${subscription.ieGroups}">
+                        <div class="field">
+                            <label for="issueEntitlementGroupKBART">${message(code: 'issueEntitlementGroup.entitlementsRenew.selected.add')}:</label>
+                            <select name="issueEntitlementGroupKBARTID" id="issueEntitlementGroupKBART"
+                                    class="ui search dropdown">
+                                <option value="">${message(code: 'default.select.choose.label')}</option>
+                                <g:each in="${subscription.ieGroups.sort { it.name }}" var="titleGroup">
+                                    <option value="${titleGroup.id}">
+                                        ${titleGroup.name} (${titleGroup.countCurrentTitles()})
+                                    </option>
+                                </g:each>
+                            </select>
+                        </div>
+                    </g:if>
+                    <div class="field">
+                        <label for="issueEntitlementGroupNewKBART">${message(code: 'issueEntitlementGroup.entitlementsRenew.selected.new')}:</label>
+                        <input type="text" id="issueEntitlementGroupNewKBART" name="issueEntitlementGroupNewKBART" value="">
                     </div>
                 </div>
             </g:if>
-            <div class="ui two fields">
-                <g:if test="${subscription.ieGroups}">
-                    <div class="field">
-                        <label for="issueEntitlementGroupKBART">${message(code: 'issueEntitlementGroup.entitlementsRenew.selected.add')}:</label>
-                        <select name="issueEntitlementGroupKBARTID" id="issueEntitlementGroupKBART"
-                                class="ui search dropdown">
-                            <option value="">${message(code: 'default.select.choose.label')}</option>
-                            <g:each in="${subscription.ieGroups.sort { it.name }}" var="titleGroup">
-                                <option value="${titleGroup.id}">
-                                    ${titleGroup.name} (${titleGroup.countCurrentTitles()})
-                                </option>
-                            </g:each>
-                        </select>
-                    </div>
-                </g:if>
-                <div class="field">
-                    <label for="issueEntitlementGroupNewKBART">${message(code: 'issueEntitlementGroup.entitlementsRenew.selected.new')}:</label>
-                    <input type="text" id="issueEntitlementGroupNewKBART" name="issueEntitlementGroupNewKBART" value="">
-                </div>
-            </div>
-        </g:if>
-    </g:form>
-    <div class="localLoadingIndicator" hidden="hidden">
-        <div class="ui inline medium text loader active">Aktualisiere Daten ..</div>
-    </div>
-    <div id="processResultWrapper"></div>
-    <laser:script file="${this.getGroovyPageFileName()}">
-        $('.action .icon.button').click(function () {
-            $(this).parent('.action').find('input:file').click();
-        });
+        </g:form>
+        <div class="localLoadingIndicator" hidden="hidden">
+            <div class="ui inline medium text loader active">Aktualisiere Daten ..</div>
+        </div>
+        <div id="processResultWrapper"></div>
+        <laser:script file="${this.getGroovyPageFileName()}">
+            $('.action .icon.button').click(function () {
+                $(this).parent('.action').find('input:file').click();
+            });
 
-        $('input:file', '.ui.action.input').on('change', function (e) {
-            var name = e.target.files[0].name;
-            $('input:text', $(e.target).parent()).val(name);
-        });
+            $('input:file', '.ui.action.input').on('change', function (e) {
+                var name = e.target.files[0].name;
+                $('input:text', $(e.target).parent()).val(name);
+            });
 
-        $('#KBARTUploadForm form').submit(function(e) {
-            e.preventDefault();
-            $('.localLoadingIndicator').show();
-            //let kbart = $('#kbartPreselect').prop('files')[0];
-            let formData = new FormData(this);
-            //formData.append('kbartFile', kbart);
-            $.ajax({
-                url: '<g:createLink controller="subscription" action="${surveyConfig ? 'selectEntitlementsWithKBARTForSurvey' : 'selectEntitlementsWithKBART'}"/>',
+            $('#KBARTUploadForm form').submit(function(e) {
+                e.preventDefault();
+                $('.localLoadingIndicator').show();
+                //let kbart = $('#kbartPreselect').prop('files')[0];
+                let formData = new FormData(this);
+                //formData.append('kbartFile', kbart);
+                $.ajax({
+                    url: '<g:createLink controller="subscription" action="${surveyConfig ? 'selectEntitlementsWithKBARTForSurvey' : 'selectEntitlementsWithKBART'}"/>',
                 cache: false,
                 contentType: false,
                 processData: false,
@@ -83,5 +85,9 @@
                 }
             });
         });
-    </laser:script>
+        </laser:script>
+    </g:if>
+    <g:else>
+        <ui:msg class="error" showIcon="error" header="${message(code:"default.error")}" message="subscription.details.addEntitlements.holdingEntire" />
+    </g:else>
 </ui:modal>

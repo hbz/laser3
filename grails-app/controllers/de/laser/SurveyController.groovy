@@ -535,7 +535,13 @@ class SurveyController {
 
         result.subscription = Subscription.get( params.long('sub') )
         result.pickAndChoose = true
-        if (!result.subscription) {
+        //double-check needed because menu is not being refreshed after xEditable change on sub/show
+        if(result.subscription?.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+            flash.error = message(code: 'subscription.details.addEntitlements.holdingInherited')
+            redirect controller: 'subscription', action: 'show', params: [id: params.long('sub')]
+            return
+        }
+        else if (!result.subscription) {
             redirect action: 'createIssueEntitlementsSurvey'
             return
         }
@@ -1205,7 +1211,7 @@ class SurveyController {
             }
         }else {
 
-            if(params.actionForSurveyProperty in ['addSurveyPropToConfig', 'deleteSurveyPropFromConfig', 'moveUp', 'moveDown']) {
+            if(params.actionForSurveyProperty in ['deleteSurveyPropFromConfig', 'moveUp', 'moveDown']) {
                 ctrlResult.result.surveyConfig.refresh()
 
                 Map<String, Object> modelMap = [

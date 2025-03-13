@@ -1200,10 +1200,8 @@ class ManagementService {
     Set<Subscription> loadSubscriptions(GrailsParameterMap params, Subscription owner) {
         Set<Subscription> subscriptions = []
         EhcacheWrapper paginationCache
-        if(params.controller == 'ajax' && params.action in ['addProviderRole', 'delAllProviderRoles', 'addVendorRole', 'delAllVendorRoles'])
-            paginationCache = cacheService.getTTL1800Cache("/myInstitution/subscriptionManagement/providerAgency/${contextService.getUser().id}/pagination")
-        else
-            paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/providerAgency/${contextService.getUser().id}/pagination")
+        String controller = params.containsKey('refererController') ? params.refererController : params.controller
+        paginationCache = cacheService.getTTL1800Cache("/${controller}/subscriptionManagement/providerAgency/${contextService.getUser().id}/pagination")
         if(paginationCache.get('membersListToggler')) {
             if(params.takeSelectedSubs.contains('/subscription/')) {
                 subscriptions = subscriptionControllerService.getFilteredSubscribers(params,owner).sub
@@ -1227,13 +1225,8 @@ class ManagementService {
     }
 
     void clearSubscriptionCache(GrailsParameterMap params) {
-        EhcacheWrapper paginationCache
-        if(params.controller == 'ajax' && params.action in ['addProviderRole', 'delAllProviderRoles', 'addVendorRole', 'delAllVendorRoles']) {
-            paginationCache = cacheService.getTTL1800Cache("/myInstitution/subscriptionManagement/providerAgency/${contextService.getUser().id}/pagination")
-        }
-        else {
-            paginationCache = cacheService.getTTL1800Cache("/${params.controller}/subscriptionManagement/providerAgency/${contextService.getUser().id}/pagination")
-        }
+        String controller = params.containsKey('refererController') ? params.refererController : params.controller
+        EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/${controller}/subscriptionManagement/providerAgency/${contextService.getUser().id}/pagination")
         paginationCache.clear()
     }
 

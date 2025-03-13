@@ -124,7 +124,7 @@
             </tr>
         </g:each>
         </tbody>
-        <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
+       %{-- <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
             <g:set var="selectableProperties"
                    value="${pdg ? surveyConfig.getSelectablePropertiesByPropDefGroup(pdg) : (selectablePrivateProperties ? surveyConfig.getPrivateSelectableProperties() : surveyConfig.getOrphanedSelectableProperties())}"/>
             <tfoot>
@@ -163,7 +163,7 @@
                 </td>
             </tr>
             </tfoot>
-        </g:if>
+        </g:if>--}%
 
     </table>
 </g:if><g:else>
