@@ -263,7 +263,16 @@ class ProviderService {
                     log.debug("${Package.executeUpdate('update Package pkg set pkg.provider = :target where pkg.provider = :source', genericParams)} packages updated")
 
                     // surveys
-                    log.debug("${SurveyInfo.executeUpdate('update SurveyInfo surin set surin.provider = :target where surin.provider = :source', genericParams)} surveys updated")
+                    // executeUpdate does not trigger properly the cascade - would result in EntityNotFoundException
+                    updateCount = 0
+                    surveys.each { SurveyInfo surin ->
+                        surin.provider = replacement
+                        if(!surin.save())
+                            log.error(surin.errors.getAllErrors().toListString())
+                        else
+                            updateCount++
+                    }
+                    log.debug("${updateCount} survey infos updated")
 
                     // alternative names
                     provider.altnames.clear()
