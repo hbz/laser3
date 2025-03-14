@@ -718,7 +718,8 @@ class SurveyController {
                         subSurveyUseForTransfer: false,
                         pickAndChoose: true,
                         pickAndChoosePerpetualAccess: (subscription.hasPerpetualAccess),
-                        issueEntitlementGroupName: params.issueEntitlementGroupNew
+                        issueEntitlementGroupName: params.issueEntitlementGroupNew,
+                        vendorSurvey: (params.vendorSurvey ?: false)
                 )
                 surveyConfig.save()
                 surveyService.addSubMembers(surveyConfig)
