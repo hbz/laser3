@@ -177,7 +177,7 @@
                                                             </div>
                                                         </div>
 
-                                                        <laser:render template="/templates/titles/reportTitleToProvider_multiple" model="${[tipp: tipp]}"/>
+                                                        <laser:render template="/templates/reportTitleToProvider/multiple_infoBox" model="${[tipp: tipp]}"/>
                                                     </div><%-- My Area END --%>
                                                 </div><%-- .grid --%>
                                             </div><%-- .segment --%>
@@ -209,6 +209,6 @@
 
 </div>
 
-<g:render template="/templates/titles/reportTitleToProvider_multiple_precon"/>
+<g:render template="/templates/reportTitleToProvider/multiple_flyoutAndTippTask"/>
 
 <laser:htmlEnd/>

@@ -17,14 +17,14 @@
             <label for="${preID}_title">
                 <g:message code="default.title.label" /> <g:message code="messageRequiredField" />
             </label>
-            <g:textField id="${preID}_title" name="title" required="" value=""/>
+            <g:textField id="${preID}_title" name="title" value="" required=""/>
         </div>
 
         <div class="field">
             <label for="${preID}_description">
                 <g:message code="default.description.label" />
             </label>
-            <g:textArea id="${preID}_description" name="description" value="" rows="5" cols="40"/>
+            <g:textArea id="${preID}_description" name="description" rows="5" cols="40" value="" />
         </div>
 
         <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajaxHtml'}">

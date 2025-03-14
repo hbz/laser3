@@ -6,7 +6,7 @@
         <ui:actionsDropdownItem data-ui="modal" href="#modalCreateTask" message="task.create.reportTitleToProvider"/>
     </ui:actionsDropdown>
 
-%{--    modal @ /templates/titles/_reportTitleToProvider.gsp --}%
+%{--    modal @ /templates/reportTitleToProvider/_flyoutAndTippTask.gsp --}%
 %{--    <laser:render template="/templates/tasks/modal_create" model="${[ownobj: issueEntitlementInstance.tipp, owntp: 'tipp']}"/>--}%
 </g:if>
 
