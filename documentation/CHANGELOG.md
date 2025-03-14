@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6349    14.03.2025  dev     3.5         Andreas Feature     Bezeichner "Lieferant" in "Library Supplier" umgewandelt
+
 5856    14.03.2025  dev     3.5         Andreas Bug         Bugs beim Zusammenführen von Anbietern behoben
 
 6301    13.03.2025  dev     3.5         Moe     Bug         Lieferanten-Umfrage: Checkbox wird nicht angezeigt

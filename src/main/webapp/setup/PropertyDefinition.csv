@@ -365,7 +365,7 @@ Subscription Property,Status: Metadata delivery,Status: Metadaten Lieferungen,St
 Subscription Property,Status: Metadata editing,Status: Metadaten Bearbeitung,Status: Metadata editing,de.laser.RefdataValue,delivery.edit.status,,true,,"Ist die Bearbeitung sämtlicher Metadaten bereits abgeschlossen? *fertig = Daten konvertiert, eingespielt und ausgeliefert","Is the editing of all metadata already finished? *finished = data converted, inserted and delivered",
 Subscription Property,Subscription Form Ullmanns,"Lizenzmodell Ullmann's","Preiskategorie Ullmann's",de.laser.RefdataValue,subscription.form.ullmans,,,,"In welchen Formen möchten Sie die Datenbank lizensieren?","In which forms would you like to subscribe to the database?",
 Subscription Property,Subscription number of editor,Subskriptionsnummer des Verlags,Subscription number of editor,java.lang.String,,,true,,Subskriptionsnummer des Verlags.,,
-Subscription Property,Subscription number of provider,Subskriptionsnummer des Lieferanten,Subscription number of provider,java.lang.String,,,true,,Subskriptionsnummer des Lieferanten.,,
+Subscription Property,Subscription number of provider,Subskriptionsnummer des Library Suppliers,Subscription number of provider,java.lang.String,,,true,,Subskriptionsnummer des Library Supplier.,,
 Subscription Property,Take Over Titles,Take-Over-Titel,Take Over Titles,java.lang.String,,,,,Bedingungen für während der Vertragslaufzeit vom Verlag übernommene oder neu veröffentlichte Titel.,,
 Subscription Property,Tax exemption,Steuerbefreiung,Tax exemption,de.laser.RefdataValue,y.n,,,,Liegt eine Steuerbefreiung für die Lizenz vor?,,
 Subscription Property,Tax rate,Steuersatz,Tax rate,java.lang.Long,,,,,,,

@@ -30,7 +30,7 @@
         </th>
 
         <th scope="col" rowspan="2" class="sortable"><a
-                href="/myInstitution/currentSubscriptions?status=103&amp;hasPerpetualAccess=1&amp;orgRole=Subscription+Consortia&amp;sort=providerAgency&amp;order=asc">Anbieter / Lieferant</a>
+                href="/myInstitution/currentSubscriptions?status=103&amp;hasPerpetualAccess=1&amp;orgRole=Subscription+Consortia&amp;sort=providerAgency&amp;order=asc">Anbieter / Library Supplier</a>
         </th>
 
         <th scope="col" class="la-smaller-table-head sortable"><a
@@ -95,7 +95,7 @@
             <!-- packages -->
         </td>
 
-        <td data-label="Anbieter / Lieferant:">
+        <td data-label="Anbieter / Library Supplier:">
 
             <a href="/org/show/25">HERDT-Verlag für Bildungsmedien GmbH
 
@@ -173,7 +173,7 @@
             <!-- packages -->
         </td>
 
-        <td data-label="Anbieter / Lieferant:">
+        <td data-label="Anbieter / Library Supplier:">
 
             <a href="/org/show/25">HERDT-Verlag für Bildungsmedien GmbH
 
@@ -251,7 +251,7 @@
             <!-- packages -->
         </td>
 
-        <td data-label="Anbieter / Lieferant:">
+        <td data-label="Anbieter / Library Supplier:">
 
             <a href="/org/show/25">HERDT-Verlag für Bildungsmedien GmbH
 
@@ -329,7 +329,7 @@
             <!-- packages -->
         </td>
 
-        <td data-label="Anbieter / Lieferant:">
+        <td data-label="Anbieter / Library Supplier:">
 
             <a href="/org/show/25">HERDT-Verlag für Bildungsmedien GmbH
 
@@ -407,7 +407,7 @@
             <!-- packages -->
         </td>
 
-        <td data-label="Anbieter / Lieferant:">
+        <td data-label="Anbieter / Library Supplier:">
 
             <a href="/org/show/25">HERDT-Verlag für Bildungsmedien GmbH
 
@@ -528,7 +528,7 @@
         </th>
 
         <th scope="col" rowspan="2" class="sortable"><a
-                href="/myInstitution/currentSubscriptions?status=103&amp;hasPerpetualAccess=1&amp;orgRole=Subscription+Consortia&amp;sort=providerAgency&amp;order=asc">Anbieter / Lieferant</a>
+                href="/myInstitution/currentSubscriptions?status=103&amp;hasPerpetualAccess=1&amp;orgRole=Subscription+Consortia&amp;sort=providerAgency&amp;order=asc">Anbieter / Library Supplier</a>
         </th>
 
         <th scope="col" class="la-smaller-table-head sortable"><a
@@ -593,7 +593,7 @@
             <!-- packages -->
         </td>
 
-        <td data-label="Anbieter / Lieferant:">
+        <td data-label="Anbieter / Library Supplier:">
 
             <a href="/org/show/25">HERDT-Verlag für Bildungsmedien GmbH
 
@@ -671,7 +671,7 @@
             <!-- packages -->
         </td>
 
-        <td data-label="Anbieter / Lieferant:">
+        <td data-label="Anbieter / Library Supplier:">
 
             <a href="/org/show/25">HERDT-Verlag für Bildungsmedien GmbH
 
@@ -749,7 +749,7 @@
             <!-- packages -->
         </td>
 
-        <td data-label="Anbieter / Lieferant:">
+        <td data-label="Anbieter / Library Supplier:">
 
             <a href="/org/show/25">HERDT-Verlag für Bildungsmedien GmbH
 
@@ -827,7 +827,7 @@
             <!-- packages -->
         </td>
 
-        <td data-label="Anbieter / Lieferant:">
+        <td data-label="Anbieter / Library Supplier:">
 
             <a href="/org/show/25">HERDT-Verlag für Bildungsmedien GmbH
 
@@ -905,7 +905,7 @@
             <!-- packages -->
         </td>
 
-        <td data-label="Anbieter / Lieferant:">
+        <td data-label="Anbieter / Library Supplier:">
 
             <a href="/org/show/25">HERDT-Verlag für Bildungsmedien GmbH
 

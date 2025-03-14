@@ -10,7 +10,7 @@
             Verknüpfte Pakete
         </th>
 
-        <th scope="col" rowspan="2" class="sortable"><a href="/laser/myInstitution/currentSubscriptions?status=103&amp;orgRole=Subscription+Consortia&amp;sort=orgRole%C2%A7provider&amp;order=asc">Anbieter / Lieferant</a></th>
+        <th scope="col" rowspan="2" class="sortable"><a href="/laser/myInstitution/currentSubscriptions?status=103&amp;orgRole=Subscription+Consortia&amp;sort=orgRole%C2%A7provider&amp;order=asc">Anbieter / Library Supplier</a></th>
 
         <th scope="col" class="la-smaller-table-head sortable"><a href="/laser/myInstitution/currentSubscriptions?status=103&amp;orgRole=Subscription+Consortia&amp;sort=s.startDate&amp;order=asc">Anfangsdatum</a></th>
 

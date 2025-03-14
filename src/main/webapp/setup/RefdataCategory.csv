@@ -137,7 +137,7 @@ person.position,Position,Person Position
 person.responsibility,Verantwortlich,Person Responsibility
 platform.status,Platform Status,Platform Status
 provider.status,Anbieter-Status,Provider Status
-provider.link.type,Verknüpfungstyp (Anbieter/Lieferant),Link type (provider/vendor)
+provider.link.type,Verknüpfungstyp (Anbieter/Library Supplier),Link type (provider/library supplier)
 publish.option,Publishoption,publish option
 regions.at,Österreichische Länder,States of Austria
 regions.de,Bundesländer Deutschlands,Federal States of Germany
@@ -199,7 +199,7 @@ title.medium,Title Medium,Title Medium
 title.type,Title Type,Title Type
 user.setting.dashboard.tab,Dashbord Tab,Dashboard Tab
 user.setting.theme,Theme,Theme
-vendor.status,Lieferant-Status,Vendor Status
+vendor.status,Library Supplier-Status,Library Supplier Status
 vendor.ordering.supported.library.system,Unterstützte Bibliothekssysteme,Supported Library Systems
 vendor.ordering.electronic.delivery.delay,elektronischer Benachrichtigungskanal,Electronic notification channel
 vendor.invoicing.format,Elektronisches Rechnungsformat,Electronic invoice format

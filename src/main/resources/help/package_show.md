@@ -1,5 +1,5 @@
 Hier finden Sie alle in der **we:kb** hinterlegten Informationen zu dem angezeigten **Paket**. 
-Neben den Rahmendaten, finden Sie die Verknüpfungen zu dem Anbieter, der Plattform und dem Lieferanten, insofern diese in der we:kb hinterlegt worden sind. 
+Neben den Rahmendaten, finden Sie die Verknüpfungen zu dem Anbieter, der Plattform und dem Library Supplier, insofern diese in der we:kb hinterlegt worden sind. 
 
 Zudem finden in der leiste Reiter mit weiteren Informationen: 
 

@@ -64,7 +64,7 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="6"><g:submitButton name="validate" class="${Btn.PRIMARY}" value="Gewählte Lieferanten zusammenführen"/></td>
+                    <td colspan="6"><g:submitButton name="validate" class="${Btn.PRIMARY}" value="Gewählte Library Supplier zusammenführen"/></td>
                 </tr>
             </tfoot>
         </table>

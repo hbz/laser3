@@ -1,4 +1,4 @@
-Das **Adressbuch** bietet Ihnen die Möglichkeit, Kontaktadressen von Anbietern und Lieferanten anzulegen.
+Das **Adressbuch** bietet Ihnen die Möglichkeit, Kontaktadressen von Anbietern und Library Suppliers anzulegen.
 Dabei ist das Adressbuch nur für die Nutzer innerhalb der eigenen Einrichtung zugänglich: Wenn Sie einen Kontakt oder eine Adresse in Ihrem Adressbuch anlegen, kann keine andere Einrichtung diese Daten einsehen.
 
 Um Adressen für Konsortialstellen anzulegen, müssen Sie sich in deren jeweiligen Einrichtungsprofil befinden. 
