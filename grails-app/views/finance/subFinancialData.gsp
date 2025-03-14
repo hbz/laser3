@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.storage.RDStore; de.laser.Subscription" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.storage.RDStore; de.laser.Subscription" %>
 <laser:htmlStart message="subscription.details.financials.label" />
 
 <laser:render template="/templates/flyouts/dateCreatedLastUpdated" model="[obj: subscription]"/>
@@ -62,14 +62,14 @@
                 <ui:actionsDropdown>
                     <ui:actionsDropdownItem id="btnAddNewCostItem" message="financials.addNewCost" />
                     <g:if test="${customerTypeService.isConsortium( institution.getCustomerType() ) && !subscription.instanceOf}">
-                        <ui:actionsDropdownItem data-ui="modal" id="generateFinanceImportWorksheet" href="#financeImportTemplate" message="myinst.financeImport.subscription.template"/>
-                        <ui:actionsDropdownItem controller="myInstitution" action="financeImport" params="${[id:subscription.id]}" message="menu.institutions.financeImport" />
                         <g:if test="${costItemElements}">
                             <ui:actionsDropdownItem data-ui="modal" id="openFinanceEnrichment" href="#financeEnrichment" message="financials.enrichment.menu" />
                         </g:if>
                         <g:else>
                             <ui:actionsDropdownItemDisabled message="financials.enrichment.menu" tooltip="${message(code:'financials.enrichment.menu.disabled')}" />
                         </g:else>
+                        <ui:actionsDropdownItem data-ui="modal" id="generateFinanceImportWorksheet" href="#financeImportTemplate" message="myinst.financeImport.subscription.template"/>
+                        <ui:actionsDropdownItem controller="myInstitution" action="financeImport" params="${[id:subscription.id]}" message="menu.institutions.financeImport" />
                         <ui:actionsDropdownItem controller="subscription" action="compareSubMemberCostItems" params="${[id:subscription.id]}" message="subscription.details.compareSubMemberCostItems.label" />
                     </g:if>
                 </ui:actionsDropdown>
@@ -113,17 +113,10 @@
         </g:if>
 
         <g:if test="${afterEnrichment}">
-            <ui:msg showIcon="true" class="success" message="financials.enrichment.result" args="[matchCounter, totalRows, noRecordCounter, missingCurrencyCounter]"/>
-            <g:if test="${wrongIdentifierCounter > 0 && wrongRecords}">
-                <div class="ui warning message icon la-clear-before">
-                    <i class="${Icon.UI.WARNING}"></i>
-                    <g:message code="financials.enrichment.invalidIDs" args="[wrongIdentifierCounter]"/>
-                    <ul>
-                        <g:each in="${wrongRecords}" var="row">
-                            <li>${row}</li>
-                        </g:each>
-                    </ul>
-                </div>
+            <ui:msg showIcon="true" class="success" message="financials.enrichment.result" args="[matchCounter, totalRows, noRecordCounter]"/>
+            <g:if test="${wrongIdentifiers}">
+                <ui:msg showIcon="true" class="error" message="financials.enrichment.invalidIDs" args="[wrongIdentifierCounter]"/>
+                <g:link class="${Btn.ICON.SIMPLE}" controller="package" action="downloadLargeFile" params="[token: token, fileformat: 'txt']"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
             </g:if>
         </g:if>
 

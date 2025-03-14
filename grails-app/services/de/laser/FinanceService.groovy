@@ -1,5 +1,10 @@
 package de.laser
 
+import com.opencsv.CSVParser
+import com.opencsv.CSVParserBuilder
+import com.opencsv.CSVReader
+import com.opencsv.CSVReaderBuilder
+import com.opencsv.ICSVParser
 import de.laser.cache.EhcacheWrapper
 import de.laser.ctrl.FinanceControllerService
 import de.laser.exceptions.CreationException
@@ -1768,83 +1773,103 @@ class FinanceService {
     Map<String, Object> financeEnrichment(MultipartFile tsvFile, String encoding, RefdataValue pickedElement, Subscription subscription) {
         Map<String, Object> result = [:]
         Set<CostItem> missing = []
-        List<String> wrongRecords = [] // wrongRecords: display in ui table
+        List<String> wrongIdentifiers = [] // wrongRecords: downloadable file
         Org contextOrg = contextService.getOrg()
-        List<String> rows = tsvFile.getInputStream().getText(encoding).split('\n')
-        rows.remove(0).split('\t')
+        //List<String> rows = tsvFile.getInputStream().getText(encoding).split('\n')
+        //rows.remove(0).split('\t') we should consider every row
         //needed because cost item updates are not flushed immediately
         Set<Long> updatedIDs = []
         //preparatory for an eventual variable match; for the moment: hard coded to 0 and 1
-        int idCol = 0, valueCol = 1, noRecordCounter = 0, wrongIdentifierCounter = 0, missingCurrencyCounter = 0, totalRows = rows.size()
+        int idCol = 0, valueCol = 1, noRecordCounter = 0, wrongIdentifierCounter = 0, missingCurrencyCounter = 0, totalRows = 0
         Set<IdentifierNamespace> namespaces = [IdentifierNamespace.findByNs('deal_id'), IdentifierNamespace.findByNs('ISIL'), IdentifierNamespace.findByNs('wibid')]
-        rows.each { String row ->
-            List<String> cols = row.split('\t')
-            String idStr = cols[idCol], valueStr = cols[valueCol]
-            //try to match the subscription
-            if(valueStr?.trim()) {
-                //first: get the org
-                Org match = null
-                Set<Org> check = Org.executeQuery('select ci.customer from CustomerIdentifier ci where ci.value = :number', [number: idStr])
-                if(check.size() == 1)
-                    match = check[0]
-                if(!match)
-                    match = Org.findByGlobalUID(idStr)
-                if(!match) {
-                    check = Org.executeQuery('select id.org from Identifier id where id.value = :value and id.ns in (:namespaces)', [value: idStr, namespaces: namespaces])
-                    if (check.size() == 1)
-                        match = check[0]
-                }
-                //match success
-                if(match) {
-                    //if-check prepares for opening for surveys
-                    if(subscription) {
-                        List<Subscription> memberCheck = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent and oo.org = :match', [parent: subscription, match: match])
-                        if(memberCheck.size() == 1) {
-                            Subscription memberSub = memberCheck[0]
-                            CostItem ci = CostItem.findBySubAndOwnerAndCostItemElement(memberSub, contextOrg, pickedElement)
-                            if(ci) {
-                                //Regex to parse different sum entries
-                                Pattern nonNumericRegex = Pattern.compile("([\$€£]|EUR|USD|GBP)"), numericRegex = Pattern.compile("([\\d'.,]+)")
-                                //step 1: strip the non-numerical part and try to parse a currency
-                                Matcher costMatch = numericRegex.matcher(valueStr), billingCurrencyMatch = nonNumericRegex.matcher(valueStr)
-                                //step 2: pass the numerical part to the value parser
-                                if(costMatch.find() && billingCurrencyMatch.find()) {
-                                    String input = costMatch.group(1), currency = billingCurrencyMatch.group(1)
-                                    BigDecimal parsedCost = escapeService.parseFinancialValue(input)
-                                    ci.costInBillingCurrency = parsedCost
-                                    switch(currency) {
-                                        case ['€', 'EUR']: ci.billingCurrency = RDStore.CURRENCY_EUR
-                                            break
-                                        case ['£', 'GBP']: ci.billingCurrency = RDStore.CURRENCY_GBP
-                                            break
-                                        case ['$', 'USD']: ci.billingCurrency = RDStore.CURRENCY_USD
-                                            break
+        tsvFile.getInputStream().withReader(encoding) { reader ->
+            char tab = '\t'
+            ICSVParser csvp = new CSVParserBuilder().withSeparator(tab).build() // csvp.DEFAULT_SEPARATOR, csvp.DEFAULT_QUOTE_CHARACTER, csvp.DEFAULT_ESCAPE_CHARACTER
+            CSVReader csvr = new CSVReaderBuilder( reader ).withCSVParser( csvp ).build()
+            String[] line
+            while (line = csvr.readNext()) {
+                if (line[0]) {
+                    totalRows++
+                    //rows.each { String row ->
+                    //List<String> cols = row.split('\t')
+                    String idStr = line[idCol], valueStr = line[valueCol]
+                    //try to match the subscription
+                    if (valueStr?.trim()) {
+                        //first: get the org
+                        Org match = null
+                        Set<Org> check = Org.executeQuery('select ci.customer from CustomerIdentifier ci where ci.value = :number', [number: idStr])
+                        if (check.size() == 1)
+                            match = check[0]
+                        if (!match)
+                            match = Org.findByGlobalUID(idStr)
+                        if (!match) {
+                            check = Org.executeQuery('select id.org from Identifier id where id.value = :value and id.ns in (:namespaces)', [value: idStr, namespaces: namespaces])
+                            if (check.size() == 1)
+                                match = check[0]
+                        }
+                        //match success
+                        if (match) {
+                            //if-check prepares for opening for surveys
+                            if (subscription) {
+                                List<Subscription> memberCheck = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent and oo.org = :match', [parent: subscription, match: match])
+                                if (memberCheck.size() == 1) {
+                                    Subscription memberSub = memberCheck[0]
+                                    CostItem ci = CostItem.findBySubAndOwnerAndCostItemElement(memberSub, contextOrg, pickedElement)
+                                    if (ci) {
+                                        //Regex to parse different sum entries
+                                        //Pattern nonNumericRegex = Pattern.compile("([\$€£]|EUR|USD|GBP)")
+                                        Pattern numericRegex = Pattern.compile("([\\d'.,]+)")
+                                        //step 1: strip the non-numerical part and try to parse a currency
+                                        //skipped as of comment of March 12th, '25
+                                        //Matcher billingCurrencyMatch = nonNumericRegex.matcher(valueStr)
+                                        //step 2: pass the numerical part to the value parser
+                                        Matcher costMatch = numericRegex.matcher(valueStr)
+                                        //if(costMatch.find() && billingCurrencyMatch.find()) {
+                                        if (costMatch.find()) {
+                                            String input = costMatch.group(1)//, currency = billingCurrencyMatch.group(1)
+                                            BigDecimal parsedCost = escapeService.parseFinancialValue(input)
+                                            ci.costInBillingCurrency = parsedCost
+                                            ci.costInLocalCurrency = parsedCost * ci.currencyRate
+                                            /*
+                                        switch(currency) {
+                                            case ['€', 'EUR']: ci.billingCurrency = RDStore.CURRENCY_EUR
+                                                break
+                                            case ['£', 'GBP']: ci.billingCurrency = RDStore.CURRENCY_GBP
+                                                break
+                                            case ['$', 'USD']: ci.billingCurrency = RDStore.CURRENCY_USD
+                                                break
+                                        }
+                                        */
+                                            if (ci.save()) {
+                                                updatedIDs << ci.id
+                                            }
+                                            else
+                                                log.error(ci.getErrors().getAllErrors().toListString())
+                                        }
+                                        /*
+                                    else if(!billingCurrencyMatch.find())
+                                        missingCurrencyCounter++
+                                    */
                                     }
-                                    if(ci.save()) {
-                                        updatedIDs << ci.id
+                                    else {
+                                        noRecordCounter++
+                                        wrongIdentifiers << idStr
                                     }
-                                    else
-                                        log.error(ci.getErrors().getAllErrors().toListString())
                                 }
-                                else if(!billingCurrencyMatch.find())
-                                    missingCurrencyCounter++
-                            }
-                            else {
-                                noRecordCounter++
                             }
                         }
+                        else {
+                            wrongIdentifierCounter++
+                            wrongIdentifiers << idStr
+                        }
                     }
-                }
-                else {
-                    wrongIdentifierCounter++
-                    wrongRecords << idStr
                 }
             }
         }
         missing.addAll(CostItem.executeQuery('select ci.id from CostItem ci where ci.sub.instanceOf = :parent and ci.owner = :owner and ci.costItemElement = :element and (ci.costInBillingCurrency = 0 or ci.costInBillingCurrency = null) and ci.id not in (:updatedIDs)', [parent: subscription, owner: contextOrg, element: pickedElement, updatedIDs: updatedIDs]))
         result.missing = missing
         result.missingCurrencyCounter = missingCurrencyCounter
-        result.wrongRecords = wrongRecords
+        result.wrongIdentifiers = wrongIdentifiers
         result.matchCounter = updatedIDs.size()
         result.wrongIdentifierCounter = wrongIdentifierCounter
         result.noRecordCounter = noRecordCounter

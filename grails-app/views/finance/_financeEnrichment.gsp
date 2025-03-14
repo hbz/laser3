@@ -14,7 +14,7 @@
         <div class="two fields">
             <div class="field">
                 <ui:select name="selectedCostItemElement" id="selectedCostItemElement" class="ui dropdown"
-                           from="${costItemElements.collect{ ciec -> ciec.costItemElement }}"
+                           from="${assignedCostItemElements}"
                            optionKey="id"
                            optionValue="value" />
             </div>
