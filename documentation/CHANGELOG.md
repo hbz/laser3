@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6355    14.03.2025  dev     3.5         Moe     Feature     Titelumfrage optimieren
+
 6301    13.03.2025  dev     3.5         Moe     Bug         Lieferanten-Umfrage: Checkbox wird nicht angezeigt
 
 6358    13.03.2025  dev     3.5         Moe     Bug         Falsche Berechnung der Angehackten Titeln bei Titelumfragen

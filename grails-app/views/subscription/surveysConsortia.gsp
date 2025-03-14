@@ -1,5 +1,5 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyOrg; de.laser.finance.CostItem; de.laser.addressbook.Person; de.laser.storage.RDStore; de.laser.interfaces.CalculatedType; de.laser.survey.SurveyResult" %>
-<laser:htmlStart message="subscription.details.surveys.label" />
+<laser:htmlStart message="subscription.details.surveys.label"/>
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
@@ -13,7 +13,7 @@
 <ui:totalNumber class="la-numberHeader" total="${surveys.size()}"/>
 
 <ui:anualRings object="${subscription}" controller="subscription" action="surveysConsortia"
-                  navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+               navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 <laser:render template="nav"/>
 
@@ -40,7 +40,7 @@
             <th>${message(code: 'surveyProperty.plural.label')}</th>
             <th>
                 <a href="#" class="la-popup-tooltip" data-content="${message(code: 'surveyConfigDocs.label')}" data-position="top center">
-                <i class="${Icon.DOCUMENT} large"></i>
+                    <i class="${Icon.DOCUMENT} large"></i>
                 </a>
             </th>
             <th>
@@ -101,57 +101,57 @@
                 </td>
 
                 <td class="center aligned">
-                        <g:link controller="survey" action="show" id="${surveyInfo.id}"
-                                params="[surveyConfigID: surveyConfig.id]">
-                            <div class="ui circular ${surveyConfig.configFinish ? "green" : ""} label">
-                                %{--Titel-Umfrage kann keine Umfrage-Merkmale haben--}%
-                                ${surveyConfig.surveyProperties?.size() ?: 0}
-                            </div>
-                        </g:link>
+                    <g:link controller="survey" action="show" id="${surveyInfo.id}"
+                            params="[surveyConfigID: surveyConfig.id]">
+                        <div class="ui circular ${surveyConfig.configFinish ? "green" : ""} label">
+                            %{--Titel-Umfrage kann keine Umfrage-Merkmale haben--}%
+                            ${surveyConfig.surveyProperties?.size() ?: 0}
+                        </div>
+                    </g:link>
                 </td>
                 <td class="center aligned">
-                        <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
-                                params="[surveyConfigID: surveyConfig.id]">
-                            <ui:bubble count="${surveyConfig.getCurrentDocs().size()}" />
-                        </g:link>
-                </td>
-
-                <td class="center aligned">
-                        <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
-                                params="[surveyConfigID: surveyConfig.id]">
-                            <div class="ui circular ${participantsFinish.size() == participantsTotal.size() ? "green" : surveyConfig.configFinish ? "yellow" : ""} label">
-                                ${participantsFinish.size() ?: 0} / ${surveyConfig.orgs?.org?.flatten()?.unique { a, b -> a.id <=> b.id }?.size() ?: 0}
-                            </div>
-                        </g:link>
-                </td>
-
-
-                <td class="center aligned">
-                    <g:if test="${surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
-                        <g:link controller="survey" action="surveyCostItems" id="${surveyInfo.id}"
-                                params="[surveyConfigID: surveyConfig.id]">
-                            <div class="ui circular ${surveyConfig.costItemsFinish ? "green" : ""} label">
-                                ${surveyConfig.getSurveyConfigCostItems().size() ?: 0}
-                            </div>
-                        </g:link>
-                    </g:if>
+                    <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
+                            params="[surveyConfigID: surveyConfig.id]">
+                        <ui:bubble count="${surveyConfig.getCurrentDocs().size()}"/>
+                    </g:link>
                 </td>
 
                 <td class="center aligned">
-                        <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
-                                params="[surveyConfigID: surveyConfig.id]">
-                            <div class="ui circular ${(participantsFinish.size() == participantsTotal.size()) ? "green" : (participantsFinish.size() > 0) ? "yellow" : ""} label">
-                                <g:if test="${participantsFinish && participantsTotal}">
-                                    <g:formatNumber
-                                            number="${(participantsFinish.size() / participantsTotal.size()) * 100}"
-                                            minFractionDigits="2"
-                                            maxFractionDigits="2"/>%
-                                </g:if>
-                                <g:else>
-                                    0%
-                                </g:else>
-                            </div>
-                        </g:link>
+                    <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
+                            params="[surveyConfigID: surveyConfig.id]">
+                        <div class="ui circular ${participantsFinish.size() == participantsTotal.size() ? "green" : surveyConfig.configFinish ? "yellow" : ""} label">
+                            ${participantsFinish.size() ?: 0} / ${surveyConfig.orgs?.org?.flatten()?.unique { a, b -> a.id <=> b.id }?.size() ?: 0}
+                        </div>
+                    </g:link>
+                </td>
+
+
+                <td class="center aligned">
+
+                    <g:link controller="survey" action="surveyCostItems" id="${surveyInfo.id}"
+                            params="[surveyConfigID: surveyConfig.id]">
+                        <div class="ui circular ${surveyConfig.costItemsFinish ? "green" : ""} label">
+                            ${surveyConfig.getSurveyConfigCostItems().size() ?: 0}
+                        </div>
+                    </g:link>
+
+                </td>
+
+                <td class="center aligned">
+                    <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
+                            params="[surveyConfigID: surveyConfig.id]">
+                        <div class="ui circular ${(participantsFinish.size() == participantsTotal.size()) ? "green" : (participantsFinish.size() > 0) ? "yellow" : ""} label">
+                            <g:if test="${participantsFinish && participantsTotal}">
+                                <g:formatNumber
+                                        number="${(participantsFinish.size() / participantsTotal.size()) * 100}"
+                                        minFractionDigits="2"
+                                        maxFractionDigits="2"/>%
+                            </g:if>
+                            <g:else>
+                                0%
+                            </g:else>
+                        </div>
+                    </g:link>
                 </td>
                 <td>
                     <span class="la-popup-tooltip"
@@ -185,5 +185,5 @@
         </h3>
     </ui:greySegment>
 </g:else>
-<laser:htmlEnd />
+<laser:htmlEnd/>
 

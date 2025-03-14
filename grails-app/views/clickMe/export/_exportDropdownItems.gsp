@@ -17,26 +17,24 @@
         <div class="ui divider"></div>
     </g:if>
 
-    <g:if test="${surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
-        <ui:actionsDropdownItem class="triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
-                                params="${params + [exportController: 'survey', exportAction: 'exportSurCostItems', clickMeType: ExportClickMeService.SURVEY_COST_ITEMS, id: params.id, surveyConfigID: surveyConfig.id, exportFileName: exportFileName, modalText: "${message(code: 'survey.exportSurveyCostItems')}"]}"
-                                message="survey.exportSurveyCostItems"/>
+    <ui:actionsDropdownItem class="triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
+                            params="${params + [exportController: 'survey', exportAction: 'exportSurCostItems', clickMeType: ExportClickMeService.SURVEY_COST_ITEMS, id: params.id, surveyConfigID: surveyConfig.id, exportFileName: exportFileName, modalText: "${message(code: 'survey.exportSurveyCostItems')}"]}"
+                            message="survey.exportSurveyCostItems"/>
 
 
-        <g:set var="clickMeConfigsCostItems"
-               value="${ClickMeConfig.findAllByContextOrgAndClickMeType(contextService.getOrg(), ExportClickMeService.SURVEY_COST_ITEMS, [sort: 'configOrder'])}"/>
+    <g:set var="clickMeConfigsCostItems"
+           value="${ClickMeConfig.findAllByContextOrgAndClickMeType(contextService.getOrg(), ExportClickMeService.SURVEY_COST_ITEMS, [sort: 'configOrder'])}"/>
 
-        <g:each in="${clickMeConfigsCostItems}" var="clickMeConfig">
-            <ui:actionsDropdownItem tooltip="${clickMeConfig.note}" class="triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
-                                    params="${params + [exportController: 'survey', exportAction: 'exportSurCostItems', clickMeType: ExportClickMeService.SURVEY_COST_ITEMS, id: params.id, clickMeConfigId: clickMeConfig.id, surveyConfigID: surveyConfig.id, exportFileName: exportFileName]}"
-                                    text="${message(code: 'survey.exportSurveyCostItems')}: ${clickMeConfig.name}"/>
-        </g:each>
+    <g:each in="${clickMeConfigsCostItems}" var="clickMeConfig">
+        <ui:actionsDropdownItem tooltip="${clickMeConfig.note}" class="triggerClickMeExport" controller="clickMe" action="exportClickMeModal"
+                                params="${params + [exportController: 'survey', exportAction: 'exportSurCostItems', clickMeType: ExportClickMeService.SURVEY_COST_ITEMS, id: params.id, clickMeConfigId: clickMeConfig.id, surveyConfigID: surveyConfig.id, exportFileName: exportFileName]}"
+                                text="${message(code: 'survey.exportSurveyCostItems')}: ${clickMeConfig.name}"/>
+    </g:each>
 
-        <g:if test="${clickMeConfigsCostItems}">
-            <div class="ui divider"></div>
-        </g:if>
-
+    <g:if test="${clickMeConfigsCostItems}">
+        <div class="ui divider"></div>
     </g:if>
+
 
     <g:if test="${surveyConfig.subSurveyUseForTransfer}">
         <ui:actionsDropdownItem class="triggerClickMeExport" controller="clickMe" action="exportClickMeModal"

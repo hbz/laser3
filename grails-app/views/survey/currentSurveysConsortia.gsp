@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.helper.Params; de.laser.survey.SurveyConfig; de.laser.RefdataCategory; de.laser.survey.SurveyResult; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem; de.laser.storage.RDConstants" %>
 
-<laser:htmlStart message="currentSurveys.label" />
+<laser:htmlStart message="currentSurveys.label"/>
 
 <ui:breadcrumbs>
     <ui:crumb message="currentSurveys.label" class="active"/>
@@ -20,7 +20,7 @@
     <laser:render template="actions"/>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon message="currentSurveys.label" type="Survey" total="${surveysCount}" floated="true" />
+<ui:h1HeaderWithIcon message="currentSurveys.label" type="Survey" total="${surveysCount}" floated="true"/>
 
 <ui:messages data="${flash}"/>
 
@@ -40,7 +40,7 @@
 
 
             <div class="field">
-                <ui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
+                <ui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}"/>
             </div>
 
             <div class="field">
@@ -86,8 +86,8 @@
 
                     <g:each in="${providers.sort { it.name }}" var="provider">
                         <option <%=Params.getLongList(params, 'filterPvd').contains(provider.id) ? 'selected="selected"' : ''%>
-                        value="${provider.id}" >
-                        ${provider.name}
+                                value="${provider.id}">
+                            ${provider.name}
                         </option>
                     </g:each>
                 </select>
@@ -100,15 +100,16 @@
 
                     <g:each in="${subscriptions}" var="sub">
                         <option <%=(params.list('filterSub').contains(sub)) ? 'selected="selected"' : ''%>
-                        value="${sub}">
-                        ${sub}
+                                value="${sub}">
+                            ${sub}
                         </option>
                     </g:each>
                 </select>
 
             </div>
 
-            <laser:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true, label:message(code: 'subscription.property.search')]"/>
+            <laser:render template="/templates/properties/genericFilter"
+                          model="[propList: propList, hideFilterProp: true, label: message(code: 'subscription.property.search')]"/>
 
         </div>
 
@@ -117,11 +118,11 @@
             <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>
                 <ui:select class="ui dropdown" name="type"
-                              from="${RefdataCategory.getAllRefdataValues(RDConstants.SURVEY_TYPE)}"
-                              optionKey="id"
-                              optionValue="value"
-                              value="${params.type}"
-                              noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                           from="${RefdataCategory.getAllRefdataValues(RDConstants.SURVEY_TYPE)}"
+                           optionKey="id"
+                           optionValue="value"
+                           value="${params.type}"
+                           noSelection="${['': message(code: 'default.select.choose.label')]}"/>
             </div>
 
             <div class="field">
@@ -241,7 +242,7 @@
             <th rowspan="2" scope="col">${message(code: 'surveyResult.label')}</th>
 
             %{--<th rowspan="2" scope="col">${message(code: 'surveyInfo.finished')}</th>--}%
-            <th rowspan="2" scope="col">${message(code:'default.actions.label')}</th>
+            <th rowspan="2" scope="col">${message(code: 'default.actions.label')}</th>
 
         </tr>
         <tr>
@@ -256,11 +257,11 @@
 
             <g:set var="surveyConfig" value="${survey[1]}"/>
 
-            %{--<g:set var="participantsFinish"
-                   value="${SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig).participant?.flatten()?.unique { a, b -> a.id <=> b.id }}"/>
+        %{--<g:set var="participantsFinish"
+               value="${SurveyResult.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig).participant?.flatten()?.unique { a, b -> a.id <=> b.id }}"/>
 
-            <g:set var="participantsTotal"
-                   value="${surveyConfig.orgs}"/>--}%
+        <g:set var="participantsTotal"
+               value="${surveyConfig.orgs}"/>--}%
 
             <tr>
                 <td class="center aligned">
@@ -268,18 +269,18 @@
                 </td>
 
                 <th scope="row" class="la-th-column">
-                        <g:link controller="survey" action="show" id="${surveyInfo.id}" class="la-main-object">
-                            ${surveyConfig ? surveyConfig.getSurveyName() : surveyInfo.name}
-                        </g:link>
-                        <g:if test="${surveyConfig?.subscription}">
-                            <g:set var="providers" value="${surveyConfig.subscription.getProviders()}"/>
-                            <g:if test="${providers}">
+                    <g:link controller="survey" action="show" id="${surveyInfo.id}" class="la-main-object">
+                        ${surveyConfig ? surveyConfig.getSurveyName() : surveyInfo.name}
+                    </g:link>
+                    <g:if test="${surveyConfig?.subscription}">
+                        <g:set var="providers" value="${surveyConfig.subscription.getProviders()}"/>
+                        <g:if test="${providers}">
 
-                                <div class="la-flexbox la-minor-object">
-                                    (<g:each in="${providers}" var="provider">${provider.name}</g:each>)
-                                </div>
-                            </g:if>
+                            <div class="la-flexbox la-minor-object">
+                                (<g:each in="${providers}" var="provider">${provider.name}</g:each>)
+                            </div>
                         </g:if>
+                    </g:if>
                 </th>
 
                 <td class="center aligned">
@@ -296,7 +297,7 @@
                 </td>
                 <td>
                     <g:formatDate formatName="default.date.format.notime" date="${surveyInfo.startDate}"/>
-                    <br />
+                    <br/>
                     <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label.shy')}:">
                         <g:formatDate formatName="default.date.format.notime" date="${surveyInfo.endDate}"/>
                     </span>
@@ -308,78 +309,76 @@
 
                 <td class="center aligned">
                     <g:if test="${surveyConfig}">
-                            <g:link controller="survey" action="show" id="${surveyInfo.id}"
-                                    params="[surveyConfigID: surveyConfig.id]">
-                                <div class="ui circular ${surveyConfig.configFinish ? "green" : ""} label">
-                                    %{--Titel-Umfrage kann keine Umfrage-Merkmale haben--}%
-                                    ${surveyConfig.surveyProperties?.size() ?: 0}
-                                </div>
-                            </g:link>
+                        <g:link controller="survey" action="show" id="${surveyInfo.id}"
+                                params="[surveyConfigID: surveyConfig.id]">
+                            <div class="ui circular ${surveyConfig.configFinish ? "green" : ""} label">
+                                %{--Titel-Umfrage kann keine Umfrage-Merkmale haben--}%
+                                ${surveyConfig.surveyProperties?.size() ?: 0}
+                            </div>
+                        </g:link>
                     </g:if>
                 </td>
 
-                    <td class="center aligned">
-                        <g:if test="${surveyConfig}">
-                            <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
-                                    params="[surveyConfigID: surveyConfig.id]">
-                                <ui:bubble count="${surveyConfig.getCurrentDocs().size()}" />
-                            </g:link>
-                        </g:if>
-                    </td>
+                <td class="center aligned">
+                    <g:if test="${surveyConfig}">
+                        <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
+                                params="[surveyConfigID: surveyConfig.id]">
+                            <ui:bubble count="${surveyConfig.getCurrentDocs().size()}"/>
+                        </g:link>
+                    </g:if>
+                </td>
 
 
                 <td class="center aligned">
                     <g:if test="${surveyConfig}">
                         <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id]">
-                                <div class="ui circular ${surveyConfig.configFinish ? "green" : ""} label">
+                            <div class="ui circular ${surveyConfig.configFinish ? "green" : ""} label">
                                 ${surveyConfig.orgs?.size() ?: 0}
-                                </div>
-                            %{--<div class="ui circular ${participantsFinish.size() == participantsTotal.size() ? "green" : surveyConfig.configFinish ? "yellow" : ""} label">
-                                ${participantsFinish.size() ?: 0} / ${surveyConfig.orgs?.size() ?: 0}
-                            </div>--}%
+                            </div>
+                        %{--<div class="ui circular ${participantsFinish.size() == participantsTotal.size() ? "green" : surveyConfig.configFinish ? "yellow" : ""} label">
+                            ${participantsFinish.size() ?: 0} / ${surveyConfig.orgs?.size() ?: 0}
+                        </div>--}%
                         </g:link>
                     </g:if>
                 </td>
 
 
                 <td class="center aligned">
-                    <g:if test="${surveyConfig && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
-                        <g:link controller="survey" action="surveyCostItems" id="${surveyInfo.id}"
-                                params="[surveyConfigID: surveyConfig.id]">
-                            <div class="ui circular ${surveyConfig.costItemsFinish ? "green" : ""} label">
-                                ${surveyConfig.getSurveyConfigCostItems().size() ?: 0}
-                            </div>
-                        </g:link>
-                    </g:if>
+                    <g:link controller="survey" action="surveyCostItems" id="${surveyInfo.id}"
+                            params="[surveyConfigID: surveyConfig.id]">
+                        <div class="ui circular ${surveyConfig.costItemsFinish ? "green" : ""} label">
+                            ${surveyConfig.getSurveyConfigCostItems().size() ?: 0}
+                        </div>
+                    </g:link>
                 </td>
 
                 <td class="center aligned">
-                    %{--<g:if test="${surveyConfig && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION && !surveyConfig.pickAndChoose}">
-                        <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
-                                params="[surveyConfigID: surveyConfig.id]"
-                                class="${Btn.BASIC_ICON}">
-                                --}%%{--<div class="ui circular ${(participantsFinish.size() == participantsTotal.size()) ? "green" : (participantsFinish.size() > 0) ? "yellow" : ""} label">
-                                <g:if
-                                        test="${participantsFinish && participantsTotal}">
-                                    <g:formatNumber
-                                            number="${(participantsFinish.size() / participantsTotal.size()) * 100}"
-                                            minFractionDigits="2"
-                                            maxFractionDigits="2"/>%
-                                </g:if>
-                                <g:else>
-                                    0%
-                                </g:else>--}%%{--
-                                <i class="${Icon.SURVEY} blue"></i>
-                            </div>
-                        </g:link>
-                    </g:if>--}%
-                        <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
-                                params="[surveyConfigID: surveyConfig.id]"
-                                class="${Btn.MODERN.SIMPLE}">
-                            <i class="${Icon.SURVEY}"></i>
-                            </div>
-                        </g:link>
+                %{--<g:if test="${surveyConfig && surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION && !surveyConfig.pickAndChoose}">
+                    <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
+                            params="[surveyConfigID: surveyConfig.id]"
+                            class="${Btn.BASIC_ICON}">
+                            --}%%{--<div class="ui circular ${(participantsFinish.size() == participantsTotal.size()) ? "green" : (participantsFinish.size() > 0) ? "yellow" : ""} label">
+                            <g:if
+                                    test="${participantsFinish && participantsTotal}">
+                                <g:formatNumber
+                                        number="${(participantsFinish.size() / participantsTotal.size()) * 100}"
+                                        minFractionDigits="2"
+                                        maxFractionDigits="2"/>%
+                            </g:if>
+                            <g:else>
+                                0%
+                            </g:else>--}%%{--
+                            <i class="${Icon.SURVEY} blue"></i>
+                        </div>
+                    </g:link>
+                </g:if>--}%
+                    <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
+                            params="[surveyConfigID: surveyConfig.id]"
+                            class="${Btn.MODERN.SIMPLE}">
+                        <i class="${Icon.SURVEY}"></i>
+                        </div>
+                    </g:link>
                 </td>
                 <td>
                     <g:link controller="survey" action="show" id="${surveyInfo.id}"
@@ -400,7 +399,6 @@
                     </g:if>
                 </td>
 
-
             </tr>
 
         </g:each>
@@ -409,11 +407,11 @@
 </g:if>
 <g:else>
     <g:if test="${filterSet}">
-        <br /><strong><g:message code="filter.result.empty.object"
-                               args="${[message(code: "survey.plural")]}"/></strong>
+        <br/><strong><g:message code="filter.result.empty.object"
+                                args="${[message(code: "survey.plural")]}"/></strong>
     </g:if>
     <g:else>
-        <br /><strong><g:message code="result.empty.object" args="${[message(code: "survey.plural")]}"/></strong>
+        <br/><strong><g:message code="result.empty.object" args="${[message(code: "survey.plural")]}"/></strong>
     </g:else>
 </g:else>
 
@@ -421,11 +419,11 @@
 
 <g:if test="${surveysCount}">
     <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
-                    max="${max}" total="${surveysCount}"/>
+                 max="${max}" total="${surveysCount}"/>
 </g:if>
 
 <ui:debugInfo>
-    <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+    <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
 </ui:debugInfo>
 
-<laser:htmlEnd />
+<laser:htmlEnd/>
