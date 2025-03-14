@@ -726,7 +726,7 @@ class SubscriptionController {
             rowData.add(row)
         }
 
-        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.tsv\"")
+        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
         response.contentType = "text/csv"
         ServletOutputStream out = response.outputStream
         out.withWriter { writer ->
@@ -759,7 +759,7 @@ class SubscriptionController {
             }
         }
 
-        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.tsv\"")
+        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
         response.contentType = "text/csv"
         ServletOutputStream out = response.outputStream
         out.withWriter { writer ->

@@ -4152,6 +4152,8 @@ class SubscriptionService {
             configMap.subscription = result.subscription
             configMap.packages = baseSub.packages.pkg
             result.packageInstance = baseSub.packages.pkg[0] //there was an if check about baseSub.pkg
+            result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
+            result.countAllTipps = TitleInstancePackagePlatform.countByPkgAndStatus(result.packageInstance, RDStore.TIPP_STATUS_CURRENT)
             result.configMap = configMap
         }
         result
