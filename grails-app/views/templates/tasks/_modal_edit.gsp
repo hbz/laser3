@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.SwissKnife; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Task;de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.utils.SwissKnife; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Task; de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
 <laser:serviceInjection />
 
 <ui:modal id="modalEditTask" message="task.edit" isEditModal="true" >
@@ -9,21 +9,21 @@
         <g:hiddenField id="${preID}_preID" name="preID" value="${preID}" />
         <g:hiddenField id="${preID}_version" name="version" value="${taskInstance.version}" />
 
-        <div class="field ${hasErrors(bean: taskInstance, field: 'title', 'error')} required">
+        <div class="field required">
             <label for="${preID}_title">
-                <g:message code="default.title.label"/>
+                <g:message code="default.title.label"/> <g:message code="messageRequiredField" />
             </label>
             <g:textField id="${preID}_title" name="title" required="" value="${taskInstance.title}"/>
         </div>
 
-        <div class="field ${hasErrors(bean: taskInstance, field: 'description', 'error')}">
+        <div class="field">
             <label for="${preID}_description">
                 <g:message code="default.description.label"/>
             </label>
             <g:textArea id="${preID}_description" name="description" value="${taskInstance.description}" rows="5" cols="40"/>
         </div>
 
-        <div class="field ${hasErrors(bean: taskInstance, field: 'description', 'error')}">
+        <div class="field">
             <label>${message(code: 'task.object.label')}</label>
             <g:if test="${taskInstance.getObjectInfo()}">
                 <g:set var="tskObj" value="${taskInstance.getObjectInfo()}" />
@@ -40,7 +40,7 @@
         <div class="field">
             <div class="two fields">
 
-                <div class="field wide eight ${hasErrors(bean: taskInstance, field: 'status', 'error')} required">
+                <div class="field wide eight">
                     <label for="${preID}_status">
                         <g:message code="task.status.label" />
                     </label>
@@ -60,7 +60,7 @@
 
         <div class="field">
             <div class="two fields">
-                <div class="field wide eight ${hasErrors(bean: taskInstance, field: 'responsible', 'error')}">
+                <div class="field wide eight">
                     <fieldset>
                         <legend>
                             <g:message code="task.responsible.label" />
@@ -83,9 +83,9 @@
                     </fieldset>
                 </div>
                 <div id="${preID}_responsibleUserWrapper"
-                     class="field wide eight ${hasErrors(bean: taskInstance, field: 'responsibleUser', 'error')}">
+                     class="field wide eight required">
                     <label for="${preID}_responsibleUserInput">
-                        <g:message code="task.responsibleUser.label" />
+                        <g:message code="task.responsibleUser.label" /> <g:message code="messageRequiredField" />
                     </label>
                     <g:select id="${preID}_responsibleUserInput"
                               name="responsibleUser.id"
@@ -114,10 +114,7 @@
             let $respUserInput      = $(preID + '_responsibleUserInput')
             let $respUserWrapper    = $(preID + '_responsibleUserWrapper')
 
-            $radRespOrg.change(function ()  { JSPC.app.toggleResponsibleUserEdit() });
-            $radRespUser.change(function () { JSPC.app.toggleResponsibleUserEdit() });
-
-            JSPC.app.toggleResponsibleUserEdit = function () {
+            let func_toggleResponsibleUser = function () {
                 if ($radRespUser.is(':checked')) {
                     $respUserWrapper.show()
                 } else {
@@ -125,14 +122,17 @@
                 }
             }
 
-            JSPC.app.toggleResponsibleUserEdit();
-
             $.fn.form.settings.rules.responsibleUserInput = function() {
                 if($radRespUser.is(':checked')) {
                     return $respUserInput.val()
                 }
                 else return true
             }
+
+            $radRespOrg.change(function ()  { func_toggleResponsibleUser() });
+            $radRespUser.change(function () { func_toggleResponsibleUser() });
+
+            func_toggleResponsibleUser();
 
             $('#${preID}_form').form({
                     on: 'blur',
