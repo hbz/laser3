@@ -274,7 +274,7 @@
 }
 
 
-a i.circular.la-gokb:hover {
+a i.circular.la-wekb:hover {
   color: @white;
   text-decoration: none;
   background-color: @blue;

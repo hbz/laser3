@@ -178,7 +178,6 @@
 
                 $('#btnAddNewCostItem').on('click', function(event) {
                     event.preventDefault();
-
                     // prevent 2 Clicks open 2 Modals
                     if (! JSPC.app.isClicked) {
                         JSPC.app.isClicked = true;
@@ -198,6 +197,11 @@
                             }
                         }).done(function (data) {
                             $('#dynamicModalContainer').html(data);
+                            let keyboardHandler = function(e) {
+                                if (e.keyCode === 27) {
+                                    $('#costItem_ajaxModal').modal('hide');
+                                }
+                            };
                             $('#dynamicModalContainer .ui.modal').modal({
                                 onVisible: function () {
                                     r2d2.initDynamicUiStuff('#costItem_ajaxModal');
@@ -206,6 +210,7 @@
                                     JSPC.app['finance'+idSuffix].preselectMembers();
 
                                     r2d2.helper.focusFirstFormElement(this);
+                                    document.addEventListener('keyup', keyboardHandler);
                                 },
                                 detachable: true,
                                 autofocus: false,
@@ -214,6 +219,9 @@
                                 onApprove: function () {
                                     $(this).find('.ui.form').submit();
                                     return false;
+                                },
+                                onHide : function() {
+                                    document.removeEventListener('keyup', keyboardHandler);
                                 }
                             }).modal('show');
                         });

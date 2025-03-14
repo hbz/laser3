@@ -173,17 +173,6 @@
                                             </div>
                                         </g:else>
                                     </g:if>
-
-                                    <g:if test="${subscription.packages.size() > 1}">
-                                        <a class="${Btn.SIMPLE} right floated" data-href="#showPackagesModal" data-ui="modal"><g:message
-                                            code="subscription.details.details.package.label"/></a>
-                                    </g:if>
-
-                                    <g:if test="${subscription.packages.size() == 1}">
-                                        <g:link class="${Btn.SIMPLE} right floated" controller="package" action="show"
-                                                id="${subscription.packages[0].pkg.id}"><g:message
-                                            code="subscription.details.details.package.label"/></g:link>
-                                    </g:if>
                                 </div>
                             </div>
                         </div>
@@ -191,6 +180,18 @@
                 </div>
                 <div class="ui fluid segment content">
                     <div class="ui grid">
+                        <div class="sixteen wide column">
+                            <g:if test="${subscription.packages.size() > 1}">
+                                <a class="${Btn.SIMPLE} right floated" data-href="#showPackagesModal" data-ui="modal"><g:message
+                                    code="subscription.details.details.package.label"/></a>
+                            </g:if>
+
+                            <g:if test="${subscription.packages.size() == 1}">
+                                <g:link class="${Btn.SIMPLE} right floated" controller="package" action="show"
+                                        id="${subscription.packages[0].pkg.id}"><g:message
+                                    code="subscription.details.details.package.label"/></g:link>
+                            </g:if>
+                        </div>
                         <div class="eight wide column">
                             <dl>
                                 <dt>${message(code: 'default.status.label')}</dt>

@@ -1,9 +1,5 @@
 <%@ page import="de.laser.ui.Btn" %>
 <g:if test="${editable}">
-    <a class="${Btn.SIMPLE}" data-ui="modal" href="#subjectGroup">
-        <g:message code="org.subjectGroup.add.label"/>
-    </a>
-
     <ui:modal id="subjectGroup" message="org.subjectGroup.add.label">
         <g:form class="ui form" url="[controller: 'organisation', action: 'addSubjectGroup',id:org.id]" method="post">
             <div class="field">

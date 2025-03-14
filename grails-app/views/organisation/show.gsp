@@ -273,20 +273,33 @@
 
                     <div class="ui card">
                         <div class="content">
-%{--                            <div class="ui header">${message(code:'org.subjectGroup.label')}</div>--}%
-                            <dl>
-                                <dt class="control-label">${message(code:'org.subjectGroup.label')}</dt>
-                                <dd>
-                                    <%
-                                        List<RefdataValue> subjectGroups = RefdataCategory.getAllRefdataValues(RDConstants.SUBJECT_GROUP)
-                                    %>
-                                    <laser:render template="orgSubjectGroupAsList"
-                                                  model="${[org: orgInstance, orgSubjectGroups: orgInstance.subjectGroup, availableSubjectGroups: subjectGroups, editable: editable]}"/>
+                            <div class="ui grid">
+                                <div class="twelve wide column">
+                                    <dl>
+                                        <dt class="control-label">${message(code:'org.subjectGroup.label')}</dt>
+                                        <dd>
+                                            <%
+                                                List<RefdataValue> subjectGroups = RefdataCategory.getAllRefdataValues(RDConstants.SUBJECT_GROUP)
+                                            %>
+                                            <laser:render template="orgSubjectGroupAsList"
+                                                          model="${[org: orgInstance, orgSubjectGroups: orgInstance.subjectGroup, availableSubjectGroups: subjectGroups, editable: editable]}"/>
 
-                                    <laser:render template="orgSubjectGroupModal"
-                                                  model="${[org: orgInstance, availableSubjectGroups: subjectGroups, editable: editable]}"/>
-                                </dd>
-                            </dl>
+                                            <laser:render template="orgSubjectGroupModal"
+                                                          model="${[org: orgInstance, availableSubjectGroups: subjectGroups, editable: editable]}"/>
+                                        </dd>
+                                    </dl>
+                                </div>
+                                <div class="right aligned four wide column">
+                                <g:if test="${editable}">
+                                    <a  data-content="<g:message code="org.subjectGroup.add.label"/>" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-ui="modal" href="#subjectGroup">
+                                        <i class="${Icon.CMD.ADD}"></i>
+                                    </a>
+                                </g:if>
+
+                                </div>
+                            </div>
+%{--                            <div class="ui header">${message(code:'org.subjectGroup.label')}</div>--}%
+
                         </div>
                     </div>
                 </div>
