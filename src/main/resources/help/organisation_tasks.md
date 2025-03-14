@@ -3,7 +3,7 @@ Sie können Aufgaben für sich selbst erstellen, wie auch für (alle) Mitarbeite
 
 **Aufgaben in LAS:eR**
 
-* können an eine Lizenz, einen Vertrag, einen Anbieter/Lieferant, eine Konsortialstelle oder Ihr Einrichtungsprofil gebunden werden
+* können an eine Lizenz, einen Vertrag, einen Anbieter/Library Supplier, eine Konsortialstelle oder Ihr Einrichtungsprofil gebunden werden
 * können mit einem Fälligkeitsdatum terminiert werden, das eine Erinnerung generiert
 
 Erinnerungen können Sie über das **Benutzerprofil** verwalten.  

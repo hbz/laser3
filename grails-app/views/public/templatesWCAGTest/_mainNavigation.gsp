@@ -20,7 +20,7 @@
                     <div class="menu" role="menu">
                         <a id="4" href="#" class="item" role="menuitem" >Meine Lizenzen</a>
                         <a id="5" href="#" class="item" role="menuitem" >Meine Verträge</a>
-                        <a id="6"  href="#" class="item" role="menuitem" >Meine Anbieter & Lieferanten</a>
+                        <a id="6"  href="#" class="item" role="menuitem" >Meine Anbieter & Library Supplier</a>
                         <a id="7" href="#" class="item" role="menuitem" >Meine Plattformen</a>
                         <a id="8" href="#" class="item" role="menuitem" >Meine Pakete</a>
                         <a id="9" href="#" class="item" role="menuitem" >Meine Titel</a>

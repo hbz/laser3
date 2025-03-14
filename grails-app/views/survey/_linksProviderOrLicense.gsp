@@ -34,7 +34,7 @@
         </h2>
 
         <g:if test="${surveyInfo.provider}">
-            <g:link controller="organisation" action="show" id="${surveyInfo.provider.id}">
+            <g:link controller="provider" action="show" id="${surveyInfo.provider.id}">
                 ${surveyInfo.provider.name}
             </g:link>
 
