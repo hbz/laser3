@@ -8,7 +8,7 @@ Die umfangreichen Operationen sind auf mehrere Reiter verteilt:
 - **Pakete:** Entknüpfung/Verknüpfung von Paketen mit/ohne Titel
 - **Dauerhafte Titel**: Übersicht über alle Pakete mit dauerhaften Zugriff
 - **Merkmale:** Hinzufügen von Lizenzmerkmalen/Änderung der Werte
-- **Anbieter/Lieferant:** Entknüpfen/Verknüpfen von Anbieter/Lieferant pro Lizenz
+- **Anbieter/Library Supplier:** Entknüpfen/Verknüpfen von Anbieter/Library Supplier pro Lizenz
 - **Dokument:** Dateiupload für mehrere Lizenzen/ Löschen Bearbeiten von Dokumenten
 - **Anmerkungen:** Anmerkungen für mehrere Lizenzen notieren
 - **Mehrjahreslaufzeit:** Nachbearbeitung von Mehrjahreslaufzeiten
