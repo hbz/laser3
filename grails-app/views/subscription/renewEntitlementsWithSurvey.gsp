@@ -165,7 +165,7 @@
         <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                      params="[id: subscription.id, surveyConfigID: surveyConfig.id, tab: 'selectableTipps']"
                      text="${message(code: "renewEntitlementsWithSurvey.selectableTipps")}" tab="selectableTipps"
-                     counts="${countselectableTipps}"/>
+                     counts="${countAllTipps - countCurrentPermanentTitles}"/>
         <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                          params="[id: subscription.id, surveyConfigID: surveyConfig.id, tab: 'selectedIEs']"
                          text="${message(code: "renewEntitlementsWithSurvey.currentTitlesSelect")}" tab="selectedIEs"

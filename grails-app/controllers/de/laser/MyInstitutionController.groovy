@@ -2177,8 +2177,8 @@ class MyInstitutionController  {
             subscriptionRows << row
         }
         String template = exportService.generateSeparatorTableString(colHeaders,subscriptionRows,"\t")
-        response.setHeader("Content-disposition", "attachment; filename=\"${escapeService.escapeString(subscription.name)}_finances.tsv\"")
-        response.contentType = "text/tsv"
+        response.setHeader("Content-disposition", "attachment; filename=\"${escapeService.escapeString(subscription.name)}_finances.csv\"")
+        response.contentType = "text/csv"
         ServletOutputStream out = response.outputStream
         out.withWriter { writer ->
             writer.write(template)
