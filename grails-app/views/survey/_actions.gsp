@@ -61,6 +61,13 @@
                 </g:if>
 
                 <g:if test="${surveyInfo && (surveyInfo.status.id == RDStore.SURVEY_IN_PROCESSING.id)}">
+                    <g:if test="${surveyConfig.vendorSurvey}">
+                        <ui:actionsDropdownItem controller="survey" action="linkSurveyVendor"
+                                                params="${[id: params.id, surveyConfigID: surveyConfig.id, initial: true]}"
+                                                message="surveyVendors.linkVendor"/>
+                        <div class="ui divider"></div>
+                    </g:if>
+
                     <ui:actionsDropdownItem controller="survey" action="addSurveyParticipants" params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
                                             text="${message(code: 'default.add.label', args: [message(code: 'surveyParticipants.label')])}"/>
 
