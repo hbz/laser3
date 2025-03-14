@@ -91,13 +91,16 @@ class ExportService {
 	 */
 	String generateSeparatorTableString(Collection titleRow, Collection columnData,String separator) {
 		List output = []
-		output.add(titleRow.join(separator))
+		if(titleRow)
+			output.add(titleRow.join(separator))
 		columnData.each { row ->
 			if(row instanceof GroovyRowResult) {
 				output.add(row.values().join(separator).replaceAll('null', ''))
 			}
 			else {
-				if(row.size() > 0)
+				if (row instanceof String && row.trim())
+					output.add(row)
+				else if(row.size() > 0)
 					output.add(row.join(separator).replaceAll('null',''))
 				else output.add(" ")
 			}
