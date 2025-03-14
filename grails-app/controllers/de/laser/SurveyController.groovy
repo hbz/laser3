@@ -536,7 +536,7 @@ class SurveyController {
         result.subscription = Subscription.get( params.long('sub') )
         result.pickAndChoose = true
         //double-check needed because menu is not being refreshed after xEditable change on sub/show
-        if(result.subscription?.holdingSelection != RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+        if(result.subscription?.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
             flash.error = message(code: 'subscription.details.addEntitlements.holdingInherited')
             redirect controller: 'subscription', action: 'show', params: [id: params.long('sub')]
             return
