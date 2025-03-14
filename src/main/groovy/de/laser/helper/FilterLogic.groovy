@@ -87,7 +87,7 @@ class FilterLogic {
     }
 
     static Map<String, Object> resolveTabAndStatusForRenewalTabsMenu(GrailsParameterMap params) {
-        log.debug('resolveTabAndStatusForTitleTabsMenu( .. )')
+        log.debug('resolveTabAndStatusForRenewalTabsMenu( .. )')
 
         String debug = '[tab: ' + params.tab + ', subTab: ' + params.subTab + ', status: ' + params.list('status') + ']'
         Map<String, Object> result = [:]
