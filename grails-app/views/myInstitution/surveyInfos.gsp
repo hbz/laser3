@@ -32,8 +32,6 @@
 
 <g:if test="${ownerId}">
     <g:set var="choosenOrg" value="${Org.findById(ownerId)}"/>
-
-
     <ui:greySegment>
         <h3 class="ui header"><g:message code="surveyInfo.owner.label"/>:</h3>
 
@@ -63,20 +61,6 @@
                 </tbody>
             </table>
         </g:if>
-
-        <div class="ui form la-padding-left-07em">
-            <div class="field">
-                <label>
-                    <g:message code="surveyInfo.comment.label"/>
-                </label>
-                <g:if test="${surveyInfo.comment}">
-                    <textarea class="la-textarea-resize-vertical" readonly="readonly" rows="3">${surveyInfo.comment}</textarea>
-                </g:if>
-                <g:else>
-                    <g:message code="surveyConfigsInfo.comment.noComment"/>
-                </g:else>
-            </div>
-        </div>
     </ui:greySegment>
 </g:if>
 

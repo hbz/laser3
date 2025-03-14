@@ -7,6 +7,16 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6301    13.03.2025  dev     3.5         Moe     Bug         Lieferanten-Umfrage: Checkbox wird nicht angezeigt
+
+6358    13.03.2025  dev     3.5         Moe     Bug         Falsche Berechnung der Angehackten Titeln bei Titelumfragen
+
+6357    13.03.2025  dev     3.5         Moe     Feature    Reiter in der Titelauswahl bei Titelumfragen anpassen
+
+6356    13.03.2025  dev     3.5         Moe     Feature     Informationskasten anzeigen, wenn man sich in den "Kindumfragen" befindet
+
+6364    13.03.2025  dev     3.5         Moe     Feature     Änderung der Reihenfolge der Funktionen im Zauberstab
+
 6361    12.03.2025  dev     3.5         Andreas Feature     Trennung des Namensraumes EZB-Anker
 
 6360    12.03.2025  dev     3.5         Andreas Feature     Löschung des falschen Lizenz-Identifier-Namensraumes emerald

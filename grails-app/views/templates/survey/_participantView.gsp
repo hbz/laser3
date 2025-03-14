@@ -1,5 +1,20 @@
 <%@ page import="de.laser.survey.SurveyPersonResult; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyPackageResult; de.laser.survey.SurveyVendorResult; de.laser.survey.SurveyConfigVendor; de.laser.survey.SurveyConfigPackage; de.laser.storage.RDConstants; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.properties.PropertyDefinition;" %>
 
+<ui:greySegment>
+    <div class="ui form la-padding-left-07em">
+        <div class="field">
+            <label>
+                <g:message code="surveyInfo.comment.label"/>
+            </label>
+            <g:if test="${surveyInfo.comment}">
+                <textarea class="la-textarea-resize-vertical" readonly="readonly" rows="3">${surveyInfo.comment}</textarea>
+            </g:if>
+            <g:else>
+                <g:message code="surveyConfigsInfo.comment.noComment"/>
+            </g:else>
+        </div>
+    </div>
+</ui:greySegment>
 
 <div class="ui stackable grid">
     <div class="sixteen wide column">
