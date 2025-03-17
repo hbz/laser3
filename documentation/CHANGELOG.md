@@ -9,9 +9,13 @@
 
 6372    14.03.2025  dev     3.5         Andreas Bug         Export der Vertrags-Anmerkungen implementiert
 
+6363    14.03.2025  dev     3.5         Moe     Feature     Lieferantenumfrage
+
 6355    14.03.2025  dev     3.5         Moe     Feature     Titelumfrage optimieren
 
 6349    14.03.2025  dev     3.5         Andreas Feature     Bezeichner "Lieferant" in "Library Supplier" umgewandelt
+
+6346    14.03.2025  dev     3.5         Moe     Feature     Speichermöglichkeiten beim Feld "Bemerkung" für Konsortialstellen
 
 6341    14.03.2025  dev     3.5         Andreas Feature     Umstellung aller Template-Dateien auf .csv
 
