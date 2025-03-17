@@ -11,6 +11,8 @@
 
 6288    17.03.2025  dev     3.5         David   Feature     "Anbieter kontaktieren" zusätzlich auf Titellisten
 
+6160    17.03.2025  dev     3.5         Moe     Bug     Mail versenden nicht Abbrechen wenn ein Fehler im Prozess ist
+
 6372    14.03.2025  dev     3.5         Andreas Bug         Export der Vertrags-Anmerkungen implementiert
 
 6363    14.03.2025  dev     3.5         Moe     Feature     Lieferantenumfrage

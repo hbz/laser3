@@ -680,24 +680,30 @@ class MailSendService {
             ccAddress = user.getSetting(UserSetting.KEYS.REMIND_CC_EMAILADDRESS, null)?.getValue()
             // println user.toString() + " : " + isRemindCCbyEmail + " : " + ccAddress
         }
+        try {
+            if (isRemindCCbyEmail && ccAddress) {
+                AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
+                    to user.getEmail()
+                    from ConfigMapper.getNotificationsEmailFrom()
+                    cc ccAddress
+                    replyTo ConfigMapper.getNotificationsEmailReplyTo()
+                    subject mailSubject
+                    body(view: "/mailTemplates/text/systemAnnouncement", model: [user: user, announcement: systemAnnouncement])
+                }
+            } else {
+                AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
+                    to user.getEmail()
+                    from ConfigMapper.getNotificationsEmailFrom()
+                    replyTo ConfigMapper.getNotificationsEmailReplyTo()
+                    subject mailSubject
+                    body(view: "/mailTemplates/text/systemAnnouncement", model: [user: user, announcement: systemAnnouncement])
+                }
+            }
+        } catch (Exception e) {
+            String eMsg = e.message
 
-        if (isRemindCCbyEmail && ccAddress) {
-            AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
-                to user.getEmail()
-                from ConfigMapper.getNotificationsEmailFrom()
-                cc ccAddress
-                replyTo ConfigMapper.getNotificationsEmailReplyTo()
-                subject mailSubject
-                body(view: "/mailTemplates/text/systemAnnouncement", model: [user: user, announcement: systemAnnouncement])
-            }
-        } else {
-            AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
-                to user.getEmail()
-                from ConfigMapper.getNotificationsEmailFrom()
-                replyTo ConfigMapper.getNotificationsEmailReplyTo()
-                subject mailSubject
-                body(view: "/mailTemplates/text/systemAnnouncement", model: [user: user, announcement: systemAnnouncement])
-            }
+            log.error("sendSystemAnnouncementMail() :: Unable to perform email due to exception: ${eMsg}")
+            SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user.getDisplayName()])
         }
     }
 
