@@ -35,6 +35,26 @@ content.option.asme,Gewählte Inhaltsoption ASME DC,Chosen content option ASME D
 content.option.asme.addition,Gewählte Inhaltsoption ASME DC Zuwahl,Chosen content option ASME DC Archive
 content.option.london.journals,Gewählte Inhaltsoption RS London Journals,Chosen content option RS London Journals
 cost.configuration,Kostenkonfiguration,Cost configuration
+cost.information.availability.book,Informationsversorgungskosten Bücher,TODO ERMS-6310
+cost.information.availability.database,Informationsversorgungskosten Datenbanken,TODO ERMS-6310
+cost.information.availability.ill,Informationsversorgungskosten für Fernleihe oder Dokumentlieferung,TODO ERMS-6310
+cost.information.availability.journal,Informationsversorgungskosten Zeitschriften (nur lesen),TODO ERMS-6310
+cost.information.availability.other,Informationsversorgungskosten sonstige Medien oder Dienste,TODO ERMS-6310
+cost.information.contracts.contractual,Überregionale bibliothekarische Dienste,TODO ERMS-6310
+cost.information.contracts.library,Rahmenvertrag technisch-inhaltlich,TODO ERMS-6310
+cost.information.contracts.membership,Institutionelle Mitgliedschaften in Verbünden oder erstattungsfähige persönliche Mitgliedschaften in Berufsverbänden o. ä.,TODO ERMS-6310
+cost.information.personnel.infrastructure,Personal Betrieb Infrastrukturen,TODO ERMS-6310
+cost.information.personnel.service,Serviceangebote und Workflows,TODO ERMS-6310
+cost.information.publication.book,Publikationskosten Bücher,TODO ERMS-6310
+cost.information.publication.journal,Publikationskosten Zeitschriftenartikel,TODO ERMS-6310
+cost.information.publication.other,Publikationskosten Sonstiges,TODO ERMS-6310
+cost.information.service.editor,Universitätsverlag (Betrieb und Wartung technisch),TODO ERMS-6310
+cost.information.service.hardware,"Bibliotheksausstattung und -hardware (Anschaffung, Betrieb, Wartung technisch)",TODO ERMS-6310
+cost.information.service.infrastructure,Infrastrukturen,TODO ERMS-6310
+cost.information.service.software,Software,TODO ERMS-6310
+cost.information.source.own,Eigenmittel der Einrichtung,TODO ERMS-6310
+cost.information.source.central,Zentrale Drittmittel (DM),TODO ERMS-6310
+cost.information.source.decentral,Dezentrale Drittmittel,TODO ERMS-6310
 cost.item.category,CostItemCategory,CostItemCategory
 cost.item.element,CostItemElement,CostItemElement
 cost.item.status,CostItemStatus,CostItemStatus
