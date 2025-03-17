@@ -193,34 +193,20 @@ class SubscriptionController {
         */
         Set<Subscription> refSubs = [result.subscription, result.subscription.instanceOf]
         result.platformInstanceRecords = [:]
-        result.platforms = subscribedPlatforms
-        result.platformsJSON = subscribedPlatforms.globalUID as JSON
-        result.keyPairs = [:]
-        if(!params.containsKey('tab'))
-            params.tab = subscribedPlatforms[0].id.toString()
-        result.subscription.packages.each { SubscriptionPackage sp ->
-            Platform platformInstance = sp.pkg.nominalPlatform
-            if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_LOCAL]) {
-                //create dummies for that they may be xEdited - OBSERVE BEHAVIOR for eventual performance loss!
-                CustomerIdentifier keyPair = CustomerIdentifier.findByPlatformAndCustomer(platformInstance, result.subscription.getSubscriberRespConsortia())
-                if(!keyPair) {
-                    keyPair = new CustomerIdentifier(platform: platformInstance,
-                            customer: result.subscription.getSubscriberRespConsortia(),
-                            type: RDStore.CUSTOMER_IDENTIFIER_TYPE_DEFAULT,
-                            owner: contextService.getOrg(),
-                            isPublic: true)
-                    if(!keyPair.save()) {
-                        log.warn(keyPair.errors.getAllErrors().toListString())
-                    }
-                }
-                result.keyPairs.put(platformInstance.gokbId, keyPair)
-            }
-            else {
-                result.subscription.getDerivedNonHiddenSubscribers().each { Org member ->
-                    CustomerIdentifier keyPair = CustomerIdentifier.findByPlatformAndCustomer(platformInstance, member)
+        if(subscribedPlatforms) {
+            result.platforms = subscribedPlatforms
+            result.platformsJSON = subscribedPlatforms.globalUID as JSON
+            result.keyPairs = [:]
+            if(!params.containsKey('tab'))
+                params.tab = subscribedPlatforms[0].id.toString()
+            result.subscription.packages.each { SubscriptionPackage sp ->
+                Platform platformInstance = sp.pkg.nominalPlatform
+                if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_LOCAL]) {
+                    //create dummies for that they may be xEdited - OBSERVE BEHAVIOR for eventual performance loss!
+                    CustomerIdentifier keyPair = CustomerIdentifier.findByPlatformAndCustomer(platformInstance, result.subscription.getSubscriberRespConsortia())
                     if(!keyPair) {
                         keyPair = new CustomerIdentifier(platform: platformInstance,
-                                customer: member,
+                                customer: result.subscription.getSubscriberRespConsortia(),
                                 type: RDStore.CUSTOMER_IDENTIFIER_TYPE_DEFAULT,
                                 owner: contextService.getOrg(),
                                 isPublic: true)
@@ -228,54 +214,74 @@ class SubscriptionController {
                             log.warn(keyPair.errors.getAllErrors().toListString())
                         }
                     }
+                    result.keyPairs.put(platformInstance.gokbId, keyPair)
                 }
-            }
-            Map queryResult = gokbService.executeQuery(Wekb.getSearchApiURL(), [uuid: platformInstance.gokbId])
-            if (queryResult.error && queryResult.error == 404) {
-                result.wekbServerUnavailable = message(code: 'wekb.error.404')
-            }
-            else if (queryResult) {
-                List records = queryResult.result
-                if(records[0]) {
-                    records[0].lastRun = platformInstance.counter5LastRun ?: platformInstance.counter4LastRun
-                    records[0].id = platformInstance.id
-                    result.platformInstanceRecords[platformInstance.gokbId] = records[0]
-                    result.platformInstanceRecords[platformInstance.gokbId].wekbUrl = Wekb.getResourceShowURL() + "/${platformInstance.gokbId}"
-                    if(records[0].statisticsFormat == 'COUNTER' && records[0].counterR4SushiServerUrl == null && records[0].counterR5SushiServerUrl == null) {
-                        result.error = 'noSushiSource'
-                        ArrayList<Object> errorArgs = ["${Wekb.getResourceShowURL()}/${platformInstance.gokbId}", platformInstance.name]
-                        result.errorArgs = errorArgs.toArray()
-                    }
-                    else {
-                        CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriberRespConsortia(), platformInstance)
-                        if(!ci?.value) {
-                            if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_LOCAL])
-                                result.error = 'noCustomerId.local'
-                            else
-                                result.error = 'noCustomerId'
+                else {
+                    result.subscription.getDerivedNonHiddenSubscribers().each { Org member ->
+                        CustomerIdentifier keyPair = CustomerIdentifier.findByPlatformAndCustomer(platformInstance, member)
+                        if(!keyPair) {
+                            keyPair = new CustomerIdentifier(platform: platformInstance,
+                                    customer: member,
+                                    type: RDStore.CUSTOMER_IDENTIFIER_TYPE_DEFAULT,
+                                    owner: contextService.getOrg(),
+                                    isPublic: true)
+                            if(!keyPair.save()) {
+                                log.warn(keyPair.errors.getAllErrors().toListString())
+                            }
                         }
                     }
                 }
-            }
-            if(result.subscription._getCalculatedType() != CalculatedType.TYPE_CONSORTIAL) {
-                //Set<String> tippUIDs = subscriptionControllerService.fetchTitles(params, refSubs, 'uids')
-                Map<String, Object> dateRangeParams = subscriptionControllerService.getDateRange(params, result.subscription)
-                result.reportTypes = []
-                CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriberRespConsortia(), platformInstance)
-                if(ci?.value) {
-                    Set allAvailableReports = subscriptionControllerService.getAvailableReports(result)
-                    if(allAvailableReports)
-                        result.reportTypes.addAll(allAvailableReports)
-                    else {
-                        result.error = 'noReportAvailable'
+                Map queryResult = gokbService.executeQuery(Wekb.getSearchApiURL(), [uuid: platformInstance.gokbId])
+                if (queryResult.error && queryResult.error == 404) {
+                    result.wekbServerUnavailable = message(code: 'wekb.error.404')
+                }
+                else if (queryResult) {
+                    List records = queryResult.result
+                    if(records[0]) {
+                        records[0].lastRun = platformInstance.counter5LastRun ?: platformInstance.counter4LastRun
+                        records[0].id = platformInstance.id
+                        result.platformInstanceRecords[platformInstance.gokbId] = records[0]
+                        result.platformInstanceRecords[platformInstance.gokbId].wekbUrl = Wekb.getResourceShowURL() + "/${platformInstance.gokbId}"
+                        if(records[0].statisticsFormat == 'COUNTER' && records[0].counterR4SushiServerUrl == null && records[0].counterR5SushiServerUrl == null) {
+                            result.error = 'noSushiSource'
+                            ArrayList<Object> errorArgs = ["${Wekb.getResourceShowURL()}/${platformInstance.gokbId}", platformInstance.name]
+                            result.errorArgs = errorArgs.toArray()
+                        }
+                        else {
+                            CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriberRespConsortia(), platformInstance)
+                            if(!ci?.value) {
+                                if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_LOCAL])
+                                    result.error = 'noCustomerId.local'
+                                else
+                                    result.error = 'noCustomerId'
+                            }
+                        }
                     }
                 }
-                else if(!ci?.value) {
-                    result.error = 'noCustomerId'
+                if(result.subscription._getCalculatedType() != CalculatedType.TYPE_CONSORTIAL) {
+                    //Set<String> tippUIDs = subscriptionControllerService.fetchTitles(params, refSubs, 'uids')
+                    Map<String, Object> dateRangeParams = subscriptionControllerService.getDateRange(params, result.subscription)
+                    result.reportTypes = []
+                    CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriberRespConsortia(), platformInstance)
+                    if(ci?.value) {
+                        Set allAvailableReports = subscriptionControllerService.getAvailableReports(result)
+                        if(allAvailableReports)
+                            result.reportTypes.addAll(allAvailableReports)
+                        else {
+                            result.error = 'noReportAvailable'
+                        }
+                    }
+                    else if(!ci?.value) {
+                        result.error = 'noCustomerId'
+                    }
                 }
             }
+            result
         }
-        result
+        else {
+            flash.error = message(code: 'default.stats.error.noPlatformAvailable')
+            redirect action: 'show', params: [id: params.id]
+        }
     }
 
     /**
@@ -720,7 +726,7 @@ class SubscriptionController {
             rowData.add(row)
         }
 
-        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.tsv\"")
+        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
         response.contentType = "text/csv"
         ServletOutputStream out = response.outputStream
         out.withWriter { writer ->
@@ -753,7 +759,7 @@ class SubscriptionController {
             }
         }
 
-        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.tsv\"")
+        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
         response.contentType = "text/csv"
         ServletOutputStream out = response.outputStream
         out.withWriter { writer ->
@@ -1361,6 +1367,11 @@ class SubscriptionController {
                 flash.error = result.error
                 result
             }
+        }
+        else if(result.subscription?.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+            flash.error = message(code: 'subscription.details.addEntitlements.holdingEntire')
+            redirect controller: 'subscription', action: 'show', params: [id: params.id]
+            return
         }
         else {
             Map<String, Object> configMap = params.clone()

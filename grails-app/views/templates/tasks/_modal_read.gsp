@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Task;de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.ui.Icon;" %>
 <laser:serviceInjection />
 
 <ui:modal id="modalReadTask" message="task.label" hideSubmitButton="true">
@@ -19,14 +19,13 @@
         </div>
 
         <div class="field">
-            <label>${message(code: 'task.object.label')}</label>
-            <g:if test="${taskInstance.getObjects()}">
-                <g:each in="${taskInstance.getObjects()}" var="tskObj">
-                    <div class="la-flexbox">
-                        <i class="${tskObj.icon} la-list-icon"></i>
-                        <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>
-                    </div>
-                </g:each>
+            <label>${message(code: 'task.object.label')}: </label>
+            <g:if test="${taskInstance.getObjectInfo()}">
+                <g:set var="tskObj" value="${taskInstance.getObjectInfo()}" />
+                <div class="la-flexbox">
+                    <i class="${tskObj.icon} la-list-icon"></i>
+                    <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object.id]}">${tskObj.object}</g:link>
+                </div>
             </g:if>
             <g:else>
                 <div class="la-flexbox">${message(code: 'task.general')}</div>

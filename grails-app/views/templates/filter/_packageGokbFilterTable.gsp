@@ -98,7 +98,11 @@
                     <th class="la-th-wrap center aligned">${message(code: 'default.actions.label')}</th>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'markPerpetualAccess'}">
-                    <th class="la-th-wrap x center aligned">${message(code: 'subscription.hasPerpetualAccess.label')}</th>
+                    <th class="la-th-wrap x center aligned">
+                        <span class="la-long-tooltip la-popup-tooltip" data-position="top center" data-content="${message(code: 'subscription.hasPerpetualAccess.label')}">
+                            <i class="flag outline icon"></i>
+                        </span>
+                    </th>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'yodaActions'}">
                     <th class="la-th-wrap x center aligned">

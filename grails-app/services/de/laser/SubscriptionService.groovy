@@ -1725,6 +1725,35 @@ class SubscriptionService {
                     result.titlesList = tippIDs ? TitleInstancePackagePlatform.findAllByIdInList(tippIDs.drop(result.offset).take(result.max), [sort: result.sort, order: result.order]) : []
                     result.num_rows = tippIDs.size()
                     break
+                case 'selectableTipps':
+                    Set<Subscription> subscriptions = []
+                    if(result.surveyConfig.pickAndChoosePerpetualAccess) {
+                        subscriptions = linksGenerationService.getSuccessionChain(result.subscription, 'sourceSubscription')
+                    }
+                    else {
+                        subscriptions << result.subscription
+                    }
+                    if(subscriptions) {
+                        Set<Long> sourceTIPPs = []
+                        List rows
+                        if(result.surveyConfig.pickAndChoosePerpetualAccess) {
+                            rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, tipp.id as tipp_id) from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subs) and ie.perpetualAccessBySub in (:subs) and ie.status = :current and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) group by tipp.hostPlatformURL, tipp.id, ie.id', [subs: subscriptions, current: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
+                        }
+                        else {
+                            rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, ie.tipp.id as tipp_id) from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)', [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
+                        }
+                        sourceTIPPs.addAll(rows["tipp_id"])
+                        tippIDs = tippIDs.minus(sourceTIPPs)
+                    }
+
+
+                    Map<String, Object> listPriceSums = issueEntitlementService.calculateListPriceSumsForTitles(tippIDs)
+                    result.tippsListPriceSumEUR = listPriceSums.listPriceSumEUR
+                    result.tippsListPriceSumUSD = listPriceSums.listPriceSumUSD
+                    result.tippsListPriceSumGBP = listPriceSums.listPriceSumGBP
+                    result.titlesList = tippIDs ? TitleInstancePackagePlatform.findAllByIdInList(tippIDs.drop(result.offset).take(result.max), [sort: result.sort, order: result.order]) : []
+                    result.num_rows = tippIDs.size()
+                    break
                 case 'selectedIEs':
                     if(issueEntitlementGroup) {
                         issueEntitlementConfigMap.tippIDs = tippIDs
@@ -2463,7 +2492,7 @@ class SubscriptionService {
                     break
                 case ["anbieter", "provider"]: colMap.provider = c
                     break
-                case ["lieferant", "agency", "vendor"]: colMap.vendor = c
+                case ["library supplier", "lieferant", "agency", "vendor"]: colMap.vendor = c
                     break
                 case ["anmerkungen", "notes"]: colMap.notes = c
                     break
@@ -2882,7 +2911,7 @@ class SubscriptionService {
                         identifier: UUID.randomUUID())
                 sub.startDate = entry.startDate ? databaseDateFormatParser.parse(entry.startDate) : null
                 sub.endDate = entry.endDate ? databaseDateFormatParser.parse(entry.endDate) : null
-                sub.referenceYear = entry.referenceYear ? new Year(entry.referenceYear.value) : null
+                sub.referenceYear = entry.referenceYear ? Year.of(entry.referenceYear.value) : null
                 sub.manualCancellationDate = entry.manualCancellationDate ? databaseDateFormatParser.parse(entry.manualCancellationDate) : null
                 sub.isAutomaticRenewAnnually = entry.isAutomaticRenewAnnually ?: false
                 /* TODO [ticket=2276]
@@ -4123,6 +4152,8 @@ class SubscriptionService {
             configMap.subscription = result.subscription
             configMap.packages = baseSub.packages.pkg
             result.packageInstance = baseSub.packages.pkg[0] //there was an if check about baseSub.pkg
+            result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
+            result.countAllTipps = TitleInstancePackagePlatform.countByPkgAndStatus(result.packageInstance, RDStore.TIPP_STATUS_CURRENT)
             result.configMap = configMap
         }
         result

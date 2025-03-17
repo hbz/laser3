@@ -98,64 +98,69 @@
         <div class="ui grid">
             <div class="row">
                 <div class="column">
-                    <div class="ui la-filter segment">
-                        <h4 class="ui header"><g:message code="subscription.details.issueEntitlementEnrichment.label"/></h4>
+                    <g:if test="${subscription.holdingSelection != RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+                        <div class="ui la-filter segment">
+                            <h4 class="ui header"><g:message code="subscription.details.issueEntitlementEnrichment.label"/></h4>
 
-                        <ui:msg class="warning" header="${message(code: "message.attention")}"
+                            <ui:msg class="warning" header="${message(code: "message.attention")}"
                                     message="subscription.details.addEntitlements.warning"/>
 
-                        <g:form class="ui form" controller="subscription" action="processIssueEntitlementEnrichment"
-                                params="${[sort: params.sort, order: params.order, filter: params.filter, pkgFilter: params.pkgfilter, startsBefore: params.startsBefore, endsAfter: params.endAfter, id: subscription.id]}"
-                                method="post" enctype="multipart/form-data">
-                            <div class="three fields">
-                                <div class="field">
-                                    <div class="ui fluid action input">
-                                        <input type="text" readonly="readonly"
-                                               placeholder="${message(code: 'template.addDocument.selectFile')}">
-                                        <input type="file" id="kbartPreselect" name="kbartPreselect"
-                                               accept=".txt,.csv,.tsv,text/tab-separated-values,text/csv,text/plain"
-                                               style="display: none;">
+                            <g:form class="ui form" controller="subscription" action="processIssueEntitlementEnrichment"
+                                    params="${[sort: params.sort, order: params.order, filter: params.filter, pkgFilter: params.pkgfilter, startsBefore: params.startsBefore, endsAfter: params.endAfter, id: subscription.id]}"
+                                    method="post" enctype="multipart/form-data">
+                                <div class="three fields">
+                                    <div class="field">
+                                        <div class="ui fluid action input">
+                                            <input type="text" readonly="readonly"
+                                                   placeholder="${message(code: 'template.addDocument.selectFile')}">
+                                            <input type="file" id="kbartPreselect" name="kbartPreselect"
+                                                   accept=".txt,.csv,.tsv,text/tab-separated-values,text/csv,text/plain"
+                                                   style="display: none;">
 
-                                        <div class="${Btn.ICON.SIMPLE}">
-                                            <i class="${Icon.CMD.ATTACHMENT}"></i>
+                                            <div class="${Btn.ICON.SIMPLE}">
+                                                <i class="${Icon.CMD.ATTACHMENT}"></i>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div class="field">
-                                    <g:if test="${issueEntitlementService.existsSerialInHolding(subscription, params.list('status'))}">
+                                    <div class="field">
+                                        <g:if test="${issueEntitlementService.existsSerialInHolding(subscription, params.list('status'))}">
+                                            <div class="ui checkbox toggle">
+                                                <g:checkBox name="uploadCoverageDates" value="${uploadCoverageDates}"/>
+                                                <label><g:message
+                                                        code="subscription.details.issueEntitlementEnrichment.uploadCoverageDates.label"/></label>
+                                            </div>
+                                        </g:if>
+
                                         <div class="ui checkbox toggle">
-                                            <g:checkBox name="uploadCoverageDates" value="${uploadCoverageDates}"/>
+                                            <g:checkBox name="uploadPriceInfo" value="${uploadPriceInfo}"/>
                                             <label><g:message
-                                                    code="subscription.details.issueEntitlementEnrichment.uploadCoverageDates.label"/></label>
+                                                    code="subscription.details.issueEntitlementEnrichment.uploadPriceInfo.label"/></label>
                                         </div>
-                                    </g:if>
+                                    </div>
 
-                                    <div class="ui checkbox toggle">
-                                        <g:checkBox name="uploadPriceInfo" value="${uploadPriceInfo}"/>
-                                        <label><g:message
-                                                code="subscription.details.issueEntitlementEnrichment.uploadPriceInfo.label"/></label>
+                                    <div class="field">
+                                        <input type="submit"
+                                               value="${message(code: 'subscription.details.addEntitlements.preselect')}"
+                                               class="${Btn.SIMPLE} fluid"/>
                                     </div>
                                 </div>
+                            </g:form>
+                            <laser:script file="${this.getGroovyPageFileName()}">
+                                $('.action .icon.button').click(function () {
+                                    $(this).parent('.action').find('input:file').click();
+                                });
 
-                                <div class="field">
-                                    <input type="submit"
-                                           value="${message(code: 'subscription.details.addEntitlements.preselect')}"
-                                           class="${Btn.SIMPLE} fluid"/>
-                                </div>
-                            </div>
-                        </g:form>
-                        <laser:script file="${this.getGroovyPageFileName()}">
-                            $('.action .icon.button').click(function () {
-                                $(this).parent('.action').find('input:file').click();
-                            });
-
-                            $('input:file', '.ui.action.input').on('change', function (e) {
-                                var name = e.target.files[0].name;
-                                $('input:text', $(e.target).parent()).val(name);
-                            });
-                        </laser:script>
-                    </div>
+                                $('input:file', '.ui.action.input').on('change', function (e) {
+                                    var name = e.target.files[0].name;
+                                    $('input:text', $(e.target).parent()).val(name);
+                                });
+                            </laser:script>
+                        </div>
+                    </g:if>
+                    <g:else>
+                        <ui:msg class="error" showIcon="error" header="${message(code:"default.error")}" message="subscription.details.addEntitlements.holdingEntire" />
+                    </g:else>
                 </div>
             </div><!--.row-->
         </div><!--.grid-->
@@ -664,7 +669,7 @@
                                                         </div>
                                                     </div>
 
-                                                    <laser:render template="/templates/titles/reportTitleToProvider_simple" model="${[tipp: ie.tipp]}"/>
+                                                    <laser:render template="/templates/reportTitleToProvider/multiple_infoBox" model="${[tipp: ie.tipp]}"/>
                                                 </div><%-- My Area END --%>
                                             </div><%-- .grid --%>
                                         </div><%-- .segment --%>
@@ -860,19 +865,6 @@
 
 <g:render template="/clickMe/export/js"/>
 
-%{-- reportTitleToProvider_simple - start --}%
-<laser:render template="/info/flyoutWrapper"/>
-
-<style>
-    .ui.form .info.message { display: flex; }
-</style>
-
-<laser:script file="${this.getGroovyPageFileName()}">
-    JSPC.app.editTask = function (id) {
-        var func = bb8.ajax4SimpleModalFunction("#modalEditTask", "<g:createLink controller="ajaxHtml" action="editTask"/>?id=" + id);
-        func();
-    }
-</laser:script>
-%{-- reportTitleToProvider_simple - end --}%
+<g:render template="/templates/reportTitleToProvider/multiple_flyoutAndTippTask"/>
 
 <laser:htmlEnd/>

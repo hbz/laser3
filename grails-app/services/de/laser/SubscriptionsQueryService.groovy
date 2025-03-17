@@ -204,7 +204,7 @@ class SubscriptionsQueryService {
                             " or exists ( select vr from VendorRole as vr where vr.subscription = s and ( " +
                                 " genfunc_filter_matcher(vr.vendor.name, :name_filter) = true " +
                                 " or genfunc_filter_matcher(vr.vendor.sortname, :name_filter) = true " +
-                            " ) )" + // filter by Lieferant (Vendor ex Agency)
+                            " ) )" + // filter by Library Supplier (Vendor ex Agency)
                          " ) "
             )
             qry_params.put('name_filter', params.q)

@@ -166,7 +166,7 @@ class ContextBarTagLib {
             tt = isMarked ? 'Der Anbieter' : 'den Anbieter'
         }
         else if (attrs.vendor) {
-            tt = isMarked ? 'Der Lieferant' : 'den Lieferanten'
+            tt = isMarked ? 'Der Library Supplier' : 'den Library Supplier'
         }
         else if (attrs.tipp) {
             tt = isMarked ? 'Der Titel' : 'den Titel'

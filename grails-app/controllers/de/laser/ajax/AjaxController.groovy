@@ -71,6 +71,7 @@ class AjaxController {
     FormService formService
     GenericOIDService genericOIDService
     IdentifierService identifierService
+    LinksGenerationService linksGenerationService
     ManagementService managementService
     PackageService packageService
     PropertyService propertyService
@@ -494,6 +495,31 @@ class AjaxController {
                   filterParams.status = [RDStore.TIPP_STATUS_CURRENT.id]
                   Map<String, Object> query = filterService.getTippQuery(filterParams, baseSub.packages.pkg)
                   List<Long> titleIDList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+
+
+                  Subscription subscriberSub = Subscription.get(params.newSubID)
+                  SurveyConfig surveyConfig = SurveyConfig.findById(params.surveyConfigID)
+                  IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub)
+                  Set<Subscription> subscriptions = []
+                  if(surveyConfig.pickAndChoosePerpetualAccess) {
+                      subscriptions = linksGenerationService.getSuccessionChain(subscriberSub, 'sourceSubscription')
+                  }
+                  else {
+                      subscriptions << subscriberSub
+                  }
+                  if(subscriptions) {
+                      Set<Long> sourceTIPPs = []
+                      List rows
+                      if(surveyConfig.pickAndChoosePerpetualAccess) {
+                          rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, tipp.id as tipp_id) from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subs) and ie.perpetualAccessBySub in (:subs) and ie.status = :current and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) group by tipp.hostPlatformURL, tipp.id, ie.id', [subs: subscriptions, current: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
+                      }
+                      else {
+                          rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, ie.tipp.id as tipp_id) from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)', [sub: subscriberSub, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
+                      }
+                      sourceTIPPs.addAll(rows["tipp_id"])
+                      titleIDList = titleIDList.minus(sourceTIPPs)
+                  }
+
 
                   titleIDList.each { Long tippID ->
                       newChecked[tippID.toString()] = params.checked == 'true' ? 'checked' : null

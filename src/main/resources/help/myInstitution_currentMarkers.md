@@ -3,7 +3,7 @@ maßgeschneidert auf diejenigen Objekte, die für Sie von besonderem Interesse s
 
 Objekte, die auf die Beobachtungsliste gesetzt werden können sind:
 
-- Anbieter & Lieferanten
+- Anbieter & Library Supplier
 - Plattformen
 - Pakete
 

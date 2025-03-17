@@ -129,7 +129,7 @@
                     ${message(code: 'exportClickMe.subscription.costItems')}: ${selectedCostItemElementID ? RefdataValue.get(selectedCostItemElementID).getI10n('value') : ''}
                 </th>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem')}">
                 <th>
                     ${message(code: 'surveyCostItems.label')}:
 
@@ -175,7 +175,7 @@
                     ${selectedCostItemElementID ? RefdataValue.get(selectedCostItemElementID).getI10n('value') : ''}
                 </th>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemPackage') && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemPackage')}">
                 <th>
                     ${message(code: 'surveyCostItems.label')}
                 </th>
@@ -744,7 +744,7 @@
 
                 </td>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem')}">
                 <td class="center aligned">
 
                     <g:if test="${surveyConfig.subSurveyUseForTransfer && orgSub && orgSub.isCurrentMultiYearSubscriptionNew()}">
@@ -848,7 +848,7 @@
                 </td>
             </g:if>
 
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemPackage') && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemPackage')}">
             %{-- // TODO Moe - date.minusDays() --}%
                 <td class="center aligned">
 
@@ -1059,7 +1059,7 @@
     </laser:script>
 
 </g:if>
-<g:if test="${(tmplConfigShow?.contains('surveyCostItem') || tmplConfigShow?.contains('surveyCostItemPackage')) && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id && editable}">
+<g:if test="${(tmplConfigShow?.contains('surveyCostItem') || tmplConfigShow?.contains('surveyCostItemPackage')) && editable}">
     <laser:script file="${this.getGroovyPageFileName()}">
         $('.triggerSurveyCostItemModal').on('click', function(e) {
             e.preventDefault();
@@ -1090,7 +1090,7 @@
     </laser:script>
 
 </g:if>
-<g:if test="${tmplConfigShow?.contains('surveySubCostItem') && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
+<g:if test="${tmplConfigShow?.contains('surveySubCostItem')}">
     <laser:script file="${this.getGroovyPageFileName()}">
         $('#selectedCostItemElementID').on('change', function() {
             var selectedCostItemElementID = $(this).val()

@@ -7,6 +7,34 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6373    17.03.2025  dev     3.5         Andreas Bug         falsches Argument bei der Verknüpfung von Anbietern
+
+6288    17.03.2025  dev     3.5         David   Feature     "Anbieter kontaktieren" zusätzlich auf Titellisten
+
+6372    14.03.2025  dev     3.5         Andreas Bug         Export der Vertrags-Anmerkungen implementiert
+
+6363    14.03.2025  dev     3.5         Moe     Feature     Lieferantenumfrage
+
+6355    14.03.2025  dev     3.5         Moe     Feature     Titelumfrage optimieren
+
+6349    14.03.2025  dev     3.5         Andreas Feature     Bezeichner "Lieferant" in "Library Supplier" umgewandelt
+
+6346    14.03.2025  dev     3.5         Moe     Feature     Speichermöglichkeiten beim Feld "Bemerkung" für Konsortialstellen
+
+6341    14.03.2025  dev     3.5         Andreas Feature     Umstellung aller Template-Dateien auf .csv
+
+5856    14.03.2025  dev     3.5         Andreas Bug         Bugs beim Zusammenführen von Anbietern behoben
+
+6301    13.03.2025  dev     3.5         Moe     Bug         Lieferanten-Umfrage: Checkbox wird nicht angezeigt
+
+6358    13.03.2025  dev     3.5         Moe     Bug         Falsche Berechnung der Angehackten Titeln bei Titelumfragen
+
+6357    13.03.2025  dev     3.5         Moe     Feature     Reiter in der Titelauswahl bei Titelumfragen anpassen
+
+6356    13.03.2025  dev     3.5         Moe     Feature     Informationskasten anzeigen, wenn man sich in den "Kindumfragen" befindet
+
+6364    13.03.2025  dev     3.5         Moe     Feature     Änderung der Reihenfolge der Funktionen im Zauberstab
+
 6361    12.03.2025  dev     3.5         Andreas Feature     Trennung des Namensraumes EZB-Anker
 
 6360    12.03.2025  dev     3.5         Andreas Feature     Löschung des falschen Lizenz-Identifier-Namensraumes emerald
@@ -19,7 +47,7 @@
 
 6253    12.03.2025  dev     3.5         Moe     Bug         Rechteprobleme bei Nutzenden mit Leser-Zugriff auf DEV
 
-6119    12.03.2025  dev     3.5         Moe     Feature    Benachrichtigung abgeschlossene Umfrage: zusätzliche Infos aufnehmen
+6119    12.03.2025  dev     3.5         Moe     Feature     Benachrichtigung abgeschlossene Umfrage: zusätzliche Infos aufnehmen
 
 6115    12.03.2025  dev     3.5         Andreas Feature     neue Merkmale und Referenzwertkategorien incl. Werte aufgenommen
 
@@ -51,13 +79,13 @@
 
 6317    26.02.2025  rc-3.4  3.4.19      Andreas Bug         Rekursionsfehler im Sync behoben
 
-6293    25.02.2025  rc-3.4  3.4.19      Moe     Bug        Merkmale kopieren n andere Lizenz
+6293    25.02.2025  rc-3.4  3.4.19      Moe     Bug         Merkmale kopieren n andere Lizenz
 
 6311    25.02.2025  rc-3.4  3.4.19      Moe     Bug         Merkmale werden beim Kopieren gedoppelt
 
 6316    25.02.2025  rc-3.4  3.4.19      Andreas Bug         Schnitzer im Kostenexport behoben
 
-6305    25.02.2025  dev     3.5         Moe Bug         einzelner Kontakt Löschbutton löscht nicht
+6305    25.02.2025  dev     3.5         Moe     Bug         einzelner Kontakt Löschbutton löscht nicht
 
 6092    25.02.2025  dev     3.5         Moe     Feature     Textänderung: (Nicht)-Verbindliche Umfragen werden (Nicht-)verpflichtende Umfragen
 
