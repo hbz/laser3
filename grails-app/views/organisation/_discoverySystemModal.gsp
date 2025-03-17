@@ -1,10 +1,6 @@
 <%@ page import="de.laser.ui.Btn; de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
 <g:if test="${editable}">
     <g:if test="${config == 'discoverySystemFrontend'}">
-        <a class="${Btn.SIMPLE}" data-ui="modal" href="#frontend">
-            <g:message code="org.discoverySystems.frontend.add"/>
-        </a>
-
         <ui:modal id="frontend" message="org.discoverySystems.frontend.add">
             <g:form class="ui form" url="[controller: 'organisation', action: 'addDiscoverySystem',id:org.id]" method="post">
                 <div class="field">
@@ -22,10 +18,6 @@
         </ui:modal>
     </g:if>
     <g:elseif test="${config == 'discoverySystemIndex'}">
-        <a class="${Btn.SIMPLE}" data-ui="modal" href="#index">
-            <g:message code="org.discoverySystems.index.add"/>
-        </a>
-
         <ui:modal id="index" message="org.discoverySystems.index.add">
             <g:form class="ui form" url="[controller: 'organisation', action: 'addDiscoverySystem', id:org.id]" method="post">
                 <div class="field">

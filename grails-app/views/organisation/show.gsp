@@ -366,6 +366,13 @@
                                 <laser:render template="discoverySystemModal"
                                               model="${[org: orgInstance, config: 'discoverySystemFrontend', editable: editable]}"/>
                             </dd>
+                            <dd>
+                                <g:if test="${editable}">
+                                    <a class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-content="${message(code: 'org.discoverySystems.frontend.add')}" data-ui="modal" href="#frontend">
+                                        <i class="${Icon.CMD.ADD}"></i>
+                                    </a>
+                                </g:if>
+                            </dd>
                         </dl>
                         <dl>
                             <dt class="control-label"><g:message code="org.discoverySystems.index.label" /></dt>
@@ -375,6 +382,13 @@
 
                                 <laser:render template="discoverySystemModal"
                                               model="${[org: orgInstance, config: 'discoverySystemIndex', editable: editable]}"/>
+                            </dd>
+                            <dd>
+                                <g:if test="${editable}">
+                                    <a class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-content="${message(code: 'org.discoverySystems.index.add')}" data-ui="modal" href="#index">
+                                        <i class="${Icon.CMD.ADD}"></i>
+                                    </a>
+                                </g:if>
                             </dd>
                         </dl>
                     </div>
