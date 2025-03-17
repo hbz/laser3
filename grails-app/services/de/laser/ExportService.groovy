@@ -5,6 +5,7 @@ import de.laser.base.AbstractReport
 import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
+import de.laser.finance.CostInformationDefinition
 import de.laser.finance.PriceItem
 import de.laser.helper.Profiler
 import de.laser.http.BasicHttpClient
@@ -1909,28 +1910,54 @@ class ExportService {
 		Map<String,Map> sheetData = [:]
 		propDefs.each { Map.Entry propDefEntry ->
 			List rows = []
-			propDefEntry.value.each { PropertyDefinition pd ->
+			propDefEntry.value.each { entry ->
 				List row = []
-				row.add([field:pd.getI10n("name"),style:null])
-				row.add([field:pd.getI10n("expl"),style:null])
-				String typeString = pd.getLocalizedValue(pd.type)
-				if(pd.isRefdataValueType()) {
-					List refdataValues = []
-                    RefdataCategory.getAllRefdataValues(pd.refdataCategory).each { RefdataValue refdataValue ->
-						refdataValues << refdataValue.getI10n("value")
+				if(entry instanceof PropertyDefinition) {
+					PropertyDefinition pd = (PropertyDefinition) entry
+					row.add([field: pd.getI10n("name"), style: null])
+					row.add([field: pd.getI10n("expl"), style: null])
+					String typeString = pd.getLocalizedValue(pd.type)
+					if (pd.isRefdataValueType()) {
+						List refdataValues = []
+						RefdataCategory.getAllRefdataValues(pd.refdataCategory).each { RefdataValue refdataValue ->
+							refdataValues << refdataValue.getI10n("value")
+						}
+						typeString += "(${refdataValues.join('/')})"
 					}
-					typeString += "(${refdataValues.join('/')})"
+					row.add([field: typeString, style: null])
+					row.add([field: pd.countOwnUsages(), style: null])
+					row.add([field: pd.isHardData ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
+					row.add([field: pd.multipleOccurrence ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
+					row.add([field: pd.isUsedForLogic ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
+					row.add([field: pd.mandatory ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
+					row.add([field: pd.multipleOccurrence ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
 				}
-				row.add([field:typeString,style:null])
-				row.add([field:pd.countOwnUsages(),style:null])
-				row.add([field:pd.isHardData ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"),style:null])
-				row.add([field:pd.multipleOccurrence ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"),style:null])
-				row.add([field:pd.isUsedForLogic ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"),style:null])
-				row.add([field:pd.mandatory ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"),style:null])
-				row.add([field:pd.multipleOccurrence ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"),style:null])
+				else if(entry instanceof CostInformationDefinition) {
+					CostInformationDefinition cif = (CostInformationDefinition) entry
+					row.add([field: cif.getI10n("name"), style: null])
+					row.add([field: cif.getI10n("expl"), style: null])
+					String typeString = cif.getLocalizedValue(cif.type)
+					if (cif.type == RefdataValue.class.name) {
+						List refdataValues = []
+						RefdataCategory.getAllRefdataValues(cif.refdataCategory).each { RefdataValue refdataValue ->
+							refdataValues << refdataValue.getI10n("value")
+						}
+						typeString += "(${refdataValues.join('/')})"
+					}
+					row.add([field: typeString, style: null])
+					row.add([field: cif.countOwnUsages(), style: null])
+					row.add([field: cif.isHardData ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
+					row.add([field: RDStore.YN_NO.getI10n("value"), style: null])
+					row.add([field: RDStore.YN_NO.getI10n("value"), style: null])
+					row.add([field: RDStore.YN_NO.getI10n("value"), style: null])
+					row.add([field: RDStore.YN_NO.getI10n("value"), style: null])
+				}
 				rows.add(row)
 			}
-			sheetData.put(messageSource.getMessage("propertyDefinition.${propDefEntry.key}.label",null,locale),[titleRow:titleRow,columnData:rows])
+			if(propDefEntry.key == CostInformationDefinition.COST_INFORMATION)
+				sheetData.put(messageSource.getMessage("costInformationDefinition.label",null,locale),[titleRow:titleRow,columnData:rows])
+			else
+				sheetData.put(messageSource.getMessage("propertyDefinition.${propDefEntry.key}.label",null,locale),[titleRow:titleRow,columnData:rows])
 		}
 		sheetData
 	}
@@ -1959,6 +1986,7 @@ class ExportService {
 			}
 			sheetData.put(messageSource.getMessage("propertyDefinition.${typeEntry.key}.label",null,locale),[titleRow:titleRow,columnData:rows])
 		}
+		//TODO cost information definition group!
 		sheetData
 	}
 

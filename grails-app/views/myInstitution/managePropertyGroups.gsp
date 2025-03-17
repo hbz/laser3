@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.properties.PropertyDefinition;de.laser.*"%>
+<%@ page import="de.laser.finance.CostInformationDefinition; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.properties.PropertyDefinition;de.laser.*"%>
 <laser:htmlStart message="menu.institutions.prop_groups" />
 
         <ui:breadcrumbs>
@@ -111,6 +111,38 @@
                 </table>
             </div>
         </g:each>
+        <div class="title ${params.ownerType == CostInformationDefinition.COST_INFORMATION ? 'active' : ''}">
+            <i class="dropdown icon"></i>
+            <g:message code="costInformationDefinition.label"/>
+        </div>
+        <div class="content ${params.ownerType == CostInformationDefinition.COST_INFORMATION ? 'active' : ''}">
+            <table class="ui sortable table la-js-responsive-table la-table compact">
+                <thead>
+                    <tr>
+                        <th><g:message code="propertyDefinitionGroup.table.header.properties"/></th>
+                        <g:if test="${editable}">
+                            <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                        </g:if>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            ${costInformationDefinitionsInUse.size()}
+                        </td>
+                        <g:if test="${editable}">
+                            <td class="x">
+                                <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'edit', costInformationsInUse: true]}" class="${Btn.MODERN.SIMPLE} trigger-modal"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
+                                </g:link>
+                            </td>
+                        </g:if>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <laser:script file="${this.getGroovyPageFileName()}">
