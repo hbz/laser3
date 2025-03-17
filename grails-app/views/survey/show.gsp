@@ -557,7 +557,7 @@
                     $('#dynamicModalContainer').html(result);
                     $('#dynamicModalContainer .ui.modal').modal({
                         autofocus: false,
-                        closable: false;
+                        closable: false,
                         onVisible: function() {
                             r2d2.helper.focusFirstFormElement(this);
                         }
