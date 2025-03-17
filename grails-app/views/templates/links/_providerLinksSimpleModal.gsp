@@ -27,7 +27,7 @@
             <input type="hidden" name="takeSelectedSubs" value="/${controllerName}/subscriptionManagement/${params.tab}/${user.id}" />
             <input type="hidden" name="membersListToggler" class="membersListToggler_modal" value="false" />
         </g:else>
-        <input type="hidden" name="linkType" value="${linkType}" />
+        <input type="hidden" name="recip_prop" value="${recip_prop}" />
 
         <label for="${tmplModalID}_orgSearch">${message(code: 'title.search')}</label>
         <input type="text" name="orgSearch" id="${tmplModalID}_orgSearch"/>
