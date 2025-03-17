@@ -21,7 +21,7 @@
         <g:if test="${wekbNewsProTaskList}">
             <div class="ui fluid card">
                 <div class="ui top attached label">
-                    Beantragte Titel-Korrekturen beim Anbieter: ${wekbNewsProTaskList.size()}
+                    ${message(code: 'dashboard.card.reportTitleToProvider')}: ${wekbNewsProTaskList.size()}
                 </div>
                 <div class="content">
                     <table class="ui unstackable scrolling compact table">

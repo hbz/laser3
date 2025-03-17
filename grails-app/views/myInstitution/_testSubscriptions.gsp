@@ -5,7 +5,7 @@
 
     <div class="ui fluid card">
         <div class="ui top attached label">
-            Aktuelle Testlizenzen: ${cts.size()}
+            ${message(code: 'dashboard.card.currentTestSubscriptions')}: ${cts.size()}
         </div>
         <div class="content">
             <table class="ui unstackable scrolling compact table">
