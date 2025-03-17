@@ -7,7 +7,7 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-6346    14.03.2025  dev     3.5         Moe     Feature     Speichermöglichkeiten beim Feld "Bemerkung" für Konsortialstellen
+6372    14.03.2025  dev     3.5         Andreas Bug         Export der Vertrags-Anmerkungen implementiert
 
 6363    14.03.2025  dev     3.5         Moe     Feature     Lieferantenumfrage
 
@@ -15,13 +15,17 @@
 
 6349    14.03.2025  dev     3.5         Andreas Feature     Bezeichner "Lieferant" in "Library Supplier" umgewandelt
 
+6346    14.03.2025  dev     3.5         Moe     Feature     Speichermöglichkeiten beim Feld "Bemerkung" für Konsortialstellen
+
+6341    14.03.2025  dev     3.5         Andreas Feature     Umstellung aller Template-Dateien auf .csv
+
 5856    14.03.2025  dev     3.5         Andreas Bug         Bugs beim Zusammenführen von Anbietern behoben
 
 6301    13.03.2025  dev     3.5         Moe     Bug         Lieferanten-Umfrage: Checkbox wird nicht angezeigt
 
 6358    13.03.2025  dev     3.5         Moe     Bug         Falsche Berechnung der Angehackten Titeln bei Titelumfragen
 
-6357    13.03.2025  dev     3.5         Moe     Feature    Reiter in der Titelauswahl bei Titelumfragen anpassen
+6357    13.03.2025  dev     3.5         Moe     Feature     Reiter in der Titelauswahl bei Titelumfragen anpassen
 
 6356    13.03.2025  dev     3.5         Moe     Feature     Informationskasten anzeigen, wenn man sich in den "Kindumfragen" befindet
 
