@@ -240,6 +240,7 @@ class VendorService {
 
                     markers.each { Marker mkr ->
                         mkr.ven = replacement
+                        mkr.save()
                     }
 
                     // persons

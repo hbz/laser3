@@ -30,14 +30,6 @@
 <ui:totalNumber total="${vendorListTotal}"/>
 </h2>
 
-<g:if test="${editable}">
-    <g:link class="${Btn.SIMPLE} right floated" controller="survey" action="linkSurveyVendor"
-            id="${surveyInfo.id}"
-            params="[surveyConfigID: surveyConfig.id, initial: true]"><g:message code="surveyVendors.linkVendor"/></g:link>
-    <br>
-    <br>
-</g:if>
-
 <g:render template="/templates/survey/vendors" model="[
         processController: 'survey',
         processAction: 'surveyVendors',

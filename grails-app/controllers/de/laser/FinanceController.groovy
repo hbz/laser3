@@ -11,6 +11,7 @@ import de.laser.utils.DateUtils
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
+import de.laser.utils.LocaleUtils
 import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
 import grails.converters.JSON
@@ -96,16 +97,33 @@ class FinanceController  {
                 CostItem.withTransaction {
                     MultipartFile inputFile = request.getFile("costInformation")
                     if(inputFile && inputFile.size > 0) {
+                        String filename = params.costInformation.originalFilename
                         RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
                         String encoding = UniversalDetector.detectCharset(inputFile.getInputStream())
                         if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
                             result.putAll(financeService.financeEnrichment(inputFile, encoding, pickedElement, result.subscription))
+                        }
+                        if(result.containsKey('wrongIdentifiers')) {
+                            //background of this procedure: the editor adding prices via file wishes to receive a "counter-file" which will then be sent to the provider for verification
+                            String dir = GlobalService.obtainFileStorageLocation()
+                            File f = new File(dir+"/${filename}_matchingErrors")
+                            result.token = "${filename}_matchingErrors"
+                            String returnFile = exportService.generateSeparatorTableString(null, result.wrongIdentifiers, '\t')
+                            FileOutputStream fos = new FileOutputStream(f)
+                            fos.withWriter { Writer w ->
+                                w.write(returnFile)
+                            }
+                            fos.flush()
+                            fos.close()
                         }
                         params.remove("costInformation")
                     }
                 }
             }
             result.financialData = financeService.getCostItemsForSubscription(params,result)
+            SortedSet<RefdataValue> assignedCostItemElements = new TreeSet<RefdataValue>()
+            assignedCostItemElements.addAll(CostItemElementConfiguration.executeQuery('select cie from CostItem ci join ci.costItemElement cie join ci.sub s where ci.owner = :org and s.instanceOf = :subscription order by cie.value_'+ LocaleUtils.getCurrentLang()+' asc',[org: contextService.getOrg(), subscription: result.subscription]))
+            result.assignedCostItemElements = assignedCostItemElements
             result.currentTitlesCounts = IssueEntitlement.executeQuery("select count(*) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :status  ", [sub: result.subscription, status: RDStore.TIPP_STATUS_CURRENT])[0]
             if (contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Support()) {
                 if(result.subscription.instanceOf){

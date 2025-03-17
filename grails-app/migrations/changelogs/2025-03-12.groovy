@@ -82,4 +82,17 @@ databaseChangeLog = {
             rollback {}
         }
     }
+
+    changeSet(author: "galffy (hand-coded)", id: "1741770494281-7") {
+        grailsChange {
+            change {
+                String query = "update property_definition set pd_type = 'java.util.Date' where pd_name = 'Access last checked' and pd_tenant_fk is null"
+                sql.execute(query)
+                String info = "${query}: ${sql.getUpdateCount()}"
+                confirm(info)
+                changeSet.setComments(info)
+            }
+            rollback {}
+        }
+    }
 }

@@ -520,7 +520,7 @@ class SurveyService {
                 }
 
 
-                //Lieferanten-Umfrage
+                //Library Supplier-Umfrage
                 if(surveyConfig.vendorSurvey) {
                     surveyData.add([])
                     surveyData.add([])

@@ -20,6 +20,8 @@
 
 <ui:messages data="${flash}"/>
 
+<g:render template="/survey/participantInfos"/>
+
 <ui:filter>
     <g:form action="manageParticipantSurveys" controller="myInstitution" method="post" id="${params.id}"
             params="[tab: params.tab]" class="ui small form">
@@ -137,33 +139,8 @@
     </g:form>
 </ui:filter>
 
-<g:if test="${participant}">
-    <g:set var="choosenOrg" value="${Org.findById(participant.id)}"/>
-    <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}"/>
 
-    <table class="ui table la-js-responsive-table la-table compact">
-        <tbody>
-        <tr>
-            <td>
-                <p><strong><g:link controller="organisation" action="show" id="${choosenOrg.id}">${choosenOrg.name} (${choosenOrg.sortname})</g:link></strong></p>
 
-                ${choosenOrg?.libraryType?.getI10n('value')}
-            </td>
-            <td>
-                <g:if test="${choosenOrgCPAs}">
-                    <g:set var="oldEditable" value="${editable}"/>
-                    <g:set var="editable" value="${false}" scope="request"/>
-                    <g:each in="${choosenOrgCPAs}" var="gcp">
-                        <laser:render template="/addressbook/person_details"
-                                  model="${[person: gcp, tmplHideLinkToAddressbook: true]}"/>
-                    </g:each>
-                    <g:set var="editable" value="${oldEditable ?: false}" scope="request"/>
-                </g:if>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</g:if>
 
 
 <div>

@@ -718,7 +718,8 @@ class SurveyController {
                         subSurveyUseForTransfer: false,
                         pickAndChoose: true,
                         pickAndChoosePerpetualAccess: (subscription.hasPerpetualAccess),
-                        issueEntitlementGroupName: params.issueEntitlementGroupNew
+                        issueEntitlementGroupName: params.issueEntitlementGroupNew,
+                        vendorSurvey: (params.vendorSurvey ?: false)
                 )
                 surveyConfig.save()
                 surveyService.addSubMembers(surveyConfig)
@@ -1096,7 +1097,7 @@ class SurveyController {
             rowData.add(row)
         }
 
-        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.tsv\"")
+        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
         response.contentType = "text/csv"
         ServletOutputStream out = response.outputStream
         out.withWriter { writer ->
@@ -1157,7 +1158,7 @@ class SurveyController {
             rowData.add(row)
         }
 
-        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.tsv\"")
+        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
         response.contentType = "text/csv"
         ServletOutputStream out = response.outputStream
         out.withWriter { writer ->

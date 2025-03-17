@@ -8,7 +8,7 @@
         </g:if>
         <laser:render template="/templates/filter/vendorFilter"
                       model="[
-                              tmplConfigShow: [['name', 'venStatus'], ['supportedLibrarySystems', 'electronicBillings', 'invoiceDispatchs'], ['curatoryGroup', 'curatoryGroupType'], ['providers']],
+                              tmplConfigShow: [['name', 'venStatus'], ['supportedLibrarySystems', 'electronicBillings', 'invoiceDispatchs'], ['property&value', 'isMyX'], ['providers']],
                               tmplConfigFormFilter: true
                       ]"/>
     </g:form>

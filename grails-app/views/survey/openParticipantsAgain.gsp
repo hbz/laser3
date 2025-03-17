@@ -1,13 +1,13 @@
 <%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyConfig; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.Org" %>
 
 
-<laser:htmlStart text="${message(code: 'survey.label')}  ${message(code: 'openParticipantsAgain.label')}" />
+<laser:htmlStart text="${message(code: 'survey.label')}${message(code: 'openParticipantsAgain.label')}"/>
 
 <ui:breadcrumbs>
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
     <g:if test="${surveyInfo}">
         <ui:crumb controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]"
-                     text="${surveyConfig.getConfigNameShort()}"/>
+                  text="${surveyConfig.getConfigNameShort()}"/>
     </g:if>
 
     <ui:crumb message="openParticipantsAgain.label" class="active"/>
@@ -23,21 +23,22 @@
 <uiSurvey:status object="${surveyInfo}"/>
 
 <g:if test="${surveyConfig.subscription}">
- <ui:buttonWithIcon style="vertical-align: super;" message="${message(code: 'button.message.showLicense')}" variation="tiny" icon="${Icon.SUBSCRIPTION}" href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
+    <ui:buttonWithIcon style="vertical-align: super;" message="${message(code: 'button.message.showLicense')}" variation="tiny" icon="${Icon.SUBSCRIPTION}"
+                       href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
 <laser:render template="nav"/>
 
-<ui:objectStatus object="${surveyInfo}" />
+<ui:objectStatus object="${surveyInfo}"/>
 
 <ui:messages data="${flash}"/>
 
-<br />
+<br/>
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">
-        ${message(code: "openParticipantsAgain.label")} <ui:bubble count="${participantsFinishTotal}" />
+    ${message(code: "openParticipantsAgain.label")} <ui:bubble count="${participantsFinishTotal}"/>
 </h2>
-<br />
+<br/>
 
 <div class="ui grid">
 
@@ -45,18 +46,36 @@
 
         <ui:greySegment>
             <g:if test="${surveyConfig.pickAndChoose}">
-                <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'finishedDate', 'surveyTitlesCount', 'surveyProperties', 'commentOnlyForOwner', 'reminderMailDate']}"/>
+                <g:set var="tmplConfigShowList"
+                       value="${['lineNumber', 'name', 'finishedDate', 'surveyTitlesCount', 'surveyProperties', 'commentOnlyForOwner', 'reminderMailDate']}"/>
             </g:if>
+            <g:elseif test="${surveyConfig.pickAndChoose && surveyConfig.vendorSurvey}">
+                <g:set var="tmplConfigShowList"
+                       value="${['lineNumber', 'name', 'finishedDate', 'surveyTitlesCount', 'surveyProperties', 'surveyVendor', 'commentOnlyForOwner', 'reminderMailDate']}"/>
+            </g:elseif>
+            <g:elseif test="${surveyConfig.packageSurvey && surveyConfig.vendorSurvey}">
+                <g:set var="tmplConfigShowList"
+                       value="${['lineNumber', 'name', 'finishedDate', 'surveyProperties', 'surveyPackages', 'surveyCostItemsPackages', 'surveyVendor', 'commentOnlyForOwner', 'reminderMailDate']}"/>
+            </g:elseif>
+            <g:elseif test="${surveyConfig.packageSurvey}">
+                <g:set var="tmplConfigShowList"
+                       value="${['lineNumber', 'name', 'finishedDate', 'surveyProperties', 'surveyPackages', 'surveyCostItemsPackages', 'commentOnlyForOwner', 'reminderMailDate']}"/>
+            </g:elseif>
+            <g:elseif test="${surveyConfig.vendorSurvey}">
+                <g:set var="tmplConfigShowList"
+                       value="${['lineNumber', 'name', 'finishedDate', 'surveyProperties', 'surveyVendor', 'commentOnlyForOwner', 'reminderMailDate']}"/>
+            </g:elseif>
             <g:else>
-                <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyProperties', 'commentOnlyForOwner', 'reminderMailDate']}"/>
+                <g:set var="tmplConfigShowList"
+                       value="${['lineNumber', 'name', 'finishedDate', 'surveyProperties', 'commentOnlyForOwner', 'reminderMailDate']}"/>
             </g:else>
 
-                <laser:render template="evaluationParticipantsView" model="[showCheckboxForParticipantsHasAccess: true,
-                                                                            showCheckboxForParticipantsHasNoAccess: false,
-                                                                        showOpenParticipantsAgainButtons: true,
-                                                                        processAction: 'createOwnMail',
-                                                                        processController: 'mail',
-                                                                        tmplConfigShow   : tmplConfigShowList]"/>
+            <laser:render template="evaluationParticipantsView" model="[showCheckboxForParticipantsHasAccess  : editable,
+                                                                        showCheckboxForParticipantsHasNoAccess: false,
+                                                                        showOpenParticipantsAgainButtons      : editable,
+                                                                        processAction                         : 'createOwnMail',
+                                                                        processController                     : 'mail',
+                                                                        tmplConfigShow                        : tmplConfigShowList]"/>
 
         </ui:greySegment>
 
@@ -73,4 +92,4 @@
     })
 </laser:script>
 
-<laser:htmlEnd />
+<laser:htmlEnd/>

@@ -473,6 +473,13 @@ r2d2 = {
                             return  JSPC.dict.get('xEditable.validation.mail', JSPC.config.language)
                         }
                     }
+                    if (dVal.includes('leitwegID')) {
+                        let regex = /^([0-9]{2,12})+-+([a-zA-Z0-9]{0,30})+-+([0-9]{2,2})+$/
+                        let test = regex.test($.trim(value)) || $.trim(value) === ''
+                        if(!test) {
+                            return  JSPC.dict.get('xEditable.validation.leit', JSPC.config.language)
+                        }
+                    }
                     if (dVal.includes('number')) {
                         let regex =  /^[0-9]+$/;
                         let test = regex.test($.trim(value)) || $.trim(value) === ''

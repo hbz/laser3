@@ -1450,6 +1450,7 @@ class AjaxHtmlController {
         switch (params.objectTyp) {
             case SurveyInfo.class.simpleName:
                 SurveyInfo surveyInfo = SurveyInfo.get(params.id)
+                SurveyConfig surveyConfig = surveyInfo.surveyConfigs[0]
                 result.editable = surveyService.isEditableSurvey(contextService.getOrg(), surveyInfo)
                 if (surveyConfig && result.editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING) {
                     result.allPropDefGroups = PropertyDefinitionGroup.executeQuery('select pdg from PropertyDefinitionGroup pdg where pdg.ownerType = :ownerType and pdg.tenant = :tenant order by pdg.order asc', [tenant: contextOrg, ownerType: PropertyDefinition.getDescrClass(PropertyDefinition.SVY_PROP)])

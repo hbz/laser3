@@ -319,19 +319,20 @@
 
     </ui:greySegment>
 
+    <g:if test="${editable}">
+        <g:form action="setSurveyWorkFlowInfos" method="post" class="ui form"
+                params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, setSurveyWorkFlowInfo: 'workflowRenewalSent']">
 
-    <g:form action="setSurveyWorkFlowInfos" method="post" class="ui form"
-            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, setSurveyWorkFlowInfo: 'workflowRenewalSent']">
-
-        <div class="ui right floated compact segment">
-            <div class="ui checkbox">
-                <input type="checkbox" onchange="this.form.submit()"
-                       name="renewalSent" ${surveyInfo.isRenewalSent ? 'checked' : ''}>
-                <label><g:message code="surveyInfo.isRenewalSent.label"/></label>
+            <div class="ui right floated compact segment">
+                <div class="ui checkbox">
+                    <input type="checkbox" onchange="this.form.submit()"
+                           name="renewalSent" ${surveyInfo.isRenewalSent ? 'checked' : ''}>
+                    <label><g:message code="surveyInfo.isRenewalSent.label"/></label>
+                </div>
             </div>
-        </div>
 
-    </g:form>
+        </g:form>
+    </g:if>
 
 
     <laser:script file="${this.getGroovyPageFileName()}">

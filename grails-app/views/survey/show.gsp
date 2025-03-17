@@ -187,6 +187,18 @@
 
                             </dl>
 
+                            <dl>
+                                <dt class="control-label">${message(code: 'surveyconfig.vendorSurvey.label')}</dt>
+                                <dd>
+                                    <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id]}">
+                                        <ui:xEditableBoolean owner="${surveyConfig}" field="vendorSurvey"/>
+                                    </g:if><g:else>
+                                        <ui:xEditableBoolean owner="${surveyConfig}" field="vendorSurvey" overwriteEditable="false"/>
+                                    </g:else>
+
+                                </dd>
+                            </dl>
+
                         </g:if>
 
                     </div>
@@ -269,7 +281,7 @@
                 </div>
 
                 <div class="ui bottom attached tab segment active">
-                    <g:if test="${params.viewTab == 'overview' && surveyConfig.subscription}">
+                    <g:if test="${params.viewTab == 'overview'}">
                         <div class="ui stackable grid">
                             <div class="eleven wide column">
 
@@ -349,33 +361,66 @@
                                 <br/>
 
                                 <div class="ui la-tab-with-js">
-                                        <div class="ui top attached tabular menu">
-                                            <a class="item ${commentTab != 'commentForNewParticipants' ? 'active' : ''}" data-tab="comment">
+                                    <div class="ui top attached tabular menu">
+                                        <a class="item ${commentTab != 'commentForNewParticipants' ? 'active' : ''}" data-tab="comment">
+                                            <div class="ui icon la-popup-tooltip"
+                                                 data-content="${message(code: "surveyconfig.comment.comment")}">
+                                                ${message(code: 'surveyconfig.comment.label')}
+                                                <i class="${Icon.TOOLTIP.HELP}"></i>
+                                            </div>
+                                            <br>
+                                        </a>
+                                        <g:if test="${surveyConfig.subscription}">
+                                            <a class="item ${commentTab == 'commentForNewParticipants' ? 'active' : ''}"
+                                               data-tab="commentForNewParticipants">
                                                 <div class="ui icon la-popup-tooltip"
-                                                     data-content="${message(code: "surveyconfig.comment.comment")}">
-                                                    ${message(code: 'surveyconfig.comment.label')}
+                                                     data-content="${message(code: "surveyconfig.commentForNewParticipants.comment")}">
+                                                    ${message(code: 'surveyconfig.commentForNewParticipants.label')}
                                                     <i class="${Icon.TOOLTIP.HELP}"></i>
                                                 </div>
-                                                <br>
                                             </a>
-                                            <g:if test="${surveyConfig.subscription}">
-                                                <a class="item ${commentTab == 'commentForNewParticipants' ? 'active' : ''}"
-                                                   data-tab="commentForNewParticipants">
-                                                    <div class="ui icon la-popup-tooltip"
-                                                         data-content="${message(code: "surveyconfig.commentForNewParticipants.comment")}">
-                                                        ${message(code: 'surveyconfig.commentForNewParticipants.label')}
-                                                        <i class="${Icon.TOOLTIP.HELP}"></i>
-                                                    </div>
-                                                </a>
-                                            </g:if>
-                                        </div>
+                                        </g:if>
+                                    </div>
 
-                                        <div class="ui bottom attached tab segment ${commentTab != 'commentForNewParticipants' ? 'active' : ''}"
-                                             data-tab="comment">
+                                    <div class="ui bottom attached tab segment ${commentTab != 'commentForNewParticipants' ? 'active' : ''}"
+                                         data-tab="comment">
+                                        <g:if test="${surveyConfig.dateCreated > DateUtils.getSDF_yyyyMMdd().parse('2023-01-12')}">
+                                            <g:if test="${editable}">
+                                                <a class="${Btn.MODERN.SIMPLE} right floated"
+                                                   onclick="JSPC.app.editComment(${surveyInfo.id}, ${surveyConfig.id}, 'comment');"
+                                                   role="button"
+                                                   aria-label="${message(code: 'ariaLabel.change.universal')}">
+                                                    <i class="${Icon.CMD.EDIT}"></i>
+                                                </a>
+                                                <br>
+                                            </g:if>
+
+                                            <div id="comment-wrapper-${surveyConfig.id}">
+                                                <article id="comment-${surveyConfig.id}" class="trumbowyg-editor trumbowyg-reset-css"
+                                                         style="margin:0; padding:0.5em 1em; box-shadow:none;">
+                                                    ${raw(surveyConfig.comment)}
+                                                </article>
+                                                <laser:script file="${this.getGroovyPageFileName()}">
+                                                    wysiwyg.analyzeNote_TMP( $("#comment-${surveyConfig.id}"), $("#comment-wrapper-${surveyConfig.id}"), true );
+                                                </laser:script>
+                                            </div>
+                                        </g:if>
+                                        <g:else>
+                                            <div class="ui form">
+                                                <div class="field">
+                                                    <textarea class="la-textarea-resize-vertical" name="comment"
+                                                              rows="15">${surveyConfig.comment}</textarea>
+                                                </div>
+                                            </div>
+                                        </g:else>
+                                    </div>
+                                    <g:if test="${surveyConfig.subscription}">
+                                        <div class="ui bottom attached tab segment ${commentTab == 'commentForNewParticipants' ? 'active' : ''}"
+                                             data-tab="commentForNewParticipants">
                                             <g:if test="${surveyConfig.dateCreated > DateUtils.getSDF_yyyyMMdd().parse('2023-01-12')}">
                                                 <g:if test="${editable}">
                                                     <a class="${Btn.MODERN.SIMPLE} right floated"
-                                                       onclick="JSPC.app.editComment(${surveyInfo.id}, ${surveyConfig.id}, 'comment');"
+                                                       onclick="JSPC.app.editComment(${surveyInfo.id}, ${surveyConfig.id}, 'commentForNewParticipants');"
                                                        role="button"
                                                        aria-label="${message(code: 'ariaLabel.change.universal')}">
                                                         <i class="${Icon.CMD.EDIT}"></i>
@@ -383,57 +428,26 @@
                                                     <br>
                                                 </g:if>
 
-                                                <div id="comment-wrapper-${surveyConfig.id}">
-                                                    <article id="comment-${surveyConfig.id}" class="trumbowyg-editor trumbowyg-reset-css" style="margin:0; padding:0.5em 1em; box-shadow:none;">
-                                                        ${raw(surveyConfig.comment)}
+                                                <div id="commentForNewParticipants-wrapper-${surveyConfig.id}">
+                                                    <article id="commentForNewParticipants-${surveyConfig.id}" class="trumbowyg-editor trumbowyg-reset-css"
+                                                             style="margin:0; padding:0.5em 1em; box-shadow:none;">
+                                                        ${raw(surveyConfig.commentForNewParticipants)}
                                                     </article>
                                                     <laser:script file="${this.getGroovyPageFileName()}">
-                                                        wysiwyg.analyzeNote_TMP( $("#comment-${surveyConfig.id}"), $("#comment-wrapper-${surveyConfig.id}"), true );
+                                                        wysiwyg.analyzeNote_TMP( $("#commentForNewParticipants-${surveyConfig.id}"), $("#commentForNewParticipants-wrapper-${surveyConfig.id}"), true );
                                                     </laser:script>
                                                 </div>
                                             </g:if>
                                             <g:else>
                                                 <div class="ui form">
                                                     <div class="field">
-                                                        <textarea class="la-textarea-resize-vertical" name="comment"
-                                                                  rows="15">${surveyConfig.comment}</textarea>
+                                                        <textarea class="la-textarea-resize-vertical" name="commentForNewParticipants"
+                                                                  rows="15">${surveyConfig.commentForNewParticipants}</textarea>
                                                     </div>
                                                 </div>
                                             </g:else>
                                         </div>
-                                        <g:if test="${surveyConfig.subscription}">
-                                            <div class="ui bottom attached tab segment ${commentTab == 'commentForNewParticipants' ? 'active' : ''}"
-                                                 data-tab="commentForNewParticipants">
-                                                <g:if test="${surveyConfig.dateCreated > DateUtils.getSDF_yyyyMMdd().parse('2023-01-12')}">
-                                                    <g:if test="${editable}">
-                                                        <a class="${Btn.MODERN.SIMPLE} right floated"
-                                                           onclick="JSPC.app.editComment(${surveyInfo.id}, ${surveyConfig.id}, 'commentForNewParticipants');"
-                                                           role="button"
-                                                           aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                                            <i class="${Icon.CMD.EDIT}"></i>
-                                                        </a>
-                                                        <br>
-                                                    </g:if>
-
-                                                    <div id="commentForNewParticipants-wrapper-${surveyConfig.id}">
-                                                        <article id="commentForNewParticipants-${surveyConfig.id}" class="trumbowyg-editor trumbowyg-reset-css" style="margin:0; padding:0.5em 1em; box-shadow:none;">
-                                                            ${raw(surveyConfig.commentForNewParticipants)}
-                                                        </article>
-                                                        <laser:script file="${this.getGroovyPageFileName()}">
-                                                            wysiwyg.analyzeNote_TMP( $("#commentForNewParticipants-${surveyConfig.id}"), $("#commentForNewParticipants-wrapper-${surveyConfig.id}"), true );
-                                                        </laser:script>
-                                                    </div>
-                                                </g:if>
-                                                <g:else>
-                                                    <div class="ui form">
-                                                        <div class="field">
-                                                            <textarea class="la-textarea-resize-vertical" name="commentForNewParticipants"
-                                                                      rows="15">${surveyConfig.commentForNewParticipants}</textarea>
-                                                        </div>
-                                                    </div>
-                                                </g:else>
-                                            </div>
-                                        </g:if>
+                                    </g:if>
                                 </div>
 
                                 <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY}">
@@ -507,19 +521,20 @@
 
         <br/>
         <br/>
+        <g:if test="${editable}">
+            <g:form action="setSurveyWorkFlowInfos" method="post" class="ui form"
+                    params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, setSurveyWorkFlowInfo: 'setSurveyConfigFinish']">
 
-        <g:form action="setSurveyWorkFlowInfos" method="post" class="ui form"
-                params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, setSurveyWorkFlowInfo: 'setSurveyConfigFinish']">
-
-            <div class="ui right floated compact segment">
-                <div class="ui checkbox">
-                    <input type="checkbox" onchange="this.form.submit()"
-                           name="configFinish" ${surveyConfig.configFinish ? 'checked' : ''}>
-                    <label><g:message code="surveyconfig.configFinish.label"/></label>
+                <div class="ui right floated compact segment">
+                    <div class="ui checkbox">
+                        <input type="checkbox" onchange="this.form.submit()"
+                               name="configFinish" ${surveyConfig.configFinish ? 'checked' : ''}>
+                        <label><g:message code="surveyconfig.configFinish.label"/></label>
+                    </div>
                 </div>
-            </div>
 
-        </g:form>
+            </g:form>
+        </g:if>
 
     </div><!-- .twelve -->
 
@@ -542,6 +557,7 @@
                     $('#dynamicModalContainer').html(result);
                     $('#dynamicModalContainer .ui.modal').modal({
                         autofocus: false,
+                        closable: false;
                         onVisible: function() {
                             r2d2.helper.focusFirstFormElement(this);
                         }

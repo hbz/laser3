@@ -404,7 +404,8 @@ class ExportClickMeService {
                                 'license.startDate'       : [field: 'licenses.startDate', label: 'Start Date', message: 'exportClickMe.license.startDate'],
                                 'license.endDate'         : [field: 'licenses.endDate', label: 'End Date', message: 'exportClickMe.license.endDate'],
                                 'license.openEnded'       : [field: 'licenses.openEnded', label: 'Open Ended', message: 'license.openEnded.label'],
-                                'license.notes'           : [field: null, label: 'Notes', message: 'default.notes.label'],
+                                'license.notes'           : [field: null, label: 'Notes (License)', message: 'license.notes.export.label'],
+                                'license.notes.shared'    : [field: null, label: 'Notes (License)', message: 'license.notes.export.shared'],
                                 'license.uuid'            : [field: 'licenses.globalUID', label: 'Laser-UUID',  message: null],
                         ]
                 ],
@@ -551,7 +552,8 @@ class ExportClickMeService {
                                 'license.startDate'       : [field: 'licenses.startDate', label: 'Start Date', message: 'exportClickMe.license.startDate'],
                                 'license.endDate'         : [field: 'licenses.endDate', label: 'End Date', message: 'exportClickMe.license.endDate'],
                                 'license.openEnded'       : [field: 'licenses.openEnded', label: 'Open Ended', message: 'license.openEnded.label'],
-                                'license.notes'           : [field: null, label: 'Notes', message: 'default.notes.label'],
+                                'license.notes'           : [field: null, label: 'Notes (License)', message: 'license.notes.export.label'],
+                                'license.notes.shared'    : [field: null, label: 'Notes (License)', message: 'license.notes.export.shared'],
                                 'license.uuid'            : [field: 'licenses.globalUID', label: 'Laser-UUID',  message: null],
                         ]
                 ],
@@ -660,7 +662,8 @@ class ExportClickMeService {
                                 'license.startDate'       : [field: 'licenses.startDate', label: 'Start Date', message: 'exportClickMe.license.startDate'],
                                 'license.endDate'         : [field: 'licenses.endDate', label: 'End Date', message: 'exportClickMe.license.endDate'],
                                 'license.openEnded'       : [field: 'licenses.openEnded', label: 'Open Ended', message: 'license.openEnded.label'],
-                                'license.notes'           : [field: null, label: 'Notes', message: 'default.notes.label'],
+                                'license.notes'           : [field: null, label: 'Notes (License)', message: 'license.notes.export.label'],
+                                'license.notes.shared'    : [field: null, label: 'Notes (License)', message: 'license.notes.export.shared'],
                                 'license.uuid'            : [field: 'licenses.globalUID', label: 'Laser-UUID',  message: null],
                         ]
                 ],
@@ -809,7 +812,8 @@ class ExportClickMeService {
                                 'license.startDate'      : [field: 'licenses.startDate', label: 'Start Date', message: 'exportClickMe.license.startDate'],
                                 'license.endDate'        : [field: 'licenses.endDate', label: 'End Date', message: 'exportClickMe.license.endDate'],
                                 'license.openEnded'      : [field: 'licenses.openEnded', label: 'Open Ended', message: 'license.openEnded.label'],
-                                'license.notes'          : [field: null, label: 'Notes', message: 'default.notes.label'],
+                                'license.notes'          : [field: null, label: 'Notes (License)', message: 'license.notes.export.label'],
+                                'license.notes.shared'   : [field: null, label: 'Notes (License)', message: 'license.notes.export.shared'],
                                 'license.uuid'           : [field: 'licenses.globalUID', label: 'Laser-UUID', message: null],
                         ]
                 ],
@@ -5247,7 +5251,7 @@ class ExportClickMeService {
                     String personString = ""
                     if (surveyOrg) {
                         List emails = []
-                        List<SurveyPersonResult> personResults = SurveyPersonResult.findAllByParticipantAndSurveyConfigAndSurveyPersonPerson(surveyOrg.org, surveyOrg.surveyConfig, true)
+                        List<SurveyPersonResult> personResults = SurveyPersonResult.findAllByParticipantAndSurveyConfigAndSurveyPerson(surveyOrg.org, surveyOrg.surveyConfig, true)
                         personResults.each { SurveyPersonResult personResult ->
                             personResult.person.contacts.each {
                                 if (it.contentType == RDStore.CCT_EMAIL)
@@ -5556,6 +5560,13 @@ class ExportClickMeService {
                         row.add(createTableCell(format, subNotes.baseItems.join('\n')))
                     else if(fieldKey == 'subscription.notes.shared')
                         row.add(createTableCell(format, subNotes.sharedItems.join('\n')))
+                }
+                else if(fieldKey.contains('license.notes')) { //license.notes and license.notes.shared
+                    Map<String, Object> licNotes = _getNotesForObject(subscription.licenses)
+                    if(fieldKey == 'license.notes')
+                        row.add(createTableCell(format, licNotes.baseItems.join('\n')))
+                    else if(fieldKey == 'license.notes.shared')
+                        row.add(createTableCell(format, licNotes.sharedItems.join('\n')))
                 }
                 else if(fieldKey == 'package.name') {
                     row.add(createTableCell(format, subscription.packages.pkg.name.join('; ')))
@@ -7733,40 +7744,47 @@ class ExportClickMeService {
     private Map<String, Object> _getNotesForObject(objInstance) {
         List<DocContext> baseItems = [], sharedItems = []
         Org contextOrg = contextService.getOrg()
-        docstoreService.getNotes(objInstance, contextOrg).each { DocContext dc ->
-            if(dc.status != RDStore.DOC_CTX_STATUS_DELETED) {
-                String noteContent = dc.owner.title
-                if(dc.owner.content != null) {
-                    XmlSlurper parser = new XmlSlurper()
-                    String inputText = dc.owner.content.replaceAll('&nbsp;', ' ')
-                            .replaceAll('&', '&amp;')
-                            .replaceAll('<(?!p|/|ul|li|strong|b|i|u|em|ol|a|h[1-6])', '&lt;')
-                            .replaceAll('(?<!p|/|ul|li|strong|b|i|u|em|ol|a|h[1-6])>', '&gt;')
-                    try {
-                        GPathResult input = parser.parseText('<mkp>'+inputText+'</mkp>')
-                        List<String> listEntries = []
-                        input.'**'.findAll{ node -> node.childNodes().size() == 0 }.each { node ->
-                            //log.debug("${node.childNodes().size()}")
-                            //if(node.childNodes().size() == 0)
-                            listEntries << node.text().trim()
-                            /*
-                            else {
-                                listEntries.addAll(_getRecursiveNodeText(node.childNodes()))
+        Set items = []
+        if(!(objInstance instanceof Collection)) {
+            items << objInstance
+        }
+        else items.addAll(objInstance)
+        items.each { obj ->
+            docstoreService.getNotes(obj, contextOrg).each { DocContext dc ->
+                if(dc.status != RDStore.DOC_CTX_STATUS_DELETED) {
+                    String noteContent = dc.owner.title
+                    if(dc.owner.content != null) {
+                        XmlSlurper parser = new XmlSlurper()
+                        String inputText = dc.owner.content.replaceAll('&nbsp;', ' ')
+                                .replaceAll('&', '&amp;')
+                                .replaceAll('<(?!p|/|ul|li|strong|b|i|u|em|ol|a|h[1-6])', '&lt;')
+                                .replaceAll('(?<!p|/|ul|li|strong|b|i|u|em|ol|a|h[1-6])>', '&gt;')
+                        try {
+                            GPathResult input = parser.parseText('<mkp>'+inputText+'</mkp>')
+                            List<String> listEntries = []
+                            input.'**'.findAll{ node -> node.childNodes().size() == 0 }.each { node ->
+                                //log.debug("${node.childNodes().size()}")
+                                //if(node.childNodes().size() == 0)
+                                listEntries << node.text().trim()
+                                /*
+                                else {
+                                    listEntries.addAll(_getRecursiveNodeText(node.childNodes()))
+                                }
+                                */
                             }
-                            */
+                            noteContent += '\n' + listEntries.join('\n')
                         }
-                        noteContent += '\n' + listEntries.join('\n')
+                        catch (SAXException e) {
+                            log.debug(inputText)
+                        }
                     }
-                    catch (SAXException e) {
-                        log.debug(inputText)
+                    if(dc.sharedFrom) {
+                        sharedItems << noteContent
                     }
-                }
-                if(dc.sharedFrom) {
-                    sharedItems << noteContent
-                }
-                else {
-                    if(dc.owner.owner == contextOrg || dc.owner.owner == null) {
-                        baseItems << noteContent
+                    else {
+                        if(dc.owner.owner == contextOrg || dc.owner.owner == null) {
+                            baseItems << noteContent
+                        }
                     }
                 }
             }
