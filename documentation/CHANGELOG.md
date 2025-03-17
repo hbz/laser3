@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6096    17.03.2025  dev     3.5         Moe     Feature     Umfrage ClickMe Excel Option nur relevante Teilnehmer 
+
 6373    17.03.2025  dev     3.5         Andreas Bug         falsches Argument bei der Verknüpfung von Anbietern
 
 6345    17.03.2025  dev     3.5         David   Feature     Testzugriffe in den Dashboard News anzeigen
