@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6288    17.03.2025  dev     3.5         David   Feature     "Anbieter kontaktieren" zusätzlich auf Titellisten
+
 6372    14.03.2025  dev     3.5         Andreas Bug         Export der Vertrags-Anmerkungen implementiert
 
 6363    14.03.2025  dev     3.5         Moe     Feature     Lieferantenumfrage
@@ -43,7 +45,7 @@
 
 6253    12.03.2025  dev     3.5         Moe     Bug         Rechteprobleme bei Nutzenden mit Leser-Zugriff auf DEV
 
-6119    12.03.2025  dev     3.5         Moe     Feature    Benachrichtigung abgeschlossene Umfrage: zusätzliche Infos aufnehmen
+6119    12.03.2025  dev     3.5         Moe     Feature     Benachrichtigung abgeschlossene Umfrage: zusätzliche Infos aufnehmen
 
 6115    12.03.2025  dev     3.5         Andreas Feature     neue Merkmale und Referenzwertkategorien incl. Werte aufgenommen
 
@@ -75,13 +77,13 @@
 
 6317    26.02.2025  rc-3.4  3.4.19      Andreas Bug         Rekursionsfehler im Sync behoben
 
-6293    25.02.2025  rc-3.4  3.4.19      Moe     Bug        Merkmale kopieren n andere Lizenz
+6293    25.02.2025  rc-3.4  3.4.19      Moe     Bug         Merkmale kopieren n andere Lizenz
 
 6311    25.02.2025  rc-3.4  3.4.19      Moe     Bug         Merkmale werden beim Kopieren gedoppelt
 
 6316    25.02.2025  rc-3.4  3.4.19      Andreas Bug         Schnitzer im Kostenexport behoben
 
-6305    25.02.2025  dev     3.5         Moe Bug         einzelner Kontakt Löschbutton löscht nicht
+6305    25.02.2025  dev     3.5         Moe     Bug         einzelner Kontakt Löschbutton löscht nicht
 
 6092    25.02.2025  dev     3.5         Moe     Feature     Textänderung: (Nicht)-Verbindliche Umfragen werden (Nicht-)verpflichtende Umfragen
 

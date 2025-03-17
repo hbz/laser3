@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.SwissKnife; java.sql.Timestamp; de.laser.Org; de.laser.License; de.laser.Subscription; de.laser.Task; de.laser.storage.RDStore;de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.utils.SwissKnife; de.laser.Org; de.laser.License; de.laser.Subscription; de.laser.Task; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory" %>
 <laser:serviceInjection />
 
 <ui:modal id="modalCreateTask" message="task.create.new">
@@ -17,21 +17,21 @@
             <label for="${preID}_title">
                 <g:message code="default.title.label" /> <g:message code="messageRequiredField" />
             </label>
-            <g:textField id="${preID}_title" name="title" required="" value=""/>
+            <g:textField id="${preID}_title" name="title" value="" required=""/>
         </div>
 
         <div class="field">
             <label for="${preID}_description">
                 <g:message code="default.description.label" />
             </label>
-            <g:textArea id="${preID}_description" name="description" value="" rows="5" cols="40"/>
+            <g:textArea id="${preID}_description" name="description" rows="5" cols="40" value="" />
         </div>
 
         <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajaxHtml'}">
             <div class="field required">
                 <fieldset>
                     <legend>
-                        <g:message code="task.typ" /> <g:message code="messageRequiredField" />
+                        <g:message code="task.typ" />
                     </legend>
                     <div class="ui radio checkbox">
                         <input id="${preID}_generalradio" type="radio" value="general" name="linkto" tabindex="0" class="hidden" checked="checked">
@@ -153,9 +153,9 @@
 
         <div class="field">
             <div class="two fields">
-                <div class="field wide eight required">
+                <div class="field wide eight">
                     <label for="${preID}_status">
-                        <g:message code="task.status.label" /> <g:message code="messageRequiredField" />
+                        <g:message code="task.status.label" />
                     </label>
                     <ui:select id="${preID}_status" name="status.id"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
@@ -171,10 +171,10 @@
             </div>
         </div>
 
-        <div class="field" id="radioGroup">
-            <span style="margin-bottom: 4px"><strong>
-                <g:message code="task.responsible.label" />
-            </strong></span>
+        <div class="field" id="${preID}_radioGroup">
+            <span style="margin-bottom: 4px">
+                <strong><g:message code="task.responsible.label" /></strong>
+            </span>
             <div class="two fields">
                 <div class="field wide eight required">
                     <fieldset>
@@ -194,10 +194,9 @@
                     </fieldset>
                 </div>
 
-                <div id="${preID}_responsibleUserWrapper"
-                     class="field wide eight required">
+                <div id="${preID}_responsibleUserWrapper" class="field wide eight required">
                     <label for="${preID}_responsibleUserInput">
-                        <g:message code="task.responsibleUser.label" />
+                        <g:message code="task.responsibleUser.label" /> <g:message code="messageRequiredField" />
                     </label>
                     <g:select id="${preID}_responsibleUserInput"
                               name="responsibleUser.id"
@@ -225,13 +224,9 @@
 
             let $radRespOrg         = $(preID + '_radioresponsibleOrg')
             let $radRespUser        = $(preID + '_radioresponsibleUser')
-            let $respUserInput      = $(preID + '_responsibleUserInput')
             let $respUserWrapper    = $(preID + '_responsibleUserWrapper')
 
-            $radRespOrg.change(function ()  { JSPC.app.toggleResponsibleUser() });
-            $radRespUser.change(function () { JSPC.app.toggleResponsibleUser() });
-
-            JSPC.app.toggleResponsibleUser = function () {
+            let func_toggleResponsibleUser = function () {
                 if ($radRespUser.is(':checked')) {
                     $respUserWrapper.show()
                 } else {
@@ -239,12 +234,8 @@
                 }
             }
 
-            $.fn.form.settings.rules.responsibleUserInput = function() {
-                if($radRespUser.is(':checked')) {
-                    return $respUserInput.val()
-                }
-                else return true
-            }
+            $radRespOrg.change(function ()  { func_toggleResponsibleUser() });
+            $radRespUser.change(function () { func_toggleResponsibleUser() });
 
             $(preID + '_form').form({
                 inline: true,
@@ -268,19 +259,12 @@
                                 type: 'checked',
                                 prompt: '<g:message code="validation.needsToBeFilledOut" />'
                         }]
-                    },
-                    responsibleUserInput: {
-                        identifier: preID.replace('#', '') + '_responsibleUserInput',
-                        rules: [{
-                                type: 'responsibleUserInput',
-                                prompt: '<g:message code="validation.responsibleMustBeChecked" />'
-                        }]
                     }
                 }
             });
 
             $radRespOrg.prop ('checked', true);
-            JSPC.app.toggleResponsibleUser();
+            func_toggleResponsibleUser();
 
             <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajaxHtml'}">
 

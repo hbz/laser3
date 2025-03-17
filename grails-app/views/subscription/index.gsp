@@ -669,7 +669,7 @@
                                                         </div>
                                                     </div>
 
-                                                    <laser:render template="/templates/titles/reportTitleToProvider_multiple" model="${[tipp: ie.tipp]}"/>
+                                                    <laser:render template="/templates/reportTitleToProvider/multiple_infoBox" model="${[tipp: ie.tipp]}"/>
                                                 </div><%-- My Area END --%>
                                             </div><%-- .grid --%>
                                         </div><%-- .segment --%>
@@ -865,6 +865,6 @@
 
 <g:render template="/clickMe/export/js"/>
 
-<g:render template="/templates/titles/reportTitleToProvider_multiple_precon"/>
+<g:render template="/templates/reportTitleToProvider/multiple_flyoutAndTippTask"/>
 
 <laser:htmlEnd/>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Task;de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.ui.Icon;" %>
 <laser:serviceInjection />
 
 <ui:modal id="modalReadTask" message="task.label" hideSubmitButton="true">
