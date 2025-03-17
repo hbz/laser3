@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.utils.AppUtils; de.laser.ui.Btn; de.laser.ui.Icon" %>
+<%@ page import="de.laser.api.v0.ApiManager; de.laser.utils.LocaleUtils; de.laser.utils.AppUtils; de.laser.ui.Btn; de.laser.ui.Icon" %>
 <laser:htmlStart text="${message(code: 'menu.user.help')}" />
 
 <sec:ifLoggedIn>
@@ -28,13 +28,19 @@
                 <div class="item">
                     <i class="${Icon.TOOLTIP.HELP} la-list-icon"></i>
                     <div class="content">
-                        <g:link controller="public" action="releases">${message(code:'releaseNotes')}</g:link>
+                        <g:link controller="public" action="releases">${message(code:'releaseNotes')} (${AppUtils.getMeta('info.app.version')})</g:link>
                     </div>
                 </div>
                 <div class="item">
                     <i class="${Icon.TOOLTIP.HELP} la-list-icon"></i>
                     <div class="content">
-                        <g:link controller="public" action="api">${message(code:'apiRelease')}</g:link>
+                        <g:link controller="public" action="api">${message(code:'apiRelease')} (${ApiManager.VERSION})</g:link>
+                    </div>
+                </div>
+                <div class="item">
+                    <i class="${Icon.TOOLTIP.HELP} la-list-icon"></i>
+                    <div class="content">
+                        <g:link controller="public" action="dsgvo">${message(code:'privacyNotice')}</g:link>
                     </div>
                 </div>
             </div>
