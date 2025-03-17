@@ -9,6 +9,8 @@
 
 6373    17.03.2025  dev     3.5         Andreas Bug         falsches Argument bei der Verknüpfung von Anbietern
 
+6345    17.03.2025  dev     3.5         David   Feature     Testzugriffe in den Dashboard News anzeigen
+
 6288    17.03.2025  dev     3.5         David   Feature     "Anbieter kontaktieren" zusätzlich auf Titellisten
 
 6372    14.03.2025  dev     3.5         Andreas Bug         Export der Vertrags-Anmerkungen implementiert
