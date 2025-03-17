@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6288    17.03.2025  dev     3.5         David   Feature     "Anbieter kontaktieren" zusätzlich auf Titellisten
+
 6361    12.03.2025  dev     3.5         Andreas Feature     Trennung des Namensraumes EZB-Anker
 
 6360    12.03.2025  dev     3.5         Andreas Feature     Löschung des falschen Lizenz-Identifier-Namensraumes emerald

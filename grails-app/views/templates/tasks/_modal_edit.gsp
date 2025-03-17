@@ -122,8 +122,8 @@
                 }
             }
 
-            $.fn.form.settings.rules.responsibleUserInput = function() {
-                if($radRespUser.is(':checked')) {
+            $.fn.form.settings.rules.task_responsibleUserInput = function() {
+                if ($radRespUser.is(':checked')) {
                     return $respUserInput.val()
                 }
                 else return true
@@ -161,7 +161,7 @@
                         responsibleUserInput: {
                             identifier: '${preID}_responsibleUserInput',
                             rules: [{
-                                    type: 'responsibleUserInput',
+                                    type: 'task_responsibleUserInput',
                                     prompt: '<g:message code="validation.responsibleMustBeChecked" />'
                             }]
                         }

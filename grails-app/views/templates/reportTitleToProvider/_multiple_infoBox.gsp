@@ -23,12 +23,12 @@
                 ${message(code:'tipp.reportTitleToProvider.info1')}
                 <br />
                 <a href="#" class="infoFlyout-trigger" data-template="reportTitleToProvider" data-tipp="${tipp.id}">${message(code:'tipp.reportTitleToProvider.mailto')}</a>
-%{--                und <a href="#modalRttpCreateTask" data-ui="modal" data-tipp="${tipp.id}">erstellen Sie sich ggf. eine Aufgabe</a> zur Erinnerung.--}%
+                und <a href="#modalCreateRttpTask" data-ui="modal" data-tipp="${tipp.id}">erstellen Sie sich ggf. eine Aufgabe</a> zur Erinnerung.
                 <br />
 
                 <g:if test="${currentTasks.cmbTaskInstanceList}">
                         <br />
-                        ${message(code:'tipp.reportTitleToProvider.info2')} <br />
+                        ${message(code:'tipp.reportTitleToProvider.info2')} <br /><br />
 
                         <g:each in="${currentTasks.myTaskInstanceList.sort{ it.dateCreated }.reverse()}" var="tt">
                             <i class="${Icon.TASK}"></i>
@@ -38,8 +38,8 @@
                 </g:if>
             </ui:msg>
 
-        </g:elseif>
+        </g:elseif>%{-- PRO --}%
 
     </g:if>
 
-</g:if>
+</g:if>%{-- INST_EDITOR --}%
