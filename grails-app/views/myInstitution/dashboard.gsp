@@ -14,14 +14,14 @@
 
         <ui:messages data="${flash}" />
 
+        <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
+            <laser:render template="dataviz_inst" />
+            <laser:render template="testSubscriptions" model="${[cts: currentTestSubscriptions]}"/>
+        </g:if>
+
         <g:if test="${wekbNews}">
             <laser:render template="wekbNews" model="${[wekbNews: wekbNews, tmplView: 'info']}"/>
         </g:if>
-
-        <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
-            <laser:render template="dataviz_inst" />
-        </g:if>
-
     <%
         RefdataValue us_dashboard_tab
         switch (params.view) {

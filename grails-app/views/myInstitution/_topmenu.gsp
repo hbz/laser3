@@ -112,7 +112,7 @@
 
 <style>
 #dashboard-topmenu {
-    margin-bottom: 2em;
+    margin-bottom: 1.5em;
 }
 #dashboard-topmenu > .content {
     padding-bottom: 0;
