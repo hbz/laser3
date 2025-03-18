@@ -37,7 +37,11 @@
             <th class="center aligned">${message(code: 'address.preferredForSurvey')}</th>
         </g:if>
         <g:if test="${showOptions}">
-            <th class="la-action-info">${message(code: 'default.actions.label')}</th>
+            <th class="center aligned">
+                <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                    <i class="${Icon.SYM.OPTIONS}"></i>
+                </span>
+            </th>
         </g:if>
     </tr>
     </thead>

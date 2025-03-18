@@ -9,7 +9,11 @@
 
     <g:if test="${! objIsOrgAndInst}"><%-- hidden if org[type=institution] --%>
         <th>${message(code: 'default.note.label')}</th>
-        <th>%{--${message(code: 'default.actions.label')}--}%</th>
+        <th class="center aligned">
+            <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                <i class="${Icon.SYM.OPTIONS}"></i>
+            </span>
+        </th>
     </g:if>
     </tr>
 </thead>

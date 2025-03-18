@@ -201,7 +201,11 @@
                         ${message(code: 'surveyOrg.reminderMailDate')}
                     </th>
                 </g:if>
-                <th class="la-action-info">${message(code: 'default.actions.label')}</th>
+                <th class="center aligned">
+                    <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                        <i class="${Icon.SYM.OPTIONS}"></i>
+                    </span>
+                </th>
             </tr>
 
             </thead>

@@ -35,7 +35,11 @@
                     <th>${message(code: 'default.count.label')}-${message(code: 'default.config.label')}</th>
                     <th>${message(code: 'clickMeConfig.configOrder')}</th>
                     <g:if test="${editable}">
-                        <th>${message(code: 'default.actions.label')}</th>
+                        <th class="center aligned">
+                            <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                                <i class="${Icon.SYM.OPTIONS}"></i>
+                            </span>
+                        </th>
                     </g:if>
                 </tr>
                 </thead>

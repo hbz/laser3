@@ -38,7 +38,11 @@
                                 <th><g:message code="readerNumber.sum.label"/></th>
                             </g:if>
                             <th><g:message code="readerNumber.notes"/></th>
-                            <th>${message(code:'default.actions.label')}</th>
+                            <th class="center aligned">
+                                <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                                    <i class="${Icon.SYM.OPTIONS}"></i>
+                                </span>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -144,7 +148,11 @@
                                 <th><g:message code="readerNumber.sum.label"/></th>
                             </g:if>
                             <th><g:message code="readerNumber.notes"/></th>
-                            <th>${message(code:'default.actions.label')}</th>
+                            <th class="center aligned">
+                                <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                                    <i class="${Icon.SYM.OPTIONS}"></i>
+                                </span>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>

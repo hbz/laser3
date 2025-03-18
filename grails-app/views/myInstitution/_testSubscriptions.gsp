@@ -19,9 +19,16 @@
 
                                 <g:each in="${ts.packages}" var="sp">
                                     &nbsp;-&nbsp;
-                                    <g:link controller="package" action="show" id="${sp.pkg.id}" target="_blank">
-                                        <i class="${Icon.PACKAGE} la-list-icon"></i>${sp.pkg}
-                                    </g:link>
+                                    <g:if test="${ts.packages.size() > 1}">
+                                        <g:link controller="subscription" action="index" id="${sp.subscription.id}" params="${[pkgfilter: sp.pkg.id]}" target="_blank">
+                                            <i class="${Icon.PACKAGE} la-list-icon"></i>${sp.pkg}
+                                        </g:link>
+                                    </g:if>
+                                    <g:else>
+                                        <g:link controller="subscription" action="index" id="${sp.subscription.id}" target="_blank">
+                                            <i class="${Icon.PACKAGE} la-list-icon"></i>${sp.pkg}
+                                        </g:link>
+                                    </g:else>
                                 </g:each>
 
 %{--                                <g:if test="${ts.provider}">--}%

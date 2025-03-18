@@ -37,7 +37,11 @@
             </th>
         </g:each>
         <th>${message(code: 'renewalEvaluation.costItem.label')}</th>
-        <th>${message(code: 'default.actions.label')}</th>
+        <th class="center aligned">
+            <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                <i class="${Icon.SYM.OPTIONS}"></i>
+            </span>
+        </th>
     </tr>
     </thead>
     <g:each in="${participantResults}" var="participantResult" status="i">

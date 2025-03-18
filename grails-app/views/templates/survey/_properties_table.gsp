@@ -13,7 +13,11 @@
             <th>${message(code: 'surveyProperty.mandatoryProperty')}</th>
             <th>${message(code: 'surveyProperty.propertyOrder')}</th>
             <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING && surveyProperties}">
-                <th>${message(code: 'default.actions.label')}</th>
+                <th class="center aligned">
+                    <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                        <i class="${Icon.SYM.OPTIONS}"></i>
+                    </span>
+                </th>
             </g:if>
         </tr>
         </thead>

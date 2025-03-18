@@ -44,7 +44,11 @@
                                     <th>${message(code:'default.type.label')}</th>
                                     <th>${message(code:'propertyDefinition.count.label')}</th>
                                     <g:if test="${editable || changeProperties}">
-                                        <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                                        <th class="center aligned">
+                                            <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                                                <i class="${Icon.SYM.OPTIONS}"></i>
+                                            </span>
+                                        </th>
                                     </g:if>
                                 </tr>
                                 </thead>
@@ -136,7 +140,11 @@
                                     <th>${message(code:'default.type.label')}</th>
                                     <th>${message(code:'propertyDefinition.count.label')}</th>
                                     <g:if test="${editable || changeProperties}">
-                                        <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                                        <th class="center aligned">
+                                            <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                                                <i class="${Icon.SYM.OPTIONS}"></i>
+                                            </span>
+                                        </th>
                                     </g:if>
                                 </tr>
                                 </thead>

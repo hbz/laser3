@@ -242,8 +242,11 @@
             <th rowspan="2" scope="col">${message(code: 'surveyResult.label')}</th>
 
             %{--<th rowspan="2" scope="col">${message(code: 'surveyInfo.finished')}</th>--}%
-            <th rowspan="2" scope="col">${message(code: 'default.actions.label')}</th>
-
+            <th rowspan="2" scope="col" class="center aligned">
+                <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                    <i class="${Icon.SYM.OPTIONS}"></i>
+                </span>
+            </th>
         </tr>
         <tr>
             <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}"

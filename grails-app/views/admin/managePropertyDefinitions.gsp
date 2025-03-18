@@ -29,7 +29,11 @@
                                     <th>${message(code:'propertyDefinition.expl.de.label')}</th>
                                     <th>${message(code:'propertyDefinition.expl.en.label')}</th>
                                     <th></th>
-                                    <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                                    <th class="center aligned">
+                                        <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                                            <i class="${Icon.SYM.OPTIONS}"></i>
+                                        </span>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -143,7 +147,11 @@
                                 <th>${message(code:'propertyDefinition.expl.de.label')}</th>
                                 <th>${message(code:'propertyDefinition.expl.en.label')}</th>
                                 <th></th>
-                                <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                                <th class="center aligned">
+                                    <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                                        <i class="${Icon.SYM.OPTIONS}"></i>
+                                    </span>
+                                </th>
                             </tr>
                             </thead>
                             <tbody>

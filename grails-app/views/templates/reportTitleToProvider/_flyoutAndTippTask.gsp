@@ -37,22 +37,12 @@
                 </g:if>
             </ui:msg>
 
+            <g:render template="/templates/reportTitleToProvider/modal" model="${[tipp: tipp]}"/>
+
         </g:elseif>%{-- PRO --}%
 
     </g:if>
 
-    <g:if test="${contextService.getOrg().isCustomerType_Pro()}">
-
-        <laser:script file="${this.getGroovyPageFileName()}">
-            JSPC.app.editTask = function (id) {
-                var func = bb8.ajax4SimpleModalFunction("#modalEditTask", "<g:createLink controller="ajaxHtml" action="editTask"/>?id=" + id);
-            func();
-        };
-        </laser:script>
-
-        <g:render template="/templates/reportTitleToProvider/modal" model="${[tipp: tipp]}"/>
-
-    </g:if>%{-- PRO --}%
-
     <laser:render template="/info/flyoutWrapper"/>
-</g:if>
+
+</g:if>%{-- INST_EDITOR --}%

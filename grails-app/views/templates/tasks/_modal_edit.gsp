@@ -101,13 +101,14 @@
         </div>
 
     </g:form>
+</ui:modal>
 
-    <laser:script file="${this.getGroovyPageFileName()}">
+<laser:script file="${this.getGroovyPageFileName()}">
 
         JSPC.callbacks.modal.onVisible.modalEditTask = function (trigger) {
             let preID = '#' + $('#modalEditTask form input[name=preID]').val()
-            console.log ( 'modalEditTask / preID: ' + preID )
-            console.log ( trigger )
+%{--            console.log ( 'modalEditTask / preID: ' + preID )--}%
+%{--            console.log ( trigger )--}%
 
             let $radRespOrg         = $(preID + '_radioresponsibleOrg')
             let $radRespUser        = $(preID + '_radioresponsibleUser')
@@ -168,6 +169,5 @@
                     }
             });
         }
-    </laser:script>
-</ui:modal>
+</laser:script>
 
