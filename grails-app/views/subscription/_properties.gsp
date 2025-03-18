@@ -36,15 +36,22 @@
 
 <!-- TODO div class="ui card la-dl-no-table" -->
 <div class="ui card la-dl-no-table">
-
-    <g:if test="${editable || contextService.isInstEditor(CustomerTypeService.ORG_INST_PRO) || contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
-        <div class="right aligned four wide column">
-            <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-content="${message(code: 'license.button.addProperty')}"
-                    onclick="JSPC.app.createProperty(${subscription.id}, '${subscription.class.simpleName}');">
-                <i class="${Icon.CMD.ADD}"></i>
-            </button>
+    <div class="content">
+        <div class="ui header la-flexbox la-justifyContent-spaceBetween">
+            <h2>
+                ${message(code: 'default.properties')}
+            </h2>
+            <g:if test="${editable || contextService.isInstEditor(CustomerTypeService.ORG_INST_PRO) || contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                <div class="right aligned four wide column">
+                    <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}"
+                            data-content="${message(code: 'license.button.addProperty')}"
+                            onclick="JSPC.app.createProperty(${subscription.id}, '${subscription.class.simpleName}','false');">
+                        <i class="${Icon.CMD.ADD}"></i>
+                    </button>
+                </div>
+            </g:if>
         </div>
-    </g:if>
+    </div>
 
 <%-- grouped custom properties --%>
 
@@ -141,6 +148,23 @@
 
 <!-- TODO div class="ui card la-dl-no-table" -->
 <div class="ui card la-dl-no-table">
+
+    <div class="content">
+        <div class="ui header la-flexbox la-justifyContent-spaceBetween">
+            <h2>
+                ${message(code: 'subscription.properties.private')}
+            </h2>
+            <div class="right aligned four wide column">
+                <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}"
+                        data-content="${message(code: 'license.button.addProperty')}"
+                        onclick="JSPC.app.createProperty(${subscription.id}, '${subscription.class.simpleName}', 'true');">
+                    <i class="${Icon.CMD.ADD}"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
     <div class="content">
         <h2 class="ui header">${message(code: 'subscription.properties.private')} ${contextService.getOrg().name}</h2>
         <g:set var="propertyWrapper" value="private-property-wrapper-${contextService.getOrg().id}"/>

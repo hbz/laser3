@@ -1463,12 +1463,13 @@ class AjaxHtmlController {
             case Subscription.class.simpleName:
                 Subscription subscription = Subscription.get(params.id)
                 result.editable = subscription.isEditableBy(user)
-                if(result.editable) {
+                if(result.editable && params.onlyPrivateProperties == 'false') {
+
                     result.allPropDefGroups = PropertyDefinitionGroup.executeQuery('select pdg from PropertyDefinitionGroup pdg where pdg.ownerType = :ownerType and pdg.tenant = :tenant order by pdg.order asc', [tenant: contextOrg, ownerType: PropertyDefinition.getDescrClass(PropertyDefinition.SUB_PROP)])
                     result.orphanedProperties = propertyService.getOrphanedPropertyDefinition(PropertyDefinition.SUB_PROP)
                 }
 
-                if(result.editable || contextService.isInstEditor( CustomerTypeService.ORG_INST_PRO ) || contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_BASIC )) {
+                if((result.editable || contextService.isInstEditor( CustomerTypeService.ORG_INST_PRO ) || contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_BASIC )) && params.onlyPrivateProperties == 'true') {
                     result.privateProperties = PropertyDefinition.findAllByDescrAndTenant(PropertyDefinition.SUB_PROP, contextService.getOrg(), [sort: 'name_' + lang])
                 }
 
