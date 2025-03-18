@@ -4,6 +4,8 @@ import de.laser.*
 import de.laser.auth.User
 import de.laser.exceptions.FinancialDataException
 import de.laser.finance.BudgetCode
+import de.laser.finance.CostInformationDefinition
+import de.laser.finance.CostInformationDefinitionGroup
 import de.laser.finance.CostItemElementConfiguration
 import de.laser.utils.LocaleUtils
 import de.laser.storage.RDConstants
@@ -238,10 +240,15 @@ class FinanceControllerService {
      */
     Map<String,Object> getEditVars(Org org) {
         String lang = LocaleUtils.getCurrentLang()
+        Set<CostInformationDefinition> costInformationDefinitions
+        if(CostInformationDefinitionGroup.countByTenant(org) > 0)
+            costInformationDefinitions = CostInformationDefinition.executeQuery('select cifg.costInformationDefinition from CostInformationDefinitionGroup cifg where cifg.tenant = :org', [org: org])
+        else costInformationDefinitions = CostInformationDefinition.findAllByTenantIsNullOrTenant(org)
         [
             costItemStatus:     RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_STATUS) - RDStore.COST_ITEM_DELETED,
             costItemSigns:      RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION),
             costItemElements:   CostItemElementConfiguration.executeQuery('select ciec from CostItemElementConfiguration ciec join ciec.costItemElement cie where ciec.forOrganisation = :org order by cie.value_'+lang+' asc',[org:org]),
+            costInformationDefinitions: costInformationDefinitions,
             taxType:            RefdataCategory.getAllRefdataValues(RDConstants.TAX_TYPE),
             budgetCodes:        BudgetCode.findAllByOwner(org, [sort: 'value']),
             currency:           financeService.orderedCurrency()
