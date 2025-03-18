@@ -11,7 +11,7 @@
         <g:if test="${showSurveyInvoicingInformation}">
                 <col style="width:  82px;">
         </g:if>
-        <g:if test="${showPreferredForSurvey && contextService.getOrg().isCustomerType_Inst()}">
+        <g:if test="${showPreferredForSurvey}">
             <col style="width:  82px;">
         </g:if>
         <g:if test="${showOptions}">
@@ -33,7 +33,7 @@
         <g:if test="${showSurveyInvoicingInformation}">
             <th class="center aligned">${message(code: 'surveyOrg.address.selected')}</th>
         </g:if>
-        <g:if test="${showPreferredForSurvey && contextService.getOrg().isCustomerType_Inst()}">
+        <g:if test="${showPreferredForSurvey}">
             <th class="center aligned">${message(code: 'address.preferredForSurvey')}</th>
         </g:if>
         <g:if test="${showOptions}">
@@ -122,13 +122,13 @@
                 <g:if test="${editable && controllerName == 'myInstitution'}">
                     <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndAddress(participant, surveyConfig, address)}">
                         <g:link controller="myInstitution" action="surveyInfos"
-                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setAddress: false, addressId: address.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation', subTab: 'addresses']">
+                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setAddress: false, addressId: address.id, viewTab: 'invoicingInformation', subTab: 'addresses']">
                             <i class="${Icon.SYM.CHECKBOX_CHECKED} large"></i>
                         </g:link>
                     </g:if>
                     <g:else>
                         <g:link controller="myInstitution" action="surveyInfos"
-                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setAddress: true, addressId: address.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation', subTab: 'addresses']">
+                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setAddress: true, addressId: address.id, viewTab: 'invoicingInformation', subTab: 'addresses']">
                             <i class="${Icon.SYM.CHECKBOX} large"></i>
                         </g:link>
                     </g:else>
@@ -136,13 +136,13 @@
                 <g:elseif test="${editable && controllerName == 'survey'}">
                     <g:if test="${SurveyOrg.findByOrgAndSurveyConfigAndAddress(participant, surveyConfig, address)}">
                         <g:link controller="survey" action="evaluationParticipant"
-                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setAddress: false, addressId: address.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation', subTab: 'addresses', participant: participant.id]">
+                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setAddress: false, addressId: address.id, viewTab: 'invoicingInformation', subTab: 'addresses', participant: participant.id]">
                             <i class="${Icon.SYM.CHECKBOX_CHECKED} large"></i>
                         </g:link>
                     </g:if>
                     <g:else>
                         <g:link controller="survey" action="evaluationParticipant"
-                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setAddress: true, addressId: address.id, setSurveyInvoicingInformation: true, viewTab: 'invoicingInformation', subTab: 'addresses', participant: participant.id]">
+                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setAddress: true, addressId: address.id, viewTab: 'invoicingInformation', subTab: 'addresses', participant: participant.id]">
                             <i class="${Icon.SYM.CHECKBOX} large"></i>
                         </g:link>
                     </g:else>
@@ -154,20 +154,27 @@
                 </g:else>
             </td>
         </g:if>
-            <g:if test="${showPreferredForSurvey && contextService.getOrg().isCustomerType_Inst()}">
+            <g:if test="${showPreferredForSurvey}">
                 <td class="center aligned">
                 <g:if test="${address.type && RDStore.ADDRESS_TYPE_BILLING.id in address.type.id}">
-                    <g:if test="${address.preferredForSurvey}">
-                        <g:link controller="ajax" action="editPreferredConcatsForSurvey"
-                                params="[id: contextService.getOrg().id, setPreferredForSurvey: false, addressId: address.id]">
-                            <i class="${Icon.SYM.CHECKBOX_CHECKED} large"></i>
-                        </g:link>
+                    <g:if test="${contextService.getOrg().isCustomerType_Inst() && editable}">
+                        <g:if test="${address.preferredForSurvey}">
+                            <g:link controller="ajax" action="editPreferredConcatsForSurvey"
+                                    params="[id: contextService.getOrg().id, setPreferredAddress: false, addressId: address.id]">
+                                <i class="${Icon.SYM.CHECKBOX_CHECKED} large"></i>
+                            </g:link>
+                        </g:if>
+                        <g:else>
+                            <g:link controller="ajax" action="editPreferredConcatsForSurvey"
+                                    params="[id: contextService.getOrg().id, setPreferredAddress: true, addressId: address.id]">
+                                <i class="${Icon.SYM.CHECKBOX} large"></i>
+                            </g:link>
+                        </g:else>
                     </g:if>
                     <g:else>
-                        <g:link controller="ajax" action="editPreferredConcatsForSurvey"
-                                params="[id: contextService.getOrg().id, setPreferredForSurvey: true, addressId: address.id]">
-                            <i class="${Icon.SYM.CHECKBOX} large"></i>
-                        </g:link>
+                        <g:if test="${address.preferredForSurvey}">
+                            <i class="${Icon.SYM.CHECKBOX_CHECKED} large"></i>
+                        </g:if>
                     </g:else>
                 </g:if>
                 </td>

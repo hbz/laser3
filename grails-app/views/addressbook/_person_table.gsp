@@ -27,10 +27,13 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('showContacts') && showContacts}">
                 <col style="width: 277px;">
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyInvoicingInformation')}">
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('setPreferredSurveyPerson')}">
                 <col style="width:  118px;">
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('preferredForSurvey') && contextService.getOrg().isCustomerType_Inst()}">
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('setPreferredBillingPerson')}">
+                <col style="width:  118px;">
+            </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('preferredForSurvey') }">
                 <col style="width:  118px;">
             </g:if>
         </g:each>
@@ -42,45 +45,56 @@
     <tr>
 <g:each in="${tmplConfigShow}" var="tmplConfigItem" status="i">
     <g:if test="${tmplConfigItem.equalsIgnoreCase('lineNumber')}">
-        <th>${message(code: 'sidewide.number')}</th>
+        <th scope="col" rowspan="2">${message(code: 'sidewide.number')}</th>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
-        <g:sortableColumn params="${params}" property="p.last_name"
+        <g:sortableColumn scope="col" rowspan="2" params="${params}" property="p.last_name"
                               title="${message(code: 'contact.surname')}/${message(code: 'contact.functionName')}"/>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('organisation')}">
-        <g:sortableColumn params="${params}" property="sortname"
+        <g:sortableColumn scope="col" rowspan="2" params="${params}" property="sortname"
                           title="${message(code: 'person.organisation.label')}"/>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('function')}">
-        <th>
+        <th scope="col" rowspan="2">
             ${message(code: 'person.function.label')}
         </th>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('position')}">
-        <th>
+        <th scope="col" rowspan="2">
             ${message(code: 'person.position.label')}
         </th>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('functionPosition')}">
-        <th>
+        <th scope="col" rowspan="2">
             ${message(code: 'person.function.label')} (${message(code: 'person.position.label')})
         </th>
     </g:if>
     <g:if test="${tmplConfigItem.equalsIgnoreCase('showContacts') && showContacts}">
-            <th>${message(code: 'person.contacts.label')}</th>
+            <th scope="col" rowspan="2">${message(code: 'person.contacts.label')}</th>
     </g:if>
-    <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyInvoicingInformation')}">
-        <th class="center aligned la-th-wrap">${message(code: 'surveyOrg.person.selected')}</th>
+    <g:if test="${tmplConfigItem.equalsIgnoreCase('setPreferredBillingPerson')}">
+        <th scope="col" rowspan="2" class="center aligned la-th-wrap">${message(code: 'surveyOrg.person.preferredBillingPerson')}</th>
     </g:if>
-    <g:if test="${tmplConfigItem.equalsIgnoreCase('preferredForSurvey') && contextService.getOrg().isCustomerType_Inst()}">
-        <th class="center aligned la-th-wrap">${message(code: 'person.preferredForSurvey')}</th>
+    <g:if test="${tmplConfigItem.equalsIgnoreCase('setPreferredSurveyPerson')}">
+        <th scope="col" rowspan="2" class="center aligned la-th-wrap">${message(code: 'surveyOrg.person.preferredSurveyPerson')}</th>
+    </g:if>
+    <g:if test="${tmplConfigItem.equalsIgnoreCase('preferredForSurvey') }">
+        <th colspan="2" class="la-th-wrap center aligned">${message(code: 'survey.label')}</th>
     </g:if>
 </g:each>
         <g:if test="${showOptions}">
-            <th class="la-action-info">${message(code: 'default.actions.label')}</th>
+            <th scope="col" rowspan="2" class="la-action-info">${message(code: 'default.actions.label')}</th>
         </g:if>
     </tr>
+    <g:each in="${tmplConfigShow}" var="tmplConfigItem" status="i">
+        <g:if test="${tmplConfigItem.equalsIgnoreCase('preferredForSurvey') }">
+            <tr>
+                <th scope="col" class="la-th-wrap center aligned">${message(code: 'person.preferredBillingPerson')}</th>
+                <th scope="col" class="la-th-wrap center aligned">${message(code: 'person.preferredSurveyPerson')}</th>
+            </tr>
+        </g:if>
+    </g:each>
     </thead>
     <tbody>
     <g:each in="${persons}" var="person" status="c">
@@ -280,65 +294,128 @@
                     </div>
                 </td>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyInvoicingInformation')}">
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('setPreferredSurveyPerson')}">
                 <td class="center aligned">
-                        <g:set var="surveyPerson" value="${null}"/>
-                        <g:if test="${params.viewTab == 'invoicingInformation'}">
-                            <g:set var="surveyPerson" value="${SurveyPersonResult.findByParticipantAndSurveyConfigAndPersonAndBillingPerson(participant, surveyConfig, person, true)}"/>
+                    <g:set var="surveyPerson" value="${SurveyPersonResult.findByParticipantAndSurveyConfigAndPersonAndSurveyPerson(participant, surveyConfig, person, true)}"/>
+                    <g:if test="${editable && controllerName == 'myInstitution'}">
+                        <g:if test="${surveyPerson}">
+                            <g:link controller="myInstitution" action="surveyInfos"
+                                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setPreferredSurveyPerson: false, personId: person.id, viewTab: params.viewTab, subTab: 'contacts']">
+                                <i class="${Icon.SYM.CHECKBOX_CHECKED} large "></i>
+                            </g:link>
                         </g:if>
                         <g:else>
-                            <g:set var="surveyPerson" value="${SurveyPersonResult.findByParticipantAndSurveyConfigAndPersonAndSurveyPerson(participant, surveyConfig, person, true)}"/>
+                            <g:link controller="myInstitution" action="surveyInfos"
+                                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setPreferredSurveyPerson: true, personId: person.id, viewTab: params.viewTab, subTab: 'contacts']">
+                                <i class="${Icon.SYM.CHECKBOX} large"></i>
+                            </g:link>
                         </g:else>
-
-                        <g:if test="${editable && controllerName == 'myInstitution'}">
-                            <g:if test="${surveyPerson}">
-                                <g:link controller="myInstitution" action="surveyInfos"
-                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: false, personId: person.id, setSurveyInvoicingInformation: true, viewTab: params.viewTab, subTab: 'contacts']">
-                                    <i class="${Icon.SYM.CHECKBOX_CHECKED} large "></i>
-                                </g:link>
-                            </g:if>
-                            <g:else>
-                                <g:link controller="myInstitution" action="surveyInfos"
-                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: true, personId: person.id, setSurveyInvoicingInformation: true, viewTab: params.viewTab, subTab: 'contacts']">
-                                    <i class="${Icon.SYM.CHECKBOX} large"></i>
-                                </g:link>
-                            </g:else>
-                        </g:if>
-                        <g:elseif test="${editable && controllerName == 'survey'}">
-                            <g:if test="${surveyPerson}">
-                                <g:link controller="survey" action="evaluationParticipant"
-                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: false, personId: person.id, setSurveyInvoicingInformation: true, viewTab: params.viewTab, subTab: 'contacts', participant: participant.id]">
-                                    <i class="${Icon.SYM.CHECKBOX_CHECKED} large"></i>
-                                </g:link>
-                            </g:if>
-                            <g:else>
-                                <g:link controller="survey" action="evaluationParticipant"
-                                        params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setConcact: true, personId: person.id, setSurveyInvoicingInformation: true, viewTab: params.viewTab, subTab: 'contacts', participant: participant.id]">
-                                    <i class="${Icon.SYM.CHECKBOX} large"></i>
-                                </g:link>
-                            </g:else>
-                        </g:elseif>
-                        <g:else>
-                            <g:if test="${surveyPerson}">
-                                    <i class="${Icon.SYM.CHECKBOX_CHECKED} large"></i>
-                            </g:if>
-                        </g:else>
-                </td>
-            </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('preferredForSurvey') && contextService.getOrg().isCustomerType_Inst()}">
-                <td class="center aligned">
-                    <g:if test="${pRolesSorted && (RDStore.PRS_FUNC_SURVEY_CONTACT in pRolesSorted.functionType || RDStore.PRS_FUNC_INVOICING_CONTACT in pRolesSorted.functionType)}">
-                        <g:if test="${person.preferredForSurvey}">
-                            <g:link controller="ajax" action="editPreferredConcatsForSurvey"
-                                    params="[id: contextService.getOrg().id, setPreferredForSurvey: false, personId: person.id]">
+                    </g:if>
+                    <g:elseif test="${editable && controllerName == 'survey'}">
+                        <g:if test="${surveyPerson}">
+                            <g:link controller="survey" action="evaluationParticipant"
+                                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setPreferredSurveyPerson: false, personId: person.id, viewTab: params.viewTab, subTab: 'contacts', participant: participant.id]">
                                 <i class="${Icon.SYM.CHECKBOX_CHECKED} large"></i>
                             </g:link>
                         </g:if>
                         <g:else>
-                            <g:link controller="ajax" action="editPreferredConcatsForSurvey"
-                                    params="[id: contextService.getOrg().id, setPreferredForSurvey: true, personId: person.id]">
+                            <g:link controller="survey" action="evaluationParticipant"
+                                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setPreferredSurveyPerson: true, personId: person.id, viewTab: params.viewTab, subTab: 'contacts', participant: participant.id]">
                                 <i class="${Icon.SYM.CHECKBOX} large"></i>
                             </g:link>
+                        </g:else>
+                    </g:elseif>
+                    <g:else>
+                        <g:if test="${surveyPerson}">
+                            <i class="${Icon.SYM.CHECKBOX_CHECKED} large"></i>
+                        </g:if>
+                    </g:else>
+                </td>
+            </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('setPreferredBillingPerson')}">
+                <td class="center aligned">
+
+                        <g:set var="surveyPerson" value="${SurveyPersonResult.findByParticipantAndSurveyConfigAndPersonAndBillingPerson(participant, surveyConfig, person, true)}"/>
+
+                    <g:if test="${editable && controllerName == 'myInstitution'}">
+                        <g:if test="${surveyPerson}">
+                            <g:link controller="myInstitution" action="surveyInfos"
+                                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setPreferredBillingPerson: false, personId: person.id, viewTab: params.viewTab, subTab: 'contacts']">
+                                <i class="${Icon.SYM.CHECKBOX_CHECKED} large "></i>
+                            </g:link>
+                        </g:if>
+                        <g:else>
+                            <g:link controller="myInstitution" action="surveyInfos"
+                                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setPreferredBillingPerson: true, personId: person.id, viewTab: params.viewTab, subTab: 'contacts']">
+                                <i class="${Icon.SYM.CHECKBOX} large"></i>
+                            </g:link>
+                        </g:else>
+                    </g:if>
+                    <g:elseif test="${editable && controllerName == 'survey'}">
+                        <g:if test="${surveyPerson}">
+                            <g:link controller="survey" action="evaluationParticipant"
+                                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setPreferredBillingPerson: false, personId: person.id, viewTab: params.viewTab, subTab: 'contacts', participant: participant.id]">
+                                <i class="${Icon.SYM.CHECKBOX_CHECKED} large"></i>
+                            </g:link>
+                        </g:if>
+                        <g:else>
+                            <g:link controller="survey" action="evaluationParticipant"
+                                    params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setPreferredBillingPerson: true, personId: person.id, viewTab: params.viewTab, subTab: 'contacts', participant: participant.id]">
+                                <i class="${Icon.SYM.CHECKBOX} large"></i>
+                            </g:link>
+                        </g:else>
+                    </g:elseif>
+                    <g:else>
+                        <g:if test="${surveyPerson}">
+                            <i class="${Icon.SYM.CHECKBOX_CHECKED} large"></i>
+                        </g:if>
+                    </g:else>
+                </td>
+            </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('preferredForSurvey') }">
+                <td class="center aligned">
+                    <g:if test="${pRolesSorted && RDStore.PRS_FUNC_INVOICING_CONTACT in pRolesSorted.functionType}">
+                        <g:if test="${contextService.getOrg().isCustomerType_Inst() && editable}">
+                            <g:if test="${person.preferredBillingPerson}">
+                                <g:link controller="ajax" action="editPreferredConcatsForSurvey"
+                                        params="[id: contextService.getOrg().id, setPreferredBillingPerson: false, personId: person.id]">
+                                    <i class="${Icon.SYM.CHECKBOX_CHECKED} large"></i>
+                                </g:link>
+                            </g:if>
+                            <g:else>
+                                <g:link controller="ajax" action="editPreferredConcatsForSurvey"
+                                        params="[id: contextService.getOrg().id, setPreferredBillingPerson: true, personId: person.id]">
+                                    <i class="${Icon.SYM.CHECKBOX} large"></i>
+                                </g:link>
+                            </g:else>
+                        </g:if>
+                        <g:else>
+                            <g:if test="${person.preferredBillingPerson}">
+                                <i class="${Icon.SYM.CHECKBOX_CHECKED} large"></i>
+                            </g:if>
+                        </g:else>
+                    </g:if>
+                </td>
+                <td class="center aligned">
+                    <g:if test="${pRolesSorted && RDStore.PRS_FUNC_SURVEY_CONTACT in pRolesSorted.functionType}">
+                        <g:if test="${contextService.getOrg().isCustomerType_Inst() && editable}">
+                            <g:if test="${person.preferredSurveyPerson}">
+                                <g:link controller="ajax" action="editPreferredConcatsForSurvey"
+                                        params="[id: contextService.getOrg().id, setPreferredSurveyPerson: false, personId: person.id]">
+                                    <i class="${Icon.SYM.CHECKBOX_CHECKED} large"></i>
+                                </g:link>
+                            </g:if>
+                            <g:else>
+                                <g:link controller="ajax" action="editPreferredConcatsForSurvey"
+                                        params="[id: contextService.getOrg().id, setPreferredSurveyPerson: true, personId: person.id]">
+                                    <i class="${Icon.SYM.CHECKBOX} large"></i>
+                                </g:link>
+                            </g:else>
+                        </g:if>
+                        <g:else>
+                            <g:if test="${person.preferredSurveyPerson}">
+                                <i class="${Icon.SYM.CHECKBOX_CHECKED} large"></i>
+                            </g:if>
                         </g:else>
                     </g:if>
                 </td>
