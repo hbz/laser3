@@ -180,6 +180,26 @@ class FinanceService {
                 newCostItem.invoiceDate = configMap.invoiceDate
                 newCostItem.financialYear = configMap.financialYear
                 newCostItem.reference = configMap.reference
+                if(configMap.costInformationDefinition != null && (configMap.costInformationRefValue != null || configMap.costInformationStringValue != null)) {
+                    newCostItem.costInformationDefinition = configMap.costInformationDefinition
+                    if(newCostItem.costInformationDefinition.type == RefdataValue.class.name) {
+                        newCostItem.costInformationRefValue = configMap.costInformationRefValue
+                        newCostItem.costInformationStringValue = null
+                    }
+                    else {
+                        newCostItem.costInformationStringValue = configMap.costInformationStringValue
+                        newCostItem.costInformationRefValue = null
+                    }
+                }
+                else if(configMap.costInformationDefinition != null) {
+                    newCostItem.costInformationRefValue = null
+                    newCostItem.costInformationStringValue = null
+                }
+                else {
+                    newCostItem.costInformationDefinition = null
+                    newCostItem.costInformationRefValue = null
+                    newCostItem.costInformationStringValue = null
+                }
                 if (newCostItem.save()) {
                     List<BudgetCode> newBcObjs = []
                     params.list('newBudgetCodes').each { newbc ->
@@ -413,6 +433,17 @@ class FinanceService {
                         costItem.invoiceDate = configMap.invoiceDate ?: costItem.invoiceDate
                         costItem.financialYear = configMap.financialYear ?: costItem.financialYear
                         costItem.reference = configMap.reference ?: costItem.reference
+                        if(configMap.costInformationDefinition != null && (configMap.costInformationRefValue != null || configMap.costInformationStringValue != null)) {
+                            costItem.costInformationDefinition = configMap.costInformationDefinition
+                            if(costItem.costInformationDefinition.type == RefdataValue.class.name) {
+                                costItem.costInformationRefValue = configMap.costInformationRefValue
+                                costItem.costInformationStringValue = null
+                            }
+                            else {
+                                costItem.costInformationStringValue = configMap.costInformationStringValue
+                                costItem.costInformationRefValue = null
+                            }
+                        }
                         if(costItem.save()) {
                             List<BudgetCode> newBcObjs = []
                             params.list('newBudgetCodes').each { newbc ->
@@ -567,6 +598,18 @@ class FinanceService {
         Date endDate = DateUtils.parseDateGeneric(params.newEndDate)
         String costDescription = params.newDescription ? params.newDescription.trim() : null
         Order order = resolveOrder(params.newOrderNumber, contextOrg)
+        CostInformationDefinition cif = null
+        RefdataValue costInformationRefValue = null
+        String costInformationStringValue = null
+        if(params.containsKey('newCostInformationDefinition') && (params.containsKey('newCostInformationStringValue') || params.containsKey('newCostInformationRefValue'))) {
+            cif = CostInformationDefinition.get(params.newCostInformationDefinition)
+            if(cif) {
+                if(cif.type == RefdataValue.class.name) {
+                    costInformationRefValue = RefdataValue.get(params.newCostInformationRefValue)
+                }
+                else costInformationStringValue = params.newCostInformationStringValue
+            }
+        }
         [costTitle: costTitle,
          isVisibleForSubscriber: isVisibleForSubscriber,
          costItemElement: costItemElement,
@@ -587,7 +630,11 @@ class FinanceService {
          startDate: startDate,
          endDate: endDate,
          costDescription: costDescription,
-         order: order]
+         order: order,
+         costInformationDefinition: cif,
+         costInformationRefValue: costInformationRefValue,
+         costInformationStringValue: costInformationStringValue
+        ]
     }
 
     /**

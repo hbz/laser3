@@ -3,6 +3,7 @@ package de.laser.finance
 import de.laser.IssueEntitlement
 import de.laser.IssueEntitlementGroup
 import de.laser.properties.PropertyDefinition
+import de.laser.utils.DateUtils
 import de.laser.wekb.Package
 import de.laser.survey.SurveyOrg
 import de.laser.Org
@@ -257,6 +258,11 @@ class CostItem extends AbstractBase
                 "select bc from BudgetCode as bc, CostItemGroup as cig, CostItem as ci where cig.costItem = ci and cig.budgetCode = bc and ci = :costitem",
                 [costitem: this]
         )
+    }
+
+    String getCostInformationValue() {
+        if (costInformationStringValue)      { return stringValue }
+        if (costInformationRefValue)         { return refValue.getI10n('value') }
     }
 
     /**

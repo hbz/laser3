@@ -1,5 +1,5 @@
 <!-- _costItemInput.gsp -->
-<%@ page import="de.laser.wekb.Package; de.laser.ui.Btn; de.laser.CustomerTypeService; de.laser.finance.BudgetCode; de.laser.finance.CostItem; de.laser.IssueEntitlement; de.laser.IssueEntitlementGroup; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.UserSetting; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.*; de.laser.interfaces.CalculatedType; de.laser.finance.CostItemElementConfiguration" %>
+<%@ page import="de.laser.wekb.Package; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.finance.BudgetCode; de.laser.finance.CostInformationDefinition; de.laser.finance.CostItem; de.laser.IssueEntitlement; de.laser.IssueEntitlementGroup; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.UserSetting; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.*; de.laser.interfaces.CalculatedType; de.laser.finance.CostItemElementConfiguration" %>
 <laser:serviceInjection />
 
         <g:if test="${costItem}">
@@ -370,6 +370,30 @@
 
         </div><!-- three fields -->
 
+        <div class="two fields">
+            <fieldset class="field la-modal-fieldset-no-margin la-forms-grid">
+                <div class="field">
+                    <label>${g.message(code: 'financials.costInformationDefinition')}</label>
+                    <ui:dropdown name="newCostInformationDefinition"
+                                 class="la-filterPropDef"
+                                 from="${costInformationDefinitions}"
+                                 iconWhich="${Icon.PROP.IS_PRIVATE}"
+                                 optionKey="${{it.id}}"
+                                 optionValue="${{ it.getI10n('name') }}"
+                                 noSelection="${message(code: 'default.select.choose.label')}"/>
+                </div><!-- .field -->
+            </fieldset>
+            <fieldset class="field la-modal-fieldset-no-margin la-forms-grid">
+                <div class="field">
+                    <label></label>
+                    <input type="text" name="newCostInformationStringValue" id="newCostInformationValueText_${idSuffix}" hidden="hidden">
+                    <select id="newCostInformationValueDropdown_${idSuffix}" name="newCostInformationRefValue" class="ui search selection fluid dropdown">
+                        <option value="">${message(code: 'default.select.choose.label')}</option>
+                    </select>
+                </div>
+            </fieldset>
+        </div><!-- two fields -->
+
         <g:if test="${mode == 'copy' && copyToOtherSub}">
         <div class="fields">
             <fieldset class="sixteen wide field la-modal-fieldset-margin-right ">
@@ -458,6 +482,9 @@
         calculateLocalCurrency: $("#calculateLocalCurrency_${idSuffix}"),
         costCurrency: $("#newCostCurrency_${idSuffix}"),
         costItemElement: $("#newCostItemElement_${idSuffix}"),
+        costInformationDefinition: $("[name='newCostInformationDefinition']"),
+        costInformationValueDropdown: $("#newCostInformationValueDropdown_${idSuffix}"),
+        costInformationValueText: $("#newCostInformationValueText_${idSuffix}"),
         billingSumRounding: $("#newBillingSumRounding_${idSuffix}"),
         finalCostRounding: $("#newFinalCostRounding_${idSuffix}"),
         taxRate: $("#newTaxRate_${idSuffix}"),
@@ -467,6 +494,17 @@
         newSubscription: $("#newSubscription_${idSuffix}"),
         isVisibleForSubscriber: $("#newIsVisibleForSubscriber_${idSuffix}"),
         elementChangeable: false,
+        refdataDefs: [
+        <%
+            Set<Long> refdataDefs = CostInformationDefinition.executeQuery("select cif.id from CostInformationDefinition cif where cif.type = '"+RefdataValue.class.name+"' and (cif.tenant = null or cif.tenant = :ctx)", [ctx: contextService.getOrg()])
+            refdataDefs.eachWithIndex { Long cifId, int i ->
+                String tmp = cifId
+                if(i < refdataDefs.size() - 1)
+                    tmp += ','
+                print tmp
+            }
+        %>
+        ],
         costItemElementConfigurations: {
         <%
             costItemElements.eachWithIndex { CostItemElementConfiguration ciec, int i ->
@@ -672,6 +710,20 @@
             });
             this.toggleLicenseeTarget.click( function() {
                 JSPC.app.finance${idSuffix}.newLicenseeTarget.parent('div').toggle();
+            });
+            this.costInformationDefinition.change( function() {
+                let numberVal = parseInt($(this).val());
+                let withRefdata = JSPC.app.finance${idSuffix}.refdataDefs.indexOf(numberVal) > -1;
+                JSPC.app.finance${idSuffix}.costInformationValueDropdown.dropdown('clear');
+                JSPC.app.adjustCostInformationDropdown(withRefdata, <g:if test="${costItem?.costInformationRefValue}">${costItem.costInformationRefValue.id}</g:if><g:else>false</g:else>);
+                if(withRefdata) {
+                    JSPC.app.finance${idSuffix}.costInformationValueDropdown.parent('div').show();
+                    JSPC.app.finance${idSuffix}.costInformationValueText.hide();
+                }
+                else {
+                    JSPC.app.finance${idSuffix}.costInformationValueDropdown.parent('div').hide();
+                    JSPC.app.finance${idSuffix}.costInformationValueText.show();
+                }
             });
             this.newPackage.change(function(){
                 let context;
@@ -908,6 +960,47 @@
                 }
         });
     }
+
+    JSPC.app.adjustCostInformationDropdown = function (withRefdata, preselect) {
+
+        var dropdownCostInformationValues = JSPC.app.finance${idSuffix}.costInformationValueDropdown;
+
+        dropdownCostInformationValues.empty();
+
+        if(withRefdata) {
+            var url = '<g:createLink controller="ajaxJson" action="adjustCostInformationValueList"/>?costInformationDefinition='+JSPC.app.finance${idSuffix}.costInformationDefinition.val();
+            if(!preselect) {
+                dropdownCostInformationValues.append('<option selected="selected" disabled>${message(code: 'default.select.choose.label')}</option>');
+                dropdownCostInformationValues.prop('selectedIndex', 0);
+            }
+            else dropdownCostInformationValues.append('<option selected="selected" disabled>${message(code: 'default.select.choose.label')}</option>');
+
+            $.ajax({
+                url: url,
+                success: function (data) {
+                    $.each(data, function (key, entry) {
+                        if(entry.value === preselect)
+                            dropdownCostInformationValues.append($('<option selected="selected"></option>').attr('value', entry.value).text(entry.text));
+                        else
+                            dropdownCostInformationValues.append($('<option></option>').attr('value', entry.value).text(entry.text));
+                    });
+                }
+            });
+        }
+    }
+    <g:if test="${costItem?.costInformationDefinition}">
+        $('.la-filterPropDef').dropdown("set selected","${costItem?.costInformationDefinition.id}");
+
+        // set filterProp by params
+        <g:if test="${costItem?.costInformationRefValue}">
+            JSPC.app.finance${idSuffix}.costInformationValueText.hide();
+            JSPC.app.finance${idSuffix}.costInformationValueDropdown.dropdown("set selected", "${costItem.costInformationRefValue.id}");
+        </g:if>
+        <g:elseif test="${costItem?.costInformationStringValue}">
+            JSPC.app.finance${idSuffix}.costInformationValueDropdown.parent('div').hide();
+            JSPC.app.finance${idSuffix}.costInformationValueText.val("${costItem.costInformationStringValue}").show();
+        </g:elseif>
+    </g:if>
 
     <g:if test="${mode == 'copy' && copyToOtherSub}">
         JSPC.app.adjustDropdown();
