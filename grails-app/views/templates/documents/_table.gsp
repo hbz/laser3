@@ -45,7 +45,11 @@
                     <th>${message(code:'org.docs.table.targetFor')}</th>
                     <th>${message(code:'org.docs.table.shareConf')}</th>
                 </g:elseif>--%>
-                <th scope="col" class="${colWide[cwCounter]} wide" rowspan="2">${message(code:'default.actions.label')}</th>
+                <th scope="col" class="${colWide[cwCounter]} wide center aligned" rowspan="2">
+                    <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                        <i class="${Icon.SYM.OPTIONS}"></i>
+                    </span>
+                </th>
             </tr>
             <tr>
                 <th scope="col" class="la-smaller-table-head">${message(code:'license.docs.table.fileName')}</th>

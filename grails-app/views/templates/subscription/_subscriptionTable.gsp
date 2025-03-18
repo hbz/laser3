@@ -77,7 +77,11 @@
                                 <ui:multiYearIcon />
                             </th>
                         </g:if>
-                        <th scope="col" rowspan="2" class="two">${message(code:'default.actions.label')}</th>
+                        <th scope="col" rowspan="2" class="two center aligned">
+                            <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                                <i class="${Icon.SYM.OPTIONS}"></i>
+                            </span>
+                        </th>
                     </tr>
                     <tr>
                         <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.endDate" title="${message(code: 'default.endDate.label.shy')}"/>

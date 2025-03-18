@@ -82,7 +82,11 @@
                 </g:else>
                 <th class="two wide">${message(code: 'default.notes.label')}</th>
                 <g:if test="${editable}">
-                    <th class="la-action-info two wide">${message(code: 'default.actions.label')}</th>
+                    <th class="two wide center aligned">
+                        <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                            <i class="${Icon.SYM.OPTIONS}"></i>
+                        </span>
+                    </th>
                 </g:if>
             </tr>
             </thead>

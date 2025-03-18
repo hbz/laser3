@@ -136,7 +136,11 @@
                     </a>
                 </th>
 
-                <th rowspan="2" class="two wide">${message(code:'default.actions.label')}</th>
+                <th rowspan="2" class="two wide center aligned">
+                    <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                        <i class="${Icon.SYM.OPTIONS}"></i>
+                    </span>
+                </th>
             </tr>
 
             <tr>
