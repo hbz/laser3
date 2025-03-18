@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.ui.Icon; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue; de.laser.storage.RDStore" %>
 <laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyResult.label')})" />
 <laser:javascript src="echarts.js"/>
 
@@ -131,9 +131,28 @@
 };
 surveyEvChart.setOption(option);
 surveyEvChart.on('click', function(params) {
-  window.open(
-    "<g:createLink controller="survey" action="surveyEvaluation" params="[id: params.id, surveyConfigID: surveyConfig.id, tab: params.tab]"/>"+'&chartFilter=' + encodeURIComponent(params.name)
-  );
+   $.ajax({
+            url: "<g:createLink controller="clickMe" action="exportClickMeModal" params="${params + [exportController: 'survey', exportAction: 'surveyEvaluation', clickMeType: ExportClickMeService.SURVEY_EVALUATION, id: params.id, surveyConfigID: surveyConfig.id, exportFileName: exportFileName]}"/>"+'&chartFilter=' + encodeURIComponent(params.name)
+        }).done( function (data) {
+            $('.ui.dimmer.modals > #exportClickMeModal').remove();
+            $('#dynamicModalContainer').empty().html(data);
+
+            $('#dynamicModalContainer .ui.modal').modal({
+               onShow: function () {
+                    r2d2.initDynamicUiStuff('#exportClickMeModal');
+                    r2d2.initDynamicXEditableStuff('#exportClickMeModal');
+                    $("html").css("cursor", "auto");
+                },
+                detachable: true,
+                autofocus: false,
+                closable: false,
+                transition: 'scale',
+                onApprove : function() {
+                    $(this).find('#exportClickMeModal .ui.form').submit();
+                    return false;
+                }
+            }).modal('show');
+        });
 });
 </laser:script>
 

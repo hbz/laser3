@@ -1329,7 +1329,7 @@ class SurveyController {
 
                 if (params.fileformat == 'xlsx') {
                     try {
-                        SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSurveyEvaluation(ctrlResult.result, selectedFields, contactSwitch, ExportClickMeService.FORMAT.XLS)
+                        SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSurveyEvaluation(ctrlResult.result, selectedFields, contactSwitch, ExportClickMeService.FORMAT.XLS, params.chartFilter)
                         // Write the output to a file
 
                         response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
@@ -1350,7 +1350,7 @@ class SurveyController {
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
                     out.withWriter { writer ->
-                        writer.write((String) exportClickMeService.exportSurveyEvaluation(ctrlResult.result, selectedFields, contactSwitch, ExportClickMeService.FORMAT.CSV))
+                        writer.write((String) exportClickMeService.exportSurveyEvaluation(ctrlResult.result, selectedFields, contactSwitch, ExportClickMeService.FORMAT.CSV, params.chartFilter))
                     }
                     out.close()
                 }

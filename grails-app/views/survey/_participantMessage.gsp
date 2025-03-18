@@ -17,7 +17,7 @@
 
             <g:message code="myinst.subscriptionDetails.message.and"/>
 
-            <g:link controller="survey" action="surveyEvaluation" id="${subscription.instanceOf.id}">
+            <g:link controller="survey" action="surveyEvaluation" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]">
                 <g:message code="survey.message.backToParticipants"/>
             </g:link>.
         </p>
