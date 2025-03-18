@@ -5,6 +5,8 @@ import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.Params
 import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
+import de.laser.survey.SurveyConfigProperties
+import de.laser.survey.SurveyResult
 import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
@@ -1068,6 +1070,52 @@ class FilterService {
                     }
                 }
                 base_qry += ')'
+        }
+
+        if(params.chartFilter){
+            List<PropertyDefinition> propList = SurveyConfigProperties.executeQuery("select scp.surveyProperty from SurveyConfigProperties scp where scp.surveyConfig = :surveyConfig", [surveyConfig: surveyConfig])
+            propList.eachWithIndex {PropertyDefinition prop, int i ->
+                if (prop.isRefdataValueType()) {
+                    def refDatas = SurveyResult.executeQuery("select sr.refValue.id from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.refValue is not null and sr.type = :propType group by sr.refValue.id", [propType: prop, surveyConfig: surveyConfig])
+                    refDatas.each {
+                        if(params.chartFilter == "${prop.getI10n('name')}: ${RefdataValue.get(it).getI10n('value')}") {
+                            base_qry += ' and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and participant = surveyOrg.org and surResult.type = :propDef and surResult.refValue = :refValue) '
+                            queryParams.put('propDef', prop)
+                            queryParams.put('refValue', RefdataValue.get(it))
+                        }
+                    }
+                }
+                if (prop.isLongType()) {
+                    if(params.chartFilter == prop.getI10n('name')){
+                        base_qry += " and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and participant = surveyOrg.org and surResult.type = :propDef and (surResult.longValue is not null)) "
+                        queryParams.put('propDef', prop)
+                    }
+                }
+                else if (prop.isStringType()) {
+                    if(params.chartFilter == prop.getI10n('name')){
+                        base_qry +=  " and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and participant = surveyOrg.org and surResult.type = :propDef and (surResult.stringValue is not null or surResult.stringValue != '')) "
+                        queryParams.put('propDef', prop)
+                    }
+                  }
+                else if (prop.isBigDecimalType()) {
+                    if(params.chartFilter == prop.getI10n('name')){
+                        base_qry += " and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and participant = surveyOrg.org and surResult.type = :propDef and (surResult.decValue is not null)) "
+                        queryParams.put('propDef', prop)
+                    }
+                }
+                else if (prop.isDateType()) {
+                    if(params.chartFilter == prop.getI10n('name')){
+                        base_qry += " and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and participant = surveyOrg.org and surResult.type = :propDef and (surResult.dateValue is not null)) "
+                        queryParams.put('propDef', prop)
+                    }
+                }
+                else if (prop.isURLType()) {
+                    if(params.chartFilter == prop.getI10n('name')){
+                        base_qry += " and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and participant = surveyOrg.org and surResult.type = :propDef and (surResult.urlValue is not null or surResult.urlValue != '')) "
+                        queryParams.put('propDef', prop)
+                    }
+                }
+            }
         }
 
         if (params.filterPropDefAllMultiYear) {

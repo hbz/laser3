@@ -16,6 +16,7 @@ import de.laser.License
 import de.laser.LicenseService
 import de.laser.LinksGenerationService
 import de.laser.PendingChange
+import de.laser.finance.CostInformationDefinition
 import de.laser.wekb.Package
 import de.laser.wekb.Provider
 import de.laser.ProviderService
@@ -189,6 +190,18 @@ class AjaxJsonController {
                 data.each { License l ->
                     result.add([value: l.id, text: l.dropdownNamingConvention()])
                 }
+            }
+        }
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def adjustCostInformationValueList() {
+        List result = []
+        CostInformationDefinition cif = CostInformationDefinition.get(params.costInformationDefinition)
+        if(cif.type == RefdataValue.class.name) {
+            RefdataCategory.getAllRefdataValues(cif.refdataCategory).each { RefdataValue rv ->
+                result.add([value: rv.id, text: rv.getI10n('value')])
             }
         }
         render result as JSON

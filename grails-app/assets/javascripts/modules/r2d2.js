@@ -619,6 +619,7 @@ r2d2 = {
                 }
             };
             $(href + '.ui.modal').modal({
+                closable: false,
                 onVisible: function() {
                     $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
                     $(this).find('.yearpicker').calendar(r2d2.configs.yearpicker);
@@ -872,6 +873,7 @@ r2d2 = {
 
                 $('.tiny.modal')
                     .modal({
+                        closable: false,
                         onShow : function() {
                             a11yModal.go({
                                 el: document.getElementById($(this).attr('id')),
