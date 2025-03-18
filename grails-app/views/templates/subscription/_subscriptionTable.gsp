@@ -146,14 +146,16 @@
                             <g:each in="${s.packages}" var="sp" status="ind">
                                 <g:if test="${ind < 10}">
                                     <div class="la-flexbox">
-                                        <i class="${Icon.PACKAGE} la-list-icon"></i>
-                                        <g:link controller="subscription" action="index" id="${s.id}" params="[pkgfilter: sp.pkg.id]"
-                                                title="${sp.pkg.provider?.name}">
+                                        <g:if test="${s.packages.size() > 1}">
+                                            <i class="${Icon.PACKAGE} la-list-icon"></i>
+                                        </g:if>
+                                        <g:link controller="subscription" action="index" id="${s.id}" params="[pkgfilter: sp.pkg.id]" title="${sp.pkg.provider?.name}">
                                             ${sp.pkg.name}
                                         </g:link>
                                     </div>
                                 </g:if>
                             </g:each>
+
                             <g:if test="${s.packages.size() > 10}">
                                 <div>${message(code: 'myinst.currentSubscriptions.etc.label', args: [s.packages.size() - 10])}</div>
                             </g:if>
