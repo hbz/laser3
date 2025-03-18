@@ -86,66 +86,70 @@
 
         </g:form>
 
-        <laser:script file="${this.getGroovyPageFileName()}">
+    </ui:modal>
 
-            JSPC.callbacks.modal.onShow.modalCreateRttpTask = function (trigger) {
-                let preID = '#' + $('#modalCreateRttpTask form input[name=preID]').val()
-                console.log ( 'modalCreateRttpTask / preID: ' + preID )
-                console.log ( trigger )
+    <laser:script file="${this.getGroovyPageFileName()}">
+        JSPC.app.editTask = function (id) {
+            var func = bb8.ajax4SimpleModalFunction("#modalEditTask", "<g:createLink controller="ajaxHtml" action="editTask"/>?id=" + id);
+            func();
+        };
 
-            <g:if test="${tipp}">%{-- only _flyoutAndTippTask.gsp --}%
-            </g:if>
-            <g:else>
-                $(preID + '_tipp').val($(trigger).attr('data-tipp'));
+        JSPC.callbacks.modal.onShow.modalCreateRttpTask = function (trigger) {
+            let preID = '#' + $('#modalCreateRttpTask form input[name=preID]').val()
+%{--            console.log ( 'modalCreateRttpTask / preID: ' + preID )--}%
+%{--            console.log ( trigger )--}%
+
+        <g:if test="${tipp}">%{-- only _flyoutAndTippTask.gsp --}%
+        </g:if>
+        <g:else>
+            $(preID + '_tipp').val($(trigger).attr('data-tipp'));
 %{--            $(preID + '_title').val("${message(code: 'task.create.reportTitleToProvider.title')}");--}%
 %{--            $(preID + '_description').val("${message(code: 'task.create.reportTitleToProvider.desc')}");--}%
-            </g:else>
+        </g:else>
 
-                let $radRespOrg         = $(preID + '_radioresponsibleOrg')
-                let $radRespUser        = $(preID + '_radioresponsibleUser')
-                let $respUserWrapper    = $(preID + '_responsibleUserWrapper')
+            let $radRespOrg         = $(preID + '_radioresponsibleOrg')
+            let $radRespUser        = $(preID + '_radioresponsibleUser')
+            let $respUserWrapper    = $(preID + '_responsibleUserWrapper')
 
-                let func_toggleResponsibleUser = function () {
-                    if ($radRespUser.is(':checked')) {
-                        $respUserWrapper.show()
-                    } else {
-                        $respUserWrapper.hide()
+            let func_toggleResponsibleUser = function () {
+                if ($radRespUser.is(':checked')) {
+                    $respUserWrapper.show()
+                } else {
+                    $respUserWrapper.hide()
+                }
+            }
+
+            $radRespOrg.change(function ()  { func_toggleResponsibleUser() });
+            $radRespUser.change(function () { func_toggleResponsibleUser() });
+
+            $(preID + '_form').form({
+                inline: true,
+                fields: {
+                    title: {
+                        identifier: preID.replace('#', '') + '_title',
+                        rules: [{
+                                type: 'empty',
+                                prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
+                        }]
+                    },
+                    endDate: {
+                        identifier: preID.replace('#', '') + '_endDate',
+                        rules: [{
+                                type: 'empty',
+                                prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
+                        }]
+                    },
+                    responsible: {
+                        rules: [{
+                                type: 'checked',
+                                prompt: '<g:message code="validation.needsToBeFilledOut" />'
+                        }]
                     }
                 }
+            });
 
-                $radRespOrg.change(function ()  { func_toggleResponsibleUser() });
-                $radRespUser.change(function () { func_toggleResponsibleUser() });
-
-                $(preID + '_form').form({
-                    inline: true,
-                    fields: {
-                        title: {
-                            identifier: preID.replace('#', '') + '_title',
-                            rules: [{
-                                    type: 'empty',
-                                    prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
-                            }]
-                        },
-                        endDate: {
-                            identifier: preID.replace('#', '') + '_endDate',
-                            rules: [{
-                                    type: 'empty',
-                                    prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
-                            }]
-                        },
-                        responsible: {
-                            rules: [{
-                                    type: 'checked',
-                                    prompt: '<g:message code="validation.needsToBeFilledOut" />'
-                            }]
-                        }
-                    }
-                });
-
-                $radRespOrg.prop ('checked', true);
-                func_toggleResponsibleUser();
-            };
-        </laser:script>
-
-    </ui:modal>
+            $radRespOrg.prop ('checked', true);
+            func_toggleResponsibleUser();
+        };
+    </laser:script>
 

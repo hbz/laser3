@@ -33,7 +33,7 @@
                           <th rowspan="2"><g:message code="consortium"/></th>
                       </g:if>
                       <g:if test="${'processing' in licenseFilterTable}">
-                          <th rowspan="2">
+                          <th rowspan="2" class="center aligned">
                               <span class="la-popup-tooltip" data-content="${message(code:'license.processing')}" data-position="top right">
                                   <i class="${Icon.ATTR.LICENSE_PROCESSING} large"></i>
                               </span>

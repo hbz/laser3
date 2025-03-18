@@ -53,7 +53,7 @@
                             <th rowspan="2">${message(code:'org.institution.label')}</th>
                         </g:elseif>
                         <g:if test="${'showInvoicing' in tableConfig}">
-                            <th rowspan="2">
+                            <th rowspan="2" class="center aligned">
                                 <span class="la-popup-tooltip" data-content="${message(code:'subscription.invoice.processing')}" data-position="top right">
                                     <i class="${Icon.ATTR.SUBSCRIPTION_INVOICE_PROCESSING} large"></i>
                                 </span>
