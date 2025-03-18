@@ -60,7 +60,11 @@
                     <th>${message(code: 'surveyConfigDocs.docs.table.fileName')}</th>
                     <th>${message(code: 'surveyConfigDocs.docs.table.type')}</th>
                     <th>%{--${message(code: 'property.share.tooltip.sharedFrom')}--}%</th>
-                    <th>${message(code: 'default.actions.label')}</th>
+                    <th class="center aligned">
+                        <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                            <i class="${Icon.SYM.OPTIONS}"></i>
+                        </span>
+                    </th>
                 </tr>
                 </thead>
                 <tbody>

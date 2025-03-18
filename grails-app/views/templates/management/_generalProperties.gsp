@@ -25,7 +25,11 @@
                     <g:if test="${subscription.packages}">
                         <th>${message(code: 'subscription.holdingSelection.label.shy')}</th>
                     </g:if>
-                    <th>${message(code: 'default.actions.label')}</th>
+                    <th class="center aligned">
+                        <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                            <i class="${Icon.SYM.OPTIONS}"></i>
+                        </span>
+                    </th>
                 </tr>
                 </thead>
                 <tbody>

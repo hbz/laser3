@@ -71,7 +71,11 @@
                         <th>${message(code: 'sidewide.number')}</th>
                         <th>${message(code: 'propertyDefinition.label')}</th>
                         <th>${message(code: 'renewalEvaluation.propertiesChanged')}</th>
-                        <th>${message(code: 'default.actions.label')}</th>
+                        <th class="center aligned">
+                            <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                                <i class="${Icon.SYM.OPTIONS}"></i>
+                            </span>
+                        </th>
                     </tr>
                     </thead>
                     <tbody>
@@ -258,7 +262,11 @@
                     </th>
                 </g:if>
             </g:each>
-            <th scope="col" rowspan="2" class="two">${message(code: 'default.actions.label')}</th>
+            <th scope="col" rowspan="2" class="two center aligned">
+                <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                    <i class="${Icon.SYM.OPTIONS}"></i>
+                </span>
+            </th>
         </tr>
         </thead>
         <tbody>
@@ -873,7 +881,11 @@
                     </g:if>
 
                 </g:each>
-                <th scope="col" rowspan="2" class="two">${message(code: 'default.actions.label')}</th>
+                <th scope="col" rowspan="2" class="two center aligned">
+                    <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                        <i class="${Icon.SYM.OPTIONS}"></i>
+                    </span>
+                </th>
             </tr>
             </thead>
             <tbody>

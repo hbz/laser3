@@ -95,7 +95,11 @@
                     </th>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'linkPackage' || tmplConfigItem == 'linkSurveyPackage' || tmplConfigItem == 'unLinkSurveyPackage' || tmplConfigItem == 'removeSurveyPackageResult' || tmplConfigItem == 'addSurveyPackageResult'}">
-                    <th class="la-th-wrap center aligned">${message(code: 'default.actions.label')}</th>
+                    <th class="la-th-wrap center aligned">
+                        <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                            <i class="${Icon.SYM.OPTIONS}"></i>
+                        </span>
+                    </th>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'markPerpetualAccess'}">
                     <th class="la-th-wrap x center aligned">
