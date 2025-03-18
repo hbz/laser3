@@ -74,7 +74,11 @@
                 <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="${sorting}" scope="col" rowspan="2"/>
                 <%-- editable must be checked here as well because of the consortia preview! --%>
                 <g:if test="${editable && contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
-                    <th class="la-action-info" scope="col" rowspan="2"><g:message code="default.actions.label"/></th>
+                    <th class="center aligned" scope="col" rowspan="2">
+                        <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                            <i class="${Icon.SYM.OPTIONS}"></i>
+                        </span>
+                    </th>
                 </g:if>
             </g:if>
             <g:else>
@@ -94,7 +98,11 @@
                 <g:sortableColumn property="startDate" title="${message(code:'financials.dateFrom')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" class="la-smaller-table-head" />
                 <g:sortableColumn property="costItemElement" title="${message(code:'financials.costItemElement')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" rowspan="2"/>
                 <g:if test="${contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
-                    <th class="la-action-info" scope="col" rowspan="2"><g:message code="default.actions.label"/></th>
+                    <th class="center aligned" scope="col" rowspan="2">
+                        <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                            <i class="${Icon.SYM.OPTIONS}"></i>
+                        </span>
+                    </th>
                 </g:if>
             </g:else>
         </tr>

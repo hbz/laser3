@@ -11,7 +11,11 @@
                     <th>${message(code: 'default.startDate.label.shy')}</th>
                     <th>${message(code: 'default.endDate.label.shy')}</th>
                     <th>${message(code: 'default.status.label')}</th>
-                    <th>${message(code:'default.actions.label')}</th>
+                    <th class="center aligned">
+                        <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                            <i class="${Icon.SYM.OPTIONS}"></i>
+                        </span>
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
@@ -116,7 +120,11 @@
                 <th>${message(code: 'default.endDate.label.shy')}</th>
                 <th>${message(code: 'default.status.label')}</th>
                 <th>${message(code: 'subscription.isMultiYear.label')}</th>
-                <th>${message(code:'default.actions.label')}</th>
+                <th class="center aligned">
+                    <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                        <i class="${Icon.SYM.OPTIONS}"></i>
+                    </span>
+                </th>
             </tr>
             </thead>
             <tbody>

@@ -16,10 +16,8 @@
                       <th rowspan="2"><g:message code="sidewide.number"/></th>
                       <g:sortableColumn rowspan="2" params="${params}" property="reference" title="${message(code:'license.slash.name')}" />
                       <g:if test="${'memberLicenses' in licenseFilterTable}">
-                          <th rowspan="2" class="center aligned">
-                              <span class="la-popup-tooltip" data-content="${message(code:'license.details.incoming.childs')}" data-position="top right">
-                                  <i class="${Icon.LICENSE} large"></i>
-                              </span>
+                          <th rowspan="2">
+                              ${message(code:'license.details.incoming.childs')}
                           </th>
                       </g:if>
 
@@ -33,7 +31,7 @@
                           <th rowspan="2"><g:message code="consortium"/></th>
                       </g:if>
                       <g:if test="${'processing' in licenseFilterTable}">
-                          <th rowspan="2">
+                          <th rowspan="2" class="center aligned">
                               <span class="la-popup-tooltip" data-content="${message(code:'license.processing')}" data-position="top right">
                                   <i class="${Icon.ATTR.LICENSE_PROCESSING} large"></i>
                               </span>
@@ -41,7 +39,11 @@
                       </g:if>
                       <g:sortableColumn class="la-smaller-table-head" params="${params}" property="startDate" title="${message(code:'license.start_date')}" />
                       <g:if test="${'action' in licenseFilterTable}">
-                          <th rowspan="2" class="la-action-info"><g:message code="default.actions.label"/></th>
+                          <th rowspan="2" class="center aligned">
+                              <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                                  <i class="${Icon.SYM.OPTIONS}"></i>
+                              </span>
+                          </th>
                       </g:if>
                   </tr>
                   <tr>
@@ -74,9 +76,12 @@
                           <g:if test="${'memberLicenses' in licenseFilterTable}">
                               <td>
                                   <g:each in="${l.derivedLicenses}" var="lChild">
-                                      <g:link controller="license" action="show" id="${lChild.id}">
-                                          <p><i class="${Icon.LICENSE} la-list-icon la-popup-tooltip" data-content="${message(code: 'license.member')}"></i> ${lChild}</p>
-                                      </g:link>
+                                      <div class="la-flexbox">
+                                          <g:if test="${l.derivedLicenses.size() > 1}">
+                                              <i class="${Icon.LICENSE} la-list-icon"></i>
+                                          </g:if>
+                                          <g:link controller="license" action="show" id="${lChild.id}">${lChild}</g:link>
+                                      </div>
                                   </g:each>
                               </td>
                           </g:if>

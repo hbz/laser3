@@ -19,7 +19,11 @@
             <th class="center aligned"><i class="exclamation triangle icon grey"></i></th>
         </g:if>
         <th>${message(code:'user.enabled.label')}</th>
-        <th class="la-action-info">${message(code:'default.actions.label')}</th>
+        <th class="center aligned">
+            <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                <i class="${Icon.SYM.OPTIONS}"></i>
+            </span>
+        </th>
     </tr>
     </thead>
     <tbody>

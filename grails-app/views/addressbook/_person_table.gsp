@@ -84,7 +84,11 @@
     </g:if>
 </g:each>
         <g:if test="${showOptions}">
-            <th scope="col" rowspan="2" class="la-action-info">${message(code: 'default.actions.label')}</th>
+            <th class="center aligned">
+                <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                    <i class="${Icon.SYM.OPTIONS}"></i>
+                </span>
+            </th>
         </g:if>
     </tr>
     <g:each in="${tmplConfigShow}" var="tmplConfigItem" status="i">

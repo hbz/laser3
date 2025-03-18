@@ -64,7 +64,11 @@
                     </th>
                     <th class="three wide">${message(code:'org.customerType.label')}</th>
                     <th class="one wide center aligned"><ui:myXIcon /></th>
-                    <th class="one wide">${message(code:'default.actions.label')}</th>
+                    <th class="one wide center aligned">
+                        <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                            <i class="${Icon.SYM.OPTIONS}"></i>
+                        </span>
+                    </th>
                 </tr>
             </thead>
             <tbody>

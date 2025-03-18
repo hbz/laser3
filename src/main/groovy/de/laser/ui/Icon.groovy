@@ -238,6 +238,8 @@ class Icon extends IconAttr {
 
         @UIDoc(usage = 'Generic symbol for: Search')
         public static String SEARCH         = 'search icon'
+        @UIDoc(usage = 'Generic symbol for: Options')
+        public static String OPTIONS        = 'sliders horizontal icon'
 
         @UIDoc(usage = 'Generic icon / Caution: free to use')
         public static String CIRCLE         = 'circle icon'

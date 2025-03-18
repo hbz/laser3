@@ -53,7 +53,7 @@
                             <th rowspan="2">${message(code:'org.institution.label')}</th>
                         </g:elseif>
                         <g:if test="${'showInvoicing' in tableConfig}">
-                            <th rowspan="2">
+                            <th rowspan="2" class="center aligned">
                                 <span class="la-popup-tooltip" data-content="${message(code:'subscription.invoice.processing')}" data-position="top right">
                                     <i class="${Icon.ATTR.SUBSCRIPTION_INVOICE_PROCESSING} large"></i>
                                 </span>
@@ -77,7 +77,11 @@
                                 <ui:multiYearIcon />
                             </th>
                         </g:if>
-                        <th scope="col" rowspan="2" class="two">${message(code:'default.actions.label')}</th>
+                        <th scope="col" rowspan="2" class="two center aligned">
+                            <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
+                                <i class="${Icon.SYM.OPTIONS}"></i>
+                            </span>
+                        </th>
                     </tr>
                     <tr>
                         <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.endDate" title="${message(code: 'default.endDate.label.shy')}"/>
@@ -146,14 +150,16 @@
                             <g:each in="${s.packages}" var="sp" status="ind">
                                 <g:if test="${ind < 10}">
                                     <div class="la-flexbox">
-                                        <i class="${Icon.PACKAGE} la-list-icon"></i>
-                                        <g:link controller="subscription" action="index" id="${s.id}" params="[pkgfilter: sp.pkg.id]"
-                                                title="${sp.pkg.provider?.name}">
+                                        <g:if test="${s.packages.size() > 1}">
+                                            <i class="${Icon.PACKAGE} la-list-icon"></i>
+                                        </g:if>
+                                        <g:link controller="subscription" action="index" id="${s.id}" params="[pkgfilter: sp.pkg.id]" title="${sp.pkg.provider?.name}">
                                             ${sp.pkg.name}
                                         </g:link>
                                     </div>
                                 </g:if>
                             </g:each>
+
                             <g:if test="${s.packages.size() > 10}">
                                 <div>${message(code: 'myinst.currentSubscriptions.etc.label', args: [s.packages.size() - 10])}</div>
                             </g:if>
