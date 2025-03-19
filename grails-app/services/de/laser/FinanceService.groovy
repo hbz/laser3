@@ -1917,6 +1917,10 @@ class FinanceService {
                                         wrongIdentifiers << idStr
                                     }
                                 }
+                                else {
+                                    wrongIdentifierCounter++
+                                    wrongIdentifiers << idStr
+                                }
                             }
                         }
                         else {
