@@ -266,6 +266,22 @@
                               value="${filterPresets?.filterCICurrency?.id}"
                               noSelection="${['':message(code:'default.select.all.label')]}"/>
                 </div>
+            </div>
+            <div class="three fields">
+                <div class="field">
+                    <label>${g.message(code: 'financials.costInformationDefinition')}</label>
+                    <ui:dropdown name="filterCIIDefinition"
+                                 class="filterCIIDefinition"
+                                 from="${costInformationDefinitions}"
+                                 iconWhich="${Icon.PROP.IS_PRIVATE}"
+                                 optionKey="${{genericOIDService.getOID(it)}}"
+                                 optionValue="${{ it.getI10n('name') }}"
+                                 noSelection="${message(code: 'default.select.choose.label')}"/>
+                </div>
+                <div class="field" id="filterCIIValueWrapper">
+                    <label></label>
+                    <select id="filterCIIValue" name="filterCIIValue" multiple="multiple" class="ui fluid multiple search selection dropdown"></select>
+                </div>
                 <div class="field la-field-right-aligned">
                     <a href="${request.forwardURI}?reset=true" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</a>
                     <g:hiddenField name="showView" value="${showView}"/>
@@ -381,11 +397,38 @@
             }
         });
     }
+        $(".filterCIIDefinition").change(function() {
+            $("#filterCIIValueWrapper").empty();
+            let url = '<g:createLink controller="ajaxJson" action="getPropValues"/>' + '?oid=' + $(this).dropdown('get value');
+            <g:if test="${fixedSubscription}">
+                url += '&subscription=${fixedSubscription.id}'
+            </g:if>
+            $.ajax({
+                url: url,
+                success: function (data) {
+                    $("#filterCIIValueWrapper").append('<label></label><select id="filterCIIValue" name="filterCIIValue" multiple="multiple" class="ui fluid multiple search selection dropdown"></select>');
+                    $.each(data, function (key, entry) {
+                        let filterCIIValue = null;
+                        <g:if test="${filterPresets?.filterCIIValue}">
+                            filterCIIValue = ${filterPresets?.filterCIIValue};
+                        </g:if>
+                        if(entry.value == filterCIIValue)
+                            $("#filterCIIValue").append($('<option></option>').attr('value', entry.value).attr('selected', 'selected').text(entry.text));
+                        else
+                            $("#filterCIIValue").append($('<option></option>').attr('value', entry.value).text(entry.text));
+                    });
+                    $("#filterCIIValue").dropdown();
+                }
+            });
+        });
 
         <g:if test="${filterPresets?.filterCIUnpaid}">
             $("#filterCIPaidFrom,#filterCIPaidTo").attr("disabled",true);
         </g:if>
         JSPC.app.setupDropdowns();
+        <g:if test="${filterPresets?.filterCIIDefinition}">
+            $(".filterCIIDefinition").dropdown("set selected","${genericOIDService.getOID(filterPresets?.filterCIIDefinition)}");
+        </g:if>
 
         $("[name='filterCIFinancialYear']").parents(".datepicker").calendar({
             type: 'year',
@@ -401,6 +444,12 @@
                     }
                 }
             },
+        });
+        $("#filterCIUnpaid").change(function() {
+            if($(this).is(":checked"))
+                $("#filterCIPaidFrom,#filterCIPaidTo").attr("disabled",true);
+            else
+                $("#filterCIPaidFrom,#filterCIPaidTo").attr("disabled",false);
         });
         $("#filterCIUnpaid").change(function() {
             if($(this).is(":checked"))
