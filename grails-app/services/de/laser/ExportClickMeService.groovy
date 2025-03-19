@@ -1920,7 +1920,7 @@ class ExportClickMeService {
                                 'tipp.firstEditor'     : [field: 'firstEditor', label: 'First Editor', message: 'tipp.firstEditor', sqlCol: 'tipp_first_editor'],
                                 'tipp.volume'          : [field: 'volume', label: 'Volume', message: 'tipp.volume', sqlCol: 'tipp_volume'],
                                 'tipp.editionStatement': [field: 'editionStatement', label: 'Edition Statement', message: 'title.editionStatement.label', sqlCol: 'tipp_edition_statement'],
-                                'tipp.editionNumber'   : [field: 'editionNumber', label: 'Edition Number', message: 'tipp.editionNumber', sqlCol: 'tipp_edition_number'],
+                                'tipp.editionNumber'   : [field: 'editionNumber', label: 'Edition Number', message: 'tipp.editionNumber', sqlCol: 'tipp_edition_number::text'],
                                 'tipp.summaryOfContent': [field: 'summaryOfContent', label: 'Summary of Content', message: 'title.summaryOfContent.label', sqlCol: 'tipp_summary_of_content'],
                                 'tipp.seriesName'      : [field: 'seriesName', label: 'Series Name', message: 'tipp.seriesName', sqlCol: 'tipp_series_name'],
                                 'tipp.subjectReference': [field: 'subjectReference', label: 'Subject Reference', message: 'tipp.subjectReference', sqlCol: 'tipp_subject_reference'],
@@ -6750,6 +6750,15 @@ class ExportClickMeService {
                 }
                 else if(fieldKey.contains('endIssue')) {
                     queryCols << "create_cell('${format}', tc_end_issue, null) as coverageEndIssue"
+                }
+                else if(fieldKey.contains('coverageNote')) {
+                    queryCols << "create_cell('${format}', tc_coverage_note, null) as coverageNote"
+                }
+                else if(fieldKey.contains('coverageDepth')) {
+                    queryCols << "create_cell('${format}', tc_coverage_depth, null) as coverageDepth"
+                }
+                else if(fieldKey.contains('embargo')) {
+                    queryCols << "create_cell('${format}', tc_embargo, null) as embargo"
                 }
             }
             else if (fieldKey.contains('listPriceEUR')) {
