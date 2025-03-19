@@ -7,6 +7,7 @@
             <input type="hidden" name="id" value="${license.id}"/>
         </g:if>
         <div class="five fields">
+            <% /* 1-1 */ %>
             <div class="field">
                 <label>${message(code:'myinst.consortiaSubscriptions.consortia')}</label>
                 <g:select class="ui search selection dropdown" name="member"
@@ -65,7 +66,9 @@
             </div>
         </div>
         <div class="four fields">
+            <% /* 2-1/2 */ %>
             <laser:render template="/templates/properties/genericFilter" model="[propList: filterPropList, label:message(code: 'subscription.property.search')]"/>
+            <% /* 2-3 */ %>
             <div class="field">
                 <label>${message(code:'subscription.form.label')}</label>
                 <ui:select class="ui dropdown" name="form"
@@ -75,30 +78,32 @@
                               value="${params.form}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
-            <div class="field">
-                <label>${message(code:'subscription.resource.label')}</label>
-                <ui:select class="ui dropdown" name="resource"
-                              from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
-                              optionKey="id"
-                              optionValue="value"
-                              value="${params.resource}"
-                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
-            </div>
-        </div>
-        <div class="three fields">
+            <% /* 2-4 */ %>
             <div class="field">
                 <label for="subKinds">${message(code: 'myinst.currentSubscriptions.subscription_kind')}</label>
                 <select id="subKinds" name="subKinds" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND).sort{it.getI10n('value')}}" var="subKind">
                         <option <%=Params.getLongList(params, 'subKinds').contains(subKind.id) ? 'selected="selected"' : ''%>
-                            value="${subKind.id}">
+                                value="${subKind.id}">
                             ${subKind.getI10n('value')}
                         </option>
                     </g:each>
                 </select>
             </div>
-
+        </div>
+        <div class="three fields">
+            <% /* 3-1 */ %>
+            <div class="field">
+                <label>${message(code:'subscription.resource.label')}</label>
+                <ui:select class="ui dropdown" name="resource"
+                           from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
+                           optionKey="id"
+                           optionValue="value"
+                           value="${params.resource}"
+                           noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
+            <% /* 3-2 */ %>
             <div class="field">
                 <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
                 <div class="inline fields la-filter-inline">
@@ -118,7 +123,7 @@
                     </div>
                 </div>
             </div>
-
+            <% /* 3-3 */ %>
             <div class="field"></div>
         </div>
 

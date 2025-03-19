@@ -45,9 +45,7 @@
                                     <th>${message(code:'propertyDefinition.count.label')}</th>
                                     <g:if test="${editable || changeProperties}">
                                         <th class="center aligned">
-                                            <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                                                <i class="${Icon.SYM.OPTIONS}"></i>
-                                            </span>
+                                            <ui:optionsIcon />
                                         </th>
                                     </g:if>
                                 </tr>
@@ -141,9 +139,7 @@
                                     <th>${message(code:'propertyDefinition.count.label')}</th>
                                     <g:if test="${editable || changeProperties}">
                                         <th class="center aligned">
-                                            <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                                                <i class="${Icon.SYM.OPTIONS}"></i>
-                                            </span>
+                                            <ui:optionsIcon />
                                         </th>
                                     </g:if>
                                 </tr>

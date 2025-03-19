@@ -14,8 +14,8 @@
         model="[
                 tmplConfigShow: [
                         ['q', 'pkgStatus', 'status', 'hasPerpetualAccess'],
-                        ['provider', 'ddc', 'curatoryGroup'],
-                        ['curatoryGroupType', 'automaticUpdates']
+                        ['provider', 'ddc', 'curatoryGroup', 'curatoryGroupType'],
+                        ['automaticUpdates']
                 ]
         ]"
     />

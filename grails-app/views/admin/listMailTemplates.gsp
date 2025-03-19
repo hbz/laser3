@@ -27,9 +27,7 @@
                 <th>${message(code: 'mailTemplate.language.label')}</th>
                 <th>${message(code: 'mailTemplate.owner.label')}</th>
                 <th class="center aligned">
-                    <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                        <i class="${Icon.SYM.OPTIONS}"></i>
-                    </span>
+                    <ui:optionsIcon />
                 </th>
             </tr>
             </thead>

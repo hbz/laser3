@@ -61,9 +61,7 @@
                     <th>${message(code: 'surveyConfigDocs.docs.table.type')}</th>
                     <th>%{--${message(code: 'property.share.tooltip.sharedFrom')}--}%</th>
                     <th class="center aligned">
-                        <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                            <i class="${Icon.SYM.OPTIONS}"></i>
-                        </span>
+                        <ui:optionsIcon />
                     </th>
                 </tr>
                 </thead>

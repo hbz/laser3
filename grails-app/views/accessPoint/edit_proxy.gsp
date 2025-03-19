@@ -76,9 +76,7 @@
                 <th>${message(code: 'accessPoint.ip.format.range')}</th>
                 <th>${message(code: 'accessPoint.ip.format.cidr')}</th>
                 <th class="center aligned">
-                    <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                        <i class="${Icon.SYM.OPTIONS}"></i>
-                    </span>
+                    <ui:optionsIcon />
                 </th>
             </tr>
             </thead>
@@ -143,9 +141,7 @@
             <th>${message(code: 'accessPoint.ip.format.range')}</th>
             <th>${message(code: 'accessPoint.ip.format.cidr')}</th>
             <th class="center aligned">
-                <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                    <i class="${Icon.SYM.OPTIONS}"></i>
-                </span>
+                <ui:optionsIcon />
             </th>
         </tr>
         </thead>

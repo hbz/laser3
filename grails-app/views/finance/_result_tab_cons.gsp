@@ -75,9 +75,7 @@
                 <%-- editable must be checked here as well because of the consortia preview! --%>
                 <g:if test="${editable && contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
                     <th class="center aligned" scope="col" rowspan="2">
-                        <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                            <i class="${Icon.SYM.OPTIONS}"></i>
-                        </span>
+                        <ui:optionsIcon />
                     </th>
                 </g:if>
             </g:if>
@@ -99,9 +97,7 @@
                 <g:sortableColumn property="costItemElement" title="${message(code:'financials.costItemElement')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" rowspan="2"/>
                 <g:if test="${contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
                     <th class="center aligned" scope="col" rowspan="2">
-                        <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                            <i class="${Icon.SYM.OPTIONS}"></i>
-                        </span>
+                        <ui:optionsIcon />
                     </th>
                 </g:if>
             </g:else>

@@ -68,9 +68,7 @@
             <tr>
                 <th class="fifteen wide">Mail-Domain</th>
                 <th class="one wide center aligned">
-                    <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                        <i class="${Icon.SYM.OPTIONS}"></i>
-                    </span>
+                    <ui:optionsIcon />
                 </th>
             </tr>
             </thead>
