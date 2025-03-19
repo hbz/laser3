@@ -224,9 +224,20 @@
             </div><!-- #new-dynamic-properties-block -->
             <div class="ui card">
                 <div class="content">
-                    <h2 class="ui header">
-                        <g:message code="accessPoint.label"/>
-                    </h2>
+                    <div class="ui header la-flexbox la-justifyContent-spaceBetween">
+                        <h2 class="ui header">
+                            <g:message code="accessPoint.label"/>
+                        </h2>
+                        <laser:render template="/templates/links/accessPointLinksModal"
+                                      model="${[tmplText:message(code:'platform.link.accessPoint.button.label'),
+                                                tmplID:'addLink',
+                                                tmplModalID:'platf_link_ap',
+                                                editmode: editable,
+                                                accessPointList: accessPointList,
+                                                tmplIcon      : 'add',
+                                                tmplTooltip   : message(code: 'platform.link.accessPoint.button.label'),
+                                      ]}" />
+                    </div>
                     <table class="ui three column table">
                         <g:each in="${orgAccessPointList}" var="orgAccessPoint">
                             <tr>
@@ -252,17 +263,6 @@
                         </g:each>
                     </table>
 
-
-                    <div class="ui la-vertical buttons">
-                        <laser:render template="/templates/links/accessPointLinksModal"
-                                  model="${[tmplText:message(code:'platform.link.accessPoint.button.label'),
-                                            tmplID:'addLink',
-                                            tmplButtonText:message(code:'platform.link.accessPoint.button.label'),
-                                            tmplModalID:'platf_link_ap',
-                                            editmode: editable,
-                                            accessPointList: accessPointList 
-                                  ]}" />
-                    </div>
                 </div>
             </div>
 

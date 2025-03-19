@@ -1452,9 +1452,12 @@ class AjaxHtmlController {
                 SurveyInfo surveyInfo = SurveyInfo.get(params.id)
                 SurveyConfig surveyConfig = surveyInfo.surveyConfigs[0]
                 result.editable = surveyService.isEditableSurvey(contextService.getOrg(), surveyInfo)
-                if (surveyConfig && result.editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING) {
+                if ((surveyConfig && result.editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING) && params.onlyPrivateProperties == 'false') {
                     result.allPropDefGroups = PropertyDefinitionGroup.executeQuery('select pdg from PropertyDefinitionGroup pdg where pdg.ownerType = :ownerType and pdg.tenant = :tenant order by pdg.order asc', [tenant: contextOrg, ownerType: PropertyDefinition.getDescrClass(PropertyDefinition.SVY_PROP)])
                     result.orphanedProperties = propertyService.getOrphanedPropertyDefinition(PropertyDefinition.SVY_PROP)
+
+                }
+                if ((surveyConfig && result.editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING) && params.onlyPrivateProperties == 'true') {
                     result.privateProperties = PropertyDefinition.findAllByDescrAndTenant(PropertyDefinition.SVY_PROP, contextService.getOrg(), [sort: 'name_' + lang])
                 }
                 result.propertyCreateUrl = createLink(controller: 'ajaxHtml', action: 'processCreateProperties', params: [objectClass: SurveyInfo.class.name, objectId: surveyInfo.id])

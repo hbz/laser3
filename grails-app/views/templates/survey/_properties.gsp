@@ -8,18 +8,19 @@
 <div class="ui card la-dl-no-table">
 
     <div class="content">
-        <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
-            <div class="right aligned four wide column">
-                <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-content="${message(code: 'license.button.addProperty')}"
-                        onclick="JSPC.app.createProperty(${surveyInfo.id}, '${surveyInfo.class.simpleName}');">
-                    <i class="${Icon.CMD.ADD}"></i>
-                </button>
-            </div>
-        </g:if>
-        <div class="header">
-            <h3 class="ui header"><g:message code="surveyConfigsInfo.properties"/>
-            <ui:totalNumber total="${surveyConfig.surveyProperties.size()}"/>
-            </h3>
+        <div class="ui header la-flexbox la-justifyContent-spaceBetween">
+            <h2>
+                <g:message code="surveyConfigsInfo.properties"/>
+                <ui:totalNumber total="${surveyConfig.surveyProperties.size()}"/>
+            </h2>
+
+            <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
+                    <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}"
+                            data-content="${message(code: 'license.button.addProperty')}"
+                            onclick="JSPC.app.createProperty(${surveyInfo.id}, '${surveyInfo.class.simpleName}','false');">
+                        <i class="${Icon.CMD.ADD}"></i>
+                    </button>
+            </g:if>
         </div>
     </div>
 
@@ -39,10 +40,11 @@
             %>
             <g:if test="${surveyProperties.size() > 0}">
                 <div class="content">
-                    <h2 class="ui header">
+                    <h3 class="ui  header">
+                        <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
                         ${message(code: 'surveyConfigsInfo.properties')}
                         (${pdg.name})
-                    </h2>
+                    </h3>
 
                     <div id="survey_grouped_custom_properties">
                         <laser:render template="/templates/survey/properties_table" model="${[
@@ -51,6 +53,7 @@
                 </div>
             </g:if>
         </g:if>
+
         <g:else>
             <g:set var="surveyProperties"
                    value="${surveyConfig.getSurveyResultsByPropDefGroupAndOrg(pdg, participant)}"/>
@@ -59,10 +62,11 @@
             %>
             <g:if test="${surveyProperties.size() > 0}">
                 <div class="content">
-                    <h2 class="ui header">
+                    <h3 class="ui  header">
+                        <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
                         ${message(code: 'surveyConfigsInfo.properties')}
                         (${pdg.name})
-                    </h2>
+                    </h3>
 
                     <div>
                         <laser:render template="/templates/survey/properties_table" model="${[
@@ -111,16 +115,37 @@
     </g:if>
 </g:else>
 
-
+</div><!--.card -->
 <%-- private properties --%>
+<div class="ui card la-dl-no-table">
+    <div class="content">
+        <div class="ui header la-flexbox la-justifyContent-spaceBetween">
+            <h2>
+                ${message(code: 'default.properties.my')}
+            </h2>
+
+                <div class="right aligned four wide column">
+                    <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}"
+                            data-content="${message(code: 'license.button.addProperty')}"
+                            onclick="JSPC.app.createProperty(${surveyInfo.id}, '${surveyInfo.class.simpleName}','true');">
+                        <i class="${Icon.CMD.ADD}"></i>
+                    </button>
+                </div>
+
+        </div>
+    </div>
+
+
+
 
     <g:if test="${controllerName == 'survey' && actionName == 'show'}">
         <g:set var="surveyProperties" value="${surveyConfig.getPrivateSurveyConfigProperties()}"/>
         <g:if test="${surveyProperties.size() > 0}">
             <div class="content">
-                <h2 class="ui header">
+                <h3 class="ui  header">
+                    <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
                     ${message(code: 'surveyConfigsInfo.properties.privat')}
-                </h2>
+                </h3>
 
                 <div id="survey_private_properties">
                     <laser:render template="/templates/survey/properties_table" model="${[
@@ -134,9 +159,10 @@
                value="${surveyConfig.getPrivateSurveyResultsByOrg(participant)}"/>
         <g:if test="${surveyProperties.size() > 0}">
             <div class="content">
-                <h2 class="ui header">
+                <h3 class="ui  header">
+                    <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
                     ${message(code: 'surveyConfigsInfo.properties.privat')}
-                </h2>
+                </h3>
 
                 <div>
                     <laser:render template="/templates/survey/properties_table" model="${[
