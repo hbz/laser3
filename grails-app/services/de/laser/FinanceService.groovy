@@ -1124,6 +1124,21 @@ class FinanceService {
                     queryParams.filterCIPaidTo = invoiceTo
                 }
             }
+            if(params.filterCIIDefinition) {
+                costItemFilterQuery += " and ci.costInformationDefinition = :filterCIIDefinition "
+                CostInformationDefinition filterCIIDefinition = genericOIDService.resolveOID(params.filterCIIDefinition)
+                queryParams.filterCIIDefinition = filterCIIDefinition
+                if(params.filterCIIValue) {
+                    if(filterCIIDefinition.type == RefdataValue.class.name) {
+                        costItemFilterQuery += " and ci.costInformationRefValue.id in (:filterCIIValue) "
+                        queryParams.filterCIIValue = Params.getLongList(params, 'filterCIIValue')
+                    }
+                    else {
+                        costItemFilterQuery += " and ci.costInformationStringValue in (:filterCIIValue) "
+                        queryParams.filterCIIValue = params.list('filterCIIValue')
+                    }
+                }
+            }
             result = [subFilter:subFilterQuery,ciFilter:costItemFilterQuery,filterData:queryParams,checkboxFilters:checkboxFilters]
             if(params.reset || params.submit)
                 cache.put('cachedFilter',result)
