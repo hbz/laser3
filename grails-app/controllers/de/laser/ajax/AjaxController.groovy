@@ -2077,10 +2077,10 @@ class AjaxController {
         Person personInstance = params.personId ? Person.get(params.personId) : null
 
         if (addressInstance && accessService.hasAccessToAddress(addressInstance as Address, AccessService.WRITE)) {
-            if (params.setPreferredForSurvey == 'false') {
+            if (params.setPreferredAddress == 'false') {
                 addressInstance.preferredForSurvey = false
             }
-            if (params.setPreferredForSurvey == 'true') {
+            if (params.setPreferredAddress == 'true') {
                 addressInstance.preferredForSurvey = true
                 List<Address> addressList = Address.findAllByOrgAndTenantIsNull(contextService.getOrg())
                 addressList.each {
@@ -2095,11 +2095,30 @@ class AjaxController {
         }
 
         if (personInstance && accessService.hasAccessToPerson(personInstance as Person, AccessService.WRITE)) {
-            if (params.setPreferredForSurvey == 'false') {
-                personInstance.preferredForSurvey = false
+
+            if(params.setPreferredBillingPerson) {
+                if (params.setPreferredBillingPerson == 'false') {
+                    personInstance.preferredBillingPerson = false
+                }
+                if (params.setPreferredBillingPerson == 'true') {
+                    personInstance.preferredBillingPerson = true
+                    List<Person> personList = Person.findAllByTenant(contextService.getOrg())
+                    personList.each {
+                        if(it != personInstance) {
+                            it.preferredBillingPerson = false
+                            it.save()
+                        }
+                    }
+                }
             }
-            if (params.setPreferredForSurvey == 'true') {
-                personInstance.preferredForSurvey = true
+
+            if(params.setPreferredSurveyPerson) {
+                if (params.setPreferredSurveyPerson == 'false') {
+                    personInstance.preferredSurveyPerson = false
+                }
+                if (params.setPreferredSurveyPerson == 'true') {
+                    personInstance.preferredSurveyPerson = true
+                }
             }
 
             personInstance.save()
