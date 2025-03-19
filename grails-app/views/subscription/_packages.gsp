@@ -45,6 +45,7 @@
                                             <g:if test="${sp.pkg.provider.gokbId}"><ui:wekbIconLink type="provider" gokbId="${sp.pkg.provider.gokbId}"/></g:if>
                                         </g:if>
                                     </div>
+                                    <%-- deactivated as of ERMS-6375 after call with Micha
                                     <g:each in="${sp.pkg.vendors}" var="pv">
                                         <g:set var="vendorRecord" value="${packageInstanceRecord.vendors.find { rec -> rec.vendorUuid == pv.vendor.gokbId }}"/>
                                         <div>
@@ -53,7 +54,7 @@
                                             <g:if test="${vendorRecord && vendorRecord.homepage}"><ui:linkWithIcon href="${vendorRecord.homepage.startsWith('http') ? vendorRecord.homepage : 'http://' + vendorRecord.homepage}"/></g:if>
                                             <g:if test="${pv.vendor.gokbId}"><ui:wekbIconLink type="vendor" gokbId="${pv.vendor.gokbId}"/></g:if>
                                         </div>
-                                    </g:each>
+                                    </g:each> --%>
                                 </div>
                                 <div class="seven wide right aligned column">
                                     <g:if test="${editmode}">

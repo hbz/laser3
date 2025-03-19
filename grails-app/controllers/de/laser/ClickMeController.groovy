@@ -142,6 +142,9 @@ class ClickMeController {
                 result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
                 result.formFields = exportClickMeService.getExportSurveyEvaluationFieldsForUI(result.surveyConfig)
                 result.contactSwitch = true
+                if(params.chartFilter){
+                    result.modalText = result.modalText + " (${params.chartFilter})"
+                }
                 result.overrideFormat = [xlsx: 'XLSX', csv: 'CSV']
                 result.exportFileName = result.exportFileName ?: escapeService.escapeString(result.surveyConfig.getSurveyName()) + "_" + message(code:'surveyResult.label')
                 break

@@ -213,12 +213,14 @@
 
     </g:form>
 
-    <laser:script file="${this.getGroovyPageFileName()}">
+</ui:modal>
+
+<laser:script file="${this.getGroovyPageFileName()}">
 
         JSPC.callbacks.modal.onShow.modalCreateTask = function (trigger) {
             let preID = '#' + $('#modalCreateTask form input[name=preID]').val()
-            console.log ( 'modalCreateTask / preID: ' + preID )
-            console.log ( trigger )
+%{--            console.log ( 'modalCreateTask / preID: ' + preID )--}%
+%{--            console.log ( trigger )--}%
 
             r2d2.helper.resetModalForm ('#modalCreateTask');
 
@@ -297,6 +299,6 @@
                 });
             </g:if>
         };
-    </laser:script>
+</laser:script>
 
-</ui:modal>
+

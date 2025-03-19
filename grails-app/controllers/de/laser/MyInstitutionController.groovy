@@ -8,6 +8,8 @@ import de.laser.cache.SessionCacheWrapper
 import de.laser.convenience.Marker
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.UserControllerService
+import de.laser.finance.CostInformationDefinition
+import de.laser.finance.CostInformationDefinitionGroup
 import de.laser.remote.Wekb
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
@@ -4124,6 +4126,7 @@ join sub.orgRelations or_sub where
             case 'edit':
                 result.pdGroup = genericOIDService.resolveOID(params.oid)
                 result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
+                result.costInformationsInUse = params.containsKey('costInformationsInUse')
                 result.createOrUpdate = message(code:'default.button.save.label')
                 render template: '/templates/properties/propertyGroupModal', model: result
                 return
@@ -4160,36 +4163,33 @@ join sub.orgRelations or_sub where
                 break
             case 'processing':
                 if(formService.validateToken(params)) {
-                    boolean valid
-                    PropertyDefinitionGroup propDefGroup
-                    String ownerType = params.prop_descr ? PropertyDefinition.getDescrClass(params.prop_descr) : null
+                    if(params.containsKey('costInformationsInUse')) {
+                        CostInformationDefinitionGroup.withTransaction { TransactionStatus ts ->
+                            CostInformationDefinitionGroup.executeUpdate(
+                                    "DELETE CostInformationDefinitionGroup cifg WHERE cifg.tenant = :ctx",
+                                    [ctx: contextService.getOrg()]
+                            )
 
-                    PropertyDefinitionGroup.withTransaction { TransactionStatus ts ->
-                        if (params.oid) {
-                            propDefGroup = (PropertyDefinitionGroup) genericOIDService.resolveOID(params.oid)
-                            propDefGroup.name = params.name ?: propDefGroup.name
-                            propDefGroup.description = params.description
-                            propDefGroup.ownerType = ownerType
-
-                            if (propDefGroup.save()) {
-                                valid = true
-                                flash.message = message(code: 'propertyDefinitionGroup.create.success', args: [propDefGroup.name]) as String
-                            }
-                            else {
-                                flash.error = message(code: 'propertyDefinitionGroup.create.error') as String
+                            params.list('costInformationDefinition').each { cif ->
+                                new CostInformationDefinitionGroup(
+                                        costInformationDefinition: cif,
+                                        tenant: contextService.getOrg()
+                                ).save()
                             }
                         }
-                        else {
-                            if (params.name && ownerType) {
-                                int position = PropertyDefinitionGroup.executeQuery('select coalesce(max(pdg.order), 0) from PropertyDefinitionGroup pdg where pdg.ownerType = :objType and pdg.tenant = :tenant', [objType: ownerType, tenant: contextService.getOrg()])[0]
-                                propDefGroup = new PropertyDefinitionGroup(
-                                        name: params.name,
-                                        description: params.description,
-                                        tenant: contextService.getOrg(),
-                                        ownerType: ownerType,
-                                        order: position + 1,
-                                        isVisible: true
-                                )
+                    }
+                    else {
+                        boolean valid
+                        PropertyDefinitionGroup propDefGroup
+                        String ownerType = params.prop_descr ? PropertyDefinition.getDescrClass(params.prop_descr) : null
+
+                        PropertyDefinitionGroup.withTransaction { TransactionStatus ts ->
+                            if (params.oid) {
+                                propDefGroup = (PropertyDefinitionGroup) genericOIDService.resolveOID(params.oid)
+                                propDefGroup.name = params.name ?: propDefGroup.name
+                                propDefGroup.description = params.description
+                                propDefGroup.ownerType = ownerType
+
                                 if (propDefGroup.save()) {
                                     valid = true
                                     flash.message = message(code: 'propertyDefinitionGroup.create.success', args: [propDefGroup.name]) as String
@@ -4197,21 +4197,41 @@ join sub.orgRelations or_sub where
                                 else {
                                     flash.error = message(code: 'propertyDefinitionGroup.create.error') as String
                                 }
-                            } else {
-                                flash.error = message(code: 'propertyDefinitionGroup.create.missing') as String
                             }
-                        }
-                        if (valid) {
-                            PropertyDefinitionGroupItem.executeUpdate(
-                                    "DELETE PropertyDefinitionGroupItem pdgi WHERE pdgi.propDefGroup = :pdg",
-                                    [pdg: propDefGroup]
-                            )
+                            else {
+                                if (params.name && ownerType) {
+                                    int position = PropertyDefinitionGroup.executeQuery('select coalesce(max(pdg.order), 0) from PropertyDefinitionGroup pdg where pdg.ownerType = :objType and pdg.tenant = :tenant', [objType: ownerType, tenant: contextService.getOrg()])[0]
+                                    propDefGroup = new PropertyDefinitionGroup(
+                                            name: params.name,
+                                            description: params.description,
+                                            tenant: contextService.getOrg(),
+                                            ownerType: ownerType,
+                                            order: position + 1,
+                                            isVisible: true
+                                    )
+                                    if (propDefGroup.save()) {
+                                        valid = true
+                                        flash.message = message(code: 'propertyDefinitionGroup.create.success', args: [propDefGroup.name]) as String
+                                    }
+                                    else {
+                                        flash.error = message(code: 'propertyDefinitionGroup.create.error') as String
+                                    }
+                                } else {
+                                    flash.error = message(code: 'propertyDefinitionGroup.create.missing') as String
+                                }
+                            }
+                            if (valid) {
+                                PropertyDefinitionGroupItem.executeUpdate(
+                                        "DELETE PropertyDefinitionGroupItem pdgi WHERE pdgi.propDefGroup = :pdg",
+                                        [pdg: propDefGroup]
+                                )
 
-                            params.list('propertyDefinition').each { pd ->
-                                new PropertyDefinitionGroupItem(
-                                        propDef: pd,
-                                        propDefGroup: propDefGroup
-                                ).save()
+                                params.list('propertyDefinition').each { pd ->
+                                    new PropertyDefinitionGroupItem(
+                                            propDef: pd,
+                                            propDefGroup: propDefGroup
+                                    ).save()
+                                }
                             }
                         }
                     }
@@ -4224,6 +4244,7 @@ join sub.orgRelations or_sub where
         PropertyDefinition.AVAILABLE_GROUPS_DESCR.each { String propDefGroupType ->
             result.propDefGroups.put(propDefGroupType,unorderedPdgs.findAll { PropertyDefinitionGroup pdg -> pdg.ownerType == PropertyDefinition.getDescrClass(propDefGroupType)})
         }
+        result.costInformationDefinitionsInUse = CostInformationDefinitionGroup.findAllByTenant(contextService.getOrg())
 
         if(params.cmd == 'exportXLS') {
             SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -4451,7 +4472,13 @@ join sub.orgRelations or_sub where
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
         switch(params.cmd) {
-            case 'add':List rl = propertyService.addPrivatePropertyDefinition(params)
+            case 'add': List rl
+                if(params.pd_descr == CostInformationDefinition.COST_INFORMATION) {
+                    rl = propertyService.addPrivateCostInformation(params)
+                }
+                else {
+                    rl = propertyService.addPrivatePropertyDefinition(params)
+                }
                 flash."${rl[0]}" = rl[1]
                 if(rl[2])
                     result.desc = rl[2]
@@ -4511,7 +4538,7 @@ join sub.orgRelations or_sub where
 
         result.languageSuffix = LocaleUtils.getCurrentLang()
 
-        Map<String, Set<PropertyDefinition>> propDefs = [:]
+        Map<String, Set> propDefs = [:]
         Set<String> availablePrivDescs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR
         if (contextService.getOrg().isCustomerType_Inst_Pro())
             availablePrivDescs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR-PropertyDefinition.SVY_PROP
@@ -4519,6 +4546,8 @@ join sub.orgRelations or_sub where
             Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, contextService.getOrg(), [sort: 'name_'+result.languageSuffix]) // ONLY private properties!
             propDefs[it] = itResult
         }
+        Set<CostInformationDefinition> costInformationDefs = CostInformationDefinition.findAllByTenant(contextService.getOrg(), [sort: 'name_'+result.languageSuffix]) // ONLY private cost informations!
+        propDefs.put(CostInformationDefinition.COST_INFORMATION, costInformationDefs)
 
         result.propertyDefinitions = propDefs
 
@@ -4557,11 +4586,13 @@ join sub.orgRelations or_sub where
 
         result.languageSuffix = LocaleUtils.getCurrentLang()
 
-        Map<String,Set<PropertyDefinition>> propDefs = [:]
+        Map<String,Set> propDefs = [:]
         PropertyDefinition.AVAILABLE_PUBLIC_DESCR.each { it ->
             Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name_'+result.languageSuffix]) // NO private properties!
             propDefs[it] = itResult
         }
+        Set<CostInformationDefinition> costInformationDefs = CostInformationDefinition.findAllByTenantIsNull([sort: 'name_'+result.languageSuffix]) // NO private cost informations!
+        propDefs.put(CostInformationDefinition.COST_INFORMATION, costInformationDefs)
 
         def (usedPdList, attrMap, multiplePdList) = propertyService.getUsageDetails() // [List<Long>, Map<String, Object>, List<Long>]
         result.propertyDefinitions = propDefs

@@ -76,7 +76,9 @@
             <th class="four wide" rowspan="2">${message(code:'default.relation.label')}</th>
             <th class="three wide" rowspan="2">${message(code:'default.progress.label')}</th>
             <th class="two wide la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
-            <th class="two wide" rowspan="2">${message(code:'default.actions.label')}</th>
+            <th class="two wide center aligned" rowspan="2">
+                <ui:optionsIcon />
+            </th>
         </tr>
         <tr>
             <th class="two wide la-smaller-table-head">${message(code:'default.dateCreated.label')}</th>

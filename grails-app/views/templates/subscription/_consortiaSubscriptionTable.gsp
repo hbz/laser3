@@ -75,7 +75,9 @@
                 <ui:multiYearIcon isConsortial="true" />
             </th>
             <g:if test="${'onlyMemberSubs' in tableConfig}">
-                <th rowspan="2">${message(code:'default.actions.label')}</th>
+                <th class="center aligned" rowspan="2">
+                    <ui:optionsIcon />
+                </th>
             </g:if>
             <g:if test="${'showInfoFlyout' in tableConfig}">
                 <th rowspan="2"></th>

@@ -13,7 +13,9 @@
             <th class="six wide" scope="col" rowspan="2">${message(code:'workflow.label')}</th>
             <th class="five wide" scope="col" rowspan="2">${message(code:'default.progress.label')}</th>
             <th class="two wide la-smaller-table-head" scope="col">${message(code:'default.lastUpdated.label')}</th>
-            <th class="two wide" scope="col" rowspan="2">${message(code:'default.actions.label')}</th>
+            <th class="two wide center aligned" scope="col" rowspan="2">
+                <ui:optionsIcon />
+            </th>
         </tr>
         <tr>
             <th class="two wide la-smaller-table-head" scope="col">${message(code:'default.dateCreated.label')}</th>

@@ -67,7 +67,9 @@
             <thead>
             <tr>
                 <th class="fifteen wide">Mail-Domain</th>
-                <th class="one wide">${message(code: 'default.actions.label')}</th>
+                <th class="one wide center aligned">
+                    <ui:optionsIcon />
+                </th>
             </tr>
             </thead>
             <tbody>

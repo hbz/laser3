@@ -13,7 +13,9 @@
             <th>${message(code: 'surveyProperty.mandatoryProperty')}</th>
             <th>${message(code: 'surveyProperty.propertyOrder')}</th>
             <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING && surveyProperties}">
-                <th>${message(code: 'default.actions.label')}</th>
+                <th class="center aligned">
+                    <ui:optionsIcon />
+                </th>
             </g:if>
         </tr>
         </thead>

@@ -77,7 +77,9 @@
                                 <th>Customer ID</th>
                                 <th>Requestor ID/API-Key</th>
                                 <th><g:message code="default.usage.sushiCallCheck.header"/></th>
-                                <th><g:message code="default.actions.label"/></th>
+                                <th class="center aligned">
+                                    <ui:optionsIcon />
+                                </th>
                             </tr>
                             <g:each in="${Subscription.executeQuery('select new map(sub.id as memberSubId, org.sortname as memberName, org.id as memberId, ci as customerIdentifier) from CustomerIdentifier ci, OrgRole oo join oo.org org join oo.sub sub where ci.customer = org and sub.instanceOf = :parent and oo.roleType in (:subscrRoles) and ci.platform.gokbId = :platform order by ci.customer.sortname asc', [parent: subscription, platform: platform.uuid, subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])}" var="row" status="i">
                                 <tr>

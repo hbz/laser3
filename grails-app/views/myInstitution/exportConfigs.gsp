@@ -35,7 +35,9 @@
                     <th>${message(code: 'default.count.label')}-${message(code: 'default.config.label')}</th>
                     <th>${message(code: 'clickMeConfig.configOrder')}</th>
                     <g:if test="${editable}">
-                        <th>${message(code: 'default.actions.label')}</th>
+                        <th class="center aligned">
+                            <ui:optionsIcon />
+                        </th>
                     </g:if>
                 </tr>
                 </thead>

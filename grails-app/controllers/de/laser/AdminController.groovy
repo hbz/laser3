@@ -3,6 +3,7 @@ package de.laser
 import de.laser.annotations.DebugInfo
 import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigDefaults
+import de.laser.finance.CostInformationDefinition
 import de.laser.mail.MailTemplate
 import de.laser.storage.RDConstants
 import de.laser.utils.AppUtils
@@ -997,6 +998,8 @@ SELECT * FROM (
             Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: sort, order: order]) // NO private properties!
             propDefs.putAt( it, itResult )
         }
+        Set<CostInformationDefinition> costInformationDefs = CostInformationDefinition.findAllByTenantIsNull([sort: sort, order: order]) // NO private cost informations!
+        propDefs.put(CostInformationDefinition.COST_INFORMATION, costInformationDefs)
 
         def (usedPdList, attrMap, multiplePdList) = propertyService.getUsageDetails() // [List<Long>, Map<String, Object>, List<Long>]
 

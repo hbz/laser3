@@ -67,7 +67,9 @@
                     <th>${message(code: 'default.subscription.label')}</th>
                 </g:if>
                 <th>${message(code:'default.notes.label')}</th>
-                <th>${message(code:'default.actions.label')}</th>
+                <th class="center aligned">
+                    <ui:optionsIcon />
+                </th>
             </tr>
             </thead>
             <tbody>

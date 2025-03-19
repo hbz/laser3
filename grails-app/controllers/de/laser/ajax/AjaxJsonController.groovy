@@ -16,6 +16,8 @@ import de.laser.License
 import de.laser.LicenseService
 import de.laser.LinksGenerationService
 import de.laser.PendingChange
+import de.laser.finance.CostInformationDefinition
+import de.laser.finance.CostItem
 import de.laser.wekb.Package
 import de.laser.wekb.Provider
 import de.laser.ProviderService
@@ -189,6 +191,18 @@ class AjaxJsonController {
                 data.each { License l ->
                     result.add([value: l.id, text: l.dropdownNamingConvention()])
                 }
+            }
+        }
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def adjustCostInformationValueList() {
+        List result = []
+        CostInformationDefinition cif = CostInformationDefinition.get(params.costInformationDefinition)
+        if(cif.type == RefdataValue.class.name) {
+            RefdataCategory.getAllRefdataValues(cif.refdataCategory).each { RefdataValue rv ->
+                result.add([value: rv.id, text: rv.getI10n('value')])
             }
         }
         render result as JSON
@@ -403,8 +417,9 @@ class AjaxJsonController {
         List<Map<String, Object>> result = []
 
         if (params.oid != "undefined") {
-            PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(params.oid)
-            if (propDef) {
+            def obj = genericOIDService.resolveOID(params.oid)
+            if (obj instanceof PropertyDefinition) {
+                PropertyDefinition propDef = (PropertyDefinition) obj
                 List<AbstractPropertyWithCalculatedLastUpdated> values = []
                 if (propDef.tenant) {
                     switch (propDef.descr) {
@@ -469,6 +484,23 @@ class AjaxJsonController {
                         }
                         result = result.sort { x, y -> x.text.compareToIgnoreCase(y.text) }
                     }
+                }
+            }
+            else if(obj instanceof CostInformationDefinition) {
+                CostInformationDefinition cif = (CostInformationDefinition) obj
+                String subFilter = ''
+                Map<String, Object> queryParams = [cif: cif, ctx: contextService.getOrg()]
+                if(params.containsKey('subscription')) {
+                    subFilter = 'and (ci.sub.id = :sub or ci.sub.instanceOf.id = :sub)'
+                    queryParams.sub = params.long('subscription')
+                }
+                if(cif.type == RefdataValue.class.name) {
+                    Set values = CostItem.executeQuery('select ci.costInformationRefValue from CostItem ci join ci.costInformationRefValue rv where ci.costInformationDefinition = :cif and ci.owner = :ctx '+subFilter+' order by rv.'+LocaleUtils.getLocalizedAttributeName('value'), queryParams)
+                    result = values.collect { RefdataValue ciiRefValue -> [value: ciiRefValue.id, text: ciiRefValue.getI10n('value')] }
+                }
+                else {
+                    Set values = CostItem.executeQuery('select ci.costInformationStringValue from CostItem ci where ci.costInformationDefinition = :cif and ci.owner = :ctx '+subFilter+'  order by lower(ci.costInformationStringValue)', queryParams)
+                    result = values.collect { String ciiStrValue -> [value: ciiStrValue, text: ciiStrValue] }
                 }
             }
         }

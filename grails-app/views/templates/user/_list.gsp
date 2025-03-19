@@ -19,7 +19,9 @@
             <th class="center aligned"><i class="exclamation triangle icon grey"></i></th>
         </g:if>
         <th>${message(code:'user.enabled.label')}</th>
-        <th class="la-action-info">${message(code:'default.actions.label')}</th>
+        <th class="center aligned">
+            <ui:optionsIcon />
+        </th>
     </tr>
     </thead>
     <tbody>

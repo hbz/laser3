@@ -36,7 +36,9 @@
                     <th>${message(code:'property.table.paragraph')}</th>
                 </g:if>
                 <th>${message(code:'property.table.notes')}</th>
-                <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                <th class="center aligned">
+                    <ui:optionsIcon />
+                </th>
             </tr>
         </thead>
     </g:if>

@@ -47,7 +47,7 @@
                 <th>${message(code: 'org.hasInstAdmin.label')}</th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('legalInformation')}">
-                <th class="la-no-uppercase">
+                <th class="center aligned">
                     <span class="la-popup-tooltip" data-content="${message(code: 'org.legalInformation.tooltip')}">
                         <i class="${Icon.ATTR.ORG_LEGAL_INFORMATION}"></i>
                     </span>
@@ -60,13 +60,21 @@
                 <th>${message(code: 'org.privateContacts.label')}</th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSubscriptions')}">
-                <th class="la-th-wrap">${message(code: 'org.subscriptions.label')}</th>
+                <th class="center aligned">
+                    <span class="la-popup-tooltip" data-content="${message(code:'org.subscriptions.label')}">
+                        <i class="${Icon.SUBSCRIPTION} large"></i>
+                    </span>
+                </th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('currentSubscriptions')}">
                 <th class="la-th-wrap">${message(code: 'org.subscriptions.label')}</th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSurveys')}">
-                <th class="la-th-wrap">${message(code: 'survey.active')}</th>
+                <th class="center aligned">
+                    <span class="la-popup-tooltip" data-content="${message(code:'survey.active')}">
+                        <i class="${Icon.SURVEY} large"></i>
+                    </span>
+                </th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('identifier')}">
                 <th>${message(code:'default.identifier.label')}</th>

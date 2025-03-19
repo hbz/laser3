@@ -14,14 +14,14 @@
 
         <ui:messages data="${flash}" />
 
+        <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
+            <laser:render template="dataviz_inst" />
+            <laser:render template="testSubscriptions" model="${[cts: currentTestSubscriptions]}"/>
+        </g:if>
+
         <g:if test="${wekbNews}">
             <laser:render template="wekbNews" model="${[wekbNews: wekbNews, tmplView: 'info']}"/>
         </g:if>
-
-        <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
-            <laser:render template="dataviz_inst" />
-        </g:if>
-
     <%
         RefdataValue us_dashboard_tab
         switch (params.view) {
@@ -186,7 +186,9 @@
                                 <th class="four wide" rowspan="2">${message(code:'default.relation.label')}</th>
                                 <th class="four wide" rowspan="2">${message(code:'default.progress.label')}</th>
                                 <th class="two wide la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
-                                <th class="two wide" rowspan="2">${message(code:'default.actions.label')}</th>
+                                <th class="two wide center aligned" rowspan="2">
+                                    <ui:optionsIcon />
+                                </th>
                             </tr>
                             <tr>
                                 <th class="la-smaller-table-head">${message(code:'default.dateCreated.label')}</th>

@@ -52,7 +52,9 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
     Date lastUpdated
     Date lastUpdatedCascading
 
-    boolean preferredForSurvey  = false
+    //only for Survey
+    boolean preferredSurveyPerson  = false
+    boolean preferredBillingPerson  = false
 
     static mapping = {
         id              column:'prs_id'
@@ -68,7 +70,8 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
         contactType     column:'prs_contact_type_rv_fk'
         roleType        column:'prs_role_type_rv_fk'
 
-        preferredForSurvey column: 'prs_preferred_for_survey'
+        preferredSurveyPerson column: 'prs_preferred_survey_person'
+        preferredBillingPerson column: 'prs_preferred_billing_person'
 
         roleLinks           cascade: 'all', batchSize: 10
         contacts            cascade: 'all', lazy: false

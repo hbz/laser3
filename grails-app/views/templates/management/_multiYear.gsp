@@ -11,7 +11,9 @@
                     <th>${message(code: 'default.startDate.label.shy')}</th>
                     <th>${message(code: 'default.endDate.label.shy')}</th>
                     <th>${message(code: 'default.status.label')}</th>
-                    <th>${message(code:'default.actions.label')}</th>
+                    <th class="center aligned">
+                        <ui:optionsIcon />
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
@@ -116,7 +118,9 @@
                 <th>${message(code: 'default.endDate.label.shy')}</th>
                 <th>${message(code: 'default.status.label')}</th>
                 <th>${message(code: 'subscription.isMultiYear.label')}</th>
-                <th>${message(code:'default.actions.label')}</th>
+                <th class="center aligned">
+                    <ui:optionsIcon />
+                </th>
             </tr>
             </thead>
             <tbody>

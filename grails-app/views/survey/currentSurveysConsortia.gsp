@@ -242,8 +242,9 @@
             <th rowspan="2" scope="col">${message(code: 'surveyResult.label')}</th>
 
             %{--<th rowspan="2" scope="col">${message(code: 'surveyInfo.finished')}</th>--}%
-            <th rowspan="2" scope="col">${message(code: 'default.actions.label')}</th>
-
+            <th rowspan="2" scope="col" class="center aligned">
+                <ui:optionsIcon />
+            </th>
         </tr>
         <tr>
             <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}"

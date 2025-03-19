@@ -71,7 +71,9 @@
                         <th>${message(code: 'sidewide.number')}</th>
                         <th>${message(code: 'propertyDefinition.label')}</th>
                         <th>${message(code: 'renewalEvaluation.propertiesChanged')}</th>
-                        <th>${message(code: 'default.actions.label')}</th>
+                        <th class="center aligned">
+                            <ui:optionsIcon />
+                        </th>
                     </tr>
                     </thead>
                     <tbody>
@@ -258,7 +260,9 @@
                     </th>
                 </g:if>
             </g:each>
-            <th scope="col" rowspan="2" class="two">${message(code: 'default.actions.label')}</th>
+            <th scope="col" rowspan="2" class="two center aligned">
+                <ui:optionsIcon />
+            </th>
         </tr>
         </thead>
         <tbody>
@@ -873,7 +877,9 @@
                     </g:if>
 
                 </g:each>
-                <th scope="col" rowspan="2" class="two">${message(code: 'default.actions.label')}</th>
+                <th scope="col" rowspan="2" class="two center aligned">
+                    <ui:optionsIcon />
+                </th>
             </tr>
             </thead>
             <tbody>

@@ -163,7 +163,9 @@
                                                               id="selectedCostItemElementID"/>
             </th>
             <g:if test="${contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
-                <th class="la-action-info" scope="col" rowspan="3"><g:message code="default.actions.label"/></th>
+                <th class="center aligned" scope="col" rowspan="3">
+                    <ui:optionsIcon />
+                </th>
             </g:if>
         </tr>
         <tr>

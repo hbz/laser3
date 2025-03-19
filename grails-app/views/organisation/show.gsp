@@ -542,6 +542,12 @@
                                                                 </div>
                                                                 <div class="fourteen wide column">
                                                                     <div class="ui label">${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}</div>
+                                                                    <g:if test="${prs.preferredBillingPerson}">
+                                                                        <i class="file invoice circular la-popup-tooltip" data-content="${message(code:'person.preferredBillingPerson')}"></i>
+                                                                    </g:if>
+                                                                    <g:if test="${prs.preferredSurveyPerson}">
+                                                                        <i class="${Icon.SURVEY} circular la-popup-tooltip" data-content="${message(code:'person.preferredSurveyPerson')}"></i>
+                                                                    </g:if>
                                                                     <div class="ui header">${prs}</div>
                                                                     <g:each in="${prs.roleLinks}" var="personRole">
                                                                         <g:if test="${personRole.org.id == orgInstance.id && personRole.positionType}">
@@ -582,6 +588,12 @@
                                                                 </div>
                                                                 <div class="fourteen wide column">
                                                                     <div class="ui label">${RDStore.PRS_FUNC_INVOICING_CONTACT.getI10n('value')}</div>
+                                                                    <g:if test="${prs.preferredBillingPerson}">
+                                                                        <i class="file invoice circular la-popup-tooltip" data-content="${message(code:'person.preferredBillingPerson')}"></i>
+                                                                    </g:if>
+                                                                    <g:if test="${prs.preferredSurveyPerson}">
+                                                                        <i class="${Icon.SURVEY} circular la-popup-tooltip" data-content="${message(code:'person.preferredSurveyPerson')}"></i>
+                                                                    </g:if>
                                                                     <div class="ui header">${prs}</div>
                                                                     <g:each in="${prs.roleLinks}" var="personRole">
                                                                         <g:if test="${personRole.org.id == orgInstance.id && personRole.positionType}">

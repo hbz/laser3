@@ -16,7 +16,7 @@
                 ${message(code:'tipp.reportTitleToProvider.proHint')}
             </ui:msg>
 
-        </g:if>
+        </g:if>%{-- BASIC --}%
         <g:elseif test="${contextService.getOrg().isCustomerType_Pro()}">
 
             <ui:msg class="info" hideClose="true">

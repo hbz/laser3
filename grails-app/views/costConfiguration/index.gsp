@@ -29,7 +29,9 @@
                         <th><g:message code="costConfiguration.useForCostItems"/></th>
                         <g:if test="${editable}">
                             <th><g:message code="financials.setAll"/></th>
-                            <th><g:message code="default.actions.label"/></th>
+                            <th class="center aligned">
+                                <ui:optionsIcon />
+                            </th>
                         </g:if>
                     </tr>
                 </thead>

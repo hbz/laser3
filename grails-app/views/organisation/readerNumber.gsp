@@ -38,7 +38,9 @@
                                 <th><g:message code="readerNumber.sum.label"/></th>
                             </g:if>
                             <th><g:message code="readerNumber.notes"/></th>
-                            <th>${message(code:'default.actions.label')}</th>
+                            <th class="center aligned">
+                                <ui:optionsIcon />
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -144,7 +146,9 @@
                                 <th><g:message code="readerNumber.sum.label"/></th>
                             </g:if>
                             <th><g:message code="readerNumber.notes"/></th>
-                            <th>${message(code:'default.actions.label')}</th>
+                            <th class="center aligned">
+                                <ui:optionsIcon />
+                            </th>
                         </tr>
                     </thead>
                     <tbody>

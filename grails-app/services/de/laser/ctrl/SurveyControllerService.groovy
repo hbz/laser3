@@ -697,13 +697,48 @@ class SurveyControllerService {
                 params.remove("vendorListToggler")
             }
 
-            if(result.surveyConfig.subscription && params.initial){
+   /*         if(result.surveyConfig.subscription && params.initial){
                 List providers = result.surveyConfig.subscription.getProviders()
                 if(providers.size() > 0){
                     params.qp_providers = providers.id
                     params.remove('initial')
                 }
+            }*/
+
+            if(params.initial){
+                params.isMyX = ['wekb_exclusive']
+                params.remove('initial')
             }
+
+            if (params.isMyX) {
+                List<String> xFilter = params.list('isMyX')
+                Set<Long> f1Result = [], f2Result = []
+                boolean   f1Set = false, f2Set = false
+                result.currentVendorIdList = Vendor.executeQuery('select vr.vendor.id from VendorRole vr, OrgRole oo join oo.sub s where s = vr.subscription and oo.org = :context and s.status = :current', [current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()])
+                if (xFilter.contains('ismyx_exclusive')) {
+                    f1Result.addAll( result.vendorTotal.findAll { result.currentVendorIdList.contains( it.id ) }.collect{ it.id } )
+                    f1Set = true
+                }
+                if (xFilter.contains('ismyx_not')) {
+                    f1Result.addAll( result.vendorTotal.findAll { ! result.currentVendorIdList.contains( it.id ) }.collect{ it.id }  )
+                    f1Set = true
+                }
+                if (xFilter.contains('wekb_exclusive')) {
+                    f2Result.addAll( result.vendorTotal.findAll { it.gokbId != null && it.gokbId in result.wekbRecords.keySet() }.collect{ it.id } )
+                    f2Set = true
+                }
+                if (xFilter.contains('wekb_not')) {
+                    f2Result.addAll( result.vendorTotal.findAll { it.gokbId == null }.collect{ it.id }  )
+                    f2Set = true
+                }
+
+                if (f1Set) { result.vendorTotal = result.vendorTotal.findAll { f1Result.contains(it.id) } }
+                if (f2Set) { result.vendorTotal = result.vendorTotal.findAll { f2Result.contains(it.id) } }
+            }
+
+            result.vendorListTotal = result.vendorTotal.size()
+            result.vendorList = result.vendorTotal.drop(result.offset).take(result.max)
+
             result.surveyVendorsCount = SurveyConfigVendor.executeQuery("select count(*) from SurveyConfigVendor where surveyConfig = :surConfig", [surConfig: result.surveyConfig])[0]
 
             result.selectedVendorIdList = SurveyConfigVendor.executeQuery("select scv.vendor.id from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])

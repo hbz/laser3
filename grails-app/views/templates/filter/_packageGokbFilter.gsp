@@ -135,6 +135,9 @@
                         />
                     </div>
                 </g:if>
+                <g:if test="${field == ''}">
+                    <div class="field"></div>
+                </g:if>
             </g:each>
             <g:if test="${numberOfFields > 1}">
                 </div><!-- .fields -->

@@ -34,7 +34,9 @@
                     </span>
                 </th>
                 <g:if test="${editable}">
-                    <th class="la-action-info one wide">${message(code:'default.actions.label')}</th>
+                    <th class="one wide center aligned">
+                        <ui:optionsIcon />
+                    </th>
                 </g:if>
             </tr>
         </thead>

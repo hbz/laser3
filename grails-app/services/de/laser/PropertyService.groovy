@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.addressbook.Person
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.finance.CostInformationDefinition
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyInfo
@@ -9,6 +10,7 @@ import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.properties.*
+import de.laser.finance.CostItem
 import de.laser.survey.SurveyResult
 import de.laser.utils.LocaleUtils
 import de.laser.wekb.Platform
@@ -172,6 +174,53 @@ class PropertyService {
     }
 
     /**
+     * Adds new CostInformationDefinition for the given institution if not existing
+     * @param params the request parameter map
+     * @return a list containing the process status
+     */
+    List addPrivateCostInformation(GrailsParameterMap params) {
+        log.debug("trying to add private cost information definition for institution: " + params)
+        Locale locale = LocaleUtils.getCurrentLocale()
+        Org tenant = contextService.getOrg()
+
+        if ( (params.pd_name) && (params.pd_name != "null") ) {
+
+            /*RefdataCategory rdc = null
+            if (params.pd_type == RefdataValue.class.name) {
+                if (params.refdatacategory) {
+                    rdc = RefdataCategory.findById( params.long('refdatacategory') )
+                }
+                if (! rdc) {
+                    return ['error', messageSource.getMessage('propertyDefinition.descr.missing2', null, locale)]
+                }
+            }*/
+
+            Map<String, Object> map = [
+                    token       : UUID.randomUUID(),
+                    //type        : params.pd_type,
+                    type        : 'java.lang.String',
+                    //rdc         : rdc?.getDesc(),
+                    i10n        : [
+                            name_de: params.pd_name?.trim(),
+                            name_en: params.pd_name?.trim(),
+                            expl_de: params.pd_expl?.trim(),
+                            expl_en: params.pd_expl?.trim()
+                    ],
+                    tenant      : tenant.globalUID]
+
+            CostInformationDefinition privateCIDef = CostInformationDefinition.construct(map)
+            Object[] args = [messageSource.getMessage("costInformationDefinition.create.label", null, locale), privateCIDef.getI10n('name')]
+            if (privateCIDef.save()) {
+                return ['message', messageSource.getMessage('default.created.message', args, locale), params.pd_descr]
+            }
+            else {
+                return ['error', messageSource.getMessage('default.not.created.message', args, locale)]
+            }
+        }
+        else return ['error', messageSource.getMessage('propertyDefinition.type.missing',null,locale)]
+    }
+
+    /**
      * Adds new PrivateProperty for the given institution if not existing
      * @param params the request parameter map
      * @return a list containing the process status
@@ -227,7 +276,7 @@ class PropertyService {
      * @return a map containing usage counts and details for each property definition
      */
     List getUsageDetails() {
-        List<Long> usedPdList  = []
+        List<String> usedPdList  = []
         Map<String, Object> detailsMap = [:]
         List<Long> multiplePdList = []
 
@@ -241,7 +290,7 @@ class PropertyService {
                 detailsMap.putAt( dc.shortName, pds.collect{ PropertyDefinition pd -> "${pd.id}:${pd.type}:${pd.descr}"}.sort() )
 
                 pds.each{ PropertyDefinition pd ->
-                    usedPdList << pd.id
+                    usedPdList << genericOIDService.getOID(pd)
                 }
 
                 String query2 = "select xp.type.id from ${dc.name} xp where xp.type.tenant = null or xp.type.tenant = :ctx group by xp.type.id, xp.tenant, xp.owner having count(xp) > 1"
@@ -251,12 +300,21 @@ class PropertyService {
                 Set<PropertyDefinition> pds = PropertyDefinition.executeQuery('select distinct type from SurveyResult')
                 detailsMap.putAt( dc.shortName, pds.collect{ PropertyDefinition pd -> "${pd.id}:${pd.type}:${pd.descr}"}.sort() )
                 pds.each { PropertyDefinition pd ->
-                    usedPdList << pd.id
+                    usedPdList << genericOIDService.getOID(pd)
                 }
 
 //                String query2 = "select xp.type.id from SurveyResult xp where xp.type.tenant = null or xp.type.tenant = :ctx group by xp.type.id, xp.tenant, xp.owner having count(xp) > 1"
                 String query2 = "select sr.type.id from SurveyResult sr where sr.type.tenant = null or sr.type.tenant = :ctx group by sr.type.id, sr.participant, sr.surveyConfig, sr.owner having count(sr) > 1"
                 multiplePdList.addAll(PropertyDefinition.executeQuery( query2, [ctx: contextService.getOrg()] ))
+            }
+            else if(CostItem.class.name.contains(dc.name)) {
+                Set<CostInformationDefinition> cifs = CostInformationDefinition.executeQuery('select distinct costInformationDefinition from CostItem')
+                detailsMap.putAt( dc.shortName, cifs.collect{ CostInformationDefinition cif -> "${cif.id}:${cif.type}"}.sort() )
+                cifs.each { CostInformationDefinition cif ->
+                    usedPdList << genericOIDService.getOID(cif)
+                }
+                //String query2 = "select ci.costInformationDefinition.id from CostItem ci where ci.costInformationDefinition.tenant = null or ci.costInformationDefinition.tenant = :ctx group by ci.costInformationDefinition.id, ci.owner having count(ci) > 1"
+                //multiplePdList.addAll(CostInformationDefinition.executeQuery( query2, [ctx: contextService.getOrg()] ))
             }
         }
         [usedPdList.unique().sort(), detailsMap.sort(), multiplePdList]

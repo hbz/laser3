@@ -33,10 +33,9 @@
             <laser:render template="/templates/filter/orgFilter"
                       model="[
                               tmplConfigShow: [
-                                      ['name', 'isLegallyObliged', 'isMyX'],
-                                      ['identifier', 'identifierNamespace', 'customerIDNamespace'],
+                                      ['name', 'identifier', 'identifierNamespace', 'customerIDNamespace'],
                                       ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'],
-                                      ['discoverySystemsFrontend', 'discoverySystemsIndex']
+                                      ['discoverySystemsFrontend', 'discoverySystemsIndex', 'isLegallyObliged', 'isMyX']
                               ],
                               tmplConfigFormFilter: true
                       ]"/>

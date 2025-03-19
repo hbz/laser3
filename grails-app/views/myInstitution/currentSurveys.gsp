@@ -240,7 +240,9 @@
                 <th><g:message code="surveyInfo.finishedDate"/></th>
             </g:if>
 
-            <th class="la-action-info">${message(code:'default.actions.label')}</th>
+            <th class="center aligned">
+                <ui:optionsIcon />
+            </th>
         </tr>
 
         </thead>

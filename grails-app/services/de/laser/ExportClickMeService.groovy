@@ -4,6 +4,7 @@ import de.laser.addressbook.Address
 import de.laser.addressbook.Contact
 import de.laser.addressbook.Person
 import de.laser.addressbook.PersonRole
+import de.laser.finance.CostInformationDefinition
 import de.laser.finance.CostItem
 import de.laser.properties.LicenseProperty
 import de.laser.properties.ProviderProperty
@@ -1143,6 +1144,18 @@ class ExportClickMeService {
                         ]
                 ],
 
+                costInformation : [
+                        label: 'Information budgets',
+                        message: 'costInformationDefinition.financeView.label',
+                        fields: [:]
+                ],
+
+                myCostInformation : [
+                        label: 'My information budgets',
+                        message: 'costInformationDefinition.financeView.my.label',
+                        fields: [:]
+                ],
+
                 org : [
                         label: 'Organisation',
                         message: 'org.institution.label',
@@ -1907,7 +1920,7 @@ class ExportClickMeService {
                                 'tipp.firstEditor'     : [field: 'firstEditor', label: 'First Editor', message: 'tipp.firstEditor', sqlCol: 'tipp_first_editor'],
                                 'tipp.volume'          : [field: 'volume', label: 'Volume', message: 'tipp.volume', sqlCol: 'tipp_volume'],
                                 'tipp.editionStatement': [field: 'editionStatement', label: 'Edition Statement', message: 'title.editionStatement.label', sqlCol: 'tipp_edition_statement'],
-                                'tipp.editionNumber'   : [field: 'editionNumber', label: 'Edition Number', message: 'tipp.editionNumber', sqlCol: 'tipp_edition_number'],
+                                'tipp.editionNumber'   : [field: 'editionNumber', label: 'Edition Number', message: 'tipp.editionNumber', sqlCol: 'tipp_edition_number::text'],
                                 'tipp.summaryOfContent': [field: 'summaryOfContent', label: 'Summary of Content', message: 'title.summaryOfContent.label', sqlCol: 'tipp_summary_of_content'],
                                 'tipp.seriesName'      : [field: 'seriesName', label: 'Series Name', message: 'tipp.seriesName', sqlCol: 'tipp_series_name'],
                                 'tipp.subjectReference': [field: 'subjectReference', label: 'Subject Reference', message: 'tipp.subjectReference', sqlCol: 'tipp_subject_reference'],
@@ -2788,6 +2801,11 @@ class ExportClickMeService {
                 exportFields.put(it.key, it.value)
             }
         }
+        Set<CostInformationDefinition> cifList = CostInformationDefinition.executeQuery("select cif from CostInformationDefinitionGroup cifg join cifg.costInformationDefinition cif where cifg.tenant = :ctx order by cif."+localizedName+" asc", [ctx:contextOrg])
+
+        cifList.each { CostInformationDefinition costInformationDefinition ->
+            exportFields.put("costInformation." + costInformationDefinition.id, [field: null, label: costInformationDefinition."${localizedName}", privateProperty: (costInformationDefinition.tenant?.id == contextOrg.id)])
+        }
 
         SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>(), addressTypes = new TreeSet<RefdataValue>()
         contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
@@ -2845,6 +2863,19 @@ class ExportClickMeService {
                 fields.subscription.fields.put('subscription.isAutomaticRenewAnnually', [field: 'sub.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
             }
             fields.subscription.fields.put('subscription.consortium', [field: null, label: 'Consortium', message: 'consortium.label', defaultChecked: true])
+        }
+
+        fields.costInformation.fields.clear()
+        fields.myCostInformation.fields.clear()
+
+        Set<CostInformationDefinition> cifList = CostInformationDefinition.executeQuery("select cif from CostInformationDefinitionGroup cifg join cifg.costInformationDefinition cif where cifg.tenant = :ctx order by cif."+localizedName+" asc", [ctx:contextOrg])
+
+        cifList.each { CostInformationDefinition costInformationDefinition ->
+            //the proxies again ...
+            if(costInformationDefinition.tenant?.id == contextOrg.id)
+                fields.myCostInformation.fields << ["costInformation.${costInformationDefinition.id}": [field: null, label: costInformationDefinition."${localizedName}", privateProperty: true]]
+            else
+                fields.costInformation.fields << ["costInformation.${costInformationDefinition.id}": [field: null, label: costInformationDefinition."${localizedName}", privateProperty: false]]
         }
 
         fields.participantIdentifiers.fields.clear()
@@ -4830,15 +4861,9 @@ class ExportClickMeService {
      * @param selectedFields the fields which should appear
      * @return an Excel worksheet containing the export
      */
-    def exportSurveyEvaluation(Map result, Map<String, Object> selectedFields, Set<String> contactSwitch, FORMAT format) {
+    def exportSurveyEvaluation(Map result, Map<String, Object> selectedFields, Set<String> contactSwitch, FORMAT format, String chartFilter) {
         Locale locale = LocaleUtils.getCurrentLocale()
-
-        List<SurveyOrg> participantsNotFinish = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig)
-        List<SurveyOrg> participantsFinish = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig)
-
-        //List<SurveyOrg> participantsNotFinish = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfigAndOrgInsertedItself(result.surveyConfig, false)
-        //List<SurveyOrg> participantsNotFinishInsertedItself = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfigAndOrgInsertedItself(result.surveyConfig, true)
-
+        Map sheetData = [:]
         Map<String, Object> selectedExportFields = [:]
 
         Map<String, Object> configFields = getExportSurveyEvaluationFields(result.surveyConfig)
@@ -4894,59 +4919,100 @@ class ExportClickMeService {
 
         List exportData = []
 
-        exportData.add([createTableCell(format, messageSource.getMessage('surveyEvaluation.participantsViewAllFinish', null, locale) + " (${participantsFinish.size()})", 'positive')])
+        if(chartFilter){
+            exportData.add([createTableCell(format, chartFilter + " (${result.participants.size()})", 'bold')])
+            result.participants.sort { it.org.sortname }.each { SurveyOrg surveyOrg ->
+                Map participantResult = [:]
+                participantResult.properties = SurveyResult.findAllByParticipantAndSurveyConfig(surveyOrg.org, result.surveyConfig)
 
-        participantsFinish.sort { it.org.sortname }.each { SurveyOrg surveyOrg ->
-            Map participantResult = [:]
-            participantResult.properties = SurveyResult.findAllByParticipantAndSurveyConfig(surveyOrg.org, result.surveyConfig)
+                participantResult.sub = [:]
+                if (result.surveyConfig.subscription) {
+                    participantResult.sub = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(surveyOrg.org)
+                }
 
-            participantResult.sub = [:]
-            if(result.surveyConfig.subscription) {
-                participantResult.sub = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(surveyOrg.org)
+                participantResult.participant = surveyOrg.org
+                participantResult.surveyConfig = result.surveyConfig
+                participantResult.surveyOwner = result.surveyConfig.surveyInfo.owner
+                participantResult.subCostItems = participantResult.sub ? CostItem.findAllBySubAndCostItemElementInListAndCostItemStatusNotEqualAndOwnerAndPkgIsNull(participantResult.sub, selectedCostItemElements.selectedCostItemElementsForSubCostItems, RDStore.COST_ITEM_DELETED, participantResult.surveyOwner, [sort: 'costItemElement']) : []
+                participantResult.surveyCostItems = CostItem.findAllBySurveyOrgAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, selectedCostItemElements.selectedCostItemElementsForSurveyCostItems, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
+                participantResult.surveyOrg = surveyOrg
+                participantResult.selectedCostItemElementsForSubCostItems = selectedCostItemElements.selectedCostItemElementsForSubCostItems
+                participantResult.selectedCostItemElementsForSurveyCostItems = selectedCostItemElements.selectedCostItemElementsForSurveyCostItems
+
+                _setSurveyEvaluationRow(participantResult, selectedExportFields, exportData, selectedCostItemFields, format, contactSwitch)
             }
 
-            participantResult.participant = surveyOrg.org
-            participantResult.surveyConfig = result.surveyConfig
-            participantResult.surveyOwner = result.surveyConfig.surveyInfo.owner
-            participantResult.subCostItems = participantResult.sub ? CostItem.findAllBySubAndCostItemElementInListAndCostItemStatusNotEqualAndOwnerAndPkgIsNull(participantResult.sub, selectedCostItemElements.selectedCostItemElementsForSubCostItems, RDStore.COST_ITEM_DELETED, participantResult.surveyOwner, [sort: 'costItemElement']) : []
-            participantResult.surveyCostItems = CostItem.findAllBySurveyOrgAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, selectedCostItemElements.selectedCostItemElementsForSurveyCostItems, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
-            participantResult.surveyOrg = surveyOrg
-            participantResult.selectedCostItemElementsForSubCostItems = selectedCostItemElements.selectedCostItemElementsForSubCostItems
-            participantResult.selectedCostItemElementsForSurveyCostItems = selectedCostItemElements.selectedCostItemElementsForSurveyCostItems
+            sheetData = [:]
+            sheetData[messageSource.getMessage('surveyInfo.evaluation', null, locale)] = [titleRow: titles, columnData: exportData]
 
-            _setSurveyEvaluationRow(participantResult, selectedExportFields, exportData, selectedCostItemFields, format, contactSwitch)
-
-
-        }
-
-        exportData.add([createTableCell(format, ' ')])
-        exportData.add([createTableCell(format, ' ')])
-        exportData.add([createTableCell(format, ' ')])
-        exportData.add([createTableCell(format, messageSource.getMessage('surveyEvaluation.participantsViewAllNotFinish', null, locale) + " (${participantsNotFinish.size()})", 'negative')])
-
-
-        participantsNotFinish.sort { it.org.sortname }.each { SurveyOrg surveyOrg ->
-            Map participantResult = [:]
-            participantResult.properties = SurveyResult.findAllByParticipantAndSurveyConfig(surveyOrg.org, result.surveyConfig)
-
-            participantResult.sub = [:]
-            if(result.surveyConfig.subscription) {
-                participantResult.sub = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(surveyOrg.org)
+            if (result.participants) {
+                sheetData = _exportAccessPoints(result.participants.org, sheetData, selectedExportFields, locale, " - 1", format)
             }
 
-            participantResult.participant = surveyOrg.org
-            participantResult.surveyConfig = result.surveyConfig
-            participantResult.surveyOwner = result.surveyConfig.surveyInfo.owner
-            participantResult.subCostItems = participantResult.sub ? CostItem.findAllBySubAndCostItemElementInListAndCostItemStatusNotEqualAndOwnerAndPkgIsNull(participantResult.sub, selectedCostItemElements.selectedCostItemElementsForSubCostItems, RDStore.COST_ITEM_DELETED, participantResult.surveyOwner, [sort: 'costItemElement']) : []
-            participantResult.surveyCostItems = CostItem.findAllBySurveyOrgAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, selectedCostItemElements.selectedCostItemElementsForSurveyCostItems, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
-            participantResult.surveyOrg = surveyOrg
-            participantResult.selectedCostItemElementsForSubCostItems = selectedCostItemElements.selectedCostItemElementsForSubCostItems
-            participantResult.selectedCostItemElementsForSurveyCostItems = selectedCostItemElements.selectedCostItemElementsForSurveyCostItems
+            if (result.participants) {
+                sheetData = _exportSurveyPackagesAndSurveyVendors(result.surveyConfig, result.participants.org, sheetData, selectedExportFields, locale, " - 2", format)
+            }
 
-            _setSurveyEvaluationRow(participantResult, selectedExportFields, exportData, selectedCostItemFields, format, contactSwitch)
-        }
+        }else {
 
-        /*exportData.add([[field: '', style: null]])
+            List<SurveyOrg> participantsNotFinish = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig)
+            List<SurveyOrg> participantsFinish = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig)
+
+            //List<SurveyOrg> participantsNotFinish = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfigAndOrgInsertedItself(result.surveyConfig, false)
+            //List<SurveyOrg> participantsNotFinishInsertedItself = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfigAndOrgInsertedItself(result.surveyConfig, true)
+            exportData.add([createTableCell(format, messageSource.getMessage('surveyEvaluation.participantsViewAllFinish', null, locale) + " (${participantsFinish.size()})", 'positive')])
+
+            participantsFinish.sort { it.org.sortname }.each { SurveyOrg surveyOrg ->
+                Map participantResult = [:]
+                participantResult.properties = SurveyResult.findAllByParticipantAndSurveyConfig(surveyOrg.org, result.surveyConfig)
+
+                participantResult.sub = [:]
+                if (result.surveyConfig.subscription) {
+                    participantResult.sub = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(surveyOrg.org)
+                }
+
+                participantResult.participant = surveyOrg.org
+                participantResult.surveyConfig = result.surveyConfig
+                participantResult.surveyOwner = result.surveyConfig.surveyInfo.owner
+                participantResult.subCostItems = participantResult.sub ? CostItem.findAllBySubAndCostItemElementInListAndCostItemStatusNotEqualAndOwnerAndPkgIsNull(participantResult.sub, selectedCostItemElements.selectedCostItemElementsForSubCostItems, RDStore.COST_ITEM_DELETED, participantResult.surveyOwner, [sort: 'costItemElement']) : []
+                participantResult.surveyCostItems = CostItem.findAllBySurveyOrgAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, selectedCostItemElements.selectedCostItemElementsForSurveyCostItems, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
+                participantResult.surveyOrg = surveyOrg
+                participantResult.selectedCostItemElementsForSubCostItems = selectedCostItemElements.selectedCostItemElementsForSubCostItems
+                participantResult.selectedCostItemElementsForSurveyCostItems = selectedCostItemElements.selectedCostItemElementsForSurveyCostItems
+
+                _setSurveyEvaluationRow(participantResult, selectedExportFields, exportData, selectedCostItemFields, format, contactSwitch)
+
+
+            }
+
+            exportData.add([createTableCell(format, ' ')])
+            exportData.add([createTableCell(format, ' ')])
+            exportData.add([createTableCell(format, ' ')])
+            exportData.add([createTableCell(format, messageSource.getMessage('surveyEvaluation.participantsViewAllNotFinish', null, locale) + " (${participantsNotFinish.size()})", 'negative')])
+
+
+            participantsNotFinish.sort { it.org.sortname }.each { SurveyOrg surveyOrg ->
+                Map participantResult = [:]
+                participantResult.properties = SurveyResult.findAllByParticipantAndSurveyConfig(surveyOrg.org, result.surveyConfig)
+
+                participantResult.sub = [:]
+                if (result.surveyConfig.subscription) {
+                    participantResult.sub = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(surveyOrg.org)
+                }
+
+                participantResult.participant = surveyOrg.org
+                participantResult.surveyConfig = result.surveyConfig
+                participantResult.surveyOwner = result.surveyConfig.surveyInfo.owner
+                participantResult.subCostItems = participantResult.sub ? CostItem.findAllBySubAndCostItemElementInListAndCostItemStatusNotEqualAndOwnerAndPkgIsNull(participantResult.sub, selectedCostItemElements.selectedCostItemElementsForSubCostItems, RDStore.COST_ITEM_DELETED, participantResult.surveyOwner, [sort: 'costItemElement']) : []
+                participantResult.surveyCostItems = CostItem.findAllBySurveyOrgAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, selectedCostItemElements.selectedCostItemElementsForSurveyCostItems, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
+                participantResult.surveyOrg = surveyOrg
+                participantResult.selectedCostItemElementsForSubCostItems = selectedCostItemElements.selectedCostItemElementsForSubCostItems
+                participantResult.selectedCostItemElementsForSurveyCostItems = selectedCostItemElements.selectedCostItemElementsForSurveyCostItems
+
+                _setSurveyEvaluationRow(participantResult, selectedExportFields, exportData, selectedCostItemFields, format, contactSwitch)
+            }
+
+            /*exportData.add([[field: '', style: null]])
         exportData.add([[field: '', style: null]])
         exportData.add([[field: '', style: null]])
 
@@ -4973,26 +5039,24 @@ class ExportClickMeService {
             _setSurveyEvaluationRow(participantResult, selectedExportFields, exportData, selectedCostItemFields, format, contactSwitch)
         }*/
 
+            sheetData[messageSource.getMessage('surveyInfo.evaluation', null, locale)] = [titleRow: titles, columnData: exportData]
 
+            if (participantsFinish) {
+                sheetData = _exportAccessPoints(participantsFinish.org, sheetData, selectedExportFields, locale, " - 1", format)
+            }
 
+            if (participantsNotFinish) {
+                sheetData = _exportAccessPoints(participantsNotFinish.org, sheetData, selectedExportFields, locale, " - 2", format)
+            }
 
-        Map sheetData = [:]
-        sheetData[messageSource.getMessage('surveyInfo.evaluation', null, locale)] = [titleRow: titles, columnData: exportData]
+            if (participantsFinish) {
+                sheetData = _exportSurveyPackagesAndSurveyVendors(result.surveyConfig, participantsFinish.org, sheetData, selectedExportFields, locale, " - 3", format)
+            }
 
-        if (participantsFinish) {
-            sheetData = _exportAccessPoints(participantsFinish.org, sheetData, selectedExportFields, locale, " - 1", format)
-        }
+            if (participantsNotFinish) {
+                sheetData = _exportSurveyPackagesAndSurveyVendors(result.surveyConfig, participantsNotFinish.org, sheetData, selectedExportFields, locale, " - 4", format)
+            }
 
-        if (participantsNotFinish) {
-            sheetData = _exportAccessPoints(participantsNotFinish.org, sheetData, selectedExportFields, locale, " - 2", format)
-        }
-
-        if (participantsFinish) {
-            sheetData = _exportSurveyPackagesAndSurveyVendors(result.surveyConfig, participantsFinish.org, sheetData, selectedExportFields, locale, " - 3", format)
-        }
-
-        if (participantsNotFinish) {
-            sheetData = _exportSurveyPackagesAndSurveyVendors(result.surveyConfig, participantsNotFinish.org, sheetData, selectedExportFields, locale, " - 4", format)
         }
 
 
@@ -5915,6 +5979,17 @@ class ExportClickMeService {
                 else if (fieldKey.startsWith('participantIdentifiers.')) {
                     _setOrgFurtherInformation(org, row, fieldKey, format)
                 }
+                else if (fieldKey.startsWith('costInformation.')) {
+                    Long id = Long.parseLong(fieldKey.split("\\.")[1])
+                    if(costItem.costInformationDefinition?.id == id){
+                        if(costItem.costInformationDefinition.type == RefdataValue.class.name)
+                            row.add(createTableCell(format, costItem.costInformationRefValue.getI10n('value')))
+                        else
+                            row.add(createTableCell(format, costItem.costInformationStringValue))
+                    }else{
+                        row.add(createTableCell(format, ' '))
+                    }
+                }
                 else if (fieldKey == 'subscription.consortium') {
                     row.add(createTableCell(format, costItem.sub?.getConsortium()?.name))
                 }
@@ -6675,6 +6750,15 @@ class ExportClickMeService {
                 }
                 else if(fieldKey.contains('endIssue')) {
                     queryCols << "create_cell('${format}', tc_end_issue, null) as coverageEndIssue"
+                }
+                else if(fieldKey.contains('coverageNote')) {
+                    queryCols << "create_cell('${format}', tc_coverage_note, null) as coverageNote"
+                }
+                else if(fieldKey.contains('coverageDepth')) {
+                    queryCols << "create_cell('${format}', tc_coverage_depth, null) as coverageDepth"
+                }
+                else if(fieldKey.contains('embargo')) {
+                    queryCols << "create_cell('${format}', tc_embargo, null) as embargo"
                 }
             }
             else if (fieldKey.contains('listPriceEUR')) {

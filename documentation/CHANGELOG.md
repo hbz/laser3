@@ -7,9 +7,21 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6376    18.03.2025  dev     3.5         Moe     Feature     metafilter umfrage Liferanten
+
+6375    19.03.2025  dev     3.5         Andreas Feature     Abschaltung der Library Supplier in der Lizenzdetailsicht
+
+6310    19.03.2025  dev     3.5         Andreas Feature     Kosten mit Merkmalen (Informationsbudget) auszeichbar
+
+6096    17.03.2025  dev     3.5         Moe     Feature     Umfrage ClickMe Excel Option nur relevante Teilnehmer 
+
 6373    17.03.2025  dev     3.5         Andreas Bug         falsches Argument bei der Verknüpfung von Anbietern
 
+6345    17.03.2025  dev     3.5         David   Feature     Testzugriffe in den Dashboard News anzeigen
+
 6288    17.03.2025  dev     3.5         David   Feature     "Anbieter kontaktieren" zusätzlich auf Titellisten
+
+6160    17.03.2025  dev     3.5         Moe     Bug     Mail versenden nicht Abbrechen wenn ein Fehler im Prozess ist
 
 6372    14.03.2025  dev     3.5         Andreas Bug         Export der Vertrags-Anmerkungen implementiert
 

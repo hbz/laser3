@@ -13,7 +13,7 @@
 
             <g:each in="${tmplConfigShow}" var="tmplConfigItem" status="i">
                 <g:if test="${tmplConfigItem == 'lineNumber'}">
-                    <th class="la-th-wrap">>${message(code: 'sidewide.number')}</th>
+                    <th class="la-th-wrap">${message(code: 'sidewide.number')}</th>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'name'}">
                     <g:sortableColumn property="name" title="${message(code: 'package.show.pkg_name')}" params="${params}"/>
@@ -95,7 +95,9 @@
                     </th>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'linkPackage' || tmplConfigItem == 'linkSurveyPackage' || tmplConfigItem == 'unLinkSurveyPackage' || tmplConfigItem == 'removeSurveyPackageResult' || tmplConfigItem == 'addSurveyPackageResult'}">
-                    <th class="la-th-wrap center aligned">${message(code: 'default.actions.label')}</th>
+                    <th class="la-th-wrap center aligned">
+                        <ui:optionsIcon />
+                    </th>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'markPerpetualAccess'}">
                     <th class="la-th-wrap x center aligned">

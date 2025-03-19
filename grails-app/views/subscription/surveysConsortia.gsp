@@ -55,8 +55,9 @@
                 </a>
             </th>
             <th>${message(code: 'surveyInfo.finished')}</th>
-            <th class="la-action-info">${message(code: 'default.actions.label')}</th>
-
+            <th class="center aligned">
+                <ui:optionsIcon />
+            </th>
         </tr>
 
         </thead>

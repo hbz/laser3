@@ -82,7 +82,9 @@
                 </g:else>
                 <th class="two wide">${message(code: 'default.notes.label')}</th>
                 <g:if test="${editable}">
-                    <th class="la-action-info two wide">${message(code: 'default.actions.label')}</th>
+                    <th class="two wide center aligned">
+                        <ui:optionsIcon />
+                    </th>
                 </g:if>
             </tr>
             </thead>

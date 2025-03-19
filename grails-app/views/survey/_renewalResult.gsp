@@ -37,7 +37,9 @@
             </th>
         </g:each>
         <th>${message(code: 'renewalEvaluation.costItem.label')}</th>
-        <th>${message(code: 'default.actions.label')}</th>
+        <th class="center aligned">
+            <ui:optionsIcon />
+        </th>
     </tr>
     </thead>
     <g:each in="${participantResults}" var="participantResult" status="i">

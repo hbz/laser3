@@ -26,7 +26,9 @@
                 <th>${message(code: 'default.type.label')}</th>
                 <th>${message(code: 'mailTemplate.language.label')}</th>
                 <th>${message(code: 'mailTemplate.owner.label')}</th>
-                <th class="la-action-info">${message(code: 'default.actions.label')}</th>
+                <th class="center aligned">
+                    <ui:optionsIcon />
+                </th>
             </tr>
             </thead>
             <tbody>

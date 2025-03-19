@@ -122,7 +122,7 @@
                                 participant   : participant,
                                 showContacts  : true,
                                 showOptions   : false,
-                                tmplConfigShow: ['lineNumber', 'function', 'position', 'name', 'showContacts', 'surveyInvoicingInformation']
+                                tmplConfigShow: ['lineNumber', 'function', 'position', 'name', 'showContacts', 'setPreferredSurveyPerson']
                         ]}"/>
                     </div>
                 </g:if>
@@ -163,7 +163,7 @@
                                     participant   : participant,
                                     showContacts  : true,
                                     showOptions   : false,
-                                    tmplConfigShow: ['lineNumber', 'function', 'position', 'name', 'showContacts', 'surveyInvoicingInformation']
+                                    tmplConfigShow: ['lineNumber', 'function', 'position', 'name', 'showContacts', 'setPreferredBillingPerson']
                             ]}"/>
 
                         </div>

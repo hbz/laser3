@@ -44,7 +44,9 @@
                             <th>Wert (Schlüssel)</th>
                             <th>DE</th>
                             <th>EN</th>
-                            <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                            <th class="center aligned">
+                                <ui:optionsIcon />
+                            </th>
                         </tr>
                         </thead>
                         <tbody>
