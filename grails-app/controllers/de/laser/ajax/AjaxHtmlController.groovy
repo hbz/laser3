@@ -1493,8 +1493,10 @@ class AjaxHtmlController {
             case Org.class.simpleName:
                 Org org = Org.get(params.id)
                 OrganisationController organisationController
-                result.editable = organisationController._checkIsEditable(org)
-                if(result.editable || contextService.isInstEditor( CustomerTypeService.ORG_INST_PRO ) || contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_BASIC )) {
+                if( params.onlyPrivateProperties == 'false') {
+                    result.editable = organisationController._checkIsEditable(org)
+                }
+                if((result.editable || contextService.isInstEditor( CustomerTypeService.ORG_INST_PRO ) || contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_BASIC )) && params.onlyPrivateProperties == 'true') {
                     result.privateProperties = PropertyDefinition.findAllByDescrAndTenant(PropertyDefinition.ORG_PROP, contextService.getOrg(), [sort: 'name_' + lang])
                 }
                 result.propertyCreateUrl = createLink(controller: 'ajaxHtml', action: 'processCreateProperties', params: [objectClass: Org.class.name, objectId: org.id])
