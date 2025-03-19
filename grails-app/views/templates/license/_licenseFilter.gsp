@@ -26,40 +26,6 @@
               <div class="field">
                   <ui:datepicker label="license.valid_on" id="validOn" name="validOn" placeholder="default.date.label" value="${validOn}" />
               </div>
-              <laser:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
-          </div>
-          <div class="three fields">
-              <div class="field">
-                  <label for="status">${message(code: 'license.status.label')}</label>
-                  <ui:select class="ui dropdown" name="status"
-                                from="${ RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS) }"
-                                optionKey="id"
-                                optionValue="value"
-                                value="${params.status}"
-                                noSelection="${['' : message(code:'default.select.choose.label')]}"/>
-              </div>
-            <g:if test="${'provider' in licenseFilterTable}">
-              <div class="field">
-                  <label for="provider"><g:message code="provider.label"/></label>
-                  <select id="provider" name="provider" multiple="" class="ui search selection fluid dropdown">
-                      <option value=""><g:message code="default.select.choose.label"/></option>
-                      <g:each in="${providers}" var="provider">
-                          <option <%=Params.getLongList(params, 'provider').contains(provider.id) ? 'selected="selected"' : ''%> value="${provider.id}">${provider.name}</option>
-                      </g:each>
-                  </select>
-              </div>
-            </g:if>
-            <g:if test="${'vendor' in licenseFilterTable}">
-              <div class="field">
-                  <label for="vendor"><g:message code="vendor.label"/></label>
-                  <select id="vendor" name="vendor" multiple="" class="ui search selection fluid dropdown">
-                      <option value=""><g:message code="default.select.choose.label"/></option>
-                      <g:each in="${vendors}" var="vendor">
-                          <option <%=Params.getLongList(params, 'vendor').contains(vendor.id) ? 'selected="selected"' : ''%> value="${vendor.id}">${vendor.name}</option>
-                      </g:each>
-                  </select>
-              </div>
-            </g:if>
               <div class="field">
                   <label for="categorisation"><g:message code="license.categorisation.label"/></label>
                   <select id="categorisation" name="categorisation" multiple="" class="ui search selection fluid dropdown">
@@ -69,17 +35,20 @@
                       </g:each>
                   </select>
               </div>
-          </div>
-          <div class="three fields">
               <div class="field">
-                  <label for="subStatus">${message(code: 'subscription.status.label')}</label>
-                  <ui:select class="ui dropdown" name="subStatus"
-                                from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
-                                optionKey="id"
-                                optionValue="value"
-                                value="${params.subStatus}"
-                                noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+                  <label for="status">${message(code: 'license.status.label')}</label>
+                  <ui:select class="ui dropdown" name="status"
+                             from="${ RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS) }"
+                             optionKey="id"
+                             optionValue="value"
+                             value="${params.status}"
+                             noSelection="${['' : message(code:'default.select.choose.label')]}"/>
               </div>
+          </div>
+
+          <div class="four fields">
+              <laser:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
+
               <div class="field">
                   <label for="subKind"><g:message code="license.subscription.kind.label"/></label>
                   <select id="subKind" name="subKind" multiple="" class="ui search selection fluid dropdown">
@@ -89,8 +58,50 @@
                       </g:each>
                   </select>
               </div>
+              <div class="field">
+                  <label for="subStatus">${message(code: 'subscription.status.label')}</label>
+                  <ui:select class="ui dropdown" name="subStatus"
+                             from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
+                             optionKey="id"
+                             optionValue="value"
+                             value="${params.subStatus}"
+                             noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+              </div>
+          </div>
+
+          <div class="four fields">
+              <g:if test="${'provider' in licenseFilterTable}">
+                  <div class="field">
+                      <label for="provider"><g:message code="provider.label"/></label>
+                      <select id="provider" name="provider" multiple="" class="ui search selection fluid dropdown">
+                          <option value=""><g:message code="default.select.choose.label"/></option>
+                          <g:each in="${providers}" var="provider">
+                              <option <%=Params.getLongList(params, 'provider').contains(provider.id) ? 'selected="selected"' : ''%> value="${provider.id}">${provider.name}</option>
+                          </g:each>
+                      </select>
+                  </div>
+              </g:if>
+              <g:else>
+                  <div class="field"></div>
+              </g:else>
+              <g:if test="${'vendor' in licenseFilterTable}">
+                <div class="field">
+                  <label for="vendor"><g:message code="vendor.label"/></label>
+                  <select id="vendor" name="vendor" multiple="" class="ui search selection fluid dropdown">
+                      <option value=""><g:message code="default.select.choose.label"/></option>
+                      <g:each in="${vendors}" var="vendor">
+                          <option <%=Params.getLongList(params, 'vendor').contains(vendor.id) ? 'selected="selected"' : ''%> value="${vendor.id}">${vendor.name}</option>
+                      </g:each>
+                  </select>
+                </div>
+             </g:if>
+             <g:else>
+                <div class="field"></div>
+             </g:else>
+              <div class="field"></div>
               <div class="field"></div>
           </div>
+
           <div class="three fields">
           <%-- TODO [ticket=2276] provisoric, name check is in order to prevent id mismatch --%>
               <g:if test="${contextService.getOrg().isCustomerType_Inst_Pro()}">

@@ -13,9 +13,11 @@
         <g:form action="manageOrganisations" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow: [['name', 'identifier', 'customerType', 'isBetaTester'],
-                                               ['discoverySystemsFrontend', 'discoverySystemsIndex', 'apiLevel', 'serverAccess'],
-                                               ['country&region', 'libraryNetwork', 'libraryType']],
+                              tmplConfigShow: [['name', 'identifier', 'customerType'],
+                                               ['country&region', 'libraryNetwork', 'libraryType'],
+                                               ['discoverySystemsFrontend', 'discoverySystemsIndex'],
+                                               ['isBetaTester', 'apiLevel', 'serverAccess', '']
+                                               ],
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>

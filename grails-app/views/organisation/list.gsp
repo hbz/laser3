@@ -54,9 +54,8 @@
                 <laser:render template="/templates/filter/orgFilter"
                           model="[
                                   tmplConfigShow: [['name', 'identifier', 'customerType'],
-                                                   ['country&region', 'libraryNetwork'],
-                                                   ['discoverySystemsFrontend', 'discoverySystemsIndex'],
-                                                   ['libraryType', 'subjectGroup']],
+                                                   ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'],
+                                                   ['discoverySystemsFrontend', 'discoverySystemsIndex']],
                                   tmplConfigFormFilter: true
                           ]"/>
             </g:form>

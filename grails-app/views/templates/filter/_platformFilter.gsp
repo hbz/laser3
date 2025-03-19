@@ -17,8 +17,6 @@
                 </div>
             </div>
 
-            <laser:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
-
             <div class="field">
                 <label for="platStatus">${message(code: 'default.status.label')}</label>
                 <select name="platStatus" id="platStatus" multiple="multiple" class="ui search selection dropdown">
@@ -32,7 +30,9 @@
             </div>
         </div>
 
-        <div class="two fields">
+        <div class="four fields">
+            <laser:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
+
             <div class="field">
                 <label for="curatoryGroup">${message(code: 'package.curatoryGroup.label')}</label>
                 <g:select class="ui fluid search select dropdown" name="curatoryGroup"
@@ -54,6 +54,59 @@
                 />
             </div>
         </div>
+
+        <g:if test="${controllerName == 'myInstitution'}">
+            <div class="four fields">
+                <div class="field">
+                    <label for="status">${message(code:'subscription.status.label')}</label>
+                    <select name="status" id="status" multiple="multiple" class="ui search selection dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" var="status">
+                            <option <%=(Params.getLongList(params, 'status').contains(status.id)) ? 'selected=selected"' : ''%> value="${status.id}">
+                                ${status.getI10n("value")}
+                            </option>
+                        </g:each>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="hasPerpetualAccess">${message(code:'subscription.hasPerpetualAccess.label')}</label>
+                    <ui:select class="ui fluid dropdown" name="hasPerpetualAccess"
+                               from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                               optionKey="id"
+                               optionValue="value"
+                               value="${params.hasPerpetualAccess}"
+                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+                </div>
+                <div class="field"></div>
+                <div class="field"></div>
+            </div>
+        </g:if>
+        <g:elseif test="${actionName == 'list'}">
+            <div class="four fields">
+                <div class="field"></div>
+                <div class="field"></div>
+                <div class="field"></div>
+                <div class="field">
+                    <label for="isMyX"><g:message code="filter.isMyX.label" /></label>
+                    <%
+                        List<Map> isMyXOptions = []
+                        isMyXOptions.add([ id: 'wekb_exclusive',    value: "${message(code:'filter.wekb.exclusive')}" ])
+                        isMyXOptions.add([ id: 'wekb_not',          value: "${message(code:'filter.wekb.not')}" ])
+
+                        //if (actionName == 'list') {
+                        isMyXOptions.add([ id: 'ismyx_exclusive',   value: "${message(code:'filter.isMyX.exclusive', args:["${message(code:'menu.my.platforms')}"])}" ])
+                        isMyXOptions.add([ id: 'ismyx_not',         value: "${message(code:'filter.isMyX.not')}" ])
+                        //}
+                    %>
+                    <select id="isMyX" name="isMyX" class="ui selection fluid dropdown" multiple="">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:each in="${isMyXOptions}" var="opt">
+                            <option <%=(params.list('isMyX').contains(opt.id)) ? 'selected="selected"' : '' %> value="${opt.id}">${opt.value}</option>
+                        </g:each>
+                    </select>
+                </div>
+            </div>
+        </g:elseif>
 
         <div class="ui accordion">
             <div class="title">
@@ -188,54 +241,6 @@
                     </g:if>
                 </g:each>
             </div>
-        </div>
-
-        <div class="three fields">
-            <div class="field">
-                <g:if test="${controllerName == 'myInstitution'}">
-                    <label for="status">${message(code:'subscription.status.label')}</label>
-                    <select name="status" id="status" multiple="multiple" class="ui search selection dropdown">
-                        <option value="">${message(code:'default.select.choose.label')}</option>
-                        <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" var="status">
-                            <option <%=(Params.getLongList(params, 'status').contains(status.id)) ? 'selected=selected"' : ''%> value="${status.id}">
-                                ${status.getI10n("value")}
-                            </option>
-                        </g:each>
-                    </select>
-                </g:if>
-            </div>
-            <div class="field">
-                <g:if test="${controllerName == 'myInstitution'}">
-                    <label for="hasPerpetualAccess">${message(code:'subscription.hasPerpetualAccess.label')}</label>
-                    <ui:select class="ui fluid dropdown" name="hasPerpetualAccess"
-                               from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
-                               optionKey="id"
-                               optionValue="value"
-                               value="${params.hasPerpetualAccess}"
-                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
-                </g:if>
-            </div>
-            <g:if test="${actionName == 'list'}">
-                <div class="field">
-                    <label for="isMyX"><g:message code="filter.isMyX.label" /></label>
-                    <%
-                        List<Map> isMyXOptions = []
-                        isMyXOptions.add([ id: 'wekb_exclusive',    value: "${message(code:'filter.wekb.exclusive')}" ])
-                        isMyXOptions.add([ id: 'wekb_not',          value: "${message(code:'filter.wekb.not')}" ])
-
-                        //if (actionName == 'list') {
-                        isMyXOptions.add([ id: 'ismyx_exclusive',   value: "${message(code:'filter.isMyX.exclusive', args:["${message(code:'menu.my.platforms')}"])}" ])
-                        isMyXOptions.add([ id: 'ismyx_not',         value: "${message(code:'filter.isMyX.not')}" ])
-                        //}
-                    %>
-                    <select id="isMyX" name="isMyX" class="ui selection fluid dropdown" multiple="">
-                        <option value="">${message(code:'default.select.choose.label')}</option>
-                        <g:each in="${isMyXOptions}" var="opt">
-                            <option <%=(params.list('isMyX').contains(opt.id)) ? 'selected="selected"' : '' %> value="${opt.id}">${opt.value}</option>
-                        </g:each>
-                    </select>
-                </div>
-            </g:if>
         </div>
 
         <div class="three fields">

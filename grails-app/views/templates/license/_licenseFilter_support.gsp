@@ -15,24 +15,34 @@
               <div class="field">
                   <ui:datepicker label="license.valid_on" id="validOn" name="validOn" placeholder="default.date.label" value="${validOn}" />
               </div>
-              <laser:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
-          </div>
-          <div class="four fields">
-              <div class="field">
-                  <label for="status">${message(code: 'license.status.label')}</label>
-                  <ui:select class="ui dropdown" name="status"
-                                from="${ RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS) }"
-                                optionKey="id"
-                                optionValue="value"
-                                value="${params.status}"
-                                noSelection="${['' : message(code:'default.select.choose.label')]}"/>
-              </div>
               <div class="field">
                   <label for="categorisation"><g:message code="license.categorisation.label"/></label>
                   <select id="categorisation" name="categorisation" multiple="" class="ui search selection fluid dropdown">
                       <option value=""><g:message code="default.select.choose.label"/></option>
                       <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_CATEGORY)}" var="categorisation">
                           <option <%=Params.getLongList(params, 'categorisation').contains(categorisation.id) ? 'selected="selected"' : ''%> value="${categorisation.id}">${categorisation.getI10n("value")}</option>
+                      </g:each>
+                  </select>
+              </div>
+              <div class="field">
+                  <label for="status">${message(code: 'license.status.label')}</label>
+                  <ui:select class="ui dropdown" name="status"
+                             from="${ RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS) }"
+                             optionKey="id"
+                             optionValue="value"
+                             value="${params.status}"
+                             noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+              </div>
+          </div>
+          <div class="four fields">
+              <laser:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
+
+              <div class="field">
+                  <label for="subKind"><g:message code="license.subscription.kind.label"/></label>
+                  <select id="subKind" name="subKind" multiple="" class="ui search selection fluid dropdown">
+                      <option value=""><g:message code="default.select.choose.label"/></option>
+                      <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}" var="subKind">
+                          <option <%=Params.getLongList(params, 'subKind').contains(subKind.id) ? 'selected="selected"' : ''%> value="${subKind.id}">${subKind.getI10n("value")}</option>
                       </g:each>
                   </select>
               </div>
@@ -44,15 +54,6 @@
                                 optionValue="value"
                                 value="${params.subStatus}"
                                 noSelection="${['' : message(code:'default.select.choose.label')]}"/>
-              </div>
-              <div class="field">
-                  <label for="subKind"><g:message code="license.subscription.kind.label"/></label>
-                  <select id="subKind" name="subKind" multiple="" class="ui search selection fluid dropdown">
-                      <option value=""><g:message code="default.select.choose.label"/></option>
-                      <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}" var="subKind">
-                          <option <%=Params.getLongList(params, 'subKind').contains(subKind.id) ? 'selected="selected"' : ''%> value="${subKind.id}">${subKind.getI10n("value")}</option>
-                      </g:each>
-                  </select>
               </div>
           </div>
           <div class="field la-field-right-aligned">
