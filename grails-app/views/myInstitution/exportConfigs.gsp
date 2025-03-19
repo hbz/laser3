@@ -36,9 +36,7 @@
                     <th>${message(code: 'clickMeConfig.configOrder')}</th>
                     <g:if test="${editable}">
                         <th class="center aligned">
-                            <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                                <i class="${Icon.SYM.OPTIONS}"></i>
-                            </span>
+                            <ui:optionsIcon />
                         </th>
                     </g:if>
                 </tr>

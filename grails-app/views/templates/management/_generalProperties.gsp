@@ -26,9 +26,7 @@
                         <th>${message(code: 'subscription.holdingSelection.label.shy')}</th>
                     </g:if>
                     <th class="center aligned">
-                        <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                            <i class="${Icon.SYM.OPTIONS}"></i>
-                        </span>
+                        <ui:optionsIcon />
                     </th>
                 </tr>
                 </thead>
@@ -369,9 +367,7 @@
                         <ui:multiYearIcon />
                     </th>
                     <th class="center aligned">
-                        <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                            <i class="${Icon.SYM.OPTIONS}"></i>
-                        </span>
+                        <ui:optionsIcon />
                     </th>
                 </tr>
                 </thead>

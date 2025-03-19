@@ -76,9 +76,7 @@
             </th>
             <g:if test="${'onlyMemberSubs' in tableConfig}">
                 <th class="center aligned" rowspan="2">
-                    <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                        <i class="${Icon.SYM.OPTIONS}"></i>
-                    </span>
+                    <ui:optionsIcon />
                 </th>
             </g:if>
             <g:if test="${'showInfoFlyout' in tableConfig}">

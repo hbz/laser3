@@ -39,9 +39,7 @@
                             </g:if>
                             <th><g:message code="readerNumber.notes"/></th>
                             <th class="center aligned">
-                                <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                                    <i class="${Icon.SYM.OPTIONS}"></i>
-                                </span>
+                                <ui:optionsIcon />
                             </th>
                         </tr>
                     </thead>
@@ -149,9 +147,7 @@
                             </g:if>
                             <th><g:message code="readerNumber.notes"/></th>
                             <th class="center aligned">
-                                <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                                    <i class="${Icon.SYM.OPTIONS}"></i>
-                                </span>
+                                <ui:optionsIcon />
                             </th>
                         </tr>
                     </thead>

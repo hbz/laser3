@@ -396,6 +396,12 @@ class IconTagLib {
         out << '</span>'
     }
 
+    def optionsIcon = { attrs, body ->
+        out << '<span class="la-popup-tooltip" data-content="' + message(code:'default.actions.label') + '">'
+        out << '  <i class="' + Icon.SYM.OPTIONS + '"></i>'
+        out << '</span>'
+    }
+
     @FixedFeature_DoNotModify
     def booleanIcon = { attrs, body ->
         String icon = Icon.SYM.UNKOWN

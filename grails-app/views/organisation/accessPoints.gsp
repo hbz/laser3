@@ -83,9 +83,7 @@
                 <th class="two wide">${message(code: 'default.notes.label')}</th>
                 <g:if test="${editable}">
                     <th class="two wide center aligned">
-                        <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                            <i class="${Icon.SYM.OPTIONS}"></i>
-                        </span>
+                        <ui:optionsIcon />
                     </th>
                 </g:if>
             </tr>

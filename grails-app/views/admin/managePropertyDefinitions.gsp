@@ -30,9 +30,7 @@
                                     <th>${message(code:'propertyDefinition.expl.en.label')}</th>
                                     <th></th>
                                     <th class="center aligned">
-                                        <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                                            <i class="${Icon.SYM.OPTIONS}"></i>
-                                        </span>
+                                        <ui:optionsIcon />
                                     </th>
                                 </tr>
                             </thead>
@@ -148,9 +146,7 @@
                                 <th>${message(code:'propertyDefinition.expl.en.label')}</th>
                                 <th></th>
                                 <th class="center aligned">
-                                    <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                                        <i class="${Icon.SYM.OPTIONS}"></i>
-                                    </span>
+                                    <ui:optionsIcon />
                                 </th>
                             </tr>
                             </thead>

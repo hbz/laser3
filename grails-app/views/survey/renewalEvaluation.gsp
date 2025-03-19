@@ -101,9 +101,7 @@
                                 <th>${message(code: 'propertyDefinition.label')}</th>
                                 <th>${message(code:'renewalEvaluation.propertiesChanged')}</th>
                                 <th class="center aligned">
-                                    <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                                        <i class="${Icon.SYM.OPTIONS}"></i>
-                                    </span>
+                                    <ui:optionsIcon />
                                 </th>
                             </tr>
                             </thead>
@@ -227,9 +225,7 @@
                     <th>${message(code: 'default.endDate.label.shy')}</th>
                     <th>${message(code: 'default.status.label')}</th>
                     <th class="center aligned">
-                        <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                            <i class="${Icon.SYM.OPTIONS}"></i>
-                        </span>
+                        <ui:optionsIcon />
                     </th>
                 </tr>
                 </thead>
@@ -284,9 +280,7 @@
                     <th>${message(code: 'default.endDate.label.shy')}</th>
                     <th>${message(code: 'default.status.label')}</th>
                     <th class="center aligned">
-                        <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                            <i class="${Icon.SYM.OPTIONS}"></i>
-                        </span>
+                        <ui:optionsIcon />
                     </th>
                 </tr>
                 </thead>

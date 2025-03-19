@@ -72,9 +72,7 @@
                         <th>${message(code: 'propertyDefinition.label')}</th>
                         <th>${message(code: 'renewalEvaluation.propertiesChanged')}</th>
                         <th class="center aligned">
-                            <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                                <i class="${Icon.SYM.OPTIONS}"></i>
-                            </span>
+                            <ui:optionsIcon />
                         </th>
                     </tr>
                     </thead>
@@ -263,9 +261,7 @@
                 </g:if>
             </g:each>
             <th scope="col" rowspan="2" class="two center aligned">
-                <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                    <i class="${Icon.SYM.OPTIONS}"></i>
-                </span>
+                <ui:optionsIcon />
             </th>
         </tr>
         </thead>
@@ -882,9 +878,7 @@
 
                 </g:each>
                 <th scope="col" rowspan="2" class="two center aligned">
-                    <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                        <i class="${Icon.SYM.OPTIONS}"></i>
-                    </span>
+                    <ui:optionsIcon />
                 </th>
             </tr>
             </thead>
