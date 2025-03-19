@@ -13,7 +13,7 @@
 
             <g:each in="${tmplConfigShow}" var="tmplConfigItem" status="i">
                 <g:if test="${tmplConfigItem == 'lineNumber'}">
-                    <th class="la-th-wrap">>${message(code: 'sidewide.number')}</th>
+                    <th class="la-th-wrap">${message(code: 'sidewide.number')}</th>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'name'}">
                     <g:sortableColumn property="name" title="${message(code: 'package.show.pkg_name')}" params="${params}"/>
