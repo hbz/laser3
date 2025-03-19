@@ -63,6 +63,20 @@ deactivated as of ERMS-4837
                     <i class="${Icon.CMD.ADD}"></i>
                 </button>
             </div>
+            <div class="content">
+                <div class="ui header la-flexbox la-justifyContent-spaceBetween">
+                    <h2>
+                        ${message(code: 'default.properties.my')}
+                    </h2>
+                    <div class="right aligned four wide column">
+                        <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}"
+                                data-content="${message(code: 'license.button.addProperty')}"
+                                onclick="JSPC.app.createProperty(${platform.id}, '${platform.class.simpleName}', 'true');">
+                            <i class="${Icon.CMD.ADD}"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
         </g:if>
 
         <div class="content">
