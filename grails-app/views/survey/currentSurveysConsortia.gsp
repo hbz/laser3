@@ -243,9 +243,7 @@
 
             %{--<th rowspan="2" scope="col">${message(code: 'surveyInfo.finished')}</th>--}%
             <th rowspan="2" scope="col" class="center aligned">
-                <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                    <i class="${Icon.SYM.OPTIONS}"></i>
-                </span>
+                <ui:optionsIcon />
             </th>
         </tr>
         <tr>

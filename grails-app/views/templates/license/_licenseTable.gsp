@@ -40,9 +40,7 @@
                       <g:sortableColumn class="la-smaller-table-head" params="${params}" property="startDate" title="${message(code:'license.start_date')}" />
                       <g:if test="${'action' in licenseFilterTable}">
                           <th rowspan="2" class="center aligned">
-                              <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                                  <i class="${Icon.SYM.OPTIONS}"></i>
-                              </span>
+                              <ui:optionsIcon />
                           </th>
                       </g:if>
                   </tr>

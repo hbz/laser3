@@ -38,9 +38,7 @@
                         <th><g:message code="propertyDefinitionGroup.table.header.presetShow"/></th>
                         <g:if test="${editable}">
                             <th class="center aligned">
-                                <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                                    <i class="${Icon.SYM.OPTIONS}"></i>
-                                </span>
+                                <ui:optionsIcon />
                             </th>
                         </g:if>
                     </tr>
@@ -126,9 +124,7 @@
                         <th><g:message code="propertyDefinitionGroup.table.header.properties"/></th>
                         <g:if test="${editable}">
                             <th class="center aligned">
-                                <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                                    <i class="${Icon.SYM.OPTIONS}"></i>
-                                </span>
+                                <ui:optionsIcon />
                             </th>
                         </g:if>
                     </tr>

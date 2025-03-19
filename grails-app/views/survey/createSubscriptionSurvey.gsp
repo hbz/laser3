@@ -137,9 +137,7 @@
                 </th>
 
                 <th rowspan="2" class="two wide center aligned">
-                    <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                        <i class="${Icon.SYM.OPTIONS}"></i>
-                    </span>
+                    <ui:optionsIcon />
                 </th>
             </tr>
 

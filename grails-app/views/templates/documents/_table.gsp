@@ -46,9 +46,7 @@
                     <th>${message(code:'org.docs.table.shareConf')}</th>
                 </g:elseif>--%>
                 <th scope="col" class="${colWide[cwCounter]} wide center aligned" rowspan="2">
-                    <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                        <i class="${Icon.SYM.OPTIONS}"></i>
-                    </span>
+                    <ui:optionsIcon />
                 </th>
             </tr>
             <tr>

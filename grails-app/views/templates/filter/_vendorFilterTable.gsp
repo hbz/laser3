@@ -71,9 +71,7 @@
                 </g:if>
                 <g:if test="${tmplConfigItem == 'linkSurveyVendor' || tmplConfigItem == 'unLinkSurveyVendor' || tmplConfigItem == 'removeSurveyVendorResult' || tmplConfigItem == 'addSurveyVendorResult'}">
                     <th class="center aligned">
-                        <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                            <i class="${Icon.SYM.OPTIONS}"></i>
-                        </span>
+                        <ui:optionsIcon />
                     </th>
                 </g:if>
 
