@@ -58,11 +58,14 @@
                     <g:textArea id="mailText_de" name="mailText" readonly="readonly" rows="30" cols="1">${mailText['de']}</g:textArea>
                 </div>
 
-                <button class="${Btn.SIMPLE} right floated" onclick="JSPC.infoFlyout.copyToClipboard('de')">
-                    ${message(code: 'mail.copyToClipboard')}
+                <button class="${Btn.ICON.SIMPLE} right floated" onclick="JSPC.infoFlyout.openMailClient('de')">
+                    <i class="${Icon.SYM.EMAIL}"></i> ${message(code: 'mail.openExternalMailer')}
                 </button>
-                <button class="${Btn.SIMPLE} right floated" onclick="JSPC.infoFlyout.copyToEmailProgram('de')">
-                    ${message(code: 'mail.openExternalMailer')}
+                <button class="${Btn.ICON.SIMPLE} right floated" onclick="JSPC.infoFlyout.clipboardContent('de')">
+                    <i class="${Icon.CMD.COPY}"></i> ${message(code: 'mail.copyToClipboard.content')}
+                </button>
+                <button class="${Btn.ICON.SIMPLE} right floated" onclick="JSPC.infoFlyout.clipboardRecipient()">
+                    <i class="${Icon.CMD.COPY}"></i> ${message(code: 'mail.copyToClipboard.recipient')}
                 </button>
             </div>
             <div class="content_lang_en hidden">
@@ -75,12 +78,16 @@
                     <g:textArea id="mailText_en" name="mailText" readonly="readonly" rows="30" cols="1">${mailText['en']}</g:textArea>
                 </div>
 
-                <button class="${Btn.SIMPLE} right floated" onclick="JSPC.infoFlyout.copyToClipboard('en')">
-                    ${message(code: 'mail.copyToClipboard')}
+                <button class="${Btn.ICON.SIMPLE} right floated" onclick="JSPC.infoFlyout.openMailClient('en')">
+                    <i class="${Icon.SYM.EMAIL}"></i> ${message(code: 'mail.openExternalMailer')}
                 </button>
-                <button class="${Btn.SIMPLE} right floated" onclick="JSPC.infoFlyout.copyToEmailProgram('en')">
-                    ${message(code: 'mail.openExternalMailer')}
+                <button class="${Btn.ICON.SIMPLE} right floated" onclick="JSPC.infoFlyout.clipboardContent('en')">
+                    <i class="${Icon.CMD.COPY}"></i> ${message(code: 'mail.copyToClipboard.content')}
                 </button>
+                <button class="${Btn.ICON.SIMPLE} right floated" onclick="JSPC.infoFlyout.clipboardRecipient()">
+                    <i class="${Icon.CMD.COPY}"></i> ${message(code: 'mail.copyToClipboard.recipient')}
+                </button>
+
             </div>
 
         </g:if>
@@ -90,22 +97,22 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.infoFlyout = {
-        copyToEmailProgram: function (lang) {
+        openMailClient: function (lang) {
             let mailto = $('#infoFlyout #mailto').val();
             let mailcc = $('#infoFlyout #mailcc').val();
             let subject = $('#infoFlyout #mailSubject_' + lang).val();
-            let body = $('#infoFlyout #mailText_' + lang).val()
+            let body = $('#infoFlyout #mailText_' + lang).val();
             let href = 'mailto:' + mailto + '?subject=' + subject + '&cc=' + mailcc + '&body=' + body;
-%{--            console.log(href);--}%
-%{--            console.log(encodeURI(href));--}%
 
             window.location.href = encodeURI(href);
         },
-        copyToClipboard: function (lang) {
-            let content = $('#infoFlyout #mailText_' + lang);
-            content.select();
-            document.execCommand('copy');
-            content.blur();
+        clipboardContent: function (lang) {
+            let tt = $('#infoFlyout #mailText_' + lang).text();
+            navigator.clipboard.writeText(tt);
+        },
+        clipboardRecipient: function () {
+            let tt = $('#infoFlyout #mailto + i + .text > .text').text().trim();
+            navigator.clipboard.writeText(tt);
         }
     }
 </laser:script>
