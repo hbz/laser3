@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6375    19.03.2025  dev     3.5         Andreas Feature     Abschaltung der Library Supplier in der Lizenzdetailsicht
+
 6310    19.03.2025  dev     3.5         Andreas Feature     Kosten mit Merkmalen (Informationsbudget) auszeichbar
 
 6096    17.03.2025  dev     3.5         Moe     Feature     Umfrage ClickMe Excel Option nur relevante Teilnehmer 
