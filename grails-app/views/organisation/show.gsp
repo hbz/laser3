@@ -641,7 +641,8 @@
                                                                                             controller          : 'org',
                                                                                             action              : 'show',
                                                                                             id                  : orgInstance.id,
-                                                                                            editable            : false
+                                                                                            editable            : false,
+                                                                                            showPreferredForSurvey: true
                                                                                     ]}"/>
                                                                                 </g:if>
                                                                             </g:each>
