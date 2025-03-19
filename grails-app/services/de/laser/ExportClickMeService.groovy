@@ -4,6 +4,7 @@ import de.laser.addressbook.Address
 import de.laser.addressbook.Contact
 import de.laser.addressbook.Person
 import de.laser.addressbook.PersonRole
+import de.laser.finance.CostInformationDefinition
 import de.laser.finance.CostItem
 import de.laser.properties.LicenseProperty
 import de.laser.properties.ProviderProperty
@@ -1141,6 +1142,18 @@ class ExportClickMeService {
                                 'costItem.issueEntitlement'                 : [field: 'issueEntitlement.tipp.name', label: 'Title', message: 'issueEntitlement.label'],
                                 'costItem.issueEntitlementGroup'            : [field: 'issueEntitlementGroup.name', label: 'Title Group Name', message: 'issueEntitlementGroup.label'],
                         ]
+                ],
+
+                costInformation : [
+                        label: 'Information budgets',
+                        message: 'costInformationDefinition.financeView.label',
+                        fields: [:]
+                ],
+
+                myCostInformation : [
+                        label: 'My information budgets',
+                        message: 'costInformationDefinition.financeView.my.label',
+                        fields: [:]
                 ],
 
                 org : [
@@ -2788,6 +2801,11 @@ class ExportClickMeService {
                 exportFields.put(it.key, it.value)
             }
         }
+        Set<CostInformationDefinition> cifList = CostInformationDefinition.executeQuery("select cif from CostInformationDefinitionGroup cifg join cifg.costInformationDefinition cif where cifg.tenant = :ctx order by cif."+localizedName+" asc", [ctx:contextOrg])
+
+        cifList.each { CostInformationDefinition costInformationDefinition ->
+            exportFields.put("costInformation." + costInformationDefinition.id, [field: null, label: costInformationDefinition."${localizedName}", privateProperty: (costInformationDefinition.tenant?.id == contextOrg.id)])
+        }
 
         SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>(), addressTypes = new TreeSet<RefdataValue>()
         contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where (p.tenant = :ctx or p.isPublic = true)', [ctx: contextOrg]))
@@ -2845,6 +2863,19 @@ class ExportClickMeService {
                 fields.subscription.fields.put('subscription.isAutomaticRenewAnnually', [field: 'sub.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
             }
             fields.subscription.fields.put('subscription.consortium', [field: null, label: 'Consortium', message: 'consortium.label', defaultChecked: true])
+        }
+
+        fields.costInformation.fields.clear()
+        fields.myCostInformation.fields.clear()
+
+        Set<CostInformationDefinition> cifList = CostInformationDefinition.executeQuery("select cif from CostInformationDefinitionGroup cifg join cifg.costInformationDefinition cif where cifg.tenant = :ctx order by cif."+localizedName+" asc", [ctx:contextOrg])
+
+        cifList.each { CostInformationDefinition costInformationDefinition ->
+            //the proxies again ...
+            if(costInformationDefinition.tenant?.id == contextOrg.id)
+                fields.myCostInformation.fields << ["costInformation.${costInformationDefinition.id}": [field: null, label: costInformationDefinition."${localizedName}", privateProperty: true]]
+            else
+                fields.costInformation.fields << ["costInformation.${costInformationDefinition.id}": [field: null, label: costInformationDefinition."${localizedName}", privateProperty: false]]
         }
 
         fields.participantIdentifiers.fields.clear()
@@ -5947,6 +5978,17 @@ class ExportClickMeService {
                 }
                 else if (fieldKey.startsWith('participantIdentifiers.')) {
                     _setOrgFurtherInformation(org, row, fieldKey, format)
+                }
+                else if (fieldKey.startsWith('costInformation.')) {
+                    Long id = Long.parseLong(fieldKey.split("\\.")[1])
+                    if(costItem.costInformationDefinition?.id == id){
+                        if(costItem.costInformationDefinition.type == RefdataValue.class.name)
+                            row.add(createTableCell(format, costItem.costInformationRefValue.getI10n('value')))
+                        else
+                            row.add(createTableCell(format, costItem.costInformationStringValue))
+                    }else{
+                        row.add(createTableCell(format, ' '))
+                    }
                 }
                 else if (fieldKey == 'subscription.consortium') {
                     row.add(createTableCell(format, costItem.sub?.getConsortium()?.name))

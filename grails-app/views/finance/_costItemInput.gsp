@@ -375,7 +375,7 @@
                 <div class="field">
                     <label>${g.message(code: 'financials.costInformationDefinition')}</label>
                     <ui:dropdown name="newCostInformationDefinition"
-                                 class="la-filterPropDef"
+                                 class="newCostInformationDefinition_${idSuffix}"
                                  from="${costInformationDefinitions}"
                                  iconWhich="${Icon.PROP.IS_PRIVATE}"
                                  optionKey="${{it.id}}"
@@ -482,7 +482,7 @@
         calculateLocalCurrency: $("#calculateLocalCurrency_${idSuffix}"),
         costCurrency: $("#newCostCurrency_${idSuffix}"),
         costItemElement: $("#newCostItemElement_${idSuffix}"),
-        costInformationDefinition: $("[name='newCostInformationDefinition']"),
+        costInformationDefinition: $(".newCostInformationDefinition_${idSuffix}"),
         costInformationValueDropdown: $("#newCostInformationValueDropdown_${idSuffix}"),
         costInformationValueText: $("#newCostInformationValueText_${idSuffix}"),
         billingSumRounding: $("#newBillingSumRounding_${idSuffix}"),
@@ -712,7 +712,7 @@
                 JSPC.app.finance${idSuffix}.newLicenseeTarget.parent('div').toggle();
             });
             this.costInformationDefinition.change( function() {
-                let numberVal = parseInt($(this).val());
+                let numberVal = parseInt($(this).dropdown('get value'));
                 let withRefdata = JSPC.app.finance${idSuffix}.refdataDefs.indexOf(numberVal) > -1;
                 JSPC.app.finance${idSuffix}.costInformationValueDropdown.dropdown('clear');
                 JSPC.app.adjustCostInformationDropdown(withRefdata, <g:if test="${costItem?.costInformationRefValue}">${costItem.costInformationRefValue.id}</g:if><g:else>false</g:else>);
@@ -968,7 +968,7 @@
         dropdownCostInformationValues.empty();
 
         if(withRefdata) {
-            var url = '<g:createLink controller="ajaxJson" action="adjustCostInformationValueList"/>?costInformationDefinition='+JSPC.app.finance${idSuffix}.costInformationDefinition.val();
+            var url = '<g:createLink controller="ajaxJson" action="adjustCostInformationValueList"/>?costInformationDefinition='+JSPC.app.finance${idSuffix}.costInformationDefinition.dropdown('get value');
             if(!preselect) {
                 dropdownCostInformationValues.append('<option selected="selected" disabled>${message(code: 'default.select.choose.label')}</option>');
                 dropdownCostInformationValues.prop('selectedIndex', 0);
@@ -989,7 +989,7 @@
         }
     }
     <g:if test="${costItem?.costInformationDefinition}">
-        $('.la-filterPropDef').dropdown("set selected","${costItem?.costInformationDefinition.id}");
+        JSPC.app.finance${idSuffix}.costInformationDefinition.dropdown("set selected","${costItem?.costInformationDefinition.id}");
 
         // set filterProp by params
         <g:if test="${costItem?.costInformationRefValue}">
