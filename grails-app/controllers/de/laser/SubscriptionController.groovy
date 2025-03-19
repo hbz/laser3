@@ -1348,7 +1348,7 @@ class SubscriptionController {
 
     /**
      * Call to list those titles of the package which have not been added to the subscription yet. The view
-     * may be exportes as KBART or Excel worksheet as well. The view contains also enrichment functionalities
+     * may be exported as KBART or Excel worksheet as well. The view contains also enrichment functionalities
      * such as preselection of titles based on identifiers or adding locally negotiated prices or coverage statements
      * @return the list view of entitlements, either as HTML table or KBART / Excel worksheet export
      */
