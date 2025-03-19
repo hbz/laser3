@@ -1124,6 +1124,21 @@ class FinanceService {
                     queryParams.filterCIPaidTo = invoiceTo
                 }
             }
+            if(params.filterCIIDefinition) {
+                costItemFilterQuery += " and ci.costInformationDefinition = :filterCIIDefinition "
+                CostInformationDefinition filterCIIDefinition = genericOIDService.resolveOID(params.filterCIIDefinition)
+                queryParams.filterCIIDefinition = filterCIIDefinition
+                if(params.filterCIIValue) {
+                    if(filterCIIDefinition.type == RefdataValue.class.name) {
+                        costItemFilterQuery += " and ci.costInformationRefValue.id in (:filterCIIValue) "
+                        queryParams.filterCIIValue = Params.getLongList(params, 'filterCIIValue')
+                    }
+                    else {
+                        costItemFilterQuery += " and ci.costInformationStringValue in (:filterCIIValue) "
+                        queryParams.filterCIIValue = params.list('filterCIIValue')
+                    }
+                }
+            }
             result = [subFilter:subFilterQuery,ciFilter:costItemFilterQuery,filterData:queryParams,checkboxFilters:checkboxFilters]
             if(params.reset || params.submit)
                 cache.put('cachedFilter',result)
@@ -1819,7 +1834,6 @@ class FinanceService {
 
     Map<String, Object> financeEnrichment(MultipartFile tsvFile, String encoding, RefdataValue pickedElement, Subscription subscription) {
         Map<String, Object> result = [:]
-        Set<CostItem> missing = []
         List<String> wrongIdentifiers = [] // wrongRecords: downloadable file
         Org contextOrg = contextService.getOrg()
         //List<String> rows = tsvFile.getInputStream().getText(encoding).split('\n')
@@ -1913,8 +1927,6 @@ class FinanceService {
                 }
             }
         }
-        missing.addAll(CostItem.executeQuery('select ci.id from CostItem ci where ci.sub.instanceOf = :parent and ci.owner = :owner and ci.costItemElement = :element and (ci.costInBillingCurrency = 0 or ci.costInBillingCurrency = null) and ci.id not in (:updatedIDs)', [parent: subscription, owner: contextOrg, element: pickedElement, updatedIDs: updatedIDs]))
-        result.missing = missing
         result.missingCurrencyCounter = missingCurrencyCounter
         result.wrongIdentifiers = wrongIdentifiers
         result.matchCounter = updatedIDs.size()

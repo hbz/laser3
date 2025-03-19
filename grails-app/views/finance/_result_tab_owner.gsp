@@ -37,9 +37,7 @@
                 <g:sortableColumn property="costItemElement" title="${message(code:'financials.costItemElement')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance" scope="col" rowspan="2"/>
             </g:else>
             <th class="center aligned" scope="col" rowspan="2">
-                <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                    <i class="${Icon.SYM.OPTIONS}"></i>
-                </span>
+                <ui:optionsIcon />
             </th>
         </tr>
         <tr>

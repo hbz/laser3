@@ -81,8 +81,8 @@ class PackageController {
         result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
         result.languages = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)
         Set<Set<String>> filterConfig = [['q', 'pkgStatus'],
-                                    ['provider', 'vendor', 'ddc', 'curatoryGroup'],
-                                    ['curatoryGroupType', 'automaticUpdates']]
+                                    ['provider', 'ddc', 'curatoryGroup', 'curatoryGroupType'],
+                                    ['automaticUpdates']]
         Set<String> tableConfig = ['lineNumber', 'name', 'pkgStatus', 'titleCount', 'provider', 'vendor', 'platform', 'curatoryGroup', 'automaticUpdates', 'lasUpdatedDisplay', 'my', 'marker']
         if(SpringSecurityUtils.ifAnyGranted('ROLE_YODA')) {
             tableConfig << 'yodaActions'

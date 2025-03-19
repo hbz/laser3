@@ -7,9 +7,7 @@
             <th class="ten wide" rowspan="2" scope="col">${message(code:'default.note.label')}</th>
             <th class="two wide la-smaller-table-head" scope="col">${message(code:'default.lastUpdated.label')}</th>
             <th class="two wide center aligned" rowspan="2" scope="col">
-                <span class="la-popup-tooltip" data-content="${message(code:'default.actions.label')}">
-                    <i class="${Icon.SYM.OPTIONS}"></i>
-                </span>
+                <ui:optionsIcon />
             </th>
         </tr>
         <tr>

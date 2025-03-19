@@ -115,8 +115,9 @@
         <g:if test="${afterEnrichment}">
             <ui:msg showIcon="true" class="success" message="financials.enrichment.result" args="[matchCounter, totalRows, noRecordCounter]"/>
             <g:if test="${wrongIdentifiers}">
-                <ui:msg showIcon="true" class="error" message="financials.enrichment.invalidIDs" args="[wrongIdentifierCounter]"/>
-                <g:link class="${Btn.ICON.SIMPLE}" controller="package" action="downloadLargeFile" params="[token: token, fileformat: 'txt']"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+                <ui:msg showIcon="true" class="error" message="financials.enrichment.invalidIDs" args="[wrongIdentifierCounter]">
+                    <g:link class="${Btn.ICON.SIMPLE}" controller="package" action="downloadLargeFile" params="[token: token, fileformat: 'txt']"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+                </ui:msg>
             </g:if>
         </g:if>
 
