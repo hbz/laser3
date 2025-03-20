@@ -1702,7 +1702,7 @@ class SurveyController {
             }
 
             ctrlResult.result
-            redirect action: 'surveyParticipants', id: params.id, params: [surveyConfigID: params.surveyConfigID, tab: params.actionSurveyParticipants == 'addSubMembersToSurvey' ? 'selectedSubParticipants' : params.tab]
+            redirect action: 'surveyParticipants', id: params.id, params: [surveyConfigID: params.surveyConfigID, tab: params.tab]
             return
         }
 

@@ -86,8 +86,13 @@
 
     option = {
         tooltip: {
-                                        trigger: 'axis'
-                                    },
+                   trigger: 'axis',
+
+                    formatter: function (params) {
+                      var tar = params[0];
+                      return 'Click for Export:' + '<br/>' + tar.name + '<br/>' + tar.value[1];
+                    }
+               },
         title: {
             text: '<g:message code="surveyInfo.evaluation"/>'
             },
@@ -125,7 +130,7 @@
         x: 'value',
         y: 'property'
       },
-      barWidth: '50%'
+      barWidth: '25%'
     }
   ]
 };
