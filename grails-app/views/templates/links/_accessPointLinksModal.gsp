@@ -2,7 +2,7 @@
 
 <g:if test="${editmode}">
     <a role="button"
-       class="ui icon button la-modern-button la-popup-tooltip ${tmplCss}"
+       class="${Btn.MODERN.SIMPLE_TOOLTIP} ${tmplCss}"
        data-ui="modal"
        href="#${tmplModalID}"
        data-content="${tmplTooltip}">

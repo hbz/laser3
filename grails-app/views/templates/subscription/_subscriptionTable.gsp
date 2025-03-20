@@ -37,7 +37,7 @@
                         </th>
                         <g:if test="${'showPackages' in tableConfig}">
                             <th rowspan="2" scope="col">
-                                ${message(code: 'license.details.linked_pkg')}
+                                ${message(code: 'package.plural')}
                             </th>
                         </g:if>
                         <g:if test="${'showProviders' in tableConfig}">
@@ -59,7 +59,7 @@
                                 </span>
                             </th>
                         </g:if>
-                        <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label.shy')}"/>
+                        <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'subscription.startDate.label')}"/>
                         <g:if test="${params.orgRole in ['Subscription Consortia']}">
                             <th scope="col" rowspan="2" class="center aligned">
                                 <span class="la-popup-tooltip" data-content="${message(code:'subscription.numberOfLicenses.label')}" data-position="top center">
@@ -82,7 +82,7 @@
                         </th>
                     </tr>
                     <tr>
-                        <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.endDate" title="${message(code: 'default.endDate.label.shy')}"/>
+                        <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.endDate" title="${message(code: 'subscription.endDate.label')}"/>
                     </tr>
                 </thead>
                 <tbody>
