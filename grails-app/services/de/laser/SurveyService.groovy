@@ -1203,6 +1203,79 @@ class SurveyService {
 
     }
 
+    void addMultiYearSubMembers(SurveyConfig surveyConfig) {
+        Map<String, Object> result = [:]
+        result.institution = contextService.getOrg()
+
+        List currentMembersSubs = subscriptionService.getValidSurveySubChilds(surveyConfig.subscription)
+
+        currentMembersSubs.each { Subscription subChild ->
+            Org org = subChild.getSubscriberRespConsortia()
+
+            if (!(SurveyOrg.findAllBySurveyConfigAndOrg(surveyConfig, org))) {
+
+                boolean existsMultiYearTerm = false
+
+
+                if (subChild.isCurrentMultiYearSubscriptionNew()) {
+                    existsMultiYearTerm = true
+                }
+
+
+                if (existsMultiYearTerm) {
+                    SurveyOrg surveyOrg = new SurveyOrg(
+                            surveyConfig: surveyConfig,
+                            org: org
+                    )
+
+                    if (!surveyOrg.save()) {
+                        log.debug("Error by add Org to SurveyOrg ${surveyOrg.errors}");
+                    }else{
+                        if(surveyConfig.surveyInfo.status in [RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]) {
+                            surveyConfig.surveyProperties.each { property ->
+
+                                if(!SurveyResult.findBySurveyConfigAndParticipantAndTypeAndOwner(surveyConfig, org, property.surveyProperty, result.institution)) {
+                                    SurveyResult surveyResult = new SurveyResult(
+                                            owner: result.institution,
+                                            participant: org ?: null,
+                                            startDate: surveyConfig.surveyInfo.startDate,
+                                            endDate: surveyConfig.surveyInfo.endDate ?: null,
+                                            type: property.surveyProperty,
+                                            surveyConfig: surveyConfig
+                                    )
+
+                                    if (surveyResult.save()) {
+                                        //log.debug(surveyResult.toString())
+                                    } else {
+                                        log.error("Not create surveyResult: " + surveyResult)
+                                    }
+                                }
+                            }
+
+                            if (surveyConfig.surveyInfo.status == RDStore.SURVEY_SURVEY_STARTED) {
+                                emailsToSurveyUsersOfOrg(surveyConfig.surveyInfo, org, false)
+                            }
+
+
+                            setDefaultPreferredConcatsForSurvey(surveyConfig, org)
+
+
+                            if(surveyConfig.pickAndChoose){
+                                Subscription participantSub = surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(org)
+                                IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, participantSub)
+                                if (!issueEntitlementGroup && participantSub) {
+                                    String groupName = IssueEntitlementGroup.countBySubAndName(participantSub, surveyConfig.issueEntitlementGroupName) > 0 ? (IssueEntitlementGroup.countBySubAndNameIlike(participantSub, surveyConfig.issueEntitlementGroupName) + 1) : surveyConfig.issueEntitlementGroupName
+                                    new IssueEntitlementGroup(surveyConfig: surveyConfig, sub: participantSub, name: groupName).save()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
     /**
      * Copies the documents, notes, tasks, participations and properties related to the given survey into the given new survey
      * @param oldSurveyConfig the survey from which data should be taken

@@ -2633,6 +2633,9 @@ class SurveyControllerService {
                 case "addSubMembersToSurvey":
                     surveyService.addSubMembers(result.surveyConfig)
                     break
+                case "addMultiYearSubMembersToSurvey":
+                    surveyService.addMultiYearSubMembers(result.surveyConfig)
+                    break
             }
         }
         [result: result, status: STATUS_OK]
