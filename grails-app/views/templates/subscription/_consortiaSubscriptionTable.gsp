@@ -50,7 +50,7 @@
                 </span>
             </th>
             <g:if test="${'showPackages' in tableConfig}">
-                <th rowspan="2">${message(code:'myinst.consortiaSubscriptions.packages')}</th>
+                <th rowspan="2">${message(code:'package.plural')}</th>
             </g:if>
             <g:if test="${'showProviders' in tableConfig}">
                 <th rowspan="2">${message(code:'myinst.consortiaSubscriptions.provider')}</th>
@@ -137,7 +137,6 @@
                 </td>
                 <th scope="row" class="la-th-column">
                     <div class="la-flexbox la-main-object">
-                        <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
                         <g:link controller="subscription" action="show" id="${subCons.id}">${subCons.name}</g:link>
                     </div>
                     <g:each in="${linkedLicenses.get(subCons)}" var="linkedLicense">
@@ -156,7 +155,9 @@
                     <td>
                         <g:each in="${subCons.packages}" var="subPkg">
                             <div class="la-flexbox">
-                                <i class="${Icon.PACKAGE} la-list-icon"></i>
+                                <g:if test="${subCons.packages.size() > 1}">
+                                    <i class="${Icon.PACKAGE} la-list-icon"></i>
+                                </g:if>
                                 <g:link controller="package" action="show" id="${subPkg.pkg.id}">${subPkg.pkg.name}</g:link>
                             </div>
                         </g:each>
