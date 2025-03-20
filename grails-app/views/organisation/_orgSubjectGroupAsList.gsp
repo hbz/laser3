@@ -5,7 +5,7 @@
         <g:each in="${orgSubjectGroups}" var="subjectGroup">
             <div class="ui item">
                 <div class="content la-space-right">
-                    <strong>${subjectGroup.subjectGroup.getI10n("value")}</strong>
+                    ${subjectGroup.subjectGroup.getI10n("value")}
                 </div>
                 <g:if test="${editable}">
                     <g:if test="${subjectGroup.subjectGroup.id in availableSubjectGroupIds}">
