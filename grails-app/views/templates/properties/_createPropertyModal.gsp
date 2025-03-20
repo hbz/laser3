@@ -3,7 +3,7 @@
 <laser:serviceInjection/>
 
 <ui:modal id="createPropertyModal" text="${message(code: 'default.add.label', args: [message(code: 'propertyDefinition.plural')])}"
-          msgSave="${message(code: 'default.add.label', args: [message(code: 'propertyDefinition.plural')])}" modalSize="large">
+          msgSave="${message(code: 'default.add.label', args: [message(code: 'propertyDefinition.plural')])}" modalSize="large" contentClass="scrolling">>
 
     <g:form class="ui form" url="${propertyCreateUrl}" method="POST">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
@@ -181,15 +181,6 @@
                         </table>
                     </g:if>
                 </div>
-                <style>
-                .scrollWrapper {
-                    overflow-y: scroll;
-                    max-height: 400px;
-                }
-
-                .scrollContent {
-                }
-                </style>
             </div>
 
         </div><!-- .grid -->
