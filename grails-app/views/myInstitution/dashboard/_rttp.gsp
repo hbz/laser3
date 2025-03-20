@@ -30,9 +30,9 @@
                                 </g:link>
                             </td>
                             <td colspan="4" class="center aligned">
-                                <a class="header" onclick="JSPC.app.dashboard.editTask(${task.id});">
-                                    <i class="${Icon.TASK} la-list-icon"></i>
-                                </a>${DateUtils.getLocalizedSDF_noTime().format(task.endDate)}
+                                <a href="#" onclick="JSPC.app.dashboard.editTask(${task.id});">
+                                    <i class="${Icon.TASK} la-list-icon"></i>${DateUtils.getLocalizedSDF_noTime().format(task.endDate)}
+                                </a>
                             </td>
                         </tr>
                     </g:each>
