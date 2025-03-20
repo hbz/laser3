@@ -186,6 +186,19 @@
                         </tr>
                         </tbody>
                     </table>
+
+                    <g:if test="${wekbNews.provider.created.size()}">
+                        <ui:msg class="info">
+                            <strong>Neue Anbieter gefunden:</strong>
+                            <g:each in="${wekbNews.provider.created}" var="p1">
+                                <g:set var="p2" value="${wekbNews.provider.all.find{ it.uuid == p1 }}" />
+                                <br/>
+                                <g:link controller="provider" action="show" id="${p2.id}" target="_blank">
+                                    <i class="${Icon.PROVIDER} la-list-icon"></i>${p2.name}
+                                </g:link>
+                            </g:each>
+                        </ui:msg>
+                    </g:if>
                 </g:if>
                 <g:else>
                     <p>

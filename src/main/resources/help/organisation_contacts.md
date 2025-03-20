@@ -11,4 +11,6 @@ Bitte hinterlegen Sie mindestens **folgende Kontaktdaten und Adressen:**
 
 Sie können einem Kontakt mehr als eine Position/Funktion zuordnen. 
 
-Der **Rechnungskontakt** und die **Rechnungsanschrift** werden für konsortiale Umfragen benötigt, die eine Rechnungsstellungabfrage beinhalten und tauchen an der Stelle, wie von Ihnen eingetragen, auf. 
+Bei der Angabe eines **Rechnungskontaktes**, eines **Umfragekontaktes** und einer **Rechnungsanschrift** haben Sie die Möglichkeit diese als bevorzugte Adressaten bei Umfragen auszuwählen.
+
+
