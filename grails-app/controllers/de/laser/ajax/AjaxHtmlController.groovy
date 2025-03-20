@@ -1467,7 +1467,6 @@ class AjaxHtmlController {
                 Subscription subscription = Subscription.get(params.id)
                 result.editable = subscription.isEditableBy(user)
                 if(result.editable && params.onlyPrivateProperties == 'false') {
-
                     result.allPropDefGroups = PropertyDefinitionGroup.executeQuery('select pdg from PropertyDefinitionGroup pdg where pdg.ownerType = :ownerType and pdg.tenant = :tenant order by pdg.order asc', [tenant: contextOrg, ownerType: PropertyDefinition.getDescrClass(PropertyDefinition.SUB_PROP)])
                     result.orphanedProperties = propertyService.getOrphanedPropertyDefinition(PropertyDefinition.SUB_PROP)
                 }
@@ -1496,9 +1495,7 @@ class AjaxHtmlController {
             case Org.class.simpleName:
                 Org org = Org.get(params.id)
                 OrganisationController organisationController
-                if( params.onlyPrivateProperties == 'false') {
-                    result.editable = organisationController._checkIsEditable(org)
-                }
+                result.editable = organisationController._checkIsEditable(org)
                 if((result.editable || contextService.isInstEditor( CustomerTypeService.ORG_INST_PRO ) || contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_BASIC )) && params.onlyPrivateProperties == 'true') {
                     result.privateProperties = PropertyDefinition.findAllByDescrAndTenant(PropertyDefinition.ORG_PROP, contextService.getOrg(), [sort: 'name_' + lang])
                 }
@@ -1508,7 +1505,7 @@ class AjaxHtmlController {
             case Provider.class.simpleName:
                 Provider provider = Provider.get(params.id)
                 result.editable = contextService.isInstEditor()
-                if(result.editable || contextService.isInstEditor( CustomerTypeService.ORG_INST_PRO ) || contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_BASIC )) {
+                if((result.editable || contextService.isInstEditor( CustomerTypeService.ORG_INST_PRO ) || contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_BASIC )) && params.onlyPrivateProperties == 'true' ){
                     result.privateProperties = PropertyDefinition.findAllByDescrAndTenant(PropertyDefinition.PRV_PROP, contextService.getOrg(), [sort: 'name_' + lang])
                 }
                 result.propertyCreateUrl = createLink(controller: 'ajaxHtml', action: 'processCreateProperties', params: [objectClass: Provider.class.name, objectId: provider.id])
@@ -1517,7 +1514,7 @@ class AjaxHtmlController {
             case Platform.class.simpleName:
                 Platform platform = Platform.get(params.id)
                 result.editable = contextService.isInstEditor()
-                if(result.editable || contextService.isInstEditor( CustomerTypeService.ORG_INST_PRO ) || contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_BASIC )) {
+                if((result.editable || contextService.isInstEditor( CustomerTypeService.ORG_INST_PRO ) || contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_BASIC )) && params.onlyPrivateProperties == 'true' ){
                     result.privateProperties = PropertyDefinition.findAllByDescrAndTenant(PropertyDefinition.PLA_PROP, contextService.getOrg(), [sort: 'name_' + lang])
                 }
                 result.propertyCreateUrl = createLink(controller: 'ajaxHtml', action: 'processCreateProperties', params: [objectClass: Platform.class.name, objectId: platform.id])
@@ -1526,7 +1523,7 @@ class AjaxHtmlController {
             case Vendor.class.simpleName:
                 Vendor vendor = Vendor.get(params.id)
                 result.editable = contextService.isInstEditor()
-                if(result.editable || contextService.isInstEditor( CustomerTypeService.ORG_INST_PRO ) || contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_BASIC )) {
+                if((result.editable || contextService.isInstEditor( CustomerTypeService.ORG_INST_PRO ) || contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_BASIC )) && params.onlyPrivateProperties == 'true' ){
                     result.privateProperties = PropertyDefinition.findAllByDescrAndTenant(PropertyDefinition.VEN_PROP, contextService.getOrg(), [sort: 'name_' + lang])
                 }
                 result.propertyCreateUrl = createLink(controller: 'ajaxHtml', action: 'processCreateProperties', params: [objectClass: Vendor.class.name, objectId: vendor.id])
