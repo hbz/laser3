@@ -269,7 +269,13 @@
                     ${(params.int('offset') ?: 0) + i + 1}
                 </td>
 
-                <th scope="row" class="la-th-column">
+                <td class="la-th-column">
+                    <g:if test="${surveyConfig.invoicingInformation}">
+                        <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                              data-content="${message(code: "surveyconfig.invoicingInformation.label")}">
+                            <i class="dollar icon la-list-icon"></i>
+                        </span>
+                    </g:if>
                     <g:link controller="survey" action="show" id="${surveyInfo.id}" class="la-main-object">
                         ${surveyConfig ? surveyConfig.getSurveyName() : surveyInfo.name}
                     </g:link>
@@ -282,7 +288,7 @@
                             </div>
                         </g:if>
                     </g:if>
-                </th>
+                </td>
 
                 <td class="center aligned">
                     <div class="ui label survey-${surveyInfo.type.value}">

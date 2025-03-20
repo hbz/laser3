@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;" %>
 <laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyParticipants.label')})" />
 
 <ui:breadcrumbs>
@@ -32,30 +32,12 @@
 <g:if test="${surveyConfig}">
     <div class="ui grid">
         <div class="sixteen wide stretched column">
-            <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyConfig; de.laser.storage.RDStore;" %>
-
-            <g:if test="${selectedSubParticipantsCount == 0 && surveyConfig.subscription}">
-                <div class="four wide column">
-
-                    <g:link action="actionSurveyParticipants"
-                            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab, actionSurveyParticipants: 'addSubMembersToSurvey']"
-                            class="${Btn.SIMPLE} right floated">
-                        <g:message code="surveyParticipants.addSubMembersToSurvey"/>
-                    </g:link>
-                    <br/>
-                    <br/>
-
-                </div>
-            </g:if>
-
-            <br />
-
             <ui:filter>
                 <g:form action="addSurveyParticipants" method="post" class="ui form"
                         params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
                     <laser:render template="/templates/filter/orgFilter"
                                   model="[
-                                          tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['discoverySystemsFrontend', 'discoverySystemsIndex'], ['subStatus', surveyConfig.subscription ? 'hasSubscription' : '']],
+                                          tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['discoverySystemsFrontend', 'discoverySystemsIndex'], ['subStatus', surveyConfig.subscription ? 'hasSubscription, subRunTimeMultiYear' : '']],
                                           tmplConfigFormFilter: true
                                   ]"/>
                 </g:form>

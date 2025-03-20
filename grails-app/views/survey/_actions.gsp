@@ -75,6 +75,11 @@
                         <ui:actionsDropdownItem action="actionSurveyParticipants"
                                                 params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, actionSurveyParticipants: 'addSubMembersToSurvey']"
                                                 message="surveyParticipants.addSubMembersToSurvey"/>
+                        <g:if test="${!surveyConfig.subSurveyUseForTransfer}">
+                            <ui:actionsDropdownItem action="actionSurveyParticipants"
+                                                    params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, actionSurveyParticipants: 'addMultiYearSubMembersToSurvey']"
+                                                    message="surveyParticipants.addMultiYearSubMembersToSurvey"/>
+                        </g:if>
                     </g:if>
                     <div class="ui divider"></div>
                 </g:if>

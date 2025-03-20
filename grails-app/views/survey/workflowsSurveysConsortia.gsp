@@ -281,12 +281,25 @@
         ${(params.int('offset') ?: 0) + i + 1}
         </td>
 
-        <td>
-            <div class="la-flexbox">
+        <td class="la-th-column">
+                <g:if test="${surveyConfig.invoicingInformation}">
+                    <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                          data-content="${message(code: "surveyconfig.invoicingInformation.label")}">
+                        <i class="dollar icon la-list-icon"></i>
+                    </span>
+                </g:if>
                 <g:link controller="survey" action="show" id="${surveyInfo.id}" class="ui ">
                     ${surveyConfig.getSurveyName()}
                 </g:link>
-            </div>
+                <g:if test="${surveyConfig.subscription}">
+                    <g:set var="providers" value="${surveyConfig.subscription.getProviders()}"/>
+                    <g:if test="${providers}">
+
+                        <div class="la-flexbox la-minor-object">
+                            (<g:each in="${providers}" var="provider">${provider.name}</g:each>)
+                        </div>
+                    </g:if>
+                </g:if>
         </td>
 
         <td class="center aligned">

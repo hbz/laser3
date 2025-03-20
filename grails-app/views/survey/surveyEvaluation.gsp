@@ -69,6 +69,17 @@
     <g:if test="${surveyConfig.pickAndChoose}">
         <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'finishedDate', 'surveyTitlesCount', 'uploadTitleListDoc', 'surveyProperties', 'commentOnlyForOwner', 'downloadTitleList']}"/>
     </g:if>
+    <g:elseif test="${surveyConfig.packageSurvey && surveyConfig.vendorSurvey}">
+        <g:set var="tmplConfigShowList"
+               value="${['lineNumber', 'name', 'surveyProperties', 'surveyPackages', 'surveyCostItemsPackages', 'surveyVendor', 'commentOnlyForOwner']}"/>
+    </g:elseif>
+    <g:elseif test="${surveyConfig.packageSurvey}">
+        <g:set var="tmplConfigShowList"
+               value="${['lineNumber', 'name', 'surveyProperties', 'surveyPackages', 'surveyCostItemsPackages', 'commentOnlyForOwner']}"/>
+    </g:elseif>
+    <g:elseif test="${surveyConfig.vendorSurvey}">
+        <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyProperties', 'surveyVendor', 'commentOnlyForOwner']}"/>
+    </g:elseif>
     <g:else>
         <g:set var="tmplConfigShowList" value="${['lineNumber', 'name', 'surveyProperties', 'commentOnlyForOwner']}"/>
     </g:else>
@@ -86,8 +97,13 @@
 
     option = {
         tooltip: {
-                                        trigger: 'axis'
-                                    },
+                   trigger: 'axis',
+
+                    formatter: function (params) {
+                      var tar = params[0];
+                      return 'Click for Export:' + '<br/>' + tar.name + '<br/>' + tar.value[1];
+                    }
+               },
         title: {
             text: '<g:message code="surveyInfo.evaluation"/>'
             },
@@ -125,7 +141,7 @@
         x: 'value',
         y: 'property'
       },
-      barWidth: '50%'
+      barWidth: '25%'
     }
   ]
 };

@@ -86,6 +86,13 @@
                             </span>
                         </g:if>
 
+                        <g:if test="${surveyConfig.invoicingInformation}">
+                            <span class="la-long-tooltip la-popup-tooltip" data-position="right center"
+                                  data-content="${message(code: "surveyconfig.invoicingInformation.label")}">
+                                <i class="dollar icon la-list-icon"></i>
+                            </span>
+                        </g:if>
+
                         <g:link controller="survey" action="show" id="${surveyInfo.id}" class="ui ">
                             ${surveyConfig.getConfigNameShort()}
                         </g:link>
