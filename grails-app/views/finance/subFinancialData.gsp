@@ -113,11 +113,28 @@
         </g:if>
 
         <g:if test="${afterEnrichment}">
-            <ui:msg showIcon="true" class="success" message="financials.enrichment.result" args="[matchCounter, totalRows, noRecordCounter]"/>
-            <g:if test="${wrongIdentifiers}">
-                <ui:msg showIcon="true" class="error" message="financials.enrichment.invalidIDs" args="[wrongIdentifierCounter]"/>
-                <g:link class="${Btn.ICON.SIMPLE}" controller="package" action="downloadLargeFile" params="[token: token, fileformat: 'txt']"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+            <g:if test="${wrongSeparator}">
+                <ui:msg showIcon="true" class="error" message="financials.enrichment.wrongSeparator"/>
             </g:if>
+            <g:else>
+                <g:if test="${matchCounter > 0}">
+                    <ui:msg showIcon="true" class="success" message="financials.enrichment.result" args="[matchCounter, totalRows]"/>
+                </g:if>
+                <g:else>
+                    <ui:msg showIcon="true" class="warning" message="financials.enrichment.emptyResult" args="[totalRows]"/>
+                </g:else>
+                <g:if test="${missing || wrongIdentifiers}">
+                    <ui:msg showIcon="true" class="error">
+                        <g:if test="${missing}">
+                            <p><g:message code="financials.enrichment.missingPrices"/></p>
+                        </g:if>
+                        <g:if test="${wrongIdentifiers}">
+                            <p><g:message code="financials.enrichment.invalidIDs" args="[wrongIdentifierCounter]"/></p>
+                            <p><g:link class="${Btn.ICON.SIMPLE}" controller="package" action="downloadLargeFile" params="[token: token, fileformat: 'txt']"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link></p>
+                        </g:if>
+                    </ui:msg>
+                </g:if>
+            </g:else>
         </g:if>
 
         <laser:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets,fixedSubscription:subscription,ciTitles:ciTitles,missing:missing]" />

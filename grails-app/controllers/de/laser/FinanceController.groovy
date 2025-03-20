@@ -120,6 +120,11 @@ class FinanceController  {
                     }
                 }
             }
+            if(params.containsKey('selectedCostItemElement') && !result.containsKey('wrongSeparator')) {
+                RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
+                Set<CostItem> missing = CostItem.executeQuery('select ci.id from CostItem ci where ci.sub.instanceOf = :parent and ci.owner = :owner and ci.costItemElement = :element and (ci.costInBillingCurrency = 0 or ci.costInBillingCurrency = null)', [parent: result.subscription, owner: contextService.getOrg(), element: pickedElement])
+                result.missing = missing
+            }
             result.financialData = financeService.getCostItemsForSubscription(params,result)
             SortedSet<RefdataValue> assignedCostItemElements = new TreeSet<RefdataValue>()
             assignedCostItemElements.addAll(CostItemElementConfiguration.executeQuery('select cie from CostItem ci join ci.costItemElement cie join ci.sub s where ci.owner = :org and s.instanceOf = :subscription order by cie.value_'+ LocaleUtils.getCurrentLang()+' asc',[org: contextService.getOrg(), subscription: result.subscription]))

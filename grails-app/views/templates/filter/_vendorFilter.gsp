@@ -39,7 +39,7 @@
                     <%
                         List<Map> isMyXOptions = []
 
-                        if (actionName == 'list') {
+                        if (actionName == 'list'  || showAllIsMyXOptions) {
                             isMyXOptions.add([ id: 'wekb_exclusive',    value: "${message(code:'filter.wekb.exclusive')}" ])
                             isMyXOptions.add([ id: 'wekb_not',          value: "${message(code:'filter.wekb.not')}" ])
                             isMyXOptions.add([ id: 'ismyx_exclusive',   value: "${message(code:'filter.isMyX.exclusive', args:["${message(code:'menu.my.vendors')}"])}" ])

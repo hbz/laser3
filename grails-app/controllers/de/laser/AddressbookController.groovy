@@ -450,6 +450,10 @@ class AddressbookController {
                             }
                         }
 
+                        if(obj.preferredForSurvey && !(RDStore.ADDRESS_TYPE_BILLING in obj.type)){
+                            obj.preferredForSurvey = false
+                        }
+
                         if (!referer.contains('tab')) {
                             if(referer.contains('?'))
                                 referer += '&tab=addresses'
@@ -508,6 +512,14 @@ class AddressbookController {
                     }
 
                     obj.properties = params
+
+                    if(obj.preferredBillingPerson && !PersonRole.findByFunctionTypeAndPrsAndOrg(RDStore.PRS_FUNC_INVOICING_CONTACT, obj, contextService.getOrg())){
+                        obj.preferredBillingPerson = false
+                    }
+
+                    if(obj.preferredSurveyPerson && !PersonRole.findByFunctionTypeAndPrsAndOrg(RDStore.PRS_FUNC_SURVEY_CONTACT, obj, contextService.getOrg())){
+                        obj.preferredSurveyPerson = false
+                    }
 
                     if (!obj.save()) {
                         log.info(obj.errors)

@@ -2500,32 +2500,30 @@ class SurveyService {
         }
         else if (params.viewTab == 'invoicingInformation') {
             if (result.editable) {
-                if(params.setSurveyInvoicingInformation) {
-                    if (params.personId) {
-                        if (params.setConcact == 'true') {
-                            Person person = Person.get(Long.valueOf(params.personId))
-                            if(person && !SurveyPersonResult.findByParticipantAndSurveyConfigAndPersonAndBillingPerson(participant, result.surveyConfig, person, true)){
-                                new SurveyPersonResult(participant: participant, surveyConfig: result.surveyConfig, person: person, billingPerson: true, owner: result.surveyInfo.owner).save()
-                            }
-                        }
-                        if (params.setConcact == 'false') {
-                            Person person = Person.get(Long.valueOf(params.personId))
-                            SurveyPersonResult surveyPersonResult = SurveyPersonResult.findByParticipantAndSurveyConfigAndPersonAndBillingPerson(participant, result.surveyConfig, person, true)
-                            if(person && surveyPersonResult){
-                                surveyPersonResult.delete()
-                            }
+                if (params.personId && params.setPreferredBillingPerson) {
+                    if (params.setPreferredBillingPerson == 'true') {
+                        Person person = Person.get(Long.valueOf(params.personId))
+                        if (person && !SurveyPersonResult.findByParticipantAndSurveyConfigAndBillingPerson(participant, result.surveyConfig, true)) {
+                            new SurveyPersonResult(participant: participant, surveyConfig: result.surveyConfig, person: person, billingPerson: true, owner: result.surveyInfo.owner).save()
                         }
                     }
+                    if (params.setPreferredBillingPerson == 'false') {
+                        Person person = Person.get(Long.valueOf(params.personId))
+                        SurveyPersonResult surveyPersonResult = SurveyPersonResult.findByParticipantAndSurveyConfigAndPersonAndBillingPerson(participant, result.surveyConfig, person, true)
+                        if (person && surveyPersonResult) {
+                            surveyPersonResult.delete()
+                        }
+                    }
+                }
 
-                    if (params.addressId) {
-                        if (params.setAddress == 'true') {
-                            result.surveyOrg.address = Address.get(Long.valueOf(params.addressId))
-                        }
-                        if (params.setAddress == 'false') {
-                            result.surveyOrg.address = null
-                        }
-                        result.surveyOrg.save()
+                if (params.addressId && params.setAddress) {
+                    if (params.setAddress == 'true') {
+                        result.surveyOrg.address = Address.get(Long.valueOf(params.addressId))
                     }
+                    if (params.setAddress == 'false') {
+                        result.surveyOrg.address = null
+                    }
+                    result.surveyOrg.save()
                 }
 
                 if(params.setEInvoiceValuesFromOrg) {
@@ -2548,15 +2546,14 @@ class SurveyService {
         }
         else if (params.viewTab == 'surveyContacts') {
             if (result.editable) {
-                if(params.setSurveyInvoicingInformation) {
-                    if (params.personId) {
-                        if (params.setConcact == 'true') {
+                    if (params.personId && params.setPreferredSurveyPerson) {
+                        if (params.setPreferredSurveyPerson == 'true') {
                             Person person = Person.get(Long.valueOf(params.personId))
                             if(person && !SurveyPersonResult.findByParticipantAndSurveyConfigAndPersonAndSurveyPerson(participant, result.surveyConfig, person, true)){
                                 new SurveyPersonResult(participant: participant, surveyConfig: result.surveyConfig, person: person, surveyPerson: true, owner: result.surveyInfo.owner).save()
                             }
                         }
-                        if (params.setConcact == 'false') {
+                        if (params.setPreferredSurveyPerson == 'false') {
                             Person person = Person.get(Long.valueOf(params.personId))
                             SurveyPersonResult surveyPersonResult = SurveyPersonResult.findByParticipantAndSurveyConfigAndPersonAndSurveyPerson(participant, result.surveyConfig, person, true)
                             if(person && surveyPersonResult){
@@ -2564,7 +2561,6 @@ class SurveyService {
                             }
                         }
                     }
-                }
             }
 
             params.sort = params.sort ?: 'sortname'
@@ -2750,21 +2746,23 @@ class SurveyService {
             parameterMap.org = org
 
             parameterMap.sort = 'sortname'
-            parameterMap.preferredForSurvey = true
+            parameterMap.preferredBillingPerson = true
             parameterMap.function = [RDStore.PRS_FUNC_INVOICING_CONTACT.id]
             List<Person> visiblePersons = addressbookService.getVisiblePersons("contacts", parameterMap)
             if(surveyConfig.invoicingInformation) {
                 visiblePersons.each { Person person ->
-                    if (person.preferredForSurvey && !SurveyPersonResult.findByParticipantAndSurveyConfigAndPersonAndBillingPerson(org, surveyConfig, person, true)) {
+                    if (person.preferredBillingPerson && !SurveyPersonResult.findByParticipantAndSurveyConfigAndPersonAndBillingPerson(org, surveyConfig, person, true)) {
                         new SurveyPersonResult(participant: org, surveyConfig: surveyConfig, person: person, billingPerson: true, owner: surveyConfig.surveyInfo.owner).save()
                     }
                 }
             }
 
+            parameterMap.remove('preferredBillingPerson')
+            parameterMap.preferredSurveyPerson = true
             parameterMap.function = [RDStore.PRS_FUNC_SURVEY_CONTACT.id]
             visiblePersons = addressbookService.getVisiblePersons("contacts", parameterMap)
             visiblePersons.each { Person person ->
-                if(person.preferredForSurvey && !SurveyPersonResult.findByParticipantAndSurveyConfigAndPersonAndSurveyPerson(org, surveyConfig, person, true)){
+                if(person.preferredSurveyPerson && !SurveyPersonResult.findByParticipantAndSurveyConfigAndPersonAndSurveyPerson(org, surveyConfig, person, true)){
                     new SurveyPersonResult(participant: org, surveyConfig: surveyConfig, person: person, surveyPerson: true, owner: surveyConfig.surveyInfo.owner).save()
                 }
             }
