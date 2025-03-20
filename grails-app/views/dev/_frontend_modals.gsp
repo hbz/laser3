@@ -5,7 +5,7 @@
 <div class="html ui top attached segment example">
     <div class="ui top attached label">Atrribut refreshModal="true"</div>
     <button class="${Btn.POSITIVE}" onClick="$('#modal1').modal('show');">Öffne Modal</button><br><br>
-    <ui:modal id="modal1" refreshModal="true" message="package.show.linkToSub" contentClass="resizable scrolling content">
+    <ui:modal id="modal1" refreshModal="true" message="package.show.linkToSub" contentClass="scrolling content">
         <div class="ui top attached stackable tabular la-tab-with-js menu">
 
             <a class="item" data-tab="tab-0">Teb 1</a>
