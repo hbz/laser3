@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Icon; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.ExportClickMeService; de.laser.ui.Icon; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue; de.laser.storage.RDStore" %>
 <laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyResult.label')})" />
 <laser:javascript src="echarts.js"/>
 
@@ -31,20 +31,6 @@
 <ui:messages data="${flash}"/>
 
 <br />
-
-<h2 class="ui icon header la-clear-before la-noMargin-top">
-    <g:if test="${surveyConfig.subscription}">
-        <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
-        <g:link controller="subscription" action="show" id="${surveyConfig.subscription.id}">
-            ${surveyConfig.getConfigNameShort()}
-        </g:link>
-
-    </g:if>
-    <g:else>
-        ${surveyConfig.getConfigNameShort()}
-    </g:else>
-    : ${message(code: 'surveyResult.label')}
-</h2>
 
 <g:if test="${surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
     <div class="ui segment">
@@ -144,6 +130,30 @@
   ]
 };
 surveyEvChart.setOption(option);
+surveyEvChart.on('click', function(params) {
+   $.ajax({
+            url: "<g:createLink controller="clickMe" action="exportClickMeModal" params="${params + [exportController: 'survey', exportAction: 'surveyEvaluation', clickMeType: ExportClickMeService.SURVEY_EVALUATION, id: params.id, surveyConfigID: surveyConfig.id, exportFileName: exportFileName]}"/>"+'&chartFilter=' + encodeURIComponent(params.name)
+        }).done( function (data) {
+            $('.ui.dimmer.modals > #exportClickMeModal').remove();
+            $('#dynamicModalContainer').empty().html(data);
+
+            $('#dynamicModalContainer .ui.modal').modal({
+               onShow: function () {
+                    r2d2.initDynamicUiStuff('#exportClickMeModal');
+                    r2d2.initDynamicXEditableStuff('#exportClickMeModal');
+                    $("html").css("cursor", "auto");
+                },
+                detachable: true,
+                autofocus: false,
+                closable: false,
+                transition: 'scale',
+                onApprove : function() {
+                    $(this).find('#exportClickMeModal .ui.form').submit();
+                    return false;
+                }
+            }).modal('show');
+        });
+});
 </laser:script>
 
     </g:else>

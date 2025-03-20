@@ -64,7 +64,9 @@
                     </th>
                     <th class="three wide">${message(code:'org.customerType.label')}</th>
                     <th class="one wide center aligned"><ui:myXIcon /></th>
-                    <th class="one wide">${message(code:'default.actions.label')}</th>
+                    <th class="one wide center aligned">
+                        <ui:optionsIcon />
+                    </th>
                 </tr>
             </thead>
             <tbody>

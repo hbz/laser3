@@ -53,11 +53,20 @@
 
 <ui:messages data="${flash}"/>
     <%
-        List configShowFilter = [['name', 'identifier'], ['identifierNamespace', 'customerIDNamespace'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'], ['discoverySystemsFrontend', 'discoverySystemsIndex'], ['property&value', 'subStatus', 'subValidOn'], ['subPerpetualAccess'], ['providers']]
+        List configShowFilter = [
+            ['name', 'identifier', 'identifierNamespace', 'customerIDNamespace'],
+            ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'],
+            ['property&value', 'subStatus', 'subValidOn'],
+            ['discoverySystemsFrontend', 'discoverySystemsIndex', 'providers', 'subPerpetualAccess']
+        ]
         List configShowTable = ['sortname', 'name', 'mainContact', 'libraryType', 'status', 'legalInformation', 'numberOfSubscriptions', 'numberOfSurveys', 'mailInfos']
 
         if (contextService.getOrg().isCustomerType_Support()) {
-            configShowFilter = [['name', 'identifier'], ['identifierNamespace', 'customerIDNamespace'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'], ['property&value', 'subStatus', 'subValidOn']]
+            configShowFilter = [
+                ['name', 'identifier', 'identifierNamespace', 'customerIDNamespace'],
+                ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'],
+                ['property&value', 'subStatus', 'subValidOn']
+            ]
             configShowTable = ['sortname', 'name', 'mainContact', 'libraryType', 'status', 'legalInformation', 'numberOfSubscriptions']
         }
     %>

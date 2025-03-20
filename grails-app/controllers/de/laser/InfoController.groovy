@@ -1,13 +1,13 @@
 package de.laser
 
-import de.laser.addressbook.Contact
-import de.laser.addressbook.Person
+import de.laser.addressbook.PersonRole
 import de.laser.auth.User
 import de.laser.ctrl.OrganisationControllerService
 import de.laser.remote.Wekb
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
 import de.laser.wekb.Platform
+import de.laser.wekb.Provider
 import de.laser.wekb.TitleInstancePackagePlatform
 import grails.plugin.springsecurity.annotation.Secured
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -72,28 +72,43 @@ ${custId ? ('Customer Identifier: ' + custId.value) : ''}
         ]
     }
 
-    private static Map<String, Object> _reportTitleToProvider(GrailsParameterMap params) {
+    private static List<List> _getProviderContacts(Provider provider, List<RefdataValue> order) {
+        List<List> result = [] // [Person, RefdataValue, Contact]
 
+        order.each { rdv ->
+            List match = PersonRole.executeQuery(
+                    "select p, pr.functionType, c from Person p inner join p.roleLinks pr inner join p.contacts c " +
+                            "where pr.provider = :provider and pr.functionType = :ft " +
+                            "and ((p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true)) " +
+                            "and c.contentType.value in ('Mail', 'E-Mail')",
+                    [provider: provider, ft: rdv, ctx: BeanStore.getContextService().getOrg()]
+            )
+            //println match
+            if (match) { result.addAll( match.sort{ it[2].language?.getI10n('value') } ) }
+        }
+        result
+    }
+
+    private static Map<String, Object> _reportTitleToProvider(GrailsParameterMap params) {
         Map<String, Object> result = [:]
 
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(params.id_tipp)
+        Provider provider = tipp.platform.provider
 
-        List<Person> ppList = BeanStore.getProviderService().getContactPersonsByFunctionType(tipp.platform.provider, false, RDStore.PRS_FUNC_SERVICE_SUPPORT)
-
-        if (!ppList) {
-            ppList = BeanStore.getProviderService().getContactPersonsByFunctionType(tipp.platform.provider, false, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS)
-        }
-        List<Contact> ccList = ppList.contacts.flatten().findAll { it.contentType?.value in ['E-Mail', 'Mail'] } as List<Contact>
-
+        List<List> prcList = _getProviderContacts(
+                provider,
+                [RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
+        )
         User user = BeanStore.getContextService().getUser()
 
         result = [
-                mailto : ccList.collect { it.content }.sort().join(','),
+                mailtoList : prcList,
+                mailto: 'Bitte ausfüllen',
                 mailcc : user.email
         ]
         result.mailSubject = [
-                de: "Fehlerhafte Titel-Daten in der We:kb - ${tipp.platform.provider.name}",
-                en: "Incorrect title information in the We:kb - ${tipp.platform.provider.name}"
+                de: "Fehlerhafte Titel-Daten in der We:kb - ${provider.name}",
+                en: "Incorrect title information in the We:kb - ${provider.name}"
         ]
 
         Map sig = _getEmailSignature(tipp)
@@ -136,16 +151,15 @@ Thank you
         Map<String, Object> result
         User user = BeanStore.getContextService().getUser()
         Platform platform = Platform.get(params.id_platform)
-        List<Person> ppList = BeanStore.getProviderService().getContactPersonsByFunctionType(platform.provider, false, RDStore.PRS_FUNC_STATS_SUPPORT)
-        if (!ppList) {
-            ppList = BeanStore.getProviderService().getContactPersonsByFunctionType(platform.provider, false, RDStore.PRS_FUNC_SERVICE_SUPPORT)
-        }
-        if (!ppList) {
-            ppList = BeanStore.getProviderService().getContactPersonsByFunctionType(platform.provider, false, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS)
-        }
-        List<Contact> ccList = ppList.contacts.flatten().findAll { it.contentType?.value in ['E-Mail', 'Mail'] } as List<Contact>
+
+        List<List> prcList = _getProviderContacts(
+                platform.provider,
+                [RDStore.PRS_FUNC_STATS_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
+        )
+
         result = [
-                mailto : ccList.collect { it.content }.sort().join(','),
+                mailtoList : prcList,
+                mailto: 'Bitte ausfüllen',
                 mailcc : user.email
         ]
         result.mailSubject = [

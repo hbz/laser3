@@ -1956,6 +1956,10 @@ i.icon.la-list-icon:before {
   width: 1px;
   overflow: hidden;
 }
+
+.la-display-none {
+  display: none;
+}
 /*!
  * # Fomantic-UI 2.9.3 - Button
  * https://github.com/fomantic/Fomantic-UI/
@@ -44701,6 +44705,11 @@ dd {
 
 .ui.list.la-titleAccordionList > .item {
   list-style-type: square;
+}
+
+.ui.selection.list.la-dashboard .list > .item,
+.ui.selection.list.la-dashboard > .item {
+  color: #015591;
 }
 /*!
  * # Fomantic-UI 2.9.3 - Loader

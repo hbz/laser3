@@ -198,6 +198,7 @@ class ManagementService {
                     result.validLicenses.addAll(License.findAllByInstanceOfInList(result.parentLicenses))
                 }
                 result.filteredSubscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription)
+                result.subIDs = result.filteredSubscriptions.collect { Map row -> row.sub.id }
             }
 
             if(controller instanceof MyInstitutionController) {
@@ -306,6 +307,7 @@ class ManagementService {
                 result.validPackages = Package.executeQuery('select sp from SubscriptionPackage sp where sp.subscription = :subscription', [subscription: result.subscription])
                 result.filteredSubscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription)
                 if(result.filteredSubscriptions)
+                    result.subIDs = result.filteredSubscriptions.collect { Map row -> row.sub.id }
                     result.childWithCostItems = CostItem.executeQuery('select ci.pkg from CostItem ci where ci.pkg is not null and ci.sub in (:filteredSubChildren) and ci.costItemStatus != :deleted and ci.owner = :context',[context:result.institution, deleted:RDStore.COST_ITEM_DELETED, filteredSubChildren:result.filteredSubscriptions.collect { row -> row.sub }])
             }
 
@@ -530,6 +532,7 @@ class ManagementService {
         else {
             if(controller instanceof SubscriptionController) {
                 result.filteredSubscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription)
+                result.subIDs = result.filteredSubscriptions.collect { Map row -> row.sub.id }
             }
 
             if(controller instanceof MyInstitutionController) {
@@ -730,6 +733,7 @@ class ManagementService {
 
             if(controller instanceof SubscriptionController) {
                 result.filteredSubscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription)
+                result.subIDs = result.filteredSubscriptions.collect { Map row -> row.sub.id }
             }
 
             if(controller instanceof MyInstitutionController) {
@@ -1183,6 +1187,47 @@ class ManagementService {
         HttpServletRequest request = grailsWebRequest.getCurrentRequest()
 
         grailsWebRequest.attributes.getFlashScope(request)
+    }
+
+    String checkTogglerState(List<Long> subIDs, String cacheKeyReferer) {
+        EhcacheWrapper cache = cacheService.getTTL1800Cache("${cacheKeyReferer}/pagination")
+        Map<String, String> checkedMap = cache.get('checkedMap') ?: [:]
+        Set<String> subKeys = subIDs.collect { Long subId -> 'selectedSubs_'+subId }
+        boolean toggle = checkedMap.keySet().containsAll(subKeys) && checkedMap.keySet().size() > 0
+        toggle ? 'true' : 'false'
+    }
+
+    Set<Subscription> loadSubscriptions(GrailsParameterMap params, Subscription owner) {
+        Set<Subscription> subscriptions = []
+        EhcacheWrapper paginationCache
+        String controller = params.containsKey('refererController') ? params.refererController : params.controller
+        paginationCache = cacheService.getTTL1800Cache("/${controller}/subscriptionManagement/providerAgency/${contextService.getUser().id}/pagination")
+        if(paginationCache.get('membersListToggler')) {
+            if(params.takeSelectedSubs.contains('/subscription/')) {
+                subscriptions = subscriptionControllerService.getFilteredSubscribers(params,owner).sub
+            }
+            else if(params.takeSelectedSubs.contains('/myInstitution/')) {
+                subscriptions = subscriptionService.getMySubscriptions(params,contextService.getUser(),contextService.getOrg()).allSubscriptions
+            }
+        }
+        else {
+            List selectionCache = []
+            if(paginationCache.get('checkedMap')) {
+                selectionCache.addAll(paginationCache.get('checkedMap').values())
+                paginationCache.remove('checkedMap')
+            }
+            else selectionCache.addAll(params.list('selectedSubs'))
+            if(selectionCache) {
+                subscriptions = Subscription.findAllByIdInList(selectionCache)
+            }
+        }
+        subscriptions
+    }
+
+    void clearSubscriptionCache(GrailsParameterMap params) {
+        String controller = params.containsKey('refererController') ? params.refererController : params.controller
+        EhcacheWrapper paginationCache = cacheService.getTTL1800Cache("/${controller}/subscriptionManagement/providerAgency/${contextService.getUser().id}/pagination")
+        paginationCache.clear()
     }
 
     /**

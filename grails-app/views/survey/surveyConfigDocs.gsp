@@ -33,19 +33,6 @@
 
 <br />
 
-<h2 class="ui icon header la-clear-before la-noMargin-top">
-    <g:if test="${surveyConfig.subscription}">
-        <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
-        <g:link controller="subscription" action="show" id="${surveyConfig.subscription.id}">
-            ${surveyConfig.getConfigNameShort()}
-        </g:link>
-    </g:if>
-    <g:else>
-        ${surveyConfig.getConfigNameShort()}
-    </g:else>: ${message(code: 'surveyConfigDocs.label')}
-</h2>
-<br />
-
 <g:if test="${surveyConfig}">
 
     <div class="ui grid">
@@ -54,12 +41,14 @@
 
         <ui:greySegment>
 
-            <div class="four wide column">
-                <button type="button" class="${Btn.MODERN.SIMPLE} right floated" data-ui="modal"
-                        data-href="#modalCreateDocument"><i class="${Icon.CMD.ADD}"></i></button>
-%{--                <laser:render template="/templates/documents/modal"--}%
-%{--                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>--}%
-            </div>
+            <g:if test="${editable}">
+                <div class="four wide column">
+                    <button type="button" class="${Btn.MODERN.SIMPLE} right floated" data-ui="modal"
+                            data-href="#modalCreateDocument"><i class="${Icon.CMD.ADD}"></i></button>
+                    %{--                <laser:render template="/templates/documents/modal"--}%
+                    %{--                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>--}%
+                </div>
+            </g:if>
             <br /><br />
 
 
@@ -71,7 +60,9 @@
                     <th>${message(code: 'surveyConfigDocs.docs.table.fileName')}</th>
                     <th>${message(code: 'surveyConfigDocs.docs.table.type')}</th>
                     <th>%{--${message(code: 'property.share.tooltip.sharedFrom')}--}%</th>
-                    <th>${message(code: 'default.actions.label')}</th>
+                    <th class="center aligned">
+                        <ui:optionsIcon />
+                    </th>
                 </tr>
                 </thead>
                 <tbody>

@@ -212,13 +212,17 @@ r2d2 = {
             var element = $(this).parents('.js-copyTriggerParent').find('.js-copyTopic');
             var html = $(element).html();
             var $temp = $("<input>");
+            var dontShow;
+            $(element).hasClass('la-display-none') ? dontShow = true : dontShow = false;
             $("body").append($temp);
             $temp.val($.trim($(element).text())).select();
             document.execCommand("copy");
             clearTimeout(timeout);
+            dontShow ?  $(element).css('display','inline'): $(element).addClass('');
             $(element).html(JSPC.dict.get('copied', JSPC.config.language));
             var timeout = setTimeout(function() {
                 $(element).html(html);
+                dontShow ? $(element).css('display','none') : $(element).addClass('');
             }, 2000); // change the HTML after 2 seconds
             $temp.remove();
         });
@@ -231,6 +235,7 @@ r2d2 = {
             function(){ $(this).removeClass('alternate') },
             function(){ $(this).addClass('alternate') }
         )
+
         //JS Library readmore.js
         $('.la-readmore').readmore({
             speed: 75,
@@ -468,6 +473,13 @@ r2d2 = {
                             return  JSPC.dict.get('xEditable.validation.mail', JSPC.config.language)
                         }
                     }
+                    if (dVal.includes('leitwegID')) {
+                        let regex = /^([0-9]{2,12})+-+([a-zA-Z0-9]{0,30})+-+([0-9]{2,2})+$/
+                        let test = regex.test($.trim(value)) || $.trim(value) === ''
+                        if(!test) {
+                            return  JSPC.dict.get('xEditable.validation.leit', JSPC.config.language)
+                        }
+                    }
                     if (dVal.includes('number')) {
                         let regex =  /^[0-9]+$/;
                         let test = regex.test($.trim(value)) || $.trim(value) === ''
@@ -540,6 +552,16 @@ r2d2 = {
 
         $(ctxSel + ' .xEditableManyToOne').editable({
             tpl: '<select class="ui search selection dropdown"></select>',
+            validate: function(value) {
+                var dVal = $(this).attr('data-validation')
+                if (dVal) {
+                    if (dVal.includes('notEmpty')) {
+                        if($.trim(value) == '') {
+                            return "Das Feld darf nicht leer sein";
+                        }
+                    }
+                }
+            },
             success: function(response, newValue) {
                 if(response.status == 'error') return response.msg; //msg will be shown in editable form
             }
@@ -557,16 +579,6 @@ r2d2 = {
         }).on('shown', function(e, obj) {
             obj.input.$input.dropdown({clearable: false}) // reference to current dropdown
         });
-
-        $(ctxSel + ' .simpleHiddenValue').editable({
-            language: JSPC.config.language,
-            format:   JSPC.config.dateFormat,
-            url: function(params) {
-                var hidden_field_id = $(this).data('hidden-id');
-                $("#" + hidden_field_id).val(params.value);
-                // Element has a data-hidden-id which is the hidden form property that should be set to the appropriate value
-            }
-        });
     },
 
 
@@ -579,7 +591,7 @@ r2d2 = {
         //tooltip
         tooltip.init(ctxSel);
 
-        $(ctxSel + " a[href], " + ctxSel + " input.js-wait-wheel").not("a[href^='#'], a[href*='ajax'], a[target='_blank'], .js-open-confirm-modal, a[data-tab], a[data-content], .close, .js-no-wait-wheel, .trigger-modal").click(function() {
+        $(ctxSel + " a[href], " + ctxSel + " input.js-wait-wheel").not("a[href^='#'], a[href*='ajax'], a[href*='mailto'], a[target='_blank'], .js-open-confirm-modal, a[data-tab], a[data-content], .close, .js-no-wait-wheel, .trigger-modal").click(function() {
             $('html').css('cursor', 'wait');
         });
 
@@ -590,7 +602,8 @@ r2d2 = {
 
         // close ui:messages alerts
         $(ctxSel + ' .close.icon').click(function() {
-            $(this).parent().hide();
+            $(this).parent().transition('fade');
+
         });
 
         // modals
@@ -600,7 +613,13 @@ r2d2 = {
             if (! href) {
                 href = $(this).attr('href')
             }
+            let keyboardHandler = function(e) {
+                if (e.keyCode === 27) {
+                    $(href + '.ui.modal').modal('hide');
+                }
+            };
             $(href + '.ui.modal').modal({
+                closable: false,
                 onVisible: function() {
                     $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
                     $(this).find('.yearpicker').calendar(r2d2.configs.yearpicker);
@@ -609,8 +628,8 @@ r2d2 = {
 
                     let modalCallbackFunction = JSPC.callbacks.modal.onVisible[$(this).attr('id')];
                     if (typeof modalCallbackFunction === "function") {
-                        console.debug('%cJSPC.callbacks.modal.onVisible found: #' + $(this).attr('id') + ' - trigger: ' + $triggerElement.attr('id'), 'color:grey')
-                        modalCallbackFunction($triggerElement)
+                        console.debug('%cJSPC.callbacks.modal.onVisible found: #' + $(this).attr('id') + ' - trigger: ' + $triggerElement.attr('id'), 'color:grey');
+                        modalCallbackFunction($triggerElement);
                     }
                 },
                 detachable: true,
@@ -627,21 +646,16 @@ r2d2 = {
                         focusElement: '',
                         escCallback:''
                     });
-                    keyboardHandler = function (e) {
-                        if (e.keyCode === 27) {
-                            $(this).modal('hide');
-                        }
-                    }
-                    this.addEventListener('keyup', keyboardHandler);
+                    document.addEventListener('keyup', keyboardHandler);
 
                     let modalCallbackFunction = JSPC.callbacks.modal.onShow[$(this).attr('id')];
                     if (typeof modalCallbackFunction === "function") {
-                        console.debug('%cJSPC.callbacks.modal.onShow found: #' + $(this).attr('id') + ' - trigger: ' + $triggerElement.attr('id'), 'color:grey')
-                        modalCallbackFunction($triggerElement)
+                        console.debug('%cJSPC.callbacks.modal.onShow found: #' + $(this).attr('id') + ' - trigger: ' + $triggerElement.attr('id'), 'color:grey');
+                        modalCallbackFunction($triggerElement);
                     }
                 },
                 onHide : function() {
-                    this.removeEventListener('keyup', keyboardHandler);
+                    document.removeEventListener('keyup', keyboardHandler);
                 }
             }).modal('show')
         });
@@ -859,6 +873,7 @@ r2d2 = {
 
                 $('.tiny.modal')
                     .modal({
+                        closable: false,
                         onShow : function() {
                             a11yModal.go({
                                 el: document.getElementById($(this).attr('id')),
@@ -1028,7 +1043,7 @@ r2d2 = {
     helper : {
 
         focusFirstFormElement: function (elem) {
-            console.log('r2d2.helper.focusFirstFormElement: #' + $(elem).attr('id') + ' .(' + $(elem).attr('class') + ')');
+            // console.log('r2d2.helper.focusFirstFormElement: #' + $(elem).attr('id') + ' .(' + $(elem).attr('class') + ')');
 
             let ffe = $(elem).find('input:not([disabled]):not([type=hidden]), textarea:not([disabled]):not([type=hidden])').first();
             if (ffe) {

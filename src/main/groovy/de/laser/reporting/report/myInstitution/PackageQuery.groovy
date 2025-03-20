@@ -1,7 +1,7 @@
 package de.laser.reporting.report.myInstitution
 
 import de.laser.IdentifierNamespace
-import de.laser.Language
+import de.laser.wekb.Language
 import de.laser.wekb.Platform
 import de.laser.wekb.Package
 import de.laser.wekb.Provider

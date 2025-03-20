@@ -10,17 +10,19 @@
 
         <laser:render template="/templates/system/messages" model="${[type: SystemMessage.TYPE_DASHBOARD]}"/>
 
-        <laser:render template="/myInstitution/topmenu" />
+        <laser:render template="/myInstitution/dashboard/topmenu" />
 
         <ui:messages data="${flash}" />
 
-        <g:if test="${wekbNews}">
-            <laser:render template="wekbNews" model="${[wekbNews: wekbNews, tmplView: 'info']}"/>
+        <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
+            <laser:render template="/myInstitution/dashboard/dataviz_inst" />
+            <laser:render template="/myInstitution/dashboard/testSubscriptions" model="${[cts: currentTestSubscriptions]}"/>
         </g:if>
 
-        <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
-            <laser:render template="dataviz_inst" />
-        </g:if>
+        <div class="ui two cards">
+            <laser:render template="/myInstitution/dashboard/rttp" />
+            <laser:render template="/myInstitution/dashboard/wekbNews" model="${[wekbNews: wekbNews, tmplView: 'info']}"/>
+        </div>
 
     <%
         RefdataValue us_dashboard_tab
@@ -186,7 +188,9 @@
                                 <th class="four wide" rowspan="2">${message(code:'default.relation.label')}</th>
                                 <th class="four wide" rowspan="2">${message(code:'default.progress.label')}</th>
                                 <th class="two wide la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
-                                <th class="two wide" rowspan="2">${message(code:'default.actions.label')}</th>
+                                <th class="two wide center aligned" rowspan="2">
+                                    <ui:optionsIcon />
+                                </th>
                             </tr>
                             <tr>
                                 <th class="la-smaller-table-head">${message(code:'default.dateCreated.label')}</th>

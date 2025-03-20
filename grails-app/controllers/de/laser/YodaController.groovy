@@ -1159,51 +1159,6 @@ class YodaController {
     }
 
     /**
-     * Moves the Nationaler Statistikserver credentials from the OrgProperty into the OrgSettings structure
-     */
-    @Secured(['ROLE_YODA'])
-    @Transactional
-    def migrateNatStatSettings() {
-        List<OrgProperty> opList = OrgProperty.executeQuery(
-                'select op from OrgProperty op join op.type pd where pd.descr = :orgConf and op.tenant = :context and op.isPublic = false', [
-                orgConf: PropertyDefinition.ORG_CONF,
-                context: contextService.getOrg()
-        ])
-
-        opList.each { OrgProperty op ->
-            if (op.type.name == 'API Key') {
-                def oss = OrgSetting.get(op.owner, OrgSetting.KEYS.NATSTAT_SERVER_API_KEY)
-
-                if (oss == OrgSetting.SETTING_NOT_FOUND) {
-                    OrgSetting.add(op.owner, OrgSetting.KEYS.NATSTAT_SERVER_API_KEY, op.getValue())
-                }
-                else {
-                    oss.setValue(op)
-                }
-            }
-            else if (op.type.name == 'RequestorID') {
-                def oss = OrgSetting.get(op.owner, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
-
-                if (oss == OrgSetting.SETTING_NOT_FOUND) {
-                    OrgSetting.add(op.owner, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID, op.getValue())
-                }
-                else {
-                    oss.setValue(op)
-                }
-            }
-        }
-
-        OrgProperty.executeQuery(
-                'select op from OrgProperty op join op.type pd where pd.descr = :orgConf '+
-                'and ( pd.name = \'API Key\' or pd.name = \'RequestorID\' ) and op.tenant = :context and op.isPublic = false',
-                [orgConf: PropertyDefinition.ORG_CONF, context: contextService.getOrg()]).each{
-            it.delete()
-        }
-
-        redirect action:'dashboard'
-    }
-
-    /**
      * Lists all system settings and their state
      * @see SystemSetting
      */
@@ -1427,7 +1382,7 @@ class YodaController {
         List opp = OrgProperty.executeQuery(
                 "SELECT pp FROM OrgProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
                         "AND pp.isPublic = false " +
-                        "AND pp.stringValue IS null AND pp.intValue IS null AND pp.decValue IS null " +
+                        "AND pp.stringValue IS null AND pp.longValue IS null AND pp.decValue IS null " +
                         "AND pp.refValue IS null AND pp.urlValue IS null AND pp.dateValue IS null " +
                         "AND (pp.note IS null OR pp.note = '') "
         )
@@ -1435,7 +1390,7 @@ class YodaController {
         List spp = SubscriptionProperty.executeQuery(
                 "SELECT pp FROM SubscriptionProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
                 "AND pp.isPublic = false " +
-                "AND pp.stringValue IS null AND pp.intValue IS null AND pp.decValue IS null " +
+                "AND pp.stringValue IS null AND pp.longValue IS null AND pp.decValue IS null " +
                 "AND pp.refValue IS null AND pp.urlValue IS null AND pp.dateValue IS null " +
                 "AND (pp.note IS null OR pp.note = '') "
         )
@@ -1443,7 +1398,7 @@ class YodaController {
         List lpp = LicenseProperty.executeQuery(
                 "SELECT pp FROM LicenseProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
                         "AND pp.isPublic = false " +
-                        "AND pp.stringValue IS null AND pp.intValue IS null AND pp.decValue IS null " +
+                        "AND pp.stringValue IS null AND pp.longValue IS null AND pp.decValue IS null " +
                         "AND pp.refValue IS null AND pp.urlValue IS null AND pp.dateValue IS null " +
                         "AND (pp.note IS null OR pp.note = '') " +
                         "AND (pp.paragraph IS null OR pp.paragraph = '') "
@@ -1452,7 +1407,7 @@ class YodaController {
         List ppp = PersonProperty.executeQuery(
                 "SELECT pp FROM PersonProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
                         "AND pp.isPublic = false " +
-                        "AND pp.stringValue IS null AND pp.intValue IS null AND pp.decValue IS null " +
+                        "AND pp.stringValue IS null AND pp.longValue IS null AND pp.decValue IS null " +
                         "AND pp.refValue IS null AND pp.urlValue IS null AND pp.dateValue IS null " +
                         "AND (pp.note IS null OR pp.note = '') "
         )

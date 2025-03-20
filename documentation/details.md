@@ -3,11 +3,12 @@
 
 ### Database Migration Plugin
 
-Dependency *org.grails:grails-shell:6.1.2* added -> TODO: remove workaround
+ * Dependency *org.grails:grails-shell:6.1.2* added -> TODO: remove workaround
+ * Database Migration Plugin will be merged into **gorm-hibernate5**  (9.0.0-M3)
 
 ### Asset Pipeline Plugin
 
-Splitted dependencies: core:4.5.2, gradle:4.4.0, grails:4.5.2 -> TODO: upgrade & remove workaround
+Upgrade to 5.x -> Switch back to usual asset include for swagger-ui
 
 ### Grails Mail Plugin
 

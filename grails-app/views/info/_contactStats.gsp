@@ -9,10 +9,38 @@
 
         <g:render template="flyoutLanguageSelector" />
 
-        <div class="field">
-            <label for="mailto">${message(code: 'mail.to')}</label>
-            <input type="text" name="mailto" id="mailto" readonly="readonly" value="${mailto}"/>
-        </div>
+        <g:if test="${mailtoList}">
+            <div class="field">
+                <label for="mailto">${message(code: 'mail.to')}</label>
+                <div class="ui fluid selection dropdown la-not-clearable">
+                    <input type="hidden" name="mailto" id="mailto" value="${mailtoList[0][2].content}">
+                    <i class="dropdown icon"></i>
+                    <div class="default text">Bitte auswählen</div>
+                    <div class="menu">
+                        <g:each in="${mailtoList}" var="prc" status="i">
+                            <div class="item" data-value="${prc[2].content}">
+                                <span class="description">
+                                    <i class="${prc[0].isPublic ? Icon.WEKB : Icon.ACP_PRIVATE}"></i>
+                                    <g:if test="${prc[2].language?.value == 'ger'}"><i class="flag de"></i></g:if>
+                                    <g:if test="${prc[2].language?.value == 'eng'}"><i class="flag gb"></i></g:if>
+
+                                    ${prc[1].getI10n('value')}
+                                </span>
+                                <span class="text">
+                                    ${prc[2].content}
+                                </span>
+                            </div>
+                        </g:each>
+                    </div>
+                </div>
+            </div>
+        </g:if>
+        <g:else>
+            <div class="field">
+                <label for="mailto">${message(code: 'mail.to')}</label>
+                <input type="text" name="mailto" id="mailto" value="${mailto}"/>
+            </div>
+        </g:else>
 
         <div class="field">
             <label for="mailcc">${message(code: 'mail.cc')}</label>

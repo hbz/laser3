@@ -1,5 +1,6 @@
 package de.laser.storage
 
+import de.laser.BootStrapService
 import de.laser.CustomerTypeService
 import de.laser.ESWrapperService
 import de.laser.GenericOIDService
@@ -142,6 +143,13 @@ class BeanStore {
      */
     static AuditService getAuditService() {
         Holders.grailsApplication.mainContext.getBean('auditService') as AuditService
+    }
+
+    /**
+     * @return the currently holding {@link BootStrapService}
+     */
+    static BootStrapService getBootStrapService() {
+        Holders.grailsApplication.mainContext.getBean('bootStrapService') as BootStrapService
     }
 
     /**

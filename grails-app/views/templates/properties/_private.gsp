@@ -3,7 +3,7 @@
 %{-- on head of container page, and on window load execute  --}%
 %{-- c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#private-property-wrapper-xxx"); --}%
 
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.LocaleUtils; de.laser.CustomerTypeService; de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; java.net.URL" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.utils.LocaleUtils; de.laser.CustomerTypeService; de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; java.net.URL; de.laser.addressbook.Person" %>
 <laser:serviceInjection />
 
 
@@ -36,7 +36,9 @@
                     <th>${message(code:'property.table.paragraph')}</th>
                 </g:if>
                 <th>${message(code:'property.table.notes')}</th>
-                <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                <th class="center aligned">
+                    <ui:optionsIcon />
+                </th>
             </tr>
         </thead>
     </g:if>
@@ -68,8 +70,8 @@
                         </g:if>
                     </td>
                     <td>
-                        <g:if test="${prop.type.isIntegerType()}">
-                            <ui:xEditable owner="${prop}" type="number" field="intValue" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
+                        <g:if test="${prop.type.isLongType()}">
+                            <ui:xEditable owner="${prop}" type="number" field="longValue" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                         </g:if>
                         <g:elseif test="${prop.type.isStringType()}">
                             <ui:xEditable owner="${prop}" type="text" field="stringValue" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
@@ -124,7 +126,7 @@
         </g:each>
     </tbody>
 
-    <g:if test="${overwriteEditable}">
+    <g:if test="${overwriteEditable && ownobj instanceof Person}">
         <tfoot>
             <tr>
                 <g:if test="${privateProperties}">

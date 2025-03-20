@@ -2,6 +2,8 @@ package de.laser.finance
 
 import de.laser.IssueEntitlement
 import de.laser.IssueEntitlementGroup
+import de.laser.properties.PropertyDefinition
+import de.laser.utils.DateUtils
 import de.laser.wekb.Package
 import de.laser.survey.SurveyOrg
 import de.laser.Org
@@ -111,6 +113,11 @@ class CostItem extends AbstractBase
     Date endDate
     CostItem copyBase              //the base cost item from which this item has been copied
 
+    //information budget
+    CostInformationDefinition costInformationDefinition
+    RefdataValue costInformationRefValue
+    String costInformationStringValue
+
     //Edits...
     Date lastUpdated
     Date dateCreated
@@ -150,6 +157,9 @@ class CostItem extends AbstractBase
         costItemCategory    column: 'ci_cat_rv_fk',                             index: 'ci_cat_idx'
         costItemElement     column: 'ci_element_rv_fk',                         index: 'ci_element_idx'
         costItemElementConfiguration column: 'ci_element_configuration_rv_fk',  index: 'ci_element_configuration_idx'
+        costInformationDefinition    column: 'ci_cost_information_definition_fk', index: 'ci_cost_information_definition_idx'
+        costInformationRefValue    column: 'ci_cost_information_ref_value_rv_fk', index: 'ci_cost_information_ref_value_idx'
+        costInformationStringValue   column: 'ci_cost_information_string_value', type: 'text'
         endDate         column: 'ci_end_date',    index: 'ci_dates_idx'
         startDate       column: 'ci_start_date',  index: 'ci_dates_idx'
         copyBase        column: 'ci_copy_base',   index: 'ci_copy_base_idx'
@@ -202,8 +212,9 @@ class CostItem extends AbstractBase
         startDate   (nullable: true)
         endDate     (nullable: true)
         copyBase    (nullable: true)
-        //lastUpdatedBy(nullable: true)
-        //createdBy(nullable: true)
+        costInformationDefinition (nullable: true)
+        costInformationRefValue (nullable: true)
+        costInformationStringValue (nullable: true)
     }
 
     @Override
@@ -247,6 +258,11 @@ class CostItem extends AbstractBase
                 "select bc from BudgetCode as bc, CostItemGroup as cig, CostItem as ci where cig.costItem = ci and cig.budgetCode = bc and ci = :costitem",
                 [costitem: this]
         )
+    }
+
+    String getCostInformationValue() {
+        if (costInformationStringValue)      { return stringValue }
+        if (costInformationRefValue)         { return refValue.getI10n('value') }
     }
 
     /**

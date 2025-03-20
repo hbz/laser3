@@ -238,6 +238,18 @@
                     </select>
                 </div>
             </g:if>
+            <g:if test="${field.equalsIgnoreCase('isBetaTester')}">
+                <div class="field">
+                    <label for="isBetaTester">${message(code:'org.isBetaTester.label')}</label>
+                    <ui:select id="isBetaTester" name="isBetaTester"
+                               from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                               optionKey="id"
+                               optionValue="value"
+                               class="ui dropdown"
+                               value="${params.isBetaTester}"
+                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+                </div>
+            </g:if>
             <g:if test="${field.equalsIgnoreCase('customerType')}">
                 <div class="field">
                     <label for="customerType">${message(code:'org.customerType.label')}</label>
@@ -394,7 +406,9 @@
                 </div>
             </g:if>
 
-
+            <g:if test="${field.equals('')}">
+                <div class="field"></div>
+            </g:if>
         </g:each>
     <g:if test="${numberOfFields > 1}">
         </div><!-- .fields -->

@@ -103,19 +103,19 @@ class Task {
     }
 
     /**
-     * Retrieves the associated objects to this task as link parameters
-     * @return a {@link List} of link argument maps, depending on the object type to which this task is associated
+     * Retrieves associated object info
+     * @return a {@link Map} depending on the object to which this task is associated
      */
-    List getObjects() {
-        List result = []
+    Map getObjectInfo() {
+        Map result = null
 
-        if (license)        { result << [controller: 'license', icon: Icon.LICENSE, object: license] }
-        if (org)            { result << [controller: 'organisation', icon: Icon.ORG, object: org] }
-        if (provider)       { result << [controller: 'provider', icon: Icon.PROVIDER, object: provider] }
-        if (subscription)   { result << [controller: 'subscription', icon: Icon.SUBSCRIPTION, object: subscription] }
-        if (surveyConfig)   { result << [controller: 'survey', icon: Icon.SURVEY, object: surveyConfig] }
-        if (tipp)           { result << [controller: 'tipp', icon: Icon.TIPP, object: tipp] }
-        if (vendor)         { result << [controller: 'vendor', icon: Icon.VENDOR, object: vendor] }
+        if (license)      { result = [controller: 'license',      icon: Icon.LICENSE,      object: license,      name: license.reference] }
+        if (org)          { result = [controller: 'organisation', icon: Icon.ORG,          object: org,          name: org.name] }
+        if (provider)     { result = [controller: 'provider',     icon: Icon.PROVIDER,     object: provider,     name: provider.name] }
+        if (subscription) { result = [controller: 'subscription', icon: Icon.SUBSCRIPTION, object: subscription, name: subscription.name] }
+        if (surveyConfig) { result = [controller: 'survey',       icon: Icon.SURVEY,       object: surveyConfig, name: surveyConfig.surveyInfo.name] }
+        if (tipp)         { result = [controller: 'tipp',         icon: Icon.TIPP,         object: tipp,         name: tipp.name] }
+        if (vendor)       { result = [controller: 'vendor',       icon: Icon.VENDOR,       object: vendor,       name: vendor.name] }
 
         result
     }
@@ -176,7 +176,7 @@ class Task {
      *     <li>{@link de.laser.survey.SurveyInfo#name}</li>
      * </ul>
      */
-    String getObjectName() {
+    String getObjectName() { // TODO: search + spotlight
         String name = ''
         if (license)            { name = license.reference }
         else if (org)           { name = org.name }

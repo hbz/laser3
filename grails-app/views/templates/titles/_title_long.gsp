@@ -355,6 +355,7 @@
     </g:if>
 
     <div class="la-title">${message(code: 'default.details.label')}</div>
+
     <g:if test="${controllerName != 'tipp' && tipp.id}">
         <g:link class="${Btn.ICON.SIMPLE_TOOLTIP} tiny"
                 data-content="${message(code: 'laser')}"

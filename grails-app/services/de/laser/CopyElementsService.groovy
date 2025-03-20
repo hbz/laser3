@@ -18,7 +18,9 @@ import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyOrg
 import de.laser.utils.LocaleUtils
+import de.laser.wekb.Provider
 import de.laser.wekb.ProviderRole
+import de.laser.wekb.Vendor
 import de.laser.wekb.VendorRole
 import de.laser.workflow.WfChecklist
 import grails.gorm.transactions.Transactional
@@ -82,11 +84,7 @@ class CopyElementsService {
                 result = ['startDate', 'endDate', 'comment']
                 break
             case SurveyConfig.class.simpleName:
-                if(obj.subSurveyUseForTransfer) {
-                    result = ['scheduledStartDate', 'scheduledEndDate', 'comment', 'internalComment']
-                }else {
                     result = ['comment', 'internalComment']
-                }
                 break
         }
 
@@ -1346,32 +1344,37 @@ class CopyElementsService {
         ownerClassName = "de.laser.properties.${ownerClassName}Property"
         def targetProp
         List todoAuditProperties = []
+        List todoProperties = []
         properties.each { AbstractPropertyWithCalculatedLastUpdated sourceProp ->
             targetProp = targetObject.propertySet.find { it.type.id == sourceProp.type.id && it.tenant == sourceProp.tenant }
-            boolean isAddNewProp = sourceProp.type?.multipleOccurrence
-            if ((!targetProp) || isAddNewProp) {
-                targetProp = (new GroovyClassLoader()).loadClass(ownerClassName).newInstance(type: sourceProp.type, owner: targetObject, tenant: sourceProp.tenant)
-                targetProp = sourceProp.copyInto(targetProp)
-                targetProp.isPublic = sourceProp.isPublic
-                //provisoric, should be moved into copyInto once migration is complete
-                _save(targetProp, flash)
-                if (sourceProp.id.toString() in auditProperties) {
-                    //copy audit
-                    if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
-                        todoAuditProperties << [sourcePropId: sourceProp.id, targetPropId: targetProp.id]
-                    }
-                }
-            } else {
-                //Replace
-                targetProp = sourceProp.copyInto(targetProp)
-                targetProp.save()
 
-                if (sourceProp.id.toString() in auditProperties) {
-                    //copy audit
-                    if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
-                        todoAuditProperties << [sourcePropId: sourceProp.id, targetPropId: targetProp.id]
+            if(!(sourceProp.type.id in todoProperties)) {
+                boolean isAddNewProp = sourceProp.type?.multipleOccurrence
+                if ((!targetProp) || isAddNewProp) {
+                    targetProp = (new GroovyClassLoader()).loadClass(ownerClassName).newInstance(type: sourceProp.type, owner: targetObject, tenant: sourceProp.tenant)
+                    targetProp = sourceProp.copyInto(targetProp)
+                    targetProp.isPublic = sourceProp.isPublic
+                    //provisoric, should be moved into copyInto once migration is complete
+                    _save(targetProp, flash)
+                    if (sourceProp.id.toString() in auditProperties) {
+                        //copy audit
+                        if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
+                            todoAuditProperties << [sourcePropId: sourceProp.id, targetPropId: targetProp.id]
+                        }
+                    }
+                } else {
+                    //Replace
+                    targetProp = sourceProp.copyInto(targetProp)
+                    targetProp.save()
+
+                    if (sourceProp.id.toString() in auditProperties) {
+                        //copy audit
+                        if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
+                            todoAuditProperties << [sourcePropId: sourceProp.id, targetPropId: targetProp.id]
+                        }
                     }
                 }
+                todoProperties << sourceProp.type.id
             }
         }
 
@@ -1410,7 +1413,13 @@ class CopyElementsService {
                         }
                     }
                 }
+            }
+        }
 
+        todoAuditProperties.each { Map todoAuditPro ->
+            AbstractPropertyWithCalculatedLastUpdated sourceProp = SubscriptionProperty.get(todoAuditPro.sourcePropId)
+            targetProp = SubscriptionProperty.get(todoAuditPro.targetPropId)
+            if(sourceProp && targetProp) {
                 def auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(targetProp.class.name, sourceProp.id)
                 auditConfigs.each {
                     AuditConfig ac ->
@@ -1691,7 +1700,8 @@ class CopyElementsService {
 
         toCopyPersonRoles.each { PersonRole prRole ->
             if(prRole.provider) {
-                if (!(prRole.provider in targetObject.providerRelations.provider) && (prRole.provider in sourceObject.providerRelations.provider)) {
+                Set<Provider> sourceProviderRelations = ProviderRole.findAllBySubscription(sourceObject)?.provider, targetProviderRelations = ProviderRole.findAllBySubscription(targetObject)?.provider
+                if (!(prRole.provider in targetProviderRelations) && (prRole.provider in sourceProviderRelations)) {
                     ProviderRole pvr = ProviderRole.findByProviderAndSubscription(prRole.provider, sourceObject)
                     def newProperties = pvr.properties
 
@@ -1701,15 +1711,18 @@ class CopyElementsService {
                     newProviderRole.sharedFrom = null
                     newProviderRole.isShared = false
                     newProviderRole.subscription = targetObject
+                    _save(newProviderRole, flash)
+                    targetProviderRelations << newProviderRole
                 }
 
-                if ((prRole.provider in targetObject.providerRelations.provider) && !PersonRole.findWhere(prs: prRole.prs, provider: prRole.provider, responsibilityType: prRole.responsibilityType, sub: targetObject)) {
+                if ((prRole.provider in targetProviderRelations) && !PersonRole.findByPrsAndProviderAndResponsibilityTypeAndSub(prRole.prs, prRole.provider, prRole.responsibilityType, targetObject)) {
                     PersonRole newPrsRole = new PersonRole(prs: prRole.prs, provider: prRole.provider, sub: targetObject, responsibilityType: prRole.responsibilityType)
                     _save(newPrsRole, flash)
                 }
             }
             else if(prRole.vendor) {
-                if (!(prRole.vendor in targetObject.vendorRelations.vendor) && (prRole.vendor in sourceObject.vendorRelations.vendor)) {
+                Set<Vendor> sourceVendorRelations = VendorRole.findAllBySubscription(sourceObject)?.vendor, targetVendorRelations = VendorRole.findAllBySubscription(targetObject)?.vendor
+                if (!(prRole.vendor in targetVendorRelations) && (prRole.vendor in sourceVendorRelations)) {
                     VendorRole vr = VendorRole.findByVendorAndSubscription(prRole.vendor, sourceObject)
                     def newProperties = vr.properties
 
@@ -1719,9 +1732,11 @@ class CopyElementsService {
                     newVendorRole.sharedFrom = null
                     newVendorRole.isShared = false
                     newVendorRole.subscription = targetObject
+                    _save(newVendorRole, flash)
+                    targetVendorRelations << newVendorRole
                 }
 
-                if ((prRole.vendor in targetObject.vendorRelations.vendor) && !PersonRole.findWhere(prs: prRole.prs, vendor: prRole.vendor, responsibilityType: prRole.responsibilityType, sub: targetObject)) {
+                if ((prRole.vendor in targetVendorRelations) && !PersonRole.findByPrsAndVendorAndResponsibilityTypeAndSub(prRole.prs, prRole.vendor, prRole.responsibilityType, targetObject)) {
                     PersonRole newPrsRole = new PersonRole(prs: prRole.prs, vendor: prRole.vendor, sub: targetObject, responsibilityType: prRole.responsibilityType)
                     _save(newPrsRole, flash)
                 }

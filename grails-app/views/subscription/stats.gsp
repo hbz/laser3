@@ -29,6 +29,7 @@
                     <g:if test="${statsInfo}">
                         <ui:msg showIcon="true" class="warning" noClose="true" header="${message(code: 'default.stats.info.header')}">
                             ${statsInfo[0]}<br>
+                            <g:message code="default.stats.noCounterSupport"/>
                         </ui:msg>
                     </g:if>
                     <ui:msg showIcon="true" class="info" noClose="true" header="${message(code: 'default.stats.contact.header')}">
@@ -54,7 +55,7 @@
                                 <div class="ui action input">
                                     <input type="text" readonly="readonly"
                                            placeholder="${message(code: 'template.addDocument.selectFile')}">
-                                    <input type="file" name="requestorIDFile" accept="text/tab-separated-values,.txt,.csv"
+                                    <input type="file" name="requestorIDFile" accept=".txt,.csv,.tsv,text/tab-separated-values,text/csv,text/plain"
                                            style="display: none;">
                                     <div class="${Btn.ICON.SIMPLE}">
                                         <i class="${Icon.CMD.ATTACHMENT}"></i>
@@ -76,7 +77,9 @@
                                 <th>Customer ID</th>
                                 <th>Requestor ID/API-Key</th>
                                 <th><g:message code="default.usage.sushiCallCheck.header"/></th>
-                                <th><g:message code="default.actions.label"/></th>
+                                <th class="center aligned">
+                                    <ui:optionsIcon />
+                                </th>
                             </tr>
                             <g:each in="${Subscription.executeQuery('select new map(sub.id as memberSubId, org.sortname as memberName, org.id as memberId, ci as customerIdentifier) from CustomerIdentifier ci, OrgRole oo join oo.org org join oo.sub sub where ci.customer = org and sub.instanceOf = :parent and oo.roleType in (:subscrRoles) and ci.platform.gokbId = :platform order by ci.customer.sortname asc', [parent: subscription, platform: platform.uuid, subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])}" var="row" status="i">
                                 <tr>
@@ -90,7 +93,7 @@
                                     <td>
                                         <ui:xEditable owner="${row.customerIdentifier}" field="requestorKey"/>
                                     </td>
-                                    <td id="${genericOIDService.getHtmlOID(row.customerIdentifier)}" class="sushiConnectionCheck" data-org="${row.memberId}" data-platform="${platform.id}" data-customerId="${row.customerIdentifier.value}" data-requestorId="${row.customerIdentifier.requestorKey}">
+                                    <td id="${genericOIDService.getHtmlOID(row.customerIdentifier)}" class="counterApiConnectionCheck" data-platform="${platform.uuid}" data-customerId="${row.customerIdentifier.value}" data-requestorId="${row.customerIdentifier.requestorKey}">
 
                                     </td>
                                     <td>
@@ -109,12 +112,30 @@
     <laser:script file="${this.getGroovyPageFileName()}">
     $('.action .icon.button').click(function () {
          $(this).parent('.action').find('input:file').click();
-     });
+    });
 
-     $('input:file', '.ui.action.input').on('change', function (e) {
+    $('input:file', '.ui.action.input').on('change', function (e) {
          var name = e.target.files[0].name;
          $('input:text', $(e.target).parent()).val(name);
-     });
+    });
+
+    $(".counterApiConnectionCheck").each(function(i) {
+        let cell = $(this);
+        let data = {
+            platform: cell.attr("data-platform"),
+            customerId: cell.attr("data-customerId"),
+            requestorId: cell.attr("data-requestorId")
+        };
+        $.ajax({
+            url: "<g:createLink controller="ajaxJson" action="checkCounterAPIConnection"/>",
+            data: data
+        }).done(function(response) {
+            if(response.error === true) {
+               cell.html('<span class="la-popup-tooltip" data-content="'+response.message+'"><i class="circular inverted icon red times"></i></span>');
+               r2d2.initDynamicUiStuff('#'+cell.attr('id'));
+            }
+        });
+    });
     </laser:script>
 
 <laser:htmlEnd />

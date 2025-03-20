@@ -44,7 +44,9 @@
                     <th class="la-no-uppercase">
                         <ui:multiYearIcon />
                     </th>
-                    <th>${message(code:'default.actions.label')}</th>
+                    <th class="center aligned">
+                        <ui:optionsIcon />
+                    </th>
                 </tr>
                 </thead>
                 <tbody>

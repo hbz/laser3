@@ -21,7 +21,7 @@ class IconTagLib {
         if (attrs.type) {
         switch (attrs.type.toLowerCase()) {
             case 'addressbook':
-                icon = Icon.ACP_PUBLIC + ' bordered inverted teal la-object-extended'
+                icon = Icon.ACP_PRIVATE + ' bordered inverted teal la-object-extended'
                 break
             case 'admin':
                 icon = Icon.AUTH.ROLE_ADMIN + ' la-object'
@@ -393,6 +393,12 @@ class IconTagLib {
 
         out << '<span class="la-long-tooltip la-popup-tooltip" data-position="bottom center" data-content="' + tt +'">'
         out << '<i class="' + Icon.STATS + ' ' + color + '"></i>'
+        out << '</span>'
+    }
+
+    def optionsIcon = { attrs, body ->
+        out << '<span class="la-popup-tooltip" data-content="' + message(code:'default.actions.label') + '">'
+        out << '  <i class="' + Icon.SYM.OPTIONS + '"></i>'
         out << '</span>'
     }
 

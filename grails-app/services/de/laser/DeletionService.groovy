@@ -19,6 +19,8 @@ import de.laser.titles.TitleHistoryEvent
 import de.laser.titles.TitleHistoryEventParticipant
 import de.laser.traces.DeletedObject
 import de.laser.convenience.Marker
+import de.laser.wekb.DeweyDecimalClassification
+import de.laser.wekb.Language
 import de.laser.wekb.Package
 import de.laser.wekb.TIPPCoverage
 import de.laser.wekb.TitleInstancePackagePlatform

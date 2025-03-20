@@ -406,10 +406,11 @@
                                                                 recip_prop: 'license',
                                                                 tmplEntity: message(code:'license.details.tmplEntity'),
                                                                 tmplText: message(code:'license.details.tmplText'),
-                                                                tmplIcon        : 'large add',
+                                                                tmplIcon        : 'add',
                                                                 tmplTooltip     : message(code:'license.details.tmplLinkProviderText'),
                                                                 tmplModalID:'osel_add_modal_lizenzgeber',
-                                                                editmode: editable
+                                                                editmode: editable,
+                                                                tmplCss       : ''
                                                       ]}" />
                                     </div>
                                     <laser:render template="/templates/links/providerLinksAsList"
@@ -433,10 +434,11 @@
                                                                 recip_prop: 'license',
                                                                 tmplEntity: message(code:'license.details.linkAgency.tmplEntity'),
                                                                 tmplText: message(code:'license.details.linkAgency.tmplText'),
-                                                                tmplIcon        : 'large add',
+                                                                tmplIcon        : 'add',
                                                                 tmplTooltip     : message(code:'license.details.tmplLinkAgencyText'),
                                                                 tmplModalID:'osel_add_modal_agency',
-                                                                editmode: editable
+                                                                editmode: editable,
+                                                                tmplCss       : ''
                                                       ]}" />
                                     </div>
                                     <laser:render template="/templates/links/vendorLinksAsList"

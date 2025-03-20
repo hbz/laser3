@@ -440,14 +440,42 @@
 
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.holdingSelection.label')}</dt>
-                                <dd><ui:xEditableRefData owner="${subscription}" field="holdingSelection"
-                                                         config="${RDConstants.SUBSCRIPTION_HOLDING}" overwriteEditable="${editable && !AuditConfig.getConfig(subscription.instanceOf, 'holdingSelection')}"/></dd>
+                                <dd>
+                                    <g:if test="${showConsortiaFunctions}">
+                                        <ui:xEditableRefData owner="${subscription}" field="holdingSelection" id="holdingSelection"
+                                                             data_confirm_tokenMsg="${message(code: 'confirm.dialog.holdingSelection')}"
+                                                             data_confirm_term_how="ok"
+                                                             class="js-open-confirm-modal-xEditableRefData"
+                                                             data_confirm_value="${RefdataValue.class.name}:${RDStore.SUBSCRIPTION_HOLDING_ENTIRE.id}"
+                                                             config="${RDConstants.SUBSCRIPTION_HOLDING}" overwriteEditable="${editable && !AuditConfig.getConfig(subscription.instanceOf, 'holdingSelection')}"/>
+                                    </g:if>
+                                    <g:else>
+                                        <ui:xEditableRefData owner="${subscription}" field="holdingSelection"
+                                                             config="${RDConstants.SUBSCRIPTION_HOLDING}" overwriteEditable="${editable && !AuditConfig.getConfig(subscription.instanceOf, 'holdingSelection')}"/>
+                                    </g:else>
+                                </dd>
+                                <%-- not needed because inheritance is defined implicitly by value
                                 <g:if test="${editable}">
                                     <dd>
                                         <ui:auditButton auditable="[subscription, 'holdingSelection']"
                                                         auditConfigs="${auditConfigs}"/>
                                     </dd>
                                 </g:if>
+                                --%>
+                            <%-- Extra Call from editable cause validation needed only in Case of Selection "Ja" --%>
+                                <laser:script file="${this.getGroovyPageFileName()}">
+                                    $('#holdingSelection').editable('destroy').editable({
+                                        tpl: '<select class="ui dropdown"></select>'
+                                    }).on('shown', function() {
+                                        r2d2.initDynamicUiStuff('body');
+                                        $(".table").trigger('reflow');
+                                        $('.ui.dropdown').dropdown({
+                                            clearable: true
+                                        });
+                                    }).on('hidden', function() {
+                                        $(".table").trigger('reflow')
+                                    });
+                                </laser:script>
                             </dl>
                         </g:if>
 
@@ -619,10 +647,11 @@
                                                         recip_prop    : 'subscription',
                                                         tmplEntity    : message(code: 'subscription.details.linkProvider.tmplEntity'),
                                                         tmplText      : message(code: 'subscription.details.linkProvider.tmplText'),
-                                                        tmplIcon        : 'large add',
+                                                        tmplIcon        : 'add',
                                                         tmplTooltip     : message(code: 'subscription.details.linkProvider.tmplButtonText'),
                                                         tmplModalID   : 'modal_add_provider',
-                                                        editmode      : editable
+                                                        editmode      : editable,
+                                                        tmplCss       : ''
                                               ]}"/>
                             </div>
                             <laser:render template="/templates/links/providerLinksAsList"
@@ -648,10 +677,12 @@
                                                         recip_prop    : 'subscription',
                                                         tmplEntity    : message(code: 'subscription.details.linkAgency.tmplEntity'),
                                                         tmplText      : message(code: 'subscription.details.linkAgency.tmplText'),
-                                                        tmplIcon      : 'large add',
+                                                        tmplIcon      : 'add',
                                                         tmplTooltip   : message(code: 'subscription.details.linkAgency.tmplButtonText'),
                                                         tmplModalID   : 'modal_add_agency',
-                                                        editmode      : editable
+                                                        editmode      : editable,
+                                                        tmplCss       : ''
+
                                               ]}"/>
                             </div>
                             <laser:render template="/templates/links/vendorLinksAsList"
@@ -659,7 +690,8 @@
                                                     roleObject   : subscription,
                                                     roleRespValue: RDStore.PRS_RESP_SPEC_SUB_EDITOR.value,
                                                     editmode     : editable,
-                                                    showPersons  : true
+                                                    showPersons  : true,
+                                                    tmplCss      : ''
                                           ]}"/>
                         </div>
                     </div>

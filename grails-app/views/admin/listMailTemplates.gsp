@@ -26,7 +26,9 @@
                 <th>${message(code: 'default.type.label')}</th>
                 <th>${message(code: 'mailTemplate.language.label')}</th>
                 <th>${message(code: 'mailTemplate.owner.label')}</th>
-                <th class="la-action-info">${message(code: 'default.actions.label')}</th>
+                <th class="center aligned">
+                    <ui:optionsIcon />
+                </th>
             </tr>
             </thead>
             <tbody>
@@ -91,7 +93,7 @@
                       from="${RefdataCategory.getAllRefdataValues(RDConstants.MAIL_TEMPLATE_LANGUAGE)}"
                       optionKey="id"
                       optionValue="${{it.getI10n('value')}}"
-                      class="ui dropdown search many-to-one"
+                      class="ui dropdown search"
                       noSelection="[null: '']"/>
         </div>
 
@@ -102,7 +104,7 @@
                       from="${RefdataCategory.getAllRefdataValues(RDConstants.MAIL_TEMPLATE_TYPE)}"
                       optionKey="id"
                       optionValue="${{it.getI10n('value')}}"
-                      class="ui dropdown search many-to-one"
+                      class="ui dropdown search"
                       noSelection="[null: '']"/>
         </div>
     </g:form>
@@ -146,7 +148,7 @@
                   from="${RefdataCategory.getAllRefdataValues(RDConstants.MAIL_TEMPLATE_LANGUAGE)}"
                   optionKey="id"
                   optionValue="${{it.getI10n('value')}}"
-                  class="ui dropdown search many-to-one"
+                  class="ui dropdown search"
                   noSelection="[null: '']"/>
         </div>
 
@@ -157,7 +159,7 @@
                       from="${RefdataCategory.getAllRefdataValues(RDConstants.MAIL_TEMPLATE_TYPE)}"
                       optionKey="id"
                       optionValue="${{it.getI10n('value')}}"
-                      class="ui dropdown search many-to-one"
+                      class="ui dropdown search"
                       noSelection="[null: '']"/>
         </div>
 

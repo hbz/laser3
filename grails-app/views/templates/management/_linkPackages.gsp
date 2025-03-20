@@ -131,7 +131,7 @@
                 <tr>
                     <g:if test="${editable}">
                         <th class="center aligned">
-                            <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"/>
+                            <g:checkBox name="membersListToggler" id="membersListToggler" checked="${managementService.checkTogglerState(subIDs, "/${controllerName}/subscriptionManagement/${params.tab}/${user.id}")}"/>
                         </th>
                     </g:if>
                     <th>${message(code: 'sidewide.number')}</th>
@@ -152,7 +152,9 @@
                     <th class="la-no-uppercase">
                         <ui:multiYearIcon />
                     </th>
-                    <th>${message(code:'default.actions.label')}</th>
+                    <th class="center aligned">
+                        <ui:optionsIcon />
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
@@ -199,7 +201,7 @@
                                         <g:if test="${sub.instanceOf && sub.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
                                             <g:link controller="subscription" action="index" id="${sub.id}"
                                                     params="[pkgfilter: sp.pkg.id]">
-                                                ${sp.pkg.name}<br/>(Bestand der Elternlizenz wird übernommen)
+                                                ${sp.pkg.name}<br/><i class="${Icon.SIG.INHERITANCE_AUTO}"></i>
                                             </g:link>
                                         </g:if>
                                         <g:elseif test="${subscriptionService.countCurrentIssueEntitlements(sub) > 0}">

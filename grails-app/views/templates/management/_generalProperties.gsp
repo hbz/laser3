@@ -25,7 +25,9 @@
                     <g:if test="${subscription.packages}">
                         <th>${message(code: 'subscription.holdingSelection.label.shy')}</th>
                     </g:if>
-                    <th>${message(code: 'default.actions.label')}</th>
+                    <th class="center aligned">
+                        <ui:optionsIcon />
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
@@ -73,7 +75,8 @@
                     </td>
                     <td>
                         <ui:xEditableRefData owner="${subscription}" field="holdingSelection" config="${RDConstants.SUBSCRIPTION_HOLDING}"/>
-                        <ui:auditButton auditable="[subscription, 'holdingSelection']"/>
+                        <%-- implicitly defined by value
+                        <ui:auditButton auditable="[subscription, 'holdingSelection']"/>--%>
                     </td>
 
                     <td class="x">
@@ -336,7 +339,7 @@
                 <tr>
                     <g:if test="${editable}">
                         <th class="center aligned">
-                            <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"/>
+                            <g:checkBox name="membersListToggler" id="membersListToggler" checked="${managementService.checkTogglerState(subIDs, "/${controllerName}/subscriptionManagement/${params.tab}/${user.id}")}"/>
                         </th>
                     </g:if>
                     <g:if test="${controllerName == "subscription"}">
@@ -363,7 +366,9 @@
                     <th class="la-no-uppercase">
                         <ui:multiYearIcon />
                     </th>
-                    <th>${message(code:'default.actions.label')}</th>
+                    <th class="center aligned">
+                        <ui:optionsIcon />
+                    </th>
                 </tr>
                 </thead>
                 <tbody>

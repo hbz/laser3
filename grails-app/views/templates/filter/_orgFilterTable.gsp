@@ -47,7 +47,7 @@
                 <th>${message(code: 'org.hasInstAdmin.label')}</th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('legalInformation')}">
-                <th class="la-no-uppercase">
+                <th class="center aligned">
                     <span class="la-popup-tooltip" data-content="${message(code: 'org.legalInformation.tooltip')}">
                         <i class="${Icon.ATTR.ORG_LEGAL_INFORMATION}"></i>
                     </span>
@@ -60,13 +60,21 @@
                 <th>${message(code: 'org.privateContacts.label')}</th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSubscriptions')}">
-                <th class="la-th-wrap">${message(code: 'org.subscriptions.label')}</th>
+                <th class="center aligned">
+                    <span class="la-popup-tooltip" data-content="${message(code:'org.subscriptions.label')}">
+                        <i class="${Icon.SUBSCRIPTION} large"></i>
+                    </span>
+                </th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('currentSubscriptions')}">
                 <th class="la-th-wrap">${message(code: 'org.subscriptions.label')}</th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSurveys')}">
-                <th class="la-th-wrap">${message(code: 'survey.active')}</th>
+                <th class="center aligned">
+                    <span class="la-popup-tooltip" data-content="${message(code:'survey.active')}">
+                        <i class="${Icon.SURVEY} large"></i>
+                    </span>
+                </th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('identifier')}">
                 <th>${message(code:'default.identifier.label')}</th>
@@ -129,7 +137,7 @@
                     ${message(code: 'exportClickMe.subscription.costItems')}: ${selectedCostItemElementID ? RefdataValue.get(selectedCostItemElementID).getI10n('value') : ''}
                 </th>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem')}">
                 <th>
                     ${message(code: 'surveyCostItems.label')}:
 
@@ -175,9 +183,15 @@
                     ${selectedCostItemElementID ? RefdataValue.get(selectedCostItemElementID).getI10n('value') : ''}
                 </th>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemPackage') && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemPackage')}">
                 <th>
                     ${message(code: 'surveyCostItems.label')}
+                </th>
+            </g:if>
+
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('isBetaTester')}">
+                <th class="center aligned">
+                    todo
                 </th>
             </g:if>
 
@@ -327,12 +341,16 @@
                                         personRole.getPrs(), RDStore.CCT_EMAIL
                                 )}" var="email">
                                     <div class="item js-copyTriggerParent">
-                                            <span data-position="right center"
-                                                  class="la-popup-tooltip js-copyTrigger"
-                                                  data-content="Mail senden an ${personRole.getPrs()?.getFirst_name()} ${personRole.getPrs()?.getLast_name()}">
-                                        <ui:contactIcon type="${email.contentType.value}"/>
-                                        <a class="js-copyTopic" href="mailto:${email.content}">${email.content}</a>
-                                        </span><br />
+                                            <span class="js-copyTrigger">
+                                                    <ui:contactIcon type="${email.contentType.value}"/>
+                                                    <a class="js-copyTopic">${email.content}</a>
+                                                    <span class="la-popup-tooltip" data-position="top right"  data-content="${message(code: 'tooltip.sendMailTo')} ${personRole.getPrs()?.getFirst_name()} ${personRole.getPrs()?.getLast_name()}">
+                                                        <a href="mailto:${email.content}"  class="${Btn.MODERN.SIMPLE} tiny">
+                                                            <i class="${Icon.LNK.MAIL_TO}"></i>
+                                                        </a>
+                                                    </span>
+                                            </span>
+                                        <br />
                                     </div>
                                 </g:each>
                                 <g:each in="${Contact.findAllByPrsAndContentType(
@@ -734,7 +752,7 @@
 
                 </td>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem')}">
                 <td class="center aligned">
 
                     <g:if test="${surveyConfig.subSurveyUseForTransfer && orgSub && orgSub.isCurrentMultiYearSubscriptionNew()}">
@@ -789,18 +807,20 @@
                                         </td>
 
                                         <td>
-                                            <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
-                                                    data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                  : params.id,
-                                                                                                                surveyConfigID: surveyConfig.id,
-                                                                                                                participant              : org.id,
-                                                                                                                costItem                 : costItem.id,
-                                                                                                                selectedCostItemElementID: selectedCostItemElementID,
-                                                                                                                selectedPackageID        : selectedPackageID,
-                                                                                                                selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
-                                                    role="button"
-                                                    aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
-                                            </button>
+                                            <g:if test="${editable}">
+                                                <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
+                                                        data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                       : params.id,
+                                                                                                                         surveyConfigID           : surveyConfig.id,
+                                                                                                                         participant              : org.id,
+                                                                                                                         costItem                 : costItem.id,
+                                                                                                                         selectedCostItemElementID: selectedCostItemElementID,
+                                                                                                                         selectedPackageID        : selectedPackageID,
+                                                                                                                         selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
+                                                        role="button"
+                                                        aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
+                                                </button>
+                                            </g:if>
                                         </td>
                                         <td>
                                             <g:if test="${costItem && costItem.costDescription}">
@@ -817,24 +837,26 @@
 
                         </g:if>
                         <g:else>
-                            <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
-                                    data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                  : params.id,
-                                                                                                surveyConfigID: surveyConfig.id,
-                                                                                                participant              : org.id,
-                                                                                                selectedCostItemElementID: selectedCostItemElementID,
-                                                                                                selectedPackageID        : selectedPackageID,
-                                                                                                selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
-                                    role="button"
-                                    aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
-                            </button>
+                            <g:if test="${editable}">
+                                <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
+                                        data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                       : params.id,
+                                                                                                         surveyConfigID           : surveyConfig.id,
+                                                                                                         participant              : org.id,
+                                                                                                         selectedCostItemElementID: selectedCostItemElementID,
+                                                                                                         selectedPackageID        : selectedPackageID,
+                                                                                                         selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
+                                </button>
+                            </g:if>
                         </g:else>
 
                     </g:else>
                 </td>
             </g:if>
 
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemPackage') && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemPackage')}">
             %{-- // TODO Moe - date.minusDays() --}%
                 <td class="center aligned">
 
@@ -886,18 +908,20 @@
                                         </td>
 
                                         <td>
-                                            <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
-                                                    data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                  : params.id,
-                                                                                                                surveyConfigID: surveyConfig.id,
-                                                                                                                participant              : org.id,
-                                                                                                                costItem                 : costItem.id,
-                                                                                                                selectedCostItemElementID: selectedCostItemElementID,
-                                                                                                                selectedPackageID        : selectedPackageID,
-                                                                                                                selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
-                                                    role="button"
-                                                    aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
-                                            </button>
+                                            <g:if test="${editable}">
+                                                <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
+                                                        data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                       : params.id,
+                                                                                                                         surveyConfigID           : surveyConfig.id,
+                                                                                                                         participant              : org.id,
+                                                                                                                         costItem                 : costItem.id,
+                                                                                                                         selectedCostItemElementID: selectedCostItemElementID,
+                                                                                                                         selectedPackageID        : selectedPackageID,
+                                                                                                                         selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
+                                                        role="button"
+                                                        aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
+                                                </button>
+                                            </g:if>
                                         </td>
                                         <td>
                                             <g:if test="${costItem && costItem.costDescription}">
@@ -914,17 +938,19 @@
 
                         </g:if>
                         <g:else>
-                            <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
-                                    data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                  : params.id,
-                                                                                                surveyConfigID: surveyConfig.id,
-                                                                                                participant              : org.id,
-                                                                                                selectedCostItemElementID: selectedCostItemElementID,
-                                                                                                selectedPackageID        : selectedPackageID,
-                                                                                                selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
-                                    role="button"
-                                    aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                                <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
-                            </button>
+                            <g:if test="${editable}">
+                                <button class="${Btn.ICON.SIMPLE} circular right floated triggerSurveyCostItemModal"
+                                        data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                       : params.id,
+                                                                                                         surveyConfigID           : surveyConfig.id,
+                                                                                                         participant              : org.id,
+                                                                                                         selectedCostItemElementID: selectedCostItemElementID,
+                                                                                                         selectedPackageID        : selectedPackageID,
+                                                                                                         selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                    <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
+                                </button>
+                            </g:if>
                         </g:else>
                     </g:if>
                 </td>
@@ -1041,7 +1067,7 @@
     </laser:script>
 
 </g:if>
-<g:if test="${(tmplConfigShow?.contains('surveyCostItem') || tmplConfigShow?.contains('surveyCostItemPackage')) && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
+<g:if test="${(tmplConfigShow?.contains('surveyCostItem') || tmplConfigShow?.contains('surveyCostItemPackage')) && editable}">
     <laser:script file="${this.getGroovyPageFileName()}">
         $('.triggerSurveyCostItemModal').on('click', function(e) {
             e.preventDefault();
@@ -1072,7 +1098,7 @@
     </laser:script>
 
 </g:if>
-<g:if test="${tmplConfigShow?.contains('surveySubCostItem') && surveyInfo.type.id != RDStore.SURVEY_TYPE_TITLE_SELECTION.id}">
+<g:if test="${tmplConfigShow?.contains('surveySubCostItem')}">
     <laser:script file="${this.getGroovyPageFileName()}">
         $('#selectedCostItemElementID').on('change', function() {
             var selectedCostItemElementID = $(this).val()

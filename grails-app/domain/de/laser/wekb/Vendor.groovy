@@ -4,7 +4,6 @@ import de.laser.addressbook.Address
 import de.laser.AlternativeName
 import de.laser.DocContext
 import de.laser.Identifier
-import de.laser.LibrarySystem
 import de.laser.Org
 import de.laser.addressbook.Person
 import de.laser.addressbook.PersonRole
@@ -348,9 +347,9 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
                 propParams.value = op.decValue
                 valueFilter = 'and vp.decValue = :value'
             }
-            if(op.intValue) {
-                propParams.value = op.intValue
-                valueFilter = 'and vp.intValue = :value'
+            if(op.longValue) {
+                propParams.value = op.longValue
+                valueFilter = 'and vp.longValue = :value'
             }
             if(op.refValue) {
                 propParams.value = op.refValue
@@ -370,8 +369,8 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
                     vp.dateValue = op.dateValue
                 if(op.decValue)
                     vp.decValue = op.decValue
-                if(op.intValue)
-                    vp.intValue = op.intValue
+                if(op.longValue)
+                    vp.longValue = op.longValue
                 if(op.refValue)
                     vp.refValue = op.refValue
                 if(op.stringValue)

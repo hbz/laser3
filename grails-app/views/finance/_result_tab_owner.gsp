@@ -36,7 +36,9 @@
                 <g:sortableColumn property="startDate" title="${message(code:'financials.dateFrom')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance" scope="col" class="la-smaller-table-head"/>
                 <g:sortableColumn property="costItemElement" title="${message(code:'financials.costItemElement')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance" scope="col" rowspan="2"/>
             </g:else>
-            <th class="la-action-info" scope="col" rowspan="2"><g:message code="default.actions.label"/></th>
+            <th class="center aligned" scope="col" rowspan="2">
+                <ui:optionsIcon />
+            </th>
         </tr>
         <tr>
             <g:if test="${!fixedSubscription}">

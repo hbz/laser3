@@ -1,6 +1,7 @@
 package de.laser.ajax
 
-
+import de.laser.addressbook.Address
+import de.laser.addressbook.Person
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserRole
@@ -15,9 +16,11 @@ import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.MarkerSupport
 import de.laser.interfaces.ShareSupport
+import de.laser.properties.LicenseProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
+import de.laser.properties.SubscriptionProperty
 import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -58,6 +61,8 @@ import java.util.concurrent.ExecutorService
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxController {
 
+    AccessService accessService
+    CacheService cacheService
     ContextService contextService
     DashboardDueDatesService dashboardDueDatesService
     EscapeService escapeService
@@ -66,6 +71,8 @@ class AjaxController {
     FormService formService
     GenericOIDService genericOIDService
     IdentifierService identifierService
+    LinksGenerationService linksGenerationService
+    ManagementService managementService
     PackageService packageService
     PropertyService propertyService
     SubscriptionControllerService subscriptionControllerService
@@ -288,10 +295,11 @@ class AjaxController {
     @Secured(['ROLE_USER'])
     def remoteRefdataSearch() {
         log.debug("remoteRefdataSearch params: ${params}")
-    
+
         List result = []
         Map<String, Object> config = refdata_config.get(params.id?.toString()) //we call toString in case we got a GString
         boolean defaultOrder = true
+        def obj = genericOIDService.resolveOID(params.oid)
 
         if (config == null) {
             String lang = LocaleUtils.getCurrentLang()
@@ -330,6 +338,12 @@ class AjaxController {
 
           // handle custom constraint(s) ..
           if (it.value.equalsIgnoreCase('deleted') && params.constraint?.contains('removeValue_deleted')) {
+              log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
+          }
+          else if ((obj instanceof SubscriptionProperty || obj instanceof LicenseProperty) && obj.owner._getCalculatedType() != CalculatedType.TYPE_CONSORTIAL && it == RDStore.INVOICE_PROCESSING_PROVIDER_OR_VENDOR && params.constraint?.contains('removeValues_processingProvOrVendor')) {
+              log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
+          }
+          else if (it in [RDStore.INVOICE_PROCESSING_CONSORTIUM, RDStore.INVOICE_PROCESSING_NOT_SET, RDStore.INVOICE_PROCESSING_PROVIDER_OR_VENDOR] && params.constraint?.contains('removeValues_invoiceProcessing')) {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
           else if (it.value.equalsIgnoreCase('administrative subscription') && params.constraint?.contains('removeValue_administrativeSubscription')) {
@@ -482,6 +496,31 @@ class AjaxController {
                   Map<String, Object> query = filterService.getTippQuery(filterParams, baseSub.packages.pkg)
                   List<Long> titleIDList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
 
+
+                  Subscription subscriberSub = Subscription.get(params.newSubID)
+                  SurveyConfig surveyConfig = SurveyConfig.findById(params.surveyConfigID)
+                  IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub)
+                  Set<Subscription> subscriptions = []
+                  if(surveyConfig.pickAndChoosePerpetualAccess) {
+                      subscriptions = linksGenerationService.getSuccessionChain(subscriberSub, 'sourceSubscription')
+                  }
+                  else {
+                      subscriptions << subscriberSub
+                  }
+                  if(subscriptions) {
+                      Set<Long> sourceTIPPs = []
+                      List rows
+                      if(surveyConfig.pickAndChoosePerpetualAccess) {
+                          rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, tipp.id as tipp_id) from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subs) and ie.perpetualAccessBySub in (:subs) and ie.status = :current and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) group by tipp.hostPlatformURL, tipp.id, ie.id', [subs: subscriptions, current: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
+                      }
+                      else {
+                          rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, ie.tipp.id as tipp_id) from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)', [sub: subscriberSub, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
+                      }
+                      sourceTIPPs.addAll(rows["tipp_id"])
+                      titleIDList = titleIDList.minus(sourceTIPPs)
+                  }
+
+
                   titleIDList.each { Long tippID ->
                       newChecked[tippID.toString()] = params.checked == 'true' ? 'checked' : null
                   }
@@ -628,34 +667,62 @@ class AjaxController {
     @Transactional
     def addVendorRole() {
         def owner  = genericOIDService.resolveOID(params.parent)
-
         Set<Vendor> vendors = Vendor.findAllByIdInList(params.list('selectedVendors'))
-        vendors.each{ vendorToLink ->
-            boolean duplicateVendorRole = false
+        if(params.containsKey('takeSelectedSubs')) {
+            Set<Subscription> subscriptions = managementService.loadSubscriptions(params, owner)
+            vendors.each { Vendor vendorToLink ->
+                List<VendorRole> duplicateVendorRoles = VendorRole.findAllBySubscriptionInListAndVendor(subscriptions, vendorToLink)
+                if(duplicateVendorRoles)
+                    subscriptions.removeAll(duplicateVendorRoles.subscription)
+                subscriptions.each { Subscription subToLink ->
+                    VendorRole new_link = new VendorRole(vendor: vendorToLink, subscription: subToLink)
 
-            if(params.recip_prop == 'subscription') {
-                duplicateVendorRole = VendorRole.findAllBySubscriptionAndVendor(owner, vendorToLink) ? true : false
-            }
-            else if(params.recip_prop == 'license') {
-                duplicateVendorRole = VendorRole.findAllByLicenseAndVendor(owner, vendorToLink) ? true : false
-            }
+                    if (new_link.save()) {
+                        if (subToLink.checkSharePreconditions(new_link)) {
+                            new_link.isShared = true
+                            new_link.save()
 
-            if(! duplicateVendorRole) {
-                VendorRole new_link = new VendorRole(vendor: vendorToLink)
-                new_link[params.recip_prop] = owner
-
-                if (new_link.save()) {
-                    // log.debug("Org link added")
-                    if (owner.checkSharePreconditions(new_link)) {
-                        new_link.isShared = true
-                        new_link.save()
-
-                        owner.updateShare(new_link)
+                            subToLink.updateShare(new_link)
+                        }
+                    } else {
+                        log.error("Problem saving new vendor link ..")
+                        new_link.errors.each { e ->
+                            log.error( e.toString() )
+                        }
                     }
-                } else {
-                    log.error("Problem saving new vendor link ..")
-                    new_link.errors.each { e ->
-                        log.error( e.toString() )
+                }
+            }
+            managementService.clearSubscriptionCache(params)
+        }
+        else if(owner) {
+
+            vendors.each{ Vendor vendorToLink ->
+                boolean duplicateVendorRole = false
+
+                if(params.recip_prop == 'subscription') {
+                    duplicateVendorRole = VendorRole.findAllBySubscriptionAndVendor(owner, vendorToLink) ? true : false
+                }
+                else if(params.recip_prop == 'license') {
+                    duplicateVendorRole = VendorRole.findAllByLicenseAndVendor(owner, vendorToLink) ? true : false
+                }
+
+                if(! duplicateVendorRole) {
+                    VendorRole new_link = new VendorRole(vendor: vendorToLink)
+                    new_link[params.recip_prop] = owner
+
+                    if (new_link.save()) {
+                        // log.debug("Org link added")
+                        if (owner.checkSharePreconditions(new_link)) {
+                            new_link.isShared = true
+                            new_link.save()
+
+                            owner.updateShare(new_link)
+                        }
+                    } else {
+                        log.error("Problem saving new vendor link ..")
+                        new_link.errors.each { e ->
+                            log.error( e.toString() )
+                        }
                     }
                 }
             }
@@ -694,36 +761,66 @@ class AjaxController {
         def owner  = genericOIDService.resolveOID(params.parent)
 
         Set<Provider> providers = Provider.findAllByIdInList(params.list('selectedProviders'))
-        providers.each{ providerToLink ->
-            boolean duplicateProviderRole = false
+        if(params.containsKey('takeSelectedSubs')) {
+            Set<Subscription> subscriptions = managementService.loadSubscriptions(params, owner)
+            providers.each { Provider providerToLink ->
+                List<ProviderRole> duplicateProviderRoles = ProviderRole.findAllBySubscriptionInListAndProvider(subscriptions, providerToLink)
+                if(duplicateProviderRoles)
+                    subscriptions.removeAll(duplicateProviderRoles.subscription)
+                subscriptions.each { Subscription subToLink ->
+                    ProviderRole new_link = new ProviderRole(provider: providerToLink, subscription: subToLink)
 
-            if(params.recip_prop == 'subscription') {
-                duplicateProviderRole = ProviderRole.findAllBySubscriptionAndProvider(owner, providerToLink) ? true : false
-            }
-            else if(params.recip_prop == 'license') {
-                duplicateProviderRole = ProviderRole.findAllByLicenseAndProvider(owner, providerToLink) ? true : false
-            }
+                    if (new_link.save()) {
+                        // log.debug("Org link added")
+                        if (subToLink.checkSharePreconditions(new_link)) {
+                            new_link.isShared = true
+                            new_link.save()
 
-            if(! duplicateProviderRole) {
-                ProviderRole new_link = new ProviderRole(provider: providerToLink)
-                new_link[params.recip_prop] = owner
-
-                if (new_link.save()) {
-                    // log.debug("Org link added")
-                    if (owner.checkSharePreconditions(new_link)) {
-                        new_link.isShared = true
-                        new_link.save()
-
-                        owner.updateShare(new_link)
+                            subToLink.updateShare(new_link)
+                        }
+                    } else {
+                        log.error("Problem saving new provider link ..")
+                        new_link.errors.each { e ->
+                            log.error( e.toString() )
+                        }
                     }
-                } else {
-                    log.error("Problem saving new provider link ..")
-                    new_link.errors.each { e ->
-                        log.error( e.toString() )
+                }
+            }
+            managementService.clearSubscriptionCache(params)
+        }
+        else if(owner) {
+            providers.each{ Provider providerToLink ->
+                boolean duplicateProviderRole = false
+
+                if(params.recip_prop == 'subscription') {
+                    duplicateProviderRole = ProviderRole.findAllBySubscriptionAndProvider(owner, providerToLink) ? true : false
+                }
+                else if(params.recip_prop == 'license') {
+                    duplicateProviderRole = ProviderRole.findAllByLicenseAndProvider(owner, providerToLink) ? true : false
+                }
+
+                if(! duplicateProviderRole) {
+                    ProviderRole new_link = new ProviderRole(provider: providerToLink)
+                    new_link[params.recip_prop] = owner
+
+                    if (new_link.save()) {
+                        // log.debug("Org link added")
+                        if (owner.checkSharePreconditions(new_link)) {
+                            new_link.isShared = true
+                            new_link.save()
+
+                            owner.updateShare(new_link)
+                        }
+                    } else {
+                        log.error("Problem saving new provider link ..")
+                        new_link.errors.each { e ->
+                            log.error( e.toString() )
+                        }
                     }
                 }
             }
         }
+
         redirect(url: request.getHeader('referer'))
     }
 
@@ -746,6 +843,58 @@ class AjaxController {
         }
         pvr.delete()
 
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_USER'])
+    @Transactional
+    def delAllProviderRoles() {
+        Subscription owner = genericOIDService.resolveOID(params.parent)
+        Set<Subscription> subscriptions = managementService.loadSubscriptions(params, owner)
+        Set<Provider> providers = Provider.findAllByIdInList(params.list('selectedProviders'))
+        int sharedProviderRoles = 0
+        if(subscriptions && providers) {
+            List<ProviderRole> providerRolesToProcess = ProviderRole.executeQuery('select pvr from ProviderRole pvr where pvr.provider in (:providers) and pvr.subscription in (:subscriptions)', [providers: providers, subscriptions: subscriptions])
+            providerRolesToProcess.each { ProviderRole pvr ->
+                if (!pvr.sharedFrom) {
+                    if (pvr.isShared) {
+                        pvr.isShared = false
+                        pvr.subscription.updateShare(pvr)
+                    }
+                    pvr.delete()
+                }
+                else sharedProviderRoles++
+            }
+        }
+        managementService.clearSubscriptionCache(params)
+        if(sharedProviderRoles > 0)
+            flash.error = message(code: 'subscription.details.linkProvider.sharedLinks.error', args: [sharedProviderRoles])
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_USER'])
+    @Transactional
+    def delAllVendorRoles() {
+        Subscription owner = genericOIDService.resolveOID(params.parent)
+        Set<Subscription> subscriptions = managementService.loadSubscriptions(params, owner)
+        Set<Vendor> vendors = Provider.findAllByIdInList(params.list('selectedVendors'))
+        int sharedVendorRoles = 0
+        if(subscriptions && vendors) {
+            List<VendorRole> vendorRolesToProcess = VendorRole.executeQuery('select vr from VendorRole vr where vr.vendor in (:vendors) and vr.subscription in (:subscriptions)', [vendors: vendors, subscriptions: subscriptions])
+            vendorRolesToProcess.each { VendorRole vr ->
+                if (!vr.sharedFrom) {
+                    if (vr.isShared) {
+                        vr.isShared = false
+                        vr.subscription.updateShare(vr)
+                    }
+                    vr.delete()
+                }
+                else sharedVendorRoles++
+            }
+        }
+        managementService.clearSubscriptionCache(params)
+        if(sharedVendorRoles > 0)
+            flash.error = message(code: 'subscription.details.linkProvider.sharedLinks.error', args: [sharedVendorRoles])
         redirect(url: request.getHeader('referer'))
     }
 
@@ -1725,7 +1874,17 @@ class AjaxController {
                         if (target_object."${params.name}" instanceof BigDecimal) {
                             params.value = escapeService.parseFinancialValue(params.value)
                         }
-                        if (target_object."${params.name}" instanceof Boolean) {
+                        else if (target_object."${params.name}" instanceof Long) {
+                            if (params.long('value').toString() != params.value) {
+                                params.value = null // Hotfix: ERMS-6274 - Todo: ERMS-6285
+                            }
+                        }
+                        else if (target_object."${params.name}" instanceof Integer) {
+                            if (params.int('value').toString() != params.value) {
+                                params.value = null // Hotfix: ERMS-6274 - Todo: ERMS-6285
+                            }
+                        }
+                        else if (target_object."${params.name}" instanceof Boolean) {
                             params.value = params.value?.equals("1")
                         }
                         if (target_object instanceof AlternativeName) {
@@ -1769,7 +1928,9 @@ class AjaxController {
                                 render result as JSON
                                 return
                             }
-                        }else {
+                        }
+                        else { // -- default
+
                             bindData(target_object, binding_properties)
 
                             target_object.save(failOnError: true)
@@ -1804,6 +1965,10 @@ class AjaxController {
 
             }
 
+        } catch (NumberFormatException e) {
+            log.error("NumberFormatException @ editableSetValue()")
+            log.error(e.toString())
+            result = target_object ? target_object[params.name] : null
         } catch (Exception e) {
             log.error("@ editableSetValue()")
             log.error(e.toString())
@@ -1903,5 +2068,62 @@ class AjaxController {
             render template: "/templates/stats/costPerUse", model: ctrlResult.result
         }
         else [error: ctrlResult.error]
+    }
+
+    @Secured(['ROLE_USER'])
+    @Transactional
+    def editPreferredConcatsForSurvey() {
+        Address  addressInstance = params.addressId ? Address.get(params.addressId) : null
+        Person personInstance = params.personId ? Person.get(params.personId) : null
+
+        if (addressInstance && accessService.hasAccessToAddress(addressInstance as Address, AccessService.WRITE)) {
+            if (params.setPreferredAddress == 'false') {
+                addressInstance.preferredForSurvey = false
+            }
+            if (params.setPreferredAddress == 'true') {
+                addressInstance.preferredForSurvey = true
+                List<Address> addressList = Address.findAllByOrgAndTenantIsNull(contextService.getOrg())
+                addressList.each {
+                    if(it != addressInstance) {
+                        it.preferredForSurvey = false
+                        it.save()
+                    }
+                }
+            }
+
+            addressInstance.save()
+        }
+
+        if (personInstance && accessService.hasAccessToPerson(personInstance as Person, AccessService.WRITE)) {
+
+            if(params.setPreferredBillingPerson) {
+                if (params.setPreferredBillingPerson == 'false') {
+                    personInstance.preferredBillingPerson = false
+                }
+                if (params.setPreferredBillingPerson == 'true') {
+                    personInstance.preferredBillingPerson = true
+                    List<Person> personList = Person.findAllByTenant(contextService.getOrg())
+                    personList.each {
+                        if(it != personInstance) {
+                            it.preferredBillingPerson = false
+                            it.save()
+                        }
+                    }
+                }
+            }
+
+            if(params.setPreferredSurveyPerson) {
+                if (params.setPreferredSurveyPerson == 'false') {
+                    personInstance.preferredSurveyPerson = false
+                }
+                if (params.setPreferredSurveyPerson == 'true') {
+                    personInstance.preferredSurveyPerson = true
+                }
+            }
+
+            personInstance.save()
+        }
+
+        redirect(controller: 'organisation', action: 'contacts', id: params.id, params: [tab: addressInstance ? 'addresses' : 'contacts'])
     }
 }

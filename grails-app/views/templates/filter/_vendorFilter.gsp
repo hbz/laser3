@@ -39,7 +39,7 @@
                     <%
                         List<Map> isMyXOptions = []
 
-                        if (actionName == 'list') {
+                        if (actionName == 'list'  || showAllIsMyXOptions) {
                             isMyXOptions.add([ id: 'wekb_exclusive',    value: "${message(code:'filter.wekb.exclusive')}" ])
                             isMyXOptions.add([ id: 'wekb_not',          value: "${message(code:'filter.wekb.not')}" ])
                             isMyXOptions.add([ id: 'ismyx_exclusive',   value: "${message(code:'filter.isMyX.exclusive', args:["${message(code:'menu.my.vendors')}"])}" ])
@@ -212,6 +212,9 @@
                 </div>
             </g:if>
 
+            <g:if test="${field.equals('')}">
+                <div class="field"></div>
+            </g:if>
 
         </g:each>
     <g:if test="${numberOfFields > 1}">
@@ -222,7 +225,7 @@
 
 <div class="field la-field-right-aligned">
 
-    <g:link controller="${processController}" action="${processAction}" id="${surveyInfo.id}" params="[viewTab: params.viewTab, subTab: params.subTab]" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</g:link>
+    <g:link controller="${processController}" action="${processAction}" id="${surveyInfo?.id}" params="[viewTab: params.viewTab, subTab: params.subTab]" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</g:link>
 
         <input name="filterSet" type="hidden" value="true">
         <g:if test="${tmplConfigFormFilter}">

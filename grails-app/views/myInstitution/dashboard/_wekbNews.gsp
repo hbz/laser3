@@ -1,162 +1,57 @@
 <%@ page import="de.laser.License; de.laser.Subscription; de.laser.CustomerTypeService; de.laser.OrgSetting; de.laser.auth.User; de.laser.Org; de.laser.utils.DateUtils;  de.laser.storage.RDStore; de.laser.Task; de.laser.system.SystemActivityProfiler; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.Wekb" %>
 <laser:serviceInjection />
 
-<g:if test="${tmplView == 'info' && wekbNews.counts.all > 0}">
-
-    <div class="ui two cards">
-
-        <g:set var="wekbNewsProTaskList" value="[]" />
-
-        <g:if test="${contextService.getOrg().isCustomerType_Pro()}">
-            <%
-                wekbNewsProTaskList = Task.executeQuery(
-                    'select t from Task t where t.tipp != null and t.status = :status ' +
-                    'and (( t.responsibleUser = :user or t.responsibleOrg = :org ) or t.creator = :user )' +
-                    'order by endDate, createDate',
-                    [user: contextService.getUser(), org: contextService.getOrg(), status: RDStore.TASK_STATUS_OPEN]
-                )
-            %>
-        </g:if>
-
-        <g:if test="${wekbNewsProTaskList}">
-            <div class="ui fluid card">
-                <div class="ui top attached label">
-                    Beantragte Titel-Korrekturen beim Anbieter
-                </div>
-                <div class="content">
-                    <div class="ui list relaxed divided" style="margin: 0.5em 0">
-                        <g:each in="${wekbNewsProTaskList}" var="task">
-                            <div class="item">
-                                <g:link controller="tipp" action="show" id="${task.tipp?.id}" target="_blank">
-                                    <i class="${Icon.TIPP} la-list-icon"></i> ${task.tipp?.name}
-                                </g:link>
-
-                                <g:if test="${task.title != message(code:'task.create.reportTitleToProvider.title')}">
-                                    &nbsp;-&nbsp;
-                                    ${task.title}
-
-%{--                                    <g:link controller="task" action="show" id="${task.id}" target="_blank">--}%
-%{--                                        <i class="${Icon.TASK} la-list-icon"></i> ${task.title}--}%
-%{--                                    </g:link>--}%
-                                </g:if>
-
-                                <span class="right floated">
-                                    ${DateUtils.getLocalizedSDF_noTime().format(task.endDate)}
-                                </span>
-                            </div>
-                        </g:each>
-                    </div>
-                </div>
-                <div class="extra content">
-                    <div class="right floated">
-                        <g:link controller="myInstitution" action="tasks" params="${[taskObject: 'tipp']}">
-                            %{--<i class="${Icon.TASK} circular"></i>--}% ${message(code:'menu.my.tasks')}
-                        </g:link>
-                    </div>
-                </div>
-            </div>
-        </g:if>
-        <g:else>
-            <div class="ui fluid card">
-                <div class="ui top attached label">
-                    Aktuell
-                </div>
-                <div class="content">
-                    <div class="ui relaxed list">
-                        <div class="item">
-%{--                            <i class="${Icon.AUTH.ORG_INST}"></i>--}%
-                            <div class="content">
-                                .. sind <strong>${OrgSetting.executeQuery(
-                                        'select count(os.org) from OrgSetting as os where os.key = :key and os.roleValue.authority in (:roles) and os.org.archiveDate is null',
-                                        [key: OrgSetting.KEYS.CUSTOMER_TYPE, roles: [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]]
-                                )[0]}</strong> aktive Einrichtungen registriert.
-                            </div>
-                        </div>
-                        <div class="item">
-%{--                            <i class="${Icon.AUTH.ORG_CONSORTIUM}"></i>--}%
-                            <div class="content">
-                                .. sind <strong>${OrgSetting.executeQuery(
-                                        'select count(os.org) from OrgSetting as os where os.key = :key and os.roleValue.authority in (:roles) and os.org.archiveDate is null',
-                                        [key: OrgSetting.KEYS.CUSTOMER_TYPE, roles: [CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO]]
-                                )[0]}</strong> aktive Konsortialmanager registriert.
-                            </div>
-                        </div>
-                        <div class="item">
-%{--                            <i class="${Icon.AUTH.INST_USER}"></i>--}%
-                            <div class="content">
-                                .. sind <strong>${User.executeQuery('select count(*) from User where enabled is true')[0]}</strong> aktive Benutzer registriert.
-                            </div>
-                        </div>
-                        <div class="item">
-                            %{--                            <i class="${Icon.AUTH.INST_USER}"></i>--}%
-                            <div class="content">
-                                .. werden <strong>${Subscription.executeQuery(
-                                    'select count(*) from Subscription where status = :current', [current: RDStore.SUBSCRIPTION_CURRENT]
-                                )[0]}</strong> aktive Lizenzen und <strong>${License.executeQuery(
-                                'select count(*) from License where status = :current', [current: RDStore.LICENSE_CURRENT]
-                                )[0]}</strong> aktive Verträge verwaltet.
-                            </div>
-                        </div>
-                        <div class="item">
-                            <div class="content">
-                                .. sind <strong>${SystemActivityProfiler.getNumberOfActiveUsers()}</strong> Benutzer online.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </g:else>
+<g:if test="${tmplView == 'info'}">
 
         <div class="ui fluid card">
-%{--            <div class="content">--}%
-%{--                <div class="header">${message(code: 'marker.WEKB_CHANGES')}</div>--}%
-%{--            </div>--}%
+
             <div class="ui top attached label">
                 <div class="header">${message(code: 'marker.WEKB_CHANGES')}</div>
             </div>
 
             <div class="content">
 
+                <g:if test="${wekbNews && wekbNews.counts.all > 0}">
                     <table class="ui basic compact table" style="border: none">
                         <tbody>
                         <tr style="border-bottom: none">
                             <td>
                                 <a href="#" class="wekb-flyout-trigger" data-preset="provider,all">
-                                    <i class="${Icon.PROVIDER} la-list-icon"></i> ${message(code: 'provider.label')}%{--: ${wekbNews.provider.count}--}%
+                                    <i class="${Icon.PROVIDER} la-list-icon"></i>${message(code: 'provider.label')}%{--: ${wekbNews.provider.count}--}%
                                 </a>
                             </td>
                             <td>
                                 <g:if test="${wekbNews.provider.created.size()}">
                                     <a href="#" class="ui label wekb-flyout-trigger" data-preset="provider,created">
-                                        <i class="${Icon.CMD.ADD} green"></i> ${wekbNews.provider.created.size()}
+                                        <i class="${Icon.CMD.ADD} green"></i>${wekbNews.provider.created.size()}
                                     </a>
                                 </g:if>
                             </td>
                             <td>
                                 <g:if test="${wekbNews.provider.countUpdated}">
                                     <a href="#" class="ui label wekb-flyout-trigger" data-preset="provider,updated">
-                                        <i class="${Icon.CMD.EDIT} blue"></i> ${wekbNews.provider.countUpdated}
+                                        <i class="${Icon.CMD.EDIT} blue"></i>${wekbNews.provider.countUpdated}
                                     </a>
                                 </g:if>
                             </td>
                             <td>
                                 <g:if test="${wekbNews.provider.deleted.size()}">
                                     <a href="#" class="ui label wekb-flyout-trigger" data-preset="provider,deleted">
-                                        <i class="${Icon.CMD.REMOVE} red"></i> ${wekbNews.provider.deleted.size()}
+                                        <i class="${Icon.CMD.REMOVE} red"></i>${wekbNews.provider.deleted.size()}
                                     </a>
                                 </g:if>
                             </td>
                             <td>
                                 <g:if test="${wekbNews.provider.my.size()}">
                                     <a href="#" class="ui label wekb-flyout-trigger" data-preset="provider,my">
-                                        <i class="${Icon.SIG.MY_OBJECT} yellow"></i> ${wekbNews.provider.my.size()}
+                                        <i class="${Icon.SIG.MY_OBJECT} yellow"></i>${wekbNews.provider.my.size()}
                                     </a>
                                 </g:if>
                             </td>
                             <td>
                                 <g:if test="${wekbNews.provider.marker.size()}">
                                     <a href="#" class="ui label wekb-flyout-trigger" data-preset="provider,marker">
-                                        <i class="${Icon.MARKER} purple"></i> ${wekbNews.provider.marker.size()}
+                                        <i class="${Icon.MARKER} purple"></i>${wekbNews.provider.marker.size()}
                                     </a>
                                 </g:if>
                             </td>
@@ -164,41 +59,41 @@
                         <tr style="border-bottom: none">
                             <td>
                                 <a href="#" class="wekb-flyout-trigger" data-preset="vendor,all">
-                                    <i class="${Icon.VENDOR} la-list-icon"></i> ${message(code: 'vendor.plural')}%{--: ${wekbNews.vendor.count}--}%
+                                    <i class="${Icon.VENDOR} la-list-icon"></i>${message(code: 'vendor.plural')}%{--: ${wekbNews.vendor.count}--}%
                                 </a>
                             </td>
                             <td>
                                 <g:if test="${wekbNews.vendor.created.size()}">
                                     <a href="#" class="ui label wekb-flyout-trigger" data-preset="vendor,created">
-                                        <i class="${Icon.CMD.ADD} green"></i> ${wekbNews.vendor.created.size()}
+                                        <i class="${Icon.CMD.ADD} green"></i>${wekbNews.vendor.created.size()}
                                     </a>
                                 </g:if>
                             </td>
                             <td>
                                 <g:if test="${wekbNews.vendor.countUpdated}">
                                     <a href="#" class="ui label wekb-flyout-trigger" data-preset="vendor,updated">
-                                        <i class="${Icon.CMD.EDIT} blue"></i> ${wekbNews.vendor.countUpdated}
+                                        <i class="${Icon.CMD.EDIT} blue"></i>${wekbNews.vendor.countUpdated}
                                     </a>
                                 </g:if>
                             </td>
                             <td>
                                 <g:if test="${wekbNews.vendor.deleted.size()}">
                                     <a href="#" class="ui label wekb-flyout-trigger" data-preset="vendor,deleted">
-                                        <i class="${Icon.CMD.REMOVE} red"></i> ${wekbNews.vendor.deleted.size()}
+                                        <i class="${Icon.CMD.REMOVE} red"></i>${wekbNews.vendor.deleted.size()}
                                     </a>
                                 </g:if>
                             </td>
                             <td>
                                 <g:if test="${wekbNews.vendor.my.size()}">
                                     <a href="#" class="ui label wekb-flyout-trigger" data-preset="vendor,my">
-                                        <i class="${Icon.SIG.MY_OBJECT} yellow"></i> ${wekbNews.vendor.my.size()}
+                                        <i class="${Icon.SIG.MY_OBJECT} yellow"></i>${wekbNews.vendor.my.size()}
                                     </a>
                                 </g:if>
                             </td>
                             <td>
                                 <g:if test="${wekbNews.vendor.marker.size()}">
                                     <a href="#" class="ui label wekb-flyout-trigger" data-preset="vendor,marker">
-                                        <i class="${Icon.MARKER} purple"></i> ${wekbNews.vendor.marker.size()}
+                                        <i class="${Icon.MARKER} purple"></i>${wekbNews.vendor.marker.size()}
                                     </a>
                                 </g:if>
                             </td>
@@ -206,41 +101,41 @@
                         <tr style="border-bottom: none">
                             <td>
                                 <a href="#" class="wekb-flyout-trigger" data-preset="platform,all">
-                                    <i class="${Icon.PLATFORM} la-list-icon"></i> ${message(code: 'platform.plural')}%{--: ${wekbNews.platform.count}--}%
+                                    <i class="${Icon.PLATFORM} la-list-icon"></i>${message(code: 'platform.plural')}%{--: ${wekbNews.platform.count}--}%
                                 </a>
                             </td>
                             <td>
                                 <g:if test="${wekbNews.platform.created.size()}">
                                     <a href="#" class="ui label wekb-flyout-trigger" data-preset="platform,created">
-                                        <i class="${Icon.CMD.ADD} green"></i> ${wekbNews.platform.created.size()}
+                                        <i class="${Icon.CMD.ADD} green"></i>${wekbNews.platform.created.size()}
                                     </a>
                                 </g:if>
                             </td>
                             <td>
                                 <g:if test="${wekbNews.platform.countUpdated}">
                                     <a href="#" class="ui label wekb-flyout-trigger" data-preset="platform,updated">
-                                        <i class="${Icon.CMD.EDIT} blue"></i> ${wekbNews.platform.countUpdated}
+                                        <i class="${Icon.CMD.EDIT} blue"></i>${wekbNews.platform.countUpdated}
                                     </a>
                                 </g:if>
                             </td>
                             <td>
                                 <g:if test="${wekbNews.platform.deleted.size()}">
                                     <a href="#" class="ui label wekb-flyout-trigger" data-preset="platform,deleted">
-                                        <i class="${Icon.CMD.REMOVE} red"></i> ${wekbNews.platform.deleted.size()}
+                                        <i class="${Icon.CMD.REMOVE} red"></i>${wekbNews.platform.deleted.size()}
                                     </a>
                                 </g:if>
                             </td>
                             <td>
                                 <g:if test="${wekbNews.platform.my.size()}">
                                     <a href="#" class="ui label wekb-flyout-trigger" data-preset="platform,my">
-                                        <i class="${Icon.SIG.MY_OBJECT} yellow"></i> ${wekbNews.platform.my.size()}
+                                        <i class="${Icon.SIG.MY_OBJECT} yellow"></i>${wekbNews.platform.my.size()}
                                     </a>
                                 </g:if>
                             </td>
                             <td>
                                 <g:if test="${wekbNews.platform.marker.size()}">
                                     <a href="#" class="ui label wekb-flyout-trigger" data-preset="platform,marker">
-                                        <i class="${Icon.MARKER} purple"></i> ${wekbNews.platform.marker.size()}
+                                        <i class="${Icon.MARKER} purple"></i>${wekbNews.platform.marker.size()}
                                     </a>
                                 </g:if>
                             </td>
@@ -248,41 +143,41 @@
                         <tr style="border-bottom: none">
                             <td>
                                 <a href="#" class="wekb-flyout-trigger" data-preset="package,all">
-                                    <i class="${Icon.PACKAGE} la-list-icon"></i> ${message(code: 'package.plural')}%{--: ${wekbNews.package.count}--}%
+                                    <i class="${Icon.PACKAGE} la-list-icon"></i>${message(code: 'package.plural')}%{--: ${wekbNews.package.count}--}%
                                 </a>
                             </td>
                             <td>
                                 <g:if test="${wekbNews.package.created.size()}">
                                     <a href="#" class="ui label wekb-flyout-trigger" data-preset="package,created">
-                                        <i class="${Icon.CMD.ADD} green"></i> ${wekbNews.package.created.size()}
+                                        <i class="${Icon.CMD.ADD} green"></i>${wekbNews.package.created.size()}
                                     </a>
                                 </g:if>
                             </td>
                             <td>
                                 <g:if test="${wekbNews.package.countUpdated}">
                                     <a href="#" class="ui label wekb-flyout-trigger" data-preset="package,updated">
-                                        <i class="${Icon.CMD.EDIT} blue"></i> ${wekbNews.package.countUpdated}
+                                        <i class="${Icon.CMD.EDIT} blue"></i>${wekbNews.package.countUpdated}
                                     </a>
                                 </g:if>
                             </td>
                             <td>
                                 <g:if test="${wekbNews.package.deleted.size()}">
                                     <a href="#" class="ui label wekb-flyout-trigger" data-preset="package,deleted">
-                                        <i class="${Icon.CMD.REMOVE} red"></i> ${wekbNews.package.deleted.size()}
+                                        <i class="${Icon.CMD.REMOVE} red"></i>${wekbNews.package.deleted.size()}
                                     </a>
                                 </g:if>
                             </td>
                             <td>
                                 <g:if test="${wekbNews.package.my.size()}">
                                     <a href="#" class="ui label wekb-flyout-trigger" data-preset="package,my">
-                                        <i class="${Icon.SIG.MY_OBJECT} yellow"></i> ${wekbNews.package.my.size()}
+                                        <i class="${Icon.SIG.MY_OBJECT} yellow"></i>${wekbNews.package.my.size()}
                                     </a>
                                 </g:if>
                             </td>
                             <td>
                                 <g:if test="${wekbNews.package.marker.size()}">
                                     <a href="#" class="ui label wekb-flyout-trigger" data-preset="package,marker">
-                                        <i class="${Icon.MARKER} purple"></i> ${wekbNews.package.marker.size()}
+                                        <i class="${Icon.MARKER} purple"></i>${wekbNews.package.marker.size()}
                                     </a>
                                 </g:if>
                             </td>
@@ -291,11 +186,14 @@
                         </tr>
                         </tbody>
                     </table>
-
+                </g:if>
+                <g:else>
+                    <p>
+                        ${message(code: 'dashboard.card.wekbNews.noData')}
+                    </p>
+                </g:else>
             </div>
         </div>
-
-    </div>
 
     <div id="wekbFlyout" class="ui ten wide flyout"></div>
 

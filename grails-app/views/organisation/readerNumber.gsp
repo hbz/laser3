@@ -34,9 +34,13 @@
                             <g:each in="${semesterCols}" var="column">
                                 <th>${column}</th>
                             </g:each>
-                            <th><g:message code="readerNumber.sum.label"/></th>
+                            <g:if test="${semesterCols.size() > 1}">
+                                <th><g:message code="readerNumber.sum.label"/></th>
+                            </g:if>
                             <th><g:message code="readerNumber.notes"/></th>
-                            <th>${message(code:'default.actions.label')}</th>
+                            <th class="center aligned">
+                                <ui:optionsIcon />
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -72,35 +76,36 @@
                                     </g:if>
                                 </td>
                             </g:each>
-                            <%
-                                Map<String,BigDecimal> sumRow = semesterSums.get(numbersInstance.getKey())
-                                BigDecimal students = sumRow.get(RDStore.READER_NUMBER_STUDENTS.getI10n("value")) ?: 0.0
-                                BigDecimal users = sumRow.get(RDStore.READER_NUMBER_USER.getI10n("value")) ?: 0.0
-                                BigDecimal FTEs = sumRow.get(RDStore.READER_NUMBER_FTE.getI10n("value")) ?: 0.0
-                                BigDecimal staff = sumRow.get(RDStore.READER_NUMBER_FTE_TOTAL.getI10n("value")) ?: 0.0
-                                boolean missing = students == 0.0 || users == 0.0 || FTEs == 0.0 || staff == 0.0
-                            %>
-                            <td>
-                                <g:if test="${FTEs > 0 || staff > 0}">
-                                    <g:if test="${users > 0}">
+                            <g:if test="${semesterCols.size() > 1}">
+                                <td>
+                                    <%
+                                        Map<String,BigDecimal> sumRow = semesterSums.get(numbersInstance.getKey())
+                                        BigDecimal students = sumRow.get(RDStore.READER_NUMBER_STUDENTS.getI10n("value")) ?: 0.0
+                                        BigDecimal FTEs = sumRow.get(RDStore.READER_NUMBER_FTE.getI10n("value")) ?: 0.0
+                                        BigDecimal staff = sumRow.get(RDStore.READER_NUMBER_SCIENTIFIC_STAFF.getI10n("value")) ?: 0.0
+                                        boolean missing = students == 0.0 || FTEs == 0.0 || staff == 0.0
+                                    %>
+                                    <g:if test="${FTEs > 0 || staff > 0}">
+                                        <g:if test="${users > 0}">
+                                            <g:formatNumber number="${users}" format="${message(code:'default.decimal.format')}"/>
+                                        </g:if>
+                                        <g:if test="${(FTEs > 0 || staff > 0) && users > 0}">/</g:if>
+                                        <g:if test="${FTEs > 0}">
+                                            <g:formatNumber number="${students+FTEs}" minFractionDigits="2" maxFractionDigits="2" format="${message(code:'default.decimal.format')}"/>
+                                        </g:if>
+                                        <g:if test="${FTEs > 0 && staff > 0}">/</g:if>
+                                        <g:if test="${staff > 0}">
+                                            <g:formatNumber number="${students+staff}" minFractionDigits="2" maxFractionDigits="2" format="${message(code:'default.decimal.format')}"/>
+                                        </g:if>
+                                    </g:if>
+                                    <g:elseif test="${students > 0}">
+                                        <g:formatNumber number="${students}" format="${message(code:'default.decimal.format')}"/>
+                                    </g:elseif>
+                                    <g:elseif test="${users > 0}">
                                         <g:formatNumber number="${users}" format="${message(code:'default.decimal.format')}"/>
-                                    </g:if>
-                                    <g:if test="${(FTEs > 0 || staff > 0) && users > 0}">/</g:if>
-                                    <g:if test="${FTEs > 0}">
-                                        <g:formatNumber number="${students+FTEs}" minFractionDigits="2" maxFractionDigits="2" format="${message(code:'default.decimal.format')}"/>
-                                    </g:if>
-                                    <g:if test="${FTEs > 0 && staff > 0}">/</g:if>
-                                    <g:if test="${staff > 0}">
-                                        <g:formatNumber number="${students+staff}" minFractionDigits="2" maxFractionDigits="2" format="${message(code:'default.decimal.format')}"/>
-                                    </g:if>
-                                </g:if>
-                                <g:elseif test="${students > 0}">
-                                    <g:formatNumber number="${students}" format="${message(code:'default.decimal.format')}"/>
-                                </g:elseif>
-                                <g:elseif test="${users > 0}">
-                                    <g:formatNumber number="${users}" format="${message(code:'default.decimal.format')}"/>
-                                </g:elseif>
-                            </td>
+                                    </g:elseif>
+                                </td>
+                            </g:if>
                             <td>
                                 <ui:xEditable type="readerNumber" owner="${numbersInstance.getValue().entrySet()[0].getValue()}" field="dateGroupNote"/>
                             </td>
@@ -137,9 +142,13 @@
                             <g:each in="${yearCols}" var="column">
                                 <th>${column}</th>
                             </g:each>
-                            <th><g:message code="readerNumber.sum.label"/></th>
+                            <g:if test="${yearCols.size() > 1}">
+                                <th><g:message code="readerNumber.sum.label"/></th>
+                            </g:if>
                             <th><g:message code="readerNumber.notes"/></th>
-                            <th>${message(code:'default.actions.label')}</th>
+                            <th class="center aligned">
+                                <ui:optionsIcon />
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -175,7 +184,9 @@
                                         </g:if>
                                     </td>
                                 </g:each>
-                                <td><g:formatNumber number="${yearSums.get(numbersInstance.getKey())}" format="${message(code:'default.decimal.format')}"/></td>
+                                <g:if test="${yearCols.size() > 1}">
+                                    <td><g:formatNumber number="${yearSums.get(numbersInstance.getKey())}" format="${message(code:'default.decimal.format')}"/></td>
+                                </g:if>
                                 <td><ui:xEditable type="readerNumber" owner="${numbersInstance.getValue().entrySet()[0].getValue()}" field="dateGroupNote"/></td>
                                 <td class="x">
                                     <g:if test="${editable}">

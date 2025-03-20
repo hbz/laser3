@@ -8,6 +8,8 @@ import de.laser.cache.SessionCacheWrapper
 import de.laser.convenience.Marker
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.UserControllerService
+import de.laser.finance.CostInformationDefinition
+import de.laser.finance.CostInformationDefinitionGroup
 import de.laser.remote.Wekb
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
@@ -31,8 +33,9 @@ import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyLinks
 import de.laser.survey.SurveyOrg
+import de.laser.survey.SurveyPersonResult
 import de.laser.survey.SurveyResult
-import de.laser.survey.SurveyPackageResult
+import de.laser.survey.SurveyVendorResult
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.PdfUtils
@@ -185,7 +188,9 @@ class MyInstitutionController  {
         result.flagContentGokb = true // gokbService.doQuery
         SwissKnife.setPaginationParams(result, params, contextService.getUser())
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.PLA_PROP], contextService.getOrg())
-        Map<String, Object> subscriptionParams = [contextOrg:contextService.getOrg(), roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIUM]]
+        Map<String, Object> baseSubscriptionParams = [contextOrg:contextService.getOrg(), roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIUM]]
+        Map<String, Object> subscriptionParams = baseSubscriptionParams.clone()
+        baseSubscriptionParams.current = RDStore.SUBSCRIPTION_CURRENT
 
         String instanceFilter = "", subFilter = ""
         if (! params.status) {
@@ -199,48 +204,50 @@ class MyInstitutionController  {
         }
         boolean withPerpetualAccess = params.long('hasPerpetualAccess') == RDStore.YN_YES.id
         if(params.status != 'FETCH_ALL') {
-            subFilter += "s2.status.id in (:status)"
+            subFilter += "s.status.id in (:status)"
             subscriptionParams.status = Params.getLongList(params, 'status')
             if(withPerpetualAccess) {
                 if(RDStore.SUBSCRIPTION_CURRENT.id in subscriptionParams.status) {
                     subscriptionParams.expired = RDStore.SUBSCRIPTION_EXPIRED.id
-                    subFilter += " or (s2.status.id = :expired and s2.hasPerpetualAccess = true) "
+                    subFilter += " or (s.status.id = :expired and s.hasPerpetualAccess = true) "
                 }
-                else subFilter += " and s2.hasPerpetualAccess = true "
+                else subFilter += " and s.hasPerpetualAccess = true "
             }
             else if(params.long('hasPerpetualAccess') == RDStore.YN_NO.id) {
-                subFilter += " and s2.hasPerpetualAccess = false "
+                subFilter += " and s.hasPerpetualAccess = false "
             }
         }
 
 
         if(contextService.getOrg().isCustomerType_Consortium())
-            instanceFilter += " and s2.instanceOf = null "
-        String subscriptionQuery = 'select s2 from OrgRole oo join oo.sub s2 where oo.org = :contextOrg and oo.roleType in (:roleTypes) and ('+subFilter+')'+instanceFilter
+            instanceFilter += " and s.instanceOf = null "
+        String subscriptionQuery = 'select s.id from OrgRole oo join oo.sub s where oo.org = :contextOrg and oo.roleType in (:roleTypes) and ('+subFilter+')'+instanceFilter
+        Set<Long> subIds = []
+        String subQueryFilter = ""
+        if(subFilter) {
+            subIds.addAll(Subscription.executeQuery(subscriptionQuery, subscriptionParams))
+            subQueryFilter = " and s.id in (:subIds)"
+        }
 
         result.subscriptionMap = [:]
         result.platformInstanceList = []
 
-        //if (subscriptionQuery) {
-        String qry3 = "select distinct p, s, ${params.sort ?: 'p.name'} from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg " +
-                "join pkg.nominalPlatform p left join p.org o " +
-                "where s in (${subscriptionQuery}) and p.gokbId in (:wekbIds) and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
+        String qry3 = "select distinct plat, s, ${params.sort ?: 'plat.name'} from Platform plat join plat.provider p, SubscriptionPackage sp join sp.subscription s join sp.pkg pkg where plat = pkg.nominalPlatform " +
+                "and plat.gokbId in (:wekbIds) and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted)) ${subQueryFilter}"
 
         Map qryParams3 = [
-                pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED
+                pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED,
         ]
-        qryParams3.putAll(subscriptionParams)
+        if(subFilter)
+            qryParams3.subIds = subIds
 
+        Map<String, Object> queryParams = filterService.getWekbPlatformFilterParams(params)
+        /*
         Map<String, Object> queryParams = [componentType: "Platform"]
 
         if (params.q?.length() > 0) {
             result.filterSet = true
-            queryParams.q = params.q
-            qry3 += "and ("
-            qry3 += "   genfunc_filter_matcher(o.name, :query) = true"
-            qry3 += "   or genfunc_filter_matcher(o.sortname, :query) = true"
-            qry3 += ")"
-            qryParams3.put('query', "${params.q}")
+            queryParams.name = params.q
         }
 
         if (params.filterPropDef) {
@@ -289,18 +296,27 @@ class MyInstitutionController  {
             result.filterSet = true
             queryParams.curatoryGroupType = params.curatoryGroupType
         }
+        */
         List wekbIds = []
         Map<String, Object> wekbParams = params.clone()
         if(!wekbParams.containsKey('sort'))
             wekbParams.sort = 'name'
-        Map queryCuratoryGroups = gokbService.executeQuery(Wekb.getGroupsURL(), [:])
+        Map queryCuratoryGroups = gokbService.executeQuery(Wekb.getGroupsURL(), [componentType: "Platform"])
         if(queryCuratoryGroups.code == 404) {
             result.error = message(code: 'wekb.error.'+queryCuratoryGroups.error) as String
         }
         else {
             if (queryCuratoryGroups) {
                 List recordsCuratoryGroups = queryCuratoryGroups.result
-                result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
+                Set<String> myPlatformWekbIds = Platform.executeQuery('select plat.gokbId from Platform plat where plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo join sp.pkg pkg where oo.org = :contextOrg and oo.roleType in (:roleTypes) and s.status = :current '+instanceFilter+')', baseSubscriptionParams)
+                List myCuratoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" && it.platformUuid in myPlatformWekbIds }
+                //post-filter because we:kb delivers the platform UUID in the map as well ==> uniqueness is explicitly given!
+                Set curatoryGroupSet = []
+                myCuratoryGroups.each { Map myCG ->
+                    myCG.remove('platformUuid')
+                    curatoryGroupSet << myCG
+                }
+                result.curatoryGroups = curatoryGroupSet
             }
             wekbIds.addAll(gokbService.doQuery([max:10000, offset:0], wekbParams, queryParams).records.collect { Map hit -> hit.uuid })
         }
@@ -311,10 +327,10 @@ class MyInstitutionController  {
         ]
         qryParams3.wekbIds = wekbIds
 
-        qry3 += " group by p, s"
+        qry3 += " group by plat, s"
         if(params.sort)
             qry3 += " order by ${params.sort} ${params.order}"
-        else qry3 += " order by p.name, s.name, s.startDate desc"
+        else qry3 += " order by plat.name, s.name, s.startDate desc"
 
         List platformSubscriptionList = []
         if(wekbIds)
@@ -418,6 +434,7 @@ class MyInstitutionController  {
         if (! contextService.getOrg().isCustomerType_Support()) {
             licenseFilterTable << "provider"
             licenseFilterTable << "vendor"
+            licenseFilterTable << "processing"
         }
 
         if (contextService.getOrg().isCustomerType_Inst_Pro()) {
@@ -579,8 +596,8 @@ class MyInstitutionController  {
         prf.setBenchmark('get licensors')
         Map<String,Set<Org>> orgs = [consortia:consortia]
         result.orgs = orgs
-        result.providers = Provider.findAll([sort: 'sortname'])
-        result.vendors = Vendor.findAll([sort: 'sortname'])
+        result.providers = providerService.getCurrentProviders(contextService.getOrg())
+        result.vendors = vendorService.getCurrentVendors(contextService.getOrg())
 
 		List bm = prf.stopBenchmark()
 		result.benchMark = bm
@@ -1288,6 +1305,7 @@ class MyInstitutionController  {
             result.tableConfig << "showPackages"
             result.tableConfig << "showProviders"
             result.tableConfig << "showVendors"
+            result.tableConfig << "showInvoicing"
         }
 
         result.putAll(subscriptionService.getMySubscriptions(params, result.user, contextService.getOrg()))
@@ -1999,7 +2017,9 @@ class MyInstitutionController  {
             wekbQryParams.uuids = currentPackageUuids
             wekbQryParams.max = currentPackageUuids.size()
             wekbQryParams.offset = 0
+            wekbQryParams.my = true
             Map<String, Object> remote = packageService.getWekbPackages(wekbQryParams)
+            result.curatoryGroups = remote.curatoryGroups
             result.curatoryGroupTypes = remote.curatoryGroupTypes
             result.automaticUpdates = remote.automaticUpdates
             result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
@@ -2159,8 +2179,8 @@ class MyInstitutionController  {
             subscriptionRows << row
         }
         String template = exportService.generateSeparatorTableString(colHeaders,subscriptionRows,"\t")
-        response.setHeader("Content-disposition", "attachment; filename=\"${escapeService.escapeString(subscription.name)}_finances.tsv\"")
-        response.contentType = "text/tsv"
+        response.setHeader("Content-disposition", "attachment; filename=\"${escapeService.escapeString(subscription.name)}_finances.csv\"")
+        response.contentType = "text/csv"
         ServletOutputStream out = response.outputStream
         out.withWriter { writer ->
             writer.write(template)
@@ -2183,7 +2203,7 @@ class MyInstitutionController  {
             MultipartFile tsvFile = request.getFile("tsvFile") //this makes the withTransaction closure necessary
             if(tsvFile && tsvFile.size > 0) {
                 String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
-                if(encoding in ["UTF-8", "WINDOWS-1252"]) {
+                if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
                     result.filename = tsvFile.originalFilename
                     Map<String,Map> financialData = financeService.financeImport(tsvFile, encoding)
                     result.headerRow = financialData.headerRow
@@ -2259,7 +2279,7 @@ class MyInstitutionController  {
             MultipartFile tsvFile = request.getFile("tsvFile") //this makes the transaction closure necessary
             if(tsvFile && tsvFile.size > 0) {
                 String encoding = UniversalDetector.detectCharset(tsvFile.getInputStream())
-                if(encoding in ["UTF-8", "WINDOWS-1252"]) {
+                if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
                     result.filename = tsvFile.originalFilename
                     Map subscriptionData = subscriptionService.subscriptionImport(tsvFile, encoding)
                     if(subscriptionData.globalErrors) {
@@ -2487,15 +2507,23 @@ class MyInstitutionController  {
                         notProcessedMandatoryProperties << surre.type.getI10n('name')
                     }
                 }
-                if(surveyConfig.surveyInfo.isMandatory && surveyConfig.invoicingInformation && (!surveyOrg.address || !surveyOrg.person)){
+                if(surveyConfig.surveyInfo.isMandatory && surveyConfig.invoicingInformation && (!surveyOrg.address || (SurveyPersonResult.countByParticipantAndSurveyConfigAndBillingPerson(contextService.getOrg(), surveyConfig, true) == 0))){
                     allResultHaveValue = false
                     flash.error = g.message(code: 'surveyResult.finish.invoicingInformation')
-                }else if(surveyConfig.surveyInfo.isMandatory && surveyConfig.vendorSurvey) {
+                }else if(SurveyPersonResult.countByParticipantAndSurveyConfigAndSurveyPerson(contextService.getOrg(), surveyConfig, true) == 0){
+                    allResultHaveValue = false
+                    flash.error = g.message(code: 'surveyResult.finish.surveyContact')
+                }
+                else if(surveyConfig.surveyInfo.isMandatory && surveyConfig.vendorSurvey) {
                     boolean vendorInvoicing = SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_INVOICE_PROCESSING)?.refValue == RDStore.INVOICE_PROCESSING_VENDOR
-                    if (vendorInvoicing && SurveyPackageResult.executeQuery('select count (*) from SurveyPackageResult spr ' +
-                            'where spr.surveyConfig = :surveyConfig and spr.participant = :participant', [surveyConfig: surveyConfig, participant: contextService.getOrg()])[0] == 0) {
+                    int vendorCount = SurveyVendorResult.executeQuery('select count (*) from SurveyVendorResult spr ' +
+                            'where spr.surveyConfig = :surveyConfig and spr.participant = :participant', [surveyConfig: surveyConfig, participant: contextService.getOrg()])[0]
+                    if (vendorInvoicing && vendorCount == 0) {
                         allResultHaveValue = false
                         flash.error = g.message(code: 'surveyResult.finish.vendorSurvey')
+                    }else if(!vendorInvoicing && vendorCount > 0){
+                        allResultHaveValue = false
+                        flash.error = g.message(code: 'surveyResult.finish.vendorSurvey.wrongVendor')
                     }
                 }
 
@@ -2509,6 +2537,14 @@ class MyInstitutionController  {
                 }
             }
             */
+
+            if(surveyConfig.subSurveyUseForTransfer && noParticipation){
+                SurveyResult surveyResult = SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION)
+                surveyResult.comment = params.surveyResultComment
+                surveyResult.save()
+            }
+
+
 
             if (!noParticipation && notProcessedMandatoryProperties.size() > 0) {
                 flash.error = message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')]) as String
@@ -2644,9 +2680,9 @@ class MyInstitutionController  {
                                 surveyService.emailsToSurveyUsersOfOrg(surveyInfo, org, false)
                                 //flash.message = message(code: 'surveyLinks.participateToSurvey.success')
 
-                                /*if(surveyConfig.invoicingInformation){
-                                    surveyService.setDefaultInvoiceInformation(surveyConfig, org)
-                                }*/
+
+                                surveyService.setDefaultPreferredConcatsForSurvey(surveyConfig, org)
+
                             }
                         }
                     }
@@ -4090,6 +4126,7 @@ join sub.orgRelations or_sub where
             case 'edit':
                 result.pdGroup = genericOIDService.resolveOID(params.oid)
                 result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
+                result.costInformationsInUse = params.containsKey('costInformationsInUse')
                 result.createOrUpdate = message(code:'default.button.save.label')
                 render template: '/templates/properties/propertyGroupModal', model: result
                 return
@@ -4126,36 +4163,33 @@ join sub.orgRelations or_sub where
                 break
             case 'processing':
                 if(formService.validateToken(params)) {
-                    boolean valid
-                    PropertyDefinitionGroup propDefGroup
-                    String ownerType = params.prop_descr ? PropertyDefinition.getDescrClass(params.prop_descr) : null
+                    if(params.containsKey('costInformationsInUse')) {
+                        CostInformationDefinitionGroup.withTransaction { TransactionStatus ts ->
+                            CostInformationDefinitionGroup.executeUpdate(
+                                    "DELETE CostInformationDefinitionGroup cifg WHERE cifg.tenant = :ctx",
+                                    [ctx: contextService.getOrg()]
+                            )
 
-                    PropertyDefinitionGroup.withTransaction { TransactionStatus ts ->
-                        if (params.oid) {
-                            propDefGroup = (PropertyDefinitionGroup) genericOIDService.resolveOID(params.oid)
-                            propDefGroup.name = params.name ?: propDefGroup.name
-                            propDefGroup.description = params.description
-                            propDefGroup.ownerType = ownerType
-
-                            if (propDefGroup.save()) {
-                                valid = true
-                                flash.message = message(code: 'propertyDefinitionGroup.create.success', args: [propDefGroup.name]) as String
-                            }
-                            else {
-                                flash.error = message(code: 'propertyDefinitionGroup.create.error') as String
+                            params.list('costInformationDefinition').each { cif ->
+                                new CostInformationDefinitionGroup(
+                                        costInformationDefinition: cif,
+                                        tenant: contextService.getOrg()
+                                ).save()
                             }
                         }
-                        else {
-                            if (params.name && ownerType) {
-                                int position = PropertyDefinitionGroup.executeQuery('select coalesce(max(pdg.order), 0) from PropertyDefinitionGroup pdg where pdg.ownerType = :objType and pdg.tenant = :tenant', [objType: ownerType, tenant: contextService.getOrg()])[0]
-                                propDefGroup = new PropertyDefinitionGroup(
-                                        name: params.name,
-                                        description: params.description,
-                                        tenant: contextService.getOrg(),
-                                        ownerType: ownerType,
-                                        order: position + 1,
-                                        isVisible: true
-                                )
+                    }
+                    else {
+                        boolean valid
+                        PropertyDefinitionGroup propDefGroup
+                        String ownerType = params.prop_descr ? PropertyDefinition.getDescrClass(params.prop_descr) : null
+
+                        PropertyDefinitionGroup.withTransaction { TransactionStatus ts ->
+                            if (params.oid) {
+                                propDefGroup = (PropertyDefinitionGroup) genericOIDService.resolveOID(params.oid)
+                                propDefGroup.name = params.name ?: propDefGroup.name
+                                propDefGroup.description = params.description
+                                propDefGroup.ownerType = ownerType
+
                                 if (propDefGroup.save()) {
                                     valid = true
                                     flash.message = message(code: 'propertyDefinitionGroup.create.success', args: [propDefGroup.name]) as String
@@ -4163,21 +4197,41 @@ join sub.orgRelations or_sub where
                                 else {
                                     flash.error = message(code: 'propertyDefinitionGroup.create.error') as String
                                 }
-                            } else {
-                                flash.error = message(code: 'propertyDefinitionGroup.create.missing') as String
                             }
-                        }
-                        if (valid) {
-                            PropertyDefinitionGroupItem.executeUpdate(
-                                    "DELETE PropertyDefinitionGroupItem pdgi WHERE pdgi.propDefGroup = :pdg",
-                                    [pdg: propDefGroup]
-                            )
+                            else {
+                                if (params.name && ownerType) {
+                                    int position = PropertyDefinitionGroup.executeQuery('select coalesce(max(pdg.order), 0) from PropertyDefinitionGroup pdg where pdg.ownerType = :objType and pdg.tenant = :tenant', [objType: ownerType, tenant: contextService.getOrg()])[0]
+                                    propDefGroup = new PropertyDefinitionGroup(
+                                            name: params.name,
+                                            description: params.description,
+                                            tenant: contextService.getOrg(),
+                                            ownerType: ownerType,
+                                            order: position + 1,
+                                            isVisible: true
+                                    )
+                                    if (propDefGroup.save()) {
+                                        valid = true
+                                        flash.message = message(code: 'propertyDefinitionGroup.create.success', args: [propDefGroup.name]) as String
+                                    }
+                                    else {
+                                        flash.error = message(code: 'propertyDefinitionGroup.create.error') as String
+                                    }
+                                } else {
+                                    flash.error = message(code: 'propertyDefinitionGroup.create.missing') as String
+                                }
+                            }
+                            if (valid) {
+                                PropertyDefinitionGroupItem.executeUpdate(
+                                        "DELETE PropertyDefinitionGroupItem pdgi WHERE pdgi.propDefGroup = :pdg",
+                                        [pdg: propDefGroup]
+                                )
 
-                            params.list('propertyDefinition').each { pd ->
-                                new PropertyDefinitionGroupItem(
-                                        propDef: pd,
-                                        propDefGroup: propDefGroup
-                                ).save()
+                                params.list('propertyDefinition').each { pd ->
+                                    new PropertyDefinitionGroupItem(
+                                            propDef: pd,
+                                            propDefGroup: propDefGroup
+                                    ).save()
+                                }
                             }
                         }
                     }
@@ -4190,6 +4244,7 @@ join sub.orgRelations or_sub where
         PropertyDefinition.AVAILABLE_GROUPS_DESCR.each { String propDefGroupType ->
             result.propDefGroups.put(propDefGroupType,unorderedPdgs.findAll { PropertyDefinitionGroup pdg -> pdg.ownerType == PropertyDefinition.getDescrClass(propDefGroupType)})
         }
+        result.costInformationDefinitionsInUse = CostInformationDefinitionGroup.findAllByTenant(contextService.getOrg())
 
         if(params.cmd == 'exportXLS') {
             SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -4228,7 +4283,7 @@ join sub.orgRelations or_sub where
         }
         SwissKnife.setPaginationParams(result, params, result.user)
 
-        result.availableDescrs = [PropertyDefinition.PRS_PROP,PropertyDefinition.PRV_PROP,PropertyDefinition.VEN_PROP,PropertyDefinition.SUB_PROP,PropertyDefinition.ORG_PROP,PropertyDefinition.PLA_PROP,PropertyDefinition.LIC_PROP]
+        result.availableDescrs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR - PropertyDefinition.SVY_PROP
 
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
         Set<PropertyDefinition> propList = []
@@ -4417,7 +4472,13 @@ join sub.orgRelations or_sub where
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
         switch(params.cmd) {
-            case 'add':List rl = propertyService.addPrivatePropertyDefinition(params)
+            case 'add': List rl
+                if(params.pd_descr == CostInformationDefinition.COST_INFORMATION) {
+                    rl = propertyService.addPrivateCostInformation(params)
+                }
+                else {
+                    rl = propertyService.addPrivatePropertyDefinition(params)
+                }
                 flash."${rl[0]}" = rl[1]
                 if(rl[2])
                     result.desc = rl[2]
@@ -4477,7 +4538,7 @@ join sub.orgRelations or_sub where
 
         result.languageSuffix = LocaleUtils.getCurrentLang()
 
-        Map<String, Set<PropertyDefinition>> propDefs = [:]
+        Map<String, Set> propDefs = [:]
         Set<String> availablePrivDescs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR
         if (contextService.getOrg().isCustomerType_Inst_Pro())
             availablePrivDescs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR-PropertyDefinition.SVY_PROP
@@ -4485,6 +4546,8 @@ join sub.orgRelations or_sub where
             Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, contextService.getOrg(), [sort: 'name_'+result.languageSuffix]) // ONLY private properties!
             propDefs[it] = itResult
         }
+        Set<CostInformationDefinition> costInformationDefs = CostInformationDefinition.findAllByTenant(contextService.getOrg(), [sort: 'name_'+result.languageSuffix]) // ONLY private cost informations!
+        propDefs.put(CostInformationDefinition.COST_INFORMATION, costInformationDefs)
 
         result.propertyDefinitions = propDefs
 
@@ -4523,11 +4586,13 @@ join sub.orgRelations or_sub where
 
         result.languageSuffix = LocaleUtils.getCurrentLang()
 
-        Map<String,Set<PropertyDefinition>> propDefs = [:]
-        PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
+        Map<String,Set> propDefs = [:]
+        PropertyDefinition.AVAILABLE_PUBLIC_DESCR.each { it ->
             Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name_'+result.languageSuffix]) // NO private properties!
             propDefs[it] = itResult
         }
+        Set<CostInformationDefinition> costInformationDefs = CostInformationDefinition.findAllByTenantIsNull([sort: 'name_'+result.languageSuffix]) // NO private cost informations!
+        propDefs.put(CostInformationDefinition.COST_INFORMATION, costInformationDefs)
 
         def (usedPdList, attrMap, multiplePdList) = propertyService.getUsageDetails() // [List<Long>, Map<String, Object>, List<Long>]
         result.propertyDefinitions = propDefs

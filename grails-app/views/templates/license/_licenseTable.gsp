@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.License;de.laser.RefdataCategory;de.laser.interfaces.CalculatedType;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.RefdataValue;de.laser.Links;de.laser.Org" %>
+<%@ page import="de.laser.storage.PropertyStore; de.laser.properties.LicenseProperty; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.License;de.laser.RefdataCategory;de.laser.interfaces.CalculatedType;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.RefdataValue;de.laser.Links;de.laser.Org" %>
 <laser:serviceInjection />
 
 <g:form action="compareLicenses" controller="compare" method="post">
@@ -16,10 +16,8 @@
                       <th rowspan="2"><g:message code="sidewide.number"/></th>
                       <g:sortableColumn rowspan="2" params="${params}" property="reference" title="${message(code:'license.slash.name')}" />
                       <g:if test="${'memberLicenses' in licenseFilterTable}">
-                          <th rowspan="2" class="center aligned">
-                              <span class="la-popup-tooltip" data-content="${message(code:'license.details.incoming.childs')}" data-position="top right">
-                                  <i class="${Icon.LICENSE} large"></i>
-                              </span>
+                          <th rowspan="2">
+                              ${message(code:'license.details.incoming.childs')}
                           </th>
                       </g:if>
 
@@ -32,9 +30,18 @@
                       <g:if test="${'licensingConsortium' in licenseFilterTable}">
                           <th rowspan="2"><g:message code="consortium"/></th>
                       </g:if>
+                      <g:if test="${'processing' in licenseFilterTable}">
+                          <th rowspan="2" class="center aligned">
+                              <span class="la-popup-tooltip" data-content="${message(code:'license.processing')}" data-position="top right">
+                                  <i class="${Icon.ATTR.LICENSE_PROCESSING} large"></i>
+                              </span>
+                          </th>
+                      </g:if>
                       <g:sortableColumn class="la-smaller-table-head" params="${params}" property="startDate" title="${message(code:'license.start_date')}" />
                       <g:if test="${'action' in licenseFilterTable}">
-                          <th rowspan="2" class="la-action-info"><g:message code="default.actions.label"/></th>
+                          <th rowspan="2" class="center aligned">
+                              <ui:optionsIcon />
+                          </th>
                       </g:if>
                   </tr>
                   <tr>
@@ -67,9 +74,12 @@
                           <g:if test="${'memberLicenses' in licenseFilterTable}">
                               <td>
                                   <g:each in="${l.derivedLicenses}" var="lChild">
-                                      <g:link controller="license" action="show" id="${lChild.id}">
-                                          <p><i class="${Icon.LICENSE} la-list-icon la-popup-tooltip" data-content="${message(code: 'license.member')}"></i> ${lChild}</p>
-                                      </g:link>
+                                      <div class="la-flexbox">
+                                          <g:if test="${l.derivedLicenses.size() > 1}">
+                                              <i class="${Icon.LICENSE} la-list-icon"></i>
+                                          </g:if>
+                                          <g:link controller="license" action="show" id="${lChild.id}">${lChild}</g:link>
+                                      </div>
                                   </g:each>
                               </td>
                           </g:if>
@@ -103,6 +113,25 @@
                         </g:if>
                           <g:if test="${'licensingConsortium' in licenseFilterTable}">
                               <td>${l.getLicensingConsortium()?.name}</td>
+                          </g:if>
+                          <g:if test="${'processing' in licenseFilterTable}">
+                              <td>
+                                  <% LicenseProperty processingProp = LicenseProperty.findByOwnerAndType(l, PropertyStore.LIC_PROCESSING) %>
+                                  <g:if test="${processingProp}">
+                                      <g:if test="${processingProp.refValue == RDStore.INVOICE_PROCESSING_CONSORTIUM}">
+                                          <span class="la-long-tooltip la-popup-tooltip" data-position="right center" data-content="${processingProp.getValueInI10n()}"><i class="${Icon.AUTH.ORG_CONSORTIUM}"></i></span>
+                                      </g:if>
+                                      <g:elseif test="${processingProp.refValue == RDStore.INVOICE_PROCESSING_PROVIDER}">
+                                          <span class="la-long-tooltip la-popup-tooltip" data-position="right center" data-content="${processingProp.getValueInI10n()}"><i class="${Icon.PROVIDER}"></i></span>
+                                      </g:elseif>
+                                      <g:elseif test="${processingProp.refValue == RDStore.INVOICE_PROCESSING_PROVIDER_OR_VENDOR}">
+                                          <span class="la-long-tooltip la-popup-tooltip" data-position="right center" data-content="${processingProp.getValueInI10n()}"><i class="${Icon.PROVIDER}"></i> / <i class="${Icon.VENDOR}"></i></span>
+                                      </g:elseif>
+                                      <g:elseif test="${processingProp.refValue == RDStore.INVOICE_PROCESSING_VENDOR}">
+                                          <span class="la-long-tooltip la-popup-tooltip" data-position="right center" data-content="${processingProp.getValueInI10n()}"><i class="${Icon.VENDOR}"></i></span>
+                                      </g:elseif>
+                                  </g:if>
+                              </td>
                           </g:if>
                           <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${l.startDate}"/><br />
                               <span class="la-secondHeaderRow" data-label="${message(code:'license.end_date')}:">

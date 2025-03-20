@@ -79,8 +79,7 @@ class DatabaseInfo {
     static String getDatabaseCollate(String dsIdentifier = DS_DEFAULT) {
         Sql sql = getSql(dsIdentifier)
         try {
-            //sql.firstRow('select datcollate from pg_database where datname = current_database()').get('datcollate') as String // TODO: postgresql16
-            sql.firstRow('show LC_COLLATE').get('lc_collate') as String
+            sql.firstRow('select datcollate from pg_database where datname = current_database()').get('datcollate') as String // postgresql16+
         }
         finally { sql.close() }
     }

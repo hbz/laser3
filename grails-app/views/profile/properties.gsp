@@ -22,7 +22,6 @@
 
 <div class="ui styled fluid accordion">
     <g:each in="${propertyDefinitions}" var="entry">
-        <g:if test="${entry.key != "System Config"}">
         <div class="title">
             <i class="dropdown icon"></i> <g:message code="propertyDefinition.${entry.key}.label" default="${entry.key}" />
         </div>
@@ -74,7 +73,6 @@
                 </tbody>
             </table>
         </div>
-    </g:if>
     </g:each>
 </div>
 

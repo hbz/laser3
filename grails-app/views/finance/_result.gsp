@@ -129,15 +129,15 @@
 
                                 <div class="field la-field-right-aligned">
                                     <input name="delete" type="hidden" value="false"/>
-                                    <%-- <g:if test="${fixedSubscription}">
+                                    <g:if test="${fixedSubscription && showBulkCostItems != 'true'}">
                                         <input name="sub" type="hidden" value="${fixedSubscription.id}"/>
-                                    </g:if> --%>
+                                    </g:if>
                                     <input name="view" type="hidden" value="${view}"/>
                                     <button type="submit" id="deleteButton" class="${Btn.NEGATIVE_CONFIRM}" role="button"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItem.bulk")}"
                                             data-confirm-term-how="delete">${message(code: 'financials.bulkCostItems.delete')}</button>
                                 </div>
-                                <laser:render template="result_tab_cons" model="[tmplShowCheckbox: true, fixedSubscription: fixedSubscription, editable: editable, data: cons, customerType: 'CONS', showView: view, offset: offsets.consOffset]"/>
+                                <laser:render template="result_tab_cons" model="[tmplShowCheckbox: true, fixedSubscription: fixedSubscription, editable: editable, data: cons, customerType: 'CONS', showView: view, offset: offsets.consOffset, missing: missing]"/>
                             </g:form>
                         </g:if>
                         <g:else>

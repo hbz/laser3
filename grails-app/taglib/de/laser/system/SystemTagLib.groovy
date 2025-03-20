@@ -35,6 +35,7 @@ class SystemTagLib {
         g.set( var:'licenseService',                bean:'licenseService' )
         g.set( var:'linksGenerationService',        bean:'linksGenerationService' )
         g.set( var:'markerService',                 bean:'markerService' )
+        g.set( var:'managementService',             bean:'managementService' )
         g.set( var:'packageService',                bean:'packageService')
         g.set( var:'pendingChangeService',          bean:'pendingChangeService')
         g.set( var:'propertyService',               bean:'propertyService')

@@ -4,6 +4,9 @@ package de.laser
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.Params
 import de.laser.storage.PropertyStore
+import de.laser.storage.RDConstants
+import de.laser.survey.SurveyConfigProperties
+import de.laser.survey.SurveyResult
 import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
@@ -34,6 +37,29 @@ class FilterService {
 
     // FilterService.Result fsr = filterService.getXQuery(paramsClone, ..)
     // if (fsr.isFilterSet) { paramsClone.filterSet = true }
+
+    static Map<String, Map> PLATFORM_FILTER_AUTH_FIELDS = ['shibbolethAuthentication': [rdcat: RDConstants.Y_N, label: 'platform.auth.shibboleth.supported'],
+                                                              'openAthens': [rdcat: RDConstants.Y_N, label: 'platform.auth.openathens.supported'],
+                                                              'ipAuthentication': [rdcat: RDConstants.IP_AUTHENTICATION, label: 'platform.auth.ip.supported'],
+                                                              'passwordAuthentication': [rdcat: RDConstants.Y_N, label: 'platform.auth.userPass.supported'],
+                                                              'mailDomain': [rdcat: RDConstants.Y_N, label: 'platform.auth.mailDomain.supported'],
+                                                              'refererAuthentication': [rdcat: RDConstants.Y_N, label: 'platform.auth.referer.supported'],
+                                                              'ezProxy': [rdcat: RDConstants.Y_N, label: 'platform.auth.ezProxy.supported'],
+                                                              'hanServer': [rdcat: RDConstants.Y_N, label: 'platform.auth.hanServer.supported'],
+                                                              'otherProxies': [rdcat: RDConstants.Y_N, label: 'platform.auth.other.proxies']]
+    static Map<String, Map> PLATFORM_FILTER_ACCESSIBILITY_FIELDS = ['accessPlatform': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.accessPlatform'],
+                                                                    'viewerForPdf': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.viewerForPdf'],
+                                                                    'viewerForEpub': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.viewerForEpub'],
+                                                                    'playerForAudio': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.playerForAudio'],
+                                                                    'playerForVideo': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.playerForVideo'],
+                                                                    'accessibilityStatementAvailable': [rdcat: RDConstants.Y_N, label: 'platform.accessibility.accessibilityStatementAvailable'],
+                                                                    'accessEPub': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.accessEPub'],
+                                                                    'accessPdf': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.accessPdf'],
+                                                                    'accessAudio': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.accessAudio'],
+                                                                    'accessVideo': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.accessVideo'],
+                                                                    'accessDatabase': [rdcat: RDConstants.ACCESSIBILITY_COMPLIANCE, label: 'platform.accessibility.accessDatabase']]
+    static Map<String, Map> PLATFORM_FILTER_ADDITIONAL_SERVICE_FIELDS = ['individualDesignLogo': [rdcat: RDConstants.Y_N, label: 'platform.additional.individualDesignLogo'],
+                                                                         'fullTextSearch': [rdcat: RDConstants.Y_N, label: 'platform.additional.fullTextSearch']]
 
     /**
      * Subclass for generic parameter containing:
@@ -154,6 +180,14 @@ class FilterService {
             query << "exists (select osAcc from OrgSetting as osAcc where osAcc.org.id = o.id and osAcc.key in (:serverAccessKeys) and osAcc.rdValue = :serverAccessYes)"
             queryParams << [serverAccessKeys : params.list('osServerAccess').collect{ OrgSetting.KEYS[it as String] }]
             queryParams << [serverAccessYes  : RDStore.YN_YES]
+        }
+
+        if (params.isBetaTester) {
+            if (params.long('isBetaTester') == RDStore.YN_YES.id) {
+                query << "o.isBetaTester is true"
+            } else {
+                query << "o.isBetaTester is false"
+            }
         }
 
         if (params.isLegallyObliged in ['yes', 'no']) {
@@ -994,11 +1028,11 @@ class FilterService {
                                 queryParams.put('prop', filterProp)
                             }
                     }
-                    else if (pd.isIntegerType()) {
+                    else if (pd.isLongType()) {
                             if (!params.filterProp || params.filterProp.length() < 1) {
-                                base_qry += " and surResult.intValue = null "
+                                base_qry += " and surResult.longValue = null "
                             } else {
-                                base_qry += " and surResult.intValue = :prop "
+                                base_qry += " and surResult.longValue = :prop "
                                 queryParams.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                             }
                     }
@@ -1036,6 +1070,52 @@ class FilterService {
                     }
                 }
                 base_qry += ')'
+        }
+
+        if(params.chartFilter){
+            List<PropertyDefinition> propList = SurveyConfigProperties.executeQuery("select scp.surveyProperty from SurveyConfigProperties scp where scp.surveyConfig = :surveyConfig", [surveyConfig: surveyConfig])
+            propList.eachWithIndex {PropertyDefinition prop, int i ->
+                if (prop.isRefdataValueType()) {
+                    def refDatas = SurveyResult.executeQuery("select sr.refValue.id from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.refValue is not null and sr.type = :propType group by sr.refValue.id", [propType: prop, surveyConfig: surveyConfig])
+                    refDatas.each {
+                        if(params.chartFilter == "${prop.getI10n('name')}: ${RefdataValue.get(it).getI10n('value')}") {
+                            base_qry += ' and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and participant = surveyOrg.org and surResult.type = :propDef and surResult.refValue = :refValue) '
+                            queryParams.put('propDef', prop)
+                            queryParams.put('refValue', RefdataValue.get(it))
+                        }
+                    }
+                }
+                if (prop.isLongType()) {
+                    if(params.chartFilter == prop.getI10n('name')){
+                        base_qry += " and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and participant = surveyOrg.org and surResult.type = :propDef and (surResult.longValue is not null)) "
+                        queryParams.put('propDef', prop)
+                    }
+                }
+                else if (prop.isStringType()) {
+                    if(params.chartFilter == prop.getI10n('name')){
+                        base_qry +=  " and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and participant = surveyOrg.org and surResult.type = :propDef and (surResult.stringValue is not null or surResult.stringValue != '')) "
+                        queryParams.put('propDef', prop)
+                    }
+                  }
+                else if (prop.isBigDecimalType()) {
+                    if(params.chartFilter == prop.getI10n('name')){
+                        base_qry += " and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and participant = surveyOrg.org and surResult.type = :propDef and (surResult.decValue is not null)) "
+                        queryParams.put('propDef', prop)
+                    }
+                }
+                else if (prop.isDateType()) {
+                    if(params.chartFilter == prop.getI10n('name')){
+                        base_qry += " and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and participant = surveyOrg.org and surResult.type = :propDef and (surResult.dateValue is not null)) "
+                        queryParams.put('propDef', prop)
+                    }
+                }
+                else if (prop.isURLType()) {
+                    if(params.chartFilter == prop.getI10n('name')){
+                        base_qry += " and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and participant = surveyOrg.org and surResult.type = :propDef and (surResult.urlValue is not null or surResult.urlValue != '')) "
+                        queryParams.put('propDef', prop)
+                    }
+                }
+            }
         }
 
         if (params.filterPropDefAllMultiYear) {
@@ -2284,6 +2364,47 @@ class FilterService {
             */
         //}
         [query: query, join: join, where: whereClauses.join(' and '), order: orderClause, params: params, subJoin: subJoin]
+    }
+
+    Map<String, Object> getWekbPlatformFilterParams(GrailsParameterMap params) {
+        Map<String, Object> queryParams = [componentType: "Platform"]
+
+        if(params.q) {
+            queryParams.name = params.q
+        }
+
+        if(params.provider) {
+            queryParams.provider = params.provider
+        }
+
+        if(Params.getLongList(params, 'platStatus')) {
+            queryParams.status = RefdataValue.findAllByIdInList(Params.getLongList(params, 'platStatus')).value
+        }
+        else if(!params.filterSet) {
+            queryParams.status = "Current"
+            params.platStatus = RDStore.PLATFORM_STATUS_CURRENT.id
+        }
+
+        Set<String> refdataListParams = PLATFORM_FILTER_ACCESSIBILITY_FIELDS.keySet()+PLATFORM_FILTER_ADDITIONAL_SERVICE_FIELDS.keySet()+PLATFORM_FILTER_AUTH_FIELDS.keySet()+['statisticsFormat']
+        refdataListParams.each { String refdataListParam ->
+            if (params.containsKey(refdataListParam)) {
+                queryParams.put(refdataListParam, Params.getRefdataList(params, refdataListParam).collect{ (it == RDStore.GENERIC_NULL_VALUE) ? 'null' : it.value })
+            }
+        }
+        if (params.counterSupport) {
+            queryParams.counterSupport = params.list('counterSupport')
+        }
+        if(params.counterAPISupport) {
+            queryParams.counterAPISupport = params.list('counterAPISupport')
+        }
+        if (params.curatoryGroup) {
+            queryParams.curatoryGroupExact = params.curatoryGroup
+        }
+
+        if (params.curatoryGroupType) {
+            queryParams.curatoryGroupType = params.curatoryGroupType
+        }
+        queryParams
     }
 
     /**

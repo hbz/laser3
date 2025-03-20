@@ -36,7 +36,7 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
     abstract PropertyDefinition type
 
     abstract String           stringValue
-    abstract Integer          intValue
+    abstract Long             longValue
     abstract BigDecimal       decValue
     abstract RefdataValue     refValue
     abstract URL              urlValue
@@ -124,7 +124,7 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
      */
     String getValueInI10n() {
         if (stringValue)      { return stringValue }
-        if (intValue != null) { return intValue.toString() }
+        if (longValue != null){ return longValue.toString() }
         if (decValue != null) { return decValue.toString() }
         if (refValue)         { return refValue.getI10n('value') }
         if (dateValue)        { return DateUtils.getLocalizedSDF_noTime().format(dateValue) }
@@ -138,7 +138,7 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
     @Override
     String toString(){
         if (stringValue)      { return stringValue }
-        if (intValue != null) { return intValue.toString() }
+        if (longValue != null){ return longValue.toString() }
         if (decValue != null) { return decValue.toString() }
         if (refValue)         { return refValue.toString() }
         if (dateValue)        { return DateUtils.getLocalizedSDF_noTime().format(dateValue) }
@@ -156,12 +156,12 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
         }
         else {
             newProp.stringValue = stringValue
-            newProp.intValue = intValue
-            newProp.decValue = decValue
-            newProp.refValue = refValue
-            newProp.dateValue = dateValue
-            newProp.urlValue = urlValue
-            newProp.note = note
+            newProp.longValue   = longValue
+            newProp.decValue    = decValue
+            newProp.refValue    = refValue
+            newProp.dateValue   = dateValue
+            newProp.urlValue    = urlValue
+            newProp.note        = note
         }
         newProp
     }
@@ -177,8 +177,8 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
         log.debug( value + " << " + type )
 
         switch (type){
-            case [ Integer.toString(), Integer.class.name ]:
-                result = Integer.parseInt(value)
+            case [ Long.toString(), Long.class.name ]:
+                result = Long.parseLong(value)
                 break
             case [ String.toString(), String.class.name ]:
                 result = value
@@ -212,8 +212,8 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
      */
     def setValue(String value, String type, String rdc) {
 
-        if (type == Integer.toString() || type == Integer.class.name) {
-            intValue = parseValue(value, type)
+        if (type == Long.toString() || type == Long.class.name) {
+            longValue = parseValue(value, type)
         }
         else if (type == BigDecimal.toString() || type == BigDecimal.class.name) {
             decValue = parseValue(value, type)

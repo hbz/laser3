@@ -10,7 +10,7 @@
 
         <laser:render template="/templates/system/messages" model="${[type: SystemMessage.TYPE_DASHBOARD]}"/>
 
-        <laser:render template="/myInstitution/topmenu" />
+        <laser:render template="/myInstitution/dashboard/topmenu" />
 
         <ui:messages data="${flash}" />
 
@@ -125,7 +125,9 @@
                                 <th class="four wide" rowspan="2">${message(code:'default.relation.label')}</th>
                                 <th class="four wide" rowspan="2">${message(code:'default.progress.label')}</th>
                                 <th class="two wide la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
-                                <th class="two wide" rowspan="2">${message(code:'default.actions.label')}</th>
+                                <th class="two wide center aligned" rowspan="2">
+                                    <ui:optionsIcon />
+                                </th>
                             </tr>
                             <tr>
                                 <th class="la-smaller-table-head">${message(code:'default.dateCreated.label')}</th>

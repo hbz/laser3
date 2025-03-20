@@ -24,26 +24,28 @@
             if (subscriptionLicenseLink) {
                 model = [tmplText               : addLink,
                          tmplID                 : 'addLicenseLink',
-                         tmplIcon               : 'large add',
+                         tmplIcon               : 'add',
                          tmplTooltip            : addLink,
                          tmplModalID            : 'sub_add_license_link',
                          editmode               : editable,
                          subscriptionLicenseLink: true,
                          atConsortialParent     : contextService.getOrg() == subscription.getConsortium(),
                          context                : subscription,
-                         linkInstanceType       : Links.class.name
+                         linkInstanceType       : Links.class.name,
+                         tmplCss                : ''
                 ]
             } else {
                 model = [tmplText          : addLink,
                          tmplID            : 'addLink',
-                         tmplIcon          : 'large add',
+                         tmplIcon          : 'add',
                          tmplTooltip        :addLink,
 //                             tmplButtonText    : addLink,
                          tmplModalID       : 'sub_add_link',
                          editmode          : editable,
                          atConsortialParent: atConsortialParent,
                          context           : entry,
-                         linkInstanceType  : Links.class.name
+                         linkInstanceType  : Links.class.name,
+                         tmplCss       : ''
                 ]
             }
         %>
@@ -156,36 +158,41 @@
                                                       ]}"/>
                                         <g:if test="${editable}">
                                             <g:if test="${subscriptionLicenseLink}">
-                                                <div class="ui buttons">
-                                                    <div class="ui simple dropdown negative icon button la-modern-button" data-content="${message(code: 'license.details.unlink')}">
-                                                        <i aria-hidden="true" class="${Icon.CMD.UNLINK}"></i>
-                                                        <div class="menu">
-                                                            <g:link controller="subscription" action="unlinkLicense" class="item js-open-confirm-modal" params="${[license: link.sourceLicense.id, id: subscription.id]}"
-                                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.license")}"
-                                                                    data-confirm-term-how="unlink" role="button" aria-label="${message(code: "ariaLabel.unlink.universal")}">
-                                                                <g:message code="license.details.unlink"/>
-                                                            </g:link>
-                                                            <g:link controller="subscription" action="unlinkLicense" class="item js-open-confirm-modal" params="${[license: link.sourceLicense.id, id: subscription.id, unlinkWithChildren: true]}"
-                                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.child.license")}"
-                                                                    data-confirm-term-how="unlink" role="button" aria-label="${message(code: "ariaLabel.unlink.universal")}">
-                                                                <g:message code="license.details.unlink.child"/>
-                                                            </g:link>
+                                                <%-- saved on server-side as String because the value is being handed as an AJAX query argument into an URL --%>
+                                                <g:if test="${Boolean.valueOf(atConsortialParent)}">
+                                                    <div class="ui buttons">
+                                                        <div class="ui simple dropdown negative icon button la-modern-button" data-content="${message(code: 'license.details.unlink')}">
+                                                            <i aria-hidden="true" class="${Icon.CMD.UNLINK}"></i>
+                                                            <div class="menu">
+                                                                <g:link controller="subscription" action="unlinkLicense" class="item js-open-confirm-modal" params="${[license: link.sourceLicense.id, id: subscription.id]}"
+                                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.license")}"
+                                                                        data-confirm-term-how="unlink" role="button" aria-label="${message(code: "ariaLabel.unlink.universal")}">
+                                                                    <g:message code="license.details.unlink"/>
+                                                                </g:link>
+                                                                <g:link controller="subscription" action="unlinkLicense" class="item js-open-confirm-modal" params="${[license: link.sourceLicense.id, id: subscription.id, unlinkWithChildren: true]}"
+                                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.child.license")}"
+                                                                        data-confirm-term-how="unlink" role="button" aria-label="${message(code: "ariaLabel.unlink.universal")}">
+                                                                    <g:message code="license.details.unlink.child"/>
+                                                                </g:link>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </g:if>
+                                                <g:else>
+                                                    <span class="la-popup-tooltip" data-content="${message(code: 'license.details.unlink')}">
+                                                        <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
+                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.license")}"
+                                                                data-confirm-term-how="unlink"
+                                                                controller="subscription" action="unlinkLicense"
+                                                                params="${[license: link.sourceLicense.id, id: subscription.id]}"
+                                                                role="button"
+                                                                aria-label="${message(code: 'ariaLabel.unlink.universal')}">
+                                                            <i class="${Icon.CMD.UNLINK}"></i>
+                                                        </g:link>
+                                                    </span>
+                                                </g:else>
                                             <%--
-                                                <span class="la-popup-tooltip"
-                                                      data-content="${message(code: 'license.details.unlink')}">
-                                                    <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
-                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.license")}"
-                                                            data-confirm-term-how="unlink"
-                                                            controller="subscription" action="unlinkLicense"
-                                                            params="${[license: link.sourceLicense.id, id: subscription.id]}"
-                                                            role="button"
-                                                            aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                        <i class="${Icon.CMD.UNLINK}"></i>
-                                                    </g:link>
-                                                </span>
+
                                                 <g:if test="${atConsortialParent}">
                                                     <div class="or" data-text="|"></div>
                                                     <span class="la-popup-tooltip"

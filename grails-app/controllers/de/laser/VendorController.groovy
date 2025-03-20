@@ -18,8 +18,10 @@ import de.laser.utils.SwissKnife
 import de.laser.wekb.ElectronicBilling
 import de.laser.wekb.ElectronicDeliveryDelayNotification
 import de.laser.wekb.InvoiceDispatch
+import de.laser.wekb.LibrarySystem
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
+import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
 import de.laser.wekb.VendorLink
 import de.laser.wekb.VendorRole
@@ -54,7 +56,7 @@ class VendorController {
         ctx.contextService.isInstUser()
     })
     def index() {
-        redirect 'list'
+        redirect action: 'list'
     }
 
     @DebugInfo(isInstUser = [])
@@ -237,9 +239,9 @@ class VendorController {
             }
             Set<Package> allPackages = vendor.packages?.pkg
             result.allPackages = allPackages
-            result.providers = allPackages.provider.toSet()
-            result.packages = Package.executeQuery('select pkg from PackageVendor pv join pv.pkg pkg, VendorRole vr, OrgRole oo join oo.sub s where pv.vendor = vr.vendor and vr.subscription = s and vr.vendor = :vendor and s.status = :current and oo.org = :context ', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()]) as Set<Package>
-            result.platforms = Platform.executeQuery('select pkg.nominalPlatform from PackageVendor pv join pv.pkg pkg, VendorRole vr, OrgRole oo join oo.sub s where pkg.provider = :vendor and vr.subscription = s and s.status = :current and oo.org = :context ', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()]) as Set<Platform>
+            result.providers = Provider.executeQuery('select p from Package pkg join pkg.provider p where pkg in (:allPackages) order by p.sortname, p.name', [allPackages: allPackages]).toSet()
+            result.packages = Package.executeQuery('select pkg from PackageVendor pv join pv.pkg pkg, VendorRole vr, OrgRole oo join oo.sub s where pv.vendor = vr.vendor and vr.subscription = s and vr.vendor = :vendor and s.status = :current and oo.org = :context order by pkg.name', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()]) as Set<Package>
+            result.platforms = Platform.executeQuery('select plat from PackageVendor pv join pv.pkg pkg join pkg.nominalPlatform plat, VendorRole vr, OrgRole oo join oo.sub s where pkg.provider = :vendor and vr.subscription = s and s.status = :current and oo.org = :context order by plat.name', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()]) as Set<Platform>
             result.tasks = taskService.getTasksByResponsibilityAndObject(result.user, vendor)
             result.currentSubscriptionsCount = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.subscription s join s.orgRelations oo where vr.vendor = :vendor and s.status = :current and oo.org = :context '+subscriptionConsortiumFilter, [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()])[0]
             result.currentLicensesCount  = VendorRole.executeQuery('select count(*) from VendorRole vr join vr.license l join l.orgRelations oo where vr.vendor = :vendor and l.status = :current and oo.org = :context '+licenseConsortiumFilter, [vendor: vendor, current: RDStore.LICENSE_CURRENT, context: contextService.getOrg()])[0]

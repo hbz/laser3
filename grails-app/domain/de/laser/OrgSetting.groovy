@@ -30,7 +30,6 @@ class OrgSetting {
         API_PASSWORD                (String),
         CUSTOMER_TYPE               (Role),
         EZB_SERVER_ACCESS           (RefdataValue, RDConstants.Y_N),
-        GASCO_ENTRY                 (RefdataValue, RDConstants.Y_N),
         OAMONITOR_SERVER_ACCESS     (RefdataValue, RDConstants.Y_N),
         NATSTAT_SERVER_ACCESS       (RefdataValue, RDConstants.Y_N),
         NATSTAT_SERVER_API_KEY      (String),

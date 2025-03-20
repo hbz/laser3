@@ -155,7 +155,6 @@
                                                            data-content="${message(code: 'menu.my.subscriptions')}"></i>
 
                                                         <div class="ui la-segment-with-icon">
-
                                                             <div class="ui list">
                                                                 <g:each in="${ie_infos}" var="ie">
                                                                     <div class="item">
@@ -177,6 +176,8 @@
                                                                 </g:each>
                                                             </div>
                                                         </div>
+
+                                                        <laser:render template="/templates/reportTitleToProvider/multiple_infoBox" model="${[tipp: tipp]}"/>
                                                     </div><%-- My Area END --%>
                                                 </div><%-- .grid --%>
                                             </div><%-- .segment --%>
@@ -207,5 +208,7 @@
 </g:if>
 
 </div>
+
+<g:render template="/templates/reportTitleToProvider/multiple_flyoutAndTippTask"/>
 
 <laser:htmlEnd/>

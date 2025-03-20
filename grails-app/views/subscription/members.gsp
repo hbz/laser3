@@ -1,4 +1,4 @@
-<%@ page import="de.laser.addressbook.Person; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.CustomerTypeService; de.laser.storage.BeanStore; de.laser.finance.CostItem; de.laser.Links; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.Subscription" %>
+<%@ page import="de.laser.addressbook.Contact; de.laser.addressbook.Person; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.ExportClickMeService; de.laser.CustomerTypeService; de.laser.storage.BeanStore; de.laser.finance.CostItem; de.laser.Links; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.Subscription" %>
 
 <laser:htmlStart text="${BeanStore.getContextService().getOrg().isCustomerType_Consortium() ? message(code:'subscription.details.consortiaMembers.label') : ''}" />
 
@@ -80,7 +80,9 @@
                 <th>
                     ${message(code: 'subscription.details.internalComment')}
                 </th>
-                <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                <th class="center aligned">
+                    <ui:optionsIcon />
+                </th>
             </tr>
             </thead>
             <tbody>
@@ -93,36 +95,24 @@
                         <td>
                             <ui:archiveIcon org="${subscr}" /> ${subscr.sortname}
                         </td>
-                        <td>
+                        <td class="js-copyTriggerParent">
                             <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
                             <ui:customerTypeOnlyProIcon org="${subscr}" />
+                            <%
+                                List<Contact> generalContactMails = Contact.executeQuery('select cct.content from Contact cct join cct.prs p join p.roleLinks pr where (p.isPublic = true or p.tenant = :context) and pr.org = :subscr and pr.functionType = :generalContact and cct.contentType = :mail', [context: contextService.getOrg(), subscr: subscr, generalContact: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, mail: RDStore.CCT_EMAIL])
+                            %>
+                            <g:if test="${generalContactMails}">
+                                <button class="ui icon button la-modern-button js-copyTrigger tiny la-popup-tooltip" data-content="${message(code: 'tooltip.clickToCopyMainContacts')}">
+                                    <i  class="${Icon.SYM.EMAIL} la-js-copyTriggerIcon"></i>
+                                </button>
 
-                            <div class="ui list">
-                                <g:each in="${Person.getPublicByOrgAndFunc(subscr, 'General contact person')}" var="gcp">
-                                    <div class="item">
-                                        ${gcp}
-                                        (${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')})
-                                    </div>
-                                </g:each>
-                                <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(subscr, 'General contact person')}" var="gcp">
-                                    <div class="item">
-                                        ${gcp}
-                                        (${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')} <i class="${Icon.ACP_PRIVATE}" style="display:inline-block"></i>)
-                                    </div>
-                                </g:each>
-                                <g:each in="${Person.getPublicByOrgAndObjectResp(subscr, sub, 'Specific subscription editor')}" var="sse">
-                                    <div class="item">
-                                        ${sse}
-                                        (${RDStore.PRS_RESP_SPEC_SUB_EDITOR.getI10n('value')})
-                                    </div>
-                                </g:each>
-                                <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(subscr, sub, 'Specific subscription editor')}" var="sse">
-                                    <div class="item">
-                                        ${sse}
-                                        (${RDStore.PRS_RESP_SPEC_SUB_EDITOR.getI10n('value')} <i class="${Icon.ACP_PRIVATE}" style="display:inline-block"></i>)
-                                    </div>
-                                </g:each>
-                            </div>
+                                <span class="js-copyTopic la-display-none">
+                                    ${generalContactMails.join(';')}
+                                </span>
+                                <a href="mailto:${generalContactMails.join(';')}" class="${Btn.MODERN.SIMPLE} tiny la-popup-tooltip" data-content="${message(code: 'tooltip.sendMailtoMainContacts')}">
+                                    <i class="${Icon.LNK.MAIL_TO}"></i>
+                                </a>
+                            </g:if>
                         </td>
                     <%--</g:each>--%>
                     <g:if test="${! sub.getSubscriber()}">
@@ -197,7 +187,7 @@
                             <ui:multiYearIcon isConsortial="true" color="orange" />
                         </g:if>
                     </td>
-                    <td class="center aligned" ">
+                    <td class="center aligned">
                         <ui:xEditableAsIcon owner="${sub}" class="ui icon center aligned" iconClass="sticky note circular inverted" field="comment" type="textarea" emptyTooltip="${message(code: 'subscription.details.internalComment')}"/>
                     </td>
                     <td class="x">

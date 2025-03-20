@@ -70,7 +70,9 @@
                     </th>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'linkSurveyVendor' || tmplConfigItem == 'unLinkSurveyVendor' || tmplConfigItem == 'removeSurveyVendorResult' || tmplConfigItem == 'addSurveyVendorResult'}">
-                    <th class="center aligned">${message(code: 'default.actions.label')}</th>
+                    <th class="center aligned">
+                        <ui:optionsIcon />
+                    </th>
                 </g:if>
 
             </g:each>

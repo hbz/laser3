@@ -33,20 +33,6 @@
 
 <br />
 
-<h2 class="ui icon header la-clear-before la-noMargin-top">
-    <g:if test="${surveyConfig.subscription}">
-        <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
-        <g:link controller="subscription" action="show" id="${surveyConfig.subscription.id}">
-            ${surveyConfig.getConfigNameShort()}
-        </g:link>
-
-    </g:if>
-    <g:else>
-        ${surveyConfig.getConfigNameShort()}
-    </g:else>
-    : ${message(code: 'surveyInfo.evaluation')}
-</h2>
-
 <g:if test="${!(surveyInfo.status in [RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED])}">
     <div class="ui segment">
         <strong>${message(code: 'renewalEvaluation.notInEvaliation')}</strong>
@@ -114,7 +100,9 @@
                                 <th class="center aligned">${message(code: 'sidewide.number')}</th>
                                 <th>${message(code: 'propertyDefinition.label')}</th>
                                 <th>${message(code:'renewalEvaluation.propertiesChanged')}</th>
-                                <th>${message(code: 'default.actions.label')}</th>
+                                <th class="center aligned">
+                                    <ui:optionsIcon />
+                                </th>
                             </tr>
                             </thead>
                             <tbody>
@@ -236,8 +224,9 @@
                     <th>${message(code: 'default.startDate.label.shy')}</th>
                     <th>${message(code: 'default.endDate.label.shy')}</th>
                     <th>${message(code: 'default.status.label')}</th>
-                    <th>${message(code: 'default.actions.label')}</th>
-
+                    <th class="center aligned">
+                        <ui:optionsIcon />
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
@@ -290,8 +279,9 @@
                     <th>${message(code: 'default.startDate.label.shy')}</th>
                     <th>${message(code: 'default.endDate.label.shy')}</th>
                     <th>${message(code: 'default.status.label')}</th>
-                    <th>${message(code: 'default.actions.label')}</th>
-
+                    <th class="center aligned">
+                        <ui:optionsIcon />
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
@@ -333,19 +323,20 @@
 
     </ui:greySegment>
 
+    <g:if test="${editable}">
+        <g:form action="setSurveyWorkFlowInfos" method="post" class="ui form"
+                params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, setSurveyWorkFlowInfo: 'workflowRenewalSent']">
 
-    <g:form action="setSurveyWorkFlowInfos" method="post" class="ui form"
-            params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, setSurveyWorkFlowInfo: 'workflowRenewalSent']">
-
-        <div class="ui right floated compact segment">
-            <div class="ui checkbox">
-                <input type="checkbox" onchange="this.form.submit()"
-                       name="renewalSent" ${surveyInfo.isRenewalSent ? 'checked' : ''}>
-                <label><g:message code="surveyInfo.isRenewalSent.label"/></label>
+            <div class="ui right floated compact segment">
+                <div class="ui checkbox">
+                    <input type="checkbox" onchange="this.form.submit()"
+                           name="renewalSent" ${surveyInfo.isRenewalSent ? 'checked' : ''}>
+                    <label><g:message code="surveyInfo.isRenewalSent.label"/></label>
+                </div>
             </div>
-        </div>
 
-    </g:form>
+        </g:form>
+    </g:if>
 
 
     <laser:script file="${this.getGroovyPageFileName()}">

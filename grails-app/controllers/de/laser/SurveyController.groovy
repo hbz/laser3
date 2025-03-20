@@ -535,7 +535,13 @@ class SurveyController {
 
         result.subscription = Subscription.get( params.long('sub') )
         result.pickAndChoose = true
-        if (!result.subscription) {
+        //double-check needed because menu is not being refreshed after xEditable change on sub/show
+        if(result.subscription?.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
+            flash.error = message(code: 'subscription.details.addEntitlements.holdingInherited')
+            redirect controller: 'subscription', action: 'show', params: [id: params.long('sub')]
+            return
+        }
+        else if (!result.subscription) {
             redirect action: 'createIssueEntitlementsSurvey'
             return
         }
@@ -712,7 +718,8 @@ class SurveyController {
                         subSurveyUseForTransfer: false,
                         pickAndChoose: true,
                         pickAndChoosePerpetualAccess: (subscription.hasPerpetualAccess),
-                        issueEntitlementGroupName: params.issueEntitlementGroupNew
+                        issueEntitlementGroupName: params.issueEntitlementGroupNew,
+                        vendorSurvey: (params.vendorSurvey ?: false)
                 )
                 surveyConfig.save()
                 surveyService.addSubMembers(surveyConfig)
@@ -746,6 +753,20 @@ class SurveyController {
             }
         }else {
             ctrlResult.result
+        }
+    }
+
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    def editComment() {
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        if(result.status == SurveyControllerService.STATUS_ERROR) {
+            render template: "/templates/generic_modal403", model: result
+        }else {
+            result.commentTyp   = params.commentTyp
+            render template: "modal_comment_edit", model: result
         }
     }
 
@@ -801,6 +822,23 @@ class SurveyController {
     })
     def surveyParticipants() {
         Map<String,Object> ctrlResult = surveyControllerService.surveyParticipants(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+        }else {
+            ctrlResult.result
+        }
+
+    }
+
+    @DebugInfo(isInstUser_denySupport = [CustomerTypeService.ORG_CONSORTIUM_PRO], withTransaction = 0)
+    @Secured(closure = {
+        ctx.contextService.isInstUser_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    def addSurveyParticipants() {
+        Map<String,Object> ctrlResult = surveyControllerService.addSurveyParticipants(params)
         if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
@@ -1011,7 +1049,7 @@ class SurveyController {
 
         String filename = "template_cost_import"
 
-        ArrayList titles = ["WIB-ID", "ISIL", "ROR-ID", "GND-NR", "DEAL-ID"]
+        ArrayList titles = ["WIB-ID", "ISIL", "ROR-ID", "GND-ID", "DEAL-ID"]
         titles.addAll([message(code: 'org.customerIdentifier'),
                        message(code: 'org.sortname.label'), message(code: 'default.name.label'),
                        message(code: 'financials.costItemElement'),
@@ -1059,7 +1097,7 @@ class SurveyController {
             rowData.add(row)
         }
 
-        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.tsv\"")
+        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
         response.contentType = "text/csv"
         ServletOutputStream out = response.outputStream
         out.withWriter { writer ->
@@ -1090,7 +1128,7 @@ class SurveyController {
 
         List<Org> members = Org.executeQuery(fsr.query, fsr.queryParams, params)
 
-        ArrayList titles = ["WIB-ID", "ISIL", "ROR-ID", "GND-NR", "DEAL-ID", message(code: 'org.sortname.label'), message(code: 'default.name.label'), message(code: 'org.libraryType.label'), message(code: 'surveyconfig.orgs.label')]
+        ArrayList titles = ["WIB-ID", "ISIL", "ROR-ID", "GND-ID", "DEAL-ID", message(code: 'org.sortname.label'), message(code: 'default.name.label'), message(code: 'org.libraryType.label'), message(code: 'surveyconfig.orgs.label')]
 
         ArrayList rowData = []
         ArrayList row
@@ -1112,7 +1150,7 @@ class SurveyController {
             row.add(org.name)
             row.add(org.libraryType?.getI10n('value'))
 
-            SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(org, result.surveyConfig)
+            SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(org, ctrlResult.surveyConfig)
             if(surveyOrg){
                 row.add(RDStore.YN_YES.getI10n('value'))
             }
@@ -1120,7 +1158,7 @@ class SurveyController {
             rowData.add(row)
         }
 
-        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.tsv\"")
+        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
         response.contentType = "text/csv"
         ServletOutputStream out = response.outputStream
         out.withWriter { writer ->
@@ -1174,7 +1212,7 @@ class SurveyController {
             }
         }else {
 
-            if(params.actionForSurveyProperty in ['addSurveyPropToConfig', 'deleteSurveyPropFromConfig', 'moveUp', 'moveDown']) {
+            if(params.actionForSurveyProperty in ['deleteSurveyPropFromConfig', 'moveUp', 'moveDown']) {
                 ctrlResult.result.surveyConfig.refresh()
 
                 Map<String, Object> modelMap = [
@@ -1291,7 +1329,7 @@ class SurveyController {
 
                 if (params.fileformat == 'xlsx') {
                     try {
-                        SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSurveyEvaluation(ctrlResult.result, selectedFields, contactSwitch, ExportClickMeService.FORMAT.XLS)
+                        SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSurveyEvaluation(ctrlResult.result, selectedFields, contactSwitch, ExportClickMeService.FORMAT.XLS, params.chartFilter)
                         // Write the output to a file
 
                         response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
@@ -1312,7 +1350,7 @@ class SurveyController {
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
                     out.withWriter { writer ->
-                        writer.write((String) exportClickMeService.exportSurveyEvaluation(ctrlResult.result, selectedFields, contactSwitch, ExportClickMeService.FORMAT.CSV))
+                        writer.write((String) exportClickMeService.exportSurveyEvaluation(ctrlResult.result, selectedFields, contactSwitch, ExportClickMeService.FORMAT.CSV, params.chartFilter))
                     }
                     out.close()
                 }
@@ -2734,6 +2772,8 @@ class SurveyController {
         result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID) : null
         result.selectedPackageID = params.selectedPackageID ? Long.valueOf(params.selectedPackageID) : null
 
+        result.modalID = 'addForAllSurveyCostItem'
+        result.idSuffix = 'addForAllSurveyCostItem'
         render(template: "/survey/costItemModal", model: result)
     }
 

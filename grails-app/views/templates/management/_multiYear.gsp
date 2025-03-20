@@ -11,7 +11,9 @@
                     <th>${message(code: 'default.startDate.label.shy')}</th>
                     <th>${message(code: 'default.endDate.label.shy')}</th>
                     <th>${message(code: 'default.status.label')}</th>
-                    <th>${message(code:'default.actions.label')}</th>
+                    <th class="center aligned">
+                        <ui:optionsIcon />
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
@@ -98,7 +100,7 @@
             <tr>
                 <g:if test="${editable}">
                     <th class="center aligned">
-                        <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"/>
+                        <g:checkBox name="membersListToggler" id="membersListToggler" checked="${managementService.checkTogglerState(subIDs, "/${controllerName}/subscriptionManagement/${params.tab}/${user.id}")}"/>
                     </th>
                 </g:if>
                 <th>${message(code: 'sidewide.number')}</th>
@@ -116,7 +118,9 @@
                 <th>${message(code: 'default.endDate.label.shy')}</th>
                 <th>${message(code: 'default.status.label')}</th>
                 <th>${message(code: 'subscription.isMultiYear.label')}</th>
-                <th>${message(code:'default.actions.label')}</th>
+                <th class="center aligned">
+                    <ui:optionsIcon />
+                </th>
             </tr>
             </thead>
             <tbody>

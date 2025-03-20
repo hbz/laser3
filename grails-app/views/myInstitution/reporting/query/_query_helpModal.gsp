@@ -337,7 +337,7 @@
             </p>
             <p>
                 Dabei sind folgende Varianten möglich: <br />
-                <i class="${Icon.SYM.CIRCLE} blue"></i> Die Plattform kann direkt über eine Referenz aus dem Lizenz-Bestand ermittelt werden, <br />
+                <i class="${Icon.SYM.CIRCLE} blue"></i> Die Plattform kann direkt über eine Referenz aus den lizenzierten Titeln ermittelt werden, <br />
                 <i class="${Icon.SYM.CIRCLE} green"></i> Der einer Lizenz zugeordnete Anbieter verweist auf eine Plattform <br />
             </p>
         </g:if>
@@ -394,17 +394,17 @@
     </div>
 
     <div class="help-section" data-help-section="subscription-x-vendor">
-        ${hh_header( 'Lieferanten von Lizenzen', 'Vendors of subscriptions' )}
+        ${hh_header( 'Library Supplier von Lizenzen', 'Vendors of subscriptions' )}
 
         <g:if test="${lang == 'de'}">
             <p>
-                Gelistet werden alle relevanten Lieferanten - also Lieferanten, die Lizenzen konkret zugeordnet werden können.
-                Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen und Lieferanten.
+                Gelistet werden alle relevanten Library Supplier - also Library Supplier, die Lizenzen konkret zugeordnet werden können.
+                Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen und Library Supplier.
             </p>
             <p>
                 Dabei sind folgende Varianten möglich: <br />
-                <i class="${Icon.SYM.CIRCLE} blue"></i> Die Lizenz verweist direkt auf den Lieferanten, <br />
-                <i class="${Icon.SYM.CIRCLE} green"></i> Der Lieferant kann über ein referenziertes Paket ermittelt werden <br />
+                <i class="${Icon.SYM.CIRCLE} blue"></i> Die Lizenz verweist direkt auf den Library Supplier, <br />
+                <i class="${Icon.SYM.CIRCLE} green"></i> Der Library Supplier kann über ein referenziertes Paket ermittelt werden <br />
             </p>
         </g:if>
         <g:else>
@@ -418,7 +418,7 @@
                 <i class="${Icon.SYM.CIRCLE} green"></i> The vendor can be identified via a referenced package <br />
             </p>
         </g:else>
-        ${hh_no_x( ['Lizenzen', 'ermittelbare Lieferanten', 'Lieferant'], ['Subscriptions', 'assignable vendors', 'Vendor'] )}
+        ${hh_no_x( ['Lizenzen', 'ermittelbare Library Supplier', 'Library Supplier'], ['Subscriptions', 'assignable vendors', 'Vendor'] )}
     </div>
 
     %{-- license --}%
@@ -469,12 +469,12 @@
     </div>
 
     <div class="help-section" data-help-section="license-x-vendor">
-        ${hh_header( 'Lieferanten von Verträgen', 'Vendors of licenses' )}
+        ${hh_header( 'Library Supplier von Verträgen', 'Vendors of licenses' )}
 
         <g:if test="${lang == 'de'}">
             <p>
-                Gelistet werden alle relevanten Lieferanten - also Lieferanten, die Verträgen konkret zugeordnet werden können.
-                Die Basissuche bestimmt dabei die Menge der betrachteten Verträge und Lieferanten.
+                Gelistet werden alle relevanten Library Supplier - also Library Supplier, die Verträgen konkret zugeordnet werden können.
+                Die Basissuche bestimmt dabei die Menge der betrachteten Verträge und Library Supplier.
             </p>
         </g:if>
         <g:else>
@@ -483,7 +483,7 @@
                 The basic search determines the number of licenses and vendors considered.
             </p>
         </g:else>
-        ${hh_no_x( ['Verträge', 'ausgewiesene Lieferanten', 'Lieferant'], ['Licenses', 'designated vendors', 'Vendor'] )}
+        ${hh_no_x( ['Verträge', 'ausgewiesene Library Supplier', 'Library Supplier'], ['Licenses', 'designated vendors', 'Vendor'] )}
     </div>
 
     %{-- org --}%
@@ -530,7 +530,7 @@
 
     <div class="help-section" data-help-section="vendor-x-identifier">
         <g:if test="${lang == 'de'}">
-            ${hc_identifier( 'Lieferanten', 'Lieferanten', 'Lieferanten' )}
+            ${hc_identifier( 'Library Supplier', 'Library Supplier', 'Library Supplier' )}
         </g:if>
         <g:else>
             ${hc_identifier( 'vendors', 'vendors', 'Vendors')}
@@ -539,7 +539,7 @@
 
     <div class="help-section" data-help-section="vendor-x-property">
         <g:if test="${lang == 'de'}">
-            ${hc_property( 'Lieferanten', 'Lieferanten', 'Lieferanten' )}
+            ${hc_property( 'Library Supplier', 'Library Supplier', 'Library Supplier' )}
         </g:if>
         <g:else>
             ${hc_property( 'vendors', 'vendors', 'Vendors' )}

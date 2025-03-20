@@ -5,6 +5,7 @@ import de.laser.base.AbstractReport
 import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
+import de.laser.finance.CostInformationDefinition
 import de.laser.finance.PriceItem
 import de.laser.helper.Profiler
 import de.laser.http.BasicHttpClient
@@ -17,6 +18,7 @@ import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
+import de.laser.stats.CounterCheck
 import de.laser.utils.LocaleUtils
 import de.laser.wekb.Platform
 import de.laser.wekb.TitleInstancePackagePlatform
@@ -66,7 +68,6 @@ class ExportService {
 
 	BatchQueryService batchQueryService
 	ContextService contextService
-	FilterService filterService
 	GokbService gokbService
 	IssueEntitlementService issueEntitlementService
 	MessageSource messageSource
@@ -91,13 +92,16 @@ class ExportService {
 	 */
 	String generateSeparatorTableString(Collection titleRow, Collection columnData,String separator) {
 		List output = []
-		output.add(titleRow.join(separator))
+		if(titleRow)
+			output.add(titleRow.join(separator))
 		columnData.each { row ->
 			if(row instanceof GroovyRowResult) {
 				output.add(row.values().join(separator).replaceAll('null', ''))
 			}
 			else {
-				if(row.size() > 0)
+				if (row instanceof String && row.trim())
+					output.add(row)
+				else if(row.size() > 0)
 					output.add(row.join(separator).replaceAll('null',''))
 				else output.add(" ")
 			}
@@ -272,7 +276,7 @@ class ExportService {
 			//log.debug("now processing ${pd.name_de}")
 			List<String> value = [], note = []
 			String ownerClassName = target.class.name.substring(target.class.name.lastIndexOf(".") + 1)
-			List<AbstractPropertyWithCalculatedLastUpdated> propCheck = (new GroovyClassLoader()).loadClass("de.laser.properties.${ownerClassName}Property").executeQuery('select prop from '+ownerClassName+'Property prop where prop.owner = :owner and prop.type = :pd and (prop.stringValue != null or prop.intValue != null or prop.decValue != null or prop.refValue != null or prop.urlValue != null or prop.dateValue != null)', [pd: pd, owner: target])
+			List<AbstractPropertyWithCalculatedLastUpdated> propCheck = (new GroovyClassLoader()).loadClass("de.laser.properties.${ownerClassName}Property").executeQuery('select prop from '+ownerClassName+'Property prop where prop.owner = :owner and prop.type = :pd and (prop.stringValue != null or prop.longValue != null or prop.decValue != null or prop.refValue != null or prop.urlValue != null or prop.dateValue != null)', [pd: pd, owner: target])
 			AbstractPropertyWithCalculatedLastUpdated prop = null
 			if(propCheck)
 				prop = propCheck[0]
@@ -285,7 +289,7 @@ class ExportService {
 				if(target.hasProperty("propertySet")) {
 					//childObjects.get(target).each { childObj ->
 						//childObj.propertySet.findAll{ AbstractPropertyWithCalculatedLastUpdated childProp -> childProp.type.descr == pd.descr && childProp.type == pd && childProp.value && !childProp.instanceOf && (childProp.tenant == contextOrg || childProp.isPublic) }
-						(new GroovyClassLoader()).loadClass("de.laser.properties.${ownerClassName}Property").executeQuery('select prop from '+ownerClassName+'Property prop where prop.owner.instanceOf = :owner and prop.type = :pd and prop.instanceOf = null and (prop.tenant = :ctx or prop.isPublic = true) and (prop.stringValue != null or prop.intValue != null or prop.decValue != null or prop.refValue != null or prop.urlValue != null or prop.dateValue != null)', [pd: pd, ctx: contextOrg, owner: target]).each { AbstractPropertyWithCalculatedLastUpdated childProp ->
+						(new GroovyClassLoader()).loadClass("de.laser.properties.${ownerClassName}Property").executeQuery('select prop from '+ownerClassName+'Property prop where prop.owner.instanceOf = :owner and prop.type = :pd and prop.instanceOf = null and (prop.tenant = :ctx or prop.isPublic = true) and (prop.stringValue != null or prop.longValue != null or prop.decValue != null or prop.refValue != null or prop.urlValue != null or prop.dateValue != null)', [pd: pd, ctx: contextOrg, owner: target]).each { AbstractPropertyWithCalculatedLastUpdated childProp ->
 							if(childProp.getValue()) {
 								if(childProp.refValue)
 									value << "${childProp.refValue.getI10n('value')} (${objectNames.get(childProp.owner)})"
@@ -366,10 +370,10 @@ class ExportService {
 			userCache.put('label', 'Hole Titel ...')
 			Map<String, Object> idSubsetQueryParams = [refSub: refSub, current: RDStore.TIPP_STATUS_CURRENT]
 			if(allTitles) {
-				titlesSorted = IssueEntitlement.executeQuery('select new map(tipp.id as tippID, tipp.name as tippName) from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :refSub and ie.status = :current order by tipp.sortname', idSubsetQueryParams)
+				titlesSorted = TitleInstancePackagePlatform.executeQuery('select new map(tipp.id as tippID, tipp.name as tippName) from TitleInstancePackagePlatform tipp, SubscriptionPackage sp where tipp.pkg = sp.pkg and sp.subscription = :refSub and tipp.status = :current order by tipp.sortname', idSubsetQueryParams)
 			}
 			else {
-				titlesSorted = TitleInstancePackagePlatform.executeQuery('select new map(tipp.id as tippID, tipp.name as tippName) from TitleInstancePackagePlatform tipp, SubscriptionPackage sp where tipp.pkg = sp.pkg and sp.subscription = :refSub and tipp.status = :current order by tipp.sortname', idSubsetQueryParams)
+				titlesSorted = IssueEntitlement.executeQuery('select new map(tipp.id as tippID, tipp.name as tippName) from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :refSub and ie.status = :current order by tipp.sortname', idSubsetQueryParams)
 			}
 			titles = subscriptionControllerService.fetchTitles(titlesSorted['tippID'].toArray())
 			userCache.put('progress', 20)
@@ -1593,21 +1597,21 @@ class ExportService {
 		String revision = null, statsUrl = null, sushiApiAuthenticationMethod = null
 		if(platformRecord.counterRegistryApiUuid) {
 			String url = "${ConfigMapper.getSushiCounterRegistryUrl()}/${platformRecord.counterRegistryApiUuid}${ConfigMapper.getSushiCounterRegistryDataSuffix()}"
-			BasicHttpClient sushiRegistry = new BasicHttpClient(url)
+			BasicHttpClient counterApiRegistry = new BasicHttpClient(url)
 			try {
 				Closure success = { resp, json ->
 					if(resp.code() == 200) {
 						if(json.containsKey('sushi_services')) {
-							Map sushiConfig = json.sushi_services[0]
-							if(sushiConfig.counter_release in ['5', '5.1'])
+							Map counterApiConfig = json.sushi_services[0]
+							if(counterApiConfig.counter_release in ['5', '5.1'])
 								revision = "counter5"
-							statsUrl = sushiConfig.url
-							if (!sushiConfig.url.contains(connectionMethod)) {
-								if (sushiConfig.url.endsWith('/'))
-									statsUrl = sushiConfig.url + connectionMethod
-								else statsUrl = sushiConfig.url + '/'+connectionMethod
+							statsUrl = counterApiConfig.url
+							if (!counterApiConfig.url.contains(connectionMethod)) {
+								if (counterApiConfig.url.endsWith('/'))
+									statsUrl = counterApiConfig.url + connectionMethod
+								else statsUrl = counterApiConfig.url + '/'+connectionMethod
 							}
-							boolean withRequestorId = Boolean.valueOf(sushiConfig.requestor_id_required), withApiKey = Boolean.valueOf(sushiConfig.api_key_required), withIpWhitelisting = Boolean.valueOf(sushiConfig.ip_address_authorization)
+							boolean withRequestorId = Boolean.valueOf(counterApiConfig.requestor_id_required), withApiKey = Boolean.valueOf(counterApiConfig.api_key_required), withIpWhitelisting = Boolean.valueOf(counterApiConfig.ip_address_authorization)
 							if(withRequestorId) {
 								if(withApiKey) {
 									sushiApiAuthenticationMethod = AbstractReport.API_AUTH_CUSTOMER_REQUESTOR_API
@@ -1622,24 +1626,27 @@ class ExportService {
 							}
 						}
 						else {
-							Map sysEventPayload = [error: "platform has no SUSHI configuration", url: url]
+							Map sysEventPayload = [errToken: "noCounterApiConfiguration", errMess: "platform has no COUNTER API configuration", platform: platformRecord.uuid, url: url, callError: true]
+							CounterCheck.construct(sysEventPayload)
 							SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
 						}
 					}
 				}
 				Closure failure = { resp, reader ->
-					Map sysEventPayload = [error: "error on call at COUNTER registry", url: url]
+					Map sysEventPayload = [errToken: "counterRegistryError", errMess: "error on call at COUNTER registry", platform: platformRecord.uuid, url: url, callError: true]
+					CounterCheck.construct(sysEventPayload)
 					SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
 				}
-				sushiRegistry.get(BasicHttpClient.ResponseType.JSON, success, failure)
+				counterApiRegistry.get(BasicHttpClient.ResponseType.JSON, success, failure)
 			}
 			catch (Exception e) {
-				Map sysEventPayload = [error: "invalid response returned for ${url} - ${e.getMessage()}!", url: url]
+				Map sysEventPayload = [errToken: "invalidResponse", errMess: "invalid response returned for ${url} - ${e.getMessage()}!", platform: platformRecord.uuid, url: url, callError: true]
+				CounterCheck.construct(sysEventPayload)
 				SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
 				log.error("stack trace: ", e)
 			}
 			finally {
-				sushiRegistry.close()
+				counterApiRegistry.close()
 			}
 		}
 		//fallback configuration
@@ -1903,28 +1910,54 @@ class ExportService {
 		Map<String,Map> sheetData = [:]
 		propDefs.each { Map.Entry propDefEntry ->
 			List rows = []
-			propDefEntry.value.each { PropertyDefinition pd ->
+			propDefEntry.value.each { entry ->
 				List row = []
-				row.add([field:pd.getI10n("name"),style:null])
-				row.add([field:pd.getI10n("expl"),style:null])
-				String typeString = pd.getLocalizedValue(pd.type)
-				if(pd.isRefdataValueType()) {
-					List refdataValues = []
-                    RefdataCategory.getAllRefdataValues(pd.refdataCategory).each { RefdataValue refdataValue ->
-						refdataValues << refdataValue.getI10n("value")
+				if(entry instanceof PropertyDefinition) {
+					PropertyDefinition pd = (PropertyDefinition) entry
+					row.add([field: pd.getI10n("name"), style: null])
+					row.add([field: pd.getI10n("expl"), style: null])
+					String typeString = pd.getLocalizedValue(pd.type)
+					if (pd.isRefdataValueType()) {
+						List refdataValues = []
+						RefdataCategory.getAllRefdataValues(pd.refdataCategory).each { RefdataValue refdataValue ->
+							refdataValues << refdataValue.getI10n("value")
+						}
+						typeString += "(${refdataValues.join('/')})"
 					}
-					typeString += "(${refdataValues.join('/')})"
+					row.add([field: typeString, style: null])
+					row.add([field: pd.countOwnUsages(), style: null])
+					row.add([field: pd.isHardData ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
+					row.add([field: pd.multipleOccurrence ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
+					row.add([field: pd.isUsedForLogic ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
+					row.add([field: pd.mandatory ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
+					row.add([field: pd.multipleOccurrence ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
 				}
-				row.add([field:typeString,style:null])
-				row.add([field:pd.countOwnUsages(),style:null])
-				row.add([field:pd.isHardData ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"),style:null])
-				row.add([field:pd.multipleOccurrence ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"),style:null])
-				row.add([field:pd.isUsedForLogic ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"),style:null])
-				row.add([field:pd.mandatory ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"),style:null])
-				row.add([field:pd.multipleOccurrence ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"),style:null])
+				else if(entry instanceof CostInformationDefinition) {
+					CostInformationDefinition cif = (CostInformationDefinition) entry
+					row.add([field: cif.getI10n("name"), style: null])
+					row.add([field: cif.getI10n("expl"), style: null])
+					String typeString = cif.getLocalizedValue(cif.type)
+					if (cif.type == RefdataValue.class.name) {
+						List refdataValues = []
+						RefdataCategory.getAllRefdataValues(cif.refdataCategory).each { RefdataValue refdataValue ->
+							refdataValues << refdataValue.getI10n("value")
+						}
+						typeString += "(${refdataValues.join('/')})"
+					}
+					row.add([field: typeString, style: null])
+					row.add([field: cif.countOwnUsages(), style: null])
+					row.add([field: cif.isHardData ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
+					row.add([field: RDStore.YN_NO.getI10n("value"), style: null])
+					row.add([field: RDStore.YN_NO.getI10n("value"), style: null])
+					row.add([field: RDStore.YN_NO.getI10n("value"), style: null])
+					row.add([field: RDStore.YN_NO.getI10n("value"), style: null])
+				}
 				rows.add(row)
 			}
-			sheetData.put(messageSource.getMessage("propertyDefinition.${propDefEntry.key}.label",null,locale),[titleRow:titleRow,columnData:rows])
+			if(propDefEntry.key == CostInformationDefinition.COST_INFORMATION)
+				sheetData.put(messageSource.getMessage("costInformationDefinition.label",null,locale),[titleRow:titleRow,columnData:rows])
+			else
+				sheetData.put(messageSource.getMessage("propertyDefinition.${propDefEntry.key}.label",null,locale),[titleRow:titleRow,columnData:rows])
 		}
 		sheetData
 	}
@@ -1953,6 +1986,7 @@ class ExportService {
 			}
 			sheetData.put(messageSource.getMessage("propertyDefinition.${typeEntry.key}.label",null,locale),[titleRow:titleRow,columnData:rows])
 		}
+		//TODO cost information definition group!
 		sheetData
 	}
 

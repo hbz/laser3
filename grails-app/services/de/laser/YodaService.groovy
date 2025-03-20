@@ -132,18 +132,26 @@ class YodaService {
         Set<Subscription> subsConcerned = Subscription.executeQuery('select s from Subscription s where s.holdingSelection = :entire and s.instanceOf != null', [entire: RDStore.SUBSCRIPTION_HOLDING_ENTIRE])
         Sql storageSql = GlobalService.obtainStorageSqlConnection(), sql = GlobalService.obtainSqlConnection()
         Connection arrayConn = sql.getDataSource().getConnection()
+        int processedTotal = 0
         //in order to distribute memory load
         try {
             subsConcerned.eachWithIndex { Subscription s, int si ->
-                Set<Map<String, Object>> data = IssueEntitlement.executeQuery("select new map(ie.version as version, now() as dateCreated, now() as lastUpdated, ie.globalUID as oldGlobalUID, coalesce(ie.dateCreated, ie.lastUpdated, '1970-01-01') as oldDateCreated, coalesce(ie.lastUpdated, ie.dateCreated, '1970-01-01') as oldLastUpdated, '"+IssueEntitlement.class.name+"' as oldObjectType, ie.id as oldDatabaseId, tipp.name as oldName, pkg.gokbId as referencePackageWekbId, tipp.gokbId as referenceTitleWekbId, s.globalUID as referenceSubscriptionUID) from IssueEntitlement ie join ie.tipp tipp join tipp.pkg pkg join ie.subscription s where s = :subConcerned", [subConcerned: s])
-                int offset = 0, step = 20000, total = data.size()
+                Set<Map<String, Object>> data = IssueEntitlement.executeQuery("select new map(ie.version as version, now() as dateCreated, now() as lastUpdated, ie.globalUID as oldGlobalUID, coalesce(ie.dateCreated, ie.lastUpdated, '1970-01-01') as oldDateCreated, coalesce(ie.lastUpdated, ie.dateCreated, '1970-01-01') as oldLastUpdated, '"+IssueEntitlement.class.name+"' as oldObjectType, ie.id as oldDatabaseId) from IssueEntitlement ie where ie.subscription = :subConcerned", [subConcerned: s])
+                int offset = 0, step = 5000, total = data.size()
+                processedTotal += data.size()
                 String query = "insert into deleted_object (do_version, do_old_date_created, do_old_last_updated, do_date_created, do_last_updated, do_old_object_type, do_old_database_id, do_old_global_uid, do_old_name, do_ref_package_wekb_id, do_ref_title_wekb_id, do_ref_subscription_uid) values (:version, :oldDateCreated, :oldLastUpdated, :dateCreated, :lastUpdated, :oldObjectType, :oldDatabaseId, :oldGlobalUID, :oldName, :referencePackageWekbId, :referenceTitleWekbId, :referenceSubscriptionUID)"
                 Set<Long> toDelete = []
-                log.debug("now processing entry subscription ${si+1} out of ${subsConcerned.size()} for ${total} records")
+                log.debug("now processing entry subscription ${si+1} out of ${subsConcerned.size()} for ${total} records, processed in total: ${processedTotal}")
                 if(data) {
                     storageSql.withBatch(step, query) { BatchingPreparedStatementWrapper stmt ->
                         for (offset; offset < total; offset++) {
-                            stmt.addBatch(data[offset])
+                            Map<String, Object> ieTrace = data[offset]
+                            TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.executeQuery('select ie.tipp from IssueEntitlement ie where ie.id = :ieId', [ieId: ieTrace.oldDatabaseId])[0]
+                            ieTrace.oldName = tipp.name
+                            ieTrace.referencePackageWekbId = tipp.pkg.gokbId
+                            ieTrace.referenceTitleWekbId = tipp.gokbId
+                            ieTrace.refereceSubscriptionUID = s.globalUID
+                            stmt.addBatch(ieTrace)
                             if(offset % step == 0 && offset > 0) {
                                 log.debug("reached ${offset} rows")
                             }
@@ -157,6 +165,7 @@ class YodaService {
                         sql.execute("delete from issue_entitlement where ie_id = any(:toDelete)", [toDelete: arrayConn.createArrayOf('bigint', part as Object[])])
                     }
                 }
+                globalService.cleanUpGorm()
             }
         }
         finally {

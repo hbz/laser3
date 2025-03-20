@@ -136,7 +136,9 @@
                     </a>
                 </th>
 
-                <th rowspan="2" class="two wide">${message(code:'default.actions.label')}</th>
+                <th rowspan="2" class="two wide center aligned">
+                    <ui:optionsIcon />
+                </th>
             </tr>
 
             <tr>

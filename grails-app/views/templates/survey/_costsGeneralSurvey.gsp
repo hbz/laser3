@@ -9,7 +9,7 @@
     String dataTooltip = ""
 %>
 
-<g:if test="${surveyInfo.owner.id != institution.id && costItemsSurvey}">
+<g:if test="${surveyInfo.owner.id != contextService.getOrg().id && costItemsSurvey}">
 
     <div class="ui card la-time-card">
 

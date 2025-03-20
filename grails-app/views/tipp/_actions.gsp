@@ -3,10 +3,9 @@
 
 <g:if test="${contextService.isInstEditor(CustomerTypeService.PERMS_PRO)}">
     <ui:actionsDropdown>
-        <ui:actionsDropdownItem data-ui="modal" href="#modalCreateTask" message="task.create.reportTitleToProvider"/>
+        <ui:actionsDropdownItem data-ui="modal" href="#modalCreateRttpTask" message="task.create.reportTitleToProvider"/>
     </ui:actionsDropdown>
 
-%{--    modal @ /templates/tasks/_reportTitleToProvider.gsp --}%
-%{--    <laser:render template="/templates/tasks/modal_create" model="${[ownobj: tipp, owntp: 'tipp']}"/>--}%
+%{--    modal @ /templates/reportTitleToProvider/_flyoutAndTippTask.gsp --}%
 </g:if>
 

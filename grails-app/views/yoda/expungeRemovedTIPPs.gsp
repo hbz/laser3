@@ -23,7 +23,7 @@
                     <th>Titel</th>
                     <th>Status we:kb</th>
                     <th>Status LAS:eR</th>
-                    <th>betroffener Lizenzbestand</th>
+                    <th>betroffene Titel in Lizenzen</th>
                 </tr>
             </thead>
             <tbody>

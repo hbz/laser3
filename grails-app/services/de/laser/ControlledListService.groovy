@@ -11,6 +11,8 @@ import de.laser.utils.LocaleUtils
 import de.laser.storage.RDStore
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
+import de.laser.wekb.DeweyDecimalClassification
+import de.laser.wekb.Language
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
@@ -136,7 +138,7 @@ class ControlledListService {
                 else propValInput << params.propVal
                 boolean dateFlag = false, refFlag = false, urlFlag = false
                 switch(filterPropDef.getImplClassValueProperty()) {
-                    case 'intValue': queryString += " and sp.intValue in (:values)"
+                    case 'longValue': queryString += " and sp.longValue in (:values)"
                         break
                     case 'decValue': queryString += " and sp.decValue in (:values)"
                         break

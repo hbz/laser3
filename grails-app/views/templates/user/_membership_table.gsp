@@ -11,7 +11,9 @@
             <th>${message(code: 'profile.membership.org')}</th>
             <th>${message(code: 'default.role.label')}</th>
             <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
-                <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                <th class="center aligned">
+                    <ui:optionsIcon />
+                </th>
             </g:if>
         </tr>
         </thead>

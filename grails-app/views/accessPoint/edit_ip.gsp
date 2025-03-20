@@ -90,7 +90,9 @@
                         <i class="${Icon.CMD.COPY}"></i>
                     </button>
                 </th>
-                <th class="one wide">${message(code: 'default.actions.label')}</th>
+                <th class="one wide center aligned">
+                    <ui:optionsIcon />
+                </th>
             </tr>
             </thead>
             <tbody>
@@ -170,7 +172,9 @@
                     <i class="${Icon.CMD.COPY}"></i>
                 </button>
             </th>
-            <th class="one wide">${message(code: 'default.actions.label')}</th>
+            <th class="one wide center aligned">
+                <ui:optionsIcon />
+            </th>
         </tr>
         </thead>
         <tbody>

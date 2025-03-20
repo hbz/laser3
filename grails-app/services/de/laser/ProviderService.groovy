@@ -7,8 +7,8 @@ import de.laser.auth.User
 import de.laser.convenience.Marker
 import de.laser.helper.Params
 import de.laser.properties.ProviderProperty
-import de.laser.remote.Wekb
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyInfo
 import de.laser.traces.DeletedObject
 import de.laser.wekb.ElectronicBilling
 import de.laser.wekb.InvoiceDispatch
@@ -125,6 +125,7 @@ class ProviderService {
         List tasks          = Task.findAllByProvider(provider)
         List platforms      = new ArrayList(provider.packages)
         List packages       = new ArrayList(provider.platforms)
+        List surveys        = SurveyInfo.findAllByProvider(provider)
 
         List customProperties       = new ArrayList(provider.propertySet.findAll { it.type.tenant == null })
         List privateProperties      = new ArrayList(provider.propertySet.findAll { it.type.tenant != null })
@@ -146,6 +147,7 @@ class ProviderService {
         result.info << ['Dokumente', docContexts]
         result.info << ['Plattformen', platforms]
         result.info << ['Pakete', packages]
+        result.info << ['Umfragen', surveys]
 
         result.info << ['Allgemeine Merkmale', customProperties]
         result.info << ['Private Merkmale', privateProperties]
@@ -223,6 +225,7 @@ class ProviderService {
 
                     markers.each { Marker mkr ->
                         mkr.prov = replacement
+                        mkr.save()
                     }
 
                     // persons
@@ -258,6 +261,18 @@ class ProviderService {
 
                     // packages
                     log.debug("${Package.executeUpdate('update Package pkg set pkg.provider = :target where pkg.provider = :source', genericParams)} packages updated")
+
+                    // surveys
+                    // executeUpdate does not trigger properly the cascade - would result in EntityNotFoundException
+                    updateCount = 0
+                    surveys.each { SurveyInfo surin ->
+                        surin.provider = replacement
+                        if(!surin.save())
+                            log.error(surin.errors.getAllErrors().toListString())
+                        else
+                            updateCount++
+                    }
+                    log.debug("${updateCount} survey infos updated")
 
                     // alternative names
                     provider.altnames.clear()
@@ -332,8 +347,10 @@ class ProviderService {
     }
 
     Set<Provider> getCurrentProviders(Org context) {
-        Set<Provider> result = ProviderRole.executeQuery("select p from ProviderRole pr join pr.provider as p where pr.subscription in (select sub from OrgRole where org = :context and roleType in (:roleTypes))",
-                [context: context, roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIUM, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]])
+        Set<Provider> result = ProviderRole.executeQuery("select p from ProviderRole pr join pr.provider as p where (pr.subscription in (select sub from OrgRole where org = :context and roleType in (:subRoleTypes)) or pr.license in (select lic from OrgRole where org = :context and roleType in (:licRoleTypes))) order by p.name, p.sortname",
+                [context: context,
+                 subRoleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIUM,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER],
+                 licRoleTypes:[RDStore.OR_LICENSING_CONSORTIUM,RDStore.OR_LICENSEE_CONS,RDStore.OR_LICENSEE]])
         result
     }
 }

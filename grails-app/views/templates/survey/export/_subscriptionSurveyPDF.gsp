@@ -15,25 +15,6 @@
     </dl>
 </g:if>
 
-
-<g:if test="${surveyConfig.subSurveyUseForTransfer}">
-    <dl>
-        <dt>
-            ${message(code: 'surveyconfig.scheduledStartDate.label')}
-        </dt>
-        <dd><ui:xEditable owner="${surveyConfig}" field="scheduledStartDate" type="date"
-                             overwriteEditable="${false}"/>
-        </dd>
-    </dl>
-    <dl>
-        <dt>
-            ${message(code: 'surveyconfig.scheduledEndDate.label')}
-        </dt>
-        <dd><ui:xEditable owner="${surveyConfig}" field="scheduledEndDate" type="date"
-                             overwriteEditable="${false}"/></dd>
-    </dl>
-</g:if>
-
 <g:each in="${surveyConfig.surveyUrls}" var="surveyUrl" status="i">
     <dl>
         <dt>
@@ -469,9 +450,9 @@
                 </g:if>
                 <g:else>
                     <td>
-                        <g:if test="${surveyResult.type.isIntegerType()}">
+                        <g:if test="${surveyResult.type.isLongType()}">
                             <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="text"
-                                             field="intValue"/>
+                                             field="longValue"/>
                         </g:if>
                         <g:elseif test="${surveyResult.type.isStringType()}">
                             <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="text"

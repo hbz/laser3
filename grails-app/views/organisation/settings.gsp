@@ -165,17 +165,9 @@
                                             </g:if>
                                             <g:else>
 
-                                                <g:if test="${OrgSetting.KEYS.GASCO_ENTRY == os.key}">
-                                                    <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
-                                                        <ui:xEditableRefData owner="${os}" field="rdValue" config="${os.key.rdc}" />
-                                                    </g:if>
-                                                    <g:else>
-                                                        ${os.getValue()?.getI10n('value')}
-                                                    </g:else>
-                                                </g:if>
-                                                <g:elseif test="${os.key.type == RefdataValue}">
+                                                <g:if test="${os.key.type == RefdataValue}">
                                                     ${os.getValue()?.getI10n('value')}
-                                                </g:elseif>
+                                                </g:if>
                                                 <g:elseif test="${os.key.type == Role}">
                                                     ${os.getValue()?.getI10n('authority')}
                                                 </g:elseif>
@@ -191,30 +183,6 @@
                         </table>
                         </div><!-- .content -->
                     </div>
-                    </g:if>
-
-                    <g:if test="${params.tab == 'general'}">
-                        <ui:flagDeprecated />
-
-                        <div class="ui card la-dl-no-table">
-                            <div class="content">
-                                <h2 class="ui header">
-                                    ${message(code:'org.confProperties')}
-                                </h2>
-
-                                <div id="custom_props_div_1">
-                                    <laser:render template="/templates/properties/custom" model="${[
-                                            prop_desc: PropertyDefinition.ORG_CONF,
-                                            ownobj: orgInstance,
-                                            orphanedProperties: orgInstance.propertySet,
-                                            custom_props_div: "custom_props_div_1" ]}"/>
-                                </div>
-                            </div><!-- .content -->
-                        </div><!-- .card -->
-
-                        <laser:script file="${this.getGroovyPageFileName()}">
-                            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_1");
-                        </laser:script>
                     </g:if>
 
 

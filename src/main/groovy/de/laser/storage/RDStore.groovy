@@ -88,7 +88,10 @@ class RDStore {
     public final static RefdataValue EXISTENT                   = getRefdataValue('Existent', RDConstants.EXISTENCE)
     public final static RefdataValue NON_EXISTENT               = getRefdataValue('Nonexistend', RDConstants.EXISTENCE)
 
+    public final static RefdataValue INVOICE_PROCESSING_CONSORTIUM   = getRefdataValue('Consortium', RDConstants.INVOICE_PROCESSING)
+    public final static RefdataValue INVOICE_PROCESSING_NOT_SET   = getRefdataValue('Not set', RDConstants.INVOICE_PROCESSING)
     public final static RefdataValue INVOICE_PROCESSING_PROVIDER   = getRefdataValue('Provider', RDConstants.INVOICE_PROCESSING)
+    public final static RefdataValue INVOICE_PROCESSING_PROVIDER_OR_VENDOR   = getRefdataValue('Provider or Vendor', RDConstants.INVOICE_PROCESSING)
     public final static RefdataValue INVOICE_PROCESSING_VENDOR   = getRefdataValue('Vendor', RDConstants.INVOICE_PROCESSING)
 
     public final static RefdataValue IE_ACCESS_CURRENT                      = getRefdataValue('Current', RDConstants.IE_ACCESS_STATUS)
@@ -190,6 +193,7 @@ class RDStore {
     public final static RefdataValue PRS_FUNC_CUSTOMER_SERVICE          = getRefdataValue('Customer Service', RDConstants.PERSON_FUNCTION)
     public final static RefdataValue PRS_FUNC_SALES_MARKETING           = getRefdataValue('Sales and Marketing', RDConstants.PERSON_FUNCTION)
     public final static RefdataValue PRS_FUNC_TRAINING                  = getRefdataValue('Training', RDConstants.PERSON_FUNCTION)
+    public final static RefdataValue PRS_FUNC_SURVEY_CONTACT         = getRefdataValue('Survey Contact', RDConstants.PERSON_FUNCTION)
 
     public final static RefdataValue PRS_POS_ACCOUNT        = getRefdataValue('Account Manager', RDConstants.PERSON_POSITION)
     public final static RefdataValue PRS_POS_BBL            = getRefdataValue('Bereichsbibliotheksleitung', RDConstants.PERSON_POSITION)

@@ -31,7 +31,9 @@
                     <th>${message(code:'property.table.paragraph')}</th>
                 </g:if>
                 <th>${message(code:'property.table.notes')}</th>
-                <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                <th class="center aligned">
+                    <ui:optionsIcon />
+                </th>
             </tr>
         </thead>
     </g:if>
@@ -62,8 +64,8 @@
                             </g:if>
                         </td>
                         <td>
-                            <g:if test="${prop.type.isIntegerType()}">
-                                <ui:xEditable owner="${prop}" type="number" field="intValue" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
+                            <g:if test="${prop.type.isLongType()}">
+                                <ui:xEditable owner="${prop}" type="number" field="longValue" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                             </g:if>
                             <g:elseif test="${prop.type.isStringType()}">
                                 <ui:xEditable owner="${prop}" type="text" field="stringValue" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
@@ -81,7 +83,7 @@
                                 </g:if>
                             </g:elseif>
                             <g:elseif test="${prop.type.isRefdataValueType()}">
-                                <ui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
+                                <ui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}" overwriteEditable="${overwriteEditable}" class="la-dont-break-out" constraint="removeValues_processingProvOrVendor"/>
                             </g:elseif>
                         </td>
                         <g:if test="${ownobj instanceof License}">
@@ -291,7 +293,7 @@
         </g:each>
     </tbody>
 
-    <g:if test="${editable}">
+%{--    <g:if test="${editable}">
         <tfoot>
             <tr>
             <g:if test="${orphanedProperties}">
@@ -329,7 +331,7 @@
                 </td>
             </tr>
         </tfoot>
-    </g:if>
+    </g:if>--}%
 </table>
 <g:if test="${error}">
     <ui:msg class="error" header="${message(code: 'myinst.message.attention')}" text="${error}"/>

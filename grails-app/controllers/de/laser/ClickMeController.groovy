@@ -4,6 +4,7 @@ import de.laser.annotations.DebugInfo
 import de.laser.storage.BeanStore
 import de.laser.survey.SurveyConfig
 import de.laser.utils.DateUtils
+import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
 
@@ -52,11 +53,13 @@ class ClickMeController {
         result.enableClickMeConfigSave = BeanStore.getContextService().isInstEditor(CustomerTypeService.PERMS_PRO)
         result.multiMap = false
 
+        result.editExportConfig = params.editExportConfig
+
         if(params.clickMeConfigId)
         {
             result.clickMeConfig = ClickMeConfig.get(params.clickMeConfigId)
             result.modalText = result.clickMeConfig ? "Export: $result.clickMeConfig.name" : result.modalText
-            result.showClickMeConfigSave = result.clickMeConfig ? false : true
+            result.showClickMeConfigSave = result.clickMeConfig ? (result.editExportConfig ? true : false) : true
         }
 
 
@@ -86,12 +89,12 @@ class ClickMeController {
                 result.exportFileName = result.exportFileName ?: message(code: 'consortium.member.plural')
                 break
             case ExportClickMeService.COST_ITEMS:
-                result.subscription = Subscription.get(params.id)
+                result.subscription = Subscription.get(params.sub)
                 result.formFields = exportClickMeService.getExportCostItemFieldsForUI(result.subscription)
                 result.exportController = 'finance'
                 result.exportAction = 'financialsExport'
                 result.contactSwitch = true
-                result.exportFileName = result.exportFileName ?: (result.subscription ? (escapeService.escapeString(subscription.name) + "_" + message(code:'subscription.details.financials.label')) : message(code:'subscription.details.financials.label'))
+                result.exportFileName = result.exportFileName ?: (result.subscription ? (escapeService.escapeString(result.subscription.name) + "_" + message(code:'subscription.details.financials.label')) : message(code:'subscription.details.financials.label'))
                 result.overrideFormat = [xlsx: 'XLSX']
                 result.multiMap = true
                 break
@@ -139,6 +142,9 @@ class ClickMeController {
                 result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
                 result.formFields = exportClickMeService.getExportSurveyEvaluationFieldsForUI(result.surveyConfig)
                 result.contactSwitch = true
+                if(params.chartFilter){
+                    result.modalText = result.modalText + " (${params.chartFilter})"
+                }
                 result.overrideFormat = [xlsx: 'XLSX', csv: 'CSV']
                 result.exportFileName = result.exportFileName ?: escapeService.escapeString(result.surveyConfig.getSurveyName()) + "_" + message(code:'surveyResult.label')
                 break
@@ -175,6 +181,45 @@ class ClickMeController {
             result.formFields = exportClickMeService.getClickMeFields(result.clickMeConfig, result.formFields)
         }
 
+        if(result.editExportConfig){
+            result.exportController = 'clickMe'
+            result.exportAction = 'editExportConfig'
+        }
+
         render(template: templateName, model: result)
     }
+
+    @DebugInfo(isInstUser = [])
+    @Secured(closure = {
+        ctx.contextService.isInstUser()
+    })
+    Map<String,Object> editExportConfig() {
+        Map<String, Object> result = [:]
+
+        if(params.clickMeConfigId)
+        {
+            result.clickMeConfig = ClickMeConfig.get(params.clickMeConfigId)
+            result.modalText = result.clickMeConfig ? "Export: $result.clickMeConfig.name" : result.modalText
+            result.showClickMeConfigSave = result.clickMeConfig ? (result.editExportConfig ? true : false) : true
+        }
+
+        if(result.clickMeConfig && params.saveClickMeConfig){
+            Map<String, Object> selectedFields = [:]
+
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            selectedFieldsRaw.each { it ->
+                if(it.value == 'on')
+                selectedFields.put( it.key.replaceFirst('iex:', ''), it.value )
+            }
+            String jsonConfig = (new JSON(selectedFields)).toString()
+            result.clickMeConfig.jsonConfig = jsonConfig
+            result.clickMeConfig.name = params.clickMeConfigName
+            result.clickMeConfig.note = params.clickMeConfigNote
+            result.clickMeConfig.save()
+        }
+
+        redirect(url: request.getHeader('referer'))
+    }
+
+
 }

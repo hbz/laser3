@@ -1,5 +1,10 @@
 package de.laser
 
+import com.opencsv.CSVParser
+import com.opencsv.CSVParserBuilder
+import com.opencsv.CSVReader
+import com.opencsv.CSVReaderBuilder
+import com.opencsv.ICSVParser
 import de.laser.cache.EhcacheWrapper
 import de.laser.ctrl.FinanceControllerService
 import de.laser.exceptions.CreationException
@@ -175,6 +180,26 @@ class FinanceService {
                 newCostItem.invoiceDate = configMap.invoiceDate
                 newCostItem.financialYear = configMap.financialYear
                 newCostItem.reference = configMap.reference
+                if(configMap.costInformationDefinition != null && (configMap.costInformationRefValue != null || configMap.costInformationStringValue != null)) {
+                    newCostItem.costInformationDefinition = configMap.costInformationDefinition
+                    if(newCostItem.costInformationDefinition.type == RefdataValue.class.name) {
+                        newCostItem.costInformationRefValue = configMap.costInformationRefValue
+                        newCostItem.costInformationStringValue = null
+                    }
+                    else {
+                        newCostItem.costInformationStringValue = configMap.costInformationStringValue
+                        newCostItem.costInformationRefValue = null
+                    }
+                }
+                else if(configMap.costInformationDefinition != null) {
+                    newCostItem.costInformationRefValue = null
+                    newCostItem.costInformationStringValue = null
+                }
+                else {
+                    newCostItem.costInformationDefinition = null
+                    newCostItem.costInformationRefValue = null
+                    newCostItem.costInformationStringValue = null
+                }
                 if (newCostItem.save()) {
                     List<BudgetCode> newBcObjs = []
                     params.list('newBudgetCodes').each { newbc ->
@@ -244,6 +269,7 @@ class FinanceService {
         List<Long> selectedCostItems = []
         Boolean billingSumRounding = params.newBillingSumRounding == 'on'
         Boolean finalCostRounding = params.newFinalCostRounding == 'on'
+        //continue here with bugfixing: why is bulk deletion deleting way too many cost items?!
         if(params.containsKey('costItemListToggler')) {
             if(result.subscription) {
                 Map costItems = getCostItemsForSubscription(params, result)
@@ -252,9 +278,6 @@ class FinanceService {
                 }
                 if (costItems.cons) {
                     selectedCostItems = costItems.cons.ids
-                }
-                if(costItems.coll) {
-                    selectedCostItems = costItems.coll.ids
                 }
                 if (costItems.subscr) {
                     selectedCostItems = costItems.subscr.ids
@@ -376,14 +399,16 @@ class FinanceService {
                             costItem.costInLocalCurrency = configMap.currencyRate * costItem.costInBillingCurrency
                             costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * taxRate))
                         }
-                        if(configMap.costBillingCurrency) {
+                        //0.0 must be considered as well
+                        if(configMap.costBillingCurrency != null) {
                             costItem.costInBillingCurrency = configMap.costBillingCurrency
                             costItem.costInBillingCurrencyAfterTax = configMap.costBillingCurrency * (1.0 + (0.01 * taxRate))
                             costItem.costInLocalCurrency = costItem.currencyRate * configMap.costBillingCurrency
                             costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * taxRate))
                         }
                         costItem.billingCurrency = configMap.billingCurrency ?: costItem.billingCurrency
-                        if(configMap.costLocalCurrency) {
+                        //0.0 must be considered as well
+                        if(configMap.costLocalCurrency != null) {
                             costItem.costInLocalCurrency = configMap.costLocalCurrency
                             costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * taxRate))
                             costItem.costInBillingCurrency = configMap.costLocalCurrency / costItem.currencyRate
@@ -408,6 +433,17 @@ class FinanceService {
                         costItem.invoiceDate = configMap.invoiceDate ?: costItem.invoiceDate
                         costItem.financialYear = configMap.financialYear ?: costItem.financialYear
                         costItem.reference = configMap.reference ?: costItem.reference
+                        if(configMap.costInformationDefinition != null && (configMap.costInformationRefValue != null || configMap.costInformationStringValue != null)) {
+                            costItem.costInformationDefinition = configMap.costInformationDefinition
+                            if(costItem.costInformationDefinition.type == RefdataValue.class.name) {
+                                costItem.costInformationRefValue = configMap.costInformationRefValue
+                                costItem.costInformationStringValue = null
+                            }
+                            else {
+                                costItem.costInformationStringValue = configMap.costInformationStringValue
+                                costItem.costInformationRefValue = null
+                            }
+                        }
                         if(costItem.save()) {
                             List<BudgetCode> newBcObjs = []
                             params.list('newBudgetCodes').each { newbc ->
@@ -562,6 +598,18 @@ class FinanceService {
         Date endDate = DateUtils.parseDateGeneric(params.newEndDate)
         String costDescription = params.newDescription ? params.newDescription.trim() : null
         Order order = resolveOrder(params.newOrderNumber, contextOrg)
+        CostInformationDefinition cif = null
+        RefdataValue costInformationRefValue = null
+        String costInformationStringValue = null
+        if(params.containsKey('newCostInformationDefinition') && (params.containsKey('newCostInformationStringValue') || params.containsKey('newCostInformationRefValue'))) {
+            cif = CostInformationDefinition.get(params.newCostInformationDefinition)
+            if(cif) {
+                if(cif.type == RefdataValue.class.name) {
+                    costInformationRefValue = RefdataValue.get(params.newCostInformationRefValue)
+                }
+                else costInformationStringValue = params.newCostInformationStringValue
+            }
+        }
         [costTitle: costTitle,
          isVisibleForSubscriber: isVisibleForSubscriber,
          costItemElement: costItemElement,
@@ -582,7 +630,11 @@ class FinanceService {
          startDate: startDate,
          endDate: endDate,
          costDescription: costDescription,
-         order: order]
+         order: order,
+         costInformationDefinition: cif,
+         costInformationRefValue: costInformationRefValue,
+         costInformationStringValue: costInformationStringValue
+        ]
     }
 
     /**
@@ -1070,6 +1122,21 @@ class FinanceService {
                     costItemFilterQuery += " and (ci.datePaid <= :filterCIPaidTo AND ci.datePaid is not null) "
                     Date invoiceTo = sdf.parse(params.filterCIPaidTo)
                     queryParams.filterCIPaidTo = invoiceTo
+                }
+            }
+            if(params.filterCIIDefinition) {
+                costItemFilterQuery += " and ci.costInformationDefinition = :filterCIIDefinition "
+                CostInformationDefinition filterCIIDefinition = genericOIDService.resolveOID(params.filterCIIDefinition)
+                queryParams.filterCIIDefinition = filterCIIDefinition
+                if(params.filterCIIValue) {
+                    if(filterCIIDefinition.type == RefdataValue.class.name) {
+                        costItemFilterQuery += " and ci.costInformationRefValue.id in (:filterCIIValue) "
+                        queryParams.filterCIIValue = Params.getLongList(params, 'filterCIIValue')
+                    }
+                    else {
+                        costItemFilterQuery += " and ci.costInformationStringValue in (:filterCIIValue) "
+                        queryParams.filterCIIValue = params.list('filterCIIValue')
+                    }
                 }
             }
             result = [subFilter:subFilterQuery,ciFilter:costItemFilterQuery,filterData:queryParams,checkboxFilters:checkboxFilters]
@@ -1763,6 +1830,123 @@ class FinanceService {
         if(result.errors)
             [result:result,status:STATUS_ERROR]
         else [result:result,status:STATUS_OK]
+    }
+
+    Map<String, Object> financeEnrichment(MultipartFile tsvFile, String encoding, RefdataValue pickedElement, Subscription subscription) {
+        Map<String, Object> result = [:]
+        List<String> wrongIdentifiers = [] // wrongRecords: downloadable file
+        Org contextOrg = contextService.getOrg()
+        //List<String> rows = tsvFile.getInputStream().getText(encoding).split('\n')
+        //rows.remove(0).split('\t') we should consider every row
+        //needed because cost item updates are not flushed immediately
+        Set<Long> updatedIDs = []
+        //preparatory for an eventual variable match; for the moment: hard coded to 0 and 1
+        int idCol = 0, valueCol = 1, noRecordCounter = 0, wrongIdentifierCounter = 0, missingCurrencyCounter = 0, totalRows = 0
+        Set<IdentifierNamespace> namespaces = [IdentifierNamespace.findByNs('ISIL'), IdentifierNamespace.findByNs('wibid')]
+        tsvFile.getInputStream().withReader(encoding) { reader ->
+            char tab = '\t'
+            ICSVParser csvp = new CSVParserBuilder().withSeparator(tab).build() // csvp.DEFAULT_SEPARATOR, csvp.DEFAULT_QUOTE_CHARACTER, csvp.DEFAULT_ESCAPE_CHARACTER
+            CSVReader csvr = new CSVReaderBuilder( reader ).withCSVParser( csvp ).build()
+            String[] line
+            while (line = csvr.readNext()) {
+                if (line[0]) {
+                    //wrong separator
+                    if (line.size() > 1) {
+                        totalRows++
+                        //rows.each { String row ->
+                        //List<String> cols = row.split('\t')
+                        String idStr = line[idCol], valueStr = line[valueCol]
+                        //try to match the subscription
+                        if (valueStr?.trim()) {
+                            //first: get the org
+                            Org match = null
+                            Set<Org> check = Org.executeQuery('select ci.customer from CustomerIdentifier ci where ci.value = :number', [number: idStr])
+                            if (check.size() == 1)
+                                match = check[0]
+                            if (!match)
+                                match = Org.findByGlobalUID(idStr)
+                            if (!match) {
+                                check = Org.executeQuery('select id.org from Identifier id where id.value = :value and id.ns in (:namespaces)', [value: idStr, namespaces: namespaces])
+                                if (check.size() == 1)
+                                    match = check[0]
+                            }
+                            //match success
+                            if (match) {
+                                //if-check prepares for opening for surveys
+                                if (subscription) {
+                                    List<Subscription> memberCheck = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.sub.instanceOf = :parent and oo.org = :match', [parent: subscription, match: match])
+                                    if (memberCheck.size() == 1) {
+                                        Subscription memberSub = memberCheck[0]
+                                        CostItem ci = CostItem.findBySubAndOwnerAndCostItemElement(memberSub, contextOrg, pickedElement)
+                                        if (ci) {
+                                            //Regex to parse different sum entries
+                                            //Pattern nonNumericRegex = Pattern.compile("([\$€£]|EUR|USD|GBP)")
+                                            Pattern numericRegex = Pattern.compile("([\\d'.,]+)")
+                                            //step 1: strip the non-numerical part and try to parse a currency
+                                            //skipped as of comment of March 12th, '25
+                                            //Matcher billingCurrencyMatch = nonNumericRegex.matcher(valueStr)
+                                            //step 2: pass the numerical part to the value parser
+                                            Matcher costMatch = numericRegex.matcher(valueStr)
+                                            //if(costMatch.find() && billingCurrencyMatch.find()) {
+                                            if (costMatch.find()) {
+                                                String input = costMatch.group(1)//, currency = billingCurrencyMatch.group(1)
+                                                BigDecimal parsedCost = escapeService.parseFinancialValue(input)
+                                                ci.costInBillingCurrency = parsedCost
+                                                ci.costInLocalCurrency = parsedCost * ci.currencyRate
+                                                /*
+                                            switch(currency) {
+                                                case ['€', 'EUR']: ci.billingCurrency = RDStore.CURRENCY_EUR
+                                                    break
+                                                case ['£', 'GBP']: ci.billingCurrency = RDStore.CURRENCY_GBP
+                                                    break
+                                                case ['$', 'USD']: ci.billingCurrency = RDStore.CURRENCY_USD
+                                                    break
+                                            }
+                                            */
+                                                if (ci.save()) {
+                                                    updatedIDs << ci.id
+                                                }
+                                                else
+                                                    log.error(ci.getErrors().getAllErrors().toListString())
+                                            }
+                                            /*
+                                        else if(!billingCurrencyMatch.find())
+                                            missingCurrencyCounter++
+                                        */
+                                        }
+                                        else {
+                                            noRecordCounter++
+                                            wrongIdentifiers << idStr
+                                        }
+                                    }
+                                }
+                                else {
+                                    wrongIdentifierCounter++
+                                    wrongIdentifiers << idStr
+                                }
+                            }
+                            else {
+                                wrongIdentifierCounter++
+                                wrongIdentifiers << idStr
+                            }
+                        }
+                    }
+                    else if(line.size() == 1) {
+                        result.wrongSeparator = true
+                        result.afterEnrichment = true
+                        result
+                    }
+                }
+            }
+        }
+        result.missingCurrencyCounter = missingCurrencyCounter
+        result.wrongIdentifiers = wrongIdentifiers
+        result.matchCounter = updatedIDs.size()
+        result.wrongIdentifierCounter = wrongIdentifierCounter
+        result.noRecordCounter = noRecordCounter
+        result.totalRows = totalRows
+        result.afterEnrichment = true
+        result
     }
 
     /**

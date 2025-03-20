@@ -15,7 +15,9 @@
                     <g:if test="${showConsortiaFunctions == true}">
                         <th>Für Einrichtung anzeigen</th>
                     </g:if>
-                    <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                    <th class="center aligned">
+                        <ui:optionsIcon />
+                    </th>
                 </tr>
             </thead>
             <tbody>

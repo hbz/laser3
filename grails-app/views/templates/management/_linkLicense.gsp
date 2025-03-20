@@ -105,7 +105,7 @@
                 <tr>
                     <g:if test="${editable}">
                         <th class="center aligned">
-                            <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"/>
+                            <g:checkBox name="membersListToggler" id="membersListToggler" checked="${managementService.checkTogglerState(subIDs, "/${controllerName}/subscriptionManagement/${params.tab}/${user.id}")}"/>
                         </th>
                     </g:if>
                     <th>${message(code: 'sidewide.number')}</th>
@@ -126,7 +126,9 @@
                     <th class="la-no-uppercase">
                         <ui:multiYearIcon />
                     </th>
-                    <th class="la-action-info">${message(code: 'default.actions.label')}</th>
+                    <th class="center aligned">
+                        <ui:optionsIcon />
+                    </th>
                 </tr>
                 </thead>
                 <tbody>

@@ -2,7 +2,6 @@
 <laser:serviceInjection/>
 
 <g:if test="${platformInstanceRecords.values().statisticsFormat.contains('COUNTER')}">
-    <laser:serviceInjection/>
     <ui:tabs>
         <g:each in="${platformInstanceRecords.values()}" var="platform">
             <ui:tabsItem controller="$controllerName" action="$actionName" tab="${platform.id.toString()}"
@@ -16,6 +15,7 @@
             <g:if test="${statsInfo}">
                 <ui:msg showIcon="true" class="warning" noClose="true" header="${message(code: 'default.stats.info.header')}">
                     ${statsInfo[0]}<br>
+                    <g:message code="default.stats.noCounterSupport"/>
                 </ui:msg>
             </g:if>
             <ui:msg showIcon="true" class="info" noClose="true" header="${message(code: 'default.stats.contact.header')}">
@@ -178,7 +178,6 @@
     </g:elseif>
 </g:if>
 <g:elseif test="${platformInstanceRecords.values().statisticsFormat.contains('Document') || platformInstanceRecords.values().statisticsFormat.contains('Diagram')}">
-    <laser:serviceInjection/>
     <ui:tabs>
         <g:each in="${platformInstanceRecords.values()}" var="platform">
             <ui:tabsItem controller="${controllerName}" action="${actionName}" tab="${platform.id.toString()}"
@@ -188,6 +187,13 @@
     <g:each in="${platformInstanceRecords.values()}" var="platform">
         <div class="ui bottom attached tab active segment" id="customerIdWrapper">
             <laser:render template="/platform/platformStatsDetails" model="[wekbServerUnavailable: wekbServerUnavailable, platformInstanceRecord: platform]"/>
+            <g:set var="statsInfo" value="${SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp where (sp.owner = :subscription or sp.owner = (select s.instanceOf from Subscription s where s = :subscription)) and sp.type = :statsAccess', [statsAccess: PropertyStore.SUB_PROP_STATS_ACCESS, subscription: subscription])}"/>
+            <g:if test="${statsInfo}">
+                <ui:msg icon="ui info icon" class="info" noClose="true" header="${message(code: 'default.stats.info.header')}">
+                    ${statsInfo[0]}<br>
+                    <g:message code="default.stats.noCounterSupport"/><br>
+                </ui:msg>
+            </g:if>
         </div>
     </g:each>
 </g:elseif>
@@ -215,8 +221,22 @@
     limit.setMilliseconds(0);
     let currDate = new Date(limit.getFullYear()-1, 0, 1, 0, 0, 0, 0);
     let startDate;
-    <g:if test="${subscription.startDate}">
-        let start = new Date(<g:formatDate date="${subscription.startDate}" format="yyyy, M, d"/>, 0, 0, 0, 0);
+    <%
+        Calendar lowerLimit = GregorianCalendar.getInstance()
+        lowerLimit.add(Calendar.YEAR, -2)
+        Set<Subscription> precedingSubs = linksGenerationService.getSuccessionChain(subscription, 'sourceSubscription')
+        Subscription startSub
+        if(precedingSubs)
+            startSub = precedingSubs.first()
+        else startSub = subscription
+    %>
+    <g:if test="${startSub?.startDate}">
+        <g:if test="${startSub?.startDate >= lowerLimit.getTime()}">
+            let start = new Date(<g:formatDate date="${startSub.startDate}" format="yyyy, M, d"/>, 0, 0, 0, 0);
+        </g:if>
+        <g:else>
+            let start = new Date(<g:formatDate date="${lowerLimit.getTime()}" format="yyyy, M, d"/>, 0, 0, 0, 0);
+        </g:else>
         start.setMonth(start.getMonth()-1); //correction because month is 0-based
         if(start.getTime() < currDate.getTime())
             currDate = start;
@@ -294,28 +314,11 @@
         }
     }).slider('set rangeValue', startIndex, endIndex);
 
-    $(".sushiConnectionCheck").each(function(i) {
-        let cell = $(this);
-        let data = {
-            org: cell.attr("data-org"),
-            platform: cell.attr("data-platform"),
-            customerId: cell.attr("data-customerId"),
-            requestorId: cell.attr("data-requestorId")
-        };
-            $.ajax({
-                url: "<g:createLink controller="ajaxJson" action="checkSUSHIConnection"/>",
-                        data: data
-                    }).done(function(response) {
-                        if(response.error === true) {
-                            cell.html('<span class="la-popup-tooltip" data-content="'+response.message+'"><i class="circular inverted icon red times"></i></span>');
-                            r2d2.initDynamicUiStuff('#'+cell.attr('id'));
-                        }
-                    });
-            });
-            $("#reportType").on('change', function() {
-    <g:applyCodec encodeAs="none">
-        let platforms = ${platformsJSON};
-    </g:applyCodec>
+
+    $("#reportType").on('change', function() {
+        <g:applyCodec encodeAs="none">
+            let platforms = ${platformsJSON};
+        </g:applyCodec>
     $.ajax({
         url: "<g:createLink controller="ajaxHtml" action="loadFilterList"/>",
                     data: {
@@ -363,6 +366,7 @@
                 }).done(function(response){
                     $("#reportWrapper").html(response).show();
                     $('#progressIndicator').hide();
+                    r2d2.initDynamicUiStuff('body');
                 });
                 checkProgress();
             });

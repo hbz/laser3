@@ -194,7 +194,7 @@
             <div class="title">
                 <g:link controller="survey" action="copyProperties"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, targetSubscriptionId: parentSuccessorSubscription.id, tab: 'privateProperties', targetSubscriptionId: targetSubscription?.id]">
-                    ${message(code: 'copyProperties.privateProperties.short')}
+                    ${message(code: 'copyProperties.privateProperties')}
                 </g:link>
             </div>
 
@@ -232,7 +232,7 @@
                 </div>
 
                 <div class="description">
-                    <i class="${Icon.FNC.COST} alternate outline"></i>${message(code: 'copySurveyCostItems.surveyCostItem')}
+                    <i class="money bill alternate outline icon"></i>${message(code: 'copySurveyCostItems.surveyCostItem')}
                 </div>
             </div>
 
@@ -265,7 +265,7 @@
                 </div>
 
                 <div class="description">
-                    <i class="${Icon.FNC.COST} alternate outline"></i>${message(code: 'surveyCostItemsPackages.label')}
+                    <i class="money bill alternate outline icon"></i>${message(code: 'surveyCostItemsPackages.label')}
                 </div>
             </div>
 

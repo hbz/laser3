@@ -53,7 +53,9 @@
                 <th>${message(code: 'propertyDefinition.expl.label')}</th>
             </g:else>
             <th>${message(code: 'default.type.label')}</th>
-            <th class="la-action-info">${message(code: 'default.actions.label')}</th>
+            <th class="center aligned">
+                <ui:optionsIcon />
+            </th>
         </tr>
         </thead>
 

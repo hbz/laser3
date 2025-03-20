@@ -19,7 +19,7 @@ import de.laser.properties.SubscriptionProperty
 import de.laser.remote.Wekb
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
-import de.laser.stats.SushiCallError
+import de.laser.stats.CounterCheck
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
@@ -60,7 +60,6 @@ class SubscriptionService {
     AuditService auditService
     BatchQueryService batchQueryService
     CacheService cacheService
-    ComparisonService comparisonService
     ContextService contextService
     EscapeService escapeService
     ExecutorService executorService
@@ -111,8 +110,7 @@ class SubscriptionService {
         List<Role> consRoles = Role.findAll { authority in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO'] }
         prf.setBenchmark('all consortia')
         result.allConsortia = Org.executeQuery(
-                """select o from Org o, OrgSetting os_ct, OrgSetting os_gs where 
-                        os_gs.org = o and os_gs.key = 'GASCO_ENTRY' and os_gs.rdValue.value = 'Yes' and
+                """select o from Org o, OrgSetting os_ct where 
                         os_ct.org = o and os_ct.key = 'CUSTOMER_TYPE' and os_ct.roleValue in (:roles) 
                         order by lower(o.name)""",
                 [roles: consRoles]
@@ -1335,22 +1333,32 @@ class SubscriptionService {
         RefdataValue value = configMap.value
         sub.holdingSelection = value
         sub.save()
-        if(value == RDStore.SUBSCRIPTION_HOLDING_ENTIRE) {
-            if(! AuditConfig.getConfig(sub, prop)) {
-                AuditConfig.addConfig(sub, prop)
+        Set<Subscription> members = Subscription.findAllByInstanceOf(sub)
+        switch(value) {
+            case RDStore.SUBSCRIPTION_HOLDING_ENTIRE:
+                if(! AuditConfig.getConfig(sub, prop)) {
+                    AuditConfig.addConfig(sub, prop)
 
-                Subscription.findAllByInstanceOf(sub).each { Subscription m ->
+                    members.each { Subscription m ->
+                        m.setProperty(prop, sub.getProperty(prop))
+                        m.save()
+                    }
+                }
+                break
+            case RDStore.SUBSCRIPTION_HOLDING_PARTIAL:
+                /*members.each { Subscription m ->
                     m.setProperty(prop, sub.getProperty(prop))
                     m.save()
-                }
-            }
-        }
-        else {
-            AuditConfig.removeConfig(sub, prop)
-            Subscription.findAllByInstanceOf(sub).each { Subscription m ->
-                m.setProperty(prop, null)
-                m.save()
-            }
+                }*/
+                AuditConfig.removeConfig(sub, prop)
+                break
+            default:
+                /*members.each { Subscription m ->
+                    m.setProperty(prop, null)
+                    m.save()
+                }*/
+                AuditConfig.removeConfig(sub, prop)
+                break
         }
     }
 
@@ -1710,6 +1718,35 @@ class SubscriptionService {
             result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
             switch(params.tab) {
                 case 'allTipps':
+                    Map<String, Object> listPriceSums = issueEntitlementService.calculateListPriceSumsForTitles(tippIDs)
+                    result.tippsListPriceSumEUR = listPriceSums.listPriceSumEUR
+                    result.tippsListPriceSumUSD = listPriceSums.listPriceSumUSD
+                    result.tippsListPriceSumGBP = listPriceSums.listPriceSumGBP
+                    result.titlesList = tippIDs ? TitleInstancePackagePlatform.findAllByIdInList(tippIDs.drop(result.offset).take(result.max), [sort: result.sort, order: result.order]) : []
+                    result.num_rows = tippIDs.size()
+                    break
+                case 'selectableTipps':
+                    Set<Subscription> subscriptions = []
+                    if(result.surveyConfig.pickAndChoosePerpetualAccess) {
+                        subscriptions = linksGenerationService.getSuccessionChain(result.subscription, 'sourceSubscription')
+                    }
+                    else {
+                        subscriptions << result.subscription
+                    }
+                    if(subscriptions) {
+                        Set<Long> sourceTIPPs = []
+                        List rows
+                        if(result.surveyConfig.pickAndChoosePerpetualAccess) {
+                            rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, tipp.id as tipp_id) from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subs) and ie.perpetualAccessBySub in (:subs) and ie.status = :current and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) group by tipp.hostPlatformURL, tipp.id, ie.id', [subs: subscriptions, current: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
+                        }
+                        else {
+                            rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, ie.tipp.id as tipp_id) from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)', [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
+                        }
+                        sourceTIPPs.addAll(rows["tipp_id"])
+                        tippIDs = tippIDs.minus(sourceTIPPs)
+                    }
+
+
                     Map<String, Object> listPriceSums = issueEntitlementService.calculateListPriceSumsForTitles(tippIDs)
                     result.tippsListPriceSumEUR = listPriceSums.listPriceSumEUR
                     result.tippsListPriceSumUSD = listPriceSums.listPriceSumUSD
@@ -2306,89 +2343,20 @@ class SubscriptionService {
         result
     }
 
-    /**
-     * currently unused, may become obsolete later
-     * @param ci
-     * @return
-     */
-    Map<String, Object> prepareSUSHIConnectionCheck(CustomerIdentifier ci) {
-        Map<String, Object> queryResult = gokbService.executeQuery(Wekb.getSushiSourcesURL(), [:])
-        Map platformRecord
-        if (queryResult) {
-            Map<String, Object> records = queryResult
-            /* COUNTER 4 SUSHI does not provide such an endpoint
-            if(records.counter4ApiSources.containsKey(platform.gokbId)) {
-                platformRecord = records.counter4ApiSources.get(platform.gokbId)
-            }
-            */
-            if(records.counter5ApiSources.containsKey(ci.platform.gokbId)) {
-                platformRecord = records.counter5ApiSources.get(ci.platform.gokbId)
-            }
+    Map<String, Object> checkCounterAPIConnection(String platformUuid, String customerId, String requestorId) {
+        Map<String, Object> result = [:]
+        Set<CounterCheck> platformCallErrors = CounterCheck.executeQuery('select cc from CounterCheck cc where cc.platform.gokbId = :platformUuid and cc.callError = true', [platformUuid: platformUuid]),
+        customerCallErrors = CounterCheck.findAllByCustomerIdAndRequestorId(customerId, requestorId)
+        Set<String> errMess = []
+        platformCallErrors.each { CounterCheck cc ->
+            errMess << cc.errMess
         }
-        if(platformRecord) {
-            Map<String, String> sushiConfig = exportService.prepareSushiCall(platformRecord, 'status')
-            if(ci.value) {
-                checkSUSHIConnection(sushiConfig.statsUrl, exportService.buildQueryArguments(sushiConfig, platformRecord, ci), sushiConfig.revision)
-            }
+        customerCallErrors.each { CounterCheck cc ->
+            errMess << messageSource.getMessage(cc.errToken, null, LocaleUtils.getCurrentLocale())
         }
-        else [success: false, code: -1]
-    }
-
-    Map<String, Object> checkSUSHIConnection(Long orgId, Long platformId, String customerId, String requestorId) {
-        Map<String, Object> connSuccessful = [:]
-        List<SushiCallError> sce = SushiCallError.executeQuery('select sce from SushiCallError sce where sce.org.id = :org and sce.platform.id = :platform and sce.customerId = :customerId and sce.requestorId = :requestorId', [org: orgId, platform: platformId, customerId: customerId, requestorId: requestorId])
-        sce.each {
-            connSuccessful.error = true
-            connSuccessful.message = sce.errMess
-        }
-        /*
-        if(revision == AbstractReport.COUNTER_5) {
-            String url = statsUrl+queryArguments
-            try {
-                Closure success = { resp, json ->
-                    if(resp.code() == 200) {
-                        if(json instanceof JSONObject && json.containsKey("Code")) {
-                            connSuccessful = [success: false, code: json.Code, message: json.Message]
-                        }
-                        else
-                            connSuccessful = [success: true]
-                    }
-                    else {
-                        log.error("server response: ${resp.status()}")
-                        connSuccessful = [success: false, code: resp.status()]
-                    }
-                }
-                Closure failure = { resp, reader ->
-                    if(reader?.containsKey("Code"))
-                        connSuccessful = [success: false, code: reader.Code, message: reader.Message]
-                    else {
-                        log.error("server response: ${resp?.status()} - ${reader}")
-                        connSuccessful = [success: false, code: 0]
-                    }
-                    Map sysEventPayload = [url: url]
-                    SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
-                }
-                HttpClientConfiguration config = new DefaultHttpClientConfiguration()
-                config.readTimeout = Duration.ofMinutes(5)
-                BasicHttpClient http = new BasicHttpClient(url, config)
-                http.get(BasicHttpClient.ResponseType.JSON, success, failure)
-                http.close()
-            }
-            catch (Exception e) {
-                connSuccessful = [success:false, code: 0, message: "invalid response returned for ${url} - ${e.getMessage()}!"]
-                log.error("stack trace: ", e)
-                Map sysEventPayload = [url: url]
-                SystemEvent.createEvent('STATS_CALL_ERROR', sysEventPayload)
-            }
-        }
-        else if(revision == AbstractReport.COUNTER_4) {
-            Map<String, Object> result = statsSyncService.fetchXMLData(statsUrl, queryArguments)
-            if(result.code == 200)
-                connSuccessful = [success: true]
-            else connSuccessful = [success: false, code: result.code, message: result.error]
-        }
-        */
-        connSuccessful
+        result.error = errMess.size() > 0
+        result.message = errMess.join(', ')
+        result
     }
 
     /**
@@ -2524,7 +2492,7 @@ class SubscriptionService {
                     break
                 case ["anbieter", "provider"]: colMap.provider = c
                     break
-                case ["lieferant", "agency", "vendor"]: colMap.vendor = c
+                case ["library supplier", "lieferant", "agency", "vendor"]: colMap.vendor = c
                     break
                 case ["anmerkungen", "notes"]: colMap.notes = c
                     break
@@ -2943,7 +2911,7 @@ class SubscriptionService {
                         identifier: UUID.randomUUID())
                 sub.startDate = entry.startDate ? databaseDateFormatParser.parse(entry.startDate) : null
                 sub.endDate = entry.endDate ? databaseDateFormatParser.parse(entry.endDate) : null
-                sub.referenceYear = entry.referenceYear ? new Year(entry.referenceYear.value) : null
+                sub.referenceYear = entry.referenceYear ? Year.of(entry.referenceYear.value) : null
                 sub.manualCancellationDate = entry.manualCancellationDate ? databaseDateFormatParser.parse(entry.manualCancellationDate) : null
                 sub.isAutomaticRenewAnnually = entry.isAutomaticRenewAnnually ?: false
                 /* TODO [ticket=2276]
@@ -3237,24 +3205,13 @@ class SubscriptionService {
                                         PriceItem priceItem
                                         try {
                                             switch (colName) {
-                                            /*
-                                            case "listPriceEurCol": priceItem = ieMatch.priceItems ? ieMatch.priceItems.find { PriceItem pi -> pi.listCurrency == RDStore.CURRENCY_EUR } : new PriceItem(issueEntitlement: ieMatch, listCurrency: RDStore.CURRENCY_EUR)
-                                                priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
-                                                break
-                                            case "listPriceUsdCol": priceItem = ieMatch.priceItems ? ieMatch.priceItems.find { PriceItem pi -> pi.listCurrency == RDStore.CURRENCY_USD } : new PriceItem(issueEntitlement: ieMatch, listCurrency: RDStore.CURRENCY_USD)
-                                                priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
-                                                break
-                                            case "listPriceGbpCol": priceItem = ieMatch.priceItems ? ieMatch.priceItems.find { PriceItem pi -> pi.listCurrency == RDStore.CURRENCY_GBP } : new PriceItem(issueEntitlement: ieMatch, listCurrency: RDStore.CURRENCY_GBP)
-                                                priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
-                                                break
-                                            */
-                                                case "localPriceEurCol": priceItem = ieMatch.priceItems ? ieMatch.priceItems.find { PriceItem pi -> pi.localCurrency == RDStore.CURRENCY_EUR } : new PriceItem(issueEntitlement: ieMatch, localCurrency: RDStore.CURRENCY_EUR)
+                                                case ["listPriceEurCol", "localPriceEurCol"]: priceItem = ieMatch.priceItems ? ieMatch.priceItems.find { PriceItem pi -> pi.localCurrency == RDStore.CURRENCY_EUR } : new PriceItem(issueEntitlement: ieMatch, localCurrency: RDStore.CURRENCY_EUR)
                                                     priceItem.localPrice = escapeService.parseFinancialValue(cellEntry)
                                                     break
-                                                case "localPriceUsdCol": priceItem = ieMatch.priceItems ? ieMatch.priceItems.find { PriceItem pi -> pi.localCurrency == RDStore.CURRENCY_USD } : new PriceItem(issueEntitlement: ieMatch, localCurrency: RDStore.CURRENCY_USD)
+                                                case ["listPriceUsdCol", "localPriceUsdCol"]: priceItem = ieMatch.priceItems ? ieMatch.priceItems.find { PriceItem pi -> pi.localCurrency == RDStore.CURRENCY_USD } : new PriceItem(issueEntitlement: ieMatch, localCurrency: RDStore.CURRENCY_USD)
                                                     priceItem.localPrice = escapeService.parseFinancialValue(cellEntry)
                                                     break
-                                                case "localPriceGbpCol": priceItem = ieMatch.priceItems ? ieMatch.priceItems.find { PriceItem pi -> pi.localCurrency == RDStore.CURRENCY_GBP } : new PriceItem(issueEntitlement: ieMatch, localCurrency: RDStore.CURRENCY_GBP)
+                                                case ["listPriceGbpCol", "localPriceGbpCol"]: priceItem = ieMatch.priceItems ? ieMatch.priceItems.find { PriceItem pi -> pi.localCurrency == RDStore.CURRENCY_GBP } : new PriceItem(issueEntitlement: ieMatch, localCurrency: RDStore.CURRENCY_GBP)
                                                     priceItem.localPrice = escapeService.parseFinancialValue(cellEntry)
                                                     break
                                             }
@@ -3512,9 +3469,9 @@ class SubscriptionService {
             //process custom property
             prop = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, sub, propDef, contextOrg)
         }
-        if (propDef.isIntegerType()) {
-            int intVal = Integer.parseInt(value)
-            prop.setIntValue(intVal)
+        if (propDef.isLongType()) {
+            long longVal = Long.parseLong(value)
+            prop.setLongValue(longVal)
         }
         else if (propDef.isBigDecimalType()) {
             BigDecimal decVal = new BigDecimal(value)
@@ -4039,7 +3996,7 @@ class SubscriptionService {
             switch (headerCol.toLowerCase().trim()) {
                 case ["laser-uuid", "las:er-uuid (einrichtung)", "las:er-uuid (institution)"]: colMap.uuidCol = c
                     break
-                case "gnd-nr": colMap.gndCol = c
+                case "gnd-id": colMap.gndCol = c
                     break
                 case "isil": colMap.isilCol = c
                     break
@@ -4195,6 +4152,8 @@ class SubscriptionService {
             configMap.subscription = result.subscription
             configMap.packages = baseSub.packages.pkg
             result.packageInstance = baseSub.packages.pkg[0] //there was an if check about baseSub.pkg
+            result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
+            result.countAllTipps = TitleInstancePackagePlatform.countByPkgAndStatus(result.packageInstance, RDStore.TIPP_STATUS_CURRENT)
             result.configMap = configMap
         }
         result

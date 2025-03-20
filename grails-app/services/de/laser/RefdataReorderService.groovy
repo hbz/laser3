@@ -46,6 +46,39 @@ class RefdataReorderService {
             }
             at.save()
         }
+        //accessibility compliance: order yes, partially, no, unavailable
+        List accessibilityCompliances = RefdataCategory.getAllRefdataValues(RDConstants.ACCESSIBILITY_COMPLIANCE)
+        order = 10
+        accessibilityCompliances.eachWithIndex { RefdataValue compliance, int i ->
+            switch(compliance.value) {
+                case 'Yes': compliance.order = 0
+                    break
+                case 'Partially': compliance.order = 10
+                    break
+                case 'No': compliance.order = 20
+                    break
+                case 'Unavailable': compliance.order = 30
+                    break
+                default: compliance.order = i*order+40
+                    break
+            }
+            compliance.save()
+        }
+        //invoicing interval: order by duration
+        List invoicingIntervals = RefdataCategory.getAllRefdataValues(RDConstants.INVOICE_INTERVAL)
+        invoicingIntervals.eachWithIndex { RefdataValue interval, int i ->
+            switch(interval.value) {
+                case 'monthly': interval.order = 0
+                    break
+                case 'quarterly': interval.order = 10
+                    break
+                case 'half-yearly': interval.order = 20
+                    break
+                case 'yearly': interval.order = 30
+                    break
+            }
+            interval.save()
+        }
         //semesters
         Calendar limit = GregorianCalendar.getInstance(), start0 = GregorianCalendar.getInstance(), start1 = GregorianCalendar.getInstance()
         limit.add(Calendar.YEAR, 6)

@@ -13,9 +13,9 @@
     <laser:render template="/templates/filter/packageGokbFilter"
         model="[
                 tmplConfigShow: [
-                        ['q', 'pkgStatus', 'status', 'hasPerpetualAccess'],
-                        ['provider', 'ddc', 'curatoryGroup'],
-                        ['curatoryGroupType', 'automaticUpdates']
+                        ['q', 'provider', 'pkgStatus'],
+                        ['ddc', 'automaticUpdates', 'curatoryGroup', 'curatoryGroupType'],
+                        ['status', 'hasPerpetualAccess', '', '']
                 ]
         ]"
     />

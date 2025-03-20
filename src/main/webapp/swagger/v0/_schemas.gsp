@@ -764,7 +764,7 @@
         scope: # mapping attr descr
           type: string
           description: The type of object to which the property may be attached to.
-          enum: [${ PropertyDefinition.AVAILABLE_CUSTOM_DESCR.toList().plus(PropertyDefinition.AVAILABLE_PRIVATE_DESCR.toList()).unique().join(', ') }]
+          enum: [${ PropertyDefinition.AVAILABLE_PUBLIC_DESCR.toList().plus(PropertyDefinition.AVAILABLE_PRIVATE_DESCR.toList()).unique().join(', ') }]
           example: Subscription Property
         paragraph:
           type: string
@@ -791,7 +791,7 @@
           description: Maps to the RefdataCategory "${RDConstants.Y_N}". If set to *No*, it is a private entry of the calling institution and only the caller can see the property.
           enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
           example: ${RDStore.YN_YES.value}
-        value: # mapping attr stringValue, intValue, decValue, refValue, urlValue, dateValue
+        value: # mapping attr stringValue, longValue, decValue, refValue, urlValue, dateValue
           type: string
           description: the property value
           example: "Zeidel'sches Recht"
@@ -1587,7 +1587,7 @@
           scope:
             type: string
             description: The type of object to which the property may be attached to.
-            enum: [${ PropertyDefinition.AVAILABLE_CUSTOM_DESCR.toList().plus(PropertyDefinition.AVAILABLE_PRIVATE_DESCR.toList()).unique().join(', ') }]
+            enum: [${ PropertyDefinition.AVAILABLE_PUBLIC_DESCR.toList().plus(PropertyDefinition.AVAILABLE_PRIVATE_DESCR.toList()).unique().join(', ') }]
             example: Subscription Property
           type:
             type: string

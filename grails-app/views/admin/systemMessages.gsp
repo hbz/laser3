@@ -42,7 +42,9 @@
             <th>${message(code: 'default.type.label')}</th>
             <th>${message(code: 'default.activated.label')}</th>
             <th>${message(code: 'default.lastUpdated.label')}</th>
-            <th class="la-action-info">${message(code:'default.actions.label')}</th>
+            <th class="center aligned">
+                <ui:optionsIcon />
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -113,6 +115,7 @@
 
                     $('#dynamicModalContainer').html(result);
                     $('#dynamicModalContainer .ui.modal').modal({
+                        closable: false,
                         autofocus: false,
                         onVisible: function() {
                             r2d2.helper.focusFirstFormElement(this)
