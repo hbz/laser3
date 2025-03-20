@@ -44,6 +44,12 @@
                  params="${params}"
                  max="${max}" total="${vendorListTotal}"/>
 </g:if>
+<g:elseif test="${initial && actionName == 'surveyVendors'}">
+    <br/>
+    <strong>
+        <g:message code="surveyVendors.addVendorsOverPencil"/>
+    </strong>
+</g:elseif>
 <g:else>
     <g:if test="${filterSet}">
         <br /><strong><g:message code="filter.result.empty.object" args="${[message(code:"vendor.plural")]}"/></strong>

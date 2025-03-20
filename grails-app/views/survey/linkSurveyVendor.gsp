@@ -27,16 +27,15 @@
 <br>
 <br>
 <h2 class="ui left floated aligned icon header la-clear-before">${message(code: 'surveyVendors.label')}
-<ui:totalNumber total="${surveyVendorsCount}/${vendorListTotal}"/>
+<ui:totalNumber total="${surveyVendorsCount}"/>
 </h2>
 
 <ui:messages data="${flash}"/>
 
 <g:render template="/templates/survey/vendors" model="[
         processController: 'survey',
-        processAction: 'linkSurveyVendor',
+        processAction: 'processLinkSurveyVendor',
         tmplShowCheckbox: editable,
-
         tmplConfigShow: ['lineNumber', 'sortname', 'name', 'isWekbCurated', 'linkSurveyVendor']]"/>
 
 <laser:htmlEnd />

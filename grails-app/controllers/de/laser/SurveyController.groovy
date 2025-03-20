@@ -941,6 +941,29 @@ class SurveyController {
         }
     }
 
+    @DebugInfo(isInstEditor_denySupport = [], ctrlService = 1)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport()
+    })
+    def processLinkSurveyVendor() {
+        Map<String,Object> ctrlResult = surveyControllerService.processLinkSurveyVendor(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+            else {
+                flash.error = ctrlResult.result.error
+                ctrlResult.result
+            }
+        }
+        else {
+            ctrlResult.result
+            redirect(action: 'surveyVendors', id: ctrlResult.result.surveyInfo.id)
+            return
+        }
+    }
+
     /**
      * Call to list the potential package candidates for linking
      * @return a list view of the packages in the we:kb ElasticSearch index or a redirect to an title list view
