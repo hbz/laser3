@@ -9,7 +9,7 @@
         </div>
         <div class="content">
             <table class="ui unstackable scrolling compact table">
-                <tbody style="max-height:290px">
+                <tbody style="max-height:145px">%{-- count:4 --}%
                     <g:each in="${cts}" var="ts">
                         <tr>
                             <td colspan="12">
@@ -18,7 +18,7 @@
                                 </g:link>
 
                                 <g:each in="${ts.packages}" var="sp">
-                                    &nbsp;-&nbsp;
+                                    &nbsp;>&nbsp;
                                     <g:if test="${ts.packages.size() > 1}">
                                         <g:link controller="subscription" action="index" id="${sp.subscription.id}" params="${[pkgfilter: sp.pkg.id]}" target="_blank">
                                             <i class="${Icon.PACKAGE} la-list-icon"></i>${sp.pkg}
@@ -30,18 +30,12 @@
                                         </g:link>
                                     </g:else>
                                 </g:each>
-
-%{--                                <g:if test="${ts.provider}">--}%
-%{--                                    <g:link controller="provider" action="show" id="${ts.provider.id}" target="_blank">--}%
-%{--                                        <i class="${Icon.PROVIDER} la-list-icon"></i> ${ts.provider}--}%
-%{--                                    </g:link>--}%
-%{--                                </g:if>--}%
                             </td>
-                            <td colspan="4" style="text-align:center">
+                            <td colspan="4" class="center aligned">
                                 <g:if test="${ts.startDate || ts.endDate}">
-                                    ${ts.startDate ? DateUtils.getLocalizedSDF_noTime().format(ts.startDate) : 'ohne Startdatum'}
+                                    ${ts.startDate ? DateUtils.getLocalizedSDF_noTime().format(ts.startDate) : message(code: 'default.startDate.without')}
                                     -
-                                    ${ts.endDate ? DateUtils.getLocalizedSDF_noTime().format(ts.endDate) : 'ohne Enddatum'}
+                                    ${ts.endDate ? DateUtils.getLocalizedSDF_noTime().format(ts.endDate) : message(code: 'default.endDate.without')}
                                 </g:if>
                             </td>
                         </tr>

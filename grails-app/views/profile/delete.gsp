@@ -77,7 +77,7 @@
                     <td>
                         ${info[0]}
                     </td>
-                    <td style="text-align:center">
+                    <td class="center aligned">
                         <g:if test="${info.size() > 2 && info[1].size() > 0}">
                             <span class="ui circular label la-popup-tooltip ${info[2]}"
                                 <g:if test="${info[2] == DeletionService.FLAG_WARNING}">
