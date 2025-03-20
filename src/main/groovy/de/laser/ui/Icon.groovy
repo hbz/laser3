@@ -333,7 +333,7 @@ class Icon extends IconAttr {
 
     public static String VENDOR                     = 'handshake icon'
 
-    public static String WEKB                       = 'la-gokb icon'
+    public static String WEKB                       = 'la-wekb icon'
 
     public static String WORKFLOW                   = 'tasks icon'
 

@@ -5,11 +5,20 @@
 <%-- private properties --%>
 <div class="ui card la-dl-no-table">
 
+
     <g:if test="${editable || contextService.isInstEditor(CustomerTypeService.ORG_INST_PRO) || contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
-        <div class="right aligned four wide column">
-            <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-content="${message(code:'license.button.addProperty')}" onclick="JSPC.app.createProperty(${vendor.id}, '${vendor.class.simpleName}');">
-                <i class="${Icon.CMD.ADD}"></i>
-            </button>
+        <div class="content">
+            <div class="ui header la-flexbox la-justifyContent-spaceBetween">
+                <h2>
+                    ${message(code: 'default.properties.my')}
+                </h2>
+                <div class="right aligned four wide column">
+                    <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-content="${message(code:'license.button.addProperty')}"
+                            onclick="JSPC.app.createProperty(${vendor.id}, '${vendor.class.simpleName}','true');">
+                        <i class="${Icon.CMD.ADD}"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </g:if>
 

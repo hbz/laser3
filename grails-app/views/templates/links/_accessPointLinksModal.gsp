@@ -1,7 +1,11 @@
 <%@ page import="de.laser.ui.Btn" %>
 
 <g:if test="${editmode}">
-    <a role="button" class="ui button ${tmplCss}" data-ui="modal" href="#${tmplModalID}">
+    <a role="button"
+       class="${Btn.MODERN.SIMPLE_TOOLTIP} ${tmplCss}"
+       data-ui="modal"
+       href="#${tmplModalID}"
+       data-content="${tmplTooltip}">
         <g:if test="${tmplIcon}">
             <i class="${tmplIcon} icon"></i>
         </g:if>
@@ -10,6 +14,7 @@
         </g:if>
     </a>
 </g:if>
+
 
 <ui:modal id="${tmplModalID}" text="${tmplText}">
 
