@@ -14,7 +14,7 @@
                 <div class="right aligned four wide column">
                     <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}"
                             data-content="${message(code: 'license.button.addProperty')}"
-                            onclick="JSPC.app.createProperty(${provider.id}, '${provider.class.simpleName}');">
+                            onclick="JSPC.app.createProperty(${provider.id}, '${provider.class.simpleName}','true');">
                         <i class="${Icon.CMD.ADD}"></i>
                     </button>
                 </div>
