@@ -120,7 +120,7 @@ class FinanceController  {
                     }
                 }
             }
-            if(params.containsKey('selectedCostItemElement')) {
+            if(params.containsKey('selectedCostItemElement') && !result.containsKey('wrongSeparator')) {
                 RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
                 Set<CostItem> missing = CostItem.executeQuery('select ci.id from CostItem ci where ci.sub.instanceOf = :parent and ci.owner = :owner and ci.costItemElement = :element and (ci.costInBillingCurrency = 0 or ci.costInBillingCurrency = null)', [parent: result.subscription, owner: contextService.getOrg(), element: pickedElement])
                 result.missing = missing

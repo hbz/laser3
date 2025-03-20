@@ -258,7 +258,7 @@ class AjaxHtmlController {
         result.wekbNews = wekbNewsService.getCurrentNews()
         result.tmplView = 'details'
 
-        render template: '/myInstitution/wekbNews', model: result
+        render template: '/myInstitution/dashboard/wekbNews', model: result
     }
 
     //-------------------------------------------------- subscription/show ---------------------------------------------
