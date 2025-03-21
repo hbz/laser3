@@ -8,13 +8,14 @@ import org.apache.commons.text.RandomStringGenerator
 class RandomUtils {
 
     static String getRandomAlphabetic(int length = 16) {
-        RandomStringGenerator rsg = new RandomStringGenerator.Builder()
-                .selectFrom("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".toCharArray())
-                .build()
-        rsg.generate(length)
+        getRandom(length, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.toCharArray())
     }
 
-    static getRandom( int length = 16, char[] dict) {
+    static String getRandomAlphaNumeric(int length = 16) {
+        getRandom(length, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'.toCharArray())
+    }
+
+    static getRandom(int length = 16, char[] dict) {
         RandomStringGenerator rsg = new RandomStringGenerator.Builder()
                 .selectFrom(dict)
                 .build()

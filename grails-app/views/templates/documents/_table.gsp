@@ -25,7 +25,7 @@
     int trCounter = 1
 
     List<DocContext> securityWorkaroundList = []
-    String randomId = RandomUtils.getRandomAlphabetic(8)
+    String randomId = RandomUtils.getRandomAlphaNumeric(8)
 %>
 
     <table class="ui celled la-js-responsive-table la-table table documents-table-${randomId}">
