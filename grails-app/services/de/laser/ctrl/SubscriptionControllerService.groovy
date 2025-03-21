@@ -27,6 +27,7 @@ import de.laser.survey.SurveyConfig
 import de.laser.config.ConfigMapper
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.utils.RandomUtils
 import de.laser.utils.SwissKnife
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
@@ -44,7 +45,6 @@ import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.time.TimeCategory
 import groovy.xml.slurpersupport.GPathResult
-import org.apache.commons.lang3.RandomStringUtils
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
@@ -3843,8 +3843,8 @@ class SubscriptionControllerService {
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         Subscription sub = Subscription.get(params.id)
 
-//        result.token           = params.token ?: RandomStringUtils.randomAlphanumeric(24) // -> static token
-        result.token           = params.token ?: RandomStringUtils.randomAlphanumeric(16) + '#' + params.id // -> static token
+//        result.token           = params.token ?: RandomUtils.getRandomAlphabetic(24) // -> static token
+        result.token           = params.token ?: RandomUtils.getRandomAlphabetic(16) + '#' + params.id // -> static token
         result.cfgQueryList    = SubscriptionReport.getCurrentQueryConfig( sub )
         result.cfgChartsList   = BaseConfig.CHARTS
         result.cfgTimelineList = SubscriptionReport.getCurrentTimelineConfig( sub )

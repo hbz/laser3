@@ -1,9 +1,9 @@
-<%@ page import="de.laser.utils.SwissKnife; de.laser.ui.Icon;" %>
+<%@ page import="de.laser.utils.RandomUtils; de.laser.ui.Icon;" %>
 <laser:serviceInjection />
 
 <ui:modal id="modalReadTask" message="task.label" hideSubmitButton="true">
 
-    <g:set var="preID" value="${SwissKnife.getRandomID()}" />
+    <g:set var="preID" value="${RandomUtils.getRandomUCID()}" />
 
     <div class="ui form">
         <div class="field">

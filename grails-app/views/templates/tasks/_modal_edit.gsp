@@ -1,9 +1,9 @@
-<%@ page import="de.laser.utils.SwissKnife; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Task; de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.utils.RandomUtils; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.Task; de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
 <laser:serviceInjection />
 
 <ui:modal id="modalEditTask" message="task.edit" isEditModal="true" >
 
-    <g:set var="preID" value="${SwissKnife.getRandomID()}" />
+    <g:set var="preID" value="${RandomUtils.getRandomUCID()}" />
 
     <g:form id="${preID}_form" class="ui form" url="[controller:'task', action:'editTask', id:taskInstance.id]" method="post">
         <g:hiddenField id="${preID}_preID" name="preID" value="${preID}" />
