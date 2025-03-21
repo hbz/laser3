@@ -2296,7 +2296,7 @@ class SubscriptionControllerService {
 
                 if (result.enrichmentProcess.wrongTitles) {
                     //background of this procedure: the editor adding titles via KBART wishes to receive a "counter-KBART" which will then be sent to the provider for verification
-                    String dir = GlobalService.obtainFileStorageLocation()
+                    String dir = GlobalService.obtainTmpFileLocation()
                     File f = new File(dir+"/${filename}_matchingErrors")
                     String returnKBART = exportService.generateSeparatorTableString(result.enrichmentProcess.titleRow, result.enrichmentProcess.wrongTitles, '\t')
                     FileOutputStream fos = new FileOutputStream(f)

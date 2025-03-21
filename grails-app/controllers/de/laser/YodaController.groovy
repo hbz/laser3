@@ -11,7 +11,6 @@ import de.laser.config.ConfigMapper
 import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
 import de.laser.properties.PersonProperty
-import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
 import de.laser.remote.Wekb
 import de.laser.remote.FTControl
@@ -22,8 +21,6 @@ import de.laser.stats.Counter5Report
 import de.laser.stats.LaserStatsCursor
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
-import de.laser.survey.SurveyConfig
-import de.laser.survey.SurveyResult
 import de.laser.system.SystemActivityProfiler
 import de.laser.system.SystemEvent
 import de.laser.system.SystemProfiler
@@ -52,7 +49,6 @@ import org.springframework.security.web.FilterChainProxy
 import org.springframework.security.web.SecurityFilterChain
 
 import javax.servlet.Filter
-import javax.servlet.ServletOutputStream
 import java.lang.annotation.Annotation
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -681,7 +677,7 @@ class YodaController {
      */
     @Secured(['ROLE_YODA'])
     Map<String, Object> manageTempUsageFiles() {
-        File dir = new File(GlobalService.obtainFileStorageLocation())
+        File dir = new File(GlobalService.obtainTmpFileLocation())
         List<File> tempFiles = dir.listFiles()
         //tempFiles.sort { File f -> Files.getAttribute(f.toPath(), 'creationTime') }
         [tempFiles: tempFiles]
@@ -695,17 +691,17 @@ class YodaController {
     def deleteTempFile() {
         if(params.containsKey('filename')) {
             if(!params.filename.contains('..') && !params.filename.contains('\\') && !params.filename.contains('/')) {
-                File f = new File(GlobalService.obtainFileStorageLocation() + '/' + params.filename)
+                File f = new File(GlobalService.obtainTmpFileLocation() + '/' + params.filename)
                 try {
                     f.delete()
                 }
                 catch (IOException e) {
-                    log.error("unable to delete file: ${GlobalService.obtainFileStorageLocation() + '/' + params.filename}")
+                    log.error("unable to delete file: ${GlobalService.obtainTmpFileLocation() + '/' + params.filename}")
                 }
             }
         }
         else if(params.containsKey('emptyDir')) {
-            File f = new File(GlobalService.obtainFileStorageLocation())
+            File f = new File(GlobalService.obtainTmpFileLocation())
             f.deleteDir()
             f.mkdir()
         }
