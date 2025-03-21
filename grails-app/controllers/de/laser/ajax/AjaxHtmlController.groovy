@@ -765,6 +765,8 @@ class AjaxHtmlController {
         Map<String,Object> result = [subscription:Subscription.get(params.id)]
         result.institution = contextService.getOrg()
         result.tab = params.tab
+        result.referer = params.referer
+        result.progressCacheKey = params.progressCacheKey
 
         if(params.surveyConfigID){
             result.surveyConfig = SurveyConfig.findById(params.surveyConfigID)

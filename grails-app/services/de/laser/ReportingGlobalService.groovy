@@ -5,13 +5,13 @@ import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.*
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseQuery
+import de.laser.utils.RandomUtils
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.apache.commons.lang3.RandomStringUtils
 
 /**
  * This service manages data retrieval for the global, context-free reporting
@@ -34,7 +34,7 @@ class ReportingGlobalService {
     void doFilter(Map<String, Object> result, GrailsParameterMap params) {
 
         result.filter = params.filter
-        result.token  = /* params.token ?: */ RandomStringUtils.randomAlphanumeric(24)
+        result.token  = /* params.token ?: */ RandomUtils.getRandomAlphaNumeric(24)
 
         result.cfgQueryList = [:]
         result.cfgDistributionList = [:]

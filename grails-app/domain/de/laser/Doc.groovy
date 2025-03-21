@@ -28,6 +28,7 @@ class Doc {
   Integer contentType = CONTENT_TYPE_STRING
   String content
   String uuid 
+  String ckey
   Date dateCreated
   Date lastUpdated
   Org owner         //the context org of the user uploading a document
@@ -40,6 +41,7 @@ class Doc {
    confidentiality column:'doc_confidentiality_rv_fk',  index:'doc_confidentiality_idx'
        contentType column:'doc_content_type',   index:'doc_content_type_idx'
               uuid column:'doc_docstore_uuid',  index:'doc_uuid_idx'
+              ckey column:'doc_ckey'
              title column:'doc_title'
           filename column:'doc_filename'
            content column:'doc_content', type:'text'
@@ -51,10 +53,11 @@ class Doc {
   }
 
   static constraints = {
-            type      (nullable:true)
-      confidentiality (nullable:true)
+    type      (nullable:true)
+    confidentiality (nullable:true)
     content   (nullable:true, blank:false)
     uuid      (nullable:true, blank:false)
+    ckey      (nullable:true, blank:false)
     contentType(nullable:true)
     title     (nullable:true, blank:false)
     filename  (nullable:true, blank:false)
@@ -92,8 +95,12 @@ class Doc {
      */
     def beforeInsert = {
         if (contentType == CONTENT_TYPE_FILE) {
-            uuid = java.util.UUID.randomUUID().toString()
-            log.info('generating new uuid: '+ uuid)
+            uuid = UUID.randomUUID().toString()
+            while ( executeQuery('select uuid from Doc where uuid = :uuid', [uuid: uuid]) ) {
+                log.warn('doc.beforeInsert() -> BAZINGA! UUID is already taken')
+                uuid = UUID.randomUUID().toString()
+            }
+            log.info('doc.beforeInsert() -> new UUID: ' + uuid)
         }
     }
 

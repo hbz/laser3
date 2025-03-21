@@ -4,7 +4,6 @@ import de.laser.auth.User
 import de.laser.storage.BeanStore
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.util.logging.Slf4j
-import org.apache.commons.lang3.RandomStringUtils
 import org.springframework.context.MessageSource
 
 /**
@@ -112,10 +111,6 @@ class SwissKnife {
      */
     static String toSnakeCase(String text) {
         text.replaceAll( /([A-Z])/, /_$1/ ).toLowerCase().replaceAll( /^_/, '' )
-    }
-
-    static String getRandomID() {
-        RandomStringUtils.randomAlphabetic(8).toUpperCase()
     }
 
     /**

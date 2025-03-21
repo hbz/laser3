@@ -577,7 +577,7 @@ class AjaxJsonController {
     }
 
     /**
-     * Reads from cache the current complection percentage of the given process in order to update the progress bar
+     * Reads from cache the current completion percentage of the given process in order to update the progress bar
      */
     @Secured(['ROLE_USER'])
     def checkProgress() {

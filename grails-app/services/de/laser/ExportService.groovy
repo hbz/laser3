@@ -95,7 +95,7 @@ class ExportService {
 		if(titleRow)
 			output.add(titleRow.join(separator))
 		columnData.each { row ->
-			if(row instanceof GroovyRowResult) {
+			if(row instanceof Map || row instanceof GroovyRowResult) {
 				output.add(row.values().join(separator).replaceAll('null', ''))
 			}
 			else {

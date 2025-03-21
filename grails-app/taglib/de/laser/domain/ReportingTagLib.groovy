@@ -11,8 +11,8 @@ import de.laser.storage.RDConstants
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseDetails
+import de.laser.utils.RandomUtils
 import de.laser.utils.SwissKnife
-import org.apache.commons.lang3.RandomStringUtils
 
 import java.lang.reflect.Field
 
@@ -274,6 +274,6 @@ class ReportingTagLib {
     }
 
     static String getUniqueId(String id) {
-        return id + '-' + RandomStringUtils.randomAlphanumeric(8).toLowerCase()
+        return id + '-' + RandomUtils.getRandomAlphaNumeric(8).toLowerCase()
     }
 }
