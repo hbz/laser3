@@ -80,10 +80,10 @@
                     <g:if test="${titleManipulation}">
                         <ui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
                         <g:if test="${actionName == 'renewEntitlementsWithSurvey'}">
-                            <ui:actionsDropdownItem id="selectEntitlementsWithKBART" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: params.tab)}" message="subscription.details.addEntitlements.menu"/>
+                            <ui:actionsDropdownItem id="selectEntitlementsWithKBART" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscriberSub.id, params: [referer: actionName, progressCacheKey: '/survey/renewEntitlementsWithSurvey/', surveyConfigID: surveyConfig.id, tab: params.tab])}" message="subscription.details.addEntitlements.menu"/>
                         </g:if>
                         <g:else>
-                            <ui:actionsDropdownItem id="selectEntitlementsWithKBART" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscription.id)}" message="subscription.details.addEntitlements.menu"/>
+                            <ui:actionsDropdownItem id="selectEntitlementsWithKBART" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscription.id, params: [referer: actionName, progressCacheKey: '/subscription/addEntitlements/'])}" message="subscription.details.addEntitlements.menu"/>
                         </g:else>
                     </g:if>
                     <g:else>

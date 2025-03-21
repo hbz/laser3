@@ -1423,6 +1423,10 @@ class FilterService {
             queryArgs << 'ie.status = :ieStatus'
             queryParams.ieStatus = RefdataValue.get(params.ieStatus)
         }
+        else {
+            queryArgs << 'ie.status != :ieStatus'
+            queryParams.ieStatus = RDStore.TIPP_STATUS_REMOVED
+        }
 
         if (params.titleGroup) {
             if(params.titleGroup == 'notInGroups'){
