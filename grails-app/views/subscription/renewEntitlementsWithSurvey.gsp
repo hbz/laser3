@@ -149,6 +149,7 @@
 <g:render template="/survey/participantInfos" model="[participant: subscriber]"/>
 
 <g:if test="${editable}">
+    <%-- TODO move away --%>
     <laser:render template="KBARTSelectionUploadFormModal"/>
 </g:if>
         <laser:render template="/templates/filter/tipp_ieFilter" model="[notShow: params.tab == 'allTipps' || params.tab == 'selectableTipps', fillDropdownsWithPackage: params.tab == 'allTipps' || params.tab == 'selectableTipps']"/>

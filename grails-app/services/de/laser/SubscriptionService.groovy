@@ -43,6 +43,7 @@ import groovy.sql.Sql
 import groovy.xml.slurpersupport.GPathResult
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.context.MessageSource
 import org.springframework.transaction.TransactionStatus
 import org.springframework.web.multipart.MultipartFile
@@ -1434,12 +1435,102 @@ class SubscriptionService {
         false
     }
 
-    Map<String, Object> selectEntitlementsWithKBART(MultipartFile kbartFile, Subscription subscription) {
-        Integer countRows = 0
-        Integer count = 0
-        Integer countSelectTipps = 0
-        Integer countNotSelectTipps = 0
+    Map<String, Object> selectEntitlementsWithKBART(MultipartFile inputFile, Map<String, Object> configMap) {
+        Map<String, Object> result = issueEntitlementService.matchTippsFromFile(inputFile, configMap)
+        int perpetuallyPurchasedCount = 0
+        Set<String> toBeAdded = []
+        EhcacheWrapper userCache = contextService.getUserCache(configMap.progressCacheKey)
+        int pointsPerIteration = 25/result.matchedTitles.size()
+        result.matchedTitles.eachWithIndex { TitleInstancePackagePlatform match, Map<String, Object> externalTitleData, int i ->
+            IssueEntitlement ieCheck = IssueEntitlement.findByTippAndSubscriptionAndStatusNotEqual(match, configMap.subscription, RDStore.TIPP_STATUS_REMOVED)
+            //issue entitlement exists in subscription
+            if(ieCheck) {
+                externalTitleData.put('found_in_package', RDStore.YN_YES.value)
+                result.notAddedTitles << externalTitleData
+            }
+            //issue entitlement does not exist in THIS subscription
+            else {
+                PermanentTitle ptCheck = PermanentTitle.findByTippAndOwner(match, contextService.getOrg())
+                //permanent title exists = title perpetually purchased!
+                if(ptCheck) {
+                    perpetuallyPurchasedCount++
+                    externalTitleData.put('found_in_package', RDStore.YN_YES.value)
+                    externalTitleData.put('already_purchased_at', "${ptCheck.subscription.name} (${ptCheck.subscription.startDate}-${ptCheck.subscription.endDate})")
+                    result.notAddedTitles << externalTitleData
+                }
+                //found nowhere ==> create new entitlement
+                else {
+                    toBeAdded << match.gokbId
+                }
+            }
+            userCache.put('progress', 50+i*pointsPerIteration)
+        }
+        userCache.put('progress', 75)
+        if (toBeAdded) {
+            Set<Long> childSubIds = [], pkgIds = []
+            if(configMap.withChildrenKBART == 'on') {
+                childSubIds.addAll(configMap.subscription.getDerivedSubscriptions().id)
+            }
+            pkgIds.addAll(Package.executeQuery('select tipp.pkg.id from TitleInstancePackagePlatform tipp where tipp.gokbId in (:wekbIds)', [wekbIds: toBeAdded]))
+            //executorService.execute({
+                //Thread.currentThread().setName("EntitlementEnrichment_${configMap.subscription.id}")
+                bulkAddEntitlements(configMap.subscription, toBeAdded, configMap.subscription.hasPerpetualAccess)
+                userCache.put('progress', 80)
+                if(configMap.withChildrenKBART == 'on') {
+                    Sql sql = GlobalService.obtainSqlConnection()
+                    try {
+                        childSubIds.each { Long childSubId ->
+                            pkgIds.each { Long pkgId ->
+                                batchQueryService.bulkAddHolding(sql, childSubId, pkgId, configMap.subscription.hasPerpetualAccess, configMap.subscription.id)
+                            }
+                        }
+                    }
+                    finally {
+                        sql.close()
+                    }
+                }
+                userCache.put('progress', 90)
+                if(globalService.isset(configMap, 'issueEntitlementGroupNewKBART') || globalService.isset(configMap, 'issueEntitlementGroupKBARTID')) {
+                    IssueEntitlementGroup issueEntitlementGroup
+                    if (configMap.issueEntitlementGroupNewKBART) {
 
+                        IssueEntitlementGroup.withTransaction {
+                            issueEntitlementGroup = IssueEntitlementGroup.findBySubAndName(configMap.subscription, params.issueEntitlementGroupNewKBART) ?: new IssueEntitlementGroup(sub: configMap.subscription, name: configMap.issueEntitlementGroupNewKBART).save()
+                        }
+                    }
+
+                    if (configMap.issueEntitlementGroupKBARTID && configMap.issueEntitlementGroupKBARTID != '') {
+                        issueEntitlementGroup = IssueEntitlementGroup.findById(Long.parseLong(configMap.issueEntitlementGroupKBARTID))
+                    }
+
+                    if (issueEntitlementGroup) {
+                        issueEntitlementGroup.refresh()
+                        Object[] keys = result.selectedTitles.toArray()
+                        keys.each { String gokbUUID ->
+                            TitleInstancePackagePlatform titleInstancePackagePlatform = TitleInstancePackagePlatform.findByGokbId(gokbUUID)
+                            if (titleInstancePackagePlatform) {
+                                IssueEntitlement ie = IssueEntitlement.findBySubscriptionAndTipp(configMap.subscription, titleInstancePackagePlatform)
+                                if (issueEntitlementGroup && !IssueEntitlementGroupItem.findByIe(ie)) {
+                                    IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
+                                            ie: ie,
+                                            ieGroup: issueEntitlementGroup)
+                                    if (!issueEntitlementGroupItem.save()) {
+                                        log.error("Problem saving IssueEntitlementGroupItem by manual adding ${issueEntitlementGroupItem.getErrors().getAllErrors().toListString()}")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            //})
+            userCache.put('progress', 100)
+            result.success = true
+        }
+        result.addedCount = toBeAdded.size()
+        result.notAddedCount = result.total-result.addedCount
+        result.perpetuallyPurchasedCount = perpetuallyPurchasedCount
+        result
+        /*
         InputStream stream = kbartFile.getInputStream()
         ArrayList<String> rows = stream.text.split('\n')
         int zdbCol = -1, onlineIdentifierCol = -1, printIdentifierCol = -1, titleUrlCol = -1, titleIdCol = -1, doiCol = -1
@@ -1507,6 +1598,7 @@ class SubscriptionService {
                         match = matchList[0] as TitleInstancePackagePlatform
                 }
                 if(match) {
+                    //TODO use from here
                     count++
                     IssueEntitlement ieMatch = IssueEntitlement.findBySubscriptionAndTippAndStatusNotEqual(subscription, match, RDStore.TIPP_STATUS_REMOVED)
                     if(ieMatch) {
@@ -1529,6 +1621,7 @@ class SubscriptionService {
             }
         }
         [titleRow: titleRow, wrongTitles: wrongTitles, truncatedRows: truncatedRows.join(', '), selectedTitles: selectedTitles, processRows: countRows, processCount: count, countSelectTipps: countSelectTipps, countNotSelectTipps: countNotSelectTipps]
+        */
     }
 
     /**
@@ -1601,63 +1694,63 @@ class SubscriptionService {
     void bulkAddEntitlements(Subscription sub, Set <String> selectedTitles, boolean pickAndChoosePerpetualAccess, IssueEntitlementGroup ieGroup = null) {
         Sql sql = GlobalService.obtainSqlConnection()
         try {
-        Object[] keys = selectedTitles.toArray()
-        sql.withTransaction {
-            sql.executeUpdate('update issue_entitlement set ie_status_rv_fk = :current from title_instance_package_platform where ie_tipp_fk = tipp_id and ie_status_rv_fk = :expected and tipp_gokb_id = any(:keys) and ie_subscription_fk = :subId', [current: RDStore.TIPP_STATUS_CURRENT.id, expected: RDStore.TIPP_STATUS_EXPECTED.id, keys: sql.connection.createArrayOf('varchar', keys), subId: sub.id])
-            Set<Map<String, Object>> ieDirectMapSet = []//, coverageDirectMapSet = [], priceItemDirectSet = []
-            selectedTitles.each { String wekbId ->
-                log.debug "processing ${wekbId}"
-                List<GroovyRowResult> existingEntitlements = sql.rows('select ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId and ie_status_rv_fk = :current and tipp_gokb_id = :key',[subId: sub.id, current: RDStore.TIPP_STATUS_CURRENT.id, key: wekbId])
-                if(existingEntitlements.size() == 0) {
-                    Map<String, Object> configMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id]//, coverageMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id], priceMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id]
-                    if(pickAndChoosePerpetualAccess || sub.hasPerpetualAccess){
-                        configMap.perpetualAccessBySub = sub.id
+            Object[] keys = selectedTitles.toArray()
+            sql.withTransaction {
+                sql.executeUpdate('update issue_entitlement set ie_status_rv_fk = :current from title_instance_package_platform where ie_tipp_fk = tipp_id and ie_status_rv_fk = :expected and tipp_gokb_id = any(:keys) and ie_subscription_fk = :subId', [current: RDStore.TIPP_STATUS_CURRENT.id, expected: RDStore.TIPP_STATUS_EXPECTED.id, keys: sql.connection.createArrayOf('varchar', keys), subId: sub.id])
+                Set<Map<String, Object>> ieDirectMapSet = []//, coverageDirectMapSet = [], priceItemDirectSet = []
+                selectedTitles.each { String wekbId ->
+                    //log.debug "processing ${wekbId}"
+                    List<GroovyRowResult> existingEntitlements = sql.rows('select ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId and ie_status_rv_fk != :removed and tipp_gokb_id = :key',[subId: sub.id, current: RDStore.TIPP_STATUS_REMOVED.id, key: wekbId])
+                    if(existingEntitlements.size() == 0) {
+                        Map<String, Object> configMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id]//, coverageMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id], priceMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id]
+                        if(pickAndChoosePerpetualAccess || sub.hasPerpetualAccess){
+                            configMap.perpetualAccessBySub = sub.id
+                        }
+                        ieDirectMapSet << configMap
+                        /*
+                        coverageDirectMapSet << coverageMap
+                        priceItemDirectSet << priceMap
+                        */
                     }
-                    ieDirectMapSet << configMap
-                    /*
-                    coverageDirectMapSet << coverageMap
-                    priceItemDirectSet << priceMap
-                    */
                 }
-            }
-            ieDirectMapSet.each { Map<String, Object> configMap ->
-                sql.withBatch("insert into issue_entitlement (ie_version, ie_guid, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_status_rv_fk, ie_access_start_date, ie_access_end_date, ie_perpetual_access_by_sub_fk) " +
-                        "select 0, concat('issueentitlement:',gen_random_uuid()), now(), now(), ${sub.id}, tipp_id, tipp_status_rv_fk, tipp_access_start_date, tipp_access_end_date, ${configMap.perpetualAccessBySub} from title_instance_package_platform where tipp_gokb_id = :wekbId") { BatchingStatementWrapper stmt ->
-                    stmt.addBatch([wekbId: configMap.wekbId])
-                }
-            }
-            if(ieGroup) {
                 ieDirectMapSet.each { Map<String, Object> configMap ->
-                    sql.withBatch("insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_last_updated, igi_ie_fk, igi_ie_group_fk) " +
-                            "select 0, now(), now(), ie_id, ${ieGroup.id} from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_gokb_id = :wekbId and ie_subscription_fk = :subId") { stmt ->
-                        stmt.addBatch([wekbId: configMap.wekbId, subId: sub.id])
+                    sql.withBatch("insert into issue_entitlement (ie_version, ie_guid, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_status_rv_fk, ie_access_start_date, ie_access_end_date, ie_perpetual_access_by_sub_fk) " +
+                            "select 0, concat('issueentitlement:',gen_random_uuid()), now(), now(), ${sub.id}, tipp_id, tipp_status_rv_fk, tipp_access_start_date, tipp_access_end_date, ${configMap.perpetualAccessBySub} from title_instance_package_platform where tipp_gokb_id = :wekbId") { BatchingStatementWrapper stmt ->
+                        stmt.addBatch([wekbId: configMap.wekbId])
                     }
                 }
-            }
-            if(sub.hasPerpetualAccess) {
-                Long ownerId = sub.getSubscriberRespConsortia().id
-                ieDirectMapSet.each { Map<String, Object> configMap ->
-                    sql.withBatch("insert into permanent_title (pt_version, pt_ie_fk, pt_date_created, pt_subscription_fk, pt_last_updated, pt_tipp_fk, pt_owner_fk) " +
-                            "select 0, ie_id, now(), ie_subscription_fk, now(), ie_tipp_fk, "+ownerId+" from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_gokb_id = :wekbId and ie_subscription_fk = :subId") { BatchingPreparedStatementWrapper stmt ->
-                        stmt.addBatch([wekbId: configMap.wekbId, subId: sub.id])
+                if(ieGroup) {
+                    ieDirectMapSet.each { Map<String, Object> configMap ->
+                        sql.withBatch("insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_last_updated, igi_ie_fk, igi_ie_group_fk) " +
+                                "select 0, now(), now(), ie_id, ${ieGroup.id} from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_gokb_id = :wekbId and ie_subscription_fk = :subId") { stmt ->
+                            stmt.addBatch([wekbId: configMap.wekbId, subId: sub.id])
+                        }
                     }
                 }
-            }
-            /*
-            coverageDirectMapSet.each { Map<String, Object> configMap ->
-                sql.withBatch("insert into issue_entitlement_coverage (ic_version, ic_date_created, ic_last_updated, ic_start_date, ic_start_issue, ic_start_volume, ic_end_date, ic_end_issue, ic_end_volume, ic_coverage_depth, ic_coverage_note, ic_embargo, ic_ie_fk) " +
-                        "select 0, now(), now(), tc_start_date, tc_start_issue, tc_start_volume, tc_end_date, tc_end_issue, tc_end_volume, tc_coverage_depth, tc_coverage_note, tc_embargo, ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id join tippcoverage on tc_tipp_fk = tipp_id where ie_subscription_fk = :subId and tipp_gokb_id = :wekbId and ie_status_rv_fk != :removed") { BatchingStatementWrapper stmt ->
-                    stmt.addBatch(configMap)
+                if(sub.hasPerpetualAccess) {
+                    Long ownerId = sub.getSubscriberRespConsortia().id
+                    ieDirectMapSet.each { Map<String, Object> configMap ->
+                        sql.withBatch("insert into permanent_title (pt_version, pt_ie_fk, pt_date_created, pt_subscription_fk, pt_last_updated, pt_tipp_fk, pt_owner_fk) " +
+                                "select 0, ie_id, now(), ie_subscription_fk, now(), ie_tipp_fk, "+ownerId+" from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_gokb_id = :wekbId and ie_subscription_fk = :subId") { BatchingPreparedStatementWrapper stmt ->
+                            stmt.addBatch([wekbId: configMap.wekbId, subId: sub.id])
+                        }
+                    }
                 }
-            }
-            priceItemDirectSet.each { Map<String, Object> configMap ->
-                sql.withBatch("insert into price_item (pi_version, pi_date_created, pi_last_updated, pi_guid, pi_list_price, pi_list_currency_rv_fk, pi_ie_fk) " +
-                        "select 0, now(), now(), concat('priceitem:',gen_random_uuid()), pi_list_price, pi_list_currency_rv_fk, ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id join price_item on pi_tipp_fk = tipp_id where ie_subscription_fk = :subId and tipp_gokb_id = :wekbId and ie_status_rv_fk != :removed") { BatchingStatementWrapper stmt ->
-                    stmt.addBatch(configMap)
+                /*
+                coverageDirectMapSet.each { Map<String, Object> configMap ->
+                    sql.withBatch("insert into issue_entitlement_coverage (ic_version, ic_date_created, ic_last_updated, ic_start_date, ic_start_issue, ic_start_volume, ic_end_date, ic_end_issue, ic_end_volume, ic_coverage_depth, ic_coverage_note, ic_embargo, ic_ie_fk) " +
+                            "select 0, now(), now(), tc_start_date, tc_start_issue, tc_start_volume, tc_end_date, tc_end_issue, tc_end_volume, tc_coverage_depth, tc_coverage_note, tc_embargo, ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id join tippcoverage on tc_tipp_fk = tipp_id where ie_subscription_fk = :subId and tipp_gokb_id = :wekbId and ie_status_rv_fk != :removed") { BatchingStatementWrapper stmt ->
+                        stmt.addBatch(configMap)
+                    }
                 }
+                priceItemDirectSet.each { Map<String, Object> configMap ->
+                    sql.withBatch("insert into price_item (pi_version, pi_date_created, pi_last_updated, pi_guid, pi_list_price, pi_list_currency_rv_fk, pi_ie_fk) " +
+                            "select 0, now(), now(), concat('priceitem:',gen_random_uuid()), pi_list_price, pi_list_currency_rv_fk, ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id join price_item on pi_tipp_fk = tipp_id where ie_subscription_fk = :subId and tipp_gokb_id = :wekbId and ie_status_rv_fk != :removed") { BatchingStatementWrapper stmt ->
+                        stmt.addBatch(configMap)
+                    }
+                }
+                */
             }
-            */
-        }
         }
         finally {
             sql.close()
