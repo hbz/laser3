@@ -2440,10 +2440,13 @@ class SurveyService {
     List generateSurveyPackageDataForCharts(SurveyConfig surveyConfig, List<Org> orgList){
         List chartSource = [['property', 'value']]
 
-        List<Package> packages = SurveyConfigPackage.executeQuery("select scp.pkg from SurveyConfigPackage scp where scp.surveyConfig = :surveyConfig order by scp.pkg.name", [surveyConfig: surveyConfig])
+        List<Package> packages = SurveyConfigPackage.executeQuery("select scp.pkg from SurveyConfigPackage scp where scp.surveyConfig = :surveyConfig order by scp.pkg.name asc", [surveyConfig: surveyConfig])
 
         packages.each {Package pkg ->
-            chartSource << ["${pkg.name.replace('"', '')}", SurveyPackageResult.executeQuery("select count(*) from SurveyPackageResult spr where spr.surveyConfig = :surveyConfig and spr.participant in (:participants) and spr.pkg = :pkg", [pkg: pkg, surveyConfig: surveyConfig, participants: orgList])[0]]
+            int countPackages = SurveyPackageResult.executeQuery("select count(*) from SurveyPackageResult spr where spr.surveyConfig = :surveyConfig and spr.participant in (:participants) and spr.pkg = :pkg", [pkg: pkg, surveyConfig: surveyConfig, participants: orgList])[0]
+            if(countPackages > 0) {
+                chartSource << ["${pkg.name.replace('"', '')}", countPackages]
+            }
         }
 
         chartSource = chartSource.reverse()
@@ -2451,12 +2454,16 @@ class SurveyService {
     }
 
     List generateSurveyVendorDataForCharts(SurveyConfig surveyConfig, List<Org> orgList){
-        List chartSource = [['property', 'value']]
+        //List chartSource = [['property', 'value']]
+        List chartSource = []
 
-        List<Vendor> vendors = SurveyConfigVendor.executeQuery("select scv.vendor from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig order by scv.vendor.name", [surveyConfig: surveyConfig])
+        List<Vendor> vendors = SurveyConfigVendor.executeQuery("select scv.vendor from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig order by scv.vendor.name asc", [surveyConfig: surveyConfig])
 
         vendors.each {Vendor vendor ->
-            chartSource << ["${vendor.name.replace('"', '')}", SurveyVendorResult.executeQuery("select count(*) from SurveyVendorResult svr where svr.surveyConfig = :surveyConfig and svr.participant in (:participants) and svr.vendor = :vendor", [vendor: vendor, surveyConfig: surveyConfig, participants: orgList])[0]]
+            int countVendors = SurveyVendorResult.executeQuery("select count(*) from SurveyVendorResult svr where svr.surveyConfig = :surveyConfig and svr.participant in (:participants) and svr.vendor = :vendor", [vendor: vendor, surveyConfig: surveyConfig, participants: orgList])[0]
+            if(countVendors > 0) {
+                chartSource << ["${vendor.name.replace('"', '')}", countVendors]
+            }
         }
 
         chartSource = chartSource.reverse()

@@ -2005,7 +2005,12 @@ class SurveyControllerService {
 
             result.participants = result.participants.sort { it.org.sortname }
 
-            result.charts = surveyService.generatePropertyDataForCharts(result.surveyConfig, result.participants?.org)
+            if(!params.fileformat) {
+                result.charts = surveyService.generatePropertyDataForCharts(result.surveyConfig, result.participants?.org)
+                if(result.surveyConfig.vendorSurvey) {
+                    result.charts = result.charts + surveyService.generateSurveyVendorDataForCharts(result.surveyConfig, result.participants?.org)
+                }
+            }
 
             [result: result, status: STATUS_OK]
         }
