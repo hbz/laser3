@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.Org; de.laser.Subscription" %>
+<%@ page import="de.laser.DocContext; de.laser.Doc; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.Org; de.laser.Subscription" %>
 <laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyInfo.evaluation')})" />
 
 <ui:breadcrumbs>
@@ -39,6 +39,76 @@
     </div>
 </g:if>
 <g:else>
+
+    <ui:greySegment>
+            <g:if test="${editable}">
+                <button type="button" class="${Btn.MODERN.SIMPLE} right floated"
+                        data-ownerid="${surveyConfig.subscription.id}"
+                        data-ownerclass="${surveyConfig.subscription.class.name}"
+                        data-doctype="${RDStore.DOC_TYPE_RENEWAL.value}"
+                        data-ui="modal"
+                        data-href="#modalCreateDocumentRenewal">
+                    <i aria-hidden="true" class="${Icon.CMD.ADD} small"></i>
+                </button>
+            </g:if>
+
+        <table class="ui compact stackable celled sortable table la-table la-js-responsive-table">
+            <thead>
+            <tr>
+                <th colspan="1"class="la-smaller-table-head center aligned">Renewal ${message(code: 'subscriptionsManagement.documents')}</th>
+                <th rowspan="2"><ui:optionsIcon /></th>
+            </tr>
+            <tr>
+                <th scope="col" class="wide" rowspan="2">${message(code:'license.docs.table.type')}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <%
+                Set<DocContext> documentSet2 = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType and owner.owner = :owner', [subscription: surveyConfig.subscription, docType: RDStore.DOC_TYPE_RENEWAL, owner: contextService.getOrg()])
+                documentSet2 = documentSet2.sort { it.owner?.title }
+            %>
+            <g:each in="${documentSet2}" var="docctx">
+                <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
+                    <tr>
+                        <td>
+                            <ui:documentIcon doc="${docctx.owner}" showText="true" showTooltip="true"/>
+                            <g:set var="supportedMimeType"
+                                   value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
+                            <strong>
+                                <g:if test="${supportedMimeType}">
+                                    <a href="#documentPreview" data-dctx="${docctx.id}">${docctx.owner.title}</a>
+                                </g:if>
+                                <g:else>
+                                    ${docctx.owner.title}
+                                </g:else>
+                            </strong>
+                            <br />
+                            ${docctx.owner.filename}
+                            <g:link controller="document" action="downloadDocument" id="${docctx.owner.uuid}"
+                                    class="${Btn.MODERN.SIMPLE} right floated"
+                                    target="_blank">
+                                <i class="${Icon.CMD.DOWNLOAD} small"></i>
+                            </g:link>
+                        </td>
+                        <td>
+                            <g:if test="${!docctx.sharedFrom && !docctx.isShared && userService.hasFormalAffiliation(docctx.owner.owner, 'INST_EDITOR')}">
+                                <g:set var="linkParams" value="${[instanceId:"${surveyInfo.id}", deleteId:"${docctx.id}", redirectController:"${controllerName}", redirectAction:"${actionName}"]}" />
+                                <g:link controller="document" action="deleteDocument" class="${Btn.MODERN.NEGATIVE_CONFIRM}"
+                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
+                                        data-confirm-term-how="delete"
+                                        params="${params.tab ? linkParams << [redirectTab: "${params.tab}"] : linkParams}"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                    <i class="${Icon.CMD.DELETE}"></i>
+                                </g:link>
+                            </g:if>
+                        </td>
+                    </tr>
+                </g:if>
+            </g:each>
+            </tbody>
+        </table>
+    </ui:greySegment>
 
     <ui:msg class="info" message="renewalEvaluation.dynamicSite" />
 
@@ -118,7 +188,7 @@
                                         ${propertyDefinition.getI10n('name')}
                                     </td>
                                     <td>${property.value.size()}</td>
-                                    <td>
+                                    <td class="center aligned">
                                         <button class="${Btn.SIMPLE}" onclick="JSPC.app.propertiesChanged(${property.key});">
                                             <g:message code="default.button.show.label"/>
                                         </button>
@@ -353,6 +423,22 @@
             });
         }
     </laser:script>
+
+    <g:if test="${editable}">
+        <laser:render template="/templates/documents/modal"
+                      model="${[newModalId: "modalCreateDocumentRenewal", owntp: 'subscription']}"/>
+
+
+        <laser:script file="${this.getGroovyPageFileName()}">
+            JSPC.callbacks.modal.onShow.modalCreateDocumentRenewal = function(trigger) {
+                $('#modalCreateDocumentRenewal input[name=ownerid]').attr('value', $(trigger).attr('data-ownerid'))
+                $('#modalCreateDocumentRenewal input[name=ownerclass]').attr('value', $(trigger).attr('data-ownerclass'))
+                $('#modalCreateDocumentRenewal input[name=ownertp]').attr('value', $(trigger).attr('data-ownertp'))
+                $('#modalCreateDocumentRenewal select[name=doctype]').dropdown('set selected', $(trigger).attr('data-doctype'))
+            }
+        </laser:script>
+
+    </g:if>
 
 </g:else>
 

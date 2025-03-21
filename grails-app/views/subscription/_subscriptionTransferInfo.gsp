@@ -263,6 +263,17 @@
                         <g:formatDate formatName="default.date.format.notime" date="${s.renewalSentDate}"/>
                     </td>
                     <td>
+
+                        <g:if test="${editable && surConfig && surConfig.surveyInfo.id.toString() == params.id}">
+                            <button type="button" class="${Btn.MODERN.SIMPLE} tiny"
+                                    data-ownerid="${s.id}"
+                                    data-ownerclass="${s.class.name}"
+                                    data-doctype="${RDStore.DOC_TYPE_RENEWAL.value}"
+                                    data-ui="modal"
+                                    data-href="#modalCreateDocumentSubTransferInfo">
+                                <i aria-hidden="true" class="${Icon.CMD.ADD} small"></i>
+                            </button>
+                        </g:if>
                         <%
                             Set<DocContext> documentSet2 = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType and owner.owner = :owner', [subscription: s, docType: RDStore.DOC_TYPE_RENEWAL, owner: contextService.getOrg()])
                             documentSet2 = documentSet2.sort { it.owner?.title }
@@ -363,4 +374,20 @@
         display: none;
     }
 </style>
+
+<g:if test="${editable}">
+    <laser:render template="/templates/documents/modal"
+                  model="${[newModalId: "modalCreateDocumentSubTransferInfo", owntp: 'subscription']}"/>
+
+
+    <laser:script file="${this.getGroovyPageFileName()}">
+        JSPC.callbacks.modal.onShow.modalCreateDocumentSubTransferInfo = function(trigger) {
+            $('#modalCreateDocumentSubTransferInfo input[name=ownerid]').attr('value', $(trigger).attr('data-ownerid'))
+            $('#modalCreateDocumentSubTransferInfo input[name=ownerclass]').attr('value', $(trigger).attr('data-ownerclass'))
+            $('#modalCreateDocumentSubTransferInfo input[name=ownertp]').attr('value', $(trigger).attr('data-ownertp'))
+            $('#modalCreateDocumentSubTransferInfo select[name=doctype]').dropdown('set selected', $(trigger).attr('data-doctype'))
+        }
+    </laser:script>
+
+</g:if>
 <!-- template: meta/subscriptionTransferInfo -->
