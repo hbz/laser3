@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5966    21.03.2025  dev     3.5         Moe     Feature     Speicheroption renewal auf Auswertungsseite
+
 6387    21.03.2025  dev     3.5         Moe     Bug         Unsauberes Verhalten Merkmalsgruppe (Umfrage)
 
 6104    19.03.2025  dev     3.5         Moe     Feature     Verlängerungsabfrage für MJL
