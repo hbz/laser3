@@ -1,7 +1,5 @@
 package de.laser
 
-import de.laser.auth.Role
-import de.laser.auth.User
 import de.laser.config.ConfigDefaults
 import de.laser.interfaces.ShareSupport
 import de.laser.storage.RDStore
@@ -25,9 +23,9 @@ import org.springframework.transaction.TransactionStatus
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class DocumentController {
 
+    AccessService accessService
     ContextService contextService
     MessageSource messageSource
-    AccessService accessService
 
     @DebugInfo(isInstUser = [])
     @Secured(closure = {
@@ -76,61 +74,51 @@ class DocumentController {
     def uploadDocument() {
         log.debug('upload document ..')
 
-        //process file
-        def input_file = request.getFile("upload_file")
-        if (input_file.size == 0) {
+        def uploadFile = request.getFile('upload_file')
+        if (uploadFile.size == 0) {
             flash.error = message(code: 'template.emptyDocument.file') as String
             redirect(url: request.getHeader('referer'))
             return
         }
 
         Doc.withTransaction { TransactionStatus ts ->
-            //get input stream of file object
-            def input_stream = input_file?.inputStream
-            String original_filename = request.getFile("upload_file")?.originalFilename
+            String ownerClass = params.ownerclass
+            String ownerId    = params.ownerid
+            String ownerTp    = params.ownertp
 
-            //retrieve uploading user and owner class
-            User user = contextService.getUser()
-            Class dc = CodeUtils.getDomainClass( params.ownerclass )
-
+            Class dc = CodeUtils.getDomainClass(ownerClass)
             if (dc) {
-                def instance = dc.get(params.ownerid)
+                def instance = dc.get(ownerId)
                 if (instance) {
                     log.debug("Got owner instance ${instance}")
 
-                    if (input_stream) {
-                        // def docstore_uuid = docstoreService.uploadStream(input_stream, original_filename, params.upload_title)
-                        // log.debug("Docstore uuid is ${docstore_uuid}");
-
-                        //create new document
-                        //TODO [ticket=2393] this must be replaced by the new entry in the document management system
-                        Doc doc_content = new Doc(
-                                contentType: Doc.CONTENT_TYPE_FILE,
-                                confidentiality: params.confidentiality ? RefdataValue.getByValueAndCategory(params.confidentiality, RDConstants.DOCUMENT_CONFIDENTIALITY) : null,
-                                filename: original_filename,
-                                mimeType: request.getFile("upload_file")?.contentType,
-                                title: params.upload_title ?: original_filename,
-                                type: RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE),
-                                creator: user,
-                                owner: contextService.getOrg(),
-                                server: AppUtils.getCurrentServer()
+                    if (uploadFile.inputStream) {
+                        Doc doc = new Doc(
+                                contentType:        Doc.CONTENT_TYPE_FILE,
+                                confidentiality:    params.confidentiality ? RefdataValue.getByValueAndCategory(params.confidentiality, RDConstants.DOCUMENT_CONFIDENTIALITY) : null,
+                                filename:   uploadFile.originalFilename,
+                                mimeType:   uploadFile.contentType,
+                                title:      params.upload_title ?: uploadFile.originalFilename,
+                                type:       RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE),
+                                creator:    contextService.getUser(),
+                                owner:      contextService.getOrg(),
+                                server:     AppUtils.getCurrentServer()
                         )
-
-                        doc_content.save()
+                        doc.save()
 
                         //move the uploaded file to its actual destination (= store the file)
-                        File new_File
+                        File targetFile
                         try {
-                            String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
-                            String fName = doc_content.uuid
+                            String tfPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
+                            String tfName = doc.uuid
 
-                            File folder = new File("${fPath}")
+                            File folder = new File("${tfPath}")
                             if (!folder.exists()) {
                                 folder.mkdirs()
                             }
-                            new_File = new File("${fPath}/${fName}")
+                            targetFile = new File("${tfPath}/${tfName}")
 
-                            input_file.transferTo(new_File)
+                            uploadFile.transferTo(targetFile)
                         }
                         catch (Exception e) {
                             e.printStackTrace()
@@ -138,8 +126,8 @@ class DocumentController {
 
                         //link the document to the target object
                         DocContext docctx = new DocContext(
-                                "${params.ownertp}": instance,
-                                owner: doc_content
+                                "${ownerTp}": instance,
+                                owner: doc
                         )
                         //set sharing settings (counts iff document is linked to an Org, are null otherwise)
                         docctx.shareConf = RefdataValue.get(params.shareConf) ?: null
@@ -162,14 +150,14 @@ class DocumentController {
 
                                     //create document objects for each file
                                     Doc doc_content2 = new Doc(
-                                            contentType: Doc.CONTENT_TYPE_FILE,
-                                            confidentiality: doc_content.confidentiality, // todo ?
-                                            filename: doc_content.filename,
-                                            mimeType: doc_content.mimeType,
-                                            title: doc_content.title,
-                                            type: doc_content.type,
-                                            owner: contextService.getOrg(),
-                                            server: AppUtils.getCurrentServer()
+                                            contentType:        Doc.CONTENT_TYPE_FILE,
+                                            confidentiality:    doc.confidentiality, // todo ?
+                                            filename:   doc.filename,
+                                            mimeType:   doc.mimeType,
+                                            title:      doc.title,
+                                            type:       doc.type,
+                                            owner:      contextService.getOrg(),
+                                            server:     AppUtils.getCurrentServer()
                                     )
 
                                     doc_content2.save()
@@ -178,15 +166,15 @@ class DocumentController {
 
                                     //store copies of the uploaded document files
                                     try {
-                                        String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
-                                        String fName = doc_content2.uuid
+                                        String tfPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
+                                        String tfName = doc_content2.uuid
 
-                                        File folder = new File("${fPath}")
+                                        File folder = new File("${tfPath}")
                                         if (!folder.exists()) {
                                             folder.mkdirs()
                                         }
-                                        File dst = new File("${fPath}/${fName}")
-                                        dst << new_File.text
+                                        File dst = new File("${tfPath}/${tfName}")
+                                        dst << targetFile.text
                                     }
                                     catch (Exception e) {
                                         e.printStackTrace()
@@ -194,7 +182,7 @@ class DocumentController {
 
                                     //create attachment of each document to the survey config
                                     DocContext doc_context2 = new DocContext(
-                                            "${params.ownertp}": config,
+                                            "${ownerTp}": config,
                                             owner: doc_content2
                                     )
                                     //doc_context2.shareConf = genericOIDService.resolveOID(params.shareConf)
@@ -202,15 +190,18 @@ class DocumentController {
                                 }
                             }
                         }
-                        log.debug("Doc created and new doc context set on ${params.ownertp} for ${params.ownerid}")
+                        log.debug('FileUpload: Created doc and docContext -> #' + doc.id + ', #' + docctx.id)
+                    }
+                    else {
+                        log.error('FileUpload: Unable to open inputStream -> ' + uploadFile.originalFilename)
                     }
                 }
                 else {
-                    log.error("Unable to locate document owner instance for class ${params.ownerclass}:${params.ownerid}")
+                    log.error('FileUpload: Document owner not found -> ' + ownerClass + ':' + ownerId)
                 }
             }
             else {
-                log.warn("Unable to locate domain class when processing generic doc upload. ownerclass was ${params.ownerclass}")
+                log.warn('FileUpload: Domain class (owner) not found -> ' + ownerClass)
             }
         }
         redirect(url: request.getHeader('referer'))

@@ -53,7 +53,7 @@ class PasswordUtils {
         char[] range = getUserPasswordCharacters()
 
         while (! isUserPasswordValid(password)) {
-            password = RandomStringUtils.random(16, 0, range.size() - 1, false, false, range)
+            password = RandomUtils.getRandom(16, range)
         }
         password
     }

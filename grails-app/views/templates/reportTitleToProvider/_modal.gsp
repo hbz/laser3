@@ -1,9 +1,9 @@
-<%@ page import="de.laser.utils.SwissKnife; de.laser.ui.Icon; de.laser.addressbook.Person; de.laser.addressbook.Contact; de.laser.CustomerTypeService; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.storage.BeanStore; de.laser.Task; grails.plugin.springsecurity.SpringSecurityUtils;" %>
+<%@ page import="de.laser.utils.RandomUtils; de.laser.ui.Icon; de.laser.addressbook.Person; de.laser.addressbook.Contact; de.laser.CustomerTypeService; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.storage.BeanStore; de.laser.Task; grails.plugin.springsecurity.SpringSecurityUtils;" %>
 <laser:serviceInjection />
 
     <ui:modal id="modalCreateRttpTask" message="task.create.reportTitleToProvider">
 
-        <g:set var="preID" value="${SwissKnife.getRandomID()}" />
+        <g:set var="preID" value="${RandomUtils.getRandomUCID()}" />
 
         <g:form id="${preID}_form" class="ui form" url="[controller: 'task', action: 'createTask']" method="post">
             <g:hiddenField id="${preID}_preID" name="preID" value="${preID}" />

@@ -16,6 +16,7 @@ import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.utils.DateUtils
 import de.laser.utils.PdfUtils
+import de.laser.utils.RandomUtils
 import de.laser.utils.SwissKnife
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
@@ -24,7 +25,6 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.sql.Sql
 import groovy.time.TimeCategory
-import org.apache.commons.lang3.RandomStringUtils
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.springframework.transaction.TransactionStatus
@@ -2456,7 +2456,7 @@ class SubscriptionController {
     def reporting() {
         if (! params.token) {
 //            params.token = 'static#' + params.id
-            params.token = RandomStringUtils.randomAlphanumeric(16) + '#' + params.id
+            params.token = RandomUtils.getRandomAlphabetic(16) + '#' + params.id
         }
         Map<String,Object> ctrlResult = subscriptionControllerService.reporting( params )
 

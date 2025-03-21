@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org; de.laser.ui.Btn; de.laser.utils.DateUtils; de.laser.Subscription; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.utils.PasswordUtils; de.laser.utils.RandomUtils; org.apache.commons.codec.binary.StringUtils; de.laser.Org; de.laser.ui.Btn; de.laser.utils.DateUtils; de.laser.Subscription; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:htmlStart text="Playground: Various" />
 
 <ui:breadcrumbs>
@@ -148,6 +148,28 @@
             <div class="content"> functional link</div>
         </div>
     </div>
+</div>
+
+<div class="ui segment">
+    <p class="ui header">StringUtils</p>
+
+    <pre>
+        ${ RandomUtils.getRandomAlphabetic(16) }
+        ${ RandomUtils.getRandomAlphabetic(16) }
+        ${ RandomUtils.getRandomAlphabetic(16) }
+
+        ${ PasswordUtils.getRandomUserPassword() }
+        ${ PasswordUtils.getRandomUserPassword() }
+        ${ PasswordUtils.getRandomUserPassword() }
+<%
+    String s = 'äöß!"- 2000_Taylor&Francis_Lizenzvertrag_BME Archive Collection Nationallizenz_20150414.pdf'
+    def    x = StringUtils.getBytesUtf8(s)
+    String y = StringUtils.newStringUtf8(x)
+%>
+    ${s} -> ${s.hashCode()}
+    ${x}
+    ${y} -> ${y.hashCode()}
+    </pre>
 </div>
 
 <div class="ui segment">
