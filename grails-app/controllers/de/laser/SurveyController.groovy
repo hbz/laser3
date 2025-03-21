@@ -1252,7 +1252,7 @@ class SurveyController {
                     modelMap.surveyProperties = ctrlResult.result.surveyConfig.getPrivateSurveyConfigProperties()
                     modelMap.selectablePrivateProperties = true
                 }
-                else if(params.props_div == 'survey_grouped_custom_properties'){
+                else if(params.props_div == "survey_grouped_custom_properties_${params.pdg_id}"){
                     PropertyDefinitionGroup pdg = PropertyDefinitionGroup.get(Long.valueOf(params.pdg_id))
                     if(pdg) {
                         modelMap.surveyProperties = ctrlResult.result.surveyConfig.getSurveyConfigPropertiesByPropDefGroup(pdg)
