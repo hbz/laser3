@@ -1802,7 +1802,7 @@ class MyInstitutionController  {
 		List bm = prf.stopBenchmark()
 		result.benchMark = bm
         if(params.containsKey('fileformat')) {
-            String dir = GlobalService.obtainFileStorageLocation()
+            String dir = GlobalService.obtainTmpFileLocation()
             File f = new File(dir+'/'+token)
             Map fileResult
             switch(params.fileformat) {
@@ -2211,7 +2211,7 @@ class MyInstitutionController  {
                     result.budgetCodes = financialData.budgetCodes
                     if(financialData.errorRows) {
                         //background of this procedure: the editor adding titles via KBART wishes to receive a "counter-KBART" which will then be sent to the provider for verification
-                        String dir = GlobalService.obtainFileStorageLocation()
+                        String dir = GlobalService.obtainTmpFileLocation()
                         File f = new File(dir+"/${result.filename}_errors")
                         if(!f.exists()) {
                             List headerRow = financialData.errorRows.remove(0)

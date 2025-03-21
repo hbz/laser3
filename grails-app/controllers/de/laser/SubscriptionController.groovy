@@ -23,13 +23,11 @@ import de.laser.wekb.Platform
 import de.laser.wekb.TitleInstancePackagePlatform
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
-import groovy.sql.Sql
 import groovy.time.TimeCategory
 import org.apache.commons.lang3.RandomStringUtils
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.mozilla.universalchardet.UniversalDetector
-import org.springframework.transaction.TransactionStatus
 import org.springframework.web.multipart.MultipartFile
 
 import javax.servlet.ServletOutputStream
@@ -1243,7 +1241,7 @@ class SubscriptionController {
                 selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
             }
             if (params.exportKBart) {
-                String dir = GlobalService.obtainFileStorageLocation()
+                String dir = GlobalService.obtainTmpFileLocation()
                 File f = new File(dir+'/'+filename)
                 if(!f.exists()) {
                     FileOutputStream fos = new FileOutputStream(f)
@@ -1304,7 +1302,7 @@ class SubscriptionController {
             result.enrichmentProcess = subscriptionService.issueEntitlementEnrichment(stream, result.subscription, (params.uploadCoverageDates == 'on'), (params.uploadPriceInfo == 'on'))
             if (result.enrichmentProcess.wrongTitles) {
                 //background of this procedure: the editor adding titles via KBART wishes to receive a "counter-KBART" which will then be sent to the provider for verification
-                String dir = GlobalService.obtainFileStorageLocation()
+                String dir = GlobalService.obtainTmpFileLocation()
                 File f = new File(dir+"/${filename}_matchingErrors")
                 String returnKBART = exportService.generateSeparatorTableString(result.enrichmentProcess.titleRow, result.enrichmentProcess.wrongTitles, '\t')
                 FileOutputStream fos = new FileOutputStream(f)
@@ -1457,7 +1455,7 @@ class SubscriptionController {
             }
             if (params.exportKBart) {
                 configMap.format = ExportService.KBART
-                String dir = GlobalService.obtainFileStorageLocation()
+                String dir = GlobalService.obtainTmpFileLocation()
                 File f = new File(dir + '/' + filename)
                 if (!f.exists()) {
                     FileOutputStream out = new FileOutputStream(f)
@@ -1562,7 +1560,7 @@ class SubscriptionController {
         else result.noFileSubmitted = true
         if (result.notAddedCount > 0) {
             //background of this procedure: the editor adding titles via KBART wishes to receive a "counter-KBART" which will then be sent to the provider for verification
-            String dir = GlobalService.obtainFileStorageLocation(), filename = "${kbartPreselect.getOriginalFilename()}_matchingErrors"
+            String dir = GlobalService.obtainTmpFileLocation(), filename = "${kbartPreselect.getOriginalFilename()}_matchingErrors"
             File f = new File(dir+'/'+filename)
             result.titleRow.addAll(['found_in_package','already_purchased_at'])
             Set<Contact> mailTo = Contact.executeQuery("select ct from PersonRole pr join pr.prs p join p.contacts ct where (p.isPublic = true or p.tenant = :context) and pr.functionType in (:functionTypes) and ct.contentType.value in (:contentTypes) and pr.provider in (:providers)",
@@ -1645,7 +1643,7 @@ class SubscriptionController {
 
         if (result.wrongTitles) {
             //background of this procedure: the editor adding titles via KBART wishes to receive a "counter-KBART" which will then be sent to the provider for verification
-            String dir = GlobalService.obtainFileStorageLocation()
+            String dir = GlobalService.obtainTmpFileLocation()
             File f = new File(dir+"/${filename}_matchingErrors")
             String returnKBART = exportService.generateSeparatorTableString(result.titleRow, result.wrongTitles, '\t')
             FileOutputStream fos = new FileOutputStream(f)

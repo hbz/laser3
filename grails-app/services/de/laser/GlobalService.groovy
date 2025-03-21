@@ -63,7 +63,7 @@ class GlobalService {
      * If there is no directory at the specified path, it will be created
      * @return a path to the temporary export save location
      */
-    static String obtainFileStorageLocation() {
+    static String obtainTmpFileLocation() {
         String dir = ConfigMapper.getStatsReportSaveLocation() ?: '/usage'
         File folder = new File(dir)
         if (!folder.exists()) {

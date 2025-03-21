@@ -105,7 +105,7 @@ class FinanceController  {
                         }
                         if(result.containsKey('wrongIdentifiers')) {
                             //background of this procedure: the editor adding prices via file wishes to receive a "counter-file" which will then be sent to the provider for verification
-                            String dir = GlobalService.obtainFileStorageLocation()
+                            String dir = GlobalService.obtainTmpFileLocation()
                             File f = new File(dir+"/${filename}_matchingErrors")
                             result.token = "${filename}_matchingErrors"
                             String returnFile = exportService.generateSeparatorTableString(null, result.wrongIdentifiers, '\t')

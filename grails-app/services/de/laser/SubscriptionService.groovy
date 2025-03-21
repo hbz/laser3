@@ -43,7 +43,6 @@ import groovy.sql.Sql
 import groovy.xml.slurpersupport.GPathResult
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.context.MessageSource
 import org.springframework.transaction.TransactionStatus
 import org.springframework.web.multipart.MultipartFile
@@ -2169,7 +2168,7 @@ class SubscriptionService {
                 result.filename = filename
                 filename += extension
                 result.token = filename
-                String dir = GlobalService.obtainFileStorageLocation()
+                String dir = GlobalService.obtainTmpFileLocation()
                 File f = new File(dir+'/'+filename)
                 if(!f.exists()) {
                     IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
