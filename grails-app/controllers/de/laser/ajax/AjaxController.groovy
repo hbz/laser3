@@ -2079,19 +2079,18 @@ class AjaxController {
         if (addressInstance && accessService.hasAccessToAddress(addressInstance as Address, AccessService.WRITE)) {
             if (params.setPreferredAddress == 'false') {
                 addressInstance.preferredForSurvey = false
+                addressInstance.save()
             }
             if (params.setPreferredAddress == 'true') {
-                addressInstance.preferredForSurvey = true
-                List<Address> addressList = Address.findAllByOrgAndTenantIsNull(contextService.getOrg())
-                addressList.each {
-                    if(it != addressInstance) {
-                        it.preferredForSurvey = false
-                        it.save()
-                    }
+                if(Address.findAllByOrgAndTenantIsNullAndPreferredForSurvey(contextService.getOrg(), true))
+                {
+                    flash.error = message(code: 'address.preferredForSurvey.fail')
+                }else {
+                    addressInstance.preferredForSurvey = true
+                    addressInstance.save()
                 }
             }
 
-            addressInstance.save()
         }
 
         if (personInstance && accessService.hasAccessToPerson(personInstance as Person, AccessService.WRITE)) {
@@ -2099,15 +2098,15 @@ class AjaxController {
             if(params.setPreferredBillingPerson) {
                 if (params.setPreferredBillingPerson == 'false') {
                     personInstance.preferredBillingPerson = false
+                    personInstance.save()
                 }
                 if (params.setPreferredBillingPerson == 'true') {
-                    personInstance.preferredBillingPerson = true
-                    List<Person> personList = Person.findAllByTenant(contextService.getOrg())
-                    personList.each {
-                        if(it != personInstance) {
-                            it.preferredBillingPerson = false
-                            it.save()
-                        }
+                    if(Person.findAllByTenantAndPreferredBillingPerson(contextService.getOrg(), true))
+                    {
+                        flash.error = message(code: 'person.preferredBillingPerson.fail')
+                    }else {
+                        personInstance.preferredBillingPerson = true
+                        personInstance.save()
                     }
                 }
             }
@@ -2119,9 +2118,8 @@ class AjaxController {
                 if (params.setPreferredSurveyPerson == 'true') {
                     personInstance.preferredSurveyPerson = true
                 }
+                personInstance.save()
             }
-
-            personInstance.save()
         }
 
         redirect(controller: 'organisation', action: 'contacts', id: params.id, params: [tab: addressInstance ? 'addresses' : 'contacts'])
