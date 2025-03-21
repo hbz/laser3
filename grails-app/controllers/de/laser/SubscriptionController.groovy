@@ -2456,7 +2456,7 @@ class SubscriptionController {
     def reporting() {
         if (! params.token) {
 //            params.token = 'static#' + params.id
-            params.token = RandomUtils.getRandomAlphabetic(16) + '#' + params.id
+            params.token = RandomUtils.getRandomAlphaNumeric(16) + '#' + params.id
         }
         Map<String,Object> ctrlResult = subscriptionControllerService.reporting( params )
 

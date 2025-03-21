@@ -16,7 +16,7 @@ class DatabaseUtils {
      */
     static Map<String, String> getQueryStruct_ilike(String field, String value) {
 
-        String name     = 'p_' + RandomUtils.getRandomAlphabetic(6)
+        String name     = 'p_' + RandomUtils.getRandomAlphaNumeric(6)
         String query    = ' (lower(' + field + ') like :' + name + ') '
         String val      = value.toLowerCase().trim()
 
@@ -42,7 +42,7 @@ class DatabaseUtils {
      */
     static Map<String, Object> getQueryStruct_ilike(List<String> fields, String value) {
 
-        String name     = 'p_' + RandomUtils.getRandomAlphabetic(6)
+        String name     = 'p_' + RandomUtils.getRandomAlphaNumeric(6)
         String query    = ''
         String val      = value.toLowerCase().trim()
 

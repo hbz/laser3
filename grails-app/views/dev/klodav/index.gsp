@@ -158,6 +158,10 @@
         ${ RandomUtils.getRandomAlphabetic(16) }
         ${ RandomUtils.getRandomAlphabetic(16) }
 
+        ${ RandomUtils.getRandomAlphaNumeric(16) }
+        ${ RandomUtils.getRandomAlphaNumeric(16) }
+        ${ RandomUtils.getRandomAlphaNumeric(16) }
+
         ${ PasswordUtils.getRandomUserPassword() }
         ${ PasswordUtils.getRandomUserPassword() }
         ${ PasswordUtils.getRandomUserPassword() }
@@ -165,6 +169,8 @@
     String s = 'äöß!"- 2000_Taylor&Francis_Lizenzvertrag_BME Archive Collection Nationallizenz_20150414.pdf'
     def    x = StringUtils.getBytesUtf8(s)
     String y = StringUtils.newStringUtf8(x)
+
+//     PasswordUtils.test()
 %>
     ${s} -> ${s.hashCode()}
     ${x}
