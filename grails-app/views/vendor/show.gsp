@@ -48,7 +48,7 @@
                     <dl>
                         <dt class="control-label"><g:message code="altname.plural" /></dt>
                         <dd>
-                            <div id="altnames" class="ui accordion la-accordion-showMore la-accordion-altName">
+                            <div id="altnames" class="ui accordion la-accordion-showMore la-accordion-altName" style="padding-bottom: 0">
                             <g:if test="${vendor.altnames}">
                                 <div class="ui divided middle aligned selection list la-flex-center">
                                     <div class="item title" id="altname_title" data-objId="altname-${vendor.altnames[0].id}">
@@ -95,12 +95,18 @@
                                     </div>
                                 </div>
                             </g:if>
+
                             </div><!-- #altnames -->
-                            <g:if test="${editable && !vendor.gokbId}">
-                                <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} la-js-addListValue" data-objtype="altname" value="${message(code: 'altname.add')}">
+                        </dd>
+                        <dd>
+                            <g:if test="${editable}">
+                                <button  data-content="${message(code: 'altname.add')}" data-objtype="altname" id="addAltname"  class="${Btn.MODERN.POSITIVE} la-js-addItem blue la-popup-tooltip">
+                                    <i class="${Icon.CMD.ADD}"></i>
+                                </button>
                             </g:if>
                         </dd>
                     </dl>
+                    <div></div>%{-- Breaks DL for a reason --}%
                     <dl>
                         <dt class="control-label"><g:message code="vendor.homepage.label"/></dt>
                         <dd>
@@ -984,7 +990,7 @@
         JSPC.app.personCreate($(this).attr('id'), ${vendor.id});
     });
 
-    $('.la-js-addListValue').click(function() {
+    $('.la-js-addItem').click(function() {
         let url;
         let returnSelector;
         switch($(this).attr('data-objtype')) {
