@@ -82,6 +82,7 @@ import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.workflow.WfChecklist
 import de.laser.workflow.WfCheckpoint
 import de.laser.workflow.WorkflowHelper
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.ss.usermodel.Workbook
 import org.mozilla.universalchardet.UniversalDetector
@@ -1496,8 +1497,38 @@ class AjaxHtmlController {
                 break
             case Org.class.simpleName:
                 Org org = Org.get(params.id)
-                OrganisationController organisationController
-                result.editable = organisationController._checkIsEditable(org)
+                boolean isEditable = false
+
+                boolean inContextOrg          = org.id == contextService.getOrg().id
+                boolean userIsYoda            = contextService.getUser().isYoda()
+                boolean userIsAdmin           = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+                boolean userHasEditableRights = userIsAdmin || contextService.isInstEditor()
+                if (inContextOrg) {
+                    isEditable = userHasEditableRights
+                }
+                else {
+                    switch (contextService.getOrg().getCustomerType()){
+                        case [ CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO ] :
+                            switch (org.getCustomerType()){
+                                case CustomerTypeService.ORG_INST_BASIC:        isEditable = userIsYoda; break
+                                case CustomerTypeService.ORG_INST_PRO:          isEditable = userIsYoda; break
+                                case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = userIsYoda; break
+                                case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = userIsYoda; break
+                                case CustomerTypeService.ORG_SUPPORT:           isEditable = userIsYoda; break
+                            }
+                            break
+                        case [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO, CustomerTypeService.ORG_SUPPORT ] :
+                            switch (org.getCustomerType()){
+                                case CustomerTypeService.ORG_INST_BASIC:        isEditable = userHasEditableRights; break
+                                case CustomerTypeService.ORG_INST_PRO:          isEditable = userHasEditableRights; break
+                                case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = userIsYoda; break
+                                case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = userIsYoda; break
+                                case CustomerTypeService.ORG_SUPPORT:           isEditable = userIsYoda; break
+                            }
+                            break
+                    }
+                }
+                result.editable = isEditable
                 if((result.editable || contextService.isInstEditor( CustomerTypeService.ORG_INST_PRO ) || contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_BASIC )) && params.onlyPrivateProperties == 'true') {
                     result.privateProperties = PropertyDefinition.findAllByDescrAndTenant(PropertyDefinition.ORG_PROP, contextService.getOrg(), [sort: 'name_' + lang])
                 }
