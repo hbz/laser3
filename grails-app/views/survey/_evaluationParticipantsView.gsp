@@ -107,11 +107,32 @@
 </g:if>
 
 <ui:filter>
+    <g:set var="filterConfigShowList"
+           value="${[['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['discoverySystemsFrontend', 'discoverySystemsIndex']]}"/>
+    <g:if test="${surveyConfig.subscription}">
+        <g:set var="filterConfigShowList"
+               value="${filterConfigShowList << ['hasSubscription', 'subRunTimeMultiYear']}"/>
+    </g:if>
+
+    <g:if test="${surveyConfig.packageSurvey && surveyConfig.vendorSurvey}">
+        <g:set var="filterConfigShowList"
+               value="${filterConfigShowList << ['surveyPackages', 'surveyVendors']}"/>
+    </g:if>
+    <g:elseif test="${surveyConfig.packageSurvey}">
+        <g:set var="filterConfigShowList"
+               value="${filterConfigShowList << ['surveyPackages']}"/>
+    </g:elseif>
+    <g:elseif test="${surveyConfig.vendorSurvey}">
+        <g:set var="filterConfigShowList"
+               value="${filterConfigShowList << ['surveyVendors']}"/>
+    </g:elseif>
+
+
     <g:form action="${actionName}" method="post" class="ui form"
             params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
         <laser:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['discoverySystemsFrontend', 'discoverySystemsIndex'], surveyConfig.subscription ? ['hasSubscription', 'subRunTimeMultiYear'] : []],
+                              tmplConfigShow      : filterConfigShowList,
                               tmplConfigFormFilter: true
                       ]"/>
     </g:form>
