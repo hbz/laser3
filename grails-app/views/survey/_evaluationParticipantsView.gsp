@@ -752,11 +752,10 @@
     </g:if>
     <br/><br/>
 
+    <g:set var="surveyParticipantsHasNotAccess"
+           value="${participants.findAll { !it.org.hasInstAdmin() }}"/>
+
     <g:if test="${surveyParticipantsHasNotAccess}">
-
-        <g:set var="surveyParticipantsHasNotAccess"
-               value="${participants.findAll { !it.org.hasInstAdmin() }}"/>
-
 
         <h4 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h4>
 
