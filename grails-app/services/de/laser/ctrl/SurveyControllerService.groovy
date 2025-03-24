@@ -4640,8 +4640,14 @@ class SurveyControllerService {
 
                     if (selectedMultiYearCount in [1, 2] && participantPropertyTwo && participantPropertyTwo.refValue?.id == RDStore.YN_YES.id) {
                         use(TimeCategory) {
-                            newStartDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 1.day) : null
-                            newEndDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 2.year) : null
+                            if(oldSubofParticipant && oldSubofParticipant.endDate){
+                                newStartDate = oldSubofParticipant.endDate + 1.day
+                                newEndDate = oldSubofParticipant.endDate + 2.year
+                            }else {
+                                newStartDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 1.day) : null
+                                newEndDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 2.year) : null
+                            }
+
                         }
                         Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)
                         if(subscription){
@@ -4650,8 +4656,13 @@ class SurveyControllerService {
                         }
                     } else if (selectedMultiYearCount in [1, 2, 3] && participantPropertyThree && participantPropertyThree.refValue?.id == RDStore.YN_YES.id) {
                         use(TimeCategory) {
-                            newStartDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 1.day) : null
-                            newEndDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 3.year) : null
+                            if(oldSubofParticipant && oldSubofParticipant.endDate){
+                                newStartDate = oldSubofParticipant.endDate + 1.day
+                                newEndDate = oldSubofParticipant.endDate + 3.year
+                            }else {
+                                newStartDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 1.day) : null
+                                newEndDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 3.year) : null
+                            }
                         }
                         Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)
                         if(subscription){
@@ -4660,8 +4671,13 @@ class SurveyControllerService {
                         }
                     } else if (selectedMultiYearCount in [1, 2, 3, 4] && participantPropertyFour && participantPropertyFour.refValue?.id == RDStore.YN_YES.id) {
                         use(TimeCategory) {
-                            newStartDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 1.day) : null
-                            newEndDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 4.year) : null
+                            if(oldSubofParticipant && oldSubofParticipant.endDate){
+                                newStartDate = oldSubofParticipant.endDate + 1.day
+                                newEndDate = oldSubofParticipant.endDate + 4.year
+                            }else {
+                                newStartDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 1.day) : null
+                                newEndDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 4.year) : null
+                            }
                         }
                         Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)
                         if(subscription){
@@ -4671,8 +4687,13 @@ class SurveyControllerService {
 
                     } else if (selectedMultiYearCount in [1, 2, 3, 4, 5] && participantPropertyFive && participantPropertyFive.refValue?.id == RDStore.YN_YES.id) {
                         use(TimeCategory) {
-                            newStartDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 1.day) : null
-                            newEndDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 5.year) : null
+                            if(oldSubofParticipant && oldSubofParticipant.endDate){
+                                newStartDate = oldSubofParticipant.endDate + 1.day
+                                newEndDate = oldSubofParticipant.endDate + 5.year
+                            }else {
+                                newStartDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 1.day) : null
+                                newEndDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 5.year) : null
+                            }
                         }
                         Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)
                         if(subscription){
@@ -4683,8 +4704,13 @@ class SurveyControllerService {
                     } else {
                         if (addMembersOnlyToSuccesorSub) {
                             use(TimeCategory) {
-                                newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
-                                newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
+                                if(oldSubofParticipant && oldSubofParticipant.endDate){
+                                    newStartDate = oldSubofParticipant.endDate + 1.day
+                                    newEndDate = oldSubofParticipant.endDate + 1.year
+                                }else {
+                                    newStartDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 1.day) : null
+                                    newEndDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 1.year) : null
+                                }
                             }
                             Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)
                             if(subscription){

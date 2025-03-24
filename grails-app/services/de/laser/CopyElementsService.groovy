@@ -27,6 +27,7 @@ import grails.gorm.transactions.Transactional
 import grails.web.mvc.FlashScope
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.Sql
+import groovy.time.TimeCategory
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.web.servlet.mvc.GrailsWebRequest
 import org.grails.web.util.WebUtils
