@@ -208,8 +208,17 @@ class ProviderService {
                     log.debug("${ProviderProperty.executeUpdate('update ProviderProperty pp set pp.owner = :target where pp.owner = :source', genericParams)} properties updated")
 
                     // documents
+                    // executeUpdate does not trigger properly the cascade - would result in EntityNotFoundException
+                    updateCount = 0
                     provider.documents.clear()
-                    log.debug("${DocContext.executeUpdate('update DocContext dc set dc.provider = :target where dc.provider = :source', genericParams)} document contexts updated")
+                    docContexts.each { DocContext dc ->
+                        dc.provider = replacement
+                        if(!dc.save())
+                            log.error(dc.errors.getAllErrors().toListString())
+                        else
+                            updateCount++
+                    }
+                    log.debug("${updateCount} doc contexts updated")
 
                     // electronic billings
                     provider.electronicBillings.clear()
@@ -254,7 +263,16 @@ class ProviderService {
                     log.debug("${updateCount} contacts updated, ${deleteCount} contacts deleted because already existent")
 
                     // tasks
-                    log.debug("${Task.executeUpdate('update Task t set t.provider = :target where t.provider = :source', genericParams)} tasks updated")
+                    // executeUpdate does not trigger properly the cascade - would result in EntityNotFoundException
+                    updateCount = 0
+                    tasks.each { Task t ->
+                        t.provider = replacement
+                        if(!t.save())
+                            log.error(t.errors.getAllErrors().toListString())
+                        else
+                            updateCount++
+                    }
+                    log.debug("${updateCount} tasks updated")
 
                     // platforms
                     log.debug("${Platform.executeUpdate('update Platform p set p.provider = :target where p.provider = :source', genericParams)} platforms updated")

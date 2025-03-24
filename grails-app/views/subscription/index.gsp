@@ -34,20 +34,35 @@
     <laser:render template="message"/>
 </g:if>
 
-<g:if test="${enrichmentProcess}">
-    <ui:msg class="success" header="${message(code: 'subscription.details.issueEntitlementEnrichment.label')}">
-        <g:message code="subscription.details.issueEntitlementEnrichment.enrichmentProcess"
-                   args="[enrichmentProcess.countIes, enrichmentProcess.processCount, enrichmentProcess.processCountChangesCoverageDates, enrichmentProcess.processCountChangesPrice]"/>
-    </ui:msg>
-
-    <g:if test="${truncatedRows}">
-        <ui:msg class="error" showIcon="true" message="subscription.details.addEntitlements.truncatedRows" args="[truncatedRows]"/>
+<g:if test="${issueEntitlementEnrichment && (success || error)}">
+    <g:if test="${success}">
+        <ui:msg class="success" header="${message(code: 'subscription.details.issueEntitlementEnrichment.label')}">
+            <g:message code="subscription.details.issueEntitlementEnrichment.enrichmentProcess"
+                       args="[processCount, toAddCount, processCountChangesCoverageDates, processCountChangesPrice]"/>
+        </ui:msg>
     </g:if>
-    <g:if test="${errorKBART}">
-        <ui:msg class="error" showIcon="true" message="subscription.details.addEntitlements.titleNotMatched" args="[errorCount]"/>
-        <g:link class="${Btn.ICON.SIMPLE}" controller="package" action="downloadLargeFile" params="[token: token, fileformat: fileformat]"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
-    </g:if>
+    <g:if test="${Boolean.valueOf(error)}">
+        <g:if test="${pickWithNoPick}">
+            <ui:msg class="error" showIcon="true" message="subscription.details.issueEntitlementEnrichment.pickWithNoPick"/>
+        </g:if>
+        <g:else>
+            <input id="errorMailto" type="hidden" value="${mailTo.content.join(';')}" />
+            <input id="errorMailcc" type="hidden" value="${contextService.getUser().email}" />
+            <ui:msg class="error" showIcon="true" message="subscription.details.issueEntitlementEnrichment.matchingError"
+                    args="[notAddedCount, notSubscribedCount, notInPackageCount, g.createLink(controller: 'package', action:'downloadLargeFile', params:[token: token, fileformat: 'kbart'])]"/>
+            <laser:script file="${this.getGroovyPageFileName()}">
+                JSPC.notifyProvider = function () {
+                    let mailto = $('#errorMailto').val();
+                    let mailcc = $('#errorMailcc').val();
+                    let subject = 'Fehlerhafte KBART';
+                    let body = 'Laut ERMS-6359 noch t.b.d.';
+                    let href = 'mailto:' + mailto + '?subject=' + subject + '&cc=' + mailcc + '&body=' + body;
 
+                    window.location.href = encodeURI(href);
+                }
+            </laser:script>
+        </g:else>
+    </g:if>
 </g:if>
 
 <g:if test="${deletedSPs}">
@@ -136,6 +151,13 @@
                                             <g:checkBox name="uploadPriceInfo" value="${uploadPriceInfo}"/>
                                             <label><g:message
                                                     code="subscription.details.issueEntitlementEnrichment.uploadPriceInfo.label"/></label>
+                                        </div>
+                                    </div>
+
+                                    <div class="field">
+                                        <div class="ui checkbox toggle">
+                                            <g:checkBox name="withPick"/>
+                                            <label><g:message code="subscription.details.issueEntitlementEnrichment.withPick.label"/></label>
                                         </div>
                                     </div>
 
