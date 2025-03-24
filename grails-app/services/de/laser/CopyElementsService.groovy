@@ -27,6 +27,7 @@ import grails.gorm.transactions.Transactional
 import grails.web.mvc.FlashScope
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.Sql
+import groovy.time.TimeCategory
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.web.servlet.mvc.GrailsWebRequest
 import org.grails.web.util.WebUtils
@@ -303,6 +304,23 @@ class CopyElementsService {
                 excludes.add(PendingChangeConfiguration.TITLE_DELETED+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
                 excludes.addAll(PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key+PendingChangeConfiguration.NOTIFICATION_SUFFIX})
                 Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,targetObject.id,excludes)
+
+                Date newStartDate = null
+                Date newEndDate = null
+
+                use(TimeCategory) {
+                    if(subMember.isMultiYear && subMember.endDate){
+                        newStartDate = subMember.endDate + 1.day
+                        newEndDate = subMember.endDate + 1.year
+                    }else {
+                        newStartDate = targetObject.endDate ? (targetObject.endDate + 1.day) : null
+                        newEndDate = targetObject.endDate ? (targetObject.endDate + 1.year) : null
+                    }
+
+                }
+
+                println(newStartDate)
+                println(newEndDate)
 
                 Subscription newSubscription = new Subscription(
                         isMultiYear: subMember.isMultiYear,
