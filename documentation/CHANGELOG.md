@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6359    24.03.2025  dev     3.5         Andreas Feature     Vereinheitlichung der Titlehinzufügeverfahren
+
 6008    21.03.2025  dev     3.5         Moe     Feature     Lieferanten-Umfrage: Export abändern
 
 5966    21.03.2025  dev     3.5         Moe     Feature     Speicheroption renewal auf Auswertungsseite
