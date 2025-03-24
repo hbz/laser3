@@ -82,9 +82,9 @@ class IssueEntitlementService {
 
     /**
      * ex <ul>
-     *     <li>{@link SubscriptionService#tippSelectForSurvey(org.springframework.web.multipart.MultipartFile, de.laser.Subscription, de.laser.survey.SurveyConfig, de.laser.Subscription)}</li>
+     *     <li>{@link SubscriptionService#tippSelectForSurvey(org.springframework.web.multipart.MultipartFile, java.util.Map)}</li>
      *     <li>{@link SubscriptionService#selectEntitlementsWithKBART(org.springframework.web.multipart.MultipartFile, java.util.Map)}</li>
-     *     <li>{@link SubscriptionService#issueEntitlementEnrichment(java.io.InputStream, de.laser.Subscription, boolean, boolean)}</li>
+     *     <li>{@link SubscriptionService#issueEntitlementEnrichment(org.springframework.web.multipart.MultipartFile, java.util.Map)}</li>
      *     </ul>
      */
     Map<String, Object> matchTippsFromFile(MultipartFile inputFile, Map configMap) {
@@ -95,7 +95,8 @@ class IssueEntitlementService {
             EhcacheWrapper userCache = contextService.getUserCache(configMap.progressCacheKey)
             userCache.put('label', 'Verarbeite Titel ...')
             userCache.put('progress', configMap.floor)
-            int countRows = 0, total = 0, notInPackageCount = 0, start, percentage = 0
+            boolean pickWithNoPick = false
+            int countRows = 0, total = 0, toAddCount = 0, notInPackageCount = 0, start, percentage = 0
             Set<String> titleRow = []
             Map<TitleInstancePackagePlatform, Map<String, Object>> matchedTitles = [:] //use keySet() to use only the retrieved we:kb keys
             Set<Map<String, Object>> notAddedTitles = []
@@ -119,6 +120,8 @@ class IssueEntitlementService {
                 CSVReader csvr = new CSVReaderBuilder( reader ).withCSVParser( csvp ).build()
                 List<String[]> lines = csvr.readAll()
                 total = lines.size()
+                if(!configMap.containsKey('withPick'))
+                    toAddCount = total
                 if(configMap.containsKey('withIDOnly')) {
                     start = 0
                 }
@@ -186,12 +189,10 @@ class IssueEntitlementService {
                         }
                     }
                 }
-                for(int i = start; i < total; i++) {
-                    String[] line = lines[i]
-                    if(line[0]) {
-                        countRows++
-                        log.debug("now processing row ${countRows}")
-                        if((line.size() == titleRow.size()) || line.size() == 1) {
+                if(!configMap.containsKey('withPick') || (configMap.containsKey('withPick') && colMap.pick > -1)) {
+                    for(int i = start; i < total; i++) {
+                        String[] line = lines[i]
+                        if(line[0]) {
                             /*
                                 here the switch between the matching methods:
                                 Select from total list (KBART) -> used now in tippSelectForSurvey()
@@ -199,76 +200,85 @@ class IssueEntitlementService {
                                 Select (with ID only) -> should contain one single column without header which contains the ID
                                 continue with tests
                              */
-                            TitleInstancePackagePlatform match = null
-                            //cascade: 1. title_url, 2. title_id, 3. identifier map
-                            if(configMap.withIDOnly) {
-                                match = TitleInstancePackagePlatform.findByHostPlatformURLAndPkgInListAndStatusNotEqual(line[colMap.titleUrlCol].trim(), configMap.subPkgs, RDStore.TIPP_STATUS_REMOVED)
-                                if(!match) {
-                                    List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns in (:ns) and tipp.status != :removed', [subPkgs: configMap.subPkgs, value: cols[colMap.titleIdCol].trim(), ns: namespaces.values(), removed: RDStore.TIPP_STATUS_REMOVED])
-                                    if (matchList.size() == 1)
-                                        match = matchList[0] as TitleInstancePackagePlatform
+                            boolean select = !configMap.containsKey('withPick') || (configMap.containsKey('withPick') && colMap.pick >= 0 && line[colMap.pick].trim().toLowerCase() in [RDStore.YN_YES.value.toLowerCase(), RDStore.YN_YES.getI10n('value').toLowerCase(), 'x'])
+                            if((line.size() == titleRow.size() && select) || configMap.containsKey('withIDOnly')) {
+                                countRows++
+                                log.debug("now processing row ${countRows}")
+                                TitleInstancePackagePlatform match = null
+                                //cascade: 1. title_url, 2. title_id, 3. identifier map
+                                if(configMap.containsKey('withIDOnly')) {
+                                    match = TitleInstancePackagePlatform.findByHostPlatformURLAndPkgInListAndStatusNotEqual(line[0].trim(), configMap.subPkgs, RDStore.TIPP_STATUS_REMOVED)
+                                    if(!match) {
+                                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns in (:ns) and tipp.status != :removed', [subPkgs: configMap.subPkgs, value: line[0].trim(), ns: namespaces.values(), removed: RDStore.TIPP_STATUS_REMOVED])
+                                        if (matchList.size() == 1)
+                                            match = matchList[0] as TitleInstancePackagePlatform
+                                    }
+                                }
+                                else {
+                                    if (colMap.titleUrlCol >= 0 && line[colMap.titleUrlCol] != null && !line[colMap.titleUrlCol].trim().isEmpty()) {
+                                        match = TitleInstancePackagePlatform.findByHostPlatformURLAndPkgInListAndStatusNotEqual(line[colMap.titleUrlCol].trim(), configMap.subPkgs, RDStore.TIPP_STATUS_REMOVED)
+                                    }
+                                    if (!match && colMap.titleIdCol >= 0 && line[colMap.titleIdCol] != null && !line[colMap.titleIdCol].trim().isEmpty()) {
+                                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status != :removed', [subPkgs: configMap.subPkgs, value: line[colMap.titleIdCol].trim(), ns: namespaces.title_id, removed: RDStore.TIPP_STATUS_REMOVED])
+                                        if (matchList.size() == 1)
+                                            match = matchList[0] as TitleInstancePackagePlatform
+                                    }
+                                    if (!match && colMap.doiCol >= 0 && line[colMap.doiCol] != null && !line[colMap.doiCol].trim().isEmpty()) {
+                                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status != :removed', [subPkgs: configMap.subPkgs, value: line[colMap.doiCol].trim(), ns: namespaces.doi, removed: RDStore.TIPP_STATUS_REMOVED])
+                                        if (matchList.size() == 1)
+                                            match = matchList[0] as TitleInstancePackagePlatform
+                                    }
+                                    if (!match && colMap.onlineIdentifierCol >= 0 && line[colMap.onlineIdentifierCol] != null && !line[colMap.onlineIdentifierCol].trim().isEmpty()) {
+                                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns in (:ns) and tipp.status != :removed', [subPkgs: configMap.subPkgs, value: line[colMap.onlineIdentifierCol].trim(), ns: [namespaces.eisbn, namespaces.eissn], removed: RDStore.TIPP_STATUS_REMOVED])
+                                        if (matchList.size() == 1)
+                                            match = matchList[0] as TitleInstancePackagePlatform
+                                    }
+                                    if (!match && colMap.printIdentifierCol >= 0 && line[colMap.printIdentifierCol] != null && !line[colMap.printIdentifierCol].trim().isEmpty()) {
+                                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns in (:ns) and tipp.status != :removed', [subPkgs: configMap.subPkgs, value: line[colMap.printIdentifierCol].trim(), ns: [namespaces.isbn, namespaces.issn], removed: RDStore.TIPP_STATUS_REMOVED])
+                                        if (matchList.size() == 1)
+                                            match = matchList[0] as TitleInstancePackagePlatform
+                                    }
+                                    if (!match && colMap.zdbCol >= 0 && line[colMap.zdbCol] != null && !line[colMap.zdbCol].trim().isEmpty()) {
+                                        List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status != :removed', [subPkgs: configMap.subPkgs, value: line[colMap.zdbCol].trim(), ns: namespaces.zdb, removed: RDStore.TIPP_STATUS_REMOVED])
+                                        if (matchList.size() == 1)
+                                            match = matchList[0] as TitleInstancePackagePlatform
+                                    }
+                                }
+                                Map<String, Object> externalTitleData = [:]
+                                colMap.each { String colName, int colNo ->
+                                    if (colNo > -1 && line[colNo]) {
+                                        String cellEntry = line[colNo].trim()
+                                        if (cellEntry)
+                                            externalTitleData.put(titleRow[colNo], cellEntry) //NOTE! when migrating issueEntitlementEnrichment, match against ORIGINAL header names (= titleRow) and NOT against internal ones (= colMap)!
+                                    }
+                                    //fill up empty cells for an eventual return file
+                                    else if(colName in ['found_in_package', 'already_purchased_at']) {
+                                        if(colName == 'already_purchased_at' && !configMap.containsKey('issueEntitlementEnrichment'))
+                                            externalTitleData.put(colName, null)
+                                    }
+                                    else if(colNo > -1) externalTitleData.put(titleRow[colNo], null)
+                                }
+                                if (match) {
+                                    matchedTitles.put(match, externalTitleData)
+                                    if(configMap.containsKey('withPick'))
+                                        toAddCount++
+                                }
+                                else if(!match) {
+                                    externalTitleData.put('found_in_package', RDStore.YN_NO.getI10n('value'))
+                                    notAddedTitles << externalTitleData
+                                    notInPackageCount++
                                 }
                             }
-                            else {
-                                if (colMap.titleUrlCol >= 0 && line[colMap.titleUrlCol] != null && !line[colMap.titleUrlCol].trim().isEmpty()) {
-                                    match = TitleInstancePackagePlatform.findByHostPlatformURLAndPkgInListAndStatusNotEqual(line[colMap.titleUrlCol].trim(), configMap.subPkgs, RDStore.TIPP_STATUS_REMOVED)
-                                }
-                                if (!match && colMap.titleIdCol >= 0 && line[colMap.titleIdCol] != null && !line[colMap.titleIdCol].trim().isEmpty()) {
-                                    List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status != :removed', [subPkgs: configMap.subPkgs, value: line[colMap.titleIdCol].trim(), ns: namespaces.title_id, removed: RDStore.TIPP_STATUS_REMOVED])
-                                    if (matchList.size() == 1)
-                                        match = matchList[0] as TitleInstancePackagePlatform
-                                }
-                                if (!match && colMap.doiCol >= 0 && line[colMap.doiCol] != null && !line[colMap.doiCol].trim().isEmpty()) {
-                                    List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status != :removed', [subPkgs: configMap.subPkgs, value: line[colMap.doiCol].trim(), ns: namespaces.doi, removed: RDStore.TIPP_STATUS_REMOVED])
-                                    if (matchList.size() == 1)
-                                        match = matchList[0] as TitleInstancePackagePlatform
-                                }
-                                if (!match && colMap.onlineIdentifierCol >= 0 && line[colMap.onlineIdentifierCol] != null && !line[colMap.onlineIdentifierCol].trim().isEmpty()) {
-                                    List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns in (:ns) and tipp.status != :removed', [subPkgs: configMap.subPkgs, value: line[colMap.onlineIdentifierCol].trim(), ns: [namespaces.eisbn, namespaces.eissn], removed: RDStore.TIPP_STATUS_REMOVED])
-                                    if (matchList.size() == 1)
-                                        match = matchList[0] as TitleInstancePackagePlatform
-                                }
-                                if (!match && colMap.printIdentifierCol >= 0 && line[colMap.printIdentifierCol] != null && !line[colMap.printIdentifierCol].trim().isEmpty()) {
-                                    List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns in (:ns) and tipp.status != :removed', [subPkgs: configMap.subPkgs, value: line[colMap.printIdentifierCol].trim(), ns: [namespaces.isbn, namespaces.issn], removed: RDStore.TIPP_STATUS_REMOVED])
-                                    if (matchList.size() == 1)
-                                        match = matchList[0] as TitleInstancePackagePlatform
-                                }
-                                if (!match && colMap.zdbCol >= 0 && line[colMap.zdbCol] != null && !line[colMap.zdbCol].trim().isEmpty()) {
-                                    List matchList = TitleInstancePackagePlatform.executeQuery('select id.tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and id.value = :value and id.ns = :ns and tipp.status != :removed', [subPkgs: configMap.subPkgs, value: line[colMap.zdbCol].trim(), ns: namespaces.zdb, removed: RDStore.TIPP_STATUS_REMOVED])
-                                    if (matchList.size() == 1)
-                                        match = matchList[0] as TitleInstancePackagePlatform
-                                }
-                            }
-                            boolean select = !configMap.containsKey('withPick') || (colMap.pick >= 0 && line[colMap.pick].trim().toLowerCase() in [RDStore.YN_YES.value.toLowerCase(), RDStore.YN_YES.getI10n('value').toLowerCase(), 'x'])
-                            Map<String, Object> externalTitleData = [:]
-                            colMap.each { String colName, int colNo ->
-                                if (colNo > -1 && line[colNo]) {
-                                    String cellEntry = line[colNo].trim()
-                                    if (cellEntry)
-                                        externalTitleData.put(titleRow[colNo], cellEntry) //NOTE! when migrating issueEntitlementEnrichment, match against ORIGINAL header names (= titleRow) and NOT against internal ones (= colMap)!
-                                }
-                                //fill up empty cells for an eventual return file
-                                else if(colName in ['found_in_package', 'already_purchased_at'])
-                                    externalTitleData.put(colName, null)
-                                else if(colNo > -1) externalTitleData.put(titleRow[colNo], null)
-                            }
-                            if (match && select) {
-                                matchedTitles.put(match, externalTitleData)
-                            }
-                            else {
-                                externalTitleData.put('found_in_package', RDStore.YN_NO.getI10n('value'))
-                                notAddedTitles << externalTitleData
-                                notInPackageCount++
-                            }
+                            //start from floor, end at ceil
+                            percentage = configMap.floor+countRows*((configMap.ceil-configMap.floor)/total)
+                            userCache.put('progress', percentage)
                         }
-                        //start from floor, end at ceil
-                        percentage = configMap.floor+countRows*((configMap.ceil-configMap.floor)/total)
-                        userCache.put('progress', percentage)
                     }
                 }
+                else pickWithNoPick = true
             }
             userCache.put('progress', configMap.ceil)
-            [titleRow: titleRow, matchedTitles: matchedTitles, notAddedTitles: notAddedTitles, total: total, processedCount: countRows, notInPackageCount: notInPackageCount]
+            [titleRow: titleRow, pickWithNoPick: pickWithNoPick, matchedTitles: matchedTitles, notAddedTitles: notAddedTitles, toAddCount: toAddCount, processedCount: countRows, notInPackageCount: notInPackageCount]
         }
     }
 

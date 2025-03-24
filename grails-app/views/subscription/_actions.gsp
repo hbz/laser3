@@ -79,12 +79,9 @@
                 <g:if test="${subscription.packages}">
                     <g:if test="${titleManipulation}">
                         <ui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
-                        <g:if test="${actionName == 'renewEntitlementsWithSurvey'}">
-                            <ui:actionsDropdownItem id="selectEntitlementsWithKBART" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscriberSub.id, params: [referer: actionName, progressCacheKey: '/survey/renewEntitlementsWithSurvey/', surveyConfigID: surveyConfig.id, tab: params.tab])}" message="subscription.details.addEntitlements.menu"/>
-                        </g:if>
-                        <g:else>
-                            <ui:actionsDropdownItem id="selectEntitlementsWithKBART" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscription.id, params: [referer: actionName, progressCacheKey: '/subscription/addEntitlements/'])}" message="subscription.details.addEntitlements.menu"/>
-                        </g:else>
+                        <ui:actionsDropdownItem id="selectEntitlementsWithKBART" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscription.id, params: [referer: actionName, headerToken: 'subscription.details.addEntitlements.menu', progressCacheKey: '/subscription/addEntitlements/'])}" message="subscription.details.addEntitlements.menu"/>
+                        <ui:actionsDropdownItem id="selectEntitlementsWithPick" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscription.id, params: [referer: actionName, headerToken: 'subscription.details.addEntitlements.menuPick', withPick: true, progressCacheKey: '/subscription/addEntitlements/'])}" message="subscription.details.addEntitlements.menuPick"/>
+                        <ui:actionsDropdownItem id="selectEntitlementsWithIDOnly" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscription.id, params: [referer: actionName, headerToken: 'subscription.details.addEntitlements.menuID', withIDOnly: true, progressCacheKey: '/subscription/addEntitlements/'])}" message="subscription.details.addEntitlements.menuID"/>
                     </g:if>
                     <g:else>
                         <ui:actionsDropdownItemDisabled message="subscription.details.addEntitlements.label" tooltip="${message(code:'subscription.details.addEntitlements.holdingEntire')}"/>
@@ -226,7 +223,7 @@
 </g:if>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    $('#selectEntitlementsWithKBART').on('click', function(e) {
+    $('#selectEntitlementsWithKBART, #selectEntitlementsWithPick, #selectEntitlementsWithIDOnly').on('click', function(e) {
             e.preventDefault();
 
             $.ajax({
@@ -251,7 +248,7 @@
                     }
                 }).modal('show');
             })
-        })
+        });
 </laser:script>
 
 
