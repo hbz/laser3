@@ -10,7 +10,7 @@
             %>
             <div class="ui item">
                 <div class="content la-space-right">
-                    <strong>${outputString}</strong>
+                    ${outputString}
                 </div>
                 <g:if test="${editable}">
                     <g:if test="${attribute[field].id in availableAttributeIds}">

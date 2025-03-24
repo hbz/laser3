@@ -178,14 +178,27 @@
                             <g:message code="vendor.ordering.supportedLibrarySystems.label" />
                         </dt>
                         <dd>
-                            <%
-                                List<RefdataValue> supportedLibrarySystems = RefdataCategory.getAllRefdataValues(RDConstants.SUPPORTED_LIBRARY_SYSTEM)
-                            %>
-                            <laser:render template="/templates/attributesList"
-                                          model="${[ownObj: vendor, deleteAction: 'deleteAttribute', attributes: vendor.supportedLibrarySystems, field: 'librarySystem', availableAttributeIds: supportedLibrarySystems.collect { RefdataValue rdv -> rdv.id }, editable: editable && !vendor.gokbId]}"/>
+                            <div class="ui grid">
+                                <div class="twelve wide column">
+                                <%
+                                    List<RefdataValue> supportedLibrarySystems = RefdataCategory.getAllRefdataValues(RDConstants.SUPPORTED_LIBRARY_SYSTEM)
+                                %>
+                                <laser:render template="/templates/attributesList"
+                                              model="${[ownObj: vendor, deleteAction: 'deleteAttribute', attributes: vendor.supportedLibrarySystems, field: 'librarySystem', availableAttributeIds: supportedLibrarySystems.collect { RefdataValue rdv -> rdv.id }, editable: editable && !vendor.gokbId]}"/>
 
-                            <laser:render template="/templates/attributesModal"
-                                          model="${[ownObj: vendor, addAction: 'addAttribute', modalId: 'librarySystem', buttonText: 'vendor.ordering.supportedLibrarySystems.add', label: 'vendor.ordering.supportedLibrarySystems.label', field: 'librarySystem', availableAttributes: supportedLibrarySystems, editable: editable && !vendor.gokbId]}"/>
+                                <laser:render template="/templates/attributesModal"
+                                              model="${[ownObj: vendor, addAction: 'addAttribute', modalId: 'librarySystem', buttonText: 'vendor.ordering.supportedLibrarySystems.add', label: 'vendor.ordering.supportedLibrarySystems.label', field: 'librarySystem', availableAttributes: supportedLibrarySystems, editable: editable && !vendor.gokbId]}"/>
+
+                                </div>
+                                <div class="right aligned four wide column">
+                                    <g:if test="${editable}">
+                                        <a  data-content="<g:message code="vendor.ordering.supportedLibrarySystems.add"/>" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-ui="modal" href="#librarySystem">
+                                            <i class="${Icon.CMD.ADD}"></i>
+                                        </a>
+                                    </g:if>
+
+                                </div>
+                            </div>
                         </dd>
                     </dl>
                     <dl>
