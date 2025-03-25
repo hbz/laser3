@@ -48,7 +48,7 @@
                     <dl>
                         <dt class="control-label"><g:message code="altname.plural" /></dt>
                         <dd>
-                            <div id="altnames" class="ui accordion la-accordion-showMore la-accordion-altName">
+                            <div id="altnames" class="ui accordion la-accordion-showMore la-accordion-altName" style="padding-bottom: 0">
                             <g:if test="${vendor.altnames}">
                                 <div class="ui divided middle aligned selection list la-flex-center">
                                     <div class="item title" id="altname_title" data-objId="altname-${vendor.altnames[0].id}">
@@ -95,12 +95,18 @@
                                     </div>
                                 </div>
                             </g:if>
+
                             </div><!-- #altnames -->
-                            <g:if test="${editable && !vendor.gokbId}">
-                                <input name="addAltname" id="addAltname" type="button" class="${Btn.SIMPLE} la-js-addListValue" data-objtype="altname" value="${message(code: 'altname.add')}">
+                        </dd>
+                        <dd>
+                            <g:if test="${editable}">
+                                <button  data-content="${message(code: 'altname.add')}" data-objtype="altname" id="addAltname"  class="${Btn.MODERN.POSITIVE} la-js-addItem blue la-popup-tooltip">
+                                    <i class="${Icon.CMD.ADD}"></i>
+                                </button>
                             </g:if>
                         </dd>
                     </dl>
+                    <div></div>%{-- Breaks DL for a reason --}%
                     <dl>
                         <dt class="control-label"><g:message code="vendor.homepage.label"/></dt>
                         <dd>
@@ -181,6 +187,13 @@
                             <laser:render template="/templates/attributesModal"
                                           model="${[ownObj: vendor, addAction: 'addAttribute', modalId: 'librarySystem', buttonText: 'vendor.ordering.supportedLibrarySystems.add', label: 'vendor.ordering.supportedLibrarySystems.label', field: 'librarySystem', availableAttributes: supportedLibrarySystems, editable: editable && !vendor.gokbId]}"/>
                         </dd>
+                        <dd>
+                            <g:if test="${editable}">
+                                <a  data-content="<g:message code="vendor.ordering.supportedLibrarySystems.add"/>" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-ui="modal" href="#librarySystem"  style="margin: 0.5em 0 0 0.5em">
+                                    <i class="${Icon.CMD.ADD}"></i>
+                                </a>
+                            </g:if>
+                        </dd>
                     </dl>
                     <dl>
                         <dt class="control-label">
@@ -195,6 +208,13 @@
 
                             <laser:render template="/templates/attributesModal"
                                           model="${[ownObj: vendor, addAction: 'addAttribute', modalId: 'delayNotification', buttonText: 'vendor.ordering.electronicDeliveryDelayNotifications.add', label: 'vendor.ordering.electronicDeliveryDelayNotifications.label', field: 'delayNotification', availableAttributes: electronicDeliveryDelayNotifications, editable: editable && !vendor.gokbId]}"/>
+                        </dd>
+                        <dd>
+                            <g:if test="${editable}">
+                                <a  data-content="<g:message code="vendor.ordering.electronicDeliveryDelayNotifications.add"/>" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-ui="modal" href="#delayNotification" >
+                                    <i class="${Icon.CMD.ADD}"></i>
+                                </a>
+                            </g:if>
                         </dd>
                     </dl>
                 </div>
@@ -984,7 +1004,7 @@
         JSPC.app.personCreate($(this).attr('id'), ${vendor.id});
     });
 
-    $('.la-js-addListValue').click(function() {
+    $('.la-js-addItem').click(function() {
         let url;
         let returnSelector;
         switch($(this).attr('data-objtype')) {

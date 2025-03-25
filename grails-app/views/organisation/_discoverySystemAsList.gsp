@@ -4,7 +4,7 @@
         <g:each in="${org.discoverySystemFrontends}" var="frontend">
             <div class="ui item">
                 <div class="content la-space-right">
-                    <strong>${frontend.frontend.getI10n("value")}</strong>
+                    ${frontend.frontend.getI10n("value")}
                 </div>
                 <g:if test="${editable}">
                     <div class="content la-space-right">
@@ -29,7 +29,7 @@
         <g:each in="${org.discoverySystemIndices}" var="index">
             <div class="ui item">
                 <div class="content la-space-right">
-                    <strong>${index.index.getI10n("value")}</strong>
+                    ${index.index.getI10n("value")}
                 </div>
                 <g:if test="${editable}">
                     <div class="content la-space-right">
