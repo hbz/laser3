@@ -15,14 +15,23 @@
                         <g:each in="${allPropDefGroups}" var="pdg">
                             <div class="la-checkAllArea">
                                 <div class="ui grid">
-                                  <div class="row">
-                                    <div class="fifteen wide column">
-                                        <h3 class="ui header">${message(code: 'propertyDefinition.plural')} (${pdg.name})</h3>
+                                    <div class="row">
+                                        <div class="fourteen wide column">
+                                            <h3 class="ui header">${message(code: 'propertyDefinition.plural')} (${pdg.name})</h3>
+                                        </div>
+
+                                        <div class="two wide colum">
+                                            <div class="ui compact inverted segment right floated"
+                                                 style="margin-right: 0;">
+                                                <div class="ui checkbox la-js-checkAll right aligned">
+                                                    <input type="checkbox" id="checkAllInput_plural"
+                                                           name="checkAllInput_plural">
+                                                    <label
+                                                        for="checkAllInput_plural">${message(code: 'menu.public')}</label>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="one wide column">
-                                        <input  type="checkbox" class="checkAll right aligned"/> <label>${message(code: 'menu.public')}</label>
-                                    </div>
-                                  </div>
                                 </div>
                                 <table class="ui celled la-js-responsive-table la-table compact table scrollContent">
                                     <tbody>
@@ -65,11 +74,11 @@
                                             </td>
                                             <td>
                                                 <g:if test="${!propertyService.checkPropertyExists(object, pd)}">
-                                                    <input type="checkbox" name="propertyDefinition" value="${pd.id}"/>
+                                                    <div class="ui checkbox">
+                                                        <input type="checkbox" name="propertyDefinition" value="${pd.id}"/>
+                                                        <label></label>
+                                                    </div>
                                                 </g:if>
-                                            %{--<g:else>
-                                                <input type="checkbox" disabled="disabled" name="propertyDefinition" value="${pd.id}"/>
-                                            </g:else>--}%
                                             </td>
                                         </tr>
                                     </g:each>
@@ -84,11 +93,16 @@
                         <div class="la-checkAllArea">
                             <div class="ui grid">
                                 <div class="row">
-                                    <div class="fifteen wide column">
+                                    <div class="fourteen wide column">
                                         <h3 class="ui header">${message(code: 'subscription.properties.orphaned')}</h3>
                                     </div>
-                                    <div class="one wide column">
-                                        <input  type="checkbox" class="checkAll right aligned"/> <label>${message(code: 'menu.public')}</label>
+                                    <div class="two wide colum">
+                                        <div class="ui compact inverted segment right floated" style="margin-right: 0;">
+                                            <div class="ui checkbox la-js-checkAll right aligned">
+                                                <input type="checkbox" id="checkAllInput_orphaned" name="checkAllInput_orphaned">
+                                                <label for="checkAllInput_orphaned">${message(code: 'menu.public')}</label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -132,11 +146,11 @@
                                         </td>
                                         <td>
                                             <g:if test="${!propertyService.checkPropertyExists(object, pd)}">
-                                                <input type="checkbox" name="propertyDefinition" value="${pd.id}"/>
+                                                <div class="ui checkbox">
+                                                    <input type="checkbox" name="propertyDefinition" value="${pd.id}"/>
+                                                    <label></label>
+                                                </div>
                                             </g:if>
-                                        %{-- <g:else>
-                                             <input type="checkbox" disabled="disabled" name="propertyDefinition" value="${pd.id}"/>
-                                         </g:else>--}%
                                         </td>
                                     </tr>
                                 </g:each>
@@ -151,11 +165,19 @@
                         <div class="la-checkAllArea">
                             <div class="ui grid">
                                 <div class="row">
-                                    <div class="fifteen wide column">
+                                    <div class="fourteen wide column">
                                         <h3 class="ui header">${message(code: 'subscription.properties.private')} ${contextService.getOrg().name}</h3>
                                     </div>
-                                    <div class="one wide column">
-                                        <input  type="checkbox" class="checkAll right aligned"/> <label>${message(code: 'menu.public')}</label>
+
+                                    <div class="two wide column">
+                                        <div class="ui compact inverted segment right floated" style="margin-right: 0;">
+                                            <div class="ui checkbox la-js-checkAll right aligned">
+                                                <input type="checkbox" id="checkAllInput_private"
+                                                       name="checkAllInput_private">
+                                                <label
+                                                    for="checkAllInput_private">${message(code: 'menu.public')}</label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -199,12 +221,12 @@
                                         </td>
                                         <td>
                                             <g:if test="${!propertyService.checkPropertyExists(object, pd)}">
-                                                <input type="checkbox" name="propertyDefinition" value="${pd.id}"/>
+                                                <div class="ui checkbox">
+                                                    <input type="checkbox" name="propertyDefinition" value="${pd.id}"/>
+                                                    <label></label>
+                                                </div>
                                             </g:if>
-                                        %{--<g:else>
-                                            <input type="checkbox" disabled="disabled" name="propertyDefinition" value="${pd.id}"/>
-                                        </g:else>--}%
-                                        </td>license
+                                        </td>
                                     </tr>
                                 </g:each>
                                 </tbody>
@@ -218,9 +240,5 @@
 
     </g:form>
 </ui:modal>
-<laser:script>
-    $(".checkAll").click(function () {
-        $(this).closest('.la-checkAllArea').find('input:checkbox').not(this).prop('checked', this.checked);
-    });
-</laser:script>
+
 <!-- O: templates/properties/_createPropertyModal -->
