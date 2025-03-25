@@ -1,10 +1,16 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore" %>
-<ui:modal id="KBARTUploadForm" message="subscription.details.addEntitlements.header" msgSave="${message(code: 'subscription.details.addEntitlements.preselect')}">
+<ui:modal id="KBARTUploadForm" message="${headerToken}" msgSave="${message(code: 'subscription.details.addEntitlements.preselect')}">
     <%-- double-check needed because menu is not being refreshed after xEditable change on sub/show --%>
     <g:if test="${subscription.holdingSelection != RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
 
         <g:form class="ui form" method="post" enctype="multipart/form-data">
             <g:hiddenField name="id" value="${subscription.id}"/>
+            <g:if test="${withPick}">
+                <g:hiddenField name="withPick" value="${true}"/>
+            </g:if>
+            <g:if test="${withIDOnly}">
+                <g:hiddenField name="withIDOnly" value="${true}"/>
+            </g:if>
             <g:hiddenField name="progressCacheKey" value="${progressCacheKey}"/>
             <g:if test="${surveyConfig}">
                 <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
@@ -80,7 +86,7 @@
                 let formData = new FormData(this);
                 //formData.append('kbartFile', kbart);
                 $.ajax({
-                    url: '<g:createLink controller="subscription" action="${surveyConfig ? 'selectEntitlementsWithKBARTForSurvey' : 'selectEntitlementsWithKBART'}"/>',
+                    url: '<g:createLink controller="subscription" action="${surveyConfig ? 'tippSelectForSurvey' : 'selectEntitlementsWithKBART'}"/>',
                     cache: false,
                     contentType: false,
                     processData: false,

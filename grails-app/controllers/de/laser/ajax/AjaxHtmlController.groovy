@@ -767,6 +767,9 @@ class AjaxHtmlController {
         result.institution = contextService.getOrg()
         result.tab = params.tab
         result.referer = params.referer
+        result.headerToken = params.headerToken
+        result.withPick = params.containsKey('withPick')
+        result.withIDOnly = params.containsKey('withIDOnly')
         result.progressCacheKey = params.progressCacheKey
 
         if(params.surveyConfigID){

@@ -1,10 +1,6 @@
-<%@ page import="de.laser.ui.Btn" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <laser:serviceInjection/>
 <g:if test="${editable}">
-    <a class="${Btn.SIMPLE}" data-ui="modal" href="#${modalId}">
-        <g:message code="${buttonText}"/>
-    </a>
-
     <ui:modal id="${modalId}" message="${buttonText}">
         <g:form class="ui form" url="[controller: controllerName, action: addAction]" method="post">
             <div class="field">

@@ -1,7 +1,7 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon" %>
 <laser:serviceInjection/>
 <g:if test="${success}">
-    <ui:msg class="success" showIcon="true" message="subscription.details.addEntitlements.matchingSuccessful" args="[total, addedCount]"/>
+    <ui:msg class="success" showIcon="true" message="subscription.details.addEntitlements.matchingSuccessful" args="[toAddCount, addedCount]"/>
 </g:if>
 <g:if test="${error}">
     <input id="errorMailto" type="hidden" value="${mailTo.content.join(';')}" />

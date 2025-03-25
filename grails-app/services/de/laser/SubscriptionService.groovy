@@ -23,6 +23,7 @@ import de.laser.stats.CounterCheck
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
+import de.laser.survey.SurveyInfo
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
@@ -1436,33 +1437,36 @@ class SubscriptionService {
 
     Map<String, Object> selectEntitlementsWithKBART(MultipartFile inputFile, Map<String, Object> configMap) {
         Map<String, Object> result = issueEntitlementService.matchTippsFromFile(inputFile, configMap)
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime(LocaleUtils.getCurrentLocale())
         int perpetuallyPurchasedCount = 0
         Set<String> toBeAdded = []
         EhcacheWrapper userCache = contextService.getUserCache(configMap.progressCacheKey)
-        int pointsPerIteration = 25/result.matchedTitles.size()
-        result.matchedTitles.eachWithIndex { TitleInstancePackagePlatform match, Map<String, Object> externalTitleData, int i ->
-            IssueEntitlement ieCheck = IssueEntitlement.findByTippAndSubscriptionAndStatusNotEqual(match, configMap.subscription, RDStore.TIPP_STATUS_REMOVED)
-            //issue entitlement exists in subscription
-            if(ieCheck) {
-                externalTitleData.put('found_in_package', RDStore.YN_YES.value)
-                result.notAddedTitles << externalTitleData
-            }
-            //issue entitlement does not exist in THIS subscription
-            else {
-                PermanentTitle ptCheck = PermanentTitle.findByTippAndOwner(match, contextService.getOrg())
-                //permanent title exists = title perpetually purchased!
-                if(ptCheck) {
-                    perpetuallyPurchasedCount++
+        if(result.matchedTitles) {
+            int pointsPerIteration = 25/result.matchedTitles.size()
+            result.matchedTitles.eachWithIndex { TitleInstancePackagePlatform match, Map<String, Object> externalTitleData, int i ->
+                IssueEntitlement ieCheck = IssueEntitlement.findByTippAndSubscriptionAndStatusNotEqual(match, configMap.subscription, RDStore.TIPP_STATUS_REMOVED)
+                //issue entitlement exists in subscription
+                if(ieCheck) {
                     externalTitleData.put('found_in_package', RDStore.YN_YES.value)
-                    externalTitleData.put('already_purchased_at', "${ptCheck.subscription.name} (${ptCheck.subscription.startDate}-${ptCheck.subscription.endDate})")
                     result.notAddedTitles << externalTitleData
                 }
-                //found nowhere ==> create new entitlement
+                //issue entitlement does not exist in THIS subscription
                 else {
-                    toBeAdded << match.gokbId
+                    PermanentTitle ptCheck = PermanentTitle.findByTippAndOwner(match, contextService.getOrg())
+                    //permanent title exists = title perpetually purchased!
+                    if(ptCheck) {
+                        perpetuallyPurchasedCount++
+                        externalTitleData.put('found_in_package', RDStore.YN_YES.value)
+                        externalTitleData.put('already_purchased_at', "${ptCheck.subscription.name} (${sdf.format(ptCheck.subscription.startDate)}-${sdf.format(ptCheck.subscription.endDate)})")
+                        result.notAddedTitles << externalTitleData
+                    }
+                    //found nowhere ==> create new entitlement
+                    else {
+                        toBeAdded << match.gokbId
+                    }
                 }
+                userCache.put('progress', 50+i*pointsPerIteration)
             }
-            userCache.put('progress', 50+i*pointsPerIteration)
         }
         userCache.put('progress', 75)
         if (toBeAdded) {
@@ -1526,7 +1530,7 @@ class SubscriptionService {
             result.success = true
         }
         result.addedCount = toBeAdded.size()
-        result.notAddedCount = result.total-result.addedCount
+        result.notAddedCount = result.toAddCount-result.addedCount
         result.perpetuallyPurchasedCount = perpetuallyPurchasedCount
         result
         /*
@@ -1597,7 +1601,6 @@ class SubscriptionService {
                         match = matchList[0] as TitleInstancePackagePlatform
                 }
                 if(match) {
-                    //TODO use from here
                     count++
                     IssueEntitlement ieMatch = IssueEntitlement.findBySubscriptionAndTippAndStatusNotEqual(subscription, match, RDStore.TIPP_STATUS_REMOVED)
                     if(ieMatch) {
@@ -3122,11 +3125,93 @@ class SubscriptionService {
      * @param uploadPriceInfo should price dates be updated as well?
      * @return a map containing the processing results
      */
-    Map issueEntitlementEnrichment(InputStream stream, Subscription subscription, boolean uploadCoverageDates, boolean uploadPriceInfo) {
-
-        Integer count = 0
-        Integer countChangesPrice = 0
-        Integer countChangesCoverageDates = 0
+    Map issueEntitlementEnrichment(MultipartFile inputFile, Map<String, Object> configMap) {
+        Map<String, Object> result = issueEntitlementService.matchTippsFromFile(inputFile, configMap)
+        int count = 0
+        int countChangesPrice = 0
+        int countChangesCoverageDates = 0
+        result.matchedTitles.each { TitleInstancePackagePlatform match, Map<String, Object> externalTitleData ->
+            IssueEntitlement ieMatch = IssueEntitlement.findBySubscriptionAndTippAndStatusNotEqual(configMap.subscription, match, RDStore.TIPP_STATUS_REMOVED)
+            if (ieMatch) {
+                count++
+                if (configMap.uploadCoverageDates) {
+                    IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage()
+                    result.titleRow.each { String colName ->
+                        String cellEntry = externalTitleData.get(colName)?.trim()
+                        if (cellEntry) {
+                            switch (colName) {
+                                case "date_first_issue_online": ieCoverage.startDate = DateUtils.parseDateGeneric(cellEntry)
+                                    break
+                                case "num_first_vol_online": ieCoverage.startVolume = cellEntry
+                                    break
+                                case "num_first_issue_online": ieCoverage.startIssue = cellEntry
+                                    break
+                                case "date_last_issue_online": ieCoverage.endDate = DateUtils.parseDateGeneric(cellEntry)
+                                    break
+                                case "num_last_vol_online": ieCoverage.endVolume = cellEntry
+                                    break
+                                case "num_last_issue_online": ieCoverage.endIssue = cellEntry
+                                    break
+                                case "embargo_info": ieCoverage.embargo = cellEntry
+                                    break
+                                case "coverage_depth": ieCoverage.coverageDepth = cellEntry
+                                    break
+                                case "notes": ieCoverage.coverageNote = cellEntry
+                                    break
+                            }
+                        }
+                    }
+                    if (ieCoverage && !ieCoverage.findEquivalent(ieMatch.coverages)) {
+                        ieCoverage.issueEntitlement = ieMatch
+                        if (!ieCoverage.save()) {
+                            throw new EntitlementCreationException(ieCoverage.errors)
+                        } else {
+                            countChangesCoverageDates++
+                        }
+                    }
+                }
+                if (configMap.uploadPriceInfo) {
+                    result.titleRow.each { String colName ->
+                        String cellEntry = externalTitleData.get(colName)?.trim()
+                        if(cellEntry) {
+                            PriceItem priceItem = null
+                            try {
+                                switch (colName) {
+                                    case ["listprice_eur", "localprice_eur"]: priceItem = ieMatch.priceItems?.find { PriceItem pi -> pi.localCurrency == RDStore.CURRENCY_EUR } ? ieMatch.priceItems.find { PriceItem pi -> pi.localCurrency == RDStore.CURRENCY_EUR } : new PriceItem(issueEntitlement: ieMatch, localCurrency: RDStore.CURRENCY_EUR)
+                                        priceItem.localPrice = escapeService.parseFinancialValue(cellEntry)
+                                        break
+                                    case ["listprice_usd", "localprice_usd"]: priceItem = ieMatch.priceItems?.find { PriceItem pi -> pi.localCurrency == RDStore.CURRENCY_USD } ? ieMatch.priceItems.find { PriceItem pi -> pi.localCurrency == RDStore.CURRENCY_USD } : new PriceItem(issueEntitlement: ieMatch, localCurrency: RDStore.CURRENCY_USD)
+                                        priceItem.localPrice = escapeService.parseFinancialValue(cellEntry)
+                                        break
+                                    case ["listprice_gbp", "localprice_gbp"]: priceItem = ieMatch.priceItems?.find { PriceItem pi -> pi.localCurrency == RDStore.CURRENCY_GBP } ? ieMatch.priceItems.find { PriceItem pi -> pi.localCurrency == RDStore.CURRENCY_GBP } : new PriceItem(issueEntitlement: ieMatch, localCurrency: RDStore.CURRENCY_GBP)
+                                        priceItem.localPrice = escapeService.parseFinancialValue(cellEntry)
+                                        break
+                                }
+                            }
+                            catch (NumberFormatException e) {
+                                log.error("Unparseable number ${cellEntry}")
+                            }
+                            if (priceItem?.localPrice && priceItem?.localCurrency) {
+                                priceItem.setGlobalUID()
+                                if (!priceItem.save()) {
+                                    throw new Exception(priceItem.errors.toString())
+                                } else {
+                                    countChangesPrice++
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        result.success = count > 0
+        result.notAddedCount = result.toAddCount-count
+        result.notSubscribedCount = result.matchedTitles.size()-count
+        result.processCount = count
+        result.processCountChangesCoverageDates = countChangesCoverageDates
+        result.processCountChangesPrice = countChangesPrice
+        result
+        /*
 
         Set<Package> subPkgs = SubscriptionPackage.executeQuery('select sp.pkg from SubscriptionPackage sp where sp.subscription = :subscription', [subscription: subscription])
 
@@ -3246,6 +3331,7 @@ class SubscriptionService {
                 }
 
                 if (match) {
+                    //TODO use from here
                     IssueEntitlement ieMatch = IssueEntitlement.findBySubscriptionAndTippAndStatusNotEqual(subscription, match, RDStore.TIPP_STATUS_REMOVED)
                     if (ieMatch) {
                         count++
@@ -3333,16 +3419,61 @@ class SubscriptionService {
         }
 
         return [processCount: count, titleRow: titleRow, processCountChangesCoverageDates: countChangesCoverageDates, processCountChangesPrice: countChangesPrice, wrongTitles: wrongTitles, truncatedRows: truncatedRows.join(', ')]
+        */
     }
 
+    Map tippSelectForSurvey(MultipartFile inputFile, Map<String, Object> configMap) {
+        Map<String, Object> result = issueEntitlementService.matchTippsFromFile(inputFile, configMap)
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime(LocaleUtils.getCurrentLocale())
+        EhcacheWrapper userCache = contextService.getUserCache(configMap.progressCacheKey)
+        int pointsPerIteration = 25/result.matchedTitles.size(), perpetuallyPurchasedCount = 0
+        Subscription subscriberSub = configMap.subscription
+        SurveyConfig surveyConfig = SurveyConfig.get(configMap.surveyConfigID)
+        SurveyInfo surveyInfo = surveyConfig.surveyInfo
+        Org subscriber = subscriberSub.getSubscriberRespConsortia(), contextOrg = contextService.getOrg()
+        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub)
+        Set<String> toBeAdded = []
+        userCache.put('progress', 50)
+        result.matchedTitles.eachWithIndex{ TitleInstancePackagePlatform match, Map<String, Object> externalTitleData, int i ->
+            IssueEntitlement ieInNewSub = IssueEntitlement.findByTippAndSubscriptionAndStatusNotEqual(match, subscriberSub, RDStore.TIPP_STATUS_REMOVED)
+            boolean allowedToSelect
+            PermanentTitle participantPerpetualAccessToTitle = PermanentTitle.findByTippAndOwner(match, subscriber)
+            if (surveyConfig.pickAndChoosePerpetualAccess) {
+                allowedToSelect = !(participantPerpetualAccessToTitle) && (!ieInNewSub || (ieInNewSub && (contextOrg.id == surveyInfo.owner.id)))
+            }
+            else {
+                allowedToSelect = !ieInNewSub || (ieInNewSub && (contextOrg.id == surveyInfo.owner.id))
+            }
+            if (!ieInNewSub && allowedToSelect) {
+                toBeAdded << match.gokbId
+            }
+            else if (!allowedToSelect) {
+                externalTitleData.put('found_in_package', RDStore.YN_YES.value)
+                externalTitleData.put('already_purchased_at', "${participantPerpetualAccessToTitle.subscription.name} (${sdf.format(participantPerpetualAccessToTitle.subscription.startDate)}-${sdf.format(participantPerpetualAccessToTitle.subscription.endDate)})")
+                result.notAddedTitles << externalTitleData
+            }
+            userCache.put('progress', 50+i*pointsPerIteration)
+        }
+        userCache.put('progress', 75)
+        if (toBeAdded) {
+            if (!issueEntitlementGroup) {
+                String groupName = IssueEntitlementGroup.countBySubAndName(subscriberSub,  surveyConfig.issueEntitlementGroupName) > 0 ? (IssueEntitlementGroup.countBySubAndNameIlike(subscriberSub, surveyConfig.issueEntitlementGroupName) + 1) : surveyConfig.issueEntitlementGroupName
+                issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: surveyConfig, sub: subscriberSub, name: groupName)
+                if (!issueEntitlementGroup.save())
+                    log.error(issueEntitlementGroup.getErrors().getAllErrors().toListString())
+            }
+            if(issueEntitlementGroup) {
+                bulkAddEntitlements(subscriberSub, toBeAdded, surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)
+            }
+            userCache.put('progress', 100)
+            result.success = true
+        }
 
-    /**
-     * Selects the given tipps based on the given input stream
-     * @param stream the file stream which contains the data to be selected
-     * @param subscription the subscription whose holding should be accessed
-     * @return a map containing the process result
-     */
-    Map tippSelectForSurvey(MultipartFile kbartFile, Subscription subscription, SurveyConfig surveyConfig, Subscription newSub) {
+        result.addedCount = toBeAdded.size()
+        result.notAddedCount = result.toAddCount-result.addedCount
+        result.perpetuallyPurchasedCount = perpetuallyPurchasedCount
+        result
+        /*
         InputStream stream = kbartFile.getInputStream()
 
         Integer countRows = 0
@@ -3438,6 +3569,7 @@ class SubscriptionService {
                             count++
                             String cellEntry = cols[pickCol].trim()
                             if (cellEntry.toLowerCase() == RDStore.YN_YES.value_de.toLowerCase() || cellEntry.toLowerCase() == RDStore.YN_YES.value_en.toLowerCase()) {
+                                //TODO use from here
                                 IssueEntitlement ieInNewSub = surveyService.titleContainedBySubscription(newSub, match, [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_EXPECTED])
                                 boolean allowedToSelect = false
                                 if (surveyConfig.pickAndChoosePerpetualAccess) {
@@ -3467,8 +3599,8 @@ class SubscriptionService {
                 }
             }
         }
-
         return [titleRow: titleRow, processRows: countRows, processCount: count, selectedTipps: selectedTipps, countSelectTipps: countSelectTipps, countNotSelectTipps: countNotSelectTipps, wrongTitles: wrongTitles, truncatedRows: truncatedRows.join(', ')]
+        */
     }
 
     @Deprecated
