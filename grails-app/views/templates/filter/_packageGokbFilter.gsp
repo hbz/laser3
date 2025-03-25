@@ -37,6 +37,17 @@
                         </div>
                     </div>
                 </g:if>
+                <g:if test="${field == 'singleTitle'}">
+                    <div class="field">
+                        <label for="search-single-title">${message(code: 'myinst.currentPackages.filter.singleTitle')}</label>
+
+                        <div class="ui input">
+                            <input type="text" id="search-single-title" name="singleTitle"
+                                   placeholder="${message(code: 'default.search.ph')}"
+                                   value="${params.singleTitle}"/>
+                        </div>
+                    </div>
+                </g:if>
                 <g:if test="${field == 'pkgStatus'}">
                     <div class="field">
                         <label for="status">${message(code: 'package.status.label')}</label>
