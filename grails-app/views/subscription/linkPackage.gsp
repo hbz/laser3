@@ -29,7 +29,7 @@
 </g:if>
 <g:else>
     <laser:render template="/templates/filter/packageGokbFilter" model="[tmplConfigShow: [
-            ['q', 'pkgStatus'],
+            ['q', 'singleTitle', 'pkgStatus'],
             ['provider', 'vendor', 'ddc', 'curatoryGroup'],
             ['curatoryGroupType', 'automaticUpdates']
     ]]"/>
@@ -54,7 +54,7 @@
 <g:if test="${records}">
     <laser:render template="/templates/filter/packageGokbFilterTable"
                   model="[
-                          tmplConfigShow: ['lineNumber', 'name', 'status', 'titleCount', 'provider', 'vendor', 'platform', 'curatoryGroup', 'automaticUpdates', 'lastUpdatedDisplay', 'linkPackage'],
+                          tmplConfigShow: tmplConfigShow,
                           pkgs: pkgs,
                           bulkProcessRunning: bulkProcessRunning
                   ]"
@@ -72,11 +72,6 @@
                                 args="${[message(code: "package.plural")]}"/></strong>
     </g:else>
 </g:else>
-
-
-
-
-<div id="magicArea"></div>
 
 <ui:modal id="linkPackageModal" message="myinst.currentSubscriptions.link_pkg"
              msgSave="${message(code: 'default.button.link.label')}">
@@ -97,7 +92,7 @@
                 </div>
             </g:if>
             <g:else>
-                <div class="field" id="holdingSelection">
+                <div class="field" id="holdingSelection_${subscription.id}">
                     <ui:select class="ui dropdown search selection" name="holdingSelection" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}"
                                optionKey="id" optionValue="value" value="${subscription.holdingSelection?.id}" noSelection="${['':message(code:'default.select.choose.label')]}"/>
                 </div>
@@ -156,7 +151,7 @@
             $(".checkbox.createEntitlementsForChildren").checkbox('uncheck').checkbox('set disabled');
         }
 
-        $("#holdingSelection .ui.dropdown").dropdown({
+        $("#holdingSelection_${subscription.id} .ui.dropdown").dropdown({
             onChange: function(value, text, $selectedItem) {
                 let rdvId = Number(value);
                 let button = $("#inheritHoldingSelection");

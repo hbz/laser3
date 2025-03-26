@@ -46,9 +46,9 @@
                         (${pdg.name})
                     </h3>
 
-                    <div id="survey_grouped_custom_properties">
+                    <div id="survey_grouped_custom_properties_${pdg.id}">
                         <laser:render template="/templates/survey/properties_table" model="${[
-                                surveyProperties: surveyProperties, pdg: pdg, props_div: 'survey_grouped_custom_properties']}"/>
+                                surveyProperties: surveyProperties, pdg: pdg, props_div: "survey_grouped_custom_properties_${pdg.id}"]}"/>
                     </div>
                 </div>
             </g:if>

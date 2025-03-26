@@ -644,11 +644,43 @@ class SurveyControllerService {
                 }
             }
 
+            if(params.initial){
+                params.isMyX = ['wekb_exclusive']
+                params.remove('initial')
+                result.initial = true
+            }
+
             result.surveyVendorsCount = SurveyConfigVendor.executeQuery("select count(*) from SurveyConfigVendor where surveyConfig = :surConfig", [surConfig: result.surveyConfig])[0]
 
             result.selectedVendorIdList = SurveyConfigVendor.executeQuery("select scv.vendor.id from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
             params.ids = result.selectedVendorIdList
             result.putAll(vendorService.getWekbVendors(params))
+
+            if (params.isMyX) {
+                List<String> xFilter = params.list('isMyX')
+                Set<Long> f1Result = [], f2Result = []
+                boolean   f1Set = false, f2Set = false
+                result.currentVendorIdList = Vendor.executeQuery('select vr.vendor.id from VendorRole vr, OrgRole oo join oo.sub s where s = vr.subscription and oo.org = :context and s.status = :current', [current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()])
+                if (xFilter.contains('ismyx_exclusive')) {
+                    f1Result.addAll( result.vendorTotal.findAll { result.currentVendorIdList.contains( it.id ) }.collect{ it.id } )
+                    f1Set = true
+                }
+                if (xFilter.contains('ismyx_not')) {
+                    f1Result.addAll( result.vendorTotal.findAll { ! result.currentVendorIdList.contains( it.id ) }.collect{ it.id }  )
+                    f1Set = true
+                }
+                if (xFilter.contains('wekb_exclusive')) {
+                    f2Result.addAll( result.vendorTotal.findAll { it.gokbId != null && it.gokbId in result.wekbRecords.keySet() }.collect{ it.id } )
+                    f2Set = true
+                }
+                if (xFilter.contains('wekb_not')) {
+                    f2Result.addAll( result.vendorTotal.findAll { it.gokbId == null }.collect{ it.id }  )
+                    f2Set = true
+                }
+
+                if (f1Set) { result.vendorTotal = result.vendorTotal.findAll { f1Result.contains(it.id) } }
+                if (f2Set) { result.vendorTotal = result.vendorTotal.findAll { f2Result.contains(it.id) } }
+            }
 
             [result: result, status: STATUS_OK]
         }
@@ -659,44 +691,7 @@ class SurveyControllerService {
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
-            if(params.addVendor) {
-                Vendor vendor = Vendor.findById(params.addVendor)
-                if(vendor) {
-                    if(!SurveyConfigVendor.findByVendorAndSurveyConfig(vendor, result.surveyConfig)) {
-                        SurveyConfigVendor surveyConfigVendor = new SurveyConfigVendor(surveyConfig: result.surveyConfig, vendor: vendor).save()
-                    }
-                }
-                params.remove("addVendor")
-            }
-
-            if(params.removeVendor) {
-                Vendor vendor = Vendor.findById(params.removeVendor)
-                if(vendor) {
-                    SurveyConfigVendor.executeUpdate("delete from SurveyConfigVendor scp where scp.surveyConfig = :surveyConfig and scp.vendor = :vendor", [surveyConfig: result.surveyConfig, vendor: vendor])
-                }
-                params.remove("removeVendor")
-            }
-
             result.putAll(vendorService.getWekbVendors(params))
-
-            List selectedVendors
-            if(params.vendorListToggler == 'on') {
-                selectedVendors = result.vendorTotal.id
-            }
-            else selectedVendors = Params.getLongList(params, "selectedVendors")
-
-            if (selectedVendors) {
-                selectedVendors.each {
-                    Vendor vendor = Vendor.findById(it)
-                    if(vendor) {
-                        if(!SurveyConfigVendor.findByVendorAndSurveyConfig(vendor, result.surveyConfig)) {
-                            SurveyConfigVendor surveyConfigVendor = new SurveyConfigVendor(surveyConfig: result.surveyConfig, vendor: vendor).save()
-                        }
-                    }
-                }
-                params.remove("selectedVendors")
-                params.remove("vendorListToggler")
-            }
 
    /*         if(result.surveyConfig.subscription && params.initial){
                 List providers = result.surveyConfig.subscription.getProviders()
@@ -743,6 +738,80 @@ class SurveyControllerService {
             result.surveyVendorsCount = SurveyConfigVendor.executeQuery("select count(*) from SurveyConfigVendor where surveyConfig = :surConfig", [surConfig: result.surveyConfig])[0]
 
             result.selectedVendorIdList = SurveyConfigVendor.executeQuery("select scv.vendor.id from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
+
+            [result: result, status: STATUS_OK]
+        }
+    }
+
+    Map<String,Object> processLinkSurveyVendor(GrailsParameterMap params) {
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params)
+        if(!result)
+            [result:null,status:STATUS_ERROR]
+        else {
+            if(params.addVendor) {
+                Vendor vendor = Vendor.findById(params.addVendor)
+                if(vendor) {
+                    if(!SurveyConfigVendor.findByVendorAndSurveyConfig(vendor, result.surveyConfig)) {
+                        SurveyConfigVendor surveyConfigVendor = new SurveyConfigVendor(surveyConfig: result.surveyConfig, vendor: vendor).save()
+                    }
+                }
+                params.remove("addVendor")
+            }
+
+            if(params.removeVendor) {
+                Vendor vendor = Vendor.findById(params.removeVendor)
+                if(vendor) {
+                    SurveyConfigVendor.executeUpdate("delete from SurveyConfigVendor scp where scp.surveyConfig = :surveyConfig and scp.vendor = :vendor", [surveyConfig: result.surveyConfig, vendor: vendor])
+                }
+                params.remove("removeVendor")
+            }
+
+            result.putAll(vendorService.getWekbVendors(params))
+
+            if (params.isMyX) {
+                List<String> xFilter = params.list('isMyX')
+                Set<Long> f1Result = [], f2Result = []
+                boolean   f1Set = false, f2Set = false
+                result.currentVendorIdList = Vendor.executeQuery('select vr.vendor.id from VendorRole vr, OrgRole oo join oo.sub s where s = vr.subscription and oo.org = :context and s.status = :current', [current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()])
+                if (xFilter.contains('ismyx_exclusive')) {
+                    f1Result.addAll( result.vendorTotal.findAll { result.currentVendorIdList.contains( it.id ) }.collect{ it.id } )
+                    f1Set = true
+                }
+                if (xFilter.contains('ismyx_not')) {
+                    f1Result.addAll( result.vendorTotal.findAll { ! result.currentVendorIdList.contains( it.id ) }.collect{ it.id }  )
+                    f1Set = true
+                }
+                if (xFilter.contains('wekb_exclusive')) {
+                    f2Result.addAll( result.vendorTotal.findAll { it.gokbId != null && it.gokbId in result.wekbRecords.keySet() }.collect{ it.id } )
+                    f2Set = true
+                }
+                if (xFilter.contains('wekb_not')) {
+                    f2Result.addAll( result.vendorTotal.findAll { it.gokbId == null }.collect{ it.id }  )
+                    f2Set = true
+                }
+
+                if (f1Set) { result.vendorTotal = result.vendorTotal.findAll { f1Result.contains(it.id) } }
+                if (f2Set) { result.vendorTotal = result.vendorTotal.findAll { f2Result.contains(it.id) } }
+            }
+
+            List selectedVendors
+            if(params.vendorListToggler == 'on') {
+                selectedVendors = result.vendorTotal.id
+            }
+            else selectedVendors = Params.getLongList(params, "selectedVendors")
+
+            if (selectedVendors) {
+                selectedVendors.each {
+                    Vendor vendor = Vendor.findById(it)
+                    if(vendor) {
+                        if(!SurveyConfigVendor.findByVendorAndSurveyConfig(vendor, result.surveyConfig)) {
+                            SurveyConfigVendor surveyConfigVendor = new SurveyConfigVendor(surveyConfig: result.surveyConfig, vendor: vendor).save()
+                        }
+                    }
+                }
+                params.remove("selectedVendors")
+                params.remove("vendorListToggler")
+            }
 
             [result: result, status: STATUS_OK]
         }
@@ -1937,7 +2006,12 @@ class SurveyControllerService {
 
             result.participants = result.participants.sort { it.org.sortname }
 
-            result.charts = surveyService.generatePropertyDataForCharts(result.surveyConfig, result.participants?.org)
+            if(!params.fileformat) {
+                result.charts = surveyService.generatePropertyDataForCharts(result.surveyConfig, result.participants?.org)
+                if(result.surveyConfig.vendorSurvey) {
+                    result.charts = result.charts + surveyService.generateSurveyVendorDataForCharts(result.surveyConfig, result.participants?.org)
+                }
+            }
 
             [result: result, status: STATUS_OK]
         }
@@ -2633,6 +2707,9 @@ class SurveyControllerService {
                     break
                 case "addSubMembersToSurvey":
                     surveyService.addSubMembers(result.surveyConfig)
+                    break
+                case "addMultiYearSubMembersToSurvey":
+                    surveyService.addMultiYearSubMembers(result.surveyConfig)
                     break
             }
         }
@@ -4564,8 +4641,14 @@ class SurveyControllerService {
 
                     if (selectedMultiYearCount in [1, 2] && participantPropertyTwo && participantPropertyTwo.refValue?.id == RDStore.YN_YES.id) {
                         use(TimeCategory) {
-                            newStartDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 1.day) : null
-                            newEndDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 2.year) : null
+                            if(oldSubofParticipant && oldSubofParticipant.endDate){
+                                newStartDate = oldSubofParticipant.endDate + 1.day
+                                newEndDate = oldSubofParticipant.endDate + 2.year
+                            }else {
+                                newStartDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 1.day) : null
+                                newEndDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 2.year) : null
+                            }
+
                         }
                         Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)
                         if(subscription){
@@ -4574,8 +4657,13 @@ class SurveyControllerService {
                         }
                     } else if (selectedMultiYearCount in [1, 2, 3] && participantPropertyThree && participantPropertyThree.refValue?.id == RDStore.YN_YES.id) {
                         use(TimeCategory) {
-                            newStartDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 1.day) : null
-                            newEndDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 3.year) : null
+                            if(oldSubofParticipant && oldSubofParticipant.endDate){
+                                newStartDate = oldSubofParticipant.endDate + 1.day
+                                newEndDate = oldSubofParticipant.endDate + 3.year
+                            }else {
+                                newStartDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 1.day) : null
+                                newEndDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 3.year) : null
+                            }
                         }
                         Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)
                         if(subscription){
@@ -4584,8 +4672,13 @@ class SurveyControllerService {
                         }
                     } else if (selectedMultiYearCount in [1, 2, 3, 4] && participantPropertyFour && participantPropertyFour.refValue?.id == RDStore.YN_YES.id) {
                         use(TimeCategory) {
-                            newStartDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 1.day) : null
-                            newEndDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 4.year) : null
+                            if(oldSubofParticipant && oldSubofParticipant.endDate){
+                                newStartDate = oldSubofParticipant.endDate + 1.day
+                                newEndDate = oldSubofParticipant.endDate + 4.year
+                            }else {
+                                newStartDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 1.day) : null
+                                newEndDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 4.year) : null
+                            }
                         }
                         Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)
                         if(subscription){
@@ -4595,8 +4688,13 @@ class SurveyControllerService {
 
                     } else if (selectedMultiYearCount in [1, 2, 3, 4, 5] && participantPropertyFive && participantPropertyFive.refValue?.id == RDStore.YN_YES.id) {
                         use(TimeCategory) {
-                            newStartDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 1.day) : null
-                            newEndDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 5.year) : null
+                            if(oldSubofParticipant && oldSubofParticipant.endDate){
+                                newStartDate = oldSubofParticipant.endDate + 1.day
+                                newEndDate = oldSubofParticipant.endDate + 5.year
+                            }else {
+                                newStartDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 1.day) : null
+                                newEndDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 5.year) : null
+                            }
                         }
                         Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)
                         if(subscription){
@@ -4607,8 +4705,13 @@ class SurveyControllerService {
                     } else {
                         if (addMembersOnlyToSuccesorSub) {
                             use(TimeCategory) {
-                                newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
-                                newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
+                                if(oldSubofParticipant && oldSubofParticipant.endDate){
+                                    newStartDate = oldSubofParticipant.endDate + 1.day
+                                    newEndDate = oldSubofParticipant.endDate + 1.year
+                                }else {
+                                    newStartDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 1.day) : null
+                                    newEndDate = result.surveyConfig.subscription.endDate ? (result.surveyConfig.subscription.endDate + 1.year) : null
+                                }
                             }
                             Subscription subscription = _processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant : null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, RDStore.SUBSCRIPTION_INTENDED, inheritedAttributes, licensesToProcess, transferProvider, transferVendor, providersSelection, vendorsSelection)
                             if(subscription){

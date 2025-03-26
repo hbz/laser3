@@ -113,7 +113,7 @@
 
         <g:if test="${surveyConfig.vendorSurvey}">
             <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyVendors"
-                           params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${surveyVendorsCount}"
+                           params="${[id: params.id, surveyConfigID: surveyConfig.id, initial: true]}" counts="${surveyVendorsCount}"
                            class="${(actionName in ['surveyVendors', 'linkSurveyVendor'] ? 'active' : '')}"
                            message="surveyVendors.label"/>
         </g:if>
@@ -139,12 +139,6 @@
             <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyPackagesEvaluation"
                            params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${evaluationCount}"
                            message="surveyPackagesEvaluation.label"/>
-        </g:if>
-
-        <g:if test="${surveyConfig.vendorSurvey}">
-            <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyVendorsEvaluation"
-                           params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${evaluationCount}"
-                           message="surveyVendorsEvaluation.label"/>
         </g:if>
 
         <g:if test="${surveyConfig.subSurveyUseForTransfer}">

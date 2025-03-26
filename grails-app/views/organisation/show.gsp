@@ -273,33 +273,27 @@
 
                     <div class="ui card">
                         <div class="content">
-                            <div class="ui grid">
-                                <div class="twelve wide column">
-                                    <dl>
-                                        <dt class="control-label">${message(code:'org.subjectGroup.label')}</dt>
-                                        <dd>
-                                            <%
-                                                List<RefdataValue> subjectGroups = RefdataCategory.getAllRefdataValues(RDConstants.SUBJECT_GROUP)
-                                            %>
-                                            <laser:render template="orgSubjectGroupAsList"
-                                                          model="${[org: orgInstance, orgSubjectGroups: orgInstance.subjectGroup, availableSubjectGroups: subjectGroups, editable: editable]}"/>
+                            <dl>
+                                <dt class="control-label">${message(code:'org.subjectGroup.label')}</dt>
+                                <dd>
+                                    <%
+                                        List<RefdataValue> subjectGroups = RefdataCategory.getAllRefdataValues(RDConstants.SUBJECT_GROUP)
+                                    %>
+                                    <laser:render template="orgSubjectGroupAsList"
+                                                  model="${[org: orgInstance, orgSubjectGroups: orgInstance.subjectGroup, availableSubjectGroups: subjectGroups, editable: editable]}"/>
 
-                                            <laser:render template="orgSubjectGroupModal"
-                                                          model="${[org: orgInstance, availableSubjectGroups: subjectGroups, editable: editable]}"/>
-                                        </dd>
-                                    </dl>
-                                </div>
-                                <div class="right aligned four wide column">
-                                <g:if test="${editable}">
-                                    <a  data-content="<g:message code="org.subjectGroup.add.label"/>" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-ui="modal" href="#subjectGroup">
-                                        <i class="${Icon.CMD.ADD}"></i>
-                                    </a>
-                                </g:if>
-
-                                </div>
-                            </div>
+                                    <laser:render template="orgSubjectGroupModal"
+                                                  model="${[org: orgInstance, availableSubjectGroups: subjectGroups, editable: editable]}"/>
+                                </dd>
+                                <dd>
+                                    <g:if test="${editable}">
+                                        <a  data-content="<g:message code="org.subjectGroup.add.label"/>" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-ui="modal" href="#subjectGroup" >
+                                            <i class="${Icon.CMD.ADD}"></i>
+                                        </a>
+                                    </g:if>
+                                </dd>
+                            </dl>
 %{--                            <div class="ui header">${message(code:'org.subjectGroup.label')}</div>--}%
-
                         </div>
                     </div>
                 </div>
@@ -543,7 +537,7 @@
                                                                 <div class="fourteen wide column">
                                                                     <div class="ui label">${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}</div>
                                                                     <g:if test="${prs.preferredBillingPerson}">
-                                                                        <i class="file invoice circular la-popup-tooltip" data-content="${message(code:'person.preferredBillingPerson')}"></i>
+                                                                        <i class="${Icon.SURVEY} circular la-popup-tooltip" data-content="${message(code:'person.preferredBillingPerson')}"></i>
                                                                     </g:if>
                                                                     <g:if test="${prs.preferredSurveyPerson}">
                                                                         <i class="${Icon.SURVEY} circular la-popup-tooltip" data-content="${message(code:'person.preferredSurveyPerson')}"></i>
@@ -589,7 +583,7 @@
                                                                 <div class="fourteen wide column">
                                                                     <div class="ui label">${RDStore.PRS_FUNC_INVOICING_CONTACT.getI10n('value')}</div>
                                                                     <g:if test="${prs.preferredBillingPerson}">
-                                                                        <i class="file invoice circular la-popup-tooltip" data-content="${message(code:'person.preferredBillingPerson')}"></i>
+                                                                        <i class="${Icon.SURVEY} circular la-popup-tooltip" data-content="${message(code:'person.preferredBillingPerson')}"></i>
                                                                     </g:if>
                                                                     <g:if test="${prs.preferredSurveyPerson}">
                                                                         <i class="${Icon.SURVEY} circular la-popup-tooltip" data-content="${message(code:'person.preferredSurveyPerson')}"></i>
@@ -668,7 +662,8 @@
                                                                                             controller          : 'org',
                                                                                             action              : 'show',
                                                                                             id                  : orgInstance.id,
-                                                                                            editable            : false
+                                                                                            editable            : false,
+                                                                                            showPreferredForSurvey: true
                                                                                     ]}"/>
                                                                                 </g:if>
                                                                             </g:each>

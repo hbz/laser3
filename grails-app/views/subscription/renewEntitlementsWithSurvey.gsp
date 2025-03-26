@@ -72,7 +72,7 @@
                     id="${subscription.id}"
                     params="${[surveyConfigID: surveyConfig.id,
                                exportConfig     : ExportService.EXCEL,
-                               tab           : 'selectableTipps']}">${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}</g:link>
+                               tab           : 'selectableTipps']}">${message(code: 'renewEntitlementsWithSurvey.selectableTipps')}</g:link>
         </ui:exportDropdownItem>
 
         <ui:exportDropdownItem>
@@ -105,8 +105,9 @@
     </ui:exportDropdown>
     <g:if test="${editable}">
         <ui:actionsDropdown>
-            <ui:actionsDropdownItem data-ui="modal" id="selectEntitlementsWithKBART" href="#KBARTUploadForm"
-                                    message="subscription.details.addEntitlements.menu"/>
+            <ui:actionsDropdownItem id="selectEntitlementsWithKBART" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscription.id, params: [referer: actionName, headerToken: 'subscription.details.addEntitlements.menu', progressCacheKey: '/survey/renewEntitlementsWithSurvey/', surveyConfigID: surveyConfig.id, tab: params.tab])}" message="subscription.details.addEntitlements.menu"/>
+            <ui:actionsDropdownItem id="selectEntitlementsWithPick" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscription.id, params: [referer: actionName, headerToken: 'subscription.details.addEntitlements.menuPick', withPick: true, progressCacheKey: '/survey/renewEntitlementsWithSurvey/', surveyConfigID: surveyConfig.id, tab: params.tab])}" message="subscription.details.addEntitlements.menuPick"/>
+            <ui:actionsDropdownItem id="selectEntitlementsWithIDOnly" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscription.id, params: [referer: actionName, headerToken: 'subscription.details.addEntitlements.menuID', withIDOnly: true, progressCacheKey: '/survey/renewEntitlementsWithSurvey/', surveyConfigID: surveyConfig.id, tab: params.tab])}" message="subscription.details.addEntitlements.menuID"/>
         </ui:actionsDropdown>
     </g:if>
 </ui:controlButtons>
@@ -148,9 +149,6 @@
 
 <g:render template="/survey/participantInfos" model="[participant: subscriber]"/>
 
-<g:if test="${editable}">
-    <laser:render template="KBARTSelectionUploadFormModal"/>
-</g:if>
         <laser:render template="/templates/filter/tipp_ieFilter" model="[notShow: params.tab == 'allTipps' || params.tab == 'selectableTipps', fillDropdownsWithPackage: params.tab == 'allTipps' || params.tab == 'selectableTipps']"/>
 
 <h3 class="ui icon header la-clear-before la-noMargin-top">
@@ -421,5 +419,32 @@
             $('#globalLoadingIndicator').hide();
         });
     });
+
+    $('#selectEntitlementsWithKBART, #selectEntitlementsWithPick, #selectEntitlementsWithIDOnly').on('click', function(e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: $(this).attr('href')
+            }).done( function (data) {
+                $('.ui.dimmer.modals > #KBARTUploadForm').remove();
+                $('#dynamicModalContainer').empty().html(data);
+
+                $('#dynamicModalContainer .ui.modal').modal({
+                   onShow: function () {
+                        r2d2.initDynamicUiStuff('#KBARTUploadForm');
+                        r2d2.initDynamicXEditableStuff('#KBARTUploadForm');
+                        $("html").css("cursor", "auto");
+                    },
+                    detachable: true,
+                    autofocus: false,
+                    closable: false,
+                    transition: 'scale',
+                    onApprove : function() {
+                        $(this).find('.ui.form').submit();
+                        return false;
+                    }
+                }).modal('show');
+            })
+        });
 </laser:script>
 <laser:htmlEnd />

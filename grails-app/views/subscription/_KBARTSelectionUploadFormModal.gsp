@@ -1,11 +1,17 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore" %>
-<ui:modal id="KBARTUploadForm" message="subscription.details.addEntitlements.header" msgSave="${message(code: 'subscription.details.addEntitlements.preselect')}">
+<ui:modal id="KBARTUploadForm" message="${headerToken}" msgSave="${message(code: 'subscription.details.addEntitlements.preselect')}">
     <%-- double-check needed because menu is not being refreshed after xEditable change on sub/show --%>
     <g:if test="${subscription.holdingSelection != RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
-        <ui:msg header="${message(code:"message.attention")}" message="subscription.details.addEntitlements.warning" />
 
         <g:form class="ui form" method="post" enctype="multipart/form-data">
             <g:hiddenField name="id" value="${subscription.id}"/>
+            <g:if test="${withPick}">
+                <g:hiddenField name="withPick" value="${true}"/>
+            </g:if>
+            <g:if test="${withIDOnly}">
+                <g:hiddenField name="withIDOnly" value="${true}"/>
+            </g:if>
+            <g:hiddenField name="progressCacheKey" value="${progressCacheKey}"/>
             <g:if test="${surveyConfig}">
                 <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
                 <g:hiddenField name="tab" value="${tab}"/>
@@ -21,7 +27,7 @@
                     </div>
                 </div>
             </div>
-            <g:if test="${actionName == 'addEntitlements'}">
+            <g:if test="${referer == 'addEntitlements'}">
                 <g:if test="${institution.isCustomerType_Consortium()}">
                     <div class="field">
                         <div class="ui right floated checkbox toggle">
@@ -52,8 +58,11 @@
                 </div>
             </g:if>
         </g:form>
-        <div class="localLoadingIndicator" hidden="hidden">
-            <div class="ui inline medium text loader active">Aktualisiere Daten ..</div>
+        <div class="ui teal progress" id="uploadProcessLoadingIndicator">
+            <div class="bar">
+                <div class="progress"></div>
+            </div>
+            <div class="label"></div>
         </div>
         <div id="processResultWrapper"></div>
         <laser:script file="${this.getGroovyPageFileName()}">
@@ -65,26 +74,52 @@
                 var name = e.target.files[0].name;
                 $('input:text', $(e.target).parent()).val(name);
             });
+            $('#uploadProcessLoadingIndicator').hide();
 
             $('#KBARTUploadForm form').submit(function(e) {
                 e.preventDefault();
-                $('.localLoadingIndicator').show();
+                $('input:submit').prop('disabled', true);
+                $('#uploadProcessLoadingIndicator').progress();
+                $('#uploadProcessLoadingIndicator').progress('set percent', 0);
+                $('#uploadProcessLoadingIndicator').show();
                 //let kbart = $('#kbartPreselect').prop('files')[0];
                 let formData = new FormData(this);
                 //formData.append('kbartFile', kbart);
                 $.ajax({
-                    url: '<g:createLink controller="subscription" action="${surveyConfig ? 'selectEntitlementsWithKBARTForSurvey' : 'selectEntitlementsWithKBART'}"/>',
-                cache: false,
-                contentType: false,
-                processData: false,
-                data: formData,
-                type: 'post',
-                success: function(response) {
-                    $('.localLoadingIndicator').hide();
+                    url: '<g:createLink controller="subscription" action="${surveyConfig ? 'tippSelectForSurvey' : 'selectEntitlementsWithKBART'}"/>',
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    data: formData,
+                    type: 'post'
+                }).done(function(response) {
+                    $('#uploadProcessLoadingIndicator').hide();
                     $('#processResultWrapper').html(response);
-                }
+                    $('input:submit').prop('disabled', false);
+                });
+                checkProgress();
             });
-        });
+
+            function checkProgress() {
+                let percentage = 0;
+                setTimeout(function() {
+                    $.ajax({
+                        <%-- progressCacheKey is set in sub/_actions.gsp resp everywhere where the link to the renderer of this template is being defined! --%>
+                        url: "<g:createLink controller="ajaxJson" action="checkProgress" params="[cachePath: progressCacheKey]"/>"
+                    }).done(function(response){
+                        percentage = response.percent;
+                        $('#uploadProcessLoadingIndicator div.label').text(response.label);
+                        if(percentage !== null)
+                            $('#uploadProcessLoadingIndicator').progress('set percent', percentage);
+                        if($('#uploadProcessLoadingIndicator').progress('is complete'))
+                            $('#uploadProcessLoadingIndicator').hide();
+                        else
+                            checkProgress();
+                    }).fail(function(resp, status){
+                        //TODO
+                    });
+                }, 500);
+            }
         </laser:script>
     </g:if>
     <g:else>

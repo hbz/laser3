@@ -125,6 +125,16 @@ class ControlledListService {
             filter.status = RDStore.SUBSCRIPTION_CURRENT
             queryString += " and s.status = :status "
         }
+        if(params.containsKey('holdingSelection')) {
+            if(params.holdingSelection == 'notEntire') {
+                queryString += " and (s.holdingSelection = :partial or s.holdingSelection = null)"
+                filter.partial = RDStore.SUBSCRIPTION_HOLDING_PARTIAL
+            }
+            else {
+                queryString = " and s.holdingSelection = :holdingSelection"
+                filter.holdingSelection = RefdataValue.get(params.holdingSelection)
+            }
+        }
         if(params.propDef) {
             PropertyDefinition filterPropDef = (PropertyDefinition) genericOIDService.resolveOID(params.propDef)
             queryString += " and sp.type = :propDef "

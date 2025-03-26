@@ -111,7 +111,7 @@
             params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
         <laser:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['discoverySystemsFrontend', 'discoverySystemsIndex'], surveyConfig.subscription ? ['hasSubscription'] : []],
+                              tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['discoverySystemsFrontend', 'discoverySystemsIndex'], surveyConfig.subscription ? ['hasSubscription', 'subRunTimeMultiYear'] : []],
                               tmplConfigFormFilter: true
                       ]"/>
     </g:form>
@@ -752,11 +752,10 @@
     </g:if>
     <br/><br/>
 
+    <g:set var="surveyParticipantsHasNotAccess"
+           value="${participants.findAll { !it.org.hasInstAdmin() }}"/>
+
     <g:if test="${surveyParticipantsHasNotAccess}">
-
-        <g:set var="surveyParticipantsHasNotAccess"
-               value="${participants.findAll { !it.org.hasInstAdmin() }}"/>
-
 
         <h4 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h4>
 

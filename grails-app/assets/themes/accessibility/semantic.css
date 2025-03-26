@@ -68754,6 +68754,14 @@ table tr td div.willBeReplacedStrong {
 .la-multi-sources:nth-child(n+2) {
   margin-top: 30px;
 }
+
+.la-checkAllArea {
+  margin-top: 4em;
+}
+
+.la-checkAllArea input[type=checkbox] {
+  vertical-align: baseline!important;
+}
 /*!
  * # Fomantic-UI 2.9.3 - Dimmer
  * https://github.com/fomantic/Fomantic-UI/

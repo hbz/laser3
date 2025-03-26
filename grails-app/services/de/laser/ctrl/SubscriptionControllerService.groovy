@@ -2066,6 +2066,9 @@ class SubscriptionControllerService {
                 log.debug("Subscription has no linked packages yet")
             }
             result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
+            if(params.singleTitle)
+                result.tmplConfigShow = ['lineNumber', 'titleName', 'status', 'package', 'provider', 'vendor', 'platform', 'curatoryGroup', 'automaticUpdates', 'lastUpdatedDisplay', 'linkTitle']
+            else result.tmplConfigShow = ['lineNumber', 'name', 'status', 'titleCount', 'provider', 'vendor', 'platform', 'curatoryGroup', 'automaticUpdates', 'lastUpdatedDisplay', 'linkPackage']
             result.putAll(packageService.getWekbPackages(params))
             [result: result, status: STATUS_OK]
         }
@@ -2296,7 +2299,7 @@ class SubscriptionControllerService {
 
                 if (result.enrichmentProcess.wrongTitles) {
                     //background of this procedure: the editor adding titles via KBART wishes to receive a "counter-KBART" which will then be sent to the provider for verification
-                    String dir = GlobalService.obtainFileStorageLocation()
+                    String dir = GlobalService.obtainTmpFileLocation()
                     File f = new File(dir+"/${filename}_matchingErrors")
                     String returnKBART = exportService.generateSeparatorTableString(result.enrichmentProcess.titleRow, result.enrichmentProcess.wrongTitles, '\t')
                     FileOutputStream fos = new FileOutputStream(f)

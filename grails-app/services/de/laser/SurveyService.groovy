@@ -1203,6 +1203,79 @@ class SurveyService {
 
     }
 
+    void addMultiYearSubMembers(SurveyConfig surveyConfig) {
+        Map<String, Object> result = [:]
+        result.institution = contextService.getOrg()
+
+        List currentMembersSubs = subscriptionService.getValidSurveySubChilds(surveyConfig.subscription)
+
+        currentMembersSubs.each { Subscription subChild ->
+            Org org = subChild.getSubscriberRespConsortia()
+
+            if (!(SurveyOrg.findAllBySurveyConfigAndOrg(surveyConfig, org))) {
+
+                boolean existsMultiYearTerm = false
+
+
+                if (subChild.isCurrentMultiYearSubscriptionNew()) {
+                    existsMultiYearTerm = true
+                }
+
+
+                if (existsMultiYearTerm) {
+                    SurveyOrg surveyOrg = new SurveyOrg(
+                            surveyConfig: surveyConfig,
+                            org: org
+                    )
+
+                    if (!surveyOrg.save()) {
+                        log.debug("Error by add Org to SurveyOrg ${surveyOrg.errors}");
+                    }else{
+                        if(surveyConfig.surveyInfo.status in [RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]) {
+                            surveyConfig.surveyProperties.each { property ->
+
+                                if(!SurveyResult.findBySurveyConfigAndParticipantAndTypeAndOwner(surveyConfig, org, property.surveyProperty, result.institution)) {
+                                    SurveyResult surveyResult = new SurveyResult(
+                                            owner: result.institution,
+                                            participant: org ?: null,
+                                            startDate: surveyConfig.surveyInfo.startDate,
+                                            endDate: surveyConfig.surveyInfo.endDate ?: null,
+                                            type: property.surveyProperty,
+                                            surveyConfig: surveyConfig
+                                    )
+
+                                    if (surveyResult.save()) {
+                                        //log.debug(surveyResult.toString())
+                                    } else {
+                                        log.error("Not create surveyResult: " + surveyResult)
+                                    }
+                                }
+                            }
+
+                            if (surveyConfig.surveyInfo.status == RDStore.SURVEY_SURVEY_STARTED) {
+                                emailsToSurveyUsersOfOrg(surveyConfig.surveyInfo, org, false)
+                            }
+
+
+                            setDefaultPreferredConcatsForSurvey(surveyConfig, org)
+
+
+                            if(surveyConfig.pickAndChoose){
+                                Subscription participantSub = surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(org)
+                                IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, participantSub)
+                                if (!issueEntitlementGroup && participantSub) {
+                                    String groupName = IssueEntitlementGroup.countBySubAndName(participantSub, surveyConfig.issueEntitlementGroupName) > 0 ? (IssueEntitlementGroup.countBySubAndNameIlike(participantSub, surveyConfig.issueEntitlementGroupName) + 1) : surveyConfig.issueEntitlementGroupName
+                                    new IssueEntitlementGroup(surveyConfig: surveyConfig, sub: participantSub, name: groupName).save()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
     /**
      * Copies the documents, notes, tasks, participations and properties related to the given survey into the given new survey
      * @param oldSurveyConfig the survey from which data should be taken
@@ -2367,10 +2440,13 @@ class SurveyService {
     List generateSurveyPackageDataForCharts(SurveyConfig surveyConfig, List<Org> orgList){
         List chartSource = [['property', 'value']]
 
-        List<Package> packages = SurveyConfigPackage.executeQuery("select scp.pkg from SurveyConfigPackage scp where scp.surveyConfig = :surveyConfig order by scp.pkg.name", [surveyConfig: surveyConfig])
+        List<Package> packages = SurveyConfigPackage.executeQuery("select scp.pkg from SurveyConfigPackage scp where scp.surveyConfig = :surveyConfig order by scp.pkg.name asc", [surveyConfig: surveyConfig])
 
         packages.each {Package pkg ->
-            chartSource << ["${pkg.name.replace('"', '')}", SurveyPackageResult.executeQuery("select count(*) from SurveyPackageResult spr where spr.surveyConfig = :surveyConfig and spr.participant in (:participants) and spr.pkg = :pkg", [pkg: pkg, surveyConfig: surveyConfig, participants: orgList])[0]]
+            int countPackages = SurveyPackageResult.executeQuery("select count(*) from SurveyPackageResult spr where spr.surveyConfig = :surveyConfig and spr.participant in (:participants) and spr.pkg = :pkg", [pkg: pkg, surveyConfig: surveyConfig, participants: orgList])[0]
+            if(countPackages > 0) {
+                chartSource << ["${pkg.name.replace('"', '')}", countPackages]
+            }
         }
 
         chartSource = chartSource.reverse()
@@ -2378,12 +2454,16 @@ class SurveyService {
     }
 
     List generateSurveyVendorDataForCharts(SurveyConfig surveyConfig, List<Org> orgList){
-        List chartSource = [['property', 'value']]
+        //List chartSource = [['property', 'value']]
+        List chartSource = []
 
-        List<Vendor> vendors = SurveyConfigVendor.executeQuery("select scv.vendor from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig order by scv.vendor.name", [surveyConfig: surveyConfig])
+        List<Vendor> vendors = SurveyConfigVendor.executeQuery("select scv.vendor from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig order by scv.vendor.name asc", [surveyConfig: surveyConfig])
 
         vendors.each {Vendor vendor ->
-            chartSource << ["${vendor.name.replace('"', '')}", SurveyVendorResult.executeQuery("select count(*) from SurveyVendorResult svr where svr.surveyConfig = :surveyConfig and svr.participant in (:participants) and svr.vendor = :vendor", [vendor: vendor, surveyConfig: surveyConfig, participants: orgList])[0]]
+            int countVendors = SurveyVendorResult.executeQuery("select count(*) from SurveyVendorResult svr where svr.surveyConfig = :surveyConfig and svr.participant in (:participants) and svr.vendor = :vendor", [vendor: vendor, surveyConfig: surveyConfig, participants: orgList])[0]
+            if(countVendors > 0) {
+                chartSource << ["${vendor.name.replace('"', '')}", countVendors]
+            }
         }
 
         chartSource = chartSource.reverse()
@@ -2505,6 +2585,8 @@ class SurveyService {
                         Person person = Person.get(Long.valueOf(params.personId))
                         if (person && !SurveyPersonResult.findByParticipantAndSurveyConfigAndBillingPerson(participant, result.surveyConfig, true)) {
                             new SurveyPersonResult(participant: participant, surveyConfig: result.surveyConfig, person: person, billingPerson: true, owner: result.surveyInfo.owner).save()
+                        }else {
+                            flash.error = message(code: 'person.preferredBillingPerson.fail')
                         }
                     }
                     if (params.setPreferredBillingPerson == 'false') {
@@ -2518,7 +2600,12 @@ class SurveyService {
 
                 if (params.addressId && params.setAddress) {
                     if (params.setAddress == 'true') {
-                        result.surveyOrg.address = Address.get(Long.valueOf(params.addressId))
+                        if(result.surveyOrg.address){
+                            flash.error = message(code: 'address.preferredForSurvey.fail')
+                        }else {
+                            result.surveyOrg.address = Address.get(Long.valueOf(params.addressId))
+                        }
+
                     }
                     if (params.setAddress == 'false') {
                         result.surveyOrg.address = null

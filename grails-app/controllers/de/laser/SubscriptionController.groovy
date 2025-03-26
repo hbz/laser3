@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.addressbook.Contact
 import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
 import de.laser.auth.User
@@ -23,11 +24,10 @@ import de.laser.wekb.Platform
 import de.laser.wekb.TitleInstancePackagePlatform
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
-import groovy.sql.Sql
 import groovy.time.TimeCategory
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
-import org.springframework.transaction.TransactionStatus
+import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.web.multipart.MultipartFile
 
 import javax.servlet.ServletOutputStream
@@ -43,7 +43,7 @@ import java.util.concurrent.ExecutorService
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SubscriptionController {
 
-    BatchQueryService batchQueryService
+    CacheService cacheService
     ContextService contextService
     CopyElementsService copyElementsService
     CustomerTypeService customerTypeService
@@ -1050,6 +1050,32 @@ class SubscriptionController {
         }
     }
 
+    @DebugInfo(isInstEditor_denySupport = [], ctrlService = 1)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport()
+    })
+    def linkTitle() {
+        Subscription subscription
+        if(Subscription.class.name in params.subscription)
+            subscription = (Subscription) genericOIDService.resolveOID(params.subscription)
+        else subscription = Subscription.get(params.subscription)
+        TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(params.tippID)
+        if(subscription && tipp) {
+            Package pkg = tipp.pkg
+            subscriptionService.linkTitle(subscription, pkg, tipp, params.linkToChildren == 'on')
+            redirect action: 'index', id: subscription.id
+        }
+        else {
+            String error = ""
+            if(!subscription)
+                error += "<p>${message(code: 'default.not.found.message', args: [message(code: 'subscription'), params.subscription])}</p>"
+            if(!tipp)
+                error += "<p>${message(code: 'default.not.found.message', args: [message(code: 'title'), params.tippID])}</p>"
+            flash.error = error
+            redirect controller: 'title', action: 'index'
+        }
+    }
+
     //-------------------------------- issue entitlements holding --------------------------------------
 
     /**
@@ -1165,9 +1191,12 @@ class SubscriptionController {
                     }
                 }
                 result.issueEntitlementEnrichment = params.issueEntitlementEnrichment
-                ['token', 'fileformat', 'errorCount', 'errorKBART'].each { String enrichmentErrorKey ->
-                    result[enrichmentErrorKey] = params.remove(enrichmentErrorKey)
+                EhcacheWrapper resultCache = cacheService.getTTL300Cache("${contextService.getUser()}/issueEntitlementResult")
+                Map<String, Object> enrichmentResult = (Map<String, Object>) resultCache.get('enrichmentResult')
+                enrichmentResult.each { String enrichmentResultKey, def value ->
+                    result[enrichmentResultKey] = value
                 }
+                resultCache.clear()
                 Map ttParams = FilterLogic.resolveTabAndStatusForTitleTabsMenu(params, 'IEs')
                 if (ttParams.status) { params.status = ttParams.status }
                 if (ttParams.tab)    { params.tab = ttParams.tab }
@@ -1189,7 +1218,7 @@ class SubscriptionController {
                 if(!configMap.order)
                     configMap.order = "asc"
                 Map<String, Object> keys = issueEntitlementService.getKeys(configMap)
-                result.putAll(issueEntitlementService.getCounts(keys.ieIDs))
+                result.putAll(issueEntitlementService.getCounts(configMap))
                 Set<Long> ieSubset = keys.ieIDs.drop(configMap.offset).take(configMap.max)
                 result.entitlements = IssueEntitlement.findAllByIdInList(ieSubset, [sort: configMap.sort, order: configMap.order])
                 result.num_ies_rows = keys.ieIDs.size()
@@ -1241,7 +1270,7 @@ class SubscriptionController {
                 selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
             }
             if (params.exportKBart) {
-                String dir = GlobalService.obtainFileStorageLocation()
+                String dir = GlobalService.obtainTmpFileLocation()
                 File f = new File(dir+'/'+filename)
                 if(!f.exists()) {
                     FileOutputStream fos = new FileOutputStream(f)
@@ -1295,32 +1324,61 @@ class SubscriptionController {
             }
         }
         else {
-            Map<String, Object> indexParams = params.clone()
-            MultipartFile kbartFile = params.kbartPreselect
-            String filename = kbartFile.originalFilename
-            InputStream stream = kbartFile.getInputStream()
-            result.enrichmentProcess = subscriptionService.issueEntitlementEnrichment(stream, result.subscription, (params.uploadCoverageDates == 'on'), (params.uploadPriceInfo == 'on'))
-            if (result.enrichmentProcess.wrongTitles) {
+            Map<String, Object> configMap = params.clone()
+            result.putAll(params)
+            MultipartFile kbartPreselect = params.kbartPreselect
+            Set<Package> subPkgs = result.subscription.packages.pkg
+            if(kbartPreselect && kbartPreselect.size > 0) {
+                String encoding = UniversalDetector.detectCharset(kbartPreselect.getInputStream())
+                if (encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
+                    result.remove('kbartPreselect')
+                    result.remove("uploadCoverageDates")
+                    result.remove("uploadPriceInfo")
+                    if(params.withPick)
+                        configMap.withPick = true //this way because I check the existence of the key
+                    configMap.uploadCoverageDates = params.uploadCoverageDates == 'on'
+                    configMap.uploadPriceInfo = params.uploadPriceInfo == 'on'
+                    String progressCacheKey = result.remove('progressCacheKey')
+                    configMap.putAll([subscription: result.subscription, subPkgs: subPkgs, encoding: encoding, issueEntitlementEnrichment: true, progressCacheKey: progressCacheKey, floor: 0, ceil: 50])
+                    result.putAll(subscriptionService.issueEntitlementEnrichment(kbartPreselect, configMap))
+                }
+                else result.wrongCharset = true
+            }
+            else result.noFileSubmitted = true
+            if (result.notAddedCount > 0) {
                 //background of this procedure: the editor adding titles via KBART wishes to receive a "counter-KBART" which will then be sent to the provider for verification
-                String dir = GlobalService.obtainFileStorageLocation()
-                File f = new File(dir+"/${filename}_matchingErrors")
-                String returnKBART = exportService.generateSeparatorTableString(result.enrichmentProcess.titleRow, result.enrichmentProcess.wrongTitles, '\t')
+                String dir = GlobalService.obtainTmpFileLocation(), filename = "${kbartPreselect.getOriginalFilename()}_matchingErrors"
+                File f = new File(dir+'/'+filename)
+                result.titleRow.add('found_in_package')
+                Set<Contact> mailTo = Contact.executeQuery("select ct from PersonRole pr join pr.prs p join p.contacts ct where (p.isPublic = true or p.tenant = :context) and pr.functionType in (:functionTypes) and ct.contentType.value in (:contentTypes) and pr.provider in (:providers)",
+                        [context: contextService.getOrg(), providers: subPkgs.provider, functionTypes: [RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS], contentTypes: [RDStore.CCT_EMAIL.value, 'Mail']])
+                result.mailTo = mailTo
+                String returnKBART = exportService.generateSeparatorTableString(result.titleRow, result.notAddedTitles, '\t')
                 FileOutputStream fos = new FileOutputStream(f)
                 fos.withWriter { Writer w ->
                     w.write(returnKBART)
                 }
                 fos.flush()
                 fos.close()
-                indexParams.token = "${filename}_matchingErrors"
-                indexParams.fileformat = "kbart"
-                indexParams.errorCount = result.enrichmentProcess.wrongTitles.size()
-                indexParams.errorKBART = true
+                result.token = filename
             }
-            result.issueEntitlementEnrichment = true
-            indexParams.remove('kbartPreselect')
-            indexParams.remove("uploadCoverageDates")
-            indexParams.remove("uploadPriceInfo")
-            redirect action: 'index', params: indexParams
+            EhcacheWrapper resultCache = cacheService.getTTL300Cache("${contextService.getUser()}/issueEntitlementResult")
+            resultCache.put('enrichmentResult', [error: result.keySet().any {String errKey -> errKey in ['wrongCharset', 'noFileSubmitted', 'noValidSubscription', 'token', 'pickWithNoPick'] },
+                                            pickWithNoPick: result.pickWithNoPick,
+                                            success: result.success,
+                                            wrongCharset: result.wrongCharset,
+                                            noFileSubmitted: result.noFileSubmitted,
+                                            mailTo: result.mailTo,
+                                            processCount: result.processCount,
+                                            toAddCount: result.toAddCount,
+                                            notAddedCount: result.notAddedCount,
+                                            notAddedTitles: result.notAddedTitles,
+                                            notSubscribedCount: result.notSubscribedCount,
+                                            notInPackageCount: result.notInPackageCount,
+                                            processCountChangesCoverageDates: result.processCountChangesCoverageDates,
+                                            processCountChangesPrice: result.processCountChangesPrice])
+            redirect action: 'index', params: [id: result.id,
+                                               issueEntitlementEnrichment: true]
         }
     }
 
@@ -1455,7 +1513,7 @@ class SubscriptionController {
             }
             if (params.exportKBart) {
                 configMap.format = ExportService.KBART
-                String dir = GlobalService.obtainFileStorageLocation()
+                String dir = GlobalService.obtainTmpFileLocation()
                 File f = new File(dir + '/' + filename)
                 if (!f.exists()) {
                     FileOutputStream out = new FileOutputStream(f)
@@ -1543,86 +1601,38 @@ class SubscriptionController {
     })
     def selectEntitlementsWithKBART() {
         Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
-        result.putAll(subscriptionService.selectEntitlementsWithKBART(params.kbartPreselect, result.subscription))
-        String filename = params.kbartPreselect.originalFilename
-        if (result.selectedTitles) {
-            Map<String, Object> configMap = params.clone()
-            Set<Long> childSubIds = [], pkgIds = []
-            if(configMap.withChildrenKBART == 'on') {
-                childSubIds.addAll(result.subscription.getDerivedSubscriptions().id)
+        MultipartFile kbartPreselect = request.getFile('kbartPreselect')
+        //we may presume that package linking is given and checked at this place
+        Set<Package> subPkgs = result.subscription.packages.pkg
+        if(kbartPreselect && kbartPreselect.size > 0) {
+            String encoding = UniversalDetector.detectCharset(kbartPreselect.getInputStream())
+            if (encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
+                params.remove('kbartPreselect')
+                result.progressCacheKey = params.remove('progressCacheKey')
+                Map<String, Object> configMap = params.clone()
+                configMap.putAll([subscription: result.subscription, subPkgs: subPkgs, encoding: encoding, progressCacheKey: result.progressCacheKey, floor: 0, ceil: 50])
+                result.putAll(subscriptionService.selectEntitlementsWithKBART(kbartPreselect, configMap))
             }
-            pkgIds.addAll(Package.executeQuery('select tipp.pkg.id from TitleInstancePackagePlatform tipp where tipp.gokbId in (:wekbIds)', [wekbIds: result.selectedTitles]))
-            executorService.execute({
-                Thread.currentThread().setName("EntitlementEnrichment_${result.subscription.id}")
-                subscriptionService.bulkAddEntitlements(result.subscription, result.selectedTitles, result.subscription.hasPerpetualAccess)
-                if(configMap.withChildrenKBART == 'on') {
-                    Sql sql = GlobalService.obtainSqlConnection()
-                    try {
-                    childSubIds.each { Long childSubId ->
-                        pkgIds.each { Long pkgId ->
-                            batchQueryService.bulkAddHolding(sql, childSubId, pkgId, result.subscription.hasPerpetualAccess, result.subscription.id)
-                        }
-                    }
-                    }
-                    finally {
-                        sql.close()
-                    }
-                }
-                if(globalService.isset(configMap, 'issueEntitlementGroupNewKBART') || globalService.isset(configMap, 'issueEntitlementGroupKBARTID')) {
-                    IssueEntitlementGroup issueEntitlementGroup
-                    if (configMap.issueEntitlementGroupNewKBART) {
-
-                        IssueEntitlementGroup.withTransaction {
-                            issueEntitlementGroup = IssueEntitlementGroup.findBySubAndName(result.subscription, params.issueEntitlementGroupNewKBART) ?: new IssueEntitlementGroup(sub: result.subscription, name: configMap.issueEntitlementGroupNewKBART).save()
-                        }
-                    }
-
-                    if (configMap.issueEntitlementGroupKBARTID && configMap.issueEntitlementGroupKBARTID != '') {
-                        issueEntitlementGroup = IssueEntitlementGroup.findById(Long.parseLong(configMap.issueEntitlementGroupKBARTID))
-                    }
-
-                    if (issueEntitlementGroup) {
-                        issueEntitlementGroup.refresh()
-                        Object[] keys = result.selectedTitles.toArray()
-                        keys.each { String gokbUUID ->
-                            IssueEntitlement.withTransaction { TransactionStatus ts ->
-                                TitleInstancePackagePlatform titleInstancePackagePlatform = TitleInstancePackagePlatform.findByGokbId(gokbUUID)
-                                if (titleInstancePackagePlatform) {
-                                    IssueEntitlement ie = IssueEntitlement.findBySubscriptionAndTipp(result.subscription, titleInstancePackagePlatform)
-
-                                    if (issueEntitlementGroup && !IssueEntitlementGroupItem.findByIe(ie)) {
-                                        IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
-                                                ie: ie,
-                                                ieGroup: issueEntitlementGroup)
-
-                                        if (!issueEntitlementGroupItem.save()) {
-                                            log.error("Problem saving IssueEntitlementGroupItem by manual adding ${issueEntitlementGroupItem.getErrors().getAllErrors().toListString()}")
-                                        }
-                                    }
-                                }
-                            }
-
-                        }
-                    }
-                }
-            })
-            result.success = true
+            else result.wrongCharset = true
         }
-        if (result.wrongTitles) {
+        else result.noFileSubmitted = true
+        if (result.notAddedCount > 0) {
             //background of this procedure: the editor adding titles via KBART wishes to receive a "counter-KBART" which will then be sent to the provider for verification
-            String dir = GlobalService.obtainFileStorageLocation()
-            File f = new File(dir+"/${filename}_matchingErrors")
-            String returnKBART = exportService.generateSeparatorTableString(result.titleRow, result.wrongTitles, '\t')
+            String dir = GlobalService.obtainTmpFileLocation(), filename = "${kbartPreselect.getOriginalFilename()}_matchingErrors"
+            File f = new File(dir+'/'+filename)
+            result.titleRow.addAll(['found_in_package','already_purchased_at'])
+            Set<Contact> mailTo = Contact.executeQuery("select ct from PersonRole pr join pr.prs p join p.contacts ct where (p.isPublic = true or p.tenant = :context) and pr.functionType in (:functionTypes) and ct.contentType.value in (:contentTypes) and pr.provider in (:providers)",
+                    [context: contextService.getOrg(), providers: subPkgs.provider, functionTypes: [RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS], contentTypes: [RDStore.CCT_EMAIL.value, 'Mail']])
+            result.mailTo = mailTo
+            String returnKBART = exportService.generateSeparatorTableString(result.titleRow, result.notAddedTitles, '\t')
             FileOutputStream fos = new FileOutputStream(f)
             fos.withWriter { Writer w ->
                 w.write(returnKBART)
             }
             fos.flush()
             fos.close()
-            result.token = "${filename}_matchingErrors"
-            result.fileformat = "kbart"
-            result.errorCount = result.wrongTitles.size()
-            result.errorKBART = true
+            result.token = filename
+            result.error = true
         }
         render template: 'entitlementProcessResult', model: result
     }
@@ -1635,75 +1645,40 @@ class SubscriptionController {
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport()
     })
-    def selectEntitlementsWithKBARTForSurvey() {
-        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-        Subscription subscriberSub = result.subscription
-        result.institution = contextService.getOrg()
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
-        result.surveyInfo = result.surveyConfig.surveyInfo
-
-        Subscription baseSub = result.surveyConfig.subscription ?: subscriberSub.instanceOf
-        result.subscriber = subscriberSub.getSubscriberRespConsortia()
-        result.subscriberSub = subscriberSub
-
-        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
-        result.titleGroupID = issueEntitlementGroup ? issueEntitlementGroup.id.toString() : null
-        result.titleGroup = issueEntitlementGroup
-
-        String filename = params.kbartPreselect.originalFilename
-        result.putAll(subscriptionService.tippSelectForSurvey(params.kbartPreselect, baseSub, result.surveyConfig, subscriberSub))
-        if (result.selectedTipps) {
-            if (!issueEntitlementGroup) {
-                IssueEntitlementGroup.withTransaction {
-                    String groupName = IssueEntitlementGroup.countBySubAndName(subscriberSub,  result.surveyConfig.issueEntitlementGroupName) > 0 ? (IssueEntitlementGroup.countBySubAndNameIlike(subscriberSub, result.surveyConfig.issueEntitlementGroupName) + 1) : result.surveyConfig.issueEntitlementGroupName
-
-                    issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: groupName)
-                    if (!issueEntitlementGroup.save())
-                        log.error(issueEntitlementGroup.getErrors().getAllErrors().toListString())
-                    else {
-                        result.titleGroupID = issueEntitlementGroup.id.toString()
-                        result.titleGroup = issueEntitlementGroup
-                    }
-                }
+    def tippSelectForSurvey() {
+        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
+        MultipartFile kbartPreselect = request.getFile('kbartPreselect')
+        //we may presume that package linking is given and checked at this place
+        Set<Package> subPkgs = result.subscription.packages.pkg
+        if(kbartPreselect && kbartPreselect.size > 0) {
+            String encoding = UniversalDetector.detectCharset(kbartPreselect.getInputStream())
+            if (encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
+                params.remove('kbartPreselect')
+                result.progressCacheKey = params.remove('progressCacheKey')
+                Map<String, Object> configMap = params.clone()
+                configMap.putAll([subscription: result.subscription, subPkgs: subPkgs, encoding: encoding, progressCacheKey: result.progressCacheKey, floor: 0, ceil: 50])
+                result.putAll(subscriptionService.tippSelectForSurvey(kbartPreselect, configMap))
             }
-            if(issueEntitlementGroup) {
-                subscriptionService.bulkAddEntitlements(subscriberSub, result.selectedTipps, result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)
-            }
-            /*
-            result.selectedTipps.each { String tippKey ->
-            TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(tippKey)
-                if (tipp) {
-                    try {
-                        if (issueEntitlementGroup && subscriptionService.addEntitlement(subscriberSub, tipp.gokbId, null, false, result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
-                            log.debug("selectEntitlementsWithKBARTForSurvey: Added tipp ${tipp.gokbId} to sub ${subscriberSub.id}")
-                        }
-                    }
-                    catch (EntitlementCreationException e) {
-                        log.debug("Error selectEntitlementsWithKBARTForSurvey: Adding tipp ${tipp} to sub ${subscriberSub.id}: " + e.getMessage())
-                    }
-                }
-            }
-            */
+            else result.wrongCharset = true
         }
-
-        result.tippSelectForSurveySuccess = true
-        params.remove("kbartPreselect")
-
-        if (result.wrongTitles) {
+        else result.noFileSubmitted = true
+        if (result.notAddedCount > 0) {
             //background of this procedure: the editor adding titles via KBART wishes to receive a "counter-KBART" which will then be sent to the provider for verification
-            String dir = GlobalService.obtainFileStorageLocation()
-            File f = new File(dir+"/${filename}_matchingErrors")
-            String returnKBART = exportService.generateSeparatorTableString(result.titleRow, result.wrongTitles, '\t')
+            String dir = GlobalService.obtainTmpFileLocation(), filename = "${kbartPreselect.getOriginalFilename()}_matchingErrors"
+            File f = new File(dir+'/'+filename)
+            result.titleRow.addAll(['found_in_package','already_purchased_at'])
+            Set<Contact> mailTo = Contact.executeQuery("select ct from PersonRole pr join pr.prs p join p.contacts ct where (p.isPublic = true or p.tenant = :context) and pr.functionType in (:functionTypes) and ct.contentType.value in (:contentTypes) and pr.provider in (:providers)",
+                    [context: contextService.getOrg(), providers: subPkgs.provider, functionTypes: [RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS], contentTypes: [RDStore.CCT_EMAIL.value, 'Mail']])
+            result.mailTo = mailTo
+            String returnKBART = exportService.generateSeparatorTableString(result.titleRow, result.notAddedTitles, '\t')
             FileOutputStream fos = new FileOutputStream(f)
             fos.withWriter { Writer w ->
                 w.write(returnKBART)
             }
             fos.flush()
             fos.close()
-            result.token = "${filename}_matchingErrors"
-            result.fileformat = "kbart"
-            result.errorCount = result.wrongTitles.size()
-            result.errorKBART = true
+            result.token = filename
+            result.error = true
         }
         render template: 'entitlementProcessResult', model: result
     }

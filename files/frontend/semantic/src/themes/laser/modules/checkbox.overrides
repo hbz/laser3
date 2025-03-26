@@ -179,3 +179,9 @@ table tr td div.willBeReplacedStrong {
   margin-top: 30px;
 }
 
+.la-checkAllArea {
+    input[type=checkbox] {
+        vertical-align: baseline!important;
+    }
+    margin-top: 4em;
+}

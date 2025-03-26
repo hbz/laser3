@@ -76,6 +76,9 @@
                     </div>
                 </g:each>
                 </div>
+                <g:if test="${showPreferredForSurvey && address.preferredForSurvey}">
+                    <i class="${Icon.SURVEY} circular la-popup-tooltip" data-content="${message(code:'address.preferredForSurvey')}"></i>
+                </g:if>
             </td>
             <td>
                 <div class="ui item address-details">

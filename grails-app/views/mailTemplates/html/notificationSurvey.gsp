@@ -91,7 +91,7 @@
 </g:else>
 <br />
 <br />
-<g:message code="email.survey.general.text3" args="${[formatDate(format: message(code: 'default.date.format.notime'), date: survey.startDate), formatDate(format: message(code: 'default.date.format.notime'), date: survey.endDate)]}" locale="${language}"/>
+<g:message code="email.survey.general.text3" args="${[formatDate(format: message(code: 'default.date.format.notime'), date: survey.endDate)]}" locale="${language}"/>
 <br />
 <br />
 <g:message code="email.survey.general.help" locale="${language}"  args="[survey.owner.name]"/>

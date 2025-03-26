@@ -9,6 +9,22 @@
 
 6398    26.03.2025  dev     3.5         David   Feature     Generator für Random (UI)IDs, etc.
 
+6370    25.03.2025  dev     3.5         Andreas Feature     Einzeltitelauswahl implementiert
+
+6390    24.03.2025  dev     3.5         Moe     Bug         Umfrage-Benachrichtigung: Startdatum wird als Enddatum ausgewertet
+
+6386    24.03.2025  dev     3.5         Moe     Feature     Laufzeiten von Kindlizenzen bei Verlängersumfragen und manueller Verlängerung richtig setzen
+
+6359    24.03.2025  dev     3.5         Andreas Feature     Vereinheitlichung der Titlehinzufügeverfahren
+
+6008    21.03.2025  dev     3.5         Moe     Feature     Lieferanten-Umfrage: Export abändern
+
+5966    21.03.2025  dev     3.5         Moe     Feature     Speicheroption renewal auf Auswertungsseite
+
+6387    21.03.2025  dev     3.5         Moe     Bug         Unsauberes Verhalten Merkmalsgruppe (Umfrage)
+
+6104    19.03.2025  dev     3.5         Moe     Feature     Verlängerungsabfrage für MJL
+
 6375    19.03.2025  dev     3.5         Andreas Feature     Abschaltung der Library Supplier in der Lizenzdetailsicht
 
 6343    19.03.2025  dev     3.5         David   Feature     Modale Dialoge für Aufgaben überarbeiten

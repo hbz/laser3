@@ -187,13 +187,13 @@
                     <td class="right aligned">
                         <g:if test="${editable}">
                             <g:if test="${editable && !(SurveyConfigVendor.findByVendorAndSurveyConfig(vendor, surveyConfig))}">
-                                <g:link type="button" class="${Btn.ICON.SIMPLE}" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                                <g:link type="button" class="${Btn.ICON.SIMPLE}" controller="survey" action="processLinkSurveyVendor" id="${params.id}"
                                         params="[addVendor: vendor.id, surveyConfigID: surveyConfig.id]"><g:message
                                         code="surveyVendors.linkVendor"/></g:link>
 
                             </g:if>
                             <g:else>
-                                <g:link type="button" class="${Btn.NEGATIVE}" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                                <g:link type="button" class="${Btn.NEGATIVE}" controller="survey" action="processLinkSurveyVendor" id="${params.id}"
                                         params="[removeVendor: vendor.id, surveyConfigID: surveyConfig.id]"><g:message
                                         code="surveyVendors.unlinkVendor"/></g:link>
 
@@ -204,7 +204,7 @@
                 <g:if test="${tmplConfigItem == 'unLinkSurveyVendor'}">
                     <td class="right aligned">
                         <g:if test="${editable && (SurveyConfigVendor.findByVendorAndSurveyConfig(vendor, surveyConfig))}">
-                            <g:link type="button" class="${Btn.NEGATIVE}" controller="${controllerName}" action="${actionName}" id="${params.id}"
+                            <g:link type="button" class="${Btn.NEGATIVE}" controller="survey" action="processLinkSurveyVendor" id="${params.id}"
                                     params="[removeVendor: vendor.id, surveyConfigID: surveyConfig.id]"><g:message
                                     code="surveyVendors.unlinkVendor"/></g:link>
 

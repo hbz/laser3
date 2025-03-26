@@ -312,7 +312,7 @@ class PackageController {
         }
 
         if (params.exportKBart) {
-            String dir = GlobalService.obtainFileStorageLocation()
+            String dir = GlobalService.obtainTmpFileLocation()
             File f = new File(dir+'/'+filename)
             if(!f.exists()) {
                 Map<String, Object> configMap = [:]
@@ -406,7 +406,7 @@ class PackageController {
      * file is being prepared and written to the file storage and a download link is being generated which delivers the file after its full generation
      * @return a HTML table showing the holding or the holding rendered as KBART or Excel worksheet
      * @see de.laser.wekb.TitleInstancePackagePlatform
-     * @see GlobalService#obtainFileStorageLocation()
+     * @see GlobalService#obtainTmpFileLocation()
      * @see #downloadLargeFile()
      */
     @DebugInfo(isInstUser_denySupport = [])

@@ -210,7 +210,7 @@ class PropertyService {
                     tenant      : tenant.globalUID]
 
             CostInformationDefinition privateCIDef = CostInformationDefinition.construct(map)
-            Object[] args = [messageSource.getMessage("costInformationDefinition.create.label", null, locale), privateCIDef.getI10n('name')]
+            Object[] args = [messageSource.getMessage("costInformationDefinition.label", null, locale), privateCIDef.getI10n('name')]
             if (privateCIDef.save()) {
                 return ['message', messageSource.getMessage('default.created.message', args, locale), params.pd_descr]
             }

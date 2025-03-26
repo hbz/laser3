@@ -105,7 +105,14 @@ class PackageService {
 
         result.baseUrl = Wekb.getURL()
 
-        Map<String, Object> queryParams = [componentType: "Package"]
+        Map<String, Object> queryParams
+        if (params.singleTitle) {
+            queryParams = [componentType: "TitleInstancePackagePlatform"]
+            result.filterSet = true
+            queryParams.name = params.singleTitle
+        }
+        else queryParams = [componentType: "Package"]
+
         if (params.q) {
             result.filterSet = true
             queryParams.name = params.q

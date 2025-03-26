@@ -88,7 +88,7 @@
                     <g:if test="${editable}">
                         <g:if test="${i == 1 && surveyProperties.size() == 2}">
                             <ui:remoteLink class="${Btn.MODERN.SIMPLE} compact" action="actionsForSurveyProperty" id="${params.id}" data-update="${props_div}"
-                                    params="[actionForSurveyProperty: 'moveUp', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id]"><i class="${Icon.CMD.MOVE_UP}"></i>
+                                    params="[actionForSurveyProperty: 'moveUp', surveyPropertyConfigId: surveyPropertyConfig.id, surveyConfigID: surveyConfig.id, surveyPropertiesIDs: surveyProperties.id, props_div: props_div, pdg_id: pdg?.id]"><i class="${Icon.CMD.MOVE_UP}"></i>
                             </ui:remoteLink>
                         </g:if>
                         <g:else>

@@ -5,8 +5,11 @@ import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.Params
 import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
+import de.laser.survey.SurveyConfigPackage
 import de.laser.survey.SurveyConfigProperties
+import de.laser.survey.SurveyConfigVendor
 import de.laser.survey.SurveyResult
+import de.laser.survey.SurveyVendorResult
 import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
@@ -14,6 +17,7 @@ import de.laser.survey.SurveyConfig
 import de.laser.utils.LocaleUtils
 import de.laser.wekb.Package
 import de.laser.wekb.TitleInstancePackagePlatform
+import de.laser.wekb.Vendor
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.Sql
@@ -1079,7 +1083,7 @@ class FilterService {
                     def refDatas = SurveyResult.executeQuery("select sr.refValue.id from SurveyResult sr where sr.surveyConfig = :surveyConfig and sr.refValue is not null and sr.type = :propType group by sr.refValue.id", [propType: prop, surveyConfig: surveyConfig])
                     refDatas.each {
                         if(params.chartFilter == "${prop.getI10n('name')}: ${RefdataValue.get(it).getI10n('value')}") {
-                            base_qry += ' and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and participant = surveyOrg.org and surResult.type = :propDef and surResult.refValue = :refValue) '
+                            base_qry += ' and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and surResult.participant = surveyOrg.org and surResult.type = :propDef and surResult.refValue = :refValue) '
                             queryParams.put('propDef', prop)
                             queryParams.put('refValue', RefdataValue.get(it))
                         }
@@ -1087,32 +1091,54 @@ class FilterService {
                 }
                 if (prop.isLongType()) {
                     if(params.chartFilter == prop.getI10n('name')){
-                        base_qry += " and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and participant = surveyOrg.org and surResult.type = :propDef and (surResult.longValue is not null)) "
+                        base_qry += " and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and surResult.participant = surveyOrg.org and surResult.type = :propDef and (surResult.longValue is not null)) "
                         queryParams.put('propDef', prop)
                     }
                 }
                 else if (prop.isStringType()) {
                     if(params.chartFilter == prop.getI10n('name')){
-                        base_qry +=  " and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and participant = surveyOrg.org and surResult.type = :propDef and (surResult.stringValue is not null or surResult.stringValue != '')) "
+                        base_qry +=  " and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and surResult.participant = surveyOrg.org and surResult.type = :propDef and (surResult.stringValue is not null or surResult.stringValue != '')) "
                         queryParams.put('propDef', prop)
                     }
                   }
                 else if (prop.isBigDecimalType()) {
                     if(params.chartFilter == prop.getI10n('name')){
-                        base_qry += " and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and participant = surveyOrg.org and surResult.type = :propDef and (surResult.decValue is not null)) "
+                        base_qry += " and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and surResult.participant = surveyOrg.org and surResult.type = :propDef and (surResult.decValue is not null)) "
                         queryParams.put('propDef', prop)
                     }
                 }
                 else if (prop.isDateType()) {
                     if(params.chartFilter == prop.getI10n('name')){
-                        base_qry += " and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and participant = surveyOrg.org and surResult.type = :propDef and (surResult.dateValue is not null)) "
+                        base_qry += " and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and surResult.participant = surveyOrg.org and surResult.type = :propDef and (surResult.dateValue is not null)) "
                         queryParams.put('propDef', prop)
                     }
                 }
                 else if (prop.isURLType()) {
                     if(params.chartFilter == prop.getI10n('name')){
-                        base_qry += " and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and participant = surveyOrg.org and surResult.type = :propDef and (surResult.urlValue is not null or surResult.urlValue != '')) "
+                        base_qry += " and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and surResult.participant = surveyOrg.org and surResult.type = :propDef and (surResult.urlValue is not null or surResult.urlValue != '')) "
                         queryParams.put('propDef', prop)
+                    }
+                }
+            }
+
+            if(surveyConfig.vendorSurvey){
+                List<Vendor> vendors = SurveyConfigVendor.executeQuery("select scv.vendor from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig order by scv.vendor.name asc", [surveyConfig: surveyConfig])
+
+                vendors.each {Vendor vendor ->
+                    if(params.chartFilter == vendor.name.replace('"', '')){
+                        base_qry += " and exists (select svr from SurveyVendorResult as svr where svr.surveyConfig = surveyOrg.surveyConfig and svr.participant = surveyOrg.org and svr.vendor = :vendor) "
+                        queryParams.put('vendor', vendor)
+                    }
+                }
+            }
+
+            if(surveyConfig.packageSurvey){
+                List<Package> packages = SurveyConfigPackage.executeQuery("select scp.pkg from SurveyConfigPackage scp where scp.surveyConfig = :surveyConfig order by scp.pkg.name asc", [surveyConfig: surveyConfig])
+
+                packages.each {Package pkg ->
+                    if(params.chartFilter == pkg.name.replace('"', '')){
+                        base_qry += " and exists (select spr from SurveyPackageResult as spr where spr.surveyConfig = surveyOrg.surveyConfig and spr.participant = surveyOrg.org and spr.pkg = :pkg) "
+                        queryParams.put('pkg', pkg)
                     }
                 }
             }
@@ -1422,6 +1448,10 @@ class FilterService {
         else if (params.containsKey('ieStatus')) {
             queryArgs << 'ie.status = :ieStatus'
             queryParams.ieStatus = RefdataValue.get(params.ieStatus)
+        }
+        else {
+            queryArgs << 'ie.status != :ieStatus'
+            queryParams.ieStatus = RDStore.TIPP_STATUS_REMOVED
         }
 
         if (params.titleGroup) {
@@ -1933,6 +1963,18 @@ class FilterService {
         if(params.yearsFirstOnline) {
             queryArgs << " (Year(tipp.dateFirstOnline) in (:yearsFirstOnline)) "
             queryParams.yearsFirstOnline = Params.getLongList_forCommaSeparatedString(params, 'yearsFirstOnline').collect { Integer.valueOf(it.toString()) }
+        }
+
+        if(params.openAccess) {
+            String openAccessString = " (tipp.openAccess in (:openAccess) "
+            Set<RefdataValue> openAccess = listReaderWrapper(params, 'openAccess').collect { String key -> RefdataValue.get(key) }
+            if(RDStore.GENERIC_NULL_VALUE in openAccess) {
+                openAccess.remove(RDStore.GENERIC_NULL_VALUE)
+                openAccessString += 'or tipp.openAccess = null'
+            }
+            openAccessString += ')'
+            queryArgs << openAccessString
+            queryParams.openAccess = openAccess
         }
 
         if (params.publishers) {
