@@ -1231,13 +1231,6 @@ class FilterService {
         }
         else {
             base_qry = " from IssueEntitlement as ie left join ie.coverages ic join ie.tipp tipp where ie.subscription in (:subscriptions) "
-            /*if (params.mode != 'advanced') {
-                // If we are not in advanced mode, hide IEs that are not current, otherwise filter
-
-                base_qry += " and ( :startDate >= coalesce(ie.accessStartDate,ie.subscription.startDate,ie.tipp.accessStartDate) or (ie.accessStartDate is null and ie.subscription.startDate is null and ie.tipp.accessStartDate is null) ) and ( ( :endDate <= coalesce(ie.accessEndDate,ie.subscription.endDate,ie.accessEndDate) or (ie.accessEndDate is null and ie.subscription.endDate is null and ie.tipp.accessEndDate is null)  or (ie.subscription.hasPerpetualAccess = true) ) ) "
-                qry_params.startDate = date_filter
-                qry_params.endDate = date_filter
-            }*/
         }
 
         if (params.status == RDStore.TIPP_STATUS_REMOVED.id.toString()) {

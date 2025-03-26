@@ -97,12 +97,6 @@
     .toggle .icon {
       color: #fff !important;
     }
-    .la-toggle-green-red.active {
-      background-color: #98b500 !important;
-    }
-    .la-toggle-green-red.inactive {
-      background-color: #D95F3D !important;
-    }
   }
 
 //*
