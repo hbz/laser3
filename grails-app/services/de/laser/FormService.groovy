@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.cache.SessionCacheWrapper
+import de.laser.utils.RandomUtils
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 
@@ -19,7 +20,7 @@ class FormService {
      * @return a randomised unique token as MD5 hash
      */
     String getNewToken() {
-        return "${System.currentTimeMillis()}:${UUID.randomUUID()}".encodeAsMD5()
+        return "${System.currentTimeMillis()}:${RandomUtils.getUUID()}".encodeAsMD5()
     }
 
     /**

@@ -34,7 +34,7 @@ class ReportingGlobalService {
     void doFilter(Map<String, Object> result, GrailsParameterMap params) {
 
         result.filter = params.filter
-        result.token  = /* params.token ?: */ RandomUtils.getRandomAlphaNumeric(24)
+        result.token  = /* params.token ?: */ RandomUtils.getAlphaNumeric(24)
 
         result.cfgQueryList = [:]
         result.cfgDistributionList = [:]

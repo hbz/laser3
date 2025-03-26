@@ -1119,7 +1119,7 @@ class SubscriptionControllerService {
                     endDate: endDate,
                     status: status,
                     administrative: administrative,
-                    identifier: UUID.randomUUID().toString())
+                    identifier: RandomUtils.getUUID())
 
             if (new_sub.save()) {
                 new OrgRole(org: result.institution, sub: new_sub, roleType: orgRole).save()
@@ -1140,7 +1140,7 @@ class SubscriptionControllerService {
                                 name: params.newEmptySubName,
                                 startDate: startDate,
                                 endDate: endDate,
-                                identifier: UUID.randomUUID().toString(),
+                                identifier: RandomUtils.getUUID(),
                                 status: status,
                                 administrative: administrative,
                                 instanceOf: new_sub
@@ -1495,7 +1495,7 @@ class SubscriptionControllerService {
                                             referenceYear: c == 0 ? referenceYear : currParent.referenceYear,
                                             administrative: currParent._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE,
                                             manualRenewalDate: currParent.manualRenewalDate,
-                                            identifier: UUID.randomUUID().toString(),
+                                            identifier: RandomUtils.getUUID(),
                                             instanceOf: currParent,
                                             resource: currParent.resource ?: null,
                                             form: currParent.form ?: null,
@@ -2955,7 +2955,7 @@ class SubscriptionControllerService {
                         try {
                         sql.withBatch('insert into price_item (pi_version, pi_ie_fk, pi_guid, pi_date_created, pi_last_updated, pi_local_price, pi_local_currency_rv_fk) values (0, :id, :guid, now(), now(), :localPrice, :localCurrency)') { BatchingStatementWrapper stmt ->
                             IssueEntitlement.executeQuery('select ie.id '+query.query+' and not exists (select pi from PriceItem pi where pi.issueEntitlement = ie and (pi.localCurrency = :localCurrency or ((pi.listCurrency = :localCurrency and pi.localCurrency = null) or (pi.listCurrency = null and pi.localCurrency = null))))', query.queryParams+[localCurrency: localCurrency]).each { Long ieid ->
-                                stmt.addBatch([id: ieid, guid: PriceItem.class.name+':'+UUID.randomUUID().toString(), localPrice: localPrice, localCurrency: localCurrency.id])
+                                stmt.addBatch([id: ieid, guid: PriceItem.class.name+':'+RandomUtils.getUUID(), localPrice: localPrice, localCurrency: localCurrency.id])
                             }
                         }
                         }
@@ -3467,7 +3467,7 @@ class SubscriptionControllerService {
                         endDate: sub_endDate,
                         referenceYear: sub_refYear,
                         manualCancellationDate: manualCancellationDate,
-                        identifier: UUID.randomUUID().toString(),
+                        identifier: RandomUtils.getUUID(),
                         type: result.subscription.type,
                         kind: result.subscription.kind,
                         resource: result.subscription.resource,
@@ -3539,7 +3539,7 @@ class SubscriptionControllerService {
                 String sub_name = params.name
                 Subscription targetObject = new Subscription(name: sub_name,
                         status: RDStore.SUBSCRIPTION_NO_STATUS,
-                        identifier: UUID.randomUUID().toString(),
+                        identifier: RandomUtils.getUUID(),
                         type: result.sourceObject.type,
                         administrative: result.sourceObject.administrative
                 )
@@ -3846,8 +3846,8 @@ class SubscriptionControllerService {
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         Subscription sub = Subscription.get(params.id)
 
-//        result.token           = params.token ?: RandomUtils.getRandomAlphanumeric(24) // -> static token
-        result.token           = params.token ?: RandomUtils.getRandomAlphaNumeric(16) + '#' + params.id // -> static token
+//        result.token           = params.token ?: RandomUtils.getAlphaNumeric(24) // -> static token
+        result.token           = params.token ?: RandomUtils.getAlphaNumeric(16) + '#' + params.id // -> static token
         result.cfgQueryList    = SubscriptionReport.getCurrentQueryConfig( sub )
         result.cfgChartsList   = BaseConfig.CHARTS
         result.cfgTimelineList = SubscriptionReport.getCurrentTimelineConfig( sub )
