@@ -29,6 +29,7 @@ dataSources.storage.password = 'laser'
 
 deployBackupLocation 	= '/tmp/backups'    // database backups (before deploys)
 documentStorageLocation = '/tmp/documents'  // uploaded documents
+documentStorageKey      = 'todo'            // uploaded documents key
 
 financials.currency = "EUR|GBP|USD|CHF" // priority of order
 
