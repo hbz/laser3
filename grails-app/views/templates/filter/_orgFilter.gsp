@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.api.v0.ApiToolkit; de.laser.helper.Params; de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.survey.SurveyConfigVendor; de.laser.survey.SurveyConfigPackage; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.api.v0.ApiToolkit; de.laser.helper.Params; de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore" %>
 
 <%
     String lang = LocaleUtils.getCurrentLang()
@@ -403,6 +403,33 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </g:if>
+
+
+            <g:if test="${field.equalsIgnoreCase('surveyVendors')}">
+                <div class="field">
+                    <label for="surveyVendors">${message(code: 'surveyVendors.label')}</label>
+                    <select id="surveyVendors" name="surveyVendors" multiple="" class="ui selection fluid dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:set var="surveyVendors" value="${de.laser.survey.SurveyConfigVendor.executeQuery("select scv.vendor from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig order by scv.vendor.name asc", [surveyConfig: surveyConfig])}"/>
+                        <g:each in="${surveyVendors}" var="surveyVendor">
+                            <option <%=Params.getLongList(params, 'surveyVendors').contains(surveyVendor.id) ? 'selected="selected"' : '' %> value="${surveyVendor.id}">${surveyVendor.name}</option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:if>
+
+            <g:if test="${field.equalsIgnoreCase('surveyPackages')}">
+                <div class="field">
+                    <label for="surveyPackages">${message(code: 'surveyPackages.label')}</label>
+                    <select id="surveyPackages" name="surveyPackages" multiple="" class="ui selection fluid dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:set var="surveyPackages" value="${SurveyConfigPackage.executeQuery("select scp.pkg from SurveyConfigPackage scp where scp.surveyConfig = :surveyConfig order by scp.pkg.name asc", [surveyConfig: surveyConfig])}"/>
+                        <g:each in="${surveyPackages}" var="surveyPackage">
+                            <option <%=Params.getLongList(params, 'surveyPackages').contains(surveyPackage.id) ? 'selected="selected"' : '' %> value="${surveyPackage.id}">${surveyPackage.name}</option>
+                        </g:each>
+                    </select>
                 </div>
             </g:if>
 

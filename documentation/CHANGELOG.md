@@ -9,6 +9,12 @@
 
 6370    25.03.2025  dev     3.5         Andreas Feature     Einzeltitelauswahl implementiert
 
+6391    24.03.2025  dev     3.5         Moe     Bug      500er Umfrage beenden DEV
+
+6389    24.03.2025  dev     3.5         Moe     Feature     Filter, die Umfragen-Teilnehmer zu tun haben, anpassen
+
+6386    24.03.2025  dev     3.5         Moe     Feature     Laufzeiten von Kindlizenzen bei Verlängersumfragen und manueller Verlängerung richtig setzen
+
 6390    24.03.2025  dev     3.5         Moe     Bug         Umfrage-Benachrichtigung: Startdatum wird als Enddatum ausgewertet
 
 6386    24.03.2025  dev     3.5         Moe     Feature     Laufzeiten von Kindlizenzen bei Verlängersumfragen und manueller Verlängerung richtig setzen
