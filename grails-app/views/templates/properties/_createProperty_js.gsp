@@ -16,6 +16,18 @@
                     onVisible: function () {
                         r2d2.initDynamicUiStuff('#createPropertyModal');
                         r2d2.initDynamicXEditableStuff('#createPropertyModal');
+                            $('.la-js-checkAll').checkbox({
+                            // check all children
+                                onChecked: function() {
+                                    var $childCheckbox  =  $(this).closest('.la-checkAllArea').find('.checkbox');
+                                    $childCheckbox.checkbox('check');
+                                },
+                            // uncheck all children
+                                onUnchecked: function() {
+                                var $childCheckbox  =  $(this).closest('.la-checkAllArea').find('.checkbox');
+                                $childCheckbox.checkbox('uncheck');
+                                }
+                          });
                     }
                 }).modal('show');
                 }
