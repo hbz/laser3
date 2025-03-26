@@ -13,6 +13,7 @@ import de.laser.properties.*
 import de.laser.finance.CostItem
 import de.laser.survey.SurveyResult
 import de.laser.utils.LocaleUtils
+import de.laser.utils.RandomUtils
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import de.laser.wekb.Vendor
@@ -196,7 +197,7 @@ class PropertyService {
             }*/
 
             Map<String, Object> map = [
-                    token       : UUID.randomUUID(),
+                    token       : RandomUtils.getUUID(),
                     //type        : params.pd_type,
                     type        : 'java.lang.String',
                     //rdc         : rdc?.getDesc(),
@@ -245,7 +246,7 @@ class PropertyService {
             }
 
             Map<String, Object> map = [
-                    token       : UUID.randomUUID(),
+                    token       : RandomUtils.getUUID(),
                     category    : params.pd_descr,
                     type        : params.pd_type,
                     rdc         : rdc?.getDesc(),

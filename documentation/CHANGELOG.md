@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6398    26.03.2025  dev     3.5         David   Feature     Generator für Random(UI)ID, etc.
+
 6375    19.03.2025  dev     3.5         Andreas Feature     Abschaltung der Library Supplier in der Lizenzdetailsicht
 
 6343    19.03.2025  dev     3.5         David   Feature     Modale Dialoge für Aufgaben überarbeiten

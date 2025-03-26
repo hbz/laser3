@@ -274,6 +274,6 @@ class ReportingTagLib {
     }
 
     static String getUniqueId(String id) {
-        return id + '-' + RandomUtils.getRandomAlphaNumeric(8).toLowerCase()
+        return id + '-' + RandomUtils.getAlphaNumeric(8).toLowerCase()
     }
 }

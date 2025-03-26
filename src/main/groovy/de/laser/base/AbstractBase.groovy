@@ -1,5 +1,6 @@
 package de.laser.base
 
+import de.laser.utils.RandomUtils
 import groovy.util.logging.Slf4j
 
 /**
@@ -24,10 +25,9 @@ abstract class AbstractBase {
     void setGlobalUID() {
 
         if (! globalUID) {
-            UUID uid = UUID.randomUUID()
             String scn = this.getClass().getSimpleName().toLowerCase()
 
-            globalUID = scn + ":" + uid.toString()
+            globalUID = scn + ":" + RandomUtils.getUUID()
         }
     }
 

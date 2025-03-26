@@ -3,7 +3,7 @@
 
     <ui:modal id="modalCreateRttpTask" message="task.create.reportTitleToProvider">
 
-        <g:set var="preID" value="${RandomUtils.getRandomUCID()}" />
+        <g:set var="preID" value="${RandomUtils.getHtmlID()}" />
 
         <g:form id="${preID}_form" class="ui form" url="[controller: 'task', action: 'createTask']" method="post">
             <g:hiddenField id="${preID}_preID" name="preID" value="${preID}" />

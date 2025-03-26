@@ -3,7 +3,7 @@
 
 <ui:modal id="modalReadTask" message="task.label" hideSubmitButton="true">
 
-    <g:set var="preID" value="${RandomUtils.getRandomUCID()}" />
+    <g:set var="preID" value="${RandomUtils.getHtmlID()}" />
 
     <div class="ui form">
         <div class="field">
