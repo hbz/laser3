@@ -90,7 +90,7 @@
                         <g:each in="${RefdataCategory.getAllRefdataValues(surveyResult.type.refdataCategory)}"
                                 var="refdataValue">
                             <g:if test="${refdataValue.getI10n('value', language)}">
-                                <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
+                                <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value', language)}"/>
                             </g:if>
                         </g:each>
                         <br/>
@@ -156,7 +156,7 @@
 <g:each in="${surveyPersons}" var="person">
     Name: ${person.title} ${person.first_name} ${person.middle_name} ${person.last_name} <br/>
     <g:each in="${person.contacts}" var="contact">
-        <g:message code="contact" locale="${language}"/> (${contact.contentType ? contact.contentType.getI10n('value', language) :''}): ${contact.content}
+        <g:message code="contact" locale="${language}"/> ${contact.contentType ? '('+contact.contentType.getI10n('value', language)+')' :''}: ${contact.content}
         <br/>
     </g:each>
     <br/>
@@ -178,7 +178,7 @@
     <g:each in="${billingPersons}" var="person">
         Name: ${person.title} ${person.first_name} ${person.middle_name} ${person.last_name} <br/>
         <g:each in="${person.contacts}" var="contact">
-            <g:message code="contact" locale="${language}"/> (${contact.contentType ? contact.contentType.getI10n('value', language) :''}): ${contact.content}
+            <g:message code="contact" locale="${language}"/> ${contact.contentType ? '('+contact.contentType.getI10n('value', language)+')' :''}: ${contact.content}
             <br/>
         </g:each>
         <br/>
@@ -192,7 +192,7 @@
     <br/>
     <br/>
     <strong><g:message code="surveyOrg.eInvoice.label" locale="${language}"/>:</strong><br/>
-    <g:message code="surveyOrg.eInvoicePortal.label" locale="${language}"/>: ${surveyOrg.eInvoicePortal.getI10n('value', language)}<br/>
+    <g:message code="surveyOrg.eInvoicePortal.label" locale="${language}"/>: ${surveyOrg.eInvoicePortal ? surveyOrg.eInvoicePortal.getI10n('value', language) : ''}<br/>
     <g:message code="surveyOrg.eInvoiceLeitwegId.label" locale="${language}"/>: ${surveyOrg.eInvoiceLeitwegId}<br/>
     <g:message code="surveyOrg.eInvoiceLeitkriterium.label" locale="${language}"/>: ${surveyOrg.eInvoiceLeitkriterium}<br/>
     <br/>

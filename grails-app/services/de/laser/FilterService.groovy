@@ -1164,6 +1164,16 @@ class FilterService {
             base_qry = base_qry + subQuery
         }
 
+        if (params.surveyVendors) {
+            base_qry += ' and exists (select svr from SurveyVendorResult as svr where svr.surveyConfig = surveyOrg.surveyConfig and svr.participant = surveyOrg.org and svr.vendor.id in (:vendors)) '
+            queryParams << [vendors : Params.getLongList(params, 'surveyVendors')]
+        }
+
+        if (params.surveyPackages) {
+            base_qry += ' and exists (select spr from SurveyPackageResult as spr where spr.surveyConfig = surveyOrg.surveyConfig and spr.participant = surveyOrg.org and spr.pkg.id in (:pkgs))'
+            queryParams << [pkgs : Params.getLongList(params, 'surveyPackages')]
+        }
+
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
                 base_qry += " order by ${params.sort} ${params.order ?: "asc"}"
