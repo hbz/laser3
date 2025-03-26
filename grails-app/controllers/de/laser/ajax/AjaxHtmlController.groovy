@@ -779,6 +779,19 @@ class AjaxHtmlController {
         render template: '/subscription/KBARTSelectionUploadFormModal', model: result
     }
 
+    /**
+     * Opens the modal for selection title with kbart upload
+     */
+    @Secured(['ROLE_USER'])
+    def linkTitleModal() {
+        log.debug('ajaxHtmlController.linkTitleModal ' + params)
+        Map<String,Object> result = [isConsortium: contextService.getOrg().isCustomerType_Consortium()]
+        result.tipp = TitleInstancePackagePlatform.findByGokbId(params.tippID)
+        if(params.containsKey('fixedSubscription'))
+            result.fixedSubscription = Subscription.get(params.fixedSubscription)
+        render template: '/title/linkTitle', model: result
+    }
+
     // ----- surveyInfos -----
 
     /**

@@ -78,6 +78,7 @@ class SubscriptionService {
     SubscriptionControllerService subscriptionControllerService
     SubscriptionsQueryService subscriptionsQueryService
     SurveyService surveyService
+    TitleService titleService
     UserService userService
 
 
@@ -1800,7 +1801,7 @@ class SubscriptionService {
             Map<String, Object> query = filterService.getTippSubsetQuery(titleConfigMap)
             Set<Long> tippIDs = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
             if(result.identifier) {
-                tippIDs = tippIDs.intersect(issueEntitlementService.getTippsByIdentifier(identifierConfigMap, result.identifier))
+                tippIDs = tippIDs.intersect(titleService.getTippsByIdentifier(identifierConfigMap, result.identifier))
             }
             EhcacheWrapper userCache = contextService.getUserCache("/subscription/renewEntitlementsWithSurvey/${result.subscription.id}?${params.tab}")
             Map<String, Object> checkedCache = userCache.get('selectedTitles')
@@ -2131,6 +2132,18 @@ class SubscriptionService {
         result
     }
 
+    void linkTitle(Subscription subscription, Package pkgToLink, TitleInstancePackagePlatform tippToLink, boolean linkToChildren) {
+        addToSubscription(subscription, pkgToLink, false)
+        addSingleEntitlement(subscription, tippToLink.gokbId, null, null)
+        if(linkToChildren) {
+            List<Subscription> memberSubs = Subscription.findAllByInstanceOf(subscription)
+            addToMemberSubscription(subscription, memberSubs, pkgToLink, false)
+            memberSubs.each {Subscription memberSub ->
+                addSingleEntitlement(memberSub, tippToLink.gokbId, null, null)
+            }
+        }
+    }
+
     Map<String, Object> exportRenewalEntitlements(GrailsParameterMap params) {
         Map<String,Object> result = getRenewalGenerics(params)
         Locale locale = LocaleUtils.getCurrentLocale()
@@ -2193,7 +2206,7 @@ class SubscriptionService {
                     Map<String, Object> query = filterService.getTippSubsetQuery(titleConfigMap), exportData = [:]
                     Set<Long> tippIDs = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
                     if(result.identifier) {
-                        tippIDs = tippIDs.intersect(issueEntitlementService.getTippsByIdentifier(identifierConfigMap, result.identifier))
+                        tippIDs = tippIDs.intersect(titleService.getTippsByIdentifier(identifierConfigMap, result.identifier))
                     }
                     userCache.put('progress', 20)
                     switch(params.tab) {
