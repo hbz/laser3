@@ -21,13 +21,10 @@
                                         </div>
 
                                         <div class="two wide colum">
-                                            <div class="ui compact inverted segment right floated"
-                                                 style="margin-right: 0;">
+                                            <div class="ui compact inverted segment right floated" style="margin-right: 0;">
                                                 <div class="ui checkbox la-js-checkAll right aligned">
-                                                    <input type="checkbox" id="checkAllInput_plural"
-                                                           name="checkAllInput_plural">
-                                                    <label
-                                                        for="checkAllInput_plural">${message(code: 'menu.public')}</label>
+                                                    <input type="checkbox" id="checkAllInput_plural" name="checkAllInput_plural">
+                                                    <label for="checkAllInput_plural">${message(code: 'menu.public')}</label>
                                                 </div>
                                             </div>
                                         </div>
