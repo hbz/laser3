@@ -60,19 +60,21 @@
             </tr>
         </g:each>
         </tbody>
-        <tfoot>
-        <td></td>
-        <td></td>
-        <td>${sumCostItems}</td>
-        <td>
-            <g:formatNumber number="${sumCostInBillingCurrency}" minFractionDigits="2"
-                            maxFractionDigits="2" type="number"/>
-        </td>
-        <td>
-            <g:formatNumber number="${sumCostInBillingCurrencyAfterTax}" minFractionDigits="2"
-                            maxFractionDigits="2" type="number"/>
-        </td>
-        <td></td>
-        </tfoot>
+        <g:if test="${costItemsByCTE}">
+            <tfoot>
+            <td></td>
+            <td></td>
+            <td>${sumCostItems}</td>
+            <td>
+                <g:formatNumber number="${sumCostInBillingCurrency}" minFractionDigits="2"
+                                maxFractionDigits="2" type="number"/>
+            </td>
+            <td>
+                <g:formatNumber number="${sumCostInBillingCurrencyAfterTax}" minFractionDigits="2"
+                                maxFractionDigits="2" type="number"/>
+            </td>
+            <td></td>
+            </tfoot>
+        </g:if>
     </table>
 </div>

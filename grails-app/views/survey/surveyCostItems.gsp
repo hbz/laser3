@@ -87,7 +87,15 @@
 
         <div id="bulkCostItems" class="hidden">
             <g:if test="${countCostItems == 0}">
-                <ui:msg class="info" showIcon="true" message="surveyCostItems.bulkOption.info"/>
+
+                <div class="ui info message icon la-clear-before" style="display:flex">
+                    <i class="info icon" aria-hidden="true"></i>
+
+                    <div class="content">
+                        <p><g:message code="surveyCostItems.bulkOption.info"/></p>
+                    </div>
+                </div>
+
             </g:if>
             <g:else>
                 <h3 class="ui header"><span class="la-long-tooltip la-popup-tooltip"
@@ -218,7 +226,7 @@
 
         <br/>
         <br/>
-        <g:if test="${editable}">
+        <g:if test="${editable && participants}">
             <button name="deleteCostItems" value="true" type="submit"
                     class="${Btn.NEGATIVE_CONFIRM}"
                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyCostItems")}"
