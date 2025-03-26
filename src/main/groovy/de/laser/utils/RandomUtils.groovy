@@ -21,7 +21,7 @@ class RandomUtils {
         getRandom(DICT_ALPHANUMERIC.toCharArray(), length)
     }
 
-    static getRandom(char[] dict, int length = 16) {
+    static String getRandom(char[] dict, int length = 16) {
         RandomStringGenerator rsg = new RandomStringGenerator.Builder()
                 .selectFrom(dict)
                 .build()
@@ -33,6 +33,6 @@ class RandomUtils {
     }
 
     static String getHtmlID() {
-        getAlphabetic(8).toUpperCase()
+        (getAlphabetic(1) + getRandom(DICT_ALPHANUMERIC.drop(26).toCharArray(), 7)).toUpperCase()
     }
 }

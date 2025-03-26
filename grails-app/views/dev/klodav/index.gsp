@@ -157,14 +157,16 @@
         ${ RandomUtils.getUUID() }  <>  ${ UUID.randomUUID().toString() }
 
         ${ RandomUtils.getHtmlID() }
+        ${ RandomUtils.getHtmlID() }
+        ${ RandomUtils.getHtmlID() }
 
-        ${ RandomUtils.getAlphabetic() }
-        ${ RandomUtils.getAlphabetic(16) }
-        ${ RandomUtils.getAlphabetic(32) }
+        __ : ${ RandomUtils.getAlphabetic() }
+        16 : ${ RandomUtils.getAlphabetic(16) }
+        32 : ${ RandomUtils.getAlphabetic(32) }
 
-        ${ RandomUtils.getAlphaNumeric() }
-        ${ RandomUtils.getAlphaNumeric(16) }
-        ${ RandomUtils.getAlphaNumeric(32) }
+        __ : ${ RandomUtils.getAlphaNumeric() }
+        16 : ${ RandomUtils.getAlphaNumeric(16) }
+        32 : ${ RandomUtils.getAlphaNumeric(32) }
 
         ${ PasswordUtils.getRandomUserPassword() }
         ${ PasswordUtils.getRandomUserPassword() }
