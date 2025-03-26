@@ -1,4 +1,4 @@
-<%@page import="de.laser.wekb.Package; de.laser.wekb.Platform; de.laser.wekb.Provider; de.laser.wekb.Vendor; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.survey.SurveyPackageResult; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.convenience.Marker; de.laser.utils.DateUtils; de.laser.storage.RDConstants; de.laser.Org; de.laser.RefdataValue" %>
+<%@page import="de.laser.wekb.TitleInstancePackagePlatform; de.laser.wekb.Package; de.laser.wekb.Platform; de.laser.wekb.Provider; de.laser.wekb.Vendor; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.survey.SurveyPackageResult; de.laser.finance.CostItem; de.laser.storage.RDStore; de.laser.convenience.Marker; de.laser.utils.DateUtils; de.laser.storage.RDConstants; de.laser.Org; de.laser.RefdataValue" %>
 <laser:serviceInjection/>
 <table class="ui sortable celled la-js-responsive-table la-table table">
     <thead>
@@ -18,6 +18,9 @@
                 <g:if test="${tmplConfigItem == 'name'}">
                     <g:sortableColumn property="name" title="${message(code: 'package.show.pkg_name')}" params="${params}"/>
                 </g:if>
+                <g:if test="${tmplConfigItem == 'titleName'}">
+                    <g:sortableColumn property="name" title="${message(code: 'default.name.label')}" params="${params}"/>
+                </g:if>
                 <g:if test="${tmplConfigItem == 'status'}">
                     <th>${message(code: 'package.status.label')}</th>
                 </g:if>
@@ -31,6 +34,9 @@
                     <th>Wekb <br>${message(code: 'package.show.nav.planned')}</th>
                     <th>Laser <br>${message(code: 'package.show.nav.expired')}</th>
                     <th>Wekb <br>${message(code: 'package.show.nav.expired')}</th>
+                </g:if>
+                <g:if test="${tmplConfigItem == 'package'}">
+                    <g:sortableColumn class="la-th-wrap" property="package.name" title="${message(code: 'package.label')}" params="${params}"/>
                 </g:if>
                 <g:if test="${tmplConfigItem == 'provider'}">
                     <g:sortableColumn class="la-th-wrap" property="provider.name" title="${message(code: 'provider.label')}" params="${params}"/>
@@ -118,6 +124,9 @@
                         </span>
                     </th>
                 </g:if>
+                <g:if test="${tmplConfigItem == 'linkTitle'}">
+                    <th class="la-th-wrap x center aligned"></th>
+                </g:if>
             </g:each>
         </tr>
     </thead>
@@ -129,7 +138,13 @@
             <g:else>
                 <g:set var="record" value="${entry}"/>
             </g:else>
-            <g:set var="pkg" value="${Package.findByGokbId(record.uuid)}"/>
+            <g:if test="${record.tippPackageUuid}">
+                <g:set var="pkg" value="${Package.findByGokbId(record.tippPackageUuid)}"/>
+                <g:set var="tipp" value="${TitleInstancePackagePlatform.findByGokbId(record.uuid)}"/>
+            </g:if>
+            <g:else>
+                <g:set var="pkg" value="${Package.findByGokbId(record.uuid)}"/>
+            </g:else>
             <%
                 Provider provider
                 SortedSet<Vendor> vendors = new TreeSet<Vendor>()
@@ -138,7 +153,7 @@
                 if(record.providerUuid)
                     provider = Provider.findByGokbId(record.providerUuid)
                 else
-                    provider = pkg.provider
+                    provider = pkg?.provider
                 if(record.nominalPlatformUuid)
                     plat = Platform.findByGokbId(record.nominalPlatformUuid)
                 else
@@ -172,6 +187,18 @@
                             <%--Package: ${Package.findByGokbId(record.uuid)} --%>
                             <g:if test="${pkg}">
                                 <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link>
+                            </g:if>
+                            <g:else>
+                                <ui:wekbIconLink type="package" gokbId="${record.uuid}" /> ${record.name}
+                            </g:else>
+                        </td>
+                    </g:if>
+                    <g:if test="${tmplConfigItem == 'titleName'}">
+                        <td>
+                            <%--UUID: ${record.uuid} --%>
+                            <%--Package: ${Package.findByGokbId(record.uuid)} --%>
+                            <g:if test="${tipp}">
+                                <g:link controller="tipp" action="show" id="${tipp.id}">${tipp.name}</g:link>
                             </g:if>
                             <g:else>
                                 <ui:wekbIconLink type="package" gokbId="${record.uuid}" /> ${record.name}
@@ -248,6 +275,17 @@
 
                         <td>
                             <g:formatNumber number="${wekbRetiredTitles}"/>
+                        </td>
+                    </g:if>
+                    <g:if test="${tmplConfigItem == 'package'}">
+                        <td>
+                            <g:if test="${pkg}">
+                                <g:if test="${pkg.gokbId}">
+                                    <ui:wekbIconLink type="package" gokbId="${pkg.gokbId}" />
+                                </g:if>
+                                <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link>
+                            </g:if>
+                            <g:else>${record.packageName}</g:else>
                         </td>
                     </g:if>
                     <g:if test="${tmplConfigItem == 'provider'}">
@@ -426,6 +464,45 @@
                                         data-content="${message(code: 'subscription.details.linkPackage.button', args: [record.name])}"><g:message
                                         code="subscription.details.linkPackage.label"/></button>
 
+                            </g:if>
+                        </td>
+                    </g:if>
+                    <g:if test="${tmplConfigItem == 'linkTitle'}">
+                        <td class="right aligned">
+                            <g:if test="${editable}">
+                                <g:set var="disabled" value="${bulkProcessRunning ? 'disabled' : ''}" />
+                                <div class="two wide column">
+                                    <a id="linkTitleToSubscription_${record.uuid}" href="${createLink(action: 'linkTitleModal', controller: 'ajaxHtml', params: [tippID: record.uuid, fixedSubscription: subscription.id])}" class="ui icon button ${disabled}"><g:message code="subscription.details.linkTitle.label"/></a>
+                                </div>
+
+                                <laser:script file="${this.getGroovyPageFileName()}">
+                                    $('#linkTitleToSubscription_${record.uuid}').on('click', function(e) {
+                                        e.preventDefault();
+
+                                        $.ajax({
+                                            url: $(this).attr('href')
+                                        }).done( function (data) {
+                                            $('.ui.dimmer.modals > #linkTitleModal').remove();
+                                            $('#dynamicModalContainer').empty().html(data);
+
+                                            $('#dynamicModalContainer .ui.modal').modal({
+                                               onShow: function () {
+                                                    r2d2.initDynamicUiStuff('#linkTitleModal');
+                                                    r2d2.initDynamicXEditableStuff('#linkTitleModal');
+                                                    $("html").css("cursor", "auto");
+                                                },
+                                                detachable: true,
+                                                autofocus: false,
+                                                closable: false,
+                                                transition: 'scale',
+                                                onApprove : function() {
+                                                    $(this).find('.ui.form').submit();
+                                                    return false;
+                                                }
+                                            }).modal('show');
+                                        })
+                                    });
+                                </laser:script>
                             </g:if>
                         </td>
                     </g:if>

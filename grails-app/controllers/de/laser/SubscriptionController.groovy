@@ -1050,6 +1050,32 @@ class SubscriptionController {
         }
     }
 
+    @DebugInfo(isInstEditor_denySupport = [], ctrlService = 1)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport()
+    })
+    def linkTitle() {
+        Subscription subscription
+        if(Subscription.class.name in params.subscription)
+            subscription = (Subscription) genericOIDService.resolveOID(params.subscription)
+        else subscription = Subscription.get(params.subscription)
+        TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(params.tippID)
+        if(subscription && tipp) {
+            Package pkg = tipp.pkg
+            subscriptionService.linkTitle(subscription, pkg, tipp, params.linkToChildren == 'on')
+            redirect action: 'index', id: subscription.id
+        }
+        else {
+            String error = ""
+            if(!subscription)
+                error += "<p>${message(code: 'default.not.found.message', args: [message(code: 'subscription'), params.subscription])}</p>"
+            if(!tipp)
+                error += "<p>${message(code: 'default.not.found.message', args: [message(code: 'title'), params.tippID])}</p>"
+            flash.error = error
+            redirect controller: 'title', action: 'index'
+        }
+    }
+
     //-------------------------------- issue entitlements holding --------------------------------------
 
     /**

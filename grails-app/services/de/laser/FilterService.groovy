@@ -1965,6 +1965,18 @@ class FilterService {
             queryParams.yearsFirstOnline = Params.getLongList_forCommaSeparatedString(params, 'yearsFirstOnline').collect { Integer.valueOf(it.toString()) }
         }
 
+        if(params.openAccess) {
+            String openAccessString = " (tipp.openAccess in (:openAccess) "
+            Set<RefdataValue> openAccess = listReaderWrapper(params, 'openAccess').collect { String key -> RefdataValue.get(key) }
+            if(RDStore.GENERIC_NULL_VALUE in openAccess) {
+                openAccess.remove(RDStore.GENERIC_NULL_VALUE)
+                openAccessString += 'or tipp.openAccess = null'
+            }
+            openAccessString += ')'
+            queryArgs << openAccessString
+            queryParams.openAccess = openAccess
+        }
+
         if (params.publishers) {
             queryArgs << " lower(tipp.publisherName) in (:publishers) "
             queryParams.publishers = listReaderWrapper(params, 'publishers').collect { it.toLowerCase().replaceAll('&quot;', '"') }

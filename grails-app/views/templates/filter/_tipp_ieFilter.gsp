@@ -4,7 +4,7 @@
 <g:set var="forTitles" value="${forTitles ?: actionName}"/>
 <g:set var="configMap" value="${configMap ?: params}"/>
 <g:set var="availableStatus" value="${RefdataCategory.getAllRefdataValues(RDConstants.TIPP_STATUS)-RDStore.TIPP_STATUS_REMOVED}" />
-<g:set var="disableFilter" value="${(allTippsCounts && allTippsCounts > 100000) || (allTippCounts && allTippCounts > 100000)}" />
+<g:set var="disableFilter" value="${(num_tipp_rows && num_tipp_rows > 100000)}" />
 
 <g:if test="${action == 'currentPermanentTitles'}">
     <g:set var="availableStatus" value="${availableStatus-RDStore.TIPP_STATUS_EXPECTED}"/>
@@ -58,7 +58,7 @@
                                       placeholder="subscription.details.asAt.placeholder"/>
                 </div>
             </g:if>
-            <g:if test="${!showStatsFilter && !(action in ['renewEntitlementsWithSurvey', 'current', 'planned', 'expired', 'deleted'])}">
+            <g:if test="${!disableStatus && !showStatsFilter && !(action in ['renewEntitlementsWithSurvey', 'current', 'planned', 'expired', 'deleted'])}">
                 <div class="field">
                     <label for="status">${message(code: 'default.status.label')}</label>
                     <select name="status" id="status" multiple=""
@@ -146,7 +146,7 @@
             </div>
         </div>
 
-        <div class="four fields">
+        <div class="five fields">
             <div class="field">
                 <label for="yearsFirstOnline">${message(code: 'tipp.YearFirstOnline')}</label>
                 <div class="ui search selection fluid multiple dropdown" id="yearsFirstOnline">
@@ -177,6 +177,19 @@
                     <div class="default text"><g:message code="default.select.choose.label"/></div>
                     <i class="dropdown icon"></i>
                 </div>
+            </div>
+
+            <div class="field">
+                <label for="openAccess">${message(code: 'tipp.openAccess')}</label>
+                <select name="openAccess" id="openAccess" multiple="" class="ui search selection dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_OA_TYPE)+RDStore.GENERIC_NULL_VALUE}" var="openAccess">
+                        <option <%=(Params.getRefdataList(params, 'openAccess')?.contains(openAccess)) ? 'selected="selected"' : ''%> value="${openAccess.id}">
+                            ${openAccess.getI10n('value')}
+                        </option>
+                    </g:each>
+                </select>
             </div>
 
             <div class="field">
@@ -318,7 +331,7 @@
             <div class="field la-field-right-aligned">
                 <g:link controller="${controllerName}" action="${action}" id="${params.id}" params="[surveyConfigID: params.surveyConfigID, tab: params.tab, tabStat: params.tabStat]"
                    class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</g:link>
-                <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}"/>
+                <input name="filterSet" type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.button.filter.label')}"/>
             </div>
     </g:form>
 </ui:filter>
