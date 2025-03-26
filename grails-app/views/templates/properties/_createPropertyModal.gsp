@@ -20,7 +20,7 @@
                                             <h3 class="ui header">${message(code: 'propertyDefinition.plural')} (${pdg.name})</h3>
                                         </div>
 
-                                        <div class="two wide colum">
+                                        <div class="two wide column">
                                             <div class="ui compact inverted segment right floated" style="margin-right: 0;">
                                                 <div class="ui checkbox la-js-checkAll right aligned">
                                                     <input type="checkbox" id="checkAllInput_plural" name="checkAllInput_plural">
@@ -93,7 +93,7 @@
                                     <div class="fourteen wide column">
                                         <h3 class="ui header">${message(code: 'subscription.properties.orphaned')}</h3>
                                     </div>
-                                    <div class="two wide colum">
+                                    <div class="two wide column">
                                         <div class="ui compact inverted segment right floated" style="margin-right: 0;">
                                             <div class="ui checkbox la-js-checkAll right aligned">
                                                 <input type="checkbox" id="checkAllInput_orphaned" name="checkAllInput_orphaned">
