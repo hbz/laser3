@@ -587,6 +587,8 @@ class MailSendService {
                     subject mailSubject
                     html(view: "/mailTemplates/html/notificationSurveyParticipationFinishForOwner", model: [org: participationFinish, survey: surveyInfo, surveyResults: surveyResults])
                 }
+
+                log.debug("emailToSurveyOwnerbyParticipationFinish - finished sendSurveyEmail() to " + " (" + mailFinishResult+ ") " + surveyInfo.owner.name)
             }
 
 
