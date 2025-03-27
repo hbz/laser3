@@ -135,6 +135,11 @@
                             </strong>
                             <br />
                             ${docctx.owner.filename}
+                            <g:if test="${docctx.owner.ckey}">
+                                <span class="la-long-tooltip la-popup-tooltip" data-content="${message(code:'license.docs.table.encrypted')}">
+                                    <i class="icon award purple"></i>
+                                </span>
+                            </g:if>
                         </td>
                         <td>
                             ${docctx.getDocType()?.getI10n('value')}

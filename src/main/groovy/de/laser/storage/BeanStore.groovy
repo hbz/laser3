@@ -1,6 +1,7 @@
 package de.laser.storage
 
 import de.laser.BootStrapService
+import de.laser.CryptoService
 import de.laser.CustomerTypeService
 import de.laser.ESWrapperService
 import de.laser.GenericOIDService
@@ -171,6 +172,10 @@ class BeanStore {
      */
     static ContextService getContextService() {
         Holders.grailsApplication.mainContext.getBean('contextService') as ContextService
+    }
+
+    static CryptoService getCryptoService() {
+        Holders.grailsApplication.mainContext.getBean('cryptoService') as CryptoService
     }
 
     /**
