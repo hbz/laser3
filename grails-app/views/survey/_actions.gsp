@@ -34,7 +34,7 @@
 
                 <g:if test="${surveyInfo.type in [RDStore.SURVEY_TYPE_SUBSCRIPTION] && surveyInfo.status.id in [RDStore.SURVEY_SURVEY_STARTED.id, RDStore.SURVEY_SURVEY_COMPLETED.id, RDStore.SURVEY_IN_EVALUATION.id, RDStore.SURVEY_COMPLETED.id]}">
                     <ui:actionsDropdownItem controller="survey" action="copySurveyCostItemsToSub" params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]"
-                                            message="surveyInfo.copySurveyCostItems" tooltip=""/>
+                                            message="surveyInfo.copySurveyCostItems"/>
                 </g:if>
                 <div class="ui divider"></div>
 
@@ -141,12 +141,12 @@
 
                     <g:if test="${surveyInfo && surveyInfo.status.id == RDStore.SURVEY_SURVEY_COMPLETED.id}">
                         <ui:actionsDropdownItem controller="survey" action="setStatus" params="[id: params.id, newStatus: 'setInEvaluation']"
-                                                message="evaluateSurvey.button" tooltip=""/>
+                                                message="evaluateSurvey.button"/>
                     </g:if>
 
                     <g:if test="${surveyInfo && surveyInfo.status.id == RDStore.SURVEY_IN_EVALUATION.id}">
                         <ui:actionsDropdownItem controller="survey" action="setStatus" params="[id: params.id, newStatus: 'setCompleted']"
-                                                message="completeSurvey.button" tooltip=""/>
+                                                message="completeSurvey.button"/>
                     </g:if>
                 </g:if>
             %{-- Only for Survey with Renewal End --}%
@@ -154,7 +154,7 @@
 
                 <g:if test="${(!surveyConfig.subSurveyUseForTransfer) && surveyInfo && surveyInfo.status.id in [RDStore.SURVEY_IN_EVALUATION.id, RDStore.SURVEY_SURVEY_COMPLETED.id]}">
                     <ui:actionsDropdownItem controller="survey" action="setStatus" params="[id: params.id, newStatus: 'setCompleted']"
-                                            message="completeSurvey.button" tooltip=""/>
+                                            message="completeSurvey.button"/>
 
                 </g:if>
                 <div class="ui divider"></div>
