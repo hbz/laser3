@@ -5,7 +5,7 @@
     String submitButtonLabel
     String formUrl
     String modalId
-    boolean docForAll = false
+
     if(docctx && doc) {
         modalText = message(code:'template.documents.edit')
         submitButtonLabel = message(code:'default.button.edit.label')
@@ -17,7 +17,6 @@
         submitButtonLabel = message(code:'default.button.create_new.label')
         formUrl = createLink(controller: 'document', action:'uploadDocument')
         modalId = "modalCreateDocument"
-        docForAll = false
     }
     else {
         modalText = message(code:'template.documents.add')
@@ -170,21 +169,8 @@
                     <dd><g:checkBox id="setSharing-${labelId}" name="setSharing" class="ui checkbox" value="${docctx?.isShared}"/></dd>
                 </dl>
             </g:if>
-        <g:if test="${docForAll}">
-            <dl>
-                <dt>
-                </dt>
-                <dd>
-                    <div class="ui checkbox">
-                        <input type="checkbox" name="docForAllSurveyConfigs">
-                        <label>${message(code: 'surveyconfig.documents.docForAllSurveyConfigs')}</label>
-                    </div>
-                </dd>
-            </dl>
-        </g:if>
 
         </div>
-
     </g:form>
 
 </ui:modal>
