@@ -1,8 +1,8 @@
 <%@page import="de.laser.ui.Icon; de.laser.ui.Btn" %>
 <ui:modal id="financeEnrichment" message="financials.enrichment.header" msgSave="${message(code: 'financials.enrichment.submit')}">
-    <ui:msg class="info" hideClose="true" showIcon="true" message="financials.enrichment.manual" />
 
-        <g:if test="${subscription}">
+        <g:if test="${subscription && !surveyInfo}">
+            <ui:msg class="info" hideClose="true" showIcon="true" message="financials.enrichment.manual" />
             <g:form class="ui form" method="post" enctype="multipart/form-data" mapping="subfinance" controller="finance" action="index" params="[sub: subscription.id]">
                 <div class="two fields">
                     <div class="field">
@@ -25,9 +25,9 @@
                 </div>
             </g:form>
         </g:if>
-        %{-- TODO Moe use this for survey context
-        <g:elseif test="surveyContext">
-            <g:form class="ui form" method="post" enctype="multipart/form-data" controller="survey" action="???">
+        <g:elseif test="${surveyInfo}">
+            <ui:msg class="info" hideClose="true" showIcon="true" message="financials.enrichment.manual.survey" />
+            <g:form class="ui form" method="post" enctype="multipart/form-data" controller="survey" action="surveyCostItems" params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">
                 <div class="two fields">
                     <div class="field">
                         <ui:select name="selectedCostItemElement" id="selectedCostItemElement" class="ui dropdown"
@@ -49,7 +49,6 @@
                 </div>
             </g:form>
         </g:elseif>
-        --}%
     <laser:script file="${this.getGroovyPageFileName()}">
         $('.action .icon.button').click(function () {
             $(this).parent('.action').find('input:file').click();

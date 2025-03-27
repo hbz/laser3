@@ -36,6 +36,31 @@
 
 <g:if test="${surveyConfig}">
 
+    <g:if test="${afterEnrichment}">
+        <g:if test="${wrongSeparator}">
+            <ui:msg showIcon="true" class="error" message="financials.enrichment.wrongSeparator"/>
+        </g:if>
+        <g:else>
+            <g:if test="${matchCounter > 0}">
+                <ui:msg showIcon="true" class="success" message="financials.enrichment.result" args="[matchCounter, totalRows]"/>
+            </g:if>
+            <g:else>
+                <ui:msg showIcon="true" class="warning" message="financials.enrichment.emptyResult" args="[totalRows]"/>
+            </g:else>
+            <g:if test="${missing || wrongIdentifiers}">
+                <ui:msg showIcon="true" class="error">
+                    <g:if test="${missing}">
+                       <g:message code="financials.enrichment.missingPrices"/>
+                    </g:if>
+                    <g:if test="${wrongIdentifiers}">
+                        <g:message code="financials.enrichment.invalidIDs" args="[wrongIdentifierCounter]"/><br>
+                        <g:link class="${Btn.ICON.SIMPLE}" controller="package" action="downloadLargeFile" params="[token: token, fileformat: 'txt']"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
+                    </g:if>
+                </ui:msg>
+            </g:if>
+        </g:else>
+    </g:if>
+
     <div class="ui grid">
 
         <div class="sixteen wide stretched column">
@@ -87,7 +112,15 @@
 
         <div id="bulkCostItems" class="hidden">
             <g:if test="${countCostItems == 0}">
-                <ui:msg class="info" showIcon="true" message="surveyCostItems.bulkOption.info"/>
+
+                <div class="ui info message icon la-clear-before" style="display:flex">
+                    <i class="info icon" aria-hidden="true"></i>
+
+                    <div class="content">
+                        <p><g:message code="surveyCostItems.bulkOption.info"/></p>
+                    </div>
+                </div>
+
             </g:if>
             <g:else>
                 <h3 class="ui header"><span class="la-long-tooltip la-popup-tooltip"
@@ -159,6 +192,13 @@
             </g:else>
 
         </div>
+        <g:if test="${surveyConfig.subscription}">
+            <g:set var="tmplConfigShow" value="['lineNumber', 'sortname', 'name', 'surveySubInfo', 'surveySubCostItem', 'surveyCostItem']"/>
+        </g:if>
+        <g:else>
+            <g:set var="tmplConfigShow" value="['lineNumber', 'sortname', 'name', 'surveyCostItem']"/>
+        </g:else>
+
 
 
         <h3 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h3>
@@ -180,7 +220,7 @@
             <laser:render template="/templates/filter/orgFilterTable"
                           model="[orgList         : surveyParticipantsHasAccess,
                                   tmplShowCheckbox: editable,
-                                  tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'surveySubInfo', (surveyConfig.subscription ? 'surveySubCostItem' : ''), 'surveyCostItem'],
+                                  tmplConfigShow  : tmplConfigShow,
                                   tableID         : 'costTable'
                           ]"/>
 
@@ -206,7 +246,7 @@
                 <laser:render template="/templates/filter/orgFilterTable"
                               model="[orgList         : surveyParticipantsHasNotAccess,
                                       tmplShowCheckbox: editable,
-                                      tmplConfigShow  : ['lineNumber', 'sortname', 'name', (surveyConfig.subscription ? 'surveySubInfo' : ''), (surveyConfig.subscription ? 'surveySubCostItem' : ''), 'surveyCostItem'],
+                                      tmplConfigShow  : tmplConfigShow,
                                       tableID         : 'costTable'
                               ]"/>
 
@@ -218,7 +258,7 @@
 
         <br/>
         <br/>
-        <g:if test="${editable}">
+        <g:if test="${editable && participants}">
             <button name="deleteCostItems" value="true" type="submit"
                     class="${Btn.NEGATIVE_CONFIRM}"
                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyCostItems")}"
