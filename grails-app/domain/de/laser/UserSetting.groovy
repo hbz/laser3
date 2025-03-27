@@ -28,7 +28,6 @@ class UserSetting {
         DASHBOARD_ITEMS_TIME_WINDOW                 (Integer),
         LANGUAGE                                    (RefdataValue, RDConstants.LANGUAGE),
         LANGUAGE_OF_EMAILS                          (RefdataValue, RDConstants.LANGUAGE),
-        SHOW_SIMPLE_VIEWS                           (RefdataValue, RDConstants.Y_N),
         SHOW_EXTENDED_FILTER                        (RefdataValue, RDConstants.Y_N),
 
         REMIND_CC_EMAILADDRESS                      (String),

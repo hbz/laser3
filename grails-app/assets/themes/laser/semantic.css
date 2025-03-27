@@ -55974,14 +55974,6 @@ Floated Menu / Item
   color: #fff !important;
 }
 
-#contextBar .la-cb-action.item .la-toggle-green-red.active {
-  background-color: #98b500 !important;
-}
-
-#contextBar .la-cb-action.item .la-toggle-green-red.inactive {
-  background-color: #D95F3D !important;
-}
-
 #contextBar .la-cb-action.item > .button,
 #contextBar .la-cb-action-ext.item > .button {
   height: 40px !important;

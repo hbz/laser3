@@ -10,8 +10,6 @@
 
     <g:set var="entityName" value="${message(code: 'platform.label')}"/>
 
-<ui:modeSwitch controller="platform" action="show" params="${params}"/>
-
 <ui:breadcrumbs>
     <g:if test="${isMyPlatform}">
         <ui:crumb controller="myInstitution" action="currentPlatforms" message="menu.my.platforms"/>

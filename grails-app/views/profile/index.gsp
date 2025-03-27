@@ -470,12 +470,6 @@
                         </div>
 
                         <div class="field">
-                            <label>${message(code: 'profile.simpleViews')}</label>
-                            <g:set var="US_SHOW_SIMPLE_VIEWS" value="${user.getSetting(KEYS.SHOW_SIMPLE_VIEWS, null)}" />
-                            <ui:xEditableRefData owner="${US_SHOW_SIMPLE_VIEWS}" field="rdValue" config="${US_SHOW_SIMPLE_VIEWS.key.rdc}" />
-                        </div>
-
-                        <div class="field">
                             <label>${message(code: 'profile.extendedFilter')}</label>
                             <g:set var="US_SHOW_EXTENDED_FILTER" value="${user.getSetting(KEYS.SHOW_EXTENDED_FILTER, RDStore.YN_YES)}" />
                             <ui:xEditableRefData owner="${US_SHOW_EXTENDED_FILTER}" field="rdValue" config="${US_SHOW_EXTENDED_FILTER.key.rdc}" />

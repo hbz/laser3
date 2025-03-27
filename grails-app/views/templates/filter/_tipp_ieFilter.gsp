@@ -51,7 +51,7 @@
                     </select>
                 </div>
             </g:if>
-            <g:if test="${params.mode != 'advanced' && !showStatsFilter && action != 'renewEntitlementsWithSurvey'}">
+            <g:if test="${!showStatsFilter && action != 'renewEntitlementsWithSurvey'}">
                 <div class="field">
                     <ui:datepicker label="subscription.details.asAt" id="asAt" name="asAt"
                                       value="${params.asAt}"
