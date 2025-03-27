@@ -16,6 +16,16 @@
                     onVisible: function () {
                         r2d2.initDynamicUiStuff('#createPropertyModal');
                         r2d2.initDynamicXEditableStuff('#createPropertyModal');
+                        $(".la-checkAllArea").each(function () {
+                              if ($(this).find("input[name='propertyDefinition']").length > 0) {
+                                console.log("größer");
+                                $(this).find(".la-js-checkAll").parent('.segment').css("visibility", "visible");
+                              } else {
+                                console.log("kleiner");
+                                $(this).find(".la-js-checkAll").parent('.segment').css("visibility", "hidden");
+                              }
+                            });
+
                             $('.la-js-checkAll').checkbox({
                             // check all children
                                 onChecked: function() {
