@@ -1164,6 +1164,16 @@ class FilterService {
             base_qry = base_qry + subQuery
         }
 
+        if (params.surveyVendors) {
+            base_qry += ' and exists (select svr from SurveyVendorResult as svr where svr.surveyConfig = surveyOrg.surveyConfig and svr.participant = surveyOrg.org and svr.vendor.id in (:vendors)) '
+            queryParams << [vendors : Params.getLongList(params, 'surveyVendors')]
+        }
+
+        if (params.surveyPackages) {
+            base_qry += ' and exists (select spr from SurveyPackageResult as spr where spr.surveyConfig = surveyOrg.surveyConfig and spr.participant = surveyOrg.org and spr.pkg.id in (:pkgs))'
+            queryParams << [pkgs : Params.getLongList(params, 'surveyPackages')]
+        }
+
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
                 base_qry += " order by ${params.sort} ${params.order ?: "asc"}"
@@ -1956,6 +1966,18 @@ class FilterService {
         if(params.yearsFirstOnline) {
             queryArgs << " (Year(tipp.dateFirstOnline) in (:yearsFirstOnline)) "
             queryParams.yearsFirstOnline = Params.getLongList_forCommaSeparatedString(params, 'yearsFirstOnline').collect { Integer.valueOf(it.toString()) }
+        }
+
+        if(params.openAccess) {
+            String openAccessString = " (tipp.openAccess in (:openAccess) "
+            Set<RefdataValue> openAccess = listReaderWrapper(params, 'openAccess').collect { String key -> RefdataValue.get(key) }
+            if(RDStore.GENERIC_NULL_VALUE in openAccess) {
+                openAccess.remove(RDStore.GENERIC_NULL_VALUE)
+                openAccessString += 'or tipp.openAccess = null'
+            }
+            openAccessString += ')'
+            queryArgs << openAccessString
+            queryParams.openAccess = openAccess
         }
 
         if (params.publishers) {

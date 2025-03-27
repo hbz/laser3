@@ -4,6 +4,7 @@ import de.laser.annotations.RefdataInfo
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
 import de.laser.storage.RDConstants
+import de.laser.utils.RandomUtils
 import org.apache.http.HttpStatus
 
 /**
@@ -95,10 +96,10 @@ class Doc {
      */
     def beforeInsert = {
         if (contentType == CONTENT_TYPE_FILE) {
-            uuid = UUID.randomUUID().toString()
+            uuid = RandomUtils.getUUID()
             while ( executeQuery('select uuid from Doc where uuid = :uuid', [uuid: uuid]) ) {
                 log.warn('doc.beforeInsert() -> BAZINGA! UUID is already taken')
-                uuid = UUID.randomUUID().toString()
+                uuid = RandomUtils.getUUID()
             }
             log.info('doc.beforeInsert() -> new UUID: ' + uuid)
         }

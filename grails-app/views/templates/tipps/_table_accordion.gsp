@@ -2,7 +2,7 @@
 <g:set var="counter" value="${(offset ?: 0) + 1}"/>
 <laser:serviceInjection/>
 
-<g:set var="ptOwner" value="${institution ?: contextService.getOrg()}"/>
+<g:set var="ptOwner" value="${contextService.getOrg()}"/>
 
 <g:if test="${tipps}">
     <div class="ui fluid card">
@@ -12,7 +12,7 @@
                     <div class="ui raised segments la-accordion-segments">
 
                         <g:render template="/templates/titles/title_segment_accordion"
-                                  model="[ie: null, tipp: tipp, permanentTitle: ptOwner ? PermanentTitle.findByOwnerAndTipp(ptOwner, tipp) : null]"/>
+                                  model="[ie: null, tipp: tipp, permanentTitle: ptOwner ? PermanentTitle.findByOwnerAndTipp(ptOwner, tipp) : null, showPackageLinking: showPackageLinking]"/>
 
                         <g:render template="/templates/titles/title_content_segment_accordion" model="[ie: null, tipp: tipp]"/>
                     </div>

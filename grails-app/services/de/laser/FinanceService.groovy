@@ -269,7 +269,6 @@ class FinanceService {
         List<Long> selectedCostItems = []
         Boolean billingSumRounding = params.newBillingSumRounding == 'on'
         Boolean finalCostRounding = params.newFinalCostRounding == 'on'
-        //continue here with bugfixing: why is bulk deletion deleting way too many cost items?!
         if(params.containsKey('costItemListToggler')) {
             if(result.subscription) {
                 Map costItems = getCostItemsForSubscription(params, result)

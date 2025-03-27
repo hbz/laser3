@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.utils.RandomUtils; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 <table id="platformTable" class="ui celled la-js-responsive-table la-table table compact">
   <thead>
@@ -25,7 +25,7 @@
                   controller="accessPoint" action="unlinkPlatform"
                   data-confirm-tokenMsg="${message(code: 'confirm.dialog.unlink.accessPoint.platform',
                       args: [accessPoint.name, linkedPlatform.platform.name])}"
-                  data-confirm-term-how="unlink" data-confirm-id="${java.util.UUID.randomUUID().toString()}"
+                  data-confirm-term-how="unlink" data-confirm-id="${RandomUtils.getUUID()}"
                   role="button"
                   aria-label="${message(code: 'ariaLabel.unlink.universal')}">
             <i class="${Icon.CMD.UNLINK}"></i>

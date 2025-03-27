@@ -27,6 +27,7 @@ import de.laser.Links
 import de.laser.LinksGenerationService
 import de.laser.Org
 import de.laser.OrgRole
+import de.laser.utils.RandomUtils
 import de.laser.wekb.Package
 import de.laser.PackageService
 import de.laser.PendingChange
@@ -3221,7 +3222,7 @@ class SurveyControllerService {
                             endDate: sub_endDate,
                             referenceYear: sub_refYear,
                             manualCancellationDate: manualCancellationDate,
-                            identifier: java.util.UUID.randomUUID().toString(),
+                            identifier: RandomUtils.getUUID(),
                             type: sub_type,
                             kind: sub_kind,
                             status: sub_status,
@@ -5075,7 +5076,7 @@ class SurveyControllerService {
                         referenceYear: newParentSub.referenceYear ?: null,
                         administrative: newParentSub._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE,
                         manualRenewalDate: newParentSub.manualRenewalDate,
-                        identifier: UUID.randomUUID().toString(),
+                        identifier: RandomUtils.getUUID(),
                         instanceOf: newParentSub,
                         resource: newParentSub.resource ?: null,
                         form: newParentSub.form ?: null,

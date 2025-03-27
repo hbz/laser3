@@ -40,8 +40,12 @@ Important: The password encoder still accepts legacy passwords, but encrypts the
 
 ### Quartz jobs
 
-*de.laser.base.AbstractJob* offers new **start** and **stop** methods to simplify and unify job implementations. 
+*de.laser.base.AbstractJob* offers new **start** and **stop** methods to simplify and standardize job implementations. 
 These should be used to wrap the execution logic.
+
+### RandomUtils
+
+*de.laser.utils.RandomUtils* offers various methods for generating random IDs, UUIDs, passwords and more.
 
 ### Service usage in Domain Classes
 

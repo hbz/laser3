@@ -6,7 +6,6 @@ import com.opencsv.CSVReaderBuilder
 import com.opencsv.ICSVParser
 import de.laser.cache.EhcacheWrapper
 import de.laser.storage.RDStore
-import de.laser.utils.DateUtils
 import de.laser.wekb.TitleInstancePackagePlatform
 import grails.gorm.transactions.Transactional
 import groovy.json.JsonSlurper
@@ -19,6 +18,7 @@ class IssueEntitlementService {
     BatchQueryService batchQueryService
     ContextService contextService
     FilterService filterService
+    TitleService titleService
 
     Subscription getTargetSubscription(Subscription s) {
         if(s.instanceOf && s.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
@@ -68,7 +68,7 @@ class IssueEntitlementService {
         Map<String, Object> queryPart1 = filterService.getTippSubsetQuery(titleConfigMap)
         Set<Long> tippIDs = TitleInstancePackagePlatform.executeQuery(queryPart1.query, queryPart1.queryParams), ieIDs = []
         if(configMap.identifier) {
-            tippIDs = tippIDs.intersect(getTippsByIdentifier(identifierConfigMap, configMap.identifier))
+            tippIDs = tippIDs.intersect(titleService.getTippsByIdentifier(identifierConfigMap, configMap.identifier))
         }
         //process here the issue entitlement-related parameters
         Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetQuery(issueEntitlementConfigMap)
@@ -280,11 +280,6 @@ class IssueEntitlementService {
             userCache.put('progress', configMap.ceil)
             [titleRow: titleRow, pickWithNoPick: pickWithNoPick, matchedTitles: matchedTitles, notAddedTitles: notAddedTitles, toAddCount: toAddCount, processedCount: countRows, notInPackageCount: notInPackageCount]
         }
-    }
-
-    Set<Long> getTippsByIdentifier(Map identifierConfigMap, String identifier) {
-        identifierConfigMap.identifier = "%${identifier.toLowerCase()}%"
-        TitleInstancePackagePlatform.executeQuery('select tipp.id from Identifier id join id.tipp tipp where tipp.pkg in (:packages) and lower(id.value) like :identifier and id.ns.ns in (:titleNS) and id.ns.nsType = :titleObj', identifierConfigMap)
     }
 
     Map<String, Object> buildIdentifierInverseMap(Set<Long> tippIDs) {

@@ -116,7 +116,8 @@ class YodaController {
                 'dataSource',
                 ConfigDefaults.DATASOURCE_DEFAULT + '.password',
                 ConfigDefaults.DATASOURCE_STORAGE + '.password',
-                ConfigMapper.WEKB_API_PASSWORD[0]
+                ConfigMapper.WEKB_API_PASSWORD[0],
+                ConfigMapper.DOCUMENT_STORAGE_KEY[0]
         ]
         result.editable = true
         result.currentConfig = grails.util.Holders.config.findAll { ! it.key.matches("[A-Z|_]*") }

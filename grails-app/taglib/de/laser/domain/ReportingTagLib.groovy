@@ -82,7 +82,7 @@ class ReportingTagLib {
             out << ui.select([
                     class      : "ui fluid search dropdown",
                     name       : filterName,
-                    id         : getUniqueId(filterName),
+                    id         : getUniqueHtmlID(filterName),
                     from       : RefdataCategory.getAllRefdataValues(RDConstants.Y_N),
                     optionKey  : "id",
                     optionValue: "value",
@@ -95,7 +95,7 @@ class ReportingTagLib {
             out << ui.datepicker([
                     label      : filterLabel,
                     name       : filterName,
-                    id         : getUniqueId(filterName),
+                    id         : getUniqueHtmlID(filterName),
                     placeholder: "filter.placeholder",
                     value      : filterValue,
                     modifiers       : true,
@@ -125,7 +125,7 @@ class ReportingTagLib {
         out << ui.select([
                 class      : "ui fluid search dropdown",
                 name       : GenericHelper.isFieldVirtual(attrs.config, attrs.refdata) ? filterName + '_virtualFF' : filterName,
-                id         : getUniqueId(filterName),
+                id         : getUniqueHtmlID(filterName),
                 from       : RefdataCategory.getAllRefdataValues(rdCat),
                 optionKey  : "id",
                 optionValue: "value",
@@ -166,7 +166,7 @@ class ReportingTagLib {
         Map<String, Object> map = [
             class      : 'ui fluid search dropdown',
             name       : filterName,
-            id         : getUniqueId(filterName),
+            id         : getUniqueHtmlID(filterName),
             from       : customRdv.get('from'),
             optionKey  : 'id',
             optionValue: 'value',
@@ -273,7 +273,7 @@ class ReportingTagLib {
         }
     }
 
-    static String getUniqueId(String id) {
-        return id + '-' + RandomUtils.getRandomAlphaNumeric(8).toLowerCase()
+    static String getUniqueHtmlID(String id) {
+        return id + '-' + RandomUtils.getHtmlID()
     }
 }

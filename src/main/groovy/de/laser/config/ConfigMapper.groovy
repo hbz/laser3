@@ -24,6 +24,7 @@ class ConfigMapper {
 
     static final List DEPLOY_BACKUP_LOCATION        = ['deployBackupLocation',      String]
     static final List DOCUMENT_STORAGE_LOCATION     = ['documentStorageLocation',   String]
+    static final List DOCUMENT_STORAGE_KEY          = ['documentStorageKey',        String]
 
     static final List FINANCIALS_CURRENCY           = ['financials.currency', String]
 
@@ -67,7 +68,7 @@ class ConfigMapper {
     static final List<List> CONTROLLED_CONFIGURATION_LIST = [
 
             AGGR_ES_CLUSTER, AGGR_ES_HOSTNAME, AGGR_ES_INDICES,
-            DEPLOY_BACKUP_LOCATION, DOCUMENT_STORAGE_LOCATION,
+            DEPLOY_BACKUP_LOCATION, DOCUMENT_STORAGE_LOCATION, DOCUMENT_STORAGE_KEY,
             FINANCIALS_CURRENCY,
             GLOBAL_DATA_SYNC_JOB_ACTIVE, GRAILS_MAIL_DISABLED, GRAILS_PLUGIN_WKHTMLTOPDF_BINARY, GRAILS_PLUGIN_WKHTMLTOPDF_XVFBRUNNER, GRAILS_SERVER_URL,
             INDEX_UPDATE_JOB_ACTIVE, IS_SEND_EMAILS_FOR_DUE_DATES_OF_ALL_USERS, IS_UPDATE_DASHBOARD_TABLE_IN_DATABASE,
@@ -147,6 +148,9 @@ class ConfigMapper {
     }
     static String getDocumentStorageLocation(int output = LOGGER) {
         readConfig( DOCUMENT_STORAGE_LOCATION, output )
+    }
+    static String getDocumentStorageKey(int output = LOGGER) {
+        readConfig( DOCUMENT_STORAGE_KEY, output )
     }
     static String getFinancialsCurrency(int output = LOGGER) {
         readConfig( FINANCIALS_CURRENCY, output )
