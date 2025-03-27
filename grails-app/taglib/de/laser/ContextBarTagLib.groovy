@@ -120,29 +120,6 @@ class ContextBarTagLib {
         out << '</div>'
     }
 
-    // <cbItemToggleAction status="" tooltip="" icon="" />
-    def cbItemToggleAction = { attrs, body ->
-
-        String status = attrs.status ?: ''
-        String tooltip = attrs.tooltip ?: ''
-        String icon = attrs.icon ?: ''
-
-        out << '<div class="item la-cb-action">'
-        if (attrs.id) {
-            out << '<button id="' + attrs.id + '" class="ui icon button ' + status + ' toggle la-toggle-green-red la-popup-tooltip" '
-            // toggle -> JS
-        } else {
-            out << '<button class="ui icon button ' + status + ' toggle la-toggle-green-red la-popup-tooltip" ' // toggle -> JS
-        }
-        if (attrs.reload) {
-            out <<      'data-reload="' + attrs.reload + '" '
-        }
-        out <<          'data-content="' + tooltip + '" data-position="bottom left">'
-        out <<              '<i class="icon ' + icon + '"></i>'
-        out <<     '</button>'
-        out << '</div>'
-    }
-
     // <ui:cbItemMarkerAction org="optional" package="optional" platform="optional" simple="true|false" />
 
     def cbItemMarkerAction = { attrs, body ->

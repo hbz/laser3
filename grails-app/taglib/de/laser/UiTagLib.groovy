@@ -452,22 +452,6 @@ class UiTagLib {
         }
     }
 
-    // <ui:modeSwitch controller="controller" action="action" params="params" />
-
-    def modeSwitch = { attrs, body ->
-
-        //return;
-        String mode = (attrs.params.mode == 'basic') ? 'basic' : ((attrs.params.mode == 'advanced') ? 'advanced' : null)
-
-        if (!mode) {
-            User user = contextService.getUser()
-            mode = (user.getSettingsValue(UserSetting.KEYS.SHOW_SIMPLE_VIEWS)?.value == 'No') ? 'advanced' : 'basic'
-
-            // CAUTION: inject default mode
-            attrs.params.mode = mode
-        }
-    }
-
     //<ui:filter simple="true|false" extended="true|false"> CONTENT </ui:filter>
 
     def filter = { attrs, body ->
