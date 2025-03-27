@@ -36,6 +36,31 @@
 
 <g:if test="${surveyConfig}">
 
+    <g:if test="${afterEnrichment}">
+        <g:if test="${wrongSeparator}">
+            <ui:msg showIcon="true" class="error" message="financials.enrichment.wrongSeparator"/>
+        </g:if>
+        <g:else>
+            <g:if test="${matchCounter > 0}">
+                <ui:msg showIcon="true" class="success" message="financials.enrichment.result" args="[matchCounter, totalRows]"/>
+            </g:if>
+            <g:else>
+                <ui:msg showIcon="true" class="warning" message="financials.enrichment.emptyResult" args="[totalRows]"/>
+            </g:else>
+            <g:if test="${missing || wrongIdentifiers}">
+                <ui:msg showIcon="true" class="error">
+                    <g:if test="${missing}">
+                        <p><g:message code="financials.enrichment.missingPrices"/></p>
+                    </g:if>
+                    <g:if test="${wrongIdentifiers}">
+                        <p><g:message code="financials.enrichment.invalidIDs" args="[wrongIdentifierCounter]"/></p>
+                        <p><g:link class="${Btn.ICON.SIMPLE}" controller="package" action="downloadLargeFile" params="[token: token, fileformat: 'txt']"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link></p>
+                    </g:if>
+                </ui:msg>
+            </g:if>
+        </g:else>
+    </g:if>
+
     <div class="ui grid">
 
         <div class="sixteen wide stretched column">
@@ -167,6 +192,13 @@
             </g:else>
 
         </div>
+        <g:if test="${surveyConfig.subscription}">
+            <g:set var="tmplConfigShow" value="['lineNumber', 'sortname', 'name', 'surveySubInfo', 'surveySubCostItem', 'surveyCostItem']"/>
+        </g:if>
+        <g:else>
+            <g:set var="tmplConfigShow" value="['lineNumber', 'sortname', 'name', 'surveyCostItem']"/>
+        </g:else>
+
 
 
         <h3 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h3>
@@ -188,7 +220,7 @@
             <laser:render template="/templates/filter/orgFilterTable"
                           model="[orgList         : surveyParticipantsHasAccess,
                                   tmplShowCheckbox: editable,
-                                  tmplConfigShow  : ['lineNumber', 'sortname', 'name', 'surveySubInfo', (surveyConfig.subscription ? 'surveySubCostItem' : ''), 'surveyCostItem'],
+                                  tmplConfigShow  : tmplConfigShow,
                                   tableID         : 'costTable'
                           ]"/>
 
@@ -214,7 +246,7 @@
                 <laser:render template="/templates/filter/orgFilterTable"
                               model="[orgList         : surveyParticipantsHasNotAccess,
                                       tmplShowCheckbox: editable,
-                                      tmplConfigShow  : ['lineNumber', 'sortname', 'name', (surveyConfig.subscription ? 'surveySubInfo' : ''), (surveyConfig.subscription ? 'surveySubCostItem' : ''), 'surveyCostItem'],
+                                      tmplConfigShow  : tmplConfigShow,
                                       tableID         : 'costTable'
                               ]"/>
 

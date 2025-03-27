@@ -7,9 +7,7 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-6399    26.03.2025  dev     3.5         David   Feature     Filter: Unnötige Parameter aus der URL entfernen
-
-6398    26.03.2025  dev     3.5         David   Feature     Generator für Random (UI)IDs, etc.
+6354    24.03.2025  dev     3.5         Moe     Feature     Kostenupload optimieren - auch bei Umfragen
 
 6370    25.03.2025  dev     3.5         Andreas Feature     Einzeltitelauswahl implementiert
 

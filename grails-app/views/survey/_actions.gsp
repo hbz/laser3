@@ -44,7 +44,7 @@
                         <ui:actionsDropdownItem onclick="JSPC.app.addForAllSurveyCostItem([${(participants?.id)}])" controller="survey"
                                             message="surveyCostItems.createInitialCostItem"/>
                         <ui:actionsDropdownItem data-ui="modal" href="#bulkCostItemsUpload" message="menu.institutions.financeImport"/>
-                        <g:if test="${costItemElements}">
+                        <g:if test="${assignedCostItemElements}">
                             <ui:actionsDropdownItem data-ui="modal" id="openFinanceEnrichment" href="#financeEnrichment" message="financials.enrichment.menu" />
                         </g:if>
                         <g:else>
@@ -212,7 +212,9 @@
     </ui:modal>
 </g:if>
 
-
+<g:if test="${actionName == 'surveyCostItems' && participants.size() > 0}">
+ <laser:render template="/finance/financeEnrichment" />
+</g:if>
 <g:if test="${surveyInfo && (surveyInfo.status.id == RDStore.SURVEY_IN_PROCESSING.id) && surveyInfo.checkOpenSurvey() && editable}">
 <ui:modal id="openSurveyNow" text="${message(code:'openSurveyNow.button')}" msgSave="${message(code:'openSurveyNow.button')}">
 
