@@ -10,8 +10,6 @@
 
 <g:set var="locale" value="${RequestContextUtils.getLocale(request)}"/>
 
-<ui:modeSwitch controller="package" action="show" params="${params}"/>
-
 <ui:breadcrumbs>
     <ui:crumb controller="package" action="index" message="package.show.all"/>
     <ui:crumb class="active" text="${packageInstance.name}"/>

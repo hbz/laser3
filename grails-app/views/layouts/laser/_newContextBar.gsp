@@ -106,18 +106,6 @@
                 </g:if>
             </g:if>
 
-            %{-- advanced mode switcher  --}%
-
-            <g:if test="${(params.mode)}">
-                <g:if test="${params.mode=='advanced'}">
-                    <ui:cbItemToggleAction id="advancedMode-toggle" status="active" icon="plus square" tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}"
-                                               reload="${g.createLink(action: actionName, params: params + ['mode':'basic'])}" />
-                </g:if>
-                <g:else>
-                    <ui:cbItemToggleAction id="advancedMode-toggle" status="inactive" icon="plus square slash" tooltip="${message(code:'statusbar.showBasicView.tooltip')}"
-                                               reload="${g.createLink(action: actionName, params: params + ['mode':'advanced'])}" />
-                </g:else>
-            </g:if>
 
             %{-- survey stuff  --}%
 
@@ -400,7 +388,7 @@
                 $('.la-context-org, .la-advanced-view').fadeIn(150);
             }, 100);
 
-            $('.button.la-toggle-green-red').on('click', function() {
+%{--            $('.button.la-toggle-green-red').on('click', function() {
                 let $button = $(this);
                 let $icon = $button.find('.icon');
 
@@ -412,7 +400,7 @@
                     $button.removeClass('active').addClass('inactive')
                     $icon.addClass("slash");
                 }
-            });
+            });--}%
 
             $('#advancedMode-toggle').on('click', function() {
                 let $button = $(this);

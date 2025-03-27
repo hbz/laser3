@@ -141,55 +141,6 @@ class DocumentController {
                             ((ShareSupport) instance).updateShare(docctx)
                         }
 
-                        //attach document to all survey participants (= SurveyConfigs)
-                        //docForAllSurveyConfigs
-                        if (instance instanceof SurveyConfig && params.docForAllSurveyConfigs) {
-                            instance.surveyInfo.surveyConfigs.each { config ->
-
-                                if (instance != config) {
-
-                                    //create document objects for each file
-                                    Doc doc_content2 = new Doc(
-                                            contentType:        Doc.CONTENT_TYPE_FILE,
-                                            confidentiality:    doc.confidentiality, // todo ?
-                                            filename:   doc.filename,
-                                            mimeType:   doc.mimeType,
-                                            title:      doc.title,
-                                            type:       doc.type,
-                                            owner:      contextService.getOrg(),
-                                            server:     AppUtils.getCurrentServer()
-                                    )
-
-                                    doc_content2.save()
-
-                                    log.debug( doc_content2.toString() )
-
-                                    //store copies of the uploaded document files
-                                    try {
-                                        String tfPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
-                                        String tfName = doc_content2.uuid
-
-                                        File folder = new File("${tfPath}")
-                                        if (!folder.exists()) {
-                                            folder.mkdirs()
-                                        }
-                                        File dst = new File("${tfPath}/${tfName}")
-                                        dst << targetFile.text
-                                    }
-                                    catch (Exception e) {
-                                        e.printStackTrace()
-                                    }
-
-                                    //create attachment of each document to the survey config
-                                    DocContext doc_context2 = new DocContext(
-                                            "${ownerTp}": config,
-                                            owner: doc_content2
-                                    )
-                                    //doc_context2.shareConf = genericOIDService.resolveOID(params.shareConf)
-                                    doc_context2.save()
-                                }
-                            }
-                        }
                         log.debug('FileUpload: Created doc and docContext -> #' + doc.id + ', #' + docctx.id)
                     }
                     else {

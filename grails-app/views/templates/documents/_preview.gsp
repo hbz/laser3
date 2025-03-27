@@ -1,6 +1,6 @@
 <laser:serviceInjection/>
 
-<ui:modal id="${modalId}" text="${modalTitle}" hideSubmitButton="true">
+<ui:modal id="${modalId}" text="${modalTitle}" modalSize="large" hideSubmitButton="true">
 
     <g:if test="${docBase64}">
         <div style="margin-bottom:1em;">
@@ -23,7 +23,12 @@
     <g:if test="${doc}">
         <div style="margin-top:1em;">
             <div class="ui list">
-                <div class="item"> <strong>${message(code:'license.docs.table.fileName')}:</strong> ${doc.filename} </div>
+                <div class="item">
+                    <strong>${message(code:'license.docs.table.fileName')}:</strong> ${doc.filename}
+                    <g:if test="${doc.ckey}">
+                        <span style="float:right;"><i class="icon award purple"></i>${message(code:'license.docs.table.encrypted')} </span>
+                    </g:if>
+                </div>
                 <g:if test="${doc.type}">
                     <div class="item"> <strong>${message(code:'license.docs.table.type')}:</strong> ${doc.type.getI10n('value')} </div>
                 </g:if>
