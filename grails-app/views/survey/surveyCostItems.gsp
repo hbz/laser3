@@ -50,11 +50,11 @@
             <g:if test="${missing || wrongIdentifiers}">
                 <ui:msg showIcon="true" class="error">
                     <g:if test="${missing}">
-                        <p><g:message code="financials.enrichment.missingPrices"/></p>
+                       <g:message code="financials.enrichment.missingPrices"/>
                     </g:if>
                     <g:if test="${wrongIdentifiers}">
-                        <p><g:message code="financials.enrichment.invalidIDs" args="[wrongIdentifierCounter]"/></p>
-                        <p><g:link class="${Btn.ICON.SIMPLE}" controller="package" action="downloadLargeFile" params="[token: token, fileformat: 'txt']"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link></p>
+                        <g:message code="financials.enrichment.invalidIDs" args="[wrongIdentifierCounter]"/><br>
+                        <g:link class="${Btn.ICON.SIMPLE}" controller="package" action="downloadLargeFile" params="[token: token, fileformat: 'txt']"><i class="${Icon.CMD.DOWNLOAD}"></i></g:link>
                     </g:if>
                 </ui:msg>
             </g:if>
