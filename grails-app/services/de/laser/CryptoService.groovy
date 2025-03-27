@@ -22,6 +22,28 @@ class CryptoService {
     public final static String ALGORITHM_SKF    = 'PBKDF2WithHmacSHA256'
     public final static String ALGORITHM_SK     = 'AES'
 
+    boolean encryptRawFile(File rawFile, Doc doc) {
+        log.debug '[encryptRawFile] ' + rawFile.toPath() + ', doc #' + doc.id
+
+        Path rfPath     = rawFile.toPath()
+        File encTmpFile = encrypToTmpFile(rawFile, doc.ckey)
+        File decTmpFile = decryptToTmpFile(encTmpFile, doc.ckey)
+
+        if (validateFiles(decTmpFile, rawFile)) {
+            log.debug '[encryptRawFile: OK] ' + rfPath
+            Files.copy(encTmpFile.toPath(), rfPath, StandardCopyOption.REPLACE_EXISTING)
+        }
+        else {
+            log.debug '[encryptRawFile: FAILED] ' + rfPath
+            doc.ckey = null
+            doc.save()
+        }
+        encTmpFile.delete()
+        decTmpFile.delete()
+
+        true
+    }
+
     File encrypToTmpFile(File inFile, String ckey) {
         File outFile = File.createTempFile('doc_', '.enc', getTempDirectory())
         xcryptFile(inFile, outFile, Cipher.ENCRYPT_MODE, ckey)
@@ -34,7 +56,7 @@ class CryptoService {
             xcryptFile(inFile, outFile, Cipher.DECRYPT_MODE, ckey)
         }
         else {
-            println '[decryptToTmpFile: FAILED] - copy as fallback'
+            log.debug'[decryptToTmpFile: FAILED] - copy as fallback'
             Files.copy(inFile.toPath(), outFile.toPath(), StandardCopyOption.REPLACE_EXISTING) // todo: ERMS-6382 FALLBACK
         }
         outFile
@@ -78,28 +100,6 @@ class CryptoService {
 
         fis.close()
         fos.close()
-    }
-
-    boolean encryptRawFile(File rawFile, Doc doc) {
-        log.debug '[encryptRawFile] ' + rawFile.toPath() + ', doc #' + doc.id
-
-        Path rfPath     = rawFile.toPath()
-        File encTmpFile = encrypToTmpFile(rawFile, doc.ckey)
-        File decTmpFile = decryptToTmpFile(encTmpFile, doc.ckey)
-
-        if (validateFiles(decTmpFile, rawFile)) {
-            log.debug '[encryptRawFile: OK] ' + rfPath
-            Files.copy(encTmpFile.toPath(), rfPath, StandardCopyOption.REPLACE_EXISTING)
-        }
-        else {
-            log.debug '[encryptRawFile: FAILED] ' + rfPath
-            doc.ckey = null
-            doc.save()
-        }
-        encTmpFile.delete()
-        decTmpFile.delete()
-
-        true
     }
 
     boolean validateFiles(File aFile, File bFile) {
