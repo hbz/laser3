@@ -62,6 +62,7 @@
         </tbody>
         <g:if test="${costItemsByCTE}">
             <tfoot>
+            <tr>
             <td></td>
             <td></td>
             <td>${sumCostItems}</td>
@@ -74,6 +75,7 @@
                                 maxFractionDigits="2" type="number"/>
             </td>
             <td></td>
+            </tr>
             </tfoot>
         </g:if>
     </table>

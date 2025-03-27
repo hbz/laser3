@@ -65,6 +65,7 @@
         </g:each>
         </tbody>
         <tfoot>
+        <tr>
         <td></td>
         <td></td>
         <td></td>
@@ -78,6 +79,7 @@
                             maxFractionDigits="2" type="number"/>
         </td>
         <td></td>
+        </tr>
         </tfoot>
     </table>
 </div>
