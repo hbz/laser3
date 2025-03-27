@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6246    27.03.2025  dev     3.5         Moe     Feature     Inaktive Benutzer nicht mehr benachrichtigen
+
 6399    26.03.2025  dev     3.5         David   Feature     Filter: Unnötige Parameter aus der URL entfernen
 
 6398    26.03.2025  dev     3.5         David   Feature     Generator für Random (UI)IDs, etc.

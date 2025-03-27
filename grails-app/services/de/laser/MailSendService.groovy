@@ -370,80 +370,83 @@ class MailSendService {
 
             String emailReceiver = user.getEmail()
 
-            surveyEntries.each { survey ->
-                try {
-                    if (emailReceiver == null || emailReceiver.isEmpty()) {
-                        log.debug("The following user does not have an email address and can not be informed about surveys: " + user.username);
-                    } else {
-                        boolean isNotificationCCbyEmail = user.getSetting(UserSetting.KEYS.IS_NOTIFICATION_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
-                        String ccAddress = null
-                        if (isNotificationCCbyEmail) {
-                            ccAddress = user.getSetting(UserSetting.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
-                        }
+            if(user.enabled) {
 
-                        String ownerReplyTo
-                        if(OrgSetting.get(survey.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND){
-                            ownerReplyTo = OrgSetting.get(survey.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
-                        }
+                surveyEntries.each { survey ->
+                    try {
+                        if (emailReceiver == null || emailReceiver.isEmpty()) {
+                            log.debug("The following user does not have an email address and can not be informed about surveys: " + user.username);
+                        } else {
+                            boolean isNotificationCCbyEmail = user.getSetting(UserSetting.KEYS.IS_NOTIFICATION_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
+                            String ccAddress = null
+                            if (isNotificationCCbyEmail) {
+                                ccAddress = user.getSetting(UserSetting.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
+                            }
 
-                        String mailFrom = fromMail
+                            String ownerReplyTo
+                            if (OrgSetting.get(survey.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY) != OrgSetting.SETTING_NOT_FOUND) {
+                                ownerReplyTo = OrgSetting.get(survey.owner, OrgSetting.KEYS.MAIL_REPLYTO_FOR_SURVEY).strValue
+                            }
 
-                        if(ownerReplyTo){
-                            replyToMail = ownerReplyTo
-                        }else {
+                            String mailFrom = fromMail
 
-                            List generalContactsEMails = []
+                            if (ownerReplyTo) {
+                                replyToMail = ownerReplyTo
+                            } else {
 
-                            survey.owner.getGeneralContactPersons(true)?.each { person ->
-                                person.contacts.each { contact ->
-                                    if (RDStore.CCT_EMAIL == contact.contentType) {
-                                        generalContactsEMails << contact.content
+                                List generalContactsEMails = []
+
+                                survey.owner.getGeneralContactPersons(true)?.each { person ->
+                                    person.contacts.each { contact ->
+                                        if (RDStore.CCT_EMAIL == contact.contentType) {
+                                            generalContactsEMails << contact.content
+                                        }
                                     }
                                 }
+                                replyToMail = (generalContactsEMails.size() > 0) ? generalContactsEMails[0].toString() : null
                             }
-                            replyToMail = (generalContactsEMails.size() > 0) ? generalContactsEMails[0].toString() : null
-                        }
 
-                        Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value.toString())
-                        String mailSubject = subjectSystemPraefix
-                        if(reminderMail) {
-                            Object[] args
-                            mailSubject = mailSubject + ' ' + messageSource.getMessage('email.subject.surveysReminder', args, language)
-                        }
-
-                        mailSubject = mailSubject + ' ' + survey.name + ' ('+survey.type.getI10n('value', language)+')'
-                        mailSubject = escapeService.replaceUmlaute(mailSubject)
-
-                        if (isNotificationCCbyEmail && ccAddress) {
-                            AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
-                                multipart true
-                                to emailReceiver
-                                from mailFrom
-                                cc ccAddress
-                                replyTo replyToMail
-                                subject mailSubject
-                                text view: "/mailTemplates/text/notificationSurvey", model: [language: language, survey: survey, reminder: reminderMail]
-                                html view: "/mailTemplates/html/notificationSurvey", model: [language: language, survey: survey, reminder: reminderMail]
+                            Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value.toString())
+                            String mailSubject = subjectSystemPraefix
+                            if (reminderMail) {
+                                Object[] args
+                                mailSubject = mailSubject + ' ' + messageSource.getMessage('email.subject.surveysReminder', args, language)
                             }
-                        } else {
-                            AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
-                                multipart true
-                                to emailReceiver
-                                from mailFrom
-                                replyTo replyToMail
-                                subject mailSubject
-                                text view: "/mailTemplates/text/notificationSurvey", model: [language: language, survey: survey, reminder: reminderMail]
-                                html view: "/mailTemplates/html/notificationSurvey", model: [language: language, survey: survey, reminder: reminderMail]
-                            }
-                        }
 
-                        log.debug("SurveyService - finished sendSurveyEmail() to " + user.displayName + " (" + user.email + ") " + org.name);
+                            mailSubject = mailSubject + ' ' + survey.name + ' (' + survey.type.getI10n('value', language) + ')'
+                            mailSubject = escapeService.replaceUmlaute(mailSubject)
+
+                            if (isNotificationCCbyEmail && ccAddress) {
+                                AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
+                                    multipart true
+                                    to emailReceiver
+                                    from mailFrom
+                                    cc ccAddress
+                                    replyTo replyToMail
+                                    subject mailSubject
+                                    text view: "/mailTemplates/text/notificationSurvey", model: [language: language, survey: survey, reminder: reminderMail]
+                                    html view: "/mailTemplates/html/notificationSurvey", model: [language: language, survey: survey, reminder: reminderMail]
+                                }
+                            } else {
+                                AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
+                                    multipart true
+                                    to emailReceiver
+                                    from mailFrom
+                                    replyTo replyToMail
+                                    subject mailSubject
+                                    text view: "/mailTemplates/text/notificationSurvey", model: [language: language, survey: survey, reminder: reminderMail]
+                                    html view: "/mailTemplates/html/notificationSurvey", model: [language: language, survey: survey, reminder: reminderMail]
+                                }
+                            }
+
+                            log.debug("SurveyService - finished sendSurveyEmail() to " + user.displayName + " (" + user.email + ") " + org.name);
+                        }
+                    } catch (Exception e) {
+                        String eMsg = e.message
+
+                        log.error("SurveyService - sendSurveyEmail() :: Unable to perform email due to exception: ${eMsg}")
+                        SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user.getDisplayName(), org: org.name, survey: survey.name])
                     }
-                } catch (Exception e) {
-                    String eMsg = e.message
-
-                    log.error("SurveyService - sendSurveyEmail() :: Unable to perform email due to exception: ${eMsg}")
-                    SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user.getDisplayName(), org: org.name, survey: survey.name])
                 }
             }
         }
@@ -467,75 +470,77 @@ class MailSendService {
 
             //Only User with Notification by Email and for Surveys Start
             formalUserList.each { fu ->
-                if (fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH) == RDStore.YN_YES &&
-                        fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES) {
+                if(fu.enabled) {
+                    if (fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH) == RDStore.YN_YES &&
+                            fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES) {
 
-                    User user = fu
-                    Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value.toString())
-                    String emailReceiver = user.getEmail()
+                        User user = fu
+                        Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value.toString())
+                        String emailReceiver = user.getEmail()
 
-                    String subjectText
-                    Object[] args = [surveyInfo.name]
-                    if (surveyInfo.type.id == RDStore.SURVEY_TYPE_RENEWAL.id) {
-                        subjectText = messageSource.getMessage('email.survey.participation.finish.renewal.subject', args, language)
-                    } else if (surveyInfo.type.id == RDStore.SURVEY_TYPE_SUBSCRIPTION.id) {
-                        subjectText = messageSource.getMessage('email.survey.participation.finish.subscriptionSurvey.subject', args, language)
-                    } else {
-                        subjectText = messageSource.getMessage('email.survey.participation.finish.subject', args, language)
-                    }
-
-                    String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + subjectText)
-
-                    List generalContactsEMails = []
-
-                    surveyInfo.owner.getGeneralContactPersons(true)?.each { person ->
-                        person.contacts.each { contact ->
-                            if (RDStore.CCT_EMAIL == contact.contentType) {
-                                generalContactsEMails << contact.content
-                            }
-                        }
-                    }
-
-                    try {
-                        if (emailReceiver == null || emailReceiver.isEmpty()) {
-                            log.debug("The following user does not have an email address and can not be informed about surveys: " + user.username);
+                        String subjectText
+                        Object[] args = [surveyInfo.name]
+                        if (surveyInfo.type.id == RDStore.SURVEY_TYPE_RENEWAL.id) {
+                            subjectText = messageSource.getMessage('email.survey.participation.finish.renewal.subject', args, language)
+                        } else if (surveyInfo.type.id == RDStore.SURVEY_TYPE_SUBSCRIPTION.id) {
+                            subjectText = messageSource.getMessage('email.survey.participation.finish.subscriptionSurvey.subject', args, language)
                         } else {
-                            boolean isNotificationCCbyEmail = user.getSetting(UserSetting.KEYS.IS_NOTIFICATION_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
-                            String ccAddress = null
-                            if (isNotificationCCbyEmail) {
-                                ccAddress = user.getSetting(UserSetting.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
-                            }
-
-                            List surveyResults = []
-
-                            surveyInfo.surveyConfigs[0].getSortedProperties().each { PropertyDefinition propertyDefinition ->
-                                surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participationFinish, surveyInfo.surveyConfigs[0], propertyDefinition)
-                            }
-
-                            if (isNotificationCCbyEmail && ccAddress) {
-                                AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
-                                    to emailReceiver
-                                    from fromMail
-                                    cc ccAddress
-                                    subject mailSubject
-                                    html(view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, org: participationFinish, survey: surveyInfo, surveyResults: surveyResults, generalContactsEMails: generalContactsEMails])
-                                }
-                            } else {
-                                AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
-                                    to emailReceiver
-                                    from fromMail
-                                    subject mailSubject
-                                    html(view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, org: participationFinish, survey: surveyInfo, surveyResults: surveyResults, generalContactsEMails: generalContactsEMails])
-                                }
-                            }
-
-                            log.debug("emailToSurveyParticipationByFinish - finished sendSurveyEmail() to " + user.displayName + " (" + user.email + ") " + participationFinish.name);
+                            subjectText = messageSource.getMessage('email.survey.participation.finish.subject', args, language)
                         }
-                    } catch (Exception e) {
-                        String eMsg = e.message
 
-                        log.error("emailToSurveyParticipationByFinish - sendSurveyEmail() :: Unable to perform email due to exception: ${eMsg}")
-                        SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user.getDisplayName(), org: participationFinish.name, survey: surveyInfo.name])
+                        String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + subjectText)
+
+                        List generalContactsEMails = []
+
+                        surveyInfo.owner.getGeneralContactPersons(true)?.each { person ->
+                            person.contacts.each { contact ->
+                                if (RDStore.CCT_EMAIL == contact.contentType) {
+                                    generalContactsEMails << contact.content
+                                }
+                            }
+                        }
+
+                        try {
+                            if (emailReceiver == null || emailReceiver.isEmpty()) {
+                                log.debug("The following user does not have an email address and can not be informed about surveys: " + user.username);
+                            } else {
+                                boolean isNotificationCCbyEmail = user.getSetting(UserSetting.KEYS.IS_NOTIFICATION_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
+                                String ccAddress = null
+                                if (isNotificationCCbyEmail) {
+                                    ccAddress = user.getSetting(UserSetting.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
+                                }
+
+                                List surveyResults = []
+
+                                surveyInfo.surveyConfigs[0].getSortedProperties().each { PropertyDefinition propertyDefinition ->
+                                    surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participationFinish, surveyInfo.surveyConfigs[0], propertyDefinition)
+                                }
+
+                                if (isNotificationCCbyEmail && ccAddress) {
+                                    AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
+                                        to emailReceiver
+                                        from fromMail
+                                        cc ccAddress
+                                        subject mailSubject
+                                        html(view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, org: participationFinish, survey: surveyInfo, surveyResults: surveyResults, generalContactsEMails: generalContactsEMails])
+                                    }
+                                } else {
+                                    AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
+                                        to emailReceiver
+                                        from fromMail
+                                        subject mailSubject
+                                        html(view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, org: participationFinish, survey: surveyInfo, surveyResults: surveyResults, generalContactsEMails: generalContactsEMails])
+                                    }
+                                }
+
+                                log.debug("emailToSurveyParticipationByFinish - finished sendSurveyEmail() to " + user.displayName + " (" + user.email + ") " + participationFinish.name);
+                            }
+                        } catch (Exception e) {
+                            String eMsg = e.message
+
+                            log.error("emailToSurveyParticipationByFinish - sendSurveyEmail() :: Unable to perform email due to exception: ${eMsg}")
+                            SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user.getDisplayName(), org: participationFinish.name, survey: surveyInfo.name])
+                        }
                     }
                 }
             }
@@ -597,59 +602,61 @@ class MailSendService {
 
             //Only User with Notification by Email and for Surveys Start
             formalUserList.each { fu ->
-                if (fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH) == RDStore.YN_YES &&
-                        fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES) {
+                if(fu.enabled) {
+                    if (fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH) == RDStore.YN_YES &&
+                            fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES) {
 
-                    User user = fu
-                    Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value.toString())
-                    String emailReceiver = user.getEmail()
-                    String mailSubject = subjectSystemPraefix
+                        User user = fu
+                        Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value.toString())
+                        String emailReceiver = user.getEmail()
+                        String mailSubject = subjectSystemPraefix
 
-                    SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(surveyInfo.surveyConfigs[0], participationFinish)
-                    if(surveyOrg && surveyOrg.orgInsertedItself) {
-                        Object[] args
-                        mailSubject = mailSubject + messageSource.getMessage('default.new', args, language) + ' '
-                    }
-
-                    mailSubject = mailSubject + surveyInfo.name +  ' (' + surveyInfo.type.getI10n('value', language) + ') ['
-                    mailSubject = mailSubject + participationFinish.sortname + ']'
-
-                    mailSubject = escapeService.replaceUmlaute(mailSubject)
-
-                    try {
-                        if (emailReceiver == null || emailReceiver.isEmpty()) {
-                            log.debug("The following user does not have an email address and can not be informed about surveys: " + user.username);
-                        } else {
-                            boolean isNotificationCCbyEmail = user.getSetting(UserSetting.KEYS.IS_NOTIFICATION_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
-                            String ccAddress = null
-                            if (isNotificationCCbyEmail) {
-                                ccAddress = user.getSetting(UserSetting.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
-                            }
-
-                            if (isNotificationCCbyEmail && ccAddress) {
-                                AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
-                                    to emailReceiver
-                                    from fromMail
-                                    cc ccAddress
-                                    subject mailSubject
-                                    html(view: "/mailTemplates/html/notificationSurveyParticipationFinishForOwner", model: [user: user, org: participationFinish, survey: surveyInfo, surveyResults: surveyResults])
-                                }
-                            } else {
-                                AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
-                                    to emailReceiver
-                                    from fromMail
-                                    subject mailSubject
-                                    html(view: "/mailTemplates/html/notificationSurveyParticipationFinishForOwner", model: [user: user, org: participationFinish, survey: surveyInfo, surveyResults: surveyResults])
-                                }
-                            }
-
-                            log.debug("emailToSurveyOwnerbyParticipationFinish - finished sendSurveyEmail() to " + user.displayName + " (" + user.email + ") " + surveyInfo.owner.name);
+                        SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(surveyInfo.surveyConfigs[0], participationFinish)
+                        if (surveyOrg && surveyOrg.orgInsertedItself) {
+                            Object[] args
+                            mailSubject = mailSubject + messageSource.getMessage('default.new', args, language) + ' '
                         }
-                    } catch (Exception e) {
-                        String eMsg = e.message
 
-                        log.error("emailToSurveyOwnerbyParticipationFinish - sendSurveyEmail() :: Unable to perform email due to exception: ${eMsg}")
-                        SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user.getDisplayName(), org: participationFinish.name, survey: surveyInfo.name])
+                        mailSubject = mailSubject + surveyInfo.name + ' (' + surveyInfo.type.getI10n('value', language) + ') ['
+                        mailSubject = mailSubject + participationFinish.sortname + ']'
+
+                        mailSubject = escapeService.replaceUmlaute(mailSubject)
+
+                        try {
+                            if (emailReceiver == null || emailReceiver.isEmpty()) {
+                                log.debug("The following user does not have an email address and can not be informed about surveys: " + user.username);
+                            } else {
+                                boolean isNotificationCCbyEmail = user.getSetting(UserSetting.KEYS.IS_NOTIFICATION_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
+                                String ccAddress = null
+                                if (isNotificationCCbyEmail) {
+                                    ccAddress = user.getSetting(UserSetting.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
+                                }
+
+                                if (isNotificationCCbyEmail && ccAddress) {
+                                    AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
+                                        to emailReceiver
+                                        from fromMail
+                                        cc ccAddress
+                                        subject mailSubject
+                                        html(view: "/mailTemplates/html/notificationSurveyParticipationFinishForOwner", model: [user: user, org: participationFinish, survey: surveyInfo, surveyResults: surveyResults])
+                                    }
+                                } else {
+                                    AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
+                                        to emailReceiver
+                                        from fromMail
+                                        subject mailSubject
+                                        html(view: "/mailTemplates/html/notificationSurveyParticipationFinishForOwner", model: [user: user, org: participationFinish, survey: surveyInfo, surveyResults: surveyResults])
+                                    }
+                                }
+
+                                log.debug("emailToSurveyOwnerbyParticipationFinish - finished sendSurveyEmail() to " + user.displayName + " (" + user.email + ") " + surveyInfo.owner.name);
+                            }
+                        } catch (Exception e) {
+                            String eMsg = e.message
+
+                            log.error("emailToSurveyOwnerbyParticipationFinish - sendSurveyEmail() :: Unable to perform email due to exception: ${eMsg}")
+                            SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user.getDisplayName(), org: participationFinish.name, survey: surveyInfo.name])
+                        }
                     }
                 }
             }
@@ -669,43 +676,45 @@ class MailSendService {
             return
         }
 
-        MessageSource messageSource = BeanStore.getMessageSource()
-        Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value.toString())
+        if(user.enabled) {
+            MessageSource messageSource = BeanStore.getMessageSource()
+            Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value.toString())
 
-        Object[] args
-        String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.sysAnnouncement', args, language)
+            Object[] args
+            String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.sysAnnouncement', args, language)
 
-        boolean isRemindCCbyEmail = user.getSetting(UserSetting.KEYS.IS_REMIND_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
-        String ccAddress
+            boolean isRemindCCbyEmail = user.getSetting(UserSetting.KEYS.IS_REMIND_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
+            String ccAddress
 
-        if (isRemindCCbyEmail) {
-            ccAddress = user.getSetting(UserSetting.KEYS.REMIND_CC_EMAILADDRESS, null)?.getValue()
-            // println user.toString() + " : " + isRemindCCbyEmail + " : " + ccAddress
-        }
-        try {
-            if (isRemindCCbyEmail && ccAddress) {
-                AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
-                    to user.getEmail()
-                    from ConfigMapper.getNotificationsEmailFrom()
-                    cc ccAddress
-                    replyTo ConfigMapper.getNotificationsEmailReplyTo()
-                    subject mailSubject
-                    body(view: "/mailTemplates/text/systemAnnouncement", model: [user: user, announcement: systemAnnouncement])
-                }
-            } else {
-                AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
-                    to user.getEmail()
-                    from ConfigMapper.getNotificationsEmailFrom()
-                    replyTo ConfigMapper.getNotificationsEmailReplyTo()
-                    subject mailSubject
-                    body(view: "/mailTemplates/text/systemAnnouncement", model: [user: user, announcement: systemAnnouncement])
-                }
+            if (isRemindCCbyEmail) {
+                ccAddress = user.getSetting(UserSetting.KEYS.REMIND_CC_EMAILADDRESS, null)?.getValue()
+                // println user.toString() + " : " + isRemindCCbyEmail + " : " + ccAddress
             }
-        } catch (Exception e) {
-            String eMsg = e.message
+            try {
+                if (isRemindCCbyEmail && ccAddress) {
+                    AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
+                        to user.getEmail()
+                        from ConfigMapper.getNotificationsEmailFrom()
+                        cc ccAddress
+                        replyTo ConfigMapper.getNotificationsEmailReplyTo()
+                        subject mailSubject
+                        body(view: "/mailTemplates/text/systemAnnouncement", model: [user: user, announcement: systemAnnouncement])
+                    }
+                } else {
+                    AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
+                        to user.getEmail()
+                        from ConfigMapper.getNotificationsEmailFrom()
+                        replyTo ConfigMapper.getNotificationsEmailReplyTo()
+                        subject mailSubject
+                        body(view: "/mailTemplates/text/systemAnnouncement", model: [user: user, announcement: systemAnnouncement])
+                    }
+                }
+            } catch (Exception e) {
+                String eMsg = e.message
 
-            log.error("sendSystemAnnouncementMail() :: Unable to perform email due to exception: ${eMsg}")
-            SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user.getDisplayName()])
+                log.error("sendSystemAnnouncementMail() :: Unable to perform email due to exception: ${eMsg}")
+                SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user.getDisplayName()])
+            }
         }
     }
 
@@ -722,21 +731,22 @@ class MailSendService {
             log.error 'sendMailToUser failed due grails.mail.disabled = true'
             return
         }
+        if(user.enabled) {
+            model.serverURL = ConfigMapper.getGrailsServerURL()
 
-        model.serverURL = ConfigMapper.getGrailsServerURL()
+            try {
 
-        try {
-
-            AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
-                to user.email
-                from ConfigMapper.getNotificationsEmailFrom()
-                replyTo ConfigMapper.getNotificationsEmailReplyTo()
-                subject ConfigMapper.getLaserSystemId() + ' - ' + subj
-                body(view: view, model: model)
+                AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
+                    to user.email
+                    from ConfigMapper.getNotificationsEmailFrom()
+                    replyTo ConfigMapper.getNotificationsEmailReplyTo()
+                    subject ConfigMapper.getLaserSystemId() + ' - ' + subj
+                    body(view: view, model: model)
+                }
             }
-        }
-        catch (Exception e) {
-            log.error "Unable to perform email due to exception: ${e.message}"
+            catch (Exception e) {
+                log.error "Unable to perform email due to exception: ${e.message}"
+            }
         }
     }
 
