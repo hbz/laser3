@@ -18,6 +18,7 @@ import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyOrg
 import de.laser.utils.LocaleUtils
+import de.laser.utils.RandomUtils
 import de.laser.wekb.Provider
 import de.laser.wekb.ProviderRole
 import de.laser.wekb.Vendor
@@ -332,7 +333,7 @@ class CopyElementsService {
                         endDate: subMember.isMultiYear ? subMember.endDate : targetObject.endDate,
                         manualRenewalDate: subMember.manualRenewalDate,
                         /* manualCancellationDate: result.subscription.manualCancellationDate, */
-                        identifier: UUID.randomUUID().toString(),
+                        identifier: RandomUtils.getUUID(),
                         instanceOf: targetObject,
                         //previousSubscription: subMember?.id,
                         resource: targetObject.resource ?: null,

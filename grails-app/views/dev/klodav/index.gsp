@@ -154,13 +154,19 @@
     <p class="ui header">StringUtils</p>
 
     <pre>
-        ${ RandomUtils.getRandomAlphabetic(16) }
-        ${ RandomUtils.getRandomAlphabetic(16) }
-        ${ RandomUtils.getRandomAlphabetic(16) }
+        ${ RandomUtils.getUUID() }  <>  ${ UUID.randomUUID().toString() }
 
-        ${ RandomUtils.getRandomAlphaNumeric(16) }
-        ${ RandomUtils.getRandomAlphaNumeric(16) }
-        ${ RandomUtils.getRandomAlphaNumeric(16) }
+        ${ RandomUtils.getHtmlID() }
+        ${ RandomUtils.getHtmlID() }
+        ${ RandomUtils.getHtmlID() }
+
+        __ : ${ RandomUtils.getAlphabetic() }
+        16 : ${ RandomUtils.getAlphabetic(16) }
+        32 : ${ RandomUtils.getAlphabetic(32) }
+
+        __ : ${ RandomUtils.getAlphaNumeric() }
+        16 : ${ RandomUtils.getAlphaNumeric(16) }
+        32 : ${ RandomUtils.getAlphaNumeric(32) }
 
         ${ PasswordUtils.getRandomUserPassword() }
         ${ PasswordUtils.getRandomUserPassword() }

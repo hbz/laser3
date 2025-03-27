@@ -261,7 +261,16 @@ r2d2 = {
             return html;
         };
 
-        // spotlight
+        // ----- filter -----
+
+        $('.la-filter').on( 'submit.laser', function() {
+            let fields = $(this).find('input[type=text], input[type=hidden], select');
+            let emptyFields = fields.filter(function(){ return !this.value; });
+            // remove unused filter params
+            emptyFields.attr('disabled', 'disabled');
+        });
+
+        // ----- spotlight -----
 
         $('.ui.search.spotlight').search({
             error : {

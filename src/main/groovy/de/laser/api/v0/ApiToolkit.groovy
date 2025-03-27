@@ -114,8 +114,8 @@ class ApiToolkit {
         }
         else {
             OrgSetting.add(org, OrgSetting.KEYS.API_LEVEL, apiLevel)
-            OrgSetting.add(org, OrgSetting.KEYS.API_KEY, RandomUtils.getRandomAlphaNumeric(24))
-            OrgSetting.add(org, OrgSetting.KEYS.API_PASSWORD, RandomUtils.getRandomAlphaNumeric(24))
+            OrgSetting.add(org, OrgSetting.KEYS.API_KEY, RandomUtils.getAlphaNumeric(24))
+            OrgSetting.add(org, OrgSetting.KEYS.API_PASSWORD, RandomUtils.getAlphaNumeric(24))
         }
     }
 

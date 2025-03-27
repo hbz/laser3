@@ -26,6 +26,7 @@ import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyInfo
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.utils.RandomUtils
 import de.laser.utils.SwissKnife
 import de.laser.wekb.Package
 import de.laser.wekb.Platform
@@ -3016,7 +3017,7 @@ class SubscriptionService {
                         isPublicForApi: entry.isPublicForApi,
                         hasPerpetualAccess: entry.hasPerpetualAccess,
                         hasPublishComponent: entry.hasPublishComponent,
-                        identifier: UUID.randomUUID())
+                        identifier: RandomUtils.getUUID())
                 sub.startDate = entry.startDate ? databaseDateFormatParser.parse(entry.startDate) : null
                 sub.endDate = entry.endDate ? databaseDateFormatParser.parse(entry.endDate) : null
                 sub.referenceYear = entry.referenceYear ? Year.of(entry.referenceYear.value) : null
