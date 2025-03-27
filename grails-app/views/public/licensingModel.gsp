@@ -224,19 +224,23 @@
                             class: 'green'
                         }]
                     }).modal('show');
-                    if ($('.la-animatedGif-img').length) {
-                          var gifSrc, srcGif;
-                          $('.la-animatedGif-img').each(function () {
-                            gifSrc = $(this).attr("src");
-                            $(this).attr("data-gif", gifSrc);
-                          });
+                        if ($('.la-animatedGif-img').length) {
+                            var gifSrc, srcGif;
+                            $('.la-animatedGif-img').each(function () {
+                                gifSrc = $(this).attr("src");
+                                $(this).attr("data-gif", gifSrc);
+                            });
                         }
 
                         $('.la-animatedGif-redo').on("click", function () {
-                          srcGif = $(this).parent().next().find('.la-animatedGif-img ').attr("data-gif");
-                          $(this).parent().next().find('.la-animatedGif-img ').attr("src", srcGif);
+                            let $img = $(this).parent().next().find('.la-animatedGif-img');
+                            let srcGif = $img.attr("data-gif");
+
+                            if (srcGif) {
+                                $img.attr("src", srcGif + "?t=" + new Date().getTime());
+                            }
+                        });
                     });
-                });
             </laser:script>
 
         </g:if>
