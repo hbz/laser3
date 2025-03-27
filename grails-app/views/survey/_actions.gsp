@@ -74,11 +74,11 @@
                                             text="${message(code: 'default.add.label', args: [message(code: 'surveyParticipants.label')])}"/>
 
                     <g:if test="${surveyConfig.subscription}">
-                        <ui:actionsDropdownItem action="actionSurveyParticipants"
+                        <ui:actionsDropdownItem controller="survey" action="actionSurveyParticipants"
                                                 params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, actionSurveyParticipants: 'addSubMembersToSurvey']"
                                                 message="surveyParticipants.addSubMembersToSurvey"/>
                         <g:if test="${!surveyConfig.subSurveyUseForTransfer}">
-                            <ui:actionsDropdownItem action="actionSurveyParticipants"
+                            <ui:actionsDropdownItem controller="survey" action="actionSurveyParticipants"
                                                     params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, actionSurveyParticipants: 'addMultiYearSubMembersToSurvey']"
                                                     message="surveyParticipants.addMultiYearSubMembersToSurvey"/>
                         </g:if>
