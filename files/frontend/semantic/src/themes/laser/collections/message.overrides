@@ -8,3 +8,7 @@
     text-decoration: underline;
   }
 }
+/* Close Icon */
+.ui.icon.message > .close.icon, {
+    margin: 0;
+}

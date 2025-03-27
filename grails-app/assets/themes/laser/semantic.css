@@ -56949,6 +56949,12 @@ Floated Menu / Item
 .ui.message a {
   text-decoration: underline;
 }
+
+/* Close Icon */
+
+.ui.icon.message > .close.icon {
+  margin: 0;
+}
 /*!
  * # Fomantic-UI 2.9.3 - Table
  * https://github.com/fomantic/Fomantic-UI/
