@@ -15,7 +15,7 @@
 
 6354    24.03.2025  dev     3.5         Moe     Feature     Kostenupload optimieren - auch bei Umfragen
 
-6391    24.03.2025  dev     3.5         Moe     Bug      500er Umfrage beenden DEV
+6391    24.03.2025  dev     3.5         Moe     Bug         500er Umfrage beenden DEV
 
 6389    24.03.2025  dev     3.5         Moe     Feature     Filter, die Umfragen-Teilnehmer zu tun haben, anpassen
 
@@ -32,6 +32,8 @@
 5966    21.03.2025  dev     3.5         Moe     Feature     Speicheroption renewal auf Auswertungsseite
 
 6387    21.03.2025  dev     3.5         Moe     Bug         Unsauberes Verhalten Merkmalsgruppe (Umfrage)
+
+6407    20.03.2025  dev     3.5         David   Feature     Hervorheben von neuen Anbietern in den we:kb-News
 
 6104    19.03.2025  dev     3.5         Moe     Feature     Verlängerungsabfrage für MJL
 
