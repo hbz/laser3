@@ -1,5 +1,9 @@
 package de.laser
 
+import com.opencsv.CSVParserBuilder
+import com.opencsv.CSVReader
+import com.opencsv.CSVReaderBuilder
+import com.opencsv.ICSVParser
 import de.laser.addressbook.Address
 import de.laser.addressbook.Person
 import de.laser.auth.User
@@ -48,11 +52,14 @@ import groovy.sql.Sql
 import groovy.time.TimeCategory
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
+import org.springframework.web.multipart.MultipartFile
 
 import java.nio.file.Files
 import java.nio.file.Path
 import java.sql.Connection
 import java.text.SimpleDateFormat
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 /**
  * This service manages survey handling
@@ -2870,6 +2877,114 @@ class SurveyService {
 
             }
         }
+    }
+
+    Map<String, Object> financeEnrichment(MultipartFile tsvFile, String encoding, RefdataValue pickedElement, SurveyConfig surveyConfig) {
+        Map<String, Object> result = [:]
+        List<String> wrongIdentifiers = [] // wrongRecords: downloadable file
+        Org contextOrg = contextService.getOrg()
+        //List<String> rows = tsvFile.getInputStream().getText(encoding).split('\n')
+        //rows.remove(0).split('\t') we should consider every row
+        //needed because cost item updates are not flushed immediately
+        Set<Long> updatedIDs = []
+        //preparatory for an eventual variable match; for the moment: hard coded to 0 and 1
+        int idCol = 0, valueCol = 1, noRecordCounter = 0, wrongIdentifierCounter = 0, missingCurrencyCounter = 0, totalRows = 0
+        Set<IdentifierNamespace> namespaces = [IdentifierNamespace.findByNs('ISIL'), IdentifierNamespace.findByNs('wibid')]
+        tsvFile.getInputStream().withReader(encoding) { reader ->
+            char tab = '\t'
+            ICSVParser csvp = new CSVParserBuilder().withSeparator(tab).build() // csvp.DEFAULT_SEPARATOR, csvp.DEFAULT_QUOTE_CHARACTER, csvp.DEFAULT_ESCAPE_CHARACTER
+            CSVReader csvr = new CSVReaderBuilder( reader ).withCSVParser( csvp ).build()
+            String[] line
+            while (line = csvr.readNext()) {
+                if (line[0]) {
+                    //wrong separator
+                    if (line.size() > 1) {
+                        totalRows++
+                        //rows.each { String row ->
+                        //List<String> cols = row.split('\t')
+                        String idStr = line[idCol], valueStr = line[valueCol]
+                        //try to match the survey
+                        if (valueStr?.trim()) {
+                            //first: get the org
+                            Org match = null
+                            Set<Org> check = Org.executeQuery('select ci.customer from CustomerIdentifier ci where ci.value = :number', [number: idStr])
+                            if (check.size() == 1)
+                                match = check[0]
+                            if (!match)
+                                match = Org.findByGlobalUID(idStr)
+                            if (!match) {
+                                check = Org.executeQuery('select id.org from Identifier id where id.value = :value and id.ns in (:namespaces)', [value: idStr, namespaces: namespaces])
+                                if (check.size() == 1)
+                                    match = check[0]
+                            }
+                            //match success
+                            if (match) {
+                                    SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, match)
+                                    if (surveyOrg) {
+                                        CostItem ci = CostItem.findBySurveyOrgAndOwnerAndCostItemElement(surveyOrg, contextOrg, pickedElement)
+                                        if (ci) {
+                                            //Regex to parse different sum entries
+                                            //Pattern nonNumericRegex = Pattern.compile("([\$€£]|EUR|USD|GBP)")
+                                            Pattern numericRegex = Pattern.compile("([\\d'.,]+)")
+                                            //step 1: strip the non-numerical part and try to parse a currency
+                                            //skipped as of comment of March 12th, '25
+                                            //Matcher billingCurrencyMatch = nonNumericRegex.matcher(valueStr)
+                                            //step 2: pass the numerical part to the value parser
+                                            Matcher costMatch = numericRegex.matcher(valueStr)
+                                            //if(costMatch.find() && billingCurrencyMatch.find()) {
+                                            if (costMatch.find()) {
+                                                String input = costMatch.group(1)//, currency = billingCurrencyMatch.group(1)
+                                                BigDecimal parsedCost = escapeService.parseFinancialValue(input)
+                                                ci.costInBillingCurrency = parsedCost
+                                                /*
+                                            switch(currency) {
+                                                case ['€', 'EUR']: ci.billingCurrency = RDStore.CURRENCY_EUR
+                                                    break
+                                                case ['£', 'GBP']: ci.billingCurrency = RDStore.CURRENCY_GBP
+                                                    break
+                                                case ['$', 'USD']: ci.billingCurrency = RDStore.CURRENCY_USD
+                                                    break
+                                            }
+                                            */
+                                                if (ci.save()) {
+                                                    updatedIDs << ci.id
+                                                }
+                                                else
+                                                    log.error(ci.getErrors().getAllErrors().toListString())
+                                            }
+                                            /*
+                                        else if(!billingCurrencyMatch.find())
+                                            missingCurrencyCounter++
+                                        */
+                                        }
+                                        else {
+                                            noRecordCounter++
+                                            wrongIdentifiers << idStr
+                                        }
+                                    }
+                            }
+                            else {
+                                wrongIdentifierCounter++
+                                wrongIdentifiers << idStr
+                            }
+                        }
+                    }
+                    else if(line.size() == 1) {
+                        result.wrongSeparator = true
+                        result.afterEnrichment = true
+                        result
+                    }
+                }
+            }
+        }
+        result.missingCurrencyCounter = missingCurrencyCounter
+        result.wrongIdentifiers = wrongIdentifiers
+        result.matchCounter = updatedIDs.size()
+        result.wrongIdentifierCounter = wrongIdentifierCounter
+        result.noRecordCounter = noRecordCounter
+        result.totalRows = totalRows
+        result.afterEnrichment = true
+        result
     }
 
 }

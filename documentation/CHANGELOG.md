@@ -13,6 +13,8 @@
 
 6370    25.03.2025  dev     3.5         Andreas Feature     Einzeltitelauswahl implementiert
 
+6354    24.03.2025  dev     3.5         Moe     Feature     Kostenupload optimieren - auch bei Umfragen
+
 6391    24.03.2025  dev     3.5         Moe     Bug         500er Umfrage beenden DEV
 
 6389    24.03.2025  dev     3.5         Moe     Feature     Filter, die Umfragen-Teilnehmer zu tun haben, anpassen

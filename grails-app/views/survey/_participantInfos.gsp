@@ -20,7 +20,7 @@
                     <g:if test="${surveyPersons}">
                         <g:set var="oldEditable" value="${editable}"/>
                         <g:set var="editable" value="${false}" scope="request"/>
-                        <g:each in="${choosenOrgCPAs}" var="gcp">
+                        <g:each in="${surveyPersons}" var="gcp">
                             <laser:render template="/addressbook/person_details"
                                           model="${[person: gcp, tmplHideLinkToAddressbook: true, showFunction: true]}"/>
                         </g:each>

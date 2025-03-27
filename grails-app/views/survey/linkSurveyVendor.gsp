@@ -18,8 +18,6 @@
                      href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
-<laser:render template="nav"/>
-
 <ui:objectStatus object="${surveyInfo}" />
 
 <g:link class="${Btn.SIMPLE} right floated" controller="survey" action="surveyVendors"

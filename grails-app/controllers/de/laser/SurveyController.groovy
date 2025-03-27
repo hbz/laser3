@@ -30,7 +30,9 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
+import org.mozilla.universalchardet.UniversalDetector
 import org.springframework.transaction.TransactionStatus
+import org.springframework.web.multipart.MultipartFile
 
 import javax.servlet.ServletOutputStream
 import java.text.DateFormat
@@ -866,6 +868,41 @@ class SurveyController {
                 return
             }
         }else {
+            if(params.containsKey('costInformation')) {
+                CostItem.withTransaction {
+                    MultipartFile inputFile = request.getFile("costInformation")
+                    if(inputFile && inputFile.size > 0) {
+                        String filename = params.costInformation.originalFilename
+                        RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
+                        String encoding = UniversalDetector.detectCharset(inputFile.getInputStream())
+                        if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
+                            ctrlResult.result.putAll(surveyService.financeEnrichment(inputFile, encoding, pickedElement, ctrlResult.result.surveyConfig))
+                        }
+                        if(ctrlResult.result.containsKey('wrongIdentifiers')) {
+                            //background of this procedure: the editor adding prices via file wishes to receive a "counter-file" which will then be sent to the provider for verification
+                            String dir = GlobalService.obtainTmpFileLocation()
+                            File f = new File(dir+"/${filename}_matchingErrors")
+                            ctrlResult.result.token = "${filename}_matchingErrors"
+                            String returnFile = exportService.generateSeparatorTableString(null, ctrlResult.result.wrongIdentifiers, '\t')
+                            FileOutputStream fos = new FileOutputStream(f)
+                            fos.withWriter { Writer w ->
+                                w.write(returnFile)
+                            }
+                            fos.flush()
+                            fos.close()
+                        }
+                        params.remove("costInformation")
+                    }
+                }
+            }
+            if(params.containsKey('selectedCostItemElement') && !ctrlResult.result.containsKey('wrongSeparator')) {
+                RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
+                String query = 'select ci.id from CostItem ci where ci.pkg is null and ci.costItemStatus != :status and ci.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ci.costItemElement = :element and (ci.costInBillingCurrency = 0 or ci.costInBillingCurrency = null)'
+
+                Set<CostItem> missing = CostItem.executeQuery(query, [status: RDStore.COST_ITEM_DELETED, surConfig: ctrlResult.result.surveyConfig, element: pickedElement])
+                ctrlResult.result.missing = missing
+            }
+
             ctrlResult.result
         }
 
