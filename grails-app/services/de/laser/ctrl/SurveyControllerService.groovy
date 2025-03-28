@@ -389,7 +389,10 @@ class SurveyControllerService {
 
             result.costItemsByCostItemElement = CostItem.executeQuery(query, [status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig]).sort {it.costItemElement.getI10n('value')}.groupBy { it.costItemElement }
 
-            result.assignedCostItemElements = CostItem.executeQuery('select ct.costItemElement '+query, [status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig]).sort {it.getI10n('value')}
+            SortedSet<RefdataValue> assignedCostItemElements = new TreeSet<RefdataValue>()
+            assignedCostItemElements.addAll(CostItem.executeQuery('select ct.costItemElement '+query, [status: RDStore.COST_ITEM_DELETED, surConfig: result.surveyConfig]).sort {it.getI10n('value')})
+
+            result.assignedCostItemElements = assignedCostItemElements
 
             [result: result, status: STATUS_OK]
         }
