@@ -3,6 +3,7 @@ package de.laser.ajax
 import de.laser.AlternativeName
 import de.laser.CacheService
 import de.laser.ControlledListService
+import de.laser.CryptoService
 import de.laser.CustomerTypeService
 import de.laser.DiscoverySystemFrontend
 import de.laser.DiscoverySystemIndex
@@ -11,7 +12,6 @@ import de.laser.GenericOIDService
 import de.laser.HelpService
 import de.laser.IssueEntitlementService
 import de.laser.OrgSetting
-import de.laser.OrganisationController
 import de.laser.PendingChangeService
 import de.laser.AddressbookService
 import de.laser.AccessService
@@ -104,6 +104,7 @@ class AjaxHtmlController {
     CacheService cacheService
     ContextService contextService
     ControlledListService controlledListService
+    CryptoService cryptoService
     CustomerTypeService customerTypeService
     CustomWkhtmltoxService wkhtmltoxService // custom
     GenericOIDService genericOIDService
@@ -1419,21 +1420,22 @@ class AjaxHtmlController {
                     if (mimeTypes.containsKey(doc.mimeType)) {
                         String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
                         File f = new File(fPath + '/' +  doc.uuid)
-
                         if (f.exists()) {
-                            if (mimeTypes.get(doc.mimeType) == 'raw'){
-                                result.docBase64 = f.getBytes().encodeBase64()
+
+                            File decTmpFile = cryptoService.decryptToTmpFile(f, doc.ckey)
+                            if (mimeTypes.get(doc.mimeType) == 'raw') {
+                                result.docBase64 = decTmpFile.getBytes().encodeBase64()
                                 result.docDataType = doc.mimeType
                             }
                             else if (mimeTypes.get(doc.mimeType) == 'encode') {
-                                String fCharset = UniversalDetector.detectCharset(f) ?: Charset.defaultCharset()
-                                result.docBase64 = f.getText(fCharset).encodeAsRaw().getBytes().encodeBase64()
-                                result.docDataType = 'text/plain;charset=' + fCharset
+                                String charset = UniversalDetector.detectCharset(decTmpFile) ?: Charset.defaultCharset()
+                                result.docBase64 = decTmpFile.getText(charset).encodeAsRaw().getBytes().encodeBase64()
+                                result.docDataType = 'text/plain;charset=' + charset
                             }
                             else {
                                 result.error = message(code: 'template.documents.preview.error') as String
                             }
-                            // encodeAsHTML().replaceAll(/\r\n|\r|\n/,'<br />')
+                            decTmpFile.delete()
                         }
                         else {
                             result.error = message(code: 'template.documents.preview.fileNotFound') as String

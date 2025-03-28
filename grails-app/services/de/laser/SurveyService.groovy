@@ -1304,7 +1304,8 @@ class SurveyService {
                             filename: dctx.owner.filename,
                             mimeType: dctx.owner.mimeType,
                             owner: dctx.owner.owner,
-                            server: dctx.owner.server
+                            server: dctx.owner.server,
+                            ckey: dctx.owner.ckey
                     ).save()
                     String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
                     Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
@@ -1328,7 +1329,7 @@ class SurveyService {
                             contentType: dctx.owner.contentType,
                             title: dctx.owner.title,
                             filename: dctx.owner.filename,
-                            mimeType: dctx.owner.mimeType,
+                            mimeType: dctx.owner.mimeType
                     ).save()
                     new DocContext(
                             owner: clonedContents,

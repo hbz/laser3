@@ -131,7 +131,8 @@ class InstitutionsService {
                             title: dctx.owner.title,
                             filename: dctx.owner.filename,
                             mimeType: dctx.owner.mimeType,
-                            server: dctx.owner.server
+                            server: dctx.owner.server,
+                            ckey: dctx.owner.ckey
                     ).save()
 
                     String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK

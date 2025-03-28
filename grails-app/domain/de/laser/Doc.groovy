@@ -3,6 +3,7 @@ package de.laser
 import de.laser.annotations.RefdataInfo
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
+import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.utils.RandomUtils
 import org.apache.http.HttpStatus
@@ -77,7 +78,10 @@ class Doc {
         try {
             String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
             File file = new File("${fPath}/${uuid}")
-            output = file.getBytes()
+
+            File decTmpFile = BeanStore.getCryptoService().decryptToTmpFile(file, ckey)
+            output = decTmpFile.getBytes()
+            decTmpFile.delete()
 
             response.setContentType(mimeType)
             response.addHeader("Content-Disposition", "attachment; filename=\"${filename}\"")
