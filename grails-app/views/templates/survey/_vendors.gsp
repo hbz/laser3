@@ -26,15 +26,14 @@
                               tmplConfigShow: tmplConfigShow
                       ]"/>
 
-
         <g:if test="${processController && processAction && tmplConfigShow.contains('unLinkSurveyVendor')}">
             <div class="field">
-                <input type="submit" class="${Btn.NEGATIVE_CLICKCONTROL}" value="${message(code: 'surveyVendors.unlinkVendor.plural')}"/>
+                <button name="processOption" value="unlinkVendors" type="submit" class="${Btn.NEGATIVE_CLICKCONTROL}">${message(code: 'surveyVendors.unlinkVendor.plural')}</button>
             </div>
         </g:if>
         <g:if test="${processController && processAction && tmplConfigShow.contains('linkSurveyVendor')}">
             <div class="field">
-                <input type="submit" class="${Btn.SIMPLE_CLICKCONTROL}" value="${message(code: 'surveyVendors.linkVendor.plural')}"/>
+                <button name="processOption" value="linkVendors" type="submit" class="${Btn.SIMPLE_CLICKCONTROL}">${message(code: 'surveyVendors.linkVendor.plural')}</button>
             </div>
         </g:if>
 

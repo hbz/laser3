@@ -593,31 +593,7 @@ class SurveyControllerService {
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
-            if(params.removeVendor) {
-                Vendor vendor = Vendor.findById(params.removeVendor)
-                if(vendor) {
-                    SurveyConfigVendor.executeUpdate("delete from SurveyConfigVendor scp where scp.surveyConfig = :surveyConfig and scp.vendor = :vendor", [surveyConfig: result.surveyConfig, vendor: vendor])
-                }
-                params.remove("removeVendor")
-            }
 
-
-            if(params.vendorListToggler == 'on') {
-                SurveyConfigVendor.executeUpdate("delete from SurveyConfigVendor scp where scp.surveyConfig = :surveyConfig", [surveyConfig: result.surveyConfig])
-                params.remove("vendorListToggler")
-            }
-            else {
-                List selectedVendors = Params.getLongList(params, "selectedVendors")
-                if (selectedVendors) {
-                    selectedVendors.each {
-                        Vendor vendor = Vendor.findById(it)
-                        if (vendor) {
-                            SurveyConfigVendor.executeUpdate("delete from SurveyConfigVendor scp where scp.surveyConfig = :surveyConfig and scp.vendor = :vendor", [surveyConfig: result.surveyConfig, vendor: vendor])
-                        }
-                    }
-                    params.remove("selectedVendors")
-                }
-            }
 
             if(params.initial){
                 params.isMyX = ['wekb_exclusive']
@@ -731,61 +707,70 @@ class SurveyControllerService {
                     }
                 }
                 params.remove("addVendor")
-            }
-
-            if(params.removeVendor) {
+            }else if (params.removeVendor) {
                 Vendor vendor = Vendor.findById(params.removeVendor)
                 if(vendor) {
                     SurveyConfigVendor.executeUpdate("delete from SurveyConfigVendor scp where scp.surveyConfig = :surveyConfig and scp.vendor = :vendor", [surveyConfig: result.surveyConfig, vendor: vendor])
                 }
                 params.remove("removeVendor")
-            }
+            }else if (params.vendorListToggler || params.selectedVendors) {
 
-            result.putAll(vendorService.getWekbVendors(params))
+                result.putAll(vendorService.getWekbVendors(params))
 
-            if (params.isMyX) {
-                List<String> xFilter = params.list('isMyX')
-                Set<Long> f1Result = [], f2Result = []
-                boolean   f1Set = false, f2Set = false
-                result.currentVendorIdList = Vendor.executeQuery('select vr.vendor.id from VendorRole vr, OrgRole oo join oo.sub s where s = vr.subscription and oo.org = :context and s.status = :current', [current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()])
-                if (xFilter.contains('ismyx_exclusive')) {
-                    f1Result.addAll( result.vendorTotal.findAll { result.currentVendorIdList.contains( it.id ) }.collect{ it.id } )
-                    f1Set = true
-                }
-                if (xFilter.contains('ismyx_not')) {
-                    f1Result.addAll( result.vendorTotal.findAll { ! result.currentVendorIdList.contains( it.id ) }.collect{ it.id }  )
-                    f1Set = true
-                }
-                if (xFilter.contains('wekb_exclusive')) {
-                    f2Result.addAll( result.vendorTotal.findAll { it.gokbId != null && it.gokbId in result.wekbRecords.keySet() }.collect{ it.id } )
-                    f2Set = true
-                }
-                if (xFilter.contains('wekb_not')) {
-                    f2Result.addAll( result.vendorTotal.findAll { it.gokbId == null }.collect{ it.id }  )
-                    f2Set = true
-                }
+                if (params.isMyX) {
+                    List<String> xFilter = params.list('isMyX')
+                    Set<Long> f1Result = [], f2Result = []
+                    boolean f1Set = false, f2Set = false
+                    result.currentVendorIdList = Vendor.executeQuery('select vr.vendor.id from VendorRole vr, OrgRole oo join oo.sub s where s = vr.subscription and oo.org = :context and s.status = :current', [current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()])
+                    if (xFilter.contains('ismyx_exclusive')) {
+                        f1Result.addAll(result.vendorTotal.findAll { result.currentVendorIdList.contains(it.id) }.collect { it.id })
+                        f1Set = true
+                    }
+                    if (xFilter.contains('ismyx_not')) {
+                        f1Result.addAll(result.vendorTotal.findAll { !result.currentVendorIdList.contains(it.id) }.collect { it.id })
+                        f1Set = true
+                    }
+                    if (xFilter.contains('wekb_exclusive')) {
+                        f2Result.addAll(result.vendorTotal.findAll { it.gokbId != null && it.gokbId in result.wekbRecords.keySet() }.collect { it.id })
+                        f2Set = true
+                    }
+                    if (xFilter.contains('wekb_not')) {
+                        f2Result.addAll(result.vendorTotal.findAll { it.gokbId == null }.collect { it.id })
+                        f2Set = true
+                    }
 
-                if (f1Set) { result.vendorTotal = result.vendorTotal.findAll { f1Result.contains(it.id) } }
-                if (f2Set) { result.vendorTotal = result.vendorTotal.findAll { f2Result.contains(it.id) } }
-            }
-
-            List selectedVendors
-            if(params.vendorListToggler == 'on') {
-                selectedVendors = result.vendorTotal.id
-            }
-            else selectedVendors = Params.getLongList(params, "selectedVendors")
-
-            if (selectedVendors) {
-                selectedVendors.each {
-                    Vendor vendor = Vendor.findById(it)
-                    if(vendor) {
-                        if(!SurveyConfigVendor.findByVendorAndSurveyConfig(vendor, result.surveyConfig)) {
-                            SurveyConfigVendor surveyConfigVendor = new SurveyConfigVendor(surveyConfig: result.surveyConfig, vendor: vendor).save()
-                        }
+                    if (f1Set) {
+                        result.vendorTotal = result.vendorTotal.findAll { f1Result.contains(it.id) }
+                    }
+                    if (f2Set) {
+                        result.vendorTotal = result.vendorTotal.findAll { f2Result.contains(it.id) }
                     }
                 }
-                params.remove("selectedVendors")
-                params.remove("vendorListToggler")
+
+                List selectedVendors
+                if (params.vendorListToggler == 'on') {
+                    selectedVendors = result.vendorTotal.id
+                } else selectedVendors = Params.getLongList(params, "selectedVendors")
+
+                if (selectedVendors) {
+                    selectedVendors.each {
+                        Vendor vendor = Vendor.findById(it)
+                        if(params.processOption == 'unlinkVendors'){
+                            if(vendor) {
+                                SurveyConfigVendor.executeUpdate("delete from SurveyConfigVendor scp where scp.surveyConfig = :surveyConfig and scp.vendor = :vendor", [surveyConfig: result.surveyConfig, vendor: vendor])
+                            }
+                        }
+                        if(params.processOption == 'linkVendors') {
+                            if (vendor) {
+                                if (!SurveyConfigVendor.findByVendorAndSurveyConfig(vendor, result.surveyConfig)) {
+                                    SurveyConfigVendor surveyConfigVendor = new SurveyConfigVendor(surveyConfig: result.surveyConfig, vendor: vendor).save()
+                                }
+                            }
+                        }
+                    }
+                    params.remove("selectedVendors")
+                    params.remove("vendorListToggler")
+                }
             }
 
             [result: result, status: STATUS_OK]
