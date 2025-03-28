@@ -36,7 +36,7 @@
 
 <g:render template="/templates/survey/packages" model="[
         processController: 'survey',
-        processAction: 'linkSurveyPackage',
+        processAction: 'processLinkSurveyPackage',
         tmplShowCheckbox: editable,
         linkSurveyPackage: true,
         tmplConfigShow: ['lineNumber', 'name', 'status', 'titleCount', 'provider', 'platform', 'curatoryGroup', 'automaticUpdates', 'lastUpdatedDisplay', 'linkSurveyPackage']]"/>

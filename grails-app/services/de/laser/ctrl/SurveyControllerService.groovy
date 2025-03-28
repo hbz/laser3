@@ -485,30 +485,6 @@ class SurveyControllerService {
             [result:null,status:STATUS_ERROR]
         else {
 
-            if(params.removeUUID) {
-                Package pkg = Package.findByGokbId(params.removeUUID)
-                if(pkg) {
-                    SurveyConfigPackage.executeUpdate("delete from SurveyConfigPackage scp where scp.surveyConfig = :surveyConfig and scp.pkg = :pkg", [surveyConfig: result.surveyConfig, pkg: pkg])
-                    result.surveyConfig = result.surveyConfig.refresh()
-                    result.surveyPackagesCount = SurveyConfigPackage.executeQuery("select count(*) from SurveyConfigPackage where surveyConfig = :surConfig", [surConfig: result.surveyConfig])[0]
-                }
-                params.remove("removeUUID")
-            }
-
-            List selectedPkgs = params.list("selectedPkgs")
-
-            if (selectedPkgs) {
-                selectedPkgs.each {
-                    Package pkg = Package.findByGokbId(it)
-                    if(pkg) {
-                        SurveyConfigPackage.executeUpdate("delete from SurveyConfigPackage scp where scp.surveyConfig = :surveyConfig and scp.pkg = :pkg", [surveyConfig: result.surveyConfig, pkg: pkg])
-                    }
-                }
-                result.surveyConfig = result.surveyConfig.refresh()
-                result.surveyPackagesCount = SurveyConfigPackage.executeQuery("select count(*) from SurveyConfigPackage where surveyConfig = :surConfig", [surConfig: result.surveyConfig])[0]
-                params.remove("selectedPkgs")
-            }
-
             if(params.initial){
                 params.remove('initial')
                 result.initial = true
@@ -534,6 +510,22 @@ class SurveyControllerService {
             [result:null,status:STATUS_ERROR]
         else {
 
+            params.max = params.max ? Integer.parseInt(params.max) : result.user.getPageSizeOrDefault()
+            params.offset = params.offset ? Integer.parseInt(params.offset) : 0
+            result.putAll(packageService.getWekbPackages(params))
+
+            result.uuidPkgs = SurveyConfigPackage.executeQuery("select scg.pkg.gokbId from SurveyConfigPackage scg where scg.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
+
+            [result: result, status: STATUS_OK]
+        }
+    }
+
+    Map<String,Object> processLinkSurveyPackage(GrailsParameterMap params) {
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params)
+        if(!result)
+            [result:null,status:STATUS_ERROR]
+        else {
+
             if(params.addUUID) {
                 Package pkg = Package.findByGokbId(params.addUUID)
                 if(pkg) {
@@ -543,14 +535,12 @@ class SurveyControllerService {
                 }else {
                     pkg = packageService.createPackageWithWEKB(params.addUUID)
                     if(pkg)
-                    SurveyConfigPackage surveyConfigPackage = new SurveyConfigPackage(surveyConfig: result.surveyConfig, pkg: pkg).save()
+                        SurveyConfigPackage surveyConfigPackage = new SurveyConfigPackage(surveyConfig: result.surveyConfig, pkg: pkg).save()
                 }
                 result.surveyConfig = result.surveyConfig.refresh()
                 result.surveyPackagesCount = SurveyConfigPackage.executeQuery("select count(*) from SurveyConfigPackage where surveyConfig = :surConfig", [surConfig: result.surveyConfig])[0]
                 params.remove("addUUID")
-            }
-
-            if(params.removeUUID) {
+            }else if(params.removeUUID) {
                 Package pkg = Package.findByGokbId(params.removeUUID)
                 if(pkg) {
                     SurveyConfigPackage.executeUpdate("delete from SurveyConfigPackage scp where scp.surveyConfig = :surveyConfig and scp.pkg = :pkg", [surveyConfig: result.surveyConfig, pkg: pkg])
@@ -558,31 +548,42 @@ class SurveyControllerService {
                     result.surveyPackagesCount = SurveyConfigPackage.executeQuery("select count(*) from SurveyConfigPackage where surveyConfig = :surConfig", [surConfig: result.surveyConfig])[0]
                 }
                 params.remove("removeUUID")
-            }
+            }else if(params.selectedPkgs || params.pkgListToggler) {
 
-            List selectedPkgs = params.list("selectedPkgs")
+                result.putAll(packageService.getWekbPackages(params))
 
-            if (selectedPkgs) {
-                selectedPkgs.each {
-                    Package pkg = Package.findByGokbId(it)
-                    if(pkg) {
-                        if(!SurveyConfigPackage.findByPkgAndSurveyConfig(pkg, result.surveyConfig)) {
-                            SurveyConfigPackage surveyConfigPackage = new SurveyConfigPackage(surveyConfig: result.surveyConfig, pkg: pkg).save()
-                        }
-                    }else {
-                        pkg = packageService.createPackageWithWEKB(it)
-                        if(pkg)
-                        SurveyConfigPackage surveyConfigPackage = new SurveyConfigPackage(surveyConfig: result.surveyConfig, pkg: pkg).save()
+                List selectedPkgs = []
+                if (params.pkgListToggler == 'on') {
+                    result.records.each {
+                            selectedPkgs << it.uuid
                     }
+                } else selectedPkgs = params.list("selectedPkgs")
+
+
+                if (selectedPkgs) {
+                    selectedPkgs.each {
+                        Package pkg = Package.findByGokbId(it)
+
+                        if(params.processOption == 'unlinkPackages'){
+                            if(pkg) {
+                                SurveyConfigPackage.executeUpdate("delete from SurveyConfigPackage scp where scp.surveyConfig = :surveyConfig and scp.pkg = :pkg", [surveyConfig: result.surveyConfig, pkg: pkg])
+                            }
+                        }
+                        if(params.processOption == 'linkPackages') {
+                            if (pkg) {
+                                if (!SurveyConfigPackage.findByPkgAndSurveyConfig(pkg, result.surveyConfig)) {
+                                    SurveyConfigPackage surveyConfigPackage = new SurveyConfigPackage(surveyConfig: result.surveyConfig, pkg: pkg).save()
+                                }
+                            } else {
+                                pkg = packageService.createPackageWithWEKB(it)
+                                if (pkg)
+                                    SurveyConfigPackage surveyConfigPackage = new SurveyConfigPackage(surveyConfig: result.surveyConfig, pkg: pkg).save()
+                            }
+                        }
+                    }
+                    params.remove("selectedPkgs")
                 }
-                params.remove("selectedPkgs")
             }
-            params.max = params.max ? Integer.parseInt(params.max) : result.user.getPageSizeOrDefault()
-            params.offset = params.offset ? Integer.parseInt(params.offset) : 0
-            result.putAll(packageService.getWekbPackages(params))
-
-            result.uuidPkgs = SurveyConfigPackage.executeQuery("select scg.pkg.gokbId from SurveyConfigPackage scg where scg.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
-
             [result: result, status: STATUS_OK]
         }
     }

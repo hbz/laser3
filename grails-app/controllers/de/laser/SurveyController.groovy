@@ -998,6 +998,29 @@ class SurveyController {
     @Secured(closure = {
         ctx.contextService.isInstEditor_denySupport()
     })
+    def processLinkSurveyPackage() {
+        Map<String,Object> ctrlResult = surveyControllerService.processLinkSurveyPackage(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+            else {
+                flash.error = ctrlResult.result.error
+                ctrlResult.result
+            }
+        }
+        else {
+            ctrlResult.result
+            redirect(action: 'surveyPackages', id: ctrlResult.result.surveyInfo.id)
+            return
+        }
+    }
+
+    @DebugInfo(isInstEditor_denySupport = [], ctrlService = 1)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport()
+    })
     def linkSurveyVendor() {
         Map<String,Object> ctrlResult = surveyControllerService.linkSurveyVendor(params)
         if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
