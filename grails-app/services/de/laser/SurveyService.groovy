@@ -2593,7 +2593,7 @@ class SurveyService {
                         if (person && !SurveyPersonResult.findByParticipantAndSurveyConfigAndBillingPerson(participant, result.surveyConfig, true)) {
                             new SurveyPersonResult(participant: participant, surveyConfig: result.surveyConfig, person: person, billingPerson: true, owner: result.surveyInfo.owner).save()
                         }else {
-                            flash.error = message(code: 'person.preferredBillingPerson.fail')
+                            result.error = message(code: 'person.preferredBillingPerson.fail')
                         }
                     }
                     if (params.setPreferredBillingPerson == 'false') {
@@ -2608,7 +2608,7 @@ class SurveyService {
                 if (params.addressId && params.setAddress) {
                     if (params.setAddress == 'true') {
                         if(result.surveyOrg.address){
-                            flash.error = message(code: 'address.preferredForSurvey.fail')
+                            result.error = message(code: 'address.preferredForSurvey.fail')
                         }else {
                             result.surveyOrg.address = Address.get(Long.valueOf(params.addressId))
                         }
@@ -2879,7 +2879,7 @@ class SurveyService {
         }
     }
 
-    Map<String, Object> financeEnrichment(MultipartFile tsvFile, String encoding, RefdataValue pickedElement, SurveyConfig surveyConfig) {
+    Map<String, Object> financeEnrichment(MultipartFile tsvFile, String encoding, RefdataValue pickedElement, SurveyConfig surveyConfig, Package pkg = null) {
         Map<String, Object> result = [:]
         List<String> wrongIdentifiers = [] // wrongRecords: downloadable file
         Org contextOrg = contextService.getOrg()
@@ -2921,7 +2921,13 @@ class SurveyService {
                             if (match) {
                                     SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, match)
                                     if (surveyOrg) {
-                                        CostItem ci = CostItem.findBySurveyOrgAndOwnerAndCostItemElement(surveyOrg, contextOrg, pickedElement)
+                                        CostItem ci
+                                        if(pkg){
+                                            ci = CostItem.findBySurveyOrgAndOwnerAndCostItemElementAndPkg(surveyOrg, contextOrg, pickedElement, pkg)
+                                        }else {
+                                            ci = CostItem.findBySurveyOrgAndOwnerAndCostItemElement(surveyOrg, contextOrg, pickedElement)
+                                        }
+
                                         if (ci) {
                                             //Regex to parse different sum entries
                                             //Pattern nonNumericRegex = Pattern.compile("([\$€£]|EUR|USD|GBP)")

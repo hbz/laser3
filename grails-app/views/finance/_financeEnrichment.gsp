@@ -26,15 +26,23 @@
             </g:form>
         </g:if>
         <g:elseif test="${surveyInfo}">
-            <ui:msg class="info" hideClose="true" showIcon="true" message="financials.enrichment.manual.survey" />
-            <g:form class="ui form" method="post" enctype="multipart/form-data" controller="survey" action="surveyCostItems" params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">
-                <div class="two fields">
+            <ui:msg class="info" hideClose="true" showIcon="true" message="${actionName == 'surveyCostItemsPackages' ? 'financials.enrichment.manual.surveyPackages' : 'financials.enrichment.manual.survey'}" />
+            <g:form class="ui form" method="post" enctype="multipart/form-data" controller="survey" action="$actionName" params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">
+                <div class="${actionName == 'surveyCostItemsPackages' ? 'three' : 'two'} fields">
                     <div class="field">
                         <ui:select name="selectedCostItemElement" id="selectedCostItemElement" class="ui dropdown"
                                    from="${assignedCostItemElements}"
                                    optionKey="id"
                                    optionValue="value" />
                     </div>
+                    <g:if test="${actionName == 'surveyCostItemsPackages'}">
+                        <div class="field">
+                            <g:select name="selectedPackageID" id="selectedPackageID" class="ui dropdown"
+                            from="${assignedPackages}"
+                            optionKey="id"
+                            optionValue="name" />
+                        </div>
+                    </g:if>
                     <div class="field">
                         <div class="ui action input">
                             <input type="text" readonly="readonly"

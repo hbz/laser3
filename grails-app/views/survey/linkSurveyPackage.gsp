@@ -18,11 +18,9 @@
                      href="${createLink(action: 'show', controller: 'subscription', id: surveyConfig.subscription.id)}"/>
 </g:if>
 
-<laser:render template="nav"/>
-
 <ui:objectStatus object="${surveyInfo}" />
 
-<h2> <g:message code="surveyPackages.linkPackage"/>:</h2>
+<h2> <g:message code="surveyPackages.linkPackage.plural"/></h2>
 <br>
 <br>
 <g:link class="${Btn.SIMPLE} right floated" controller="survey" action="surveyPackages"
@@ -38,7 +36,7 @@
 
 <g:render template="/templates/survey/packages" model="[
         processController: 'survey',
-        processAction: 'linkSurveyPackage',
+        processAction: 'processLinkSurveyPackage',
         tmplShowCheckbox: editable,
         linkSurveyPackage: true,
         tmplConfigShow: ['lineNumber', 'name', 'status', 'titleCount', 'provider', 'platform', 'curatoryGroup', 'automaticUpdates', 'lastUpdatedDisplay', 'linkSurveyPackage']]"/>

@@ -32,7 +32,7 @@
 
 <g:render template="/templates/survey/vendors" model="[
         processController: 'survey',
-        processAction: 'surveyVendors',
+        processAction: 'processLinkSurveyVendor',
         tmplShowCheckbox: editable,
 
         tmplConfigShow: ['lineNumber', 'sortname', 'name', 'isWekbCurated', 'unLinkSurveyVendor']]"/>

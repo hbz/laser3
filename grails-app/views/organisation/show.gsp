@@ -655,6 +655,9 @@
                                                                             <div class="ui label">${typeName}</div>
                                                                             <g:each in="${publicAddresses}" var="a">
                                                                                 <g:if test="${a.org}">
+                                                                                    <g:if test="${a.preferredForSurvey}">
+                                                                                        <i class="${Icon.SURVEY} circular la-popup-tooltip" data-content="${message(code:'address.preferredForSurvey')}"></i>
+                                                                                    </g:if>
                                                                                     <laser:render template="/addressbook/address" model="${[
                                                                                             hideAddressType     : true,
                                                                                             address             : a,
