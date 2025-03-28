@@ -11,17 +11,21 @@
                 $("#createPropertyModal").remove();
 
                 $("#dynamicModalContainer").html(result);
+                let keyboardHandler = function(e) {
+                    if (e.keyCode === 27) {
+                        $('#createPropertyModal').modal('hide');
+                    }
+                };
                 $("#dynamicModalContainer .ui.modal").modal({
                     closable: false,
                     onVisible: function () {
+                        document.addEventListener('keyup', keyboardHandler);
                         r2d2.initDynamicUiStuff('#createPropertyModal');
                         r2d2.initDynamicXEditableStuff('#createPropertyModal');
                         $(".la-checkAllArea").each(function () {
                               if ($(this).find("input[name='propertyDefinition']").length > 0) {
-                                console.log("größer");
                                 $(this).find(".la-js-checkAll").parent('.segment').css("visibility", "visible");
                               } else {
-                                console.log("kleiner");
                                 $(this).find(".la-js-checkAll").parent('.segment').css("visibility", "hidden");
                               }
                             });
@@ -40,6 +44,7 @@
                           });
                     }
                 }).modal('show');
+
                 }
         });
     }
