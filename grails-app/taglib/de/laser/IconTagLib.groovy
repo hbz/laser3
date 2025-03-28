@@ -47,6 +47,9 @@ class IconTagLib {
             case 'database':
                 icon = 'icon bordered la-object-database'
                 break
+            case 'dev':
+                icon = 'icon code bordered inverted teal la-object-extended'
+                break
             case [ 'ebook', 'monograph' ]:
                 icon = 'icon bordered la-object-ebook'
                 break

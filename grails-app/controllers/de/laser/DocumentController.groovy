@@ -8,7 +8,6 @@ import de.laser.utils.CodeUtils
 import de.laser.config.ConfigMapper
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDConstants
-import de.laser.survey.SurveyConfig
 import de.laser.utils.LocaleUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
@@ -25,6 +24,7 @@ class DocumentController {
 
     AccessService accessService
     ContextService contextService
+    CryptoService cryptoService
     MessageSource messageSource
 
     @DebugInfo(isInstUser = [])
@@ -102,7 +102,8 @@ class DocumentController {
                                 type:       RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE),
                                 creator:    contextService.getUser(),
                                 owner:      contextService.getOrg(),
-                                server:     AppUtils.getCurrentServer()
+                                server:     AppUtils.getCurrentServer(),
+                                ckey:       cryptoService.generateCKey()
                         )
                         doc.save()
 
@@ -117,8 +118,9 @@ class DocumentController {
                                 folder.mkdirs()
                             }
                             targetFile = new File("${tfPath}/${tfName}")
-
                             uploadFile.transferTo(targetFile)
+
+                            cryptoService.encryptRawFile(targetFile, doc)
                         }
                         catch (Exception e) {
                             e.printStackTrace()

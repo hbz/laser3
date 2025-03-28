@@ -137,7 +137,7 @@
                             ${docctx.owner.filename}
                             <g:if test="${docctx.owner.ckey}">
                                 <span class="la-long-tooltip la-popup-tooltip" data-content="${message(code:'license.docs.table.encrypted')}">
-                                    <i class="icon award purple"></i>
+                                    <i class="icon award pink"></i>
                                 </span>
                             </g:if>
                         </td>

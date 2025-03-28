@@ -13,6 +13,10 @@ class DevController  {
     ContextService contextService
     LicenseService licenseService
 
+    @Secured(['ROLE_ADMIN'])
+    def index() {
+    }
+
     /**
      * @return the frontend view with sample area for frontend developing and showcase
      */

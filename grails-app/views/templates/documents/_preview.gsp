@@ -26,7 +26,7 @@
                 <div class="item">
                     <strong>${message(code:'license.docs.table.fileName')}:</strong> ${doc.filename}
                     <g:if test="${doc.ckey}">
-                        <span style="float:right;"><i class="icon award purple"></i>${message(code:'license.docs.table.encrypted')} </span>
+                        <span style="float:right;"><i class="icon award pink"></i>${message(code:'license.docs.table.encrypted')} </span>
                     </g:if>
                 </div>
                 <g:if test="${doc.type}">

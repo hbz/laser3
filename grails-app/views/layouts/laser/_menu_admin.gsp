@@ -59,16 +59,5 @@
         <div class="divider"></div>
         <ui:link addItemAttributes="true" controller="admin" action="missingPermantTitlesInSubs">${message(code:'menu.admin.missingPermantTitlesInSubs')}</ui:link>
         <ui:link addItemAttributes="true" controller="admin" action="packageLaserVsWekb">${message(code:'menu.admin.packageLaserVsWekb')}</ui:link>
-        <div class="divider"></div>
-
-        <div class="item" role="menuitem" aria-haspopup="true">
-            <div class="title">
-                <i class="icon code"></i> <span class="text">Developer</span> <i class="dropdown icon"></i>
-            </div>
-            <div class="menu" role="menu">
-                <ui:link addItemAttributes="true" controller="dev" action="frontend">Frontend</ui:link>
-                <ui:link addItemAttributes="true" controller="dev" action="klodav">klodav</ui:link>
-            </div>
-        </div>
     </div>
 </div>
