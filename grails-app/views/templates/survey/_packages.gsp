@@ -37,6 +37,12 @@
                  params="${params}"
                  max="${max}" total="${recordsCount}"/>
 </g:if>
+<g:elseif test="${initial && actionName == 'surveyPackages'}">
+    <br/>
+    <strong>
+        <g:message code="surveyPackages.addPackagesOverPencil"/>
+    </strong>
+</g:elseif>
 <g:else>
     <g:if test="${filterSet}">
         <br/><strong><g:message code="filter.result.empty.object"
