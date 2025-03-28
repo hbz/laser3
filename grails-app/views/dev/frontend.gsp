@@ -52,6 +52,13 @@
 
 </laser:htmlStart> %{-- </head><body>--}%
 
+<ui:breadcrumbs>
+    <ui:crumb message="menu.devDocs" controller="dev" action="index"/>
+    <ui:crumb text="Frontend for Developers" class="active"/>
+</ui:breadcrumbs>
+
+<ui:h1HeaderWithIcon text="Frontend for Developers" type="dev"/>
+
 <section id="example">
 
     %{-- COLORS  --}%

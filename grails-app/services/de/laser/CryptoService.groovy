@@ -56,7 +56,7 @@ class CryptoService {
             xcryptFile(inFile, outFile, Cipher.DECRYPT_MODE, ckey)
         }
         else {
-            log.debug'[decryptToTmpFile: FAILED] - copy as fallback'
+            log.debug'[decryptToTmpFile: FAILED] - no ckey - copy raw file'
             Files.copy(inFile.toPath(), outFile.toPath(), StandardCopyOption.REPLACE_EXISTING) // todo: ERMS-6382 FALLBACK
         }
         outFile
@@ -111,7 +111,7 @@ class CryptoService {
     }
 
     File getTempDirectory() {
-        File dir = new File(System.getProperty('java.io.tmpdir') + '/laser/docs')
+        File dir = new File(System.getProperty('java.io.tmpdir') + '/laser-docs')
         if (! dir.exists()) {
             dir.mkdirs()
         }

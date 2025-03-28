@@ -2,11 +2,11 @@
 <laser:htmlStart text="Playground: Markdown" />
 
 <ui:breadcrumbs>
-    <ui:crumb message="menu.admin" controller="admin" action="index"/>
+    <ui:crumb message="menu.devDocs" controller="dev" action="index"/>
     <ui:crumb text="Playground" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon text="Playground" type="admin"/>
+<ui:h1HeaderWithIcon text="Playground" type="dev"/>
 
 <g:render template="klodav/nav" />
 

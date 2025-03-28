@@ -96,6 +96,12 @@
                         <laser:render template="/layouts/laser/menu_yoda" />
                     </sec:ifAnyGranted>
 
+                    %{-- menu: devDocs --}%
+
+                    <sec:ifAnyGranted roles="ROLE_ADMIN">
+                        <laser:render template="/layouts/laser/menu_devDocs" />
+                    </sec:ifAnyGranted>
+
                     <div class="right menu la-right-menuPart">
 
                         %{-- menu: global search --}%
