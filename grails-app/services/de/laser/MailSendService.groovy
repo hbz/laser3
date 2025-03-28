@@ -370,7 +370,7 @@ class MailSendService {
 
             String emailReceiver = user.getEmail()
 
-            if(user.enabled) {
+            if(user.enabled && !user.accountExpired) {
 
                 surveyEntries.each { survey ->
                     try {
@@ -466,11 +466,10 @@ class MailSendService {
 
         if (surveyInfo.owner) {
             //Only User that approved
-            List<User> formalUserList = participationFinish ? User.findAllByFormalOrg(participationFinish) : []
+            List<User> formalUserList = participationFinish ? User.findAllByFormalOrgAndEnabledAndAccountExpired(participationFinish, true, false) : []
 
             //Only User with Notification by Email and for Surveys Start
             formalUserList.each { fu ->
-                if(fu.enabled) {
                     if (fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH) == RDStore.YN_YES &&
                             fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES) {
 
@@ -542,7 +541,6 @@ class MailSendService {
                             SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user.getDisplayName(), org: participationFinish.name, survey: surveyInfo.name])
                         }
                     }
-                }
             }
         }
     }
@@ -598,11 +596,10 @@ class MailSendService {
 
 
             //Only User that approved
-            List<User> formalUserList = surveyInfo.owner ? User.findAllByFormalOrg(surveyInfo.owner) : []
+            List<User> formalUserList = surveyInfo.owner ? User.findAllByFormalOrgAndEnabledAndAccountExpired(surveyInfo.owner, true, false) : []
 
             //Only User with Notification by Email and for Surveys Start
             formalUserList.each { fu ->
-                if(fu.enabled) {
                     if (fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH) == RDStore.YN_YES &&
                             fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES) {
 
@@ -658,7 +655,6 @@ class MailSendService {
                             SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user.getDisplayName(), org: participationFinish.name, survey: surveyInfo.name])
                         }
                     }
-                }
             }
         }
     }
@@ -676,7 +672,7 @@ class MailSendService {
             return
         }
 
-        if(user.enabled) {
+        if(user.enabled && !user.accountExpired) {
             MessageSource messageSource = BeanStore.getMessageSource()
             Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value.toString())
 
@@ -731,7 +727,7 @@ class MailSendService {
             log.error 'sendMailToUser failed due grails.mail.disabled = true'
             return
         }
-        if(user.enabled) {
+        if(user.enabled && !user.accountExpired) {
             model.serverURL = ConfigMapper.getGrailsServerURL()
 
             try {
