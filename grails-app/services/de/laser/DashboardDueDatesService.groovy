@@ -207,18 +207,18 @@ class DashboardDueDatesService {
 
         int userCount = 0, mailCount = 0
         try {
-            List<User> users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
+            List<User> users = User.findAllByEnabledAndAccountExpired(true, false)
             users.each { user ->
-                boolean userWantsEmailReminder = RDStore.YN_YES.equals(user.getSetting(UserSetting.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO).rdValue)
-                if (userWantsEmailReminder) {
-                    if (user.formalOrg) {
-                        List<DashboardDueDate> dashboardEntries = getDashboardDueDates(user)
-                        if (_sendEmail(user, user.formalOrg, dashboardEntries)) {
-                            mailCount++
+                    boolean userWantsEmailReminder = RDStore.YN_YES.equals(user.getSetting(UserSetting.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO).rdValue)
+                    if (userWantsEmailReminder) {
+                        if (user.formalOrg) {
+                            List<DashboardDueDate> dashboardEntries = getDashboardDueDates(user)
+                            if (_sendEmail(user, user.formalOrg, dashboardEntries)) {
+                                mailCount++
+                            }
+                            userCount++
                         }
-                        userCount++
                     }
-                }
             }
             flash.message += messageSource.getMessage('menu.admin.sendEmailsForDueDates.successful', null, locale)
         } catch (Exception e) {
