@@ -1583,6 +1583,9 @@ class SurveyController {
                 return
             }
         }else {
+            if(ctrlResult.result.error){
+                flash.error = ctrlResult.result.error
+            }
             ctrlResult.result
         }
     }

@@ -2593,7 +2593,7 @@ class SurveyService {
                         if (person && !SurveyPersonResult.findByParticipantAndSurveyConfigAndBillingPerson(participant, result.surveyConfig, true)) {
                             new SurveyPersonResult(participant: participant, surveyConfig: result.surveyConfig, person: person, billingPerson: true, owner: result.surveyInfo.owner).save()
                         }else {
-                            flash.error = message(code: 'person.preferredBillingPerson.fail')
+                            result.error = message(code: 'person.preferredBillingPerson.fail')
                         }
                     }
                     if (params.setPreferredBillingPerson == 'false') {
@@ -2608,7 +2608,7 @@ class SurveyService {
                 if (params.addressId && params.setAddress) {
                     if (params.setAddress == 'true') {
                         if(result.surveyOrg.address){
-                            flash.error = message(code: 'address.preferredForSurvey.fail')
+                            result.error = message(code: 'address.preferredForSurvey.fail')
                         }else {
                             result.surveyOrg.address = Address.get(Long.valueOf(params.addressId))
                         }
