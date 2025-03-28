@@ -185,7 +185,32 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItemPackage')}">
                 <th>
-                    ${message(code: 'surveyCostItems.label')}
+                    ${message(code: 'surveyCostItems.label')}:
+                        <g:if test="${actionName == 'surveyCostItemsPackages'}">
+                            <%
+                                def tmpParams2 = params.clone()
+                                tmpParams2.remove("sort")
+                            %>
+                            <g:if test="${sortOnCostItemsUp}">
+                                <g:link action="surveyCostItemsPackages"
+                                        params="${tmpParams2 + [sortOnCostItemsDown: true]}"><span
+                                        class="la-popup-tooltip"
+                                        data-position="top right"
+                                        data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
+                                    <i class="arrow down circle icon blue"></i>
+                                </span></g:link>
+                            </g:if>
+                            <g:else>
+                                <g:link action="surveyCostItemsPackages"
+                                        params="${tmpParams2 + [sortOnCostItemsUp: true]}"><span
+                                        class="la-popup-tooltip"
+                                        data-position="top right"
+                                        data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
+                                    <i class="arrow up circle icon blue"></i>
+                                </span></g:link>
+                            </g:else>
+                        </g:if>
+                    ${selectedCostItemElementID ? RefdataValue.get(selectedCostItemElementID).getI10n('value') : ''}
                 </th>
             </g:if>
 
@@ -813,9 +838,7 @@
                                                                                                                          surveyConfigID           : surveyConfig.id,
                                                                                                                          participant              : org.id,
                                                                                                                          costItem                 : costItem.id,
-                                                                                                                         selectedCostItemElementID: selectedCostItemElementID,
-                                                                                                                         selectedPackageID        : selectedPackageID,
-                                                                                                                         selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
+                                                                                                                         selectedCostItemElementID: selectedCostItemElementID])}"
                                                         role="button"
                                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                                     <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
@@ -842,9 +865,7 @@
                                         data-href="${g.createLink(action: 'editSurveyCostItem', params: [id                       : params.id,
                                                                                                          surveyConfigID           : surveyConfig.id,
                                                                                                          participant              : org.id,
-                                                                                                         selectedCostItemElementID: selectedCostItemElementID,
-                                                                                                         selectedPackageID        : selectedPackageID,
-                                                                                                         selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
+                                                                                                         selectedCostItemElementID: selectedCostItemElementID])}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                     <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
@@ -916,7 +937,7 @@
                                                                                                                          costItem                 : costItem.id,
                                                                                                                          selectedCostItemElementID: selectedCostItemElementID,
                                                                                                                          selectedPackageID        : selectedPackageID,
-                                                                                                                         selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
+                                                                                                                         selectPkg              : "true"])}"
                                                         role="button"
                                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                                     <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>
@@ -945,7 +966,7 @@
                                                                                                          participant              : org.id,
                                                                                                          selectedCostItemElementID: selectedCostItemElementID,
                                                                                                          selectedPackageID        : selectedPackageID,
-                                                                                                         selectedPkg              : actionName == 'surveyCostItemsPackages' ? true : ''])}"
+                                                                                                         selectPkg              : "true"])}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                     <i aria-hidden="true" class="${Icon.CMD.EDIT}"></i>

@@ -158,9 +158,26 @@
     <br/>
 </g:if>
 
+<g:if test="${survey.surveyConfigs[0].vendorSurvey}">
+    <g:set var="vendors"
+           value="${SurveyVendorResult.executeQuery('select svr.vendor from SurveyVendorResult svr where svr.participant = :participant and svr.surveyConfig = :surveyConfig', [participant: org, surveyConfig: survey.surveyConfigs[0]])}"/>
+    <strong><g:message code="surveyVendors.selectedVendor" locale="${language}"/>:</strong><br/>
+    <g:each in="${vendors}" var="vendor">${vendor.name}</g:each>
+    <br/>
+    <br/>
+</g:if>
+<g:if test="${survey.surveyConfigs[0].packageSurvey}">
+    <g:set var="pkgs"
+           value="${SurveyPackageResult.executeQuery('select spr.pkg from SurveyPackageResult spr where spr.participant = :participant and spr.surveyConfig = :surveyConfig', [participant: org, surveyConfig: survey.surveyConfigs[0]])}"/>
+    <strong><g:message code="surveyPackages.selectedPackages" locale="${language}"/>:</strong><br/>
+    <g:each in="${pkgs}" var="pkg"> - ${pkg.name}  <br/></g:each>
+    <br/>
+    <br/>
+</g:if>
+
 <strong>${RDStore.PRS_FUNC_SURVEY_CONTACT.getI10n('value', language)}:</strong><br/>
 <g:if test="${surveyContactMails}">
-    E-Mails: ${surveyContactMails.join('; ')}<br/>
+    E-Mail: ${surveyContactMails.join('; ')}<br/>
     <br/>
 </g:if>
 <g:each in="${surveyPersons}" var="person">
@@ -177,12 +194,12 @@
 <g:if test="${survey.surveyConfigs[0].invoicingInformation}">
     <g:set var="billingPersons"
            value="${SurveyPersonResult.executeQuery('select spr.person from SurveyPersonResult spr where spr.billingPerson = true and spr.participant = :participant and spr.surveyConfig = :surveyConfig', [participant: org, surveyConfig: survey.surveyConfigs[0]])}"/>
-    <g:set var="billingContactEmails" value="${Contact.executeQuery("select c.content, p.title, p.first_name, p.middle_name, p.last_name from Person p " +
+    <g:set var="billingContactEmails" value="${Contact.executeQuery("select c.content from Person p " +
             "join p.contacts c where p in (:persons) and c.contentType = :type",
             [persons: billingPersons, type: RDStore.CCT_EMAIL])}"/>
     <strong>${RDStore.PRS_FUNC_INVOICING_CONTACT.getI10n('value', language)}:</strong><br/>
     <g:if test="${billingContactEmails}">
-        E-Mails: ${billingContactEmails.join('; ')}<br/>
+        E-Mail: ${billingContactEmails.join('; ')}<br/>
         <br/>
     </g:if>
     <g:each in="${billingPersons}" var="person">
@@ -205,23 +222,6 @@
     <g:message code="surveyOrg.eInvoicePortal.label" locale="${language}"/>: ${surveyOrg.eInvoicePortal ? surveyOrg.eInvoicePortal.getI10n('value', language) : ''}<br/>
     <g:message code="surveyOrg.eInvoiceLeitwegId.label" locale="${language}"/>: ${surveyOrg.eInvoiceLeitwegId}<br/>
     <g:message code="surveyOrg.eInvoiceLeitkriterium.label" locale="${language}"/>: ${surveyOrg.eInvoiceLeitkriterium}<br/>
-    <br/>
-    <br/>
-</g:if>
-
-<g:if test="${survey.surveyConfigs[0].vendorSurvey}">
-    <g:set var="vendors"
-           value="${SurveyVendorResult.executeQuery('select svr.vendor from SurveyVendorResult svr where svr.participant = :participant and svr.surveyConfig = :surveyConfig', [participant: org, surveyConfig: survey.surveyConfigs[0]])}"/>
-    <strong><g:message code="surveyVendors.selectedVendor" locale="${language}"/>:</strong><br/>
-    <g:each in="${vendors}" var="vendor">${vendor.name}</g:each>
-    <br/>
-    <br/>
-</g:if>
-<g:if test="${survey.surveyConfigs[0].packageSurvey}">
-    <g:set var="pkgs"
-           value="${SurveyPackageResult.executeQuery('select spr.pkg from SurveyPackageResult spr where spr.participant = :participant and spr.surveyConfig = :surveyConfig', [participant: org, surveyConfig: survey.surveyConfigs[0]])}"/>
-    <strong><g:message code="surveyPackages.selectedPackages" locale="${language}"/>:</strong><br/>
-    <g:each in="${pkgs}" var="pkg"> - ${pkg.name}  <br/></g:each>
     <br/>
     <br/>
 </g:if>

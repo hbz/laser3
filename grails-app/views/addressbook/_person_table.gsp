@@ -84,7 +84,7 @@
     </g:if>
 </g:each>
         <g:if test="${showOptions}">
-            <th colspan="2" class="center aligned">
+            <th colspan="2" rowspan="2" class="center aligned">
                 <ui:optionsIcon />
             </th>
         </g:if>

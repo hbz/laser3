@@ -14,7 +14,7 @@
         <g:hiddenField name="surveyOrg" value="${surveyOrg.class.getName()}:${surveyOrg.id}"/>
     </g:if>
 </g:else>
-<g:hiddenField name="selectedPkg" value="${selectedPkg}"/>
+<g:hiddenField name="selectPkg" value="${selectPkg}"/>
 
 <div class="fields la-forms-grid">
     <div class="eight wide field">
@@ -145,7 +145,7 @@
     </fieldset> <!-- 1/2 field |  .la-account-currency -->
 
 </div><!-- three fields -->
-<g:if test="${selectedPkg}">
+<g:if test="${selectPkg == "true"}">
     <div class="field ">
         <div class="one fields la-forms-grid">
             <fieldset class="sixteen wide field">

@@ -2446,6 +2446,9 @@ class MyInstitutionController  {
         }else {
             withFormat {
                 html {
+                    if(result.error){
+                        flash.error = result.error
+                    }
                     result
                 }
             }

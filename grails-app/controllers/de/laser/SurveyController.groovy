@@ -24,6 +24,7 @@ import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.PdfUtils
 import de.laser.utils.SwissKnife
+import de.laser.wekb.Package
 import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import grails.converters.JSON
@@ -924,6 +925,43 @@ class SurveyController {
                 return
             }
         }else {
+            if(params.containsKey('costInformation')) {
+                CostItem.withTransaction {
+                    MultipartFile inputFile = request.getFile("costInformation")
+                    if(inputFile && inputFile.size > 0) {
+                        String filename = params.costInformation.originalFilename
+                        RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
+                        String encoding = UniversalDetector.detectCharset(inputFile.getInputStream())
+                        Package pkg = params.selectedPackageID ? Package.get(params.long('selectedPackageID')) : null
+                        if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"] && pkg) {
+                            ctrlResult.result.putAll(surveyService.financeEnrichment(inputFile, encoding, pickedElement, ctrlResult.result.surveyConfig, pkg))
+                        }
+                        if(ctrlResult.result.containsKey('wrongIdentifiers')) {
+                            //background of this procedure: the editor adding prices via file wishes to receive a "counter-file" which will then be sent to the provider for verification
+                            String dir = GlobalService.obtainTmpFileLocation()
+                            File f = new File(dir+"/${filename}_matchingErrors")
+                            ctrlResult.result.token = "${filename}_matchingErrors"
+                            String returnFile = exportService.generateSeparatorTableString(null, ctrlResult.result.wrongIdentifiers, '\t')
+                            FileOutputStream fos = new FileOutputStream(f)
+                            fos.withWriter { Writer w ->
+                                w.write(returnFile)
+                            }
+                            fos.flush()
+                            fos.close()
+                        }
+                        params.remove("costInformation")
+                    }
+                }
+            }
+            if(params.containsKey('selectedCostItemElement') && !ctrlResult.result.containsKey('wrongSeparator')) {
+                RefdataValue pickedElement = RefdataValue.get(params.selectedCostItemElement)
+                Package pkg = params.selectedPackageID ? Package.get(params.long('selectedPackageID')) : null
+                String query = 'select ci.id from CostItem ci where ci.pkg = :pkg and ci.costItemStatus != :status and ci.surveyOrg in (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = :surConfig) and ci.costItemElement = :element and (ci.costInBillingCurrency = 0 or ci.costInBillingCurrency = null)'
+
+                Set<CostItem> missing = CostItem.executeQuery(query, [pkg: pkg, status: RDStore.COST_ITEM_DELETED, surConfig: ctrlResult.result.surveyConfig, element: pickedElement])
+                ctrlResult.result.missing = missing
+            }
+
             ctrlResult.result
         }
 
@@ -953,6 +991,29 @@ class SurveyController {
         else {
                 flash.message = ctrlResult.result.message
                 ctrlResult.result
+        }
+    }
+
+    @DebugInfo(isInstEditor_denySupport = [], ctrlService = 1)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_denySupport()
+    })
+    def processLinkSurveyPackage() {
+        Map<String,Object> ctrlResult = surveyControllerService.processLinkSurveyPackage(params)
+        if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+            else {
+                flash.error = ctrlResult.result.error
+                ctrlResult.result
+            }
+        }
+        else {
+            ctrlResult.result
+            redirect(action: 'surveyPackages', id: ctrlResult.result.surveyInfo.id)
+            return
         }
     }
 
@@ -1583,6 +1644,9 @@ class SurveyController {
                 return
             }
         }else {
+            if(ctrlResult.result.error){
+                flash.error = ctrlResult.result.error
+            }
             ctrlResult.result
         }
     }
@@ -2300,7 +2364,7 @@ class SurveyController {
         ctx.contextService.isInstEditor_denySupport( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> copySurveyCostItemPackage() {
-        Map<String,Object> ctrlResult = surveyControllerService.surveyCostItemPackage(params)
+        Map<String,Object> ctrlResult = surveyControllerService.copySurveyCostItemPackage(params)
         if(ctrlResult.status == SurveyControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {
                 response.sendError(401)
@@ -2778,7 +2842,7 @@ class SurveyController {
         result.mode = result.costItem ? "edit" : ""
         result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID) : null
         result.selectedPackageID = params.selectedPackageID ? Long.valueOf(params.selectedPackageID) : null
-        result.selectedPkg = params.selectedPkg
+        result.selectPkg = params.selectPkg
         result.taxKey = result.costItem ? result.costItem.taxKey : null
         result.idSuffix = "edit_${result.costItem ? result.costItem.id : result.participant.id}"
         result.modalID = 'surveyCostItemModal'
@@ -2825,8 +2889,8 @@ class SurveyController {
             result.surveyOrgList = orgList.isEmpty() ? [] : SurveyOrg.findAllByOrgInListAndSurveyConfig(orgList, result.surveyConfig)
         }
 
-        if(params.selectedPkg){
-            result.selectedPkg = true
+        if(params.selectPkg){
+            result.selectPkg = "true"
         }
 
         result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID) : null
