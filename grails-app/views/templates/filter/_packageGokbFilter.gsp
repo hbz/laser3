@@ -2,6 +2,16 @@
 <ui:filter>
     <g:form action="${actionName}" controller="${controllerName}" params="${params}" method="get" class="ui small form clearing">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
+        <g:if test="${participant}">
+            <input type="hidden" name="participant" value="${participant.id}"/>
+            <g:hiddenField name="participant" value="${participant.id}"/>
+        </g:if>
+        <g:if test="${params.viewTab}">
+            <g:hiddenField name="viewTab" value="${params.viewTab}"/>
+        </g:if>
+        <g:if test="${params.subTab}">
+            <g:hiddenField name="subTab" value="${params.subTab}"/>
+        </g:if>
         <g:each in="${tmplConfigShow}" var="row">
             <g:set var="numberOfFields" value="${row.size()}"/>
             <g:if test="${numberOfFields > 1}">
