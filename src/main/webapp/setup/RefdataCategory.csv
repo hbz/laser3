@@ -4,6 +4,7 @@ access.limitation,Zugangsbegrenzung,Access limitation
 access.point.type,Access Point Type,Access Point Type
 accessibility.compliance,Accessibility Compliance,Grad der Barrierefreiheit
 address.type,Art der Adresse,Address Type
+agreement,Zustimmung,Agreement
 archiving.agency,Archivierungsplattform,Archiving Agency
 authority,Autorität,Authority
 billingTime, Rechnungzeitpunkt, Time of billing
@@ -33,6 +34,7 @@ contact.content.type,Kontakttyp,Type of Contact
 contact.type,Art des Kontaktes,Contact Type
 content.option.asme,Gewählte Inhaltsoption ASME DC,Chosen content option ASME DC
 content.option.asme.addition,Gewählte Inhaltsoption ASME DC Zuwahl,Chosen content option ASME DC Archive
+content.option.asme.addition.new,Gewählte Inhaltsoption ASME DC Zuwahl NEU,Chosen content option ASME DC Zuwahl NEU
 content.option.london.journals,Gewählte Inhaltsoption RS London Journals,Chosen content option RS London Journals
 cost.configuration,Kostenkonfiguration,Cost configuration
 cost.information.availability.book,Informationsversorgungskosten Bücher,TODO ERMS-6310
