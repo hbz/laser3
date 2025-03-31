@@ -18,9 +18,12 @@ import java.security.spec.KeySpec
 @Transactional
 class CryptoService {
 
-    public final static String ALGORITHM_CIPHER = 'AES/CBC/PKCS5Padding'
-    public final static String ALGORITHM_SKF    = 'PBKDF2WithHmacSHA256'
-    public final static String ALGORITHM_SK     = 'AES'
+    public final static String ALGORITHM_SK         = 'AES'
+    public final static String ALGORITHM_RND        = 'PBKDF2WithHmacSHA256'
+    public final static String ALGORITHM_XFORM      = 'AES/CBC/PKCS5Padding'
+
+    public final static String DEFAULT_PASSPHRASE   = 'd3f4Ul7_P4zzphr4Z3'
+    public final static String DEFAULT_TMP_DIR      = '/laser-docs'
 
     boolean encryptRawFile(File rawFile, Doc doc) {
         log.debug '[encryptRawFile] ' + rawFile.toPath() + ', doc #' + doc.id
@@ -63,11 +66,11 @@ class CryptoService {
     }
 
     void xcryptFile(File inFile, File outFile, int cipherMode, String ckey) {
-        String passphrase = ConfigMapper.getDocumentStorageKey()
+        String passphrase = ConfigMapper.getDocumentStorageKey() ?: DEFAULT_PASSPHRASE
         String salt       = ckey.take(32)
         String iv         = ckey.takeRight(16)
 
-        SecretKeyFactory factory = SecretKeyFactory.getInstance(ALGORITHM_SKF)
+        SecretKeyFactory factory = SecretKeyFactory.getInstance(ALGORITHM_RND)
         KeySpec spec    = new PBEKeySpec(passphrase.toCharArray(), salt.getBytes(), 65536, 256)
         SecretKey key   = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), ALGORITHM_SK)
 
@@ -77,7 +80,7 @@ class CryptoService {
 
         IvParameterSpec ivspec = new IvParameterSpec(iv.getBytes())
 
-        Cipher cipher = Cipher.getInstance(ALGORITHM_CIPHER)
+        Cipher cipher = Cipher.getInstance(ALGORITHM_XFORM)
         cipher.init(cipherMode, key, ivspec)
 
         FileInputStream fis  = new FileInputStream(inFile)
@@ -111,7 +114,7 @@ class CryptoService {
     }
 
     File getTempDirectory() {
-        File dir = new File(System.getProperty('java.io.tmpdir') + '/laser-docs')
+        File dir = new File(System.getProperty('java.io.tmpdir') + DEFAULT_TMP_DIR)
         if (! dir.exists()) {
             dir.mkdirs()
         }
