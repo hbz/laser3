@@ -65,7 +65,7 @@
                     ${i + 1}
                 </td>
                 <td>
-                    <g:if test="${property?.tenant && property?.tenant.id == institution.id}">
+                    <g:if test="${property?.tenant && property?.tenant.id == contextService.getOrg().id}">
                         <ui:xEditable owner="${property}" field="name_${SUBSTITUTE}" type="textarea"/>
                         <i class='${Icon.PROP.IS_PRIVATE}'></i>
                     </g:if>
@@ -76,7 +76,7 @@
 
                 <td>
 
-                    <g:if test="${property?.tenant && property?.tenant.id == institution.id}">
+                    <g:if test="${property?.tenant && property?.tenant.id == contextService.getOrg().id}">
                         <ui:xEditable owner="${property}" field="expl_${SUBSTITUTE}" type="textarea"/>
                     </g:if>
                     <g:else>
@@ -99,8 +99,8 @@
                     </g:if>
                 </td>
                 <td class="x">
-                    <g:if test="${property.countUsages() == 0 && property?.tenant?.id == institution?.id}">
-                        <g:link action="actionsForSurveyProperty" id="${params.id}" params="[deleteId: property?.id, actionForSurveyProperty: 'deleteSurveyProperty']"
+                    <g:if test="${property.countUsages() == 0 && property.tenant?.id == contextService.getOrg().id}">
+                        <g:link action="actionsForSurveyProperty" id="${params.id}" params="[deleteId: property.id, actionForSurveyProperty: 'deleteSurveyProperty']"
                                 class="${Btn.ICON.NEGATIVE_CONFIRM}"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.property", args: [property.getI10n('name')])}"
                                 data-confirm-term-how="delete"

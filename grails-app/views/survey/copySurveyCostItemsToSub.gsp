@@ -96,7 +96,7 @@
 
                 <tr class="">
                     <td>
-                        <g:if test="${participant.surveyCostItem && !CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(participant.newSub, institution, selectedCostItemElement, RDStore.COST_ITEM_DELETED)}">
+                        <g:if test="${participant.surveyCostItem && !CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNull(participant.newSub, contextService.getOrg(), selectedCostItemElement, RDStore.COST_ITEM_DELETED)}">
                             <g:checkBox name="selectedSurveyCostItem" value="${participant.surveyCostItem.id}" checked="false"/>
                         </g:if>
                     </td>
@@ -157,7 +157,7 @@
                         <g:if test="${participant.newSub}">
                             <table class="ui very basic compact table">
                                 <tbody>
-                                <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, institution, selectedCostItemElement, RDStore.COST_ITEM_DELETED)}"
+                                <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqual(participant.newSub, contextService.getOrg(), selectedCostItemElement, RDStore.COST_ITEM_DELETED)}"
                                         var="costItemParticipantSub">
                                     <tr>
                                         <td>

@@ -129,7 +129,7 @@
 
                     <tr class="">
                         <td>
-                            <g:if test="${participant.surveyCostItem && !CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNotNull(participant.newSub, institution, selectedCostItemElement, RDStore.COST_ITEM_DELETED)}">
+                            <g:if test="${participant.surveyCostItem && !CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkgIsNotNull(participant.newSub, contextService.getOrg(), selectedCostItemElement, RDStore.COST_ITEM_DELETED)}">
                                 <g:checkBox name="selectedSurveyCostItemPackage" value="${participant.surveyCostItem.id}"
                                             checked="false"/>
                             </g:if>
@@ -164,7 +164,7 @@
                             <g:if test="${participant.oldSub}">
                                 <table class="ui very basic compact table">
                                     <tbody>
-                                    <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkg(participant.oldSub, institution, selectedCostItemElement, RDStore.COST_ITEM_DELETED, pkg)}"
+                                    <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkg(participant.oldSub, contextService.getOrg(), selectedCostItemElement, RDStore.COST_ITEM_DELETED, pkg)}"
                                             var="costItemParticipantSub">
                                         <tr>
                                             <td>
@@ -244,7 +244,7 @@
                             <g:if test="${participant.newSub}">
                                 <table class="ui very basic compact table">
                                     <tbody>
-                                    <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkg(participant.newSub, institution, selectedCostItemElement, RDStore.COST_ITEM_DELETED, pkg)}"
+                                    <g:each in="${CostItem.findAllBySubAndOwnerAndCostItemElementAndCostItemStatusNotEqualAndPkg(participant.newSub, contextService.getOrg(), selectedCostItemElement, RDStore.COST_ITEM_DELETED, pkg)}"
                                             var="costItemParticipantSuccessorSub">
 
                                         <tr>
