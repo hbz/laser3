@@ -97,9 +97,8 @@
                                     </g:if>
                                 </td>
 
-                                <%-- delivers an enormous set of cost items not related to the survey and blowing up the view so that it crashes; TODO ask Moe!
                                 <g:set var="surveyCostItems" scope="request"
-                                       value="${CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, costItem.costItemElement)}"/>--%>
+                                       value="${costItem.costItemElement && surveyOrg ? CostItem.findAllBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, costItem.costItemElement) : null}"/>
 
 
                                 <g:if test="${surveyCostItems && !(costItem.costItemElement in (costItemElementsNotInSurveyCostItems))}">

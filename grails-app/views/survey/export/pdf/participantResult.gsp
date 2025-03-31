@@ -105,7 +105,7 @@
                                                                                 subscription       : subscription,
                                                                                 visibleProviders: providerRoles,
                                                                                 surveyResults      : surveyResults,
-                                                                                institution: institution,
+                                                                                participant: participant,
                                                                                 ownerView: ownerView]"/>
 </g:if>
 
@@ -115,7 +115,7 @@
                                                                            subscription       : surveyConfig.subscription,
                                                                            tasks              : tasks,
                                                                            visibleProviders: providerRoles,
-                                                                           institution: institution,
+                                                                           participant: participant,
                                                                            ownerView: ownerView]"/>
 </g:if>
 
@@ -126,7 +126,7 @@
                                                                                 subscription       : subscription,
                                                                                 visibleProviders: providerRoles,
                                                                                 surveyResults      : surveyResults,
-                                                                                institution: institution,
+                                                                                participant: participant,
                                                                                 ownerView: ownerView]"/>
 
     <g:render template="/templates/survey/export/entitlementSurveyPDF" model="[countSelectedIEs: countSelectedIEs,

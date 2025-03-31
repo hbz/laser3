@@ -9,7 +9,7 @@
 <g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id, RDStore.SURVEY_TYPE_TITLE_SELECTION.id]}">
 
     <g:set var="surveyPackages"
-           value="${SurveyPackageResult.executeQuery("select spr.pkg from SurveyPackageResult spr where spr.participant = :participant and spr.surveyConfig = :surveyConfig", [participant: institution, surveyConfig: surveyConfig])}"/>
+           value="${SurveyPackageResult.executeQuery("select spr.pkg from SurveyPackageResult spr where spr.participant = :participant and spr.surveyConfig = :surveyConfig", [participant: participant, surveyConfig: surveyConfig])}"/>
 
     <g:set var="costItemsSurvey"
            value="${surveyOrg && surveyPackages ? CostItem.findAllBySurveyOrgAndPkgInList(surveyOrg, surveyPackages) : null}"/>
@@ -21,7 +21,7 @@
 
     <% Set<RefdataValue> costItemElementsNotInSurveyCostItems = [] %>
 
-    <g:if test="${surveyInfo.owner.id != institution.id && (costItemsSubsc || costItemsSurvey)}">
+    <g:if test="${surveyInfo.owner.id != participant.id && (costItemsSubsc || costItemsSurvey)}">
 
         <div class="ui card la-time-card">
 
@@ -263,12 +263,12 @@
 
 <g:if test="${surveyInfo.type.id == RDStore.SURVEY_TYPE_INTEREST.id}">
     <g:set var="surveyPackages"
-           value="${SurveyPackageResult.executeQuery("select spr.pkg from SurveyPackageResult spr where spr.participant = :participant and spr.surveyConfig = :surveyConfig", [participant: institution, surveyConfig: surveyConfig])}"/>
+           value="${SurveyPackageResult.executeQuery("select spr.pkg from SurveyPackageResult spr where spr.participant = :participant and spr.surveyConfig = :surveyConfig", [participant: participant, surveyConfig: surveyConfig])}"/>
 
     <g:set var="costItemsSurvey"
            value="${surveyOrg && surveyPackages ? CostItem.findAllBySurveyOrgAndPkgInList(surveyOrg, surveyPackages) : null}"/>
 
-    <g:if test="${surveyInfo.owner.id != institution.id && costItemsSurvey}">
+    <g:if test="${surveyInfo.owner.id != participant.id && costItemsSurvey}">
 
         <div class="ui card la-time-card">
 

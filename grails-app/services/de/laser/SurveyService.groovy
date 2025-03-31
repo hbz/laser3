@@ -24,6 +24,7 @@ import de.laser.stats.Counter5ApiSource
 import de.laser.stats.Counter5Report
 import de.laser.storage.BeanStore
 import de.laser.storage.PropertyStore
+import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigPackage
@@ -2499,7 +2500,7 @@ class SurveyService {
 
 
     Map participantResultGenerics(Map result, Org participant, GrailsParameterMap params){
-
+        result.participant = participant
         if (params.viewTab == 'overview') {
             if (result.surveyConfig.subscription) {
                 result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionForNonHiddenSubscriber(participant)
@@ -2761,6 +2762,8 @@ class SurveyService {
                 }
             }
 
+            result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
+
             params.subTab = params.subTab ?: 'allPackages'
 
             if (result.surveyConfig.surveyPackages) {
@@ -2807,8 +2810,8 @@ class SurveyService {
                 }
             }
 
+            result.propList    = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.VEN_PROP], contextService.getOrg())
             params.subTab = params.subTab ?: 'allVendors'
-
 
             List configVendorIds
             if (params.subTab == 'allVendors') {
@@ -2827,6 +2830,32 @@ class SurveyService {
 
             params.ids = configVendorIds
             result.putAll(vendorService.getWekbVendors(params))
+
+            if (params.isMyX) {
+                List<String> xFilter = params.list('isMyX')
+                Set<Long> f1Result = [], f2Result = []
+                boolean   f1Set = false, f2Set = false
+                result.currentVendorIdList = Vendor.executeQuery('select vr.vendor.id from VendorRole vr, OrgRole oo join oo.sub s where s = vr.subscription and oo.org = :context and s.status = :current', [current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()])
+                if (xFilter.contains('ismyx_exclusive')) {
+                    f1Result.addAll( result.vendorTotal.findAll { result.currentVendorIdList.contains( it.id ) }.collect{ it.id } )
+                    f1Set = true
+                }
+                if (xFilter.contains('ismyx_not')) {
+                    f1Result.addAll( result.vendorTotal.findAll { ! result.currentVendorIdList.contains( it.id ) }.collect{ it.id }  )
+                    f1Set = true
+                }
+                if (xFilter.contains('wekb_exclusive')) {
+                    f2Result.addAll( result.vendorTotal.findAll { it.gokbId != null && it.gokbId in result.wekbRecords.keySet() }.collect{ it.id } )
+                    f2Set = true
+                }
+                if (xFilter.contains('wekb_not')) {
+                    f2Result.addAll( result.vendorTotal.findAll { it.gokbId == null }.collect{ it.id }  )
+                    f2Set = true
+                }
+
+                if (f1Set) { result.vendorTotal = result.vendorTotal.findAll { f1Result.contains(it.id) } }
+                if (f2Set) { result.vendorTotal = result.vendorTotal.findAll { f2Result.contains(it.id) } }
+            }
 
         }
 

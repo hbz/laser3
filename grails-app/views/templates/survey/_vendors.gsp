@@ -6,6 +6,13 @@
         <g:if test="${params.viewTab}">
             <g:hiddenField name="viewTab" value="${params.viewTab}"/>
         </g:if>
+        <g:if test="${participant}">
+            <input type="hidden" name="participant" value="${participant.id}"/>
+            <g:hiddenField name="participant" value="${participant.id}"/>
+        </g:if>
+        <g:if test="${params.subTab}">
+            <g:hiddenField name="subTab" value="${params.subTab}"/>
+        </g:if>
         <laser:render template="/templates/filter/vendorFilter"
                       model="[
                               tmplConfigShow: [['name'], ['supportedLibrarySystems', 'electronicBillings', 'invoiceDispatchs'], ['property&value', 'isMyX'], ['providers']],
