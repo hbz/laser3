@@ -12,6 +12,7 @@ class RDConstants {
     public static final String ACCESS_POINT_TYPE         = 'access.point.type'
     public static final String ACCESSIBILITY_COMPLIANCE  = 'accessibility.compliance'
     public static final String ADDRESS_TYPE              = 'address.type'
+    public static final String AGREEMENT                 = 'agreement'
     public static final String ARCHIVING_AGENCY          = 'archiving.agency'
     public static final String AUTHORITY                 = 'authority'
 

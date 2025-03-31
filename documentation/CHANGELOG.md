@@ -6,8 +6,14 @@
 
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
+     
+6389    31.03.2025  dev     3.5         Moe     Bug         Filter, die mit Umfragen-Teilnehmer zu tun haben, anpassen
 
 6405    31.03.2025  dev     3.5         Moe     Bug         500er beim Aufrufen der Paketumfrage als Einrichtung
+
+6397    31.03.2025  dev     3.5         Andreas Feature     Neues Umfragemerkmal Vertraulichkeit aufgenommen
+
+5945    31.03.2025  dev     3.5         Andreas Feature     Neues Umfrage- und Lizenzmerkmal ASME Zuwahl neu aufgenommen 
 
 6388    27.03.2025  dev     3.5         Moe     Feature     Paket-Umfrage Verbesserungen
 
