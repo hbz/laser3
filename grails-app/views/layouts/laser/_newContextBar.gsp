@@ -164,7 +164,7 @@
 
                 <g:if test="${linkifyMap || subscription.instanceOf}">
                     <div class="item la-cb-action-ext">
-                        <div class="ui simple dropdown button icon">
+                        <div class="ui simple dropdown clearable button icon">
                             <i class="${Icon.SYM.LINKED_OBJECTS}"></i>
                             <div class="menu">
                                 <g:if test="${subscription.instanceOf}">

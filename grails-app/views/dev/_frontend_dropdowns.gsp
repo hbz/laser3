@@ -55,7 +55,7 @@
     </div>
 </div>
 <!-- START Example with form selection -->
-<div class="dropdown example">
+<div class="dropdown clearable example">
 
     <div class="html ui top attached segment">
         <ui>
@@ -94,8 +94,8 @@
 </div>
 <!-- STOP Example with form selection -->
 
-<!-- START Example search dropdown -->
-<div class="dropdown example">
+<!-- START Example search dropdown clearable -->
+<div class="dropdown clearable example">
 
     <div class="html ui top attached segment">
         <ui>
@@ -131,10 +131,10 @@
     </div>
 
 </div>
-<!-- STOP Example search dropdown -->
+<!-- STOP Example search dropdown clearable -->
 
-<!-- START Example dropdown in filters -->
-<div class="dropdown example">
+<!-- START Example dropdown clearable in filters -->
+<div class="dropdown clearable example">
 
     <div class="html ui top attached segment">
         <ui>
@@ -186,10 +186,10 @@
     </div>
 
 </div>
-<!-- STOP Example dropdown in filters -->
+<!-- STOP Example dropdown clearable in filters -->
 
 <!-- START Example with no form selection -->
-<div class="dropdown example">
+<div class="dropdown clearable example">
 
     <div class="html ui top attached segment">
         <ui>
@@ -205,7 +205,7 @@
                     <i aria-hidden="true" class="${Icon.PROP.IS_PRIVATE}"></i> = Mein Merkmal
                 </div>
             </label>
-            <div class="ui search selection dropdown ">
+            <div class="ui search selection dropdown clearable ">
                 <input type="hidden" name="filterPropDef">
                 <i aria-hidden="true" class="dropdown icon"></i>
                 <div class="default text">Bitte auswählen</div>

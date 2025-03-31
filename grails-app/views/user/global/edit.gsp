@@ -257,7 +257,7 @@
                                                         <div class="ui fields">
                                                             <div class="field">
                                                                 <g:select from="${Role.findAllByRoleType('global')}"
-                                                                          class="ui dropdown fluid"
+                                                                          class="ui dropdown clearable fluid"
                                                                           name="role"
                                                                           optionKey="${{ it.id }}"
                                                                           optionValue="${{ it.getI10n('authority') }}"

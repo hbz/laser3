@@ -1464,7 +1464,7 @@
                 select += '<div class="item" data-value="' + optionValue + '">'+ count + ': ' + optionText + '</div>';
             }
 
-            select = ' <div class="ui fluid search selection dropdown la-filterProp">' +
+            select = ' <div class="ui fluid search selection dropdown clearable la-filterProp">' +
     '   <input type="hidden" id="subscription" name="targetSubscriptionId">' +
     '   <i class="dropdown icon"></i>' +
     '   <div class="default text">${message(code: 'default.select.choose.label')}</div>' +
