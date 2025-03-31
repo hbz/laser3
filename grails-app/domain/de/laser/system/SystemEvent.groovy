@@ -37,6 +37,8 @@ class SystemEvent {
             'BOOTSTRAP_STARTUP'             : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'CAJ_JOB_START'                 : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'CAJ_JOB_COMPLETE'              : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
+            'CRYPTO_DECRYPT_ERROR'          : [category: CATEGORY.OTHER,   relevance: RELEVANCE.WARNING],
+            'CRYPTO_ENCRYPT_ERROR'          : [category: CATEGORY.OTHER,   relevance: RELEVANCE.WARNING],
             'DBDD_JOB_START'                : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'DBDD_JOB_COMPLETE'             : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'DBDD_JOB_IGNORE'               : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.WARNING],

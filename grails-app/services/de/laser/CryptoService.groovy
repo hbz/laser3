@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.config.ConfigMapper
+import de.laser.system.SystemEvent
 import de.laser.utils.RandomUtils
 import grails.gorm.transactions.Transactional
 
@@ -66,43 +67,57 @@ class CryptoService {
     }
 
     void xcryptFile(File inFile, File outFile, int cipherMode, String ckey) {
-        String passphrase = ConfigMapper.getDocumentStorageKey() ?: DEFAULT_PASSPHRASE
-        String salt       = ckey.take(32)
-        String iv         = ckey.takeRight(16)
 
-        SecretKeyFactory factory = SecretKeyFactory.getInstance(ALGORITHM_RND)
-        KeySpec spec    = new PBEKeySpec(passphrase.toCharArray(), salt.getBytes(), 65536, 256)
-        SecretKey key   = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), ALGORITHM_SK)
+        try {
+            String passphrase = ConfigMapper.getDocumentStorageKey() ?: DEFAULT_PASSPHRASE
+            String salt       = ckey.take(32)
+            String iv         = ckey.takeRight(16)
 
-//        byte[] iv = new byte[16]
-//        new SecureRandom().nextBytes(iv)
-//        IvParameterSpec ivspec = new IvParameterSpec(iv)
+            SecretKeyFactory factory = SecretKeyFactory.getInstance(ALGORITHM_RND)
+            KeySpec spec    = new PBEKeySpec(passphrase.toCharArray(), salt.getBytes(), 65536, 256)
+            SecretKey key   = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), ALGORITHM_SK)
 
-        IvParameterSpec ivspec = new IvParameterSpec(iv.getBytes())
+    //        byte[] iv = new byte[16]
+    //        new SecureRandom().nextBytes(iv)
+    //        IvParameterSpec ivspec = new IvParameterSpec(iv)
 
-        Cipher cipher = Cipher.getInstance(ALGORITHM_XFORM)
-        cipher.init(cipherMode, key, ivspec)
+            IvParameterSpec ivspec = new IvParameterSpec(iv.getBytes())
 
-        FileInputStream fis  = new FileInputStream(inFile)
-        FileOutputStream fos = new FileOutputStream(outFile)
+            Cipher cipher = Cipher.getInstance(ALGORITHM_XFORM)
+            cipher.init(cipherMode, key, ivspec)
 
-        byte[] buffer = new byte[64]
-        int bytesRead
+            FileInputStream fis  = new FileInputStream(inFile)
+            FileOutputStream fos = new FileOutputStream(outFile)
 
-        while ((bytesRead = fis.read(buffer)) != -1) {
-            byte[] output = cipher.update(buffer, 0, bytesRead)
-            if (output != null) {
-                fos.write(output)
+            byte[] buffer = new byte[64]
+            int bytesRead
+
+            while ((bytesRead = fis.read(buffer)) != -1) {
+                byte[] output = cipher.update(buffer, 0, bytesRead)
+                if (output != null) {
+                    fos.write(output)
+                }
+            }
+
+            byte[] outBytes = cipher.doFinal()
+            if (outBytes != null) {
+                fos.write(outBytes)
+            }
+
+            fis.close()
+            fos.close()
+        }
+        catch (Exception e) {
+            log.error e.toString()
+
+            String pck = ckey.take(4) + '..' + ckey.takeRight(4)
+            if (cipherMode == Cipher.DECRYPT_MODE) {
+                SystemEvent.createEvent('CRYPTO_DECRYPT_ERROR', ['error': e.toString(), file: inFile.getName(), ckey: pck])
+            }
+            if (cipherMode == Cipher.ENCRYPT_MODE) {
+                SystemEvent.createEvent('CRYPTO_ENCRYPT_ERROR', ['error': e.toString(), file: inFile.getName(), ckey: pck])
             }
         }
-
-        byte[] outBytes = cipher.doFinal()
-        if (outBytes != null) {
-            fos.write(outBytes)
-        }
-
-        fis.close()
-        fos.close()
     }
 
     boolean validateFiles(File aFile, File bFile) {
