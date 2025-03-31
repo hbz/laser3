@@ -2,12 +2,12 @@
 <g:set bean="genericOIDService" var="genericOIDService"/>
 <g:set bean="gokbService" var="gokbService"/>
 <g:set var="surveyOrg"
-       value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
+       value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant)}"/>
 
 <g:if test="${ownerView && surveyOrg}">
     <dl>
         <dt>
-            ${message(code: 'surveyOrg.ownerComment.label', args: [institution.sortname])}
+            ${message(code: 'surveyOrg.ownerComment.label', args: [participant.sortname])}
         </dt>
         <dd>
             ${surveyOrg.ownerComment}
@@ -435,7 +435,7 @@
                     </g:if>
                 </td>
                 <g:set var="surveyOrg"
-                       value="${SurveyOrg.findBySurveyConfigAndOrg(surveyResult.surveyConfig, institution)}"/>
+                       value="${SurveyOrg.findBySurveyConfigAndOrg(surveyResult.surveyConfig, participant)}"/>
 
                 <g:if test="${surveyResult.surveyConfig.subSurveyUseForTransfer && surveyOrg && surveyOrg.existsMultiYearTerm()}">
                     <td>

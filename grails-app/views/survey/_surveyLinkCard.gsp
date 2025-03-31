@@ -77,12 +77,12 @@
                             <g:each in="${surveyLinks.sort { it.targetSurvey.name }}" var="surveyLink">
                                 <g:if test="${surveyLink.targetSurvey.status != RDStore.SURVEY_IN_PROCESSING}">
                                     <%
-                                        boolean surveyOrgFound = SurveyOrg.findAllByOrgAndSurveyConfigInList(institution, surveyLink.targetSurvey.surveyConfigs).size() > 0
+                                        boolean surveyOrgFound = SurveyOrg.findAllByOrgAndSurveyConfigInList(participant, surveyLink.targetSurvey.surveyConfigs).size() > 0
                                         boolean existsMultiYearTerm = false
                                         SurveyConfig targetSurveyConfig = surveyLink.targetSurvey.surveyConfigs[0]
                                         Subscription sub = targetSurveyConfig.subscription
                                         if (sub && !targetSurveyConfig.pickAndChoose && targetSurveyConfig.subSurveyUseForTransfer) {
-                                            Subscription subChild = sub.getDerivedSubscriptionForNonHiddenSubscriber(institution)
+                                            Subscription subChild = sub.getDerivedSubscriptionForNonHiddenSubscriber(participant)
 
                                             if (subChild && subChild.isCurrentMultiYearSubscriptionNew()) {
                                                 existsMultiYearTerm = true
