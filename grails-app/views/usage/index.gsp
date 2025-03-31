@@ -16,7 +16,7 @@
         <div class="three fields">
             <div class="field">
                 <label for="supplier">${message(code: 'platform.label')}</label>
-                <g:select class="ui dropdown" id="supplier" name="supplier"
+                <g:select class="ui dropdown clearable " id="supplier" name="supplier"
                               from="${providerList}"
                               optionKey="id"
                               optionDisabled="optionDisabled"
@@ -26,7 +26,7 @@
             </div>
             <div class="field">
                 <label for="institution">${message(code: 'default.usage.adminPage.institutionLabel')}</label>
-                <g:select class="ui dropdown" id="institution" name="institution"
+                <g:select class="ui dropdown clearable " id="institution" name="institution"
                           from="${institutionList}"
                           optionKey="id"
                           optionValue="name"

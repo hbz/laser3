@@ -18,7 +18,7 @@
                     <g:select id="idns" name="idns"
                               from="${idnsPreset}" optionKey="id" optionValue="ns"
                               value="${params.idns}"
-                              class="ui dropdown"
+                              class="ui dropdown clearable "
                               noSelection="${['' : message(code:'default.select.choose.label')]}"
                     />
                 </div>

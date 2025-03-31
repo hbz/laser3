@@ -39,7 +39,7 @@
             <div class="field">
                 <label><g:message code="financials.costItemElement"/></label>
                 <g:if test="${costItemElements}">
-                    <ui:select name="newCostItemElement" id="newCostItemElement_${idSuffix}" class="ui fluid dropdown"
+                    <ui:select name="newCostItemElement" id="newCostItemElement_${idSuffix}" class="ui fluid dropdown clearable "
                                   from="${costItemElements.collect { ciec -> ciec.costItemElement }}"
                                   optionKey="id"
                                   optionValue="value"

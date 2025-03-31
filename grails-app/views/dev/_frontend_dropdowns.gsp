@@ -5,7 +5,7 @@
     <div class="three wide fields">
         <div class="field">
             <label>Sortierung</label>
-            <div class="ui selection icon dropdown">
+            <div class="ui selection icon dropdown clearable ">
                 <i class="dropdown icon"></i>
                 <div class="default text">Bitte auswählen</div>
                 <div class="menu">
@@ -71,7 +71,7 @@
                     <i aria-hidden="true" class="${Icon.PROP.IS_PRIVATE}"></i> = Mein Merkmal
                 </div>
             </label>
-            <select class="ui dropdown">
+            <select class="ui dropdown clearable ">
                 <option value="">Bitte auswählen</option>
                 <option value="1">Option 1</option>
                 <option value="0">Option 2</option>
@@ -83,7 +83,7 @@
 
     <div class="ui instructive bottom attached segment">
         <pre aria-hidden="true">
-            &lt;select class="ui dropdown">
+            &lt;select class="ui dropdown clearable ">
             &ltoption value="">Bitte auswählen</option>
             &ltoption value="1">Option 1</option>
             &ltoption value="0">Option 2</option>
@@ -110,7 +110,7 @@
                     <i aria-hidden="true" class="${Icon.PROP.IS_PRIVATE}"></i> = Mein Merkmal
                 </div>
             </label>
-            <select class="ui search dropdown">
+            <select class="ui search dropdown clearable ">
                 <option value="">Bitte auswählen</option>
                 <option value="1">Option 1</option>
                 <option value="0">Option 2</option>
@@ -122,7 +122,7 @@
 
     <div class="ui instructive bottom attached segment">
         <pre aria-hidden="true">
-            &lt;select class="ui <strong>search</strong>  dropdown">
+            &lt;select class="ui <strong>search</strong>  dropdown clearable ">
             &ltoption value="">Bitte auswählen</option>
             &ltoption value="1">Option 1</option>
             &ltoption value="0">Option 2</option>
@@ -131,9 +131,9 @@
     </div>
 
 </div>
-<!-- STOP Example search dropdown clearable -->
+<!-- STOP Example search dropdown clearable  clearable -->
 
-<!-- START Example dropdown clearable in filters -->
+<!-- START Example dropdown clearable  clearable in filters -->
 <div class="dropdown clearable example">
 
     <div class="html ui top attached segment">
@@ -153,12 +153,12 @@
                 </div>
             </label>
             <div class="la-filter">
-                <select class="ui dropdown">
+                <select class="ui dropdown clearable ">
                     <option value="">Bitte auswählen</option>
                     <option value="1">Option 1</option>
                     <option value="0">Option 2</option>
                 </select>
-                <select class="ui search dropdown">
+                <select class="ui search dropdown clearable ">
                     <option value="">Bitte auswählen</option>
                     <option value="1">Option 1</option>
                     <option value="0">Option 2</option>
@@ -171,13 +171,13 @@
 
     <div class="ui instructive bottom attached segment">
         <pre aria-hidden="true">
-            &lt;select class="ui dropdown">
+            &lt;select class="ui dropdown clearable ">
             &ltoption value="">Bitte auswählen</option>
             &ltoption value="1">Option 1</option>
             &ltoption value="0">Option 2</option>
             &lt;/select>
 
-            &lt;select class="ui <strong>search</strong> dropdown">
+            &lt;select class="ui <strong>search</strong> dropdown clearable ">
             &ltoption value="">Bitte auswählen</option>
             &ltoption value="1">Option 1</option>
             &ltoption value="0">Option 2</option>
@@ -238,7 +238,7 @@
         &lt;i class=&quot;${Icon.PROP.IS_PRIVATE} &quot;&gt;&lt;/i&gt; = Meine Merkmal
         &lt;/div&gt;
         &lt;/label&gt;
-        &lt;div class=&quot;ui search selection dropdown la-filterPropDef&quot;&gt;
+        &lt;div class=&quot;ui search selection dropdown clearable  la-filterPropDef&quot;&gt;
         &lt;input type=&quot;hidden&quot; name=&quot;filterPropDef&quot;&gt; &lt;i class=&quot;dropdown icon&quot;&gt;&lt;/i&gt;
         &lt;input class=&quot;search&quot; <strong>id=&quot;filterPropDef&quot;</strong> &gt;
         &lt;div class=&quot;default text&quot;&gt;Bitte ausw&auml;hlen&lt;/div&gt;

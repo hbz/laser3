@@ -271,7 +271,7 @@
                 <div class="field">
                     <label>${g.message(code: 'financials.costInformationDefinition')}</label>
                     <ui:dropdown name="filterCIIDefinition"
-                                 class="filterCIIDefinition"
+                                 class="filterCIIDefinition clearable"
                                  from="${costInformationDefinitions}"
                                  iconWhich="${Icon.PROP.IS_PRIVATE}"
                                  optionKey="${{genericOIDService.getOID(it)}}"

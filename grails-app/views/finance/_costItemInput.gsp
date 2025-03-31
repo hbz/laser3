@@ -375,7 +375,7 @@
                 <div class="field">
                     <label>${g.message(code: 'financials.costInformationDefinition')}</label>
                     <ui:dropdown name="newCostInformationDefinition"
-                                 class="newCostInformationDefinition_${idSuffix}"
+                                 class="newCostInformationDefinition_${idSuffix} clearable"
                                  from="${costInformationDefinitions}"
                                  iconWhich="${Icon.PROP.IS_PRIVATE}"
                                  optionKey="${{it.id}}"
