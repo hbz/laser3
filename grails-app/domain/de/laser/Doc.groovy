@@ -79,18 +79,22 @@ class Doc {
             String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
             File file = new File("${fPath}/${uuid}")
 
-            File decTmpFile = BeanStore.getCryptoService().decryptToTmpFile(file, ckey)
-            output = decTmpFile.getBytes()
-            decTmpFile.delete()
+            if (file.exists()) {
+                File decTmpFile = BeanStore.getCryptoService().decryptToTmpFile(file, ckey)
+                output = decTmpFile.getBytes()
+                decTmpFile.delete()
 
-            response.setContentType(mimeType)
-            response.addHeader("Content-Disposition", "attachment; filename=\"${filename}\"")
-            response.setHeader('Content-Length', "${output.length}")
+                response.setContentType(mimeType)
+                response.addHeader("Content-Disposition", "attachment; filename=\"${filename}\"")
+                response.setHeader('Content-Length', "${output.length}")
 
-            response.outputStream << output
+                response.outputStream << output
+            }
+            else {
+                response.sendError(HttpStatus.SC_NOT_FOUND)
+            }
         } catch(Exception e) {
             log.error(e.getMessage())
-
             response.sendError(HttpStatus.SC_NOT_FOUND)
         }
     }

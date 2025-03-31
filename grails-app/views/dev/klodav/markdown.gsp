@@ -10,33 +10,42 @@
 
 <g:render template="klodav/nav" />
 
-<div class="ui segment">
-    <p class="ui header small">Parser</p>
-    <ul>
-        <g:each in="${helpService.getMarkdownParser().getOptions().getAll()}" var="opt">
-            <li>${opt}</li>
-        </g:each>
-    </ul>
-
-    <p class="ui header small">Renderer</p>
-    <ul>
-        <g:each in="${helpService.getMarkdownHtmlRenderer().getOptions().getAll()}" var="opt">
-            <li>${opt}</li>
-        </g:each>
-    </ul>
-
-    <p class="ui header small">Token</p>
-    <ul>
-        <g:each in="${helpService.getTokenMap()}" var="tk">
-            <li>{{${tk.key}}} -> ${tk.value}</li>
-        </g:each>
-    </ul>
+<div class="ui fluid card">
+    <div class="content">
+        <div class="header">Parser, Renderer, Tokens</div>
+    </div>
+    <div class="content">
+        <ul>
+            <g:each in="${helpService.getMarkdownParser().getOptions().getAll()}" var="opt">
+                <li>${opt}</li>
+            </g:each>
+        </ul>
+    </div>
+    <div class="content">
+        <ul>
+            <g:each in="${helpService.getMarkdownHtmlRenderer().getOptions().getAll()}" var="opt">
+                <li>${opt}</li>
+            </g:each>
+        </ul>
+    </div>
+    <div class="content">
+        <ul>
+            <g:each in="${helpService.getTokenMap()}" var="tk">
+                <li>{{${tk.key}}} -> ${tk.value}</li>
+            </g:each>
+        </ul>
+    </div>
 </div>
 
-<div class="ui segment la-markdown">
-    <ui:renderMarkdown file="test.md" />
-    <hr />
-    Source (modified) : <a href="https://gist.github.com/allysonsilva/85fff14a22bbdf55485be947566cc09e" target="_blank">allysonsilva/Full-Markdown.md @ GitHub</a>
+<div class="ui fluid card la-markdown">
+    <div class="content">
+        <div class="header">Output</div>
+    </div>
+    <div class="content">
+        <ui:renderMarkdown file="test.md" />
+        <hr />
+        Source (modified) : <a href="https://gist.github.com/allysonsilva/85fff14a22bbdf55485be947566cc09e" target="_blank">allysonsilva/Full-Markdown.md @ GitHub</a>
+    </div>
 </div>
 
 <laser:htmlEnd />
