@@ -731,20 +731,29 @@ r2d2 = {
 
         // DROPDOWN
 
+
+        // all dropdowns but dropdowns la-not-clearable
+        $(ctxSel + ' .ui.dropdown.la-not-clearable').dropdown({
+            selectOnKeydown: false,
+        });
+
         // all dropdowns but dropdowns inside mainMenue and but la-not-clearable at user/create view
         // simple dropdown
         $(ctxSel + ' .ui.dropdown').not('#mainMenue .ui.dropdown').not('.la-not-clearable').dropdown({
             selectOnKeydown: false,
             clearable: true
         });
-        // all dropdowns but dropdowns la-not-clearable
-        $(ctxSel + ' .ui.dropdown.la-not-clearable').dropdown({
+
+        //////// SEARCH START
+        // search clearable
+        $(ctxSel + ' .ui.search.dropdown.la-not-clearable').dropdown({
+            forceSelection: false,
             selectOnKeydown: false,
-            clearable: false
+            fullTextSearch: 'exact',
+            message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.config.language)}
         });
 
-        // all search dropdowns but la-not-clearable at user/create view
-        // search dropdown
+        // search not clearable
         $(ctxSel + ' .ui.search.dropdown').not('.la-not-clearable').dropdown({
             forceSelection: false,
             selectOnKeydown: false,
@@ -752,19 +761,35 @@ r2d2 = {
             clearable: true,
             message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.config.language)}
         });
+        //////// SEARCH STOP
 
-        // FILTER
-        // special: stuff on change
-        // simple dropdown
-        $(ctxSel + ' .la-filter .ui.dropdown').dropdown({
+
+        ////// FILTER START
+        $(ctxSel + ' .la-filter .ui.dropdown.la-not-clearable').dropdown({
+            selectOnKeydown: false,
+            onChange: function(value, text, $choice){
+                (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
+            }
+        });
+        $(ctxSel + ' .la-filter .ui.dropdown').not('.la-not-clearable').dropdown({
             selectOnKeydown: false,
             clearable: true,
             onChange: function(value, text, $choice){
                 (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
             }
         });
-        // search dropdown
-        $(ctxSel + ' .la-filter .ui.search.dropdown').dropdown({
+        // search dropdown clearable
+        $(ctxSel + ' .la-filter .ui.search.dropdown.la-not-clearable').dropdown({
+            forceSelection: false,
+            selectOnKeydown: false,
+            fullTextSearch: 'exact',
+            message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.config.language)},
+            onChange: function(value, text, $choice){
+                (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
+            }
+        });
+        // search dropdown not clearable
+        $(ctxSel + ' .la-filter .ui.search.dropdown').not('.la-not-clearable').dropdown({
             forceSelection: false,
             selectOnKeydown: false,
             fullTextSearch: 'exact',
@@ -784,6 +809,8 @@ r2d2 = {
                 (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
             }
         });
+        ////// FILTER STOP
+
         // dropdowns escape
         $(ctxSel + ' .la-filter .ui.dropdown').on('keydown', function(e) {
             if(['Escape','Backspace','Delete'].includes(event.key)) {
