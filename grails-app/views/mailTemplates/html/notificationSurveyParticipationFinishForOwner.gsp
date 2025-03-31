@@ -65,7 +65,6 @@
         <tr>
             <th><g:message code="sidewide.number" locale="${language}"/></th>
             <th><g:message code="surveyProperty.label" locale="${language}"/></th>
-            <th><g:message code="default.type.label" locale="${language}"/></th>
             <th><g:message code="surveyResult.result" locale="${language}"/></th>
             <th>
                 <g:message code="surveyResult.participantComment" locale="${language}"/>
@@ -82,20 +81,6 @@
                 </td>
                 <td>
                     ${surveyResult.type.getI10n('name', language)}
-                </td>
-                <td>
-                    ${PropertyDefinition.getLocalizedValue(surveyResult.type.type)}
-                    <g:if test="${surveyResult.type.isRefdataValueType()}">
-                        <g:set var="refdataValues" value="${[]}"/>
-                        <g:each in="${RefdataCategory.getAllRefdataValues(surveyResult.type.refdataCategory)}"
-                                var="refdataValue">
-                            <g:if test="${refdataValue.getI10n('value', language)}">
-                                <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value', language)}"/>
-                            </g:if>
-                        </g:each>
-                        <br/>
-                        (${refdataValues.join('/')})
-                    </g:if>
                 </td>
                 <td>
                     ${surveyResult.getResult()}
@@ -167,7 +152,7 @@
 
 <strong>${RDStore.PRS_FUNC_SURVEY_CONTACT.getI10n('value', language)}:</strong><br/>
 <g:if test="${surveyContactMails}">
-    E-Mail: ${surveyContactMails.join('; ')}<br/>
+    E-Mails: ${surveyContactMails.join('; ')}<br/>
     <br/>
 </g:if>
 <g:each in="${surveyPersons}" var="person">
@@ -184,14 +169,14 @@
 <g:if test="${survey.surveyConfigs[0].invoicingInformation}">
     <g:set var="billingPersons"
            value="${SurveyPersonResult.executeQuery('select spr.person from SurveyPersonResult spr where spr.billingPerson = true and spr.participant = :participant and spr.surveyConfig = :surveyConfig', [participant: org, surveyConfig: survey.surveyConfigs[0]])}"/>
-    <g:set var="billingContactEmails" value="${Contact.executeQuery("select c.content from Person p " +
+    %{--<g:set var="billingContactEmails" value="${Contact.executeQuery("select c.content from Person p " +
             "join p.contacts c where p in (:persons) and c.contentType = :type",
-            [persons: billingPersons, type: RDStore.CCT_EMAIL])}"/>
+            [persons: billingPersons, type: RDStore.CCT_EMAIL])}"/>--}%
     <strong>${RDStore.PRS_FUNC_INVOICING_CONTACT.getI10n('value', language)}:</strong><br/>
-    <g:if test="${billingContactEmails}">
+   %{-- <g:if test="${billingContactEmails}">
         E-Mail: ${billingContactEmails.join('; ')}<br/>
         <br/>
-    </g:if>
+    </g:if>--}%
     <g:each in="${billingPersons}" var="person">
         Name: ${person.title} ${person.first_name} ${person.middle_name} ${person.last_name} <br/>
         <g:each in="${person.contacts}" var="contact">
