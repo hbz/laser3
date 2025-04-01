@@ -16,7 +16,7 @@ class DropdownTagLib {
 
     def exportDropdown = { attrs, body ->
 
-        out << '<div class="ui simple dropdown button">'
+        out << '<div class="ui simple dropdown clearable button">'
         out <<     '<i class="' + Icon.CMD.DOWNLOAD + '"></i>'
         out <<     '<div class="menu">'
         out <<         body()
@@ -35,7 +35,7 @@ class DropdownTagLib {
 
     def actionsDropdown = { attrs, body ->
 
-        out << '<div class="ui simple dropdown button">'
+        out << '<div class="ui simple dropdown clearable button">'
         out <<     '<i class="magic icon"></i>'
         out <<     '<div class="menu" style="left:auto; right:0">'
         out <<         body()

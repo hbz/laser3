@@ -57,7 +57,7 @@
                     fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
                     fakeList.add(RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null', 'filter.fake.values'))
                 %>
-                <ui:select class="ui dropdown" name="status"
+                <ui:select class="ui dropdown clearable" name="status"
                               from="${ fakeList }"
                               optionKey="id"
                               optionValue="value"
@@ -71,7 +71,7 @@
             <% /* 2-3 */ %>
             <div class="field">
                 <label>${message(code:'subscription.form.label')}</label>
-                <ui:select class="ui dropdown" name="form"
+                <ui:select class="ui dropdown clearable" name="form"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}"
                               optionKey="id"
                               optionValue="value"
@@ -96,7 +96,7 @@
             <% /* 3-1 */ %>
             <div class="field">
                 <label>${message(code:'subscription.resource.label')}</label>
-                <ui:select class="ui dropdown" name="resource"
+                <ui:select class="ui dropdown clearable" name="resource"
                            from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
                            optionKey="id"
                            optionValue="value"

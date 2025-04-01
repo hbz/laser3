@@ -39,7 +39,7 @@
             <div class="field">
                 <label><g:message code="financials.costItemElement"/></label>
                 <g:if test="${costItemElements}">
-                    <ui:select name="newCostItemElement" id="newCostItemElement_${idSuffix}" class="ui fluid dropdown"
+                    <ui:select name="newCostItemElement" id="newCostItemElement_${idSuffix}" class="ui fluid dropdown clearable "
                                   from="${costItemElements.collect { ciec -> ciec.costItemElement }}"
                                   optionKey="id"
                                   optionValue="value"
@@ -64,7 +64,7 @@
         <div class="field">
             <label>${message(code: 'default.status.label')}</label>
             <ui:select name="newCostItemStatus" id="newCostItemStatus_${idSuffix}" title="${g.message(code: 'financials.addNew.costState')}"
-                          class="ui dropdown"
+                          class="ui dropdown clearable"
                           from="${costItemStatus}"
                           optionKey="id"
                           optionValue="value"
@@ -115,7 +115,7 @@
             </div><!-- .field -->
             <div class="field">
                 <label>${message(code: 'financials.newCosts.taxTypeAndRate')}</label>
-                <g:select class="ui dropdown calc" name="newTaxRate" id="newTaxRate_${idSuffix}" title="TaxRate"
+                <g:select class="ui dropdown clearable calc" name="newTaxRate" id="newTaxRate_${idSuffix}" title="TaxRate"
                           from="${CostItem.TAX_TYPES}"
                           optionKey="${{ it.taxType.class.name + ":" + it.taxType.id + "§" + it.taxRate }}"
                           optionValue="${{ it.display ? it.taxType.getI10n("value") + " (" + it.taxRate + "%)" : it.taxType.getI10n("value") }}"
@@ -152,7 +152,7 @@
                 <div class="field">
                     <label>${message(code: 'package.label')}</label>
                     <g:if test="${surveyConfig.surveyPackages}">
-                        <g:select name="newPackage" id="newPackage_${idSuffix}" class="ui dropdown search"
+                        <g:select name="newPackage" id="newPackage_${idSuffix}" class="ui dropdown clearable search"
                                   from="${surveyConfig.surveyPackages}"
                                   optionValue="${{ it.pkg.name }}"
                                   optionKey="${{ it.pkg.id }}"

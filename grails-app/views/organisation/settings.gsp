@@ -55,7 +55,7 @@
                                 <laser:script file="${this.getGroovyPageFileName()}">
 
                                     $('body #natstat_server_access').editable('destroy').editable({
-                                        tpl: '<select class="ui dropdown"></select>'
+                                        tpl: '<select class="ui dropdown clearable"></select>'
                                     }).on('shown', function() {
                                         r2d2.initDynamicUiStuff('body');
                                         $(".table").trigger('reflow');
@@ -67,7 +67,7 @@
                                     });
 
                                     $('body #oamonitor_server_access').editable('destroy').editable({
-                                        tpl: '<select class="ui dropdown"></select>'
+                                        tpl: '<select class="ui dropdown clearable"></select>'
                                     }).on('shown', function() {
                                         r2d2.initDynamicUiStuff('body');
                                         $(".table").trigger('reflow');
@@ -79,7 +79,7 @@
                                     });
 
                                     $('body #ezb_server_access').editable('destroy').editable({
-                                        tpl: '<select class="ui dropdown"></select>'
+                                        tpl: '<select class="ui dropdown clearable"></select>'
                                     }).on('shown', function() {
                                         r2d2.initDynamicUiStuff('body');
                                         $(".table").trigger('reflow');

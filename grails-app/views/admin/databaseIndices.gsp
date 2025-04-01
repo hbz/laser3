@@ -22,7 +22,7 @@
     <button class="${Btn.ICON.SIMPLE} small" id="filter_internal1"><icon:arrow /> Id/Version</button>
     <button class="${Btn.ICON.SIMPLE} small" id="filter_internal2"><icon:arrow /> DateCreated/LastUpdated</button>
     <button class="${Btn.ICON.SIMPLE} small" id="filter_collections"><icon:arrow /> Collections</button>
-    <g:select class="ui dropdown" from="${['1.000':1000, '5.000':5000, '10.000':10000, '50.000':50000, '100.000':100000, '500.000':500000, '1.000.000':1000000, '5.000.000':5000000, '10.000.000':10000000]}"
+    <g:select class="ui dropdown clearable" from="${['1.000':1000, '5.000':5000, '10.000':10000, '50.000':50000, '100.000':100000, '500.000':500000, '1.000.000':1000000, '5.000.000':5000000, '10.000.000':10000000]}"
               id="threshold_filter_value" name="threshold_filter_value"
               optionValue="${{it.key}}"
               optionKey="${{it.value}}"
