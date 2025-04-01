@@ -80,7 +80,7 @@ class Doc {
             File file = new File("${fPath}/${uuid}")
 
             if (file.exists()) {
-                File decTmpFile = BeanStore.getCryptoService().decryptToTmpFile(file, ckey)
+                File decTmpFile = BeanStore.getFileCryptService().decryptToTmpFile(file, ckey)
                 output = decTmpFile.getBytes()
                 decTmpFile.delete()
 

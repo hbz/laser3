@@ -1,4 +1,4 @@
-<%@ page import="de.laser.License; de.laser.Subscription; de.laser.CustomerTypeService; de.laser.OrgSetting; de.laser.auth.User; de.laser.Org; de.laser.utils.DateUtils;  de.laser.storage.RDStore; de.laser.Task; de.laser.system.SystemActivityProfiler; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.Wekb" %>
+<%@ page import="de.laser.wekb.Vendor; de.laser.License; de.laser.Subscription; de.laser.CustomerTypeService; de.laser.OrgSetting; de.laser.auth.User; de.laser.Org; de.laser.utils.DateUtils;  de.laser.storage.RDStore; de.laser.Task; de.laser.system.SystemActivityProfiler; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.Wekb" %>
 <laser:serviceInjection />
 
 <g:if test="${tmplView == 'info'}">
@@ -186,17 +186,37 @@
                         </tr>
                         </tbody>
                     </table>
+%{--<%--}%
+%{--    // TEST--}%
+%{--    wekbNews.provider.created = wekbNews.provider.all.collect{ it.uuid }--}%
+%{--    wekbNews.vendor.created = wekbNews.vendor.all.collect{ it.uuid }--}%
+%{--%>--}%
+                    <g:set var="ccProvider" value="${wekbNews.provider.created}" />
+                    <g:set var="ccVendor" value="${wekbNews.vendor.created}" />
 
-                    <g:if test="${wekbNews.provider.created.size()}">
+                    <g:if test="${ccProvider.size() || ccVendor.size()}">
                         <ui:msg class="info">
-                            <strong>Neue Anbieter gefunden:</strong>
-                            <g:each in="${wekbNews.provider.created}" var="p1">
-                                <g:set var="p2" value="${wekbNews.provider.all.find{ it.uuid == p1 }}" />
-                                <br/>
-                                <g:link controller="provider" action="show" id="${p2.id}" target="_blank">
-                                    <i class="${Icon.PROVIDER} la-list-icon"></i>${p2.name}
-                                </g:link>
-                            </g:each>
+                            <g:if test="${ccProvider.size()}">
+                                <div>
+                                    <i class="${Icon.PROVIDER} la-list-icon"></i><strong>Neue Anbieter:</strong>
+                                </div>
+                                <g:each in="${ccProvider}" var="p1" status="i">
+                                    <g:set var="p2" value="${wekbNews.provider.all.find{ it.uuid == p1 }}" />
+                                    <g:if test="${i > 0}">, </g:if>
+                                    <g:link controller="provider" action="show" id="${p2.id}" target="_blank">${p2.name}</g:link>
+                                </g:each>
+                            </g:if>
+                            <g:if test="${ccVendor.size()}">
+                                <g:if test="${ccProvider.size()}"><br /><br /></g:if>
+                                <div>
+                                    <i class="${Icon.VENDOR} la-list-icon"></i><strong>Neue Library Supplier:</strong>
+                                </div>
+                                <g:each in="${ccVendor}" var="p1" status="i">
+                                    <g:set var="p2" value="${wekbNews.vendor.all.find{ it.uuid == p1 }}" />
+                                    <g:if test="${i > 0}">, </g:if>
+                                    <g:link controller="vendor" action="show" id="${p2.id}" target="_blank">${p2.name}</g:link>
+                                </g:each>
+                            </g:if>
                         </ui:msg>
                     </g:if>
                 </g:if>
