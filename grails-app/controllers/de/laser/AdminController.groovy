@@ -1003,6 +1003,14 @@ SELECT * FROM (
 
         def (usedPdList, attrMap, multiplePdList) = propertyService.getUsageDetails() // [List<Long>, Map<String, Object>, List<Long>]
 
+        // ERMS-6306
+        multiplePdList.unique().each {
+            PropertyDefinition pd = PropertyDefinition.get(it)
+            if (! pd.multipleOccurrence) {
+                println 'ERMS-6306 -> #' + pd.id + ' ' + pd.descr + ' - ' + pd.name + ' (' + pd.name_de + '), hardData: ' + pd.isHardData
+            }
+        }
+
         render view: 'managePropertyDefinitions', model: [
                 editable    : true,
                 propertyDefinitions: propDefs,
