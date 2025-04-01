@@ -104,7 +104,7 @@
 
     <g:form action="processCreateEntitlementGroup" controller="subscription" params="[id: params.id]"
             method="post" class="ui form">
-        <div class="field required ">
+        <div class="field required">
             <label>${message(code: 'default.name.label')} <g:message code="messageRequiredField" /></label>
             <input type="text" name="name" placeholder="" value="${params.name}" required/>
         </div>

@@ -98,7 +98,7 @@
 
                     <div class="content" id="subscription-info">
                         <div class="ui stackable grid container">
-                            <div class="ten wide column ">
+                            <div class="ten wide column">
                                 <dl>
                                     <dt class="control-label">${message(code: 'default.status.label')}</dt>
                                     <dd>${subscription.status.getI10n('value')}</dd>

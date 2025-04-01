@@ -396,7 +396,7 @@
 
         <g:if test="${mode == 'copy' && copyToOtherSub}">
         <div class="fields">
-            <fieldset class="sixteen wide field la-modal-fieldset-margin-right ">
+            <fieldset class="sixteen wide field la-modal-fieldset-margin-right">
                 <label>${g.message(code: 'financials.copyCostItem.toOtherSub')}</label>
 
                 <div class="ui field">

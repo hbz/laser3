@@ -163,7 +163,7 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('organisation')}">
             <td>
-                <div class="ui divided middle aligned list la-flex-list ">
+                <div class="ui divided middle aligned list la-flex-list">
                     <g:each in="${pRolesSorted.groupBy  {it.org.id}}" var="orgId">
                         <g:set var="org" value="${Org.get(orgId.key)}"/>
                         <div class="ui item">
@@ -200,7 +200,7 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('function')}">
                 <td>
                     <%-- filter by model.restrictToOrg --%>
-                    <div class="ui divided middle aligned list la-flex-list ">
+                    <div class="ui divided middle aligned list la-flex-list">
                         <g:each in="${pRolesSorted.sort{it.functionType?.getI10n('value')}}" var="role">
                                 <g:if test="${role.functionType}">
                                     <div class="ui item">
@@ -228,7 +228,7 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('position')}">
                 <td>
                     <%-- filter by model.restrictToOrg --%>
-                    <div class="ui divided middle aligned list la-flex-list ">
+                    <div class="ui divided middle aligned list la-flex-list">
                         <g:each in="${pProvRolesSorted.sort{it.positionType?.getI10n('value')}}" var="role">
                                 <g:if test="${role.positionType}">
                                     <div class="ui item">
@@ -249,7 +249,7 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('functionPosition')}">
                 <td>
                     <%-- filter by model.restrictToOrg --%>
-                    <div class="ui divided middle aligned list la-flex-list ">
+                    <div class="ui divided middle aligned list la-flex-list">
                         <g:each in="${pRolesSorted.sort{it.functionType ? it.functionType?.getI10n('value') : it.positionType?.getI10n('value')}}" var="role">
                             <div class="ui item">
                                 <g:if test="${role.functionType}">
@@ -285,7 +285,7 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('showContacts') && showContacts}">
                 <td>
-                    <div class="ui divided middle aligned list la-flex-list ">
+                    <div class="ui divided middle aligned list la-flex-list">
                         <g:each in="${person.contacts?.toSorted()}" var="contact">
                             <laser:render template="/addressbook/contact" model="${[
                                     contact             : contact,
@@ -303,7 +303,7 @@
                         <g:if test="${surveyPerson}">
                             <g:link controller="myInstitution" action="surveyInfos"
                                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setPreferredSurveyPerson: false, personId: person.id, viewTab: params.viewTab, subTab: 'contacts']">
-                                <i class="${Icon.SYM.CHECKBOX_CHECKED} large "></i>
+                                <i class="${Icon.SYM.CHECKBOX_CHECKED} large"></i>
                             </g:link>
                         </g:if>
                         <g:else>
@@ -343,7 +343,7 @@
                         <g:if test="${surveyPerson}">
                             <g:link controller="myInstitution" action="surveyInfos"
                                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, setPreferredBillingPerson: false, personId: person.id, viewTab: params.viewTab, subTab: 'contacts']">
-                                <i class="${Icon.SYM.CHECKBOX_CHECKED} large "></i>
+                                <i class="${Icon.SYM.CHECKBOX_CHECKED} large"></i>
                             </g:link>
                         </g:if>
                         <g:else>
