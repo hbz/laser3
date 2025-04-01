@@ -380,7 +380,7 @@
 
 %{--<div class="ui fluid card">--}%
 %{--    <div class="content">--}%
-%{--        <div class="la-filter">--}%
+%{--        <div id="filter-dropdown-ex" class="la-filter-">--}%
 %{--            <form class="ui form">--}%
 %{--                <div class="fields">--}%
 %{--                    <div class="field">--}%
@@ -389,12 +389,24 @@
 %{--                        </select>--}%
 %{--                    </div>--}%
 %{--                    <div class="field">--}%
-%{--                        <select class="ui dropdown la-not-clearable">--}%
+%{--                        <select class="ui dropdown clearable">--}%
 %{--                            <option value="000">000</option><option value="001">001</option><option value="002">003</option>--}%
 %{--                        </select>--}%
 %{--                    </div>--}%
 %{--                    <div class="field">--}%
+%{--                        <select class="ui dropdown la-not-clearable">--}%
+%{--                            <option value="000">000</option><option value="001">001</option><option value="002">003</option>--}%
+%{--                        </select>--}%
+%{--                    </div>--}%
+%{--                </div>--}%
+%{--                <div class="fields">--}%
+%{--                    <div class="field">--}%
 %{--                        <select class="ui search dropdown">--}%
+%{--                            <option value="000">000</option><option value="001">001</option><option value="002">003</option>--}%
+%{--                        </select>--}%
+%{--                    </div>--}%
+%{--                    <div class="field">--}%
+%{--                        <select class="ui search dropdown clearable">--}%
 %{--                            <option value="000">000</option><option value="001">001</option><option value="002">003</option>--}%
 %{--                        </select>--}%
 %{--                    </div>--}%
@@ -403,18 +415,32 @@
 %{--                            <option value="000">000</option><option value="001">001</option><option value="002">003</option>--}%
 %{--                        </select>--}%
 %{--                    </div>--}%
+%{--                </div>--}%
+%{--                <div class="fields">--}%
 %{--                    <div class="field">--}%
 %{--                        <select class="ui selection dropdown">--}%
 %{--                            <option value="000">000</option><option value="001">001</option><option value="002">003</option>--}%
 %{--                        </select>--}%
-%{--                        </div>--}%
+%{--                    </div>--}%
+%{--                    <div class="field">--}%
+%{--                        <select class="ui selection dropdown clearable">--}%
+%{--                            <option value="000">000</option><option value="001">001</option><option value="002">003</option>--}%
+%{--                        </select>--}%
+%{--                    </div>--}%
 %{--                    <div class="field">--}%
 %{--                        <select class="ui selection dropdown la-not-clearable">--}%
 %{--                            <option value="000">000</option><option value="001">001</option><option value="002">003</option>--}%
 %{--                        </select>--}%
 %{--                    </div>--}%
+%{--                </div>--}%
+%{--                <div class="fields">--}%
 %{--                    <div class="field">--}%
 %{--                        <select class="ui search selection dropdown">--}%
+%{--                            <option value="000">000</option><option value="001">001</option><option value="002">003</option>--}%
+%{--                        </select>--}%
+%{--                    </div>--}%
+%{--                    <div class="field">--}%
+%{--                        <select class="ui search selection dropdown clearable">--}%
 %{--                            <option value="000">000</option><option value="001">001</option><option value="002">003</option>--}%
 %{--                        </select>--}%
 %{--                    </div>--}%
@@ -423,19 +449,37 @@
 %{--                            <option value="000">000</option><option value="001">001</option><option value="002">003</option>--}%
 %{--                        </select>--}%
 %{--                    </div>--}%
+%{--                </div>--}%
+%{--                <div class="fields">--}%
 %{--                    <div class="field">--}%
-%{--                        <select class="ui multiple search selection dropdown">--}%
+%{--                        <select class="ui search selection dropdown" multiple="">--}%
 %{--                            <option value="000">000</option><option value="001">001</option><option value="002">003</option>--}%
 %{--                        </select>--}%
 %{--                    </div>--}%
 %{--                    <div class="field">--}%
-%{--                        <select class="ui multiple search selection dropdown la-not-clearable">--}%
+%{--                        <select class="ui search selection dropdown clearable" multiple="">--}%
+%{--                            <option value="000">000</option><option value="001">001</option><option value="002">003</option>--}%
+%{--                        </select>--}%
+%{--                    </div>--}%
+%{--                    <div class="field">--}%
+%{--                        <select class="ui search selection dropdown la-not-clearable" multiple="">--}%
 %{--                            <option value="000">000</option><option value="001">001</option><option value="002">003</option>--}%
 %{--                        </select>--}%
 %{--                    </div>--}%
 %{--                </div>--}%
 %{--            </form>--}%
 %{--        </div>--}%
+%{--        <laser:script file="${this.getGroovyPageFileName()}">--}%
+%{--            $(document).ready(function() {--}%
+%{--                let dd = $('#filter-dropdown-ex .dropdown');--}%
+%{--                console.log(dd);--}%
+
+%{--                dd.dropdown('destroy');--}%
+%{--                dd.dropdown({--}%
+%{--                    clearable: false--}%
+%{--                });--}%
+%{--            })--}%
+%{--        </laser:script>--}%
 %{--    </div>--}%
 %{--</div>--}%
 
