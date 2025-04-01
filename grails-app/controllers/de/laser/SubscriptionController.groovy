@@ -63,6 +63,7 @@ class SubscriptionController {
     SubscriptionService subscriptionService
     SurveyService surveyService
     TaskService taskService
+    TitleService titleService
 
     //-----
 
@@ -1055,10 +1056,9 @@ class SubscriptionController {
         ctx.contextService.isInstEditor_denySupport()
     })
     def linkTitle() {
-        Subscription subscription
-        if(Subscription.class.name in params.subscription)
-            subscription = (Subscription) genericOIDService.resolveOID(params.subscription)
-        else subscription = Subscription.get(params.subscription)
+        Subscription subscription = (Subscription) genericOIDService.resolveOID(params.subscription)
+        if(!subscription)
+            subscription = Subscription.get(params.subscription)
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(params.tippID)
         if(subscription && tipp) {
             Package pkg = tipp.pkg
@@ -1460,9 +1460,9 @@ class SubscriptionController {
             result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
             result.countSelectedTipps = result.checkedCount
             if(configMap.packages) {
-                Map<String, Object> keys = issueEntitlementService.getKeys(configMap)
-                Set<Long> tippIDs = keys.tippIDs
-                tippIDs.removeAll(keys.ieIDs)
+                Map<String, Object> keysInSubscription = issueEntitlementService.getKeys(configMap)
+                Set<Long> tippIDs = titleService.getKeys(configMap)
+                tippIDs.removeAll(keysInSubscription.tippIDs)
                 result.num_tipp_rows = tippIDs.size()
                 result.tipps = []
                 Map<TitleInstancePackagePlatform, Set<PermanentTitle>> permanentTitles = [:]
