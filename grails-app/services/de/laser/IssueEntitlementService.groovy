@@ -28,11 +28,24 @@ class IssueEntitlementService {
 
     Map<String, Object> getCounts(Map configMap) {
         int currentIECounts = 0, plannedIECounts = 0, expiredIECounts = 0, deletedIECounts = 0, allIECounts = 0
-        Map<String, Object> keys = getKeys(configMap+[forCount: true]) //double perform because I have to exclude the status filter ...
-        keys.ieIDs.collate(65000).each { List<Long> subset ->
-            List counts = IssueEntitlement.executeQuery('select count(*), rv.id from IssueEntitlement ie join ie.status rv where ie.id in (:subset) group by rv.id', [subset: subset])
+        Map<String, Object> parameterGenerics = getParameterGenerics(configMap)
+        Map<String, Object> titleConfigMap = parameterGenerics.titleConfigMap,
+                            identifierConfigMap = parameterGenerics.identifierConfigMap,
+                            issueEntitlementConfigMap = parameterGenerics.issueEntitlementConfigMap
+        Set<Long> tippIDs = []
+        Map<String, Object> queryPart1 = filterService.getIssueEntitlementSubsetQuery(issueEntitlementConfigMap), queryPart2 = filterService.getTippSubsetQuery(titleConfigMap)
+        List<Map<String, Object>> tippIeMap = IssueEntitlement.executeQuery(queryPart1.query, queryPart1.queryParams)
+        tippIeMap.each { row ->
+            tippIDs << row.tippID
+        }
+        tippIDs = tippIDs.intersect(TitleInstancePackagePlatform.executeQuery(queryPart2.query, queryPart2.queryParams))
+        if(configMap.identifier) {
+            tippIDs = tippIDs.intersect(titleService.getTippsByIdentifier(identifierConfigMap, configMap.identifier))
+        }
+        tippIDs.collate(65000).each { List<Long> subset ->
+            List counts = IssueEntitlement.executeQuery('select count(*), rv.id from IssueEntitlement ie join ie.status rv where ie.tipp.id in (:subset) group by rv.id', [subset: subset])
             counts.each { row ->
-                switch(row[1]) {
+                switch (row[1]) {
                     case RDStore.TIPP_STATUS_CURRENT.id: currentIECounts += row[0]
                         break
                     case RDStore.TIPP_STATUS_EXPECTED.id: plannedIECounts += row[0]
@@ -56,23 +69,27 @@ class IssueEntitlementService {
         if(configMap.filter) {
             titleConfigMap.filter = configMap.filter
         }
-        if(!configMap.containsKey('status') && !configMap.containsKey('forCount')) {
+        if(!configMap.containsKey('status')) {
             titleConfigMap.tippStatus = RDStore.TIPP_STATUS_CURRENT.id //activate if needed
             issueEntitlementConfigMap.ieStatus = RDStore.TIPP_STATUS_CURRENT.id
         }
-        else if(!configMap.containsKey('forCount')) {
+        else {
             titleConfigMap.tippStatus = configMap.status
             issueEntitlementConfigMap.ieStatus = configMap.status
         }
+        Set<Long> tippIDs = [], ieIDs = []
+        //process here the issue entitlement-related parameters
+        Map<String, Object> queryPart1 = filterService.getIssueEntitlementSubsetQuery(issueEntitlementConfigMap)
+        List<Map<String, Object>> tippIeMap = IssueEntitlement.executeQuery(queryPart1.query, queryPart1.queryParams)
+        tippIeMap.each { row ->
+            tippIDs << row.tippID
+        }
         //process here the title-related parameters
-        Map<String, Object> queryPart1 = filterService.getTippSubsetQuery(titleConfigMap)
-        Set<Long> tippIDs = TitleInstancePackagePlatform.executeQuery(queryPart1.query, queryPart1.queryParams), ieIDs = []
+        Map<String, Object> queryPart2 = filterService.getTippSubsetQuery(titleConfigMap)
+        tippIDs = tippIDs.intersect(TitleInstancePackagePlatform.executeQuery(queryPart2.query, queryPart2.queryParams))
         if(configMap.identifier) {
             tippIDs = tippIDs.intersect(titleService.getTippsByIdentifier(identifierConfigMap, configMap.identifier))
         }
-        //process here the issue entitlement-related parameters
-        Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetQuery(issueEntitlementConfigMap)
-        List<Map<String, Object>> tippIeMap = IssueEntitlement.executeQuery(queryPart2.query, queryPart2.queryParams)
         tippIeMap.each { row ->
             if(row.tippID in tippIDs)
                 ieIDs << row.ieID
@@ -402,7 +419,7 @@ class IssueEntitlementService {
                                               ebookFirstAutorOrFirstEditor: configMap.ebookFirstAutorOrFirstEditor, dateFirstOnlineFrom: configMap.dateFirstOnlineFrom,
                                               dateFirstOnlineTo: configMap.dateFirstOnlineFrom, yearsFirstOnline: configMap.yearsFirstOnline, publishers: configMap.publishers,
                                               coverageDepth: configMap.coverageDepth, title_types: configMap.title_types, medium: configMap.medium, sort: sort, order: order],
-                            identifierConfigMap = [identifier: configMap.identifier, packages: configMap.packages, titleNS: IdentifierNamespace.CORE_TITLE_NS, titleObj: IdentifierNamespace.NS_TITLE, sort: sort, order: order],
+                            identifierConfigMap = [identifier: configMap.identifier, packages: configMap.packages, titleNS: IdentifierNamespace.CORE_TITLE_NS, titleObj: IdentifierNamespace.NS_TITLE], //may be needed elsewhere sort: sort, order: order
                             issueEntitlementConfigMap = [subscription: configMap.subscription, asAt: configMap.asAt, hasPerpetualAccess: configMap.hasPerpetualAccess, titleGroup: configMap.titleGroup, sort: sort, order: order]
         [titleConfigMap: titleConfigMap, identifierConfigMap: identifierConfigMap, issueEntitlementConfigMap: issueEntitlementConfigMap]
     }
