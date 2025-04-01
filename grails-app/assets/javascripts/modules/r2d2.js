@@ -731,34 +731,22 @@ r2d2 = {
 
         // DROPDOWN
 
-        // all dropdowns but dropdowns inside mainMenue and but la-not-clearable at user/create view
         // simple dropdown
-        $(ctxSel + ' .ui.dropdown').not('#mainMenue .ui.dropdown').not('.la-not-clearable').dropdown({
+        $(ctxSel + ' .ui.dropdown').dropdown({
             selectOnKeydown: false,
-            clearable: true
         });
-        // all dropdowns but dropdowns la-not-clearable
-        $(ctxSel + ' .ui.dropdown.la-not-clearable').dropdown({
-            selectOnKeydown: false,
-            clearable: false
-        });
-
-        // all search dropdowns but la-not-clearable at user/create view
         // search dropdown
-        $(ctxSel + ' .ui.search.dropdown').not('.la-not-clearable').dropdown({
+        $(ctxSel + ' .ui.search.dropdown').dropdown({
             forceSelection: false,
             selectOnKeydown: false,
             fullTextSearch: 'exact',
-            clearable: true,
             message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.config.language)}
         });
 
         // FILTER
-        // special: stuff on change
         // simple dropdown
         $(ctxSel + ' .la-filter .ui.dropdown').dropdown({
             selectOnKeydown: false,
-            clearable: true,
             onChange: function(value, text, $choice){
                 (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
             }
@@ -768,7 +756,6 @@ r2d2 = {
             forceSelection: false,
             selectOnKeydown: false,
             fullTextSearch: 'exact',
-            clearable: true,
             message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.config.language)},
             onChange: function(value, text, $choice){
                 (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
@@ -778,12 +765,14 @@ r2d2 = {
             allowAdditions: true,
             forceSelection: false,
             hideAdditions: false,
-            clearable: true,
             message: {addResult:JSPC.dict.get('dropdown.message.addResult', JSPC.config.language)},
             onChange: function(value, text, $choice){
                 (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
             }
         });
+
+
+
         // dropdowns escape
         $(ctxSel + ' .la-filter .ui.dropdown').on('keydown', function(e) {
             if(['Escape','Backspace','Delete'].includes(event.key)) {

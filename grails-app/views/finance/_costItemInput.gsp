@@ -24,7 +24,7 @@
                             <label><g:message code="financials.isVisibleForSubscriber"/></label>
                             <g:set var="newIsVisibleForSubscriberValue" value="${costItem?.isVisibleForSubscriber ? RDStore.YN_YES.id : RDStore.YN_NO.id}" />
                             <g:if test="${idSuffix == 'bulk'}">
-                                <ui:select name="newIsVisibleForSubscriber" id="newIsVisibleForSubscriber_${idSuffix}" class="ui dropdown"
+                                <ui:select name="newIsVisibleForSubscriber" id="newIsVisibleForSubscriber_${idSuffix}" class="ui dropdown clearable"
                                               from="${yn}"
                                               optionKey="id"
                                               optionValue="value"
@@ -73,7 +73,7 @@
                     <div class="field">
                         <label><g:message code="financials.costItemElement"/></label>
                         <g:if test="${costItemElements}">
-                            <ui:select name="newCostItemElement" id="newCostItemElement_${idSuffix}" class="ui dropdown"
+                            <ui:select name="newCostItemElement" id="newCostItemElement_${idSuffix}" class="ui dropdown clearable"
                                           from="${costItemElements.collect{ ciec -> ciec.costItemElement }}"
                                           optionKey="id"
                                           optionValue="value"
