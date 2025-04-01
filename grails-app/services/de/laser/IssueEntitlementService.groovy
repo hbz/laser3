@@ -72,11 +72,15 @@ class IssueEntitlementService {
         }
         //process here the issue entitlement-related parameters
         Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetQuery(issueEntitlementConfigMap)
-
-        tippIDs.collate(65000).each { List<Long> subset ->
+        List<Map<String, Object>> tippIeMap = IssueEntitlement.executeQuery(queryPart2.query, queryPart2.queryParams)
+        tippIeMap.each { row ->
+            if(row.tippID in tippIDs)
+                ieIDs << row.ieID
+        }
+        /*tippIDs.collate(65000).each { List<Long> subset ->
             queryPart2.queryParams.subset = subset
             ieIDs.addAll(IssueEntitlement.executeQuery(queryPart2.query, queryPart2.queryParams))
-        }
+        }*/
         [tippIDs: tippIDs, ieIDs: ieIDs]
     }
 
