@@ -84,7 +84,7 @@
                                optionKey="id"
                                optionValue="value"
                                value="${selectedCostItemElementID}"
-                               class="ui dropdown"
+                               class="ui dropdown clearable"
                                id="selectedCostItemElementID"/>--}%
                 </th>
                 <th>${message(code: 'copySurveyCostItems.newCostItem')}</th>

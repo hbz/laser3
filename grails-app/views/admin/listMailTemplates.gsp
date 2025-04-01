@@ -93,7 +93,7 @@
                       from="${RefdataCategory.getAllRefdataValues(RDConstants.MAIL_TEMPLATE_LANGUAGE)}"
                       optionKey="id"
                       optionValue="${{it.getI10n('value')}}"
-                      class="ui dropdown search"
+                      class="ui dropdown clearable search"
                       noSelection="[null: '']"/>
         </div>
 
@@ -104,7 +104,7 @@
                       from="${RefdataCategory.getAllRefdataValues(RDConstants.MAIL_TEMPLATE_TYPE)}"
                       optionKey="id"
                       optionValue="${{it.getI10n('value')}}"
-                      class="ui dropdown search"
+                      class="ui dropdown clearable search"
                       noSelection="[null: '']"/>
         </div>
     </g:form>
@@ -148,7 +148,7 @@
                   from="${RefdataCategory.getAllRefdataValues(RDConstants.MAIL_TEMPLATE_LANGUAGE)}"
                   optionKey="id"
                   optionValue="${{it.getI10n('value')}}"
-                  class="ui dropdown search"
+                  class="ui dropdown clearable search"
                   noSelection="[null: '']"/>
         </div>
 
@@ -159,7 +159,7 @@
                       from="${RefdataCategory.getAllRefdataValues(RDConstants.MAIL_TEMPLATE_TYPE)}"
                       optionKey="id"
                       optionValue="${{it.getI10n('value')}}"
-                      class="ui dropdown search"
+                      class="ui dropdown clearable search"
                       noSelection="[null: '']"/>
         </div>
 

@@ -63,7 +63,7 @@
 
             <div class="field">
                 <label>${message(code: 'surveyInfo.owner.label')}</label>
-                <g:select class="ui dropdown" name="owner"
+                <g:select class="ui dropdown clearable" name="owner"
                               from="${allConsortia}"
                               optionKey="id"
                               optionValue="name"
@@ -107,7 +107,7 @@
 
             <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>
-                <ui:select class="ui dropdown" name="type"
+                <ui:select class="ui dropdown clearable" name="type"
                            from="${RefdataCategory.getAllRefdataValues(de.laser.storage.RDConstants.SURVEY_TYPE)}"
                            optionKey="id"
                            optionValue="value"

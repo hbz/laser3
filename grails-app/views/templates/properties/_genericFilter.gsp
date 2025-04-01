@@ -11,7 +11,7 @@
     </label>
     <%-- value="${params.filterPropDef}" --%>
     <ui:dropdown id="filterPropDef" name="${newfilterPropDefName ?: 'filterPropDef'}"
-                 class="la-filterPropDef"
+                 class="la-filterPropDef clearable"
                  from="${propList}"
                  iconWhich="${Icon.PROP.IS_PRIVATE}"
                  optionKey="${{

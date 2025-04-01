@@ -45,7 +45,7 @@
                             <br /><br />
                             Beim Löschen relevante Daten an folgende Organisation übertragen:
 
-                            <g:select id="orgReplacement" name="orgReplacement" class="ui dropdown selection"
+                            <g:select id="orgReplacement" name="orgReplacement" class="ui dropdown clearable  selection"
                                       from="${substituteList.sort()}"
                                       optionKey="${{Org.class.name + ':' + it.id}}" optionValue="${{(it.sortname) + ' (' + it.name + ')'}}" />
                                       --%>

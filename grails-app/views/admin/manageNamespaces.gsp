@@ -46,7 +46,7 @@
 
                     <div class="field ${hasErrors(bean: identifierNamespaceInstance, field: 'nsType', 'error')} ">
                         <label for="nsType"><g:message code="default.type.label" /></label>
-                        <g:select id="nsType" name="nsType" class="ui dropdown la-clearable"
+                        <g:select id="nsType" name="nsType" class="ui dropdown clearable"
                                   from="${IdentifierNamespace.AVAILABLE_NSTYPES}"
                                   noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                     </div>
