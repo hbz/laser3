@@ -24,7 +24,7 @@
                               value="${params.endDate}" />
         </div>
 
-        <div class="field ">
+        <div class="field">
             <label>${message(code: 'surveyInfo.isMandatory.label.info')}</label>
             <div class="ui checkbox">
                 <input type="checkbox" name="mandatory" ${params.mandatory? 'checked':''}>
@@ -52,7 +52,7 @@
         </div>
     </div>
 
-        <div class="field ">
+        <div class="field">
             <label>${message(code: 'surveyInfo.comment.label')}</label>
 
             <textarea class="la-textarea-resize-vertical" name="comment">${params.comment}</textarea>

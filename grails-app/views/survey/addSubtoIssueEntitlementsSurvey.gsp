@@ -58,7 +58,7 @@
         </div>
     </div>
 
-    <div class="field ">
+    <div class="field">
         <label>${message(code: 'surveyInfo.comment.label')}</label>
 
         <textarea class="la-textarea-resize-vertical" name="comment">${params.comment}</textarea>

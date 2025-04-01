@@ -1,7 +1,7 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 <g:if test="${contact}">
-    <div class="ui item contact-details js-copyTriggerParent " style="display: flex; flex-flow: row wrap;">
+    <div class="ui item contact-details js-copyTriggerParent" style="display: flex; flex-flow: row wrap;">
         <div  style="display: flex; flex-flow: row wrap;">
 
             <div class="content la-space-right" >

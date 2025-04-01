@@ -130,7 +130,7 @@
                                     </dt>
                                     <dd>
 
-                                        <div class="ui list ">
+                                        <div class="ui list">
                                             <g:each in="${subscription.ids?.sort { it.ns.ns }}"
                                                     var="id">
                                                 <div class="item js-copyTriggerParent">

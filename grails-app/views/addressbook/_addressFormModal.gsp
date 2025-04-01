@@ -196,7 +196,7 @@
         </div>
         <!-- Alternating address Table END-->
         <br>
-        <div class="field ">
+        <div class="field">
             <div class="two fields">
                 <div class="eight wide field">
                     <label for="additionFirst">
@@ -213,7 +213,7 @@
             </div>
         </div>
 
-        <div class="field ">
+        <div class="field">
             <div class="two fields">
                 <div class="field eight wide required  ${hasErrors(bean: addressInstance, field: 'country',
                         'error')}">

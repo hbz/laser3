@@ -93,7 +93,7 @@
             <input type="text" name="discount" placeholder="" value="${params.discount}" required/>
         </div>
 
-        <div class="field ">
+        <div class="field">
             <label>${message(code: 'default.note.label')}</label>
 
             <textarea name="note">${params.note}</textarea>

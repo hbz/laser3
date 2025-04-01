@@ -109,7 +109,7 @@
             <input type="text" name="name" placeholder="" value="${params.name}" required/>
         </div>
 
-        <div class="field ">
+        <div class="field">
             <label>${message(code: 'default.description.label')}</label>
 
             <textarea name="description">${params.description}</textarea>

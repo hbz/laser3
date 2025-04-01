@@ -174,7 +174,7 @@
                                         select += '<option value="' + option.value + '">' + option.text + '</option>';
                                     }
                                 }
-                                select = '<select id="xcgRdvTo" name="xcgRdvTo" class="ui search selection dropdown clearable ">' + select + '</select>';
+                                select = '<select id="xcgRdvTo" name="xcgRdvTo" class="ui search selection dropdown clearable">' + select + '</select>';
 
                                 $('label[for=xcgRdvTo]').next().replaceWith(select);
 

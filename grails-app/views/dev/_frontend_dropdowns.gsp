@@ -5,7 +5,7 @@
     <div class="three wide fields">
         <div class="field">
             <label>Sortierung</label>
-            <div class="ui selection icon dropdown clearable ">
+            <div class="ui selection icon dropdown clearable">
                 <i class="dropdown icon"></i>
                 <div class="default text">Bitte auswählen</div>
                 <div class="menu">
@@ -71,7 +71,7 @@
                     <i aria-hidden="true" class="${Icon.PROP.IS_PRIVATE}"></i> = Mein Merkmal
                 </div>
             </label>
-            <select class="ui dropdown clearable ">
+            <select class="ui dropdown clearable">
                 <option value="">Bitte auswählen</option>
                 <option value="1">Option 1</option>
                 <option value="0">Option 2</option>
@@ -83,7 +83,7 @@
 
     <div class="ui instructive bottom attached segment">
         <pre aria-hidden="true">
-            &lt;select class="ui dropdown clearable ">
+            &lt;select class="ui dropdown clearable">
             &ltoption value="">Bitte auswählen</option>
             &ltoption value="1">Option 1</option>
             &ltoption value="0">Option 2</option>
@@ -110,7 +110,7 @@
                     <i aria-hidden="true" class="${Icon.PROP.IS_PRIVATE}"></i> = Mein Merkmal
                 </div>
             </label>
-            <select class="ui search dropdown clearable ">
+            <select class="ui search dropdown clearable">
                 <option value="">Bitte auswählen</option>
                 <option value="1">Option 1</option>
                 <option value="0">Option 2</option>
@@ -122,7 +122,7 @@
 
     <div class="ui instructive bottom attached segment">
         <pre aria-hidden="true">
-            &lt;select class="ui <strong>search</strong>  dropdown clearable ">
+            &lt;select class="ui <strong>search</strong>  dropdown clearable">
             &ltoption value="">Bitte auswählen</option>
             &ltoption value="1">Option 1</option>
             &ltoption value="0">Option 2</option>
@@ -153,12 +153,12 @@
                 </div>
             </label>
             <div class="la-filter">
-                <select class="ui dropdown clearable ">
+                <select class="ui dropdown clearable">
                     <option value="">Bitte auswählen</option>
                     <option value="1">Option 1</option>
                     <option value="0">Option 2</option>
                 </select>
-                <select class="ui search dropdown clearable ">
+                <select class="ui search dropdown clearable">
                     <option value="">Bitte auswählen</option>
                     <option value="1">Option 1</option>
                     <option value="0">Option 2</option>
@@ -171,13 +171,13 @@
 
     <div class="ui instructive bottom attached segment">
         <pre aria-hidden="true">
-            &lt;select class="ui dropdown clearable ">
+            &lt;select class="ui dropdown clearable">
             &ltoption value="">Bitte auswählen</option>
             &ltoption value="1">Option 1</option>
             &ltoption value="0">Option 2</option>
             &lt;/select>
 
-            &lt;select class="ui <strong>search</strong> dropdown clearable ">
+            &lt;select class="ui <strong>search</strong> dropdown clearable">
             &ltoption value="">Bitte auswählen</option>
             &ltoption value="1">Option 1</option>
             &ltoption value="0">Option 2</option>
@@ -205,7 +205,7 @@
                     <i aria-hidden="true" class="${Icon.PROP.IS_PRIVATE}"></i> = Mein Merkmal
                 </div>
             </label>
-            <div class="ui search selection dropdown clearable ">
+            <div class="ui search selection dropdown clearable">
                 <input type="hidden" name="filterPropDef">
                 <i aria-hidden="true" class="dropdown icon"></i>
                 <div class="default text">Bitte auswählen</div>
