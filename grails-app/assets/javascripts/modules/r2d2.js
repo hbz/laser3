@@ -560,7 +560,7 @@ r2d2 = {
         $(ctxSel + ' .xEditableDatepicker').editable({});
 
         $(ctxSel + ' .xEditableManyToOne').editable({
-            tpl: '<select class="ui search selection dropdown"></select>',
+            tpl: '<select class="ui search selection dropdown clearable "></select>',
             validate: function(value) {
                 var dVal = $(this).attr('data-validation')
                 if (dVal) {
@@ -581,7 +581,7 @@ r2d2 = {
         // boolean values are only allowed to be 0 or 1, so clearable is not suitable
         // role values are not allowed to be null, so clearable is not suitable
         $(ctxSel + ' .xEditableBoolean, ' + ctxSel + ' .xEditableRole').editable({
-            tpl: '<select class="ui search selection dropdown"></select>',
+            tpl: '<select class="ui search selection dropdown clearable"></select>',
             success: function(response, newValue) {
                 if(response.status == 'error') return response.msg; //msg will be shown in editable form
             }
