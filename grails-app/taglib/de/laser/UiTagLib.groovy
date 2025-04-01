@@ -918,7 +918,7 @@ class UiTagLib {
 
         def (text, message) = SwissKnife.getTextAndMessage(attrs)
         String linkBody = (text && message) ? text + " - " + message : text + message
-        String cssClass = ((this.pageScope.variables?.actionName == attrs.action && (attrs.tab == params.tab || attrs.tab == params[attrs.subTab])) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
+        String cssClass = ((this.pageScope.variables?.actionName == attrs.action && (attrs.tab == params.tab || attrs.tab == params.subTab)) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
         String counts = (attrs.counts >= 0) ? '<span class="ui circular label">' + attrs.counts + '</span>' : null
 
