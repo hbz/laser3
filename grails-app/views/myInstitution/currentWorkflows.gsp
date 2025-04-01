@@ -13,7 +13,7 @@
         <div class="two fields">
             <div class="field">
                 <label>${message(code:'default.relation.label')}</label>
-                <ui:select class="ui dropdown clearable la-not-clearable" name="filterTargetType"
+                <ui:select class="ui dropdown clearable" name="filterTargetType"
                            required="required"
                            noSelection="${['' : message(code:'default.select.choose.label')]}"
                            from="${RefdataCategory.getAllRefdataValues(RDConstants.WF_WORKFLOW_TARGET_TYPE)}"
