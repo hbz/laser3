@@ -171,7 +171,7 @@
                                       from="${[csv:'CSV', pdf:'PDF', xlsx: 'XLSX']}"
                             />
                             %{-- <ui:dropdownWithI18nExplanations name="fileformat"
-                                    class="ui dropdown clearable la-not-clearable"
+                                    class="ui dropdown la-not-clearable"
                                     from="[csv: ['CSV', 'Comma-Separated Values'], pdf: ['PDF', 'Portable Document Format'], xlsx: ['XLSX', 'Excel - Office Open XML']]" value="csv"
                                     optionKey="key"
                                     optionValue="${{it.value[0]}}"
