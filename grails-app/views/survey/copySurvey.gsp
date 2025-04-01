@@ -229,7 +229,7 @@
                                     <td>
                                         ${surveyProperty.surveyProperty.getI10n('name')}
 
-                                        <g:if test="${surveyProperty.surveyProperty.tenant?.id == institution.id}">
+                                        <g:if test="${surveyProperty.surveyProperty.tenant?.id == contextService.getOrg().id}">
                                             <i class='${Icon.PROP.IS_PRIVATE}'></i>
                                         </g:if>
 
@@ -528,7 +528,7 @@
                                             -- ${message(code: 'myinst.currentSubscriptions.name_not_set')}  --
                                         </g:else>
                                         <g:if test="${s.instanceOf}">
-                                            <g:if test="${s.getConsortium() && s.getConsortium() == institution}">
+                                            <g:if test="${s.getConsortium() && s.getConsortium() == contextService.getOrg()}">
                                                 ( ${s.getSubscriberRespConsortia().name} )
                                             </g:if>
                                         </g:if>
@@ -597,7 +597,7 @@
                                 <td>
                                     <g:link mapping="subfinance" controller="finance" action="index"
                                             params="${[sub: s.id]}">
-                                        ${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(*) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:institution, deleted:RDStore.COST_ITEM_DELETED])[0]}
+                                        ${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(*) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:contextService.getOrg(), deleted:RDStore.COST_ITEM_DELETED])[0]}
                                     </g:link>
                                 </td>
 

@@ -118,22 +118,24 @@
 </div><!--.card -->
 <%-- private properties --%>
 <div class="ui card la-dl-no-table">
+
     <div class="content">
         <div class="ui header la-flexbox la-justifyContent-spaceBetween">
             <h2>
                 ${message(code: 'default.properties.my')}
             </h2>
-
+            <g:if test="${controllerName == 'survey' && actionName == 'show' && editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
                 <div class="right aligned four wide column">
                     <button type="button" class="${Btn.MODERN.SIMPLE_TOOLTIP}"
                             data-content="${message(code: 'license.button.addProperty')}"
-                            onclick="JSPC.app.createProperty(${surveyInfo.id}, '${surveyInfo.class.simpleName}','true');">
+                            onclick="JSPC.app.createProperty(${surveyInfo.id}, '${surveyInfo.class.simpleName}', 'true');">
                         <i class="${Icon.CMD.ADD}"></i>
                     </button>
                 </div>
-
+            </g:if>
         </div>
     </div>
+
 
 
 

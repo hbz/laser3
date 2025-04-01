@@ -1,7 +1,7 @@
 <%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.survey.SurveyLinks; de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.Subscription; de.laser.storage.RDStore;" %>
 <laser:serviceInjection/>
 
-<g:if test="${contextService.getOrg()?.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
+<g:if test="${contextService.getOrg().id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
     <ui:card message="surveyLinks.label" href="#surveyLinks"
                 editable="${editable && controllerName == 'survey' && actionName == 'show'}">
         <div class="ui small feed content">
@@ -77,12 +77,12 @@
                             <g:each in="${surveyLinks.sort { it.targetSurvey.name }}" var="surveyLink">
                                 <g:if test="${surveyLink.targetSurvey.status != RDStore.SURVEY_IN_PROCESSING}">
                                     <%
-                                        boolean surveyOrgFound = SurveyOrg.findAllByOrgAndSurveyConfigInList(institution, surveyLink.targetSurvey.surveyConfigs).size() > 0
+                                        boolean surveyOrgFound = SurveyOrg.findAllByOrgAndSurveyConfigInList(participant, surveyLink.targetSurvey.surveyConfigs).size() > 0
                                         boolean existsMultiYearTerm = false
                                         SurveyConfig targetSurveyConfig = surveyLink.targetSurvey.surveyConfigs[0]
                                         Subscription sub = targetSurveyConfig.subscription
                                         if (sub && !targetSurveyConfig.pickAndChoose && targetSurveyConfig.subSurveyUseForTransfer) {
-                                            Subscription subChild = sub.getDerivedSubscriptionForNonHiddenSubscriber(institution)
+                                            Subscription subChild = sub.getDerivedSubscriptionForNonHiddenSubscriber(participant)
 
                                             if (subChild && subChild.isCurrentMultiYearSubscriptionNew()) {
                                                 existsMultiYearTerm = true
@@ -94,7 +94,7 @@
                                         String newActionName = "surveyInfos"
                                         Map newParams = [id: surveyLink.targetSurvey.id]
 
-                                        if(controllerName == 'survey' && contextService.getOrg()?.id == surveyConfig.surveyInfo.owner.id){
+                                        if(controllerName == 'survey' && contextService.getOrg().id == surveyConfig.surveyInfo.owner.id){
                                             newControllerName = "survey"
                                             newActionName = "evaluationParticipant"
                                             newParams=[id: surveyLink.targetSurvey.id, participant: participant.id]
