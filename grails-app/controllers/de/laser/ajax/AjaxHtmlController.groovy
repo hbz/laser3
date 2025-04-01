@@ -3,11 +3,11 @@ package de.laser.ajax
 import de.laser.AlternativeName
 import de.laser.CacheService
 import de.laser.ControlledListService
-import de.laser.CryptoService
 import de.laser.CustomerTypeService
 import de.laser.DiscoverySystemFrontend
 import de.laser.DiscoverySystemIndex
 import de.laser.DocContext
+import de.laser.FileCryptService
 import de.laser.GenericOIDService
 import de.laser.HelpService
 import de.laser.IssueEntitlementService
@@ -22,7 +22,6 @@ import de.laser.WorkflowService
 import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
-import de.laser.ctrl.OrganisationControllerService
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ContextService
 import de.laser.GokbService
@@ -49,7 +48,6 @@ import de.laser.Doc
 import de.laser.addressbook.Person
 import de.laser.addressbook.PersonRole
 import de.laser.SubscriptionPackage
-import de.laser.SubscriptionService
 import de.laser.storage.BeanStore
 import de.laser.storage.PropertyStore
 import de.laser.survey.SurveyConfig
@@ -104,9 +102,9 @@ class AjaxHtmlController {
     CacheService cacheService
     ContextService contextService
     ControlledListService controlledListService
-    CryptoService cryptoService
     CustomerTypeService customerTypeService
     CustomWkhtmltoxService wkhtmltoxService // custom
+    FileCryptService fileCryptService
     GenericOIDService genericOIDService
     GokbService gokbService
     HelpService helpService
@@ -116,8 +114,6 @@ class AjaxHtmlController {
     PendingChangeService pendingChangeService
     ReportingGlobalService reportingGlobalService
     ReportingLocalService reportingLocalService
-    OrganisationControllerService organisationControllerService
-    SubscriptionService subscriptionService
     SubscriptionControllerService subscriptionControllerService
     TaskService taskService
     AccessService accessService
@@ -1422,7 +1418,7 @@ class AjaxHtmlController {
                         File f = new File(fPath + '/' +  doc.uuid)
                         if (f.exists()) {
 
-                            File decTmpFile = cryptoService.decryptToTmpFile(f, doc.ckey)
+                            File decTmpFile = fileCryptService.decryptToTmpFile(f, doc.ckey)
                             if (mimeTypes.get(doc.mimeType) == 'raw') {
                                 result.docBase64 = decTmpFile.getBytes().encodeBase64()
                                 result.docDataType = doc.mimeType

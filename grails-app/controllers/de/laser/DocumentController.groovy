@@ -24,7 +24,7 @@ class DocumentController {
 
     AccessService accessService
     ContextService contextService
-    CryptoService cryptoService
+    FileCryptService fileCryptService
     MessageSource messageSource
 
     @DebugInfo(isInstUser = [])
@@ -103,7 +103,7 @@ class DocumentController {
                                 creator:    contextService.getUser(),
                                 owner:      contextService.getOrg(),
                                 server:     AppUtils.getCurrentServer(),
-                                ckey:       cryptoService.generateCKey()
+                                ckey:       fileCryptService.generateCKey()
                         )
                         doc.save()
 
@@ -120,7 +120,7 @@ class DocumentController {
                             targetFile = new File("${tfPath}/${tfName}")
                             uploadFile.transferTo(targetFile)
 
-                            cryptoService.encryptRawFile(targetFile, doc)
+                            fileCryptService.encryptRawFile(targetFile, doc)
                         }
                         catch (Exception e) {
                             e.printStackTrace()
