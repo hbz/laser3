@@ -1,7 +1,7 @@
 <%@ page import="de.laser.ui.Icon" %>
 <laser:serviceInjection />
 
-<div class="ui dropdown clearable item" role="menuitem" aria-haspopup="true">
+<div class="ui dropdown item" role="menuitem" aria-haspopup="true">
     <a class="title">
         ${message(code:'menu.admin')} <i class="dropdown icon"></i>
     </a>

@@ -164,7 +164,7 @@
 
                 <div class="field">
                     <label for="filterCIElement">${message(code:'financials.costItemElement')}</label>
-                    <select name="filterCIElement" id="filterCIElement" multiple="" class="ui dropdown search selection">
+                    <select name="filterCIElement" id="filterCIElement" multiple="" class="ui dropdown clearable  search selection">
                         <option value=""><g:message code="default.select.all.label"/></option>
                         <g:set var="costItemElementsForFilter" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.COST_ITEM_ELEMENT])}" scope="request"/>
                         <g:each in="${costItemElementsForFilter}" var="rdv">
@@ -177,7 +177,7 @@
 
                 <div class="field">
                     <label for="filterCIStatus">${message(code:'default.status.label')}</label>
-                    <select name="filterCIStatus" id="filterCIStatus" multiple="" class="ui dropdown search selection">
+                    <select name="filterCIStatus" id="filterCIStatus" multiple="" class="ui dropdown clearable  search selection">
                         <option value=""><g:message code="default.select.all.label"/></option>
                         <g:set var="costItemStatusForFilter" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.COST_ITEM_STATUS])}" scope="request"/>
                         <g:each in="${costItemStatusForFilter-RDStore.COST_ITEM_DELETED+RDStore.GENERIC_NULL_VALUE}" var="rdv">
@@ -248,7 +248,7 @@
                         }
                         taxTypesList.add([key:'null',value:"${RDStore.GENERIC_NULL_VALUE.getI10n('value')}"])
                     %>
-                    <g:select id="filterCITaxType" class="ui dropdown selection search"
+                    <g:select id="filterCITaxType" class="ui dropdown clearable  selection search"
                               name="filterCITaxType"
                               from="${taxTypesList}"
                               optionKey="${{it.key}}"
@@ -258,7 +258,7 @@
                 </div>
                 <div class="field">
                     <label for="filterCICurrency"><g:message code="default.currency.label"/></label>
-                    <g:select id="filterCICurrency" class="ui dropdown selection search"
+                    <g:select id="filterCICurrency" class="ui dropdown clearable  selection search"
                               name="filterCICurrency"
                               from="${currenciesList}"
                               optionKey="${{it.id}}"

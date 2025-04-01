@@ -68,7 +68,7 @@
             <% /* 1-4 */ %>
             <div class="field">
                 <label>${message(code: 'menu.my.providers')}</label>
-                <g:select class="ui dropdown search" name="provider"
+                <g:select class="ui dropdown clearable search" name="provider"
                           from="${providers}"
                           optionKey="id"
                           optionValue="name"
