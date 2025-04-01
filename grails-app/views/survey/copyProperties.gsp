@@ -201,7 +201,7 @@
                                                   optionKey="id"
                                                   optionValue="name"
                                                   value="${selectedProperty}"
-                                                  class="ui dropdown"
+                                                  class="ui dropdown clearable"
                                                   onchange="this.form.submit()"/>
                                 </g:form>
                             </th>
@@ -220,7 +220,7 @@
                                               optionKey="id"
                                               optionValue="name"
                                               value="${selectedProperty}"
-                                              class="ui dropdown"
+                                              class="ui dropdown clearable"
                                               onchange="this.form.submit()"/>
                             </g:form>
                             </th>

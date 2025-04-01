@@ -65,7 +65,7 @@
             <!-- 2-3 -->
             <div class="field">
                 <label>${message(code: 'subscription.form.label')}</label>
-                <ui:select class="ui dropdown" name="form"
+                <ui:select class="ui dropdown clearable" name="form"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}"
                               optionKey="id"
                               optionValue="value"
@@ -75,7 +75,7 @@
             <!-- 2-4 -->
             <div class="field">
                 <label>${message(code: 'subscription.resource.label')}</label>
-                <ui:select class="ui dropdown" name="resource"
+                <ui:select class="ui dropdown clearable" name="resource"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
                               optionKey="id"
                               optionValue="value"

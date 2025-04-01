@@ -93,7 +93,7 @@
                         }
                     %>
                     <g:select from="${documentTypes}"
-                              class="ui dropdown fluid"
+                              class="ui dropdown clearable  fluid"
                               optionKey="value"
                               optionValue="${{ it.getI10n('value') }}"
                               id="doctype-${labelId}"
@@ -108,7 +108,7 @@
                 </dt>
                 <dd>
                     <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_CONFIDENTIALITY)}"
-                              class="ui dropdown fluid"
+                              class="ui dropdown clearable  fluid"
                               optionKey="value"
                               optionValue="${{ it.getI10n('value') }}"
                               id="confidentiality-${labelId}"
@@ -154,7 +154,7 @@
                         <label for="shareConf-${labelId}">${message(code:'template.addDocument.shareConf')}</label>
                     </dt>
                     <dd>
-                        <ui:select from="${availableConfigs}" class="ui dropdown fluid la-not-clearable" name="shareConf" id="shareConf-${labelId}" optionKey="id" optionValue="value" value="${value}"/>
+                        <ui:select from="${availableConfigs}" class="ui dropdown clearable  fluid la-not-clearable" name="shareConf" id="shareConf-${labelId}" optionKey="id" optionValue="value" value="${value}"/>
                     </dd>
                 </dl>
             </g:if>

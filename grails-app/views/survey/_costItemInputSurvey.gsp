@@ -64,7 +64,7 @@
         <div class="field">
             <label>${message(code: 'default.status.label')}</label>
             <ui:select name="newCostItemStatus" id="newCostItemStatus_${idSuffix}" title="${g.message(code: 'financials.addNew.costState')}"
-                          class="ui dropdown"
+                          class="ui dropdown clearable"
                           from="${costItemStatus}"
                           optionKey="id"
                           optionValue="value"

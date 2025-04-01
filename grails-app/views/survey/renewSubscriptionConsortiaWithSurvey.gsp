@@ -95,7 +95,7 @@
                 <th>${message(code: 'default.status.label')}</th>
                 <td>
                 <g:set var="rdcSubStatus" value="${RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_STATUS)}"/>
-                <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" class="ui dropdown"
+                <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" class="ui dropdown clearable"
                           optionKey="id"
                           optionValue="${{ it.getI10n('value') }}"
                           name="subStatus"
@@ -111,7 +111,7 @@
             <tr>
                 <th>${message(code: 'subscription.kind.label')}</th>
                 <td>
-                    <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}" class="ui dropdown"
+                    <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}" class="ui dropdown clearable"
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
                               name="subKind"
@@ -128,7 +128,7 @@
                 <th>${message(code: 'subscription.form.label.shy')}</th>
                 <td>
                     <g:set var="rdcSubForm" value="${RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_FORM)}"/>
-                    <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}" class="ui dropdown"
+                    <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}" class="ui dropdown clearable"
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
                               name="subForm"
@@ -144,7 +144,7 @@
             <tr>
                 <th>${message(code: 'subscription.resource.label')}</th>
                 <td>
-                    <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}" class="ui dropdown"
+                    <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}" class="ui dropdown clearable"
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
                               name="subResource"
@@ -160,7 +160,7 @@
             <tr>
                 <th>${message(code: 'subscription.isPublicForApi.label')}</th>
                 <td>
-                    <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}" class="ui dropdown"
+                    <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}" class="ui dropdown clearable"
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
                               name="subIsPublicForApi"
@@ -176,7 +176,7 @@
             <tr>
                 <th>${message(code: 'subscription.hasPerpetualAccess.label')}</th>
                 <td>
-                    <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}" class="ui dropdown"
+                    <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}" class="ui dropdown clearable"
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
                               name="subHasPerpetualAccess"
@@ -192,7 +192,7 @@
             <tr>
                 <th>${message(code: 'subscription.hasPublishComponent.label.shy')}</th>
                 <td>
-                    <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}" class="ui dropdown"
+                    <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}" class="ui dropdown clearable"
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
                               name="subHasPublishComponent"
@@ -209,7 +209,7 @@
             <tr>
                 <th>${message(code: 'subscription.holdingSelection.label.shy')}</th>
                 <td>
-                    <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" class="ui dropdown"
+                    <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" class="ui dropdown clearable"
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
                               name="subHoldingSelection"

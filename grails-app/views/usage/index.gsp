@@ -87,14 +87,14 @@
         <div class="two fields">
             <div class="field">
                 <label for="supplier">${message(code: 'default.usage.adminPage.natStatSupplierLabel')}</label>
-                <g:select class="ui dropdown" id="supplier" name="supplier"
+                <g:select class="ui dropdown clearable" id="supplier" name="supplier"
                           from="${natstatProviders}"
                           value="${params.supplier}"
                           noSelection="${['': message(code: 'default.select.choose.label')]}"/>
             </div>
             <div class="field">
                 <label for="institution">${message(code: 'default.usage.adminPage.institutionLabel')}</label>
-                <g:select class="ui dropdown" name="institution"
+                <g:select class="ui dropdown clearable" name="institution"
                           from="${natstatInstitutions}"
                           optionKey="${{it.last().value}}"
                           optionValue="${{it.first().name + ' (' + it.last().value + ')'}}"
