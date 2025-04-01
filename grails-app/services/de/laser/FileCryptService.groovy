@@ -29,7 +29,7 @@ class FileCryptService {
             CKEY             : 64,
             SALT             : 32,
             IV               : 16,
-            PASSPHRASE       : 'd3f4Ul7_P4zzphr4Z3',
+            PASSPHRASE       : 'd3f4Ul7_P4zzphr4Z3', // local
             TMP_DIR          : '/laser-docs'
         ]
     ]
