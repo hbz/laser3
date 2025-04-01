@@ -23,7 +23,7 @@
                     <label for="org">
                         <g:message code="person.belongsTo"/>
                     </label>
-                    <g:select class="ui dropdown clearable  search selection"
+                    <g:select class="ui dropdown clearable search selection"
                               name="org"
                               from="${orgList}"
                               value=""
@@ -46,7 +46,7 @@
                     <label for="provider">
                         <g:message code="person.belongsTo"/>
                     </label>
-                    <g:select class="ui dropdown clearable  search selection"
+                    <g:select class="ui dropdown clearable search selection"
                               name="provider"
                               from="${providerList}"
                               value=""
@@ -69,7 +69,7 @@
                     <label for="vendor">
                         <g:message code="person.belongsTo"/>
                     </label>
-                    <g:select class="ui dropdown clearable  search selection"
+                    <g:select class="ui dropdown clearable search selection"
                               name="vendor"
                               from="${vendorList}"
                               value=""
@@ -90,8 +90,8 @@
                 <label for="typeId">
                     ${RefdataCategory.getByDesc(RDConstants.ADDRESS_TYPE).getI10n('desc')}
                 </label>
-                %{--<ui:select class="ui dropdown clearable  multiple" id="type" name="type.id"--}%
-                <ui:select class="ui dropdown clearable  search selection" id="typeId" name="type.id"
+                %{--<ui:select class="ui dropdown clearable multiple" id="type" name="type.id"--}%
+                <ui:select class="ui dropdown clearable search selection" id="typeId" name="type.id"
                               from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.ADDRESS_TYPE)}"
                               optionKey="id"
                               optionValue="value"
@@ -220,7 +220,7 @@
                     <label for="country">
                         <g:message code="address.country.label" />
                     </label>
-                    <ui:select class="ui dropdown clearable   search" id="country" name="country.id"
+                    <ui:select class="ui dropdown clearable search" id="country" name="country.id"
                                   from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.COUNTRY)}"
                                   optionKey="id"
                                   optionValue="value"

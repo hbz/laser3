@@ -166,7 +166,7 @@
                     </div><!-- .field -->
                     <div class="field">
                         <label>${message(code:'financials.newCosts.taxTypeAndRate')}</label>
-                        <g:select class="ui dropdown clearable  calc" name="newTaxRate" id="newTaxRate_${idSuffix}" title="TaxRate"
+                        <g:select class="ui dropdown clearable calc" name="newTaxRate" id="newTaxRate_${idSuffix}" title="TaxRate"
                               from="${CostItem.TAX_TYPES}"
                               optionKey="${{it.taxType.class.name+":"+it.taxType.id+"§"+it.taxRate}}"
                               optionValue="${{it.display ? it.taxType.getI10n("value")+" ("+it.taxRate+"%)" : it.taxType.getI10n("value")}}"
@@ -260,7 +260,7 @@
                             </g:if>
                             <g:elseif test="${costItem?.sub == subscription && subscription._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL}">
                                 <input type="button" name="toggleLicenseeTarget" id="toggleLicenseeTarget_${idSuffix}" class="${Btn.SIMPLE} la-full-width" value="${message(code:'financials.newCosts.toggleLicenseeTarget')}">
-                                <g:select name="newLicenseeTarget" id="newLicenseeTarget_${idSuffix}" class="ui dropdown clearable  multiple search"
+                                <g:select name="newLicenseeTarget" id="newLicenseeTarget_${idSuffix}" class="ui dropdown clearable multiple search"
                                           from="${validSubChilds}" multiple="multiple"
                                           optionValue="${{it.name ? it.getSubscriberRespConsortia().dropdownNamingConvention(institution) : it.label}}"
                                           optionKey="id"
@@ -270,7 +270,7 @@
                             </g:elseif>
                             <g:else>
                                 <input type="button" name="toggleLicenseeTarget" id="toggleLicenseeTarget_${idSuffix}" class="${Btn.SIMPLE} la-full-width" value="${message(code:'financials.newCosts.toggleLicenseeTarget')}">
-                                <g:select name="newLicenseeTarget" id="newLicenseeTarget_${idSuffix}" class="ui dropdown clearable  multiple search"
+                                <g:select name="newLicenseeTarget" id="newLicenseeTarget_${idSuffix}" class="ui dropdown clearable multiple search"
                                           from="${validSubChilds}" multiple="multiple"
                                           optionValue="${{it.name ? it.getSubscriberRespConsortia().dropdownNamingConvention(institution) : it.label}}"
                                           optionKey="id"
@@ -286,7 +286,7 @@
                         <div class="field">
                             <label>${message(code:'financials.newCosts.package')}</label>
                             <g:if test="${costItem?.sub}">
-                                <g:select name="newPackage" id="newPackage_${idSuffix}" class="ui dropdown clearable  search"
+                                <g:select name="newPackage" id="newPackage_${idSuffix}" class="ui dropdown clearable search"
                                           from="${costItem?.sub?.packages?.pkg}"
                                           optionValue="${{it?.name ?: message(code:'financials.newCosts.noPackageLink')}}"
                                           optionKey="id"

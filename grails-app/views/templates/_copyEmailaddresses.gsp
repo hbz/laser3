@@ -32,7 +32,7 @@
             </div>
             <div class="field">
                 <label><g:message code="person.position.label" /></label>
-                <ui:select class="ui dropdown clearable  search"
+                <ui:select class="ui dropdown clearable search"
                            name="prsPositionMultiSelect"
                            multiple=""
                            from="${rdvAllPersonPositions}"

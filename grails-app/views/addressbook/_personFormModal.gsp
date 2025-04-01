@@ -311,7 +311,7 @@
                         </div>
 
                         <div class="field wide four">
-                            <ui:select class="ui dropdown clearable  contentType" name="contentType.id"
+                            <ui:select class="ui dropdown clearable contentType" name="contentType.id"
                                        from="${[RDStore.CCT_EMAIL, RDStore.CCT_FAX, RDStore.CCT_MOBILE, RDStore.CCT_PHONE, RDStore.CCT_URL]}"
                                        optionKey="id"
                                        optionValue="value"

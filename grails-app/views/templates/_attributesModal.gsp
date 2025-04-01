@@ -9,7 +9,7 @@
                 <label for="attributeSelection_${modalId}"><g:message code="${label}"/>:</label>
 
                 <g:select from="${availableAttributes}"
-                          class="ui dropdown clearable  fluid"
+                          class="ui dropdown clearable fluid"
                           id="attributeSelection_${modalId}"
                           optionKey="${{ genericOIDService.getOID(it) }}"
                           optionValue="${{ it instanceof de.laser.RefdataValue ? it.getI10n('value') : it.name }}"

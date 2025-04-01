@@ -131,9 +131,9 @@
     </div>
 
 </div>
-<!-- STOP Example search dropdown clearable  clearable -->
+<!-- STOP Example search dropdown clearable clearable -->
 
-<!-- START Example dropdown clearable  clearable in filters -->
+<!-- START Example dropdown clearable clearable in filters -->
 <div class="dropdown clearable example">
 
     <div class="html ui top attached segment">
@@ -238,7 +238,7 @@
         &lt;i class=&quot;${Icon.PROP.IS_PRIVATE} &quot;&gt;&lt;/i&gt; = Meine Merkmal
         &lt;/div&gt;
         &lt;/label&gt;
-        &lt;div class=&quot;ui search selection dropdown clearable  la-filterPropDef&quot;&gt;
+        &lt;div class=&quot;ui search selection dropdown clearable la-filterPropDef&quot;&gt;
         &lt;input type=&quot;hidden&quot; name=&quot;filterPropDef&quot;&gt; &lt;i class=&quot;dropdown icon&quot;&gt;&lt;/i&gt;
         &lt;input class=&quot;search&quot; <strong>id=&quot;filterPropDef&quot;</strong> &gt;
         &lt;div class=&quot;default text&quot;&gt;Bitte ausw&auml;hlen&lt;/div&gt;

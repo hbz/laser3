@@ -368,7 +368,7 @@
                                             <input type="url" name="propValue${i}" class="memberProperty" placeholder="${message(code:'default.value.label')}"/>
                                         </g:elseif>
                                         <g:elseif test="${prop.isRefdataValueType()}">
-                                            <ui:select class="ui dropdown clearable  search memberPropertyDropdown" name="propValue${i}"
+                                            <ui:select class="ui dropdown clearable search memberPropertyDropdown" name="propValue${i}"
                                                        from="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: prop.refdataCategory])}"
                                                        optionKey="id"
                                                        optionValue="value"

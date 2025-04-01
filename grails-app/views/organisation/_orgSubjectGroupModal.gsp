@@ -6,7 +6,7 @@
             <label for="subjectGroupSelection"><g:message code="org.subjectGroup.label"/>:</label>
 
             <g:select from="${availableSubjectGroups}"
-                      class="ui dropdown clearable  fluid"
+                      class="ui dropdown clearable fluid"
                       id="subjectGroupSelection"
                       optionKey="id"
                       optionValue="${{ it?.getI10n('value') }}"
