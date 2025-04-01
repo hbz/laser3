@@ -5,7 +5,7 @@
                 <a href="#" aria-label="Start" class="header item la-logo-item">
                     <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
                 </a>
-                <div class="ui dropdown clearable item" role="none">
+                <div class="ui dropdown item" role="none">
                     <a role="menuitem" aria-haspopup="true" tabindex="0">Alle</a>
                     <i class="dropdown icon"></i>
                    <div class="menu" role="menu" aria-label="das Menu">
@@ -14,7 +14,7 @@
                         <a id="3" href="#" class="item" role="menuitem" aria-label="Alle Organisationen" >Alle Organisationen</a>
                     </div>
                 </div>
-                <div class="ui dropdown clearable item" role="none">
+                <div class="ui dropdown item" role="none">
                     <a role="menuitem" aria-haspopup="true" tabindex="0">Meine Objekte</a>
                     <i class="dropdown icon"></i>
                     <div class="menu" role="menu">
@@ -27,7 +27,7 @@
                         <a id="10" href="#" class="item" role="menuitem" >Meine Dokumente</a>
                     </div>
                 </div>
-                <div class="ui dropdown clearable item" role="none">
+                <div class="ui dropdown item" role="none">
                     <a role="menuitem" aria-haspopup="true" tabindex="0">Meine Einrichtung</a>
                     <i class="dropdown icon"></i>
                     <div class="menu" role="menu">
@@ -62,7 +62,7 @@
                             <i class="top right grey corner plus icon"></i>
                         </i>
                     </a>
-                    <div class="ui dropdown clearable item la-noBorder" role="menuitem" aria-haspopup="true">
+                    <div class="ui dropdown item la-noBorder" role="menuitem" aria-haspopup="true">
                         Ingrid Bluoss
                         <i class="dropdown icon"></i>
                         <div class="menu" role="menu">

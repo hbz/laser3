@@ -43,7 +43,7 @@
                 List documentTypes = RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_TYPE) - notAvailable
             %>
             <g:select from="${documentTypes}"
-                      class="ui dropdown clearable  fluid"
+                      class="ui dropdown clearable fluid"
                       optionKey="value"
                       optionValue="${{ it.getI10n('value') }}"
                       name="doctype"

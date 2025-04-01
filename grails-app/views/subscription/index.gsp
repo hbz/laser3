@@ -358,7 +358,7 @@
                         </div>
                         <div class="four wide column">
                             <div class="field la-field-noLabel">
-                                <ui:select class="ui dropdown" name="bulk_local_currency" title="${message(code: 'financials.addNew.currencyType')}"
+                                <ui:select class="ui dropdown clearable" name="bulk_local_currency" title="${message(code: 'financials.addNew.currencyType')}"
                                     optionKey="id" optionValue="value" from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.CURRENCY)}"/>
                             </div>
                         </div>
@@ -374,7 +374,7 @@
                             <g:if test="${subscription.ieGroups.size() > 0}">
                                 <div class="field">
                                     <label><g:message code="subscription.details.ieGroups"/></label>
-                                    <select class="ui dropdown" name="titleGroupInsert" id="titleGroupInsert">
+                                    <select class="ui dropdown clearable" name="titleGroupInsert" id="titleGroupInsert">
                                         <option value="">${message(code: 'default.select.choose.label')}</option>
                                         <g:each in="${subscription.ieGroups.sort { it.name }}" var="titleGroup">
                                             <option value="${titleGroup.id}">${titleGroup.name}</option>

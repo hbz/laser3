@@ -49,7 +49,7 @@
 
                 <div class="field">
                     <label><g:message code="person.function.label"/></label>
-                    <ui:select class="ui dropdown search"
+                    <ui:select class="ui dropdown clearable  search"
                                   name="function"
                                   from="${rdvAllPersonFunctions}"
                                   multiple=""
@@ -60,7 +60,7 @@
 
                 <div class="field">
                     <label><g:message code="person.position.label"/></label>
-                    <ui:select class="ui dropdown search"
+                    <ui:select class="ui dropdown clearable  search"
                                   name="position"
                                   from="${rdvAllPersonPositions}"
                                   multiple=""

@@ -87,7 +87,7 @@
                     <label for="osApiLevel">
                         <g:message code="org.apiLevel.label"/>
                     </label>
-                    <select id="osApiLevel" name="osApiLevel" multiple="multiple" class="ui dropdown clearable  multiple">
+                    <select id="osApiLevel" name="osApiLevel" multiple="multiple" class="ui dropdown clearable multiple">
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:each in="${ApiToolkit.getAllApiLevels()}" var="alf">
                             <option <%=(params.list('osApiLevel').contains(alf)) ? 'selected="selected"' : '' %> value="${alf}">
@@ -103,7 +103,7 @@
                     <label for="osServerAccess">
                         <g:message code="org.serverAccess.label"/>
                     </label>
-                    <select id="osServerAccess" name="osServerAccess" multiple="multiple" class="ui dropdown clearable  multiple">
+                    <select id="osServerAccess" name="osServerAccess" multiple="multiple" class="ui dropdown clearable multiple">
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:each in="${[OrgSetting.KEYS.NATSTAT_SERVER_ACCESS, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS, OrgSetting.KEYS.EZB_SERVER_ACCESS]}" var="saf">
                             <option <%=(params.list('osServerAccess').contains(saf.toString())) ? 'selected="selected"' : '' %> value="${saf}">
@@ -163,7 +163,7 @@
                         %{--<g:set var="orgRoles" value="${RefdataCategory.getAllRefdataValues(RDConstants.ORGANISATIONAL_ROLE)}"/>--}%
                         <g:set var="orgRoles" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.ORGANISATIONAL_ROLE])}" scope="request"/>
                     </g:if>
-                    <ui:select class="ui dropdown clearable  search" id="orgRole" name="orgRole"
+                    <ui:select class="ui dropdown clearable search" id="orgRole" name="orgRole"
                                   from="${orgRoles}"
                                   optionKey="id"
                                   optionValue="value"
@@ -206,7 +206,7 @@
                 <div class="field">
                     <label for="country">${message(code: 'org.country.label')}</label>
                     <g:set var="countries" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.COUNTRY])}" scope="request"/>
-                    <ui:select class="ui dropdown clearable  search" id="country" name="country"
+                    <ui:select class="ui dropdown clearable search" id="country" name="country"
                                   from="${countries}"
                                   optionKey="id"
                                   optionValue="value"
@@ -253,7 +253,7 @@
             <g:if test="${field.equalsIgnoreCase('customerType')}">
                 <div class="field">
                     <label for="customerType">${message(code:'org.customerType.label')}</label>
-                    <select id="customerType" name="customerType" multiple="" class="ui dropdown clearable  search">
+                    <select id="customerType" name="customerType" multiple="" class="ui dropdown clearable search">
                         <option value=""><g:message code="default.select.choose.label"/></option>
                         <g:each in="${[Role.findByAuthority('FAKE')] + Role.findAllByRoleType('org')}" var="rr">
                             <option <%=Params.getLongList(params, 'customerType').contains(rr.id) ? 'selected="selected"' : ''%> value="${rr.id}">${rr.getI10n('authority')}</option>

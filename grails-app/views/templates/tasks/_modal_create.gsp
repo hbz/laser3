@@ -79,7 +79,7 @@
                 <label for="${preID}_license">
                     <g:message code="task.linkto" /> <g:message code="license.label" /> <g:message code="messageRequiredField" />
                 </label>
-                <g:select class="ui dropdown clearable  search"
+                <g:select class="ui dropdown clearable search"
                           id="${preID}_license"
                           name="license"
                           from="${validLicensesDropdown}"
@@ -100,7 +100,7 @@
                           optionKey="${{it.optionKey}}"
                           optionValue="${{it.optionValue}}"
                           value="${ownobj?.id}"
-                          class="ui dropdown clearable  search"
+                          class="ui dropdown clearable search"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                 />
             </div>
@@ -115,7 +115,7 @@
                           optionKey="${{it.optionKey}}"
                           optionValue="${{it.optionValue}}"
                           value="${ownobj?.id}"
-                          class="ui dropdown clearable  search"
+                          class="ui dropdown clearable search"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                 />
             </div>
@@ -130,7 +130,7 @@
                           optionKey="${{it.optionKey}}"
                           optionValue="${{it.optionValue}}"
                           value="${ownobj?.id}"
-                          class="ui dropdown clearable  search"
+                          class="ui dropdown clearable search"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                 />
             </div>
@@ -139,7 +139,7 @@
                 <label for="${preID}_subscription">
                     <g:message code="task.linkto" /> <g:message code="default.subscription.label" /> <g:message code="messageRequiredField" />
                 </label>
-                <g:select class="ui dropdown clearable  search"
+                <g:select class="ui dropdown clearable search"
                           id="${preID}_subscription"
                           name="subscription"
                           from="${validSubscriptionsDropdown}"

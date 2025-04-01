@@ -13,7 +13,7 @@
         <div class="two fields">
             <div class="field">
                 <label>${message(code:'default.relation.label')}</label>
-                <ui:select class="ui dropdown la-not-clearable" name="filterTargetType"
+                <ui:select class="ui dropdown clearable la-not-clearable" name="filterTargetType"
                            required="required"
                            noSelection="${['' : message(code:'default.select.choose.label')]}"
                            from="${RefdataCategory.getAllRefdataValues(RDConstants.WF_WORKFLOW_TARGET_TYPE)}"
@@ -24,7 +24,7 @@
             </div>
             <div class="field">
                 <label>${message(code: 'default.status.label')}</label>
-                <ui:select class="ui dropdown" name="filterStatus"
+                <ui:select class="ui dropdown clearable" name="filterStatus"
                           from="${[RDStore.WF_WORKFLOW_STATUS_OPEN, RDStore.WF_WORKFLOW_STATUS_DONE]}"
                           optionKey="id"
                           optionValue="value"
@@ -33,7 +33,7 @@
             </div>
             <div class="field">
                 <label>${message(code: 'workflow.template.plural')}</label>
-                <g:select class="ui dropdown" name="filterTemplates"
+                <g:select class="ui dropdown clearable" name="filterTemplates"
                           from="${ ['yes':'Nur Vorlagen', 'no':'Keine Vorlagen'] }"
                           optionKey="${{it.key}}"
                           optionValue="${{it.value}}"

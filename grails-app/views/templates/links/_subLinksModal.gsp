@@ -191,7 +191,7 @@
                             ${thisString}
                         </div>
                         <div class="twelve wide column">
-                            <g:select class="ui dropdown clearable  select la-full-width" name="${selectLink}" id="${selectLink}" from="${linkTypes}" optionKey="${{it.key}}"
+                            <g:select class="ui dropdown clearable select la-full-width" name="${selectLink}" id="${selectLink}" from="${linkTypes}" optionKey="${{it.key}}"
                                       optionValue="${{it.value}}" value="${linkType ?: null}" noSelection="${['' : message(code:'default.select.choose.label')]}"/>
                         </div>
                     </div>

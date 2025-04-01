@@ -22,7 +22,7 @@
         <div class="two fields">
             <div class="field">
                 <label><g:message code="person.function.label" /></label>
-                <ui:select class="ui dropdown clearable  clearable search"
+                <ui:select class="ui dropdown clearable search"
                            name="prsFunctionMultiSelect"
                            multiple=""
                            from="${rdvAllPersonFunctions}"

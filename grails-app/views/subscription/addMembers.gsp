@@ -89,7 +89,7 @@
                     <div class="field">
                         <label for="subStatus"><g:message code="subscription.status.label"/></label>
                         <g:set value="${RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_STATUS)}" var="rdcSubStatus"/>
-                        <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" class="ui dropdown"
+                        <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" class="ui dropdown clearable"
                                   optionKey="id"
                                   optionValue="${{ it.getI10n('value') }}"
                                   name="subStatus"
@@ -368,7 +368,7 @@
                                             <input type="url" name="propValue${i}" class="memberProperty" placeholder="${message(code:'default.value.label')}"/>
                                         </g:elseif>
                                         <g:elseif test="${prop.isRefdataValueType()}">
-                                            <ui:select class="ui dropdown search memberPropertyDropdown" name="propValue${i}"
+                                            <ui:select class="ui dropdown clearable  search memberPropertyDropdown" name="propValue${i}"
                                                        from="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: prop.refdataCategory])}"
                                                        optionKey="id"
                                                        optionValue="value"
