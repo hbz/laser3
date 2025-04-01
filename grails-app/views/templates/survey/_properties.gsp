@@ -40,7 +40,7 @@
             %>
             <g:if test="${surveyProperties.size() > 0}">
                 <div class="content">
-                    <h3 class="ui  header">
+                    <h3 class="ui header">
                         <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
                         ${message(code: 'surveyConfigsInfo.properties')}
                         (${pdg.name})
@@ -62,7 +62,7 @@
             %>
             <g:if test="${surveyProperties.size() > 0}">
                 <div class="content">
-                    <h3 class="ui  header">
+                    <h3 class="ui header">
                         <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
                         ${message(code: 'surveyConfigsInfo.properties')}
                         (${pdg.name})
@@ -144,7 +144,7 @@
         <g:set var="surveyProperties" value="${surveyConfig.getPrivateSurveyConfigProperties()}"/>
         <g:if test="${surveyProperties.size() > 0}">
             <div class="content">
-                <h3 class="ui  header">
+                <h3 class="ui header">
                     <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
                     ${message(code: 'surveyConfigsInfo.properties.privat')}
                 </h3>
@@ -161,7 +161,7 @@
                value="${surveyConfig.getPrivateSurveyResultsByOrg(participant)}"/>
         <g:if test="${surveyProperties.size() > 0}">
             <div class="content">
-                <h3 class="ui  header">
+                <h3 class="ui header">
                     <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
                     ${message(code: 'surveyConfigsInfo.properties.privat')}
                 </h3>

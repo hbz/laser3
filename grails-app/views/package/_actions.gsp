@@ -37,7 +37,7 @@
             </div>
             <div class="two fields holdingSelection">
                 <div class="field">
-                    <ui:select class="ui dropdown clearable  search selection" id="holdingSelection" name="holdingSelection" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" optionKey="id" optionValue="value"/>
+                    <ui:select class="ui dropdown clearable search selection" id="holdingSelection" name="holdingSelection" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" optionKey="id" optionValue="value"/>
                 </div>
                 <g:if test="${org.isCustomerType_Consortium()}">
                     <g:hiddenField name="subOID" value="null"/>

@@ -174,7 +174,7 @@
 
             <g:form action="proccessCopyProperties" controller="survey" id="${surveyInfo.id}"
                     params="[surveyConfigID: surveyConfig.id, tab: params.tab, targetSubscriptionId: targetSubscription?.id]"
-                    method="post" class="ui form ">
+                    method="post" class="ui form">
                 <g:hiddenField name="copyProperty" value="${selectedProperty}"/>
 
                 <table class="ui celled sortable table la-js-responsive-table la-table" id="parentSubscription">

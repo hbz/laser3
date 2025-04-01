@@ -232,7 +232,7 @@
                                     <i class="${Icon.SURVEY} la-list-icon"></i>
                                 </span>
                             </g:if>
-                            <g:link controller="survey" action="show" id="${surveyInfo.id}" class="ui ">
+                            <g:link controller="survey" action="show" id="${surveyInfo.id}" class="ui">
                                 ${surveyConfig?.getSurveyName()}
                             </g:link>
                         </div>

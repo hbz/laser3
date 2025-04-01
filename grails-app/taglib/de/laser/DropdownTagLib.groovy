@@ -178,7 +178,7 @@ class DropdownTagLib {
         String noSelection  = attrs.noSelection ?: ''
 
         out << '<label>' + message(code: 'form.label.sort') + '</label>'
-        out << '<select class="ui  selection dropdown la-js-sorting la-not-clearable ' + cssClass + '">'
+        out << '<select class="ui selection dropdown la-js-sorting la-not-clearable ' + cssClass + '">'
         out <<     '<option value="">' + noSelection + '</option>'
         attrs.from.eachWithIndex { sortKey, sortValue, i ->
             String selectedAsc = attrs.sort == sortKey && attrs.order == 'asc' ? 'selected' : ''

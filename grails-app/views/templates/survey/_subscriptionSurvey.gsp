@@ -98,7 +98,7 @@
 
                     <div class="content" id="subscription-info">
                         <div class="ui stackable grid container">
-                            <div class="ten wide column ">
+                            <div class="ten wide column">
                                 <dl>
                                     <dt class="control-label">${message(code: 'default.status.label')}</dt>
                                     <dd>${subscription.status.getI10n('value')}</dd>
@@ -130,7 +130,7 @@
                                     </dt>
                                     <dd>
 
-                                        <div class="ui list ">
+                                        <div class="ui list">
                                             <g:each in="${subscription.ids?.sort { it.ns.ns }}"
                                                     var="id">
                                                 <div class="item js-copyTriggerParent">

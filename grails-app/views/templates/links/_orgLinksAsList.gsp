@@ -91,7 +91,7 @@
                                                     <i class="${Icon.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.public')}"></i>
                                                 </div>
                                                 <div class="thirteen wide column">
-                                                    <div class="ui  label">
+                                                    <div class="ui label">
                                                         ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                                     </div>
                                                     <div class="ui header">
@@ -120,7 +120,7 @@
                                                         <i class="${Icon.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.public')}"></i>
                                                     </div>
                                                     <div class="thirteen wide column">
-                                                        <div class="ui  label">
+                                                        <div class="ui label">
                                                             ${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}
                                                         </div>
                                                         <div class="ui header">
@@ -145,7 +145,7 @@
                                                         <i class="${Icon.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.public')}"></i>
                                                     </div>
                                                     <div class="thirteen wide column">
-                                                        <div class="ui  label">
+                                                        <div class="ui label">
                                                             ${RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value')}
                                                         </div>
                                                         <div class="ui header">
@@ -170,7 +170,7 @@
                                                         <i class="${Icon.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.public')}"></i>
                                                     </div>
                                                     <div class="thirteen wide column">
-                                                        <div class="ui  label">
+                                                        <div class="ui label">
                                                             ${(RefdataValue.getByValueAndCategory('Metadata Contact', RDConstants.PERSON_FUNCTION)).getI10n('value')}
                                                         </div>
                                                         <div class="ui header">
@@ -196,7 +196,7 @@
                                                     <i class="${Icon.ACP_PUBLIC} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.public')}"></i>
                                                 </div>
                                                 <div class="thirteen wide column">
-                                                    <div class="ui  label">
+                                                    <div class="ui label">
                                                         ${(RefdataValue.getByValue(roleRespValue)).getI10n('value')}
                                                     </div>
                                                     <div class="ui header">
@@ -248,7 +248,7 @@
                                                     <i class="${Icon.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}"></i>
                                                 </div>
                                                 <div class="thirteen wide column">
-                                                    <div class="ui  label">
+                                                    <div class="ui label">
                                                         ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                                     </div>
                                                     <div class="ui header">
@@ -274,7 +274,7 @@
                                                         <i class="${Icon.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}"></i>
                                                     </div>
                                                     <div class="thirteen wide column">
-                                                        <div class="ui  label">
+                                                        <div class="ui label">
                                                             ${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}
                                                         </div>
                                                         <div class="ui header">
@@ -299,7 +299,7 @@
                                                         <i class="${Icon.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}"></i>
                                                     </div>
                                                     <div class="thirteen wide column">
-                                                        <div class="ui  label">
+                                                        <div class="ui label">
                                                             ${RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value')}
                                                         </div>
                                                         <div class="ui header">
@@ -324,7 +324,7 @@
                                                         <i class="${Icon.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}"></i>
                                                     </div>
                                                     <div class="thirteen wide column">
-                                                        <div class="ui  label">
+                                                        <div class="ui label">
                                                             ${(RefdataValue.getByValueAndCategory('Metadata Contact', RDConstants.PERSON_FUNCTION)).getI10n('value')}
                                                         </div>
                                                         <div class="ui header">
@@ -350,7 +350,7 @@
                                                     <i class="${Icon.ACP_PRIVATE} circular large la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip" data-content="${message(code:'address.private')}" ></i>
                                                </div>
                                                 <div class="twelve wide column">
-                                                    <div class="ui  label">
+                                                    <div class="ui label">
                                                         ${(RefdataValue.getByValue(roleRespValue)).getI10n('value')}
                                                     </div>
                                                     <div class="ui header">

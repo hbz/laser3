@@ -183,14 +183,14 @@
         <div class="ui form">
             <div class="three fields">
                 <div class="field">
-                    <g:select id="filterTableUri" name="filterTableUri" class="ui dropdown clearable  search selection"
+                    <g:select id="filterTableUri" name="filterTableUri" class="ui dropdown clearable search selection"
                               from="${contextStats.collect{it[0]}.unique().sort()}"
                               optionKey="${{it}}" optionValue="${{it}}"
                               noSelection="['':'Alle anzeigen']"
                     />
                 </div>
                 <div class="field">
-                    <g:select id="filterTableCtx" name="filterTableCtx" class="ui dropdown clearable  search selection"
+                    <g:select id="filterTableCtx" name="filterTableCtx" class="ui dropdown clearable search selection"
                               from="${contextStats.collect{Org.get(it[3])}.unique()}"
                               optionKey="id" optionValue="${{it.sortname}}"
                               noSelection="['':'Alle anzeigen']"

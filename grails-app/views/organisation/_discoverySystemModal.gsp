@@ -7,7 +7,7 @@
                     <label for="frontendSelection"><g:message code="org.discoverySystems.frontend.label"/>:</label>
 
                     <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.DISCOVERY_SYSTEM_FRONTEND)}"
-                              class="ui dropdown clearable  fluid"
+                              class="ui dropdown clearable fluid"
                               id="frontendSelection"
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
@@ -24,7 +24,7 @@
                     <label for="indexSelection"><g:message code="org.discoverySystems.index.label"/>:</label>
 
                     <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.DISCOVERY_SYSTEM_INDEX)}"
-                              class="ui dropdown clearable  fluid"
+                              class="ui dropdown clearable fluid"
                               id="indexSelection"
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"

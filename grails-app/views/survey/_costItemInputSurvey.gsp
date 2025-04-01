@@ -146,7 +146,7 @@
 
 </div><!-- three fields -->
 <g:if test="${selectPkg == "true"}">
-    <div class="field ">
+    <div class="field">
         <div class="one fields la-forms-grid">
             <fieldset class="sixteen wide field">
                 <div class="field">
@@ -165,7 +165,7 @@
     </div>
 </g:if>
 
-<div class="field ">
+<div class="field">
     <div class="two fields la-forms-grid">
         <ui:datepicker label="financials.dateFrom" id="newStartDate" name="newStartDate" placeholder="default.date.label"
                           value="${costItem?.startDate}"/>
