@@ -259,7 +259,7 @@
                                 </g:else>
                             </g:if>
                             <g:elseif test="${prop.tenant?.id == consortium?.id && atSubscr}">
-                                <span class="la-popup-tooltip" data-content="${message(code:'property.notInherited.fromConsortia')}" data-position="top right"><i class="icon cart arrow down grey "></i></span>
+                                <span class="la-popup-tooltip" data-content="${message(code:'property.notInherited.fromConsortia')}" data-position="top right"><i class="icon cart arrow down grey"></i></span>
                             </g:elseif>
                         </g:else>
                     </td>

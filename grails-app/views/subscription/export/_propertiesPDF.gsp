@@ -114,7 +114,7 @@
 <%-- private properties --%>
 
 <!-- TODO div class="ui card la-dl-no-table" -->
-<div class="ui card la-dl-no-table ">
+<div class="ui card la-dl-no-table">
     <div class="content">
         <h2 class="ui header">${message(code:'subscription.properties.private')} ${contextService.getOrg().name}</h2>
         <g:set var="propertyWrapper" value="private-property-wrapper-${contextService.getOrg().id}" />

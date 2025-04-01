@@ -24,7 +24,7 @@
                     <g:hiddenField name="accessMethod" value="${accessPoint.accessMethod}"/>
                     <div class="field">
                         <label><g:message code="platform.label"/></label>
-                        <g:select id="platforms" class="ui dropdown search" name="platforms"
+                        <g:select id="platforms" class="ui dropdown clearable search" name="platforms"
                                   from="${platformList}"
                                   optionKey="id"
                                   optionValue="name"

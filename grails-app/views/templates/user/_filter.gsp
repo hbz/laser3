@@ -22,7 +22,7 @@
                 <label for="role"><g:message code="default.role.label"/></label>
                 <g:select from="${filterableRoles}"
                           noSelection="${['' : message(code:'default.all')]}"
-                          class="ui dropdown"
+                          class="ui dropdown clearable"
                           value="${params.role}" optionKey="${{it.id}}" optionValue="${{message(code:'cv.roles.'+it.authority)}}" id="role" name="role" />
             </div>
 
@@ -31,7 +31,7 @@
                     <label for="status"><g:message code="default.status.label"/></label>
                     <g:select from="${filterableStatus}"
                               noSelection="${['' : message(code:'default.all')]}"
-                              class="ui dropdown"
+                              class="ui dropdown clearable"
                               value="${params.status}" optionKey="${{it.key}}" optionValue="${{it.value}}" id="status" name="status" />
                 </div>
             </g:if>

@@ -1415,9 +1415,9 @@ class FilterService {
     Map<String,Object> getIssueEntitlementSubsetQuery(Map params) {
         log.debug 'getIssueEntitlementSubsetQuery'
         Map<String, Object> result = [:], clauses = getIssueEntitlementSubsetArguments(params)
-        String query = "select ie.id from IssueEntitlement ie join ie.tipp tipp where tipp.id in (:subset) "
+        String query = "select new map(ie.id as ieID, tipp.id as tippID) from IssueEntitlement ie join ie.tipp tipp "
 
-        result.query = query + "and ${clauses.arguments} order by ${params.sort} ${params.order}"
+        result.query = query + "where ${clauses.arguments} order by ${params.sort} ${params.order}"
         result.queryParams = clauses.queryParams
 
         result
@@ -1880,7 +1880,9 @@ class FilterService {
         log.debug 'getTippSubsetQuery'
         Map<String, Object> result = [:], clauses = getTippSubsetArguments(params)
         String query = 'select tipp.id from TitleInstancePackagePlatform tipp where'
-        result.query = query+" ${clauses.arguments} order by ${params.sort} ${params.order}"
+        result.query = query+" ${clauses.arguments} "
+        if(!params.containsKey('noSort'))
+            result.query += "order by ${params.sort} ${params.order}"
         result.queryParams = clauses.queryParams
         result
     }

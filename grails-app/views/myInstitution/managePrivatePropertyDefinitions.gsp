@@ -316,13 +316,13 @@
                         }
                         availablePrivateDescr[CostInformationDefinition.COST_INFORMATION] = message(code:"costInformationDefinition.label")
                     %>
-                    <g:select name="pd_descr" id="pd_descr" class="ui dropdown" optionKey="key" optionValue="value"
+                    <g:select name="pd_descr" id="pd_descr" class="ui dropdown clearable" optionKey="key" optionValue="value"
                         from="${availablePrivateDescr.entrySet()}" noSelection="${[null:message(code:'default.select.choose.label')]}"/>
                 </div>
 
                 <div class="field five wide required propertyDefinitionField">
                     <label for="pd_type"><g:message code="propertyDefinition.type.label" /> <g:message code="messageRequiredField" /></label>
-                    <g:select class="ui dropdown"
+                    <g:select class="ui dropdown clearable"
                         from="${PropertyDefinition.validTypes.entrySet()}"
                         optionKey="key" optionValue="${{PropertyDefinition.getLocalizedValue(it.key)}}"
                         noSelection="${[null:message(code:'default.select.choose.label')]}"

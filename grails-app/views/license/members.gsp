@@ -38,7 +38,7 @@
 
             <div class="field">
                 <label>${message(code: 'default.status.label')}</label>
-                <ui:select class="ui dropdown" name="status"
+                <ui:select class="ui dropdown clearable" name="status"
                               from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
                               optionKey="id"
                               optionValue="value"

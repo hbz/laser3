@@ -80,7 +80,7 @@ class ReportingTagLib {
             out << '<label for="' + filterName + '">' + filterLabel + '</label>'
 
             out << ui.select([
-                    class      : "ui fluid search dropdown",
+                    class      : "ui fluid search dropdown clearable",
                     name       : filterName,
                     id         : getUniqueHtmlID(filterName),
                     from       : RefdataCategory.getAllRefdataValues(RDConstants.Y_N),
@@ -123,7 +123,7 @@ class ReportingTagLib {
         out << '<label for="' + filterName + '">' + filterLabel + '</label>'
 
         out << ui.select([
-                class      : "ui fluid search dropdown",
+                class      : "ui fluid search dropdown clearable",
                 name       : GenericHelper.isFieldVirtual(attrs.config, attrs.refdata) ? filterName + '_virtualFF' : filterName,
                 id         : getUniqueHtmlID(filterName),
                 from       : RefdataCategory.getAllRefdataValues(rdCat),
@@ -164,7 +164,7 @@ class ReportingTagLib {
         out << '<label for="' + filterName + '">' + filterLabel + '</label>'
 
         Map<String, Object> map = [
-            class      : 'ui fluid search dropdown',
+            class      : 'ui fluid search dropdown clearable',
             name       : filterName,
             id         : getUniqueHtmlID(filterName),
             from       : customRdv.get('from'),

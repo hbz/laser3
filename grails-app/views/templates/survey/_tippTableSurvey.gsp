@@ -241,9 +241,9 @@
         </g:each>
     </div><%-- .accordions --%>
     <div class="ui segment grid la-filter">
-        <div class="twelve wide column ">
+        <div class="twelve wide column">
         </div>
-        <div class="four wide column ">
+        <div class="four wide column">
             <div class="ui list">
                %{-- <div class="item">
                     <div class="content">

@@ -46,8 +46,8 @@ class ManagementService {
     AddressbookService addressbookService
     CacheService cacheService
     ContextService contextService
-    CryptoService cryptoService
     ExecutorService executorService
+    FileCryptService fileCryptService
     FormService formService
     GenericOIDService genericOIDService
     GlobalService globalService
@@ -1127,7 +1127,7 @@ class ManagementService {
                                             creator: result.user,
                                             owner: contextService.getOrg(),
                                             server: AppUtils.getCurrentServer(),
-                                            ckey: cryptoService.generateCKey()
+                                            ckey: fileCryptService.generateCKey()
                                     )
                                     doc_content.save()
 
@@ -1144,7 +1144,7 @@ class ManagementService {
                                             sourceFile = new File("${fPath}/${fName}")
                                             input_file.transferTo(sourceFile)
 
-                                            cryptoService.encryptRawFile(sourceFile, doc_content) // TODO: ERMS-6382
+                                            fileCryptService.encryptRawFile(sourceFile, doc_content) // TODO: ERMS-6382
                                         }else {
                                             Path source = sourceFile.toPath()
                                             Path target = new File("${fPath}/${fName}").toPath()
