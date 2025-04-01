@@ -380,7 +380,7 @@
 
 %{--<div class="ui fluid card">--}%
 %{--    <div class="content">--}%
-%{--        <div id="filter-dropdown-ex" class="la-filter-">--}%
+%{--        <div id="filter-dropdown-ex" class="la-filter">--}%
 %{--            <form class="ui form">--}%
 %{--                <div class="fields">--}%
 %{--                    <div class="field">--}%
