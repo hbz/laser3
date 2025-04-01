@@ -131,7 +131,7 @@
         <div class="ui internally celled grid la-margin-bottom-1em">
             <div class="row">
                 <!-- Hausanschrift START -->
-                <div class="ui  segment eight wide column" id="physicalAddress">
+                <div class="ui segment eight wide column" id="physicalAddress">
                     <h4 class="ui dividing header"><g:message code="address.streetaddress.label" /></h4>
                     <div class="fields">
                         <div class="twelve wide required field">
@@ -165,7 +165,7 @@
                 </div>
                 <!-- Hausanschrift END -->
                 <!-- Postanschrift START -->
-                <div class="ui  segment disabled eight wide column" id="postalAddress">
+                <div class="ui segment disabled eight wide column" id="postalAddress">
                     <h4 class="ui dividing header"><g:message code="address.pob.label" /></h4>
                     <div class="fields">
                         <div class="sixteen required wide field">

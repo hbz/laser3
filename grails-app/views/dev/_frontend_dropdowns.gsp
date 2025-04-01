@@ -234,7 +234,7 @@
             &lt;label <strong>for=&quot;filterPropDef&quot;</strong>&gt;
         Merkmal
         &lt;i class=&quot;${Icon.TOOLTIP.HELP} la-popup&quot;&gt;&lt;/i&gt;
-        &lt;div class=&quot;ui  popup &quot;&gt;
+        &lt;div class=&quot;ui popup &quot;&gt;
         &lt;i class=&quot;${Icon.PROP.IS_PRIVATE} &quot;&gt;&lt;/i&gt; = Meine Merkmal
         &lt;/div&gt;
         &lt;/label&gt;

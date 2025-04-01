@@ -8,7 +8,7 @@
         </span>
     </h1>
 
-    <div class="ui  segment">
+    <div class="ui segment">
         <g:form action="sendFeedbackForm" controller="public" method="get" class="ui small form">
             <div class="field">
                 <label>Name</label>

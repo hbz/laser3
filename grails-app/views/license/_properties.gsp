@@ -164,7 +164,7 @@
             </div>
     </div>
     <div class="content">
-        <h3 class="ui  header">
+        <h3 class="ui header">
             <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
             ${message(code: 'subscription.properties.private')} ${contextService.getOrg().name}
         </h3>

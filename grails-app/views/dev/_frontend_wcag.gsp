@@ -24,7 +24,7 @@
     </div>
 </div>
 <h3>Icons in einem Button, der eine Bezeichnung hat</h3>
-<button class="ui   button la-inline-labeled la-js-filterButton la-clearfix blue"> Filter <i
+<button class="ui button la-inline-labeled la-js-filterButton la-clearfix blue"> Filter <i
         aria-hidden="true" class="${Icon.LNK.FILTERED} icon"></i> <span
         class="ui circular label la-js-filter-total hidden">0</span>
 </button>
