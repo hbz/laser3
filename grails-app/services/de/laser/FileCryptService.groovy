@@ -17,24 +17,31 @@ import java.nio.file.StandardCopyOption
 import java.security.spec.KeySpec
 
 @Transactional
-class CryptoService {
+class FileCryptService {
 
-    public final static String ALGORITHM_SK         = 'AES'
-    public final static String ALGORITHM_RND        = 'PBKDF2WithHmacSHA256'
-    public final static String ALGORITHM_XFORM      = 'AES/CBC/PKCS5Padding'
-
-    public final static String DEFAULT_PASSPHRASE   = 'd3f4Ul7_P4zzphr4Z3'
-    public final static String DEFAULT_TMP_DIR      = '/laser-docs'
+    public final static Map CONFIG = [
+        DEFAULT : [
+            ALGORITHM        : 'AES',
+            ALGORITHM_PRF    : 'PBKDF2WithHmacSHA256',
+            ALGORITHM_XFORM  : 'AES/CBC/PKCS5Padding',
+            ALGORITHM_IC     : 65536,
+            ALGORITHM_KL     : 256,
+            CKEY             : 64,
+            SALT             : 32,
+            IV               : 16,
+            PASSPHRASE       : 'd3f4Ul7_P4zzphr4Z3',
+            TMP_DIR          : '/laser-docs'
+        ]
+    ]
 
     boolean encryptRawFile(File rawFile, Doc doc) {
         log.debug '[encryptRawFile] ' + rawFile.toPath() + ', doc #' + doc.id
 
         Path rfPath     = rawFile.toPath()
-        File encTmpFile = encrypToTmpFile(rawFile, doc.ckey)
+        File encTmpFile = encryptToTmpFile(rawFile, doc.ckey)
         File decTmpFile = decryptToTmpFile(encTmpFile, doc.ckey)
 
         if (validateFiles(decTmpFile, rawFile)) {
-            log.debug '[encryptRawFile: OK] ' + rfPath
             Files.copy(encTmpFile.toPath(), rfPath, StandardCopyOption.REPLACE_EXISTING)
         }
         else {
@@ -48,34 +55,35 @@ class CryptoService {
         true
     }
 
-    File encrypToTmpFile(File inFile, String ckey) {
+    File encryptToTmpFile(File inFile, String ckey) {
         File outFile = File.createTempFile('doc_', '.enc', getTempDirectory())
-        xcryptFile(inFile, outFile, Cipher.ENCRYPT_MODE, ckey)
+        doCrypto(inFile, outFile, Cipher.ENCRYPT_MODE, ckey)
         outFile
     }
 
     File decryptToTmpFile(File inFile, String ckey) {
         File outFile = File.createTempFile('doc_', '.dec', getTempDirectory())
         if (ckey) {
-            xcryptFile(inFile, outFile, Cipher.DECRYPT_MODE, ckey)
+            doCrypto(inFile, outFile, Cipher.DECRYPT_MODE, ckey)
         }
         else {
-            log.debug'[decryptToTmpFile: FAILED] - no ckey - copy raw file'
+            log.debug'[decryptToTmpFile: FAILED] -> no ckey -> raw file copied'
             Files.copy(inFile.toPath(), outFile.toPath(), StandardCopyOption.REPLACE_EXISTING) // todo: ERMS-6382 FALLBACK
         }
         outFile
     }
 
-    void xcryptFile(File inFile, File outFile, int cipherMode, String ckey) {
-
+    void doCrypto(File inFile, File outFile, int cipherMode, String ckey) {
         try {
-            String passphrase = ConfigMapper.getDocumentStorageKey() ?: DEFAULT_PASSPHRASE
-            String salt       = ckey.take(32)
-            String iv         = ckey.takeRight(16)
+            Map cfg           = getConfig()
 
-            SecretKeyFactory factory = SecretKeyFactory.getInstance(ALGORITHM_RND)
-            KeySpec spec    = new PBEKeySpec(passphrase.toCharArray(), salt.getBytes(), 65536, 256)
-            SecretKey key   = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), ALGORITHM_SK)
+            String passphrase = ConfigMapper.getDocumentStorageKey() ?: cfg.PASSPHRASE
+            String salt       = ckey.take(cfg.SALT)
+            String iv         = ckey.takeRight(cfg.IV)
+
+            SecretKeyFactory factory = SecretKeyFactory.getInstance(cfg.ALGORITHM_PRF)
+            KeySpec spec    = new PBEKeySpec(passphrase.toCharArray(), salt.getBytes(), cfg.ALGORITHM_IC, cfg.ALGORITHM_KL)
+            SecretKey key   = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), cfg.ALGORITHM)
 
     //        byte[] iv = new byte[16]
     //        new SecureRandom().nextBytes(iv)
@@ -83,7 +91,7 @@ class CryptoService {
 
             IvParameterSpec ivspec = new IvParameterSpec(iv.getBytes())
 
-            Cipher cipher = Cipher.getInstance(ALGORITHM_XFORM)
+            Cipher cipher = Cipher.getInstance(cfg.ALGORITHM_XFORM)
             cipher.init(cipherMode, key, ivspec)
 
             FileInputStream fis  = new FileInputStream(inFile)
@@ -124,15 +132,19 @@ class CryptoService {
         (-1L == Files.mismatch(aFile.toPath(), bFile.toPath()))
     }
 
-    String generateCKey() {
-        RandomUtils.getAlphaNumeric(64)
+    Map getConfig() {
+        CONFIG.DEFAULT
     }
 
     File getTempDirectory() {
-        File dir = new File(System.getProperty('java.io.tmpdir') + DEFAULT_TMP_DIR)
+        File dir = new File(System.getProperty('java.io.tmpdir') + getConfig().TMP_DIR)
         if (! dir.exists()) {
             dir.mkdirs()
         }
         dir
+    }
+
+    String generateCKey() {
+        RandomUtils.getAlphaNumeric(getConfig().CKEY)
     }
 }

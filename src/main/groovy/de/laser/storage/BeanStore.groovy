@@ -1,9 +1,9 @@
 package de.laser.storage
 
 import de.laser.BootStrapService
-import de.laser.CryptoService
 import de.laser.CustomerTypeService
 import de.laser.ESWrapperService
+import de.laser.FileCryptService
 import de.laser.GenericOIDService
 import de.laser.GlobalSourceSyncService
 import de.laser.GokbService
@@ -174,10 +174,6 @@ class BeanStore {
         Holders.grailsApplication.mainContext.getBean('contextService') as ContextService
     }
 
-    static CryptoService getCryptoService() {
-        Holders.grailsApplication.mainContext.getBean('cryptoService') as CryptoService
-    }
-
     /**
      * @return the currently holding {@link CustomerTypeService}
      */
@@ -204,6 +200,10 @@ class BeanStore {
      */
     static ESWrapperService getESWrapperService() {
         Holders.grailsApplication.mainContext.getBean('ESWrapperService') as ESWrapperService
+    }
+
+    static FileCryptService getFileCryptService() {
+        Holders.grailsApplication.mainContext.getBean('fileCryptService') as FileCryptService
     }
 
     /**
