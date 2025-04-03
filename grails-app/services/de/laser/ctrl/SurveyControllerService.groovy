@@ -1990,9 +1990,14 @@ class SurveyControllerService {
             result.participants = result.participants.sort { it.org.sortname }
 
             if(!params.fileformat) {
-                result.charts = surveyService.generatePropertyDataForCharts(result.surveyConfig, result.participants?.org)
+                 List charts = surveyService.generatePropertyDataForCharts(result.surveyConfig, result.participants?.org)
                 if(result.surveyConfig.vendorSurvey) {
-                    result.charts = result.charts + surveyService.generateSurveyVendorDataForCharts(result.surveyConfig, result.participants?.org)
+                    charts = charts + surveyService.generateSurveyVendorDataForCharts(result.surveyConfig, result.participants?.org)
+                }
+                if(params.chartSort){
+                    result.charts = [['property', 'value']] + charts.sort{it[1]}
+                }else {
+                    result.charts = [['property', 'value']] + charts
                 }
             }
 
@@ -2027,12 +2032,21 @@ class SurveyControllerService {
 
             result.participants = SurveyOrg.executeQuery(fsq.query, fsq.queryParams, params)
 
-
             result.propList = result.surveyConfig.surveyProperties.surveyProperty
 
             result.participants = result.participants.sort { it.org.sortname }
 
-            result.charts = surveyService.generateSurveyPackageDataForCharts(result.surveyConfig, result.participants?.org)
+            if(!params.fileformat) {
+                List charts = surveyService.generateSurveyPackageDataForCharts(result.surveyConfig, result.participants?.org)
+                if(result.surveyConfig.vendorSurvey) {
+                    charts = charts + surveyService.generateSurveyVendorDataForCharts(result.surveyConfig, result.participants?.org)
+                }
+                if(params.chartSort){
+                    result.charts = [['property', 'value']] + charts.sort{it[1]}
+                }else {
+                    result.charts = [['property', 'value']] + charts
+                }
+            }
 
             [result: result, status: STATUS_OK]
         }
