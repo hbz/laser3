@@ -1,4 +1,4 @@
-<%@ page import="de.laser.License; de.laser.Subscription; de.laser.CustomerTypeService; de.laser.OrgSetting; de.laser.auth.User; de.laser.Org; de.laser.utils.DateUtils;  de.laser.storage.RDStore; de.laser.Task; de.laser.system.SystemActivityProfiler; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.Wekb" %>
+<%@ page import="de.laser.ui.IconAttr; de.laser.License; de.laser.Subscription; de.laser.CustomerTypeService; de.laser.OrgSetting; de.laser.auth.User; de.laser.Org; de.laser.utils.DateUtils;  de.laser.storage.RDStore; de.laser.Task; de.laser.system.SystemActivityProfiler; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.remote.Wekb" %>
 <laser:serviceInjection />
 
 <g:set var="rttpList" value="[]" />
@@ -31,7 +31,12 @@
                             </td>
                             <td colspan="4" class="center aligned">
                                 <a href="#" onclick="JSPC.app.dashboard.editTask(${task.id});">
-                                    <i class="${Icon.TASK} la-list-icon"></i>${DateUtils.getLocalizedSDF_noTime().format(task.endDate)}
+                                    <g:if test="${task.creator.id == contextService.getUser().id}">
+                                        <i class="${Icon.SIG.MY_OBJECT} la-list-icon"></i>${DateUtils.getLocalizedSDF_noTime().format(task.endDate)}
+                                    </g:if>
+                                    <g:else>
+                                        <i class="${Icon.TASK} la-list-icon"></i>${DateUtils.getLocalizedSDF_noTime().format(task.endDate)}
+                                    </g:else>
                                 </a>
                             </td>
                         </tr>
