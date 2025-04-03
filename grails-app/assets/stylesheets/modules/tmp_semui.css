@@ -325,6 +325,32 @@ body.survey_copyElementsIntoSurvey nav.tabular .item .content .description
     overflow: scroll
 }
 
+.la-markdown ol {
+    list-style: none;
+    padding-left: 0;
+}
+
+.la-markdown ol li {
+    position: relative;
+    padding-left: 1.8em;
+}
+
+.la-markdown ol li::before {
+    content: counter(list-item);
+    position: absolute;
+    left: 0;
+    width: 1.3em;
+    height: 1.3em;
+    background: #fa820a;
+    color: white;
+    font-weight: bold;
+    font-size: 1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.3em; /* Abgerundetes Quadrat */
+}
+
 /*
 .ui.flyout:not(.markdown) > .header {
     padding-top: 70px;
