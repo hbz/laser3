@@ -36,7 +36,7 @@
                         <g:message code="${instanceType}" />
                     </div>
                     <div class="twelve wide column">
-                            <div class="ui search selection dropdown la-full-width" id="${linkField}">
+                            <div class="ui search selection dropdown clearable la-full-width" id="${linkField}">
                                 <input type="hidden" name="${linkField}"/>
                                 <i class="dropdown icon"></i>
                                 <input type="text" class="search"/>

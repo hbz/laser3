@@ -163,14 +163,23 @@
 
                 <ui:link addItemAttributes="true" controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</ui:link>
                 <ui:link addItemAttributes="true" controller="admin" action="identifierValidation">${message(code: "menu.admin.identifierValidation")}</ui:link>
-                <ui:link addItemAttributes="true" controller="admin" action="fileConsistency">${message(code: "menu.admin.fileConsistency")}</ui:link>
                 <ui:link addItemAttributes="true" controller="admin" action="manageDeletedObjects">${message(code: "menu.admin.deletedObjects")}</ui:link>
             </div>
         </div>
 
         <div class="item" role="menuitem" aria-haspopup="true">
             <div class="title">
-                ${message(code:'menu.admin.dataMigration')} <i class="dropdown icon"></i>
+                <i class="icon folder open"></i> ${message(code:'menu.admin.files')} <i class="dropdown icon"></i>
+            </div>
+            <div class="menu" role="menu">
+                <ui:link addItemAttributes="true" controller="admin" action="simpleFilesCheck">${message(code: "menu.admin.simpleFilesCheck")}</ui:link>
+                <ui:link addItemAttributes="true" controller="admin" action="fileConsistency">${message(code: "menu.admin.fileConsistency")}</ui:link>
+            </div>
+        </div>
+
+        <div class="item" role="menuitem" aria-haspopup="true">
+            <div class="title">
+                <i class="icon random"></i> ${message(code:'menu.admin.dataMigration')} <i class="dropdown icon"></i>
             </div>
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="yoda" action="checkOrgLicRoles"><g:message code="menu.admin.checkOrgLicRoles"/></ui:link>

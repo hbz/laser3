@@ -57,7 +57,7 @@
 
             <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>
-                <ui:select class="ui dropdown" name="type"
+                <ui:select class="ui dropdown clearable" name="type"
                               from="${RefdataCategory.getAllRefdataValues(de.laser.storage.RDConstants.SURVEY_TYPE)}"
                               optionKey="id"
                               optionValue="value"
@@ -232,7 +232,7 @@
                                     <i class="${Icon.SURVEY} la-list-icon"></i>
                                 </span>
                             </g:if>
-                            <g:link controller="survey" action="show" id="${surveyInfo.id}" class="ui ">
+                            <g:link controller="survey" action="show" id="${surveyInfo.id}" class="ui">
                                 ${surveyConfig?.getSurveyName()}
                             </g:link>
                         </div>

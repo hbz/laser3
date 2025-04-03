@@ -19,7 +19,7 @@
 
             <div class="field">
                 <label>${message(code: 'filter.status')}</label>
-                <ui:select class="ui dropdown" name="status" id="status"
+                <ui:select class="ui dropdown clearable" name="status" id="status"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
                               optionKey="id"
                               optionValue="value"
@@ -37,7 +37,7 @@
             </div>
             <div class="two fields holdingSelection">
                 <div class="field">
-                    <ui:select class="ui dropdown search selection" id="holdingSelection" name="holdingSelection" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" optionKey="id" optionValue="value"/>
+                    <ui:select class="ui dropdown clearable search selection" id="holdingSelection" name="holdingSelection" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" optionKey="id" optionValue="value"/>
                 </div>
                 <g:if test="${org.isCustomerType_Consortium()}">
                     <g:hiddenField name="subOID" value="null"/>
@@ -108,7 +108,7 @@
                             <td>
                                 <g:if test="${!(settingKey in excludes)}">
                                     <g:if test="${true}">
-                                        <ui:select class="ui dropdown"
+                                        <ui:select class="ui dropdown clearable "
                                                       name="${settingKey}!§!setting"
                                                       from="${RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)}"
                                                       optionKey="id" optionValue="value"

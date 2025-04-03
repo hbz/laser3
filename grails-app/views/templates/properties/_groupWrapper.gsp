@@ -4,7 +4,7 @@
 <%-- SHOW --%>
 <%--<div class="ui card la-dl-no-table">--%>
     <div class="content">
-        <h3 class="ui  header">
+        <h3 class="ui header">
             <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
             ${message(code: 'subscription.properties.public')}
             (${propDefGroup.name})

@@ -48,7 +48,7 @@
 
             <div class="field">
                 <label>${message(code: 'default.status.label')}</label>
-                <ui:select class="ui dropdown" name="status"
+                <ui:select class="ui dropdown clearable " name="status"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
                               optionKey="id"
                               optionValue="value"
@@ -65,7 +65,7 @@
             <!-- 2-3 -->
             <div class="field">
                 <label>${message(code: 'subscription.form.label')}</label>
-                <ui:select class="ui dropdown" name="form"
+                <ui:select class="ui dropdown clearable" name="form"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}"
                               optionKey="id"
                               optionValue="value"
@@ -75,7 +75,7 @@
             <!-- 2-4 -->
             <div class="field">
                 <label>${message(code: 'subscription.resource.label')}</label>
-                <ui:select class="ui dropdown" name="resource"
+                <ui:select class="ui dropdown clearable" name="resource"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
                               optionKey="id"
                               optionValue="value"
@@ -88,7 +88,7 @@
         <div class="two fields">
             <div class="field">
                 <label>${message(code: 'menu.my.providers')}</label>
-                <g:select class="ui dropdown search" name="provider"
+                <g:select class="ui dropdown clearable search" name="provider"
                           from="${providers}"
                           optionKey="id"
                           optionValue="name"

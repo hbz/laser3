@@ -83,7 +83,7 @@
                                     </div>
 
                                     <div>
-                                        <ui:select class="ui dropdown search"
+                                        <ui:select class="ui dropdown clearable search"
                                                    name="prsFunctionMultiSelect"
                                                    multiple=""
                                                    from="${rdvAllPersonFunctions}"
@@ -98,7 +98,7 @@
                                     </div>
 
                                     <div>
-                                        <ui:select class="ui dropdown search"
+                                        <ui:select class="ui dropdown clearable search"
                                                    name="prsPositionMultiSelect"
                                                    multiple=""
                                                    from="${rdvAllPersonPositions}"

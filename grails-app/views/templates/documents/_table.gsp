@@ -256,7 +256,7 @@
                     <td></td>
                     <td>
                         <form id="bulk_form_${randomId}" class="ui form" method="POST">
-                            <ui:select class="ui dropdown search"
+                            <ui:select class="ui dropdown clearable search"
                                        name="bulk_docConf" id="bulk_docConf_${randomId}"
                                        from="${RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_CONFIDENTIALITY)}"
                                        optionKey="id"

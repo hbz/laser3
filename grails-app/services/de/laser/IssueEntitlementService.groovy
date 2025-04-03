@@ -32,6 +32,7 @@ class IssueEntitlementService {
         Map<String, Object> titleConfigMap = parameterGenerics.titleConfigMap,
                             identifierConfigMap = parameterGenerics.identifierConfigMap,
                             issueEntitlementConfigMap = parameterGenerics.issueEntitlementConfigMap
+        titleConfigMap.noSort = true
         Set<Long> tippIDs = []
         Map<String, Object> queryPart1 = filterService.getIssueEntitlementSubsetQuery(issueEntitlementConfigMap), queryPart2 = filterService.getTippSubsetQuery(titleConfigMap)
         List<Map<String, Object>> tippIeMap = IssueEntitlement.executeQuery(queryPart1.query, queryPart1.queryParams)
@@ -43,7 +44,7 @@ class IssueEntitlementService {
             tippIDs = tippIDs.intersect(titleService.getTippsByIdentifier(identifierConfigMap, configMap.identifier))
         }
         tippIDs.collate(65000).each { List<Long> subset ->
-            List counts = IssueEntitlement.executeQuery('select count(*), rv.id from IssueEntitlement ie join ie.status rv where ie.tipp.id in (:subset) group by rv.id', [subset: subset])
+            List counts = IssueEntitlement.executeQuery('select count(*), rv.id from IssueEntitlement ie join ie.status rv where ie.tipp.id in (:subset) and ie.subscription = :subscription group by rv.id', [subset: subset, subscription: configMap.subscription])
             counts.each { row ->
                 switch (row[1]) {
                     case RDStore.TIPP_STATUS_CURRENT.id: currentIECounts += row[0]

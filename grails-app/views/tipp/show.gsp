@@ -264,7 +264,7 @@
 
         <div class="content">
 
-            <table class="ui celled la-js-responsive-table la-table table ">
+            <table class="ui celled la-js-responsive-table la-table table">
                 <thead>
                 <tr>
                     --}%%{--<th><g:message code="title.edit.component_id.label"/></th>--}%%{--

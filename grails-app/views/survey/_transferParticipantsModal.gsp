@@ -199,7 +199,7 @@
                     <div class="generateSlavedLicsReference-wrapper hidden">
                         <br />
                         <g:select from="${memberLicenses}"
-                                  class="ui fluid search multiple dropdown hide"
+                                  class="ui fluid search multiple dropdown clearable hide"
                                   optionKey="${{ License.class.name + ':' + it.id }}"
                                   optionValue="${{ it.reference }}"
                                   noSelection="${['' : message(code:'default.select.all.label')]}"
