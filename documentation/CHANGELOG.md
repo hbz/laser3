@@ -11,6 +11,8 @@
 
 6415/6416    03.04.2025  dev     3.5         Andreas Bug         Nutzerzahlen waren nicht aufrufbar
 
+6414    31.03.2025  dev     3.5         Moe     Bug         Umfrage Balkendiagramm sortieren
+
 6114    31.03.2025  dev     3.5         Moe     Bug         Kostenanzeige in der Umfrage
      
 6389    31.03.2025  dev     3.5         Moe     Bug         Filter, die mit Umfragen-Teilnehmer zu tun haben, anpassen
