@@ -1179,6 +1179,9 @@ class SurveyController {
                        message(code: 'myinst.financeImport.invoiceTotal'), message(code: 'default.currency.label.utf'), message(code: 'myinst.financeImport.taxRate'), message(code: 'myinst.financeImport.taxType'),
                        message(code: 'myinst.financeImport.dateFrom'), message(code: 'myinst.financeImport.dateTo'), message(code: 'myinst.financeImport.title'), message(code: 'myinst.financeImport.description')])
 
+        if(ctrlResult.surveyConfig.packageSurvey){
+            titles.add('Anbieter-Produkt-ID')
+        }
         ArrayList rowData = []
         ArrayList row
         SurveyOrg.findAllBySurveyConfig(ctrlResult.surveyConfig).each { SurveyOrg surveyOrg ->
