@@ -24,13 +24,16 @@
 </h3>
 
 
-<g:if test="${!error}">
+<g:if test="${error}">
+    <ui:msg class="error" noClose="true" text="${error}"/>
+</g:if>
+<g:else>
     <laser:render template="/templates/filter/packageGokbFilter" model="[tmplConfigShow: [
             ['q', 'pkgStatus'],
             ['provider', 'vendor', 'ddc', 'curatoryGroup'],
             ['curatoryGroupType', 'automaticUpdates']
     ]]"/>
-</g:if>
+</g:else>
 
 <ui:messages data="${flash}"/>
 
