@@ -55,15 +55,18 @@
                 </td>--%>
                 <td>
                     <g:if test="${subscriptionMap.get('platform_' + platformInstance.id)}">
-                        <ul class="la-simpleList">
                             <g:each in="${subscriptionMap.get('platform_' + platformInstance.id)}" var="sub">
-                                <li>
                                     <%
                                         String period = sub.startDate ? g.formatDate(date: sub.startDate, format: message(code: 'default.date.format.notime'))  : ''
                                         period = sub.endDate ? period + ' - ' + g.formatDate(date: sub.endDate, format: message(code: 'default.date.format.notime'))  : ''
                                         period = period ? '('+period+')' : ''
                                     %>
-                                    <g:link controller="subscription" action="show" id="${sub.id}">${sub} ${period}</g:link>
+                                    <div class="la-flexbox">
+                                        <g:if test="${subscriptionMap.get('platform_' + platformInstance.id).size() > 1}">
+                                            <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
+                                        </g:if>
+                                        <g:link controller="subscription" action="show" id="${sub.id}">${sub} ${period}</g:link>
+                                    </div>
                                     <%--
                                     <g:if test="${sub.packages}">
                                         <g:each in="${sub.deduplicatedAccessPointsForOrgAndPlatform(contextService.getOrg(), platformInstance)}" var="orgap">
@@ -77,9 +80,7 @@
                                         </g:each>
                                     </g:if>
                                     --%>
-                                </li>
                             </g:each>
-                        </ul>
                     </g:if>
                 </td>
                 <td class="center aligned">

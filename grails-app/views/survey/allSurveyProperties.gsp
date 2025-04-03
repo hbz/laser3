@@ -135,7 +135,7 @@
             <div class="field six wide">
                 <label for="pd_descr" class="property-label">${message(code: 'default.description.label')}</label>
                 <%--<g:select name="pd_descr" from="${PropertyDefinition.AVAILABLE_PRIVATE_DESCR}"/>--%>
-                <select name="pd_descr" id="pd_descr" class="ui dropdown">
+                <select name="pd_descr" id="pd_descr" class="ui dropdown clearable">
                     <g:each in="${[PropertyDefinition.SVY_PROP]}" var="pd">
                         <option value="${pd}"><g:message code="propertyDefinition.${pd}.label"
                                                          default="${pd}"/></option>
@@ -145,7 +145,7 @@
 
             <div class="field five wide">
                 <label for="pd_type" class="property-label"><g:message code="default.type.label"/></label>
-                <g:select class="ui dropdown"
+                <g:select class="ui dropdown clearable"
                           from="${PropertyDefinition.validTypes.entrySet()}"
                           optionKey="key" optionValue="${{ PropertyDefinition.getLocalizedValue(it.key) }}"
                           name="pd_type"
@@ -166,7 +166,7 @@
         <div class="fields">
             <div class="field hide" id="remoteRefdataSearchWrapper" style="width: 100%">
                 <label class="property-label"><g:message code="refdataCategory.label"/></label>
-                <select class="ui search selection dropdown remoteRefdataSearch" name="refdatacategory"></select>
+                <select class="ui search selection dropdown clearable remoteRefdataSearch" name="refdatacategory"></select>
 
                 <div class="ui grid" style="margin-top:1em">
                     <div class="ten wide column">

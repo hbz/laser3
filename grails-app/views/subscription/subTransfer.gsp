@@ -179,7 +179,7 @@
                                 </a>
                                 <laser:script file="${this.getGroovyPageFileName()}">
                                     $('body #discountScale').editable('destroy').editable({
-                                        tpl: '<select class="ui dropdown"></select>'
+                                        tpl: '<select class="ui dropdown clearable"></select>'
                                         }).on('shown', function() {
                                         r2d2.initDynamicUiStuff('body');
 

@@ -367,8 +367,7 @@
                         </td>
                     </g:if>
                     <g:if test="${tmplConfigItem == 'subscription'}">
-                        <td>
-                            <ul class="la-simpleList">
+                            <td>
                                 <g:each in="${subscriptionMap.get('package_' + pkg.gokbId)}" var="sub">
                                     <%
                                         String period = sub.startDate ? g.formatDate(date: sub.startDate, format: message(code: 'default.date.format.notime'))  : ''
@@ -376,12 +375,15 @@
                                         period = period ? '('+period+')' : ''
                                         perpetuallySubscribed = sub.hasPerpetualAccess
                                     %>
-                                    <li>
-                                        <g:link controller="subscription" action="show" id="${sub.id}">${sub.name + ' ' +period}</g:link>
-                                    </li>
+
+                                    <div class="la-flexbox">
+                                        <g:if test="${subscriptionMap.get('package_' + pkg.gokbId).size() > 1}">
+                                            <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
+                                        </g:if>
+                                        <g:link controller="subscription" action="show" id="${sub.id}">${sub.name + ' ' + period}</g:link>
+                                    </div>
                                 </g:each>
-                            </ul>
-                        </td>
+                            </td>
                     </g:if>
                     <g:if test="${tmplConfigItem == 'surveyCostItemsPackages'}">
                         <td class="center aligned">

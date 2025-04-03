@@ -98,7 +98,7 @@
 
         <g:form action="proccessCopySurveyCostItems" controller="survey" id="${surveyInfo.id}"
                 params="[surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]"
-                method="post" class="ui form ">
+                method="post" class="ui form">
 
             <g:set var="sumOldCostItem" value="${0.0}"/>
             <g:set var="sumNewCostItem" value="${0.0}"/>
@@ -126,7 +126,7 @@
                                    optionKey="id"
                                    optionValue="value"
                                    value="${selectedCostItemElementID}"
-                                   class="ui dropdown"
+                                   class="ui dropdown clearable"
                                    id="selectedCostItemElementID"/>--}%
                     </th>
                     <th>${message(code: 'copySurveyCostItems.newCostItem')}</th>

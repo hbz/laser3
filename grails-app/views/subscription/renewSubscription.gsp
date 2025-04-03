@@ -106,7 +106,7 @@
                                value="${RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_STATUS)}"/>
                         <g:select
                                 from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
-                                class="ui dropdown"
+                                class="ui dropdown clearable"
                                 optionKey="id"
                                 optionValue="${{ it.getI10n('value') }}"
                                 name="subStatus"

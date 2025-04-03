@@ -268,7 +268,7 @@
 
 </div>
 
-    <div class="ui clearing segment la-segmentNotVisable ">
+    <div class="ui clearing segment la-segmentNotVisable">
         <g:if test="${contextService.getOrg().id == surveyConfig.surveyInfo.owner.id}">
             <g:link controller="survey" action="evaluationParticipant"
                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: subscriber.id]"

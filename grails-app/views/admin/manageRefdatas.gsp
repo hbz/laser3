@@ -174,7 +174,7 @@
                                         select += '<option value="' + option.value + '">' + option.text + '</option>';
                                     }
                                 }
-                                select = '<select id="xcgRdvTo" name="xcgRdvTo" class="ui search selection dropdown">' + select + '</select>';
+                                select = '<select id="xcgRdvTo" name="xcgRdvTo" class="ui search selection dropdown clearable">' + select + '</select>';
 
                                 $('label[for=xcgRdvTo]').next().replaceWith(select);
 
@@ -205,7 +205,7 @@
                         from="${rdCategories}"
                         optionKey="id" optionValue="${{it.getI10n('desc')}}"
                         name="refdata_category_id"
-                        id="refdata_modal_select" class="ui search selection dropdown" />
+                        id="refdata_modal_select" class="ui search selection dropdown clearable " />
                 </div>
 
             </g:form>

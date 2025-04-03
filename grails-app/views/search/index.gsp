@@ -68,7 +68,7 @@
 
         <div class="fields">
             <div class="three wide field">
-                <g:select class="ui dropdown"
+                <g:select class="ui dropdown clearable "
                           from="${['AND', 'OR', 'NOT']}"
                           name="advancedSearchOption"
                           valueMessagePrefix="search.advancedSearch.option"
@@ -83,7 +83,7 @@
 
         <div class="fields">
             <div class="three wide field">
-                <g:select class="ui dropdown"
+                <g:select class="ui dropdown clearable"
                           from="${['AND', 'OR', 'NOT']}"
                           name="advancedSearchOption2"
                           valueMessagePrefix="search.advancedSearch.option"
@@ -98,7 +98,7 @@
 
         <div class="fields">
             <div class="three wide field">
-                <g:select class="ui dropdown"
+                <g:select class="ui dropdown clearable"
                           from="${['AND', 'OR', 'NOT']}"
                           name="advancedSearchOption3"
                           valueMessagePrefix="search.advancedSearch.option"

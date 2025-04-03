@@ -159,7 +159,7 @@
                                                               optionKey="id"
                                                               optionValue="value"
                                                               value="${selectedCostItemElementID}"
-                                                              class="ui dropdown"
+                                                              class="ui dropdown clearable"
                                                               id="selectedCostItemElementID"/>
             </th>
             <g:if test="${contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">

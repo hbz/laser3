@@ -279,7 +279,7 @@
                               from="${allConsortia}"
                               optionKey="id"
                               optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"
-                              class="ui dropdown search"
+                              class="ui dropdown clearable search"
                 />
             </div>
 
@@ -290,7 +290,7 @@
                               optionKey="id"
                               optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"
                               value=""
-                              class="ui dropdown search"
+                              class="ui dropdown clearable search"
                 />
             </div>
         </g:form>

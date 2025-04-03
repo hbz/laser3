@@ -14,7 +14,7 @@
         <g:render template="profiler/menu" model="${[hideWrapper: true]}"/>
 
         <div style="position:absolute; right:0">
-            <g:select name="archive" id="archive" class="ui dropdown"
+            <g:select name="archive" id="archive" class="ui dropdown clearable"
                       from="${allArchives}" optionKey="${{it[0].toString()}}" optionValue="${{it[0].toString() + ' (' + it[1].toString() + ')'}}" value="${archive}"/>
             <laser:script file="${this.getGroovyPageFileName()}">
                 $('#archive').on('change', function() {
@@ -183,14 +183,14 @@
         <div class="ui form">
             <div class="three fields">
                 <div class="field">
-                    <g:select id="filterTableUri" name="filterTableUri" class="ui dropdown search selection"
+                    <g:select id="filterTableUri" name="filterTableUri" class="ui dropdown clearable search selection"
                               from="${contextStats.collect{it[0]}.unique().sort()}"
                               optionKey="${{it}}" optionValue="${{it}}"
                               noSelection="['':'Alle anzeigen']"
                     />
                 </div>
                 <div class="field">
-                    <g:select id="filterTableCtx" name="filterTableCtx" class="ui dropdown search selection"
+                    <g:select id="filterTableCtx" name="filterTableCtx" class="ui dropdown clearable search selection"
                               from="${contextStats.collect{Org.get(it[3])}.unique()}"
                               optionKey="id" optionValue="${{it.sortname}}"
                               noSelection="['':'Alle anzeigen']"
