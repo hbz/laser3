@@ -2448,7 +2448,8 @@ class SurveyService {
     }
 
     List generateSurveyPackageDataForCharts(SurveyConfig surveyConfig, List<Org> orgList){
-        List chartSource = [['property', 'value']]
+        //List chartSource = [['property', 'value']]
+        List chartSource = []
 
         List<Package> packages = SurveyConfigPackage.executeQuery("select scp.pkg from SurveyConfigPackage scp where scp.surveyConfig = :surveyConfig order by scp.pkg.name asc", [surveyConfig: surveyConfig])
 
@@ -2460,7 +2461,7 @@ class SurveyService {
         }
 
         chartSource = chartSource.reverse()
-        return chartSource.reverse()
+        return chartSource
     }
 
     List generateSurveyVendorDataForCharts(SurveyConfig surveyConfig, List<Org> orgList){

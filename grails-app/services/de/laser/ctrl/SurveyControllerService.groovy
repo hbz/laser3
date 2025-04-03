@@ -2066,9 +2066,7 @@ class SurveyControllerService {
 
             if(!params.fileformat) {
                 List charts = surveyService.generateSurveyPackageDataForCharts(result.surveyConfig, result.participants?.org)
-                if(result.surveyConfig.vendorSurvey) {
-                    charts = charts + surveyService.generateSurveyVendorDataForCharts(result.surveyConfig, result.participants?.org)
-                }
+
                 if(params.chartSort){
                     result.charts = [['property', 'value']] + charts.sort{it[1]}
                 }else {
