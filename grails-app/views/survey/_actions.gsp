@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.Org" %>
+<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.Org; de.laser.survey.SurveyConfigPackage;" %>
 <laser:serviceInjection/>
 
 <g:if test="${contextService.isInstEditor(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
@@ -41,10 +41,10 @@
                 <g:if test="${actionName == 'surveyCostItems' || actionName == 'surveyCostItemsPackages'}">
 
                     <g:if test="${participants.size() > 0}">
-                        <ui:actionsDropdownItem onclick="JSPC.app.addForAllSurveyCostItem([${(participants?.id)}])" controller="survey"
-                                            message="surveyCostItems.createInitialCostItem"/>
-                        <ui:actionsDropdownItem data-ui="modal" href="#bulkCostItemsUpload" message="menu.institutions.financeImport"/>
                         <g:if test="${actionName == 'surveyCostItems'}">
+                            <ui:actionsDropdownItem onclick="JSPC.app.addForAllSurveyCostItem([${(participants?.id)}])" controller="survey"
+                                                    message="surveyCostItems.createInitialCostItem"/>
+                            <ui:actionsDropdownItem data-ui="modal" href="#bulkCostItemsUpload" message="menu.institutions.financeImport"/>
                             <g:if test="${assignedCostItemElements}">
                                 <ui:actionsDropdownItem data-ui="modal" id="openFinanceEnrichment" href="#financeEnrichment"
                                                         message="financials.enrichment.menu"/>
@@ -56,6 +56,17 @@
                         </g:if>
 
                         <g:if test="${actionName == 'surveyCostItemsPackages'}">
+                            <g:if test="${SurveyConfigPackage.countBySurveyConfig(surveyConfig)}">
+                                <ui:actionsDropdownItem onclick="JSPC.app.addForAllSurveyCostItem([${(participants?.id)}])" controller="survey"
+                                                        message="surveyCostItems.createInitialCostItem"/>
+                                <ui:actionsDropdownItem data-ui="modal" href="#bulkCostItemsUpload" message="menu.institutions.financeImport"/>
+                            </g:if>
+                            <g:else>
+                                <ui:actionsDropdownItemDisabled message="surveyCostItems.createInitialCostItem"
+                                                                tooltip="${message(code: 'surveyPackages.addCosts.disable')}"/>
+                                <ui:actionsDropdownItemDisabled message="menu.institutions.financeImport"
+                                                                tooltip="${message(code: 'surveyPackages.addCosts.disable')}"/>
+                            </g:else>
                             <g:if test="${assignedCostItemElements && assignedPackages}">
                                 <ui:actionsDropdownItem data-ui="modal" id="openFinanceEnrichment" href="#financeEnrichment"
                                                         message="financials.enrichment.menu"/>
@@ -275,6 +286,9 @@
 
     <g:form action="processSurveyCostItemsBulkWithUpload" controller="survey" method="post" class="ui form" enctype="multipart/form-data"
             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">
+        <g:if test="${actionName == 'surveyCostItemsPackages'}">
+            <g:hiddenField name="costItemsForSurveyPackage" value="true"/>
+        </g:if>
         <br>
         <g:link class="item" controller="profile" action="importManuel" target="_blank">${message(code: 'help.technicalHelp.uploadFile.manuel')}</g:link>
         <br>
