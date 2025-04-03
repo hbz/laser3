@@ -649,7 +649,8 @@
             if(localHandInput === true) {
                 //manipulate iff localCurrency has been changed by user
                 parsedLocalCurrency = JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val().trim());
-                JSPC.app.finance${idSuffix}.costCurrencyRate.val(JSPC.app.finance${idSuffix}.doubleToString((parsedLocalCurrency / parsedBillingCurrency), true));
+                if(parsedLocalCurrency != 0 && parsedBillingCurrency != 0)
+                    JSPC.app.finance${idSuffix}.costCurrencyRate.val(JSPC.app.finance${idSuffix}.doubleToString((parsedLocalCurrency / parsedBillingCurrency), true));
             }
             let billingCurrencyAfterRounding = roundB ? Math.round(parsedBillingCurrency) : parsedBillingCurrency
             let localCurrencyAfterRounding = roundB ? Math.round(parsedLocalCurrency) : parsedLocalCurrency
@@ -692,6 +693,8 @@
         },
         doubleToString: function (input, currencyRate = false) {
             let rndInput = currencyRate ? input : input.toFixed(2)
+            if(currencyRate)
+                console.log(input);
             if(!isNaN(input)) {
                 let output;
                 if(JSPC.app.finance${idSuffix}.userLang !== 'en')
