@@ -30,8 +30,13 @@
                         <br />
                         ${message(code:'tipp.reportTitleToProvider.info2')} <br /><br />
 
-                        <g:each in="${currentTasks.myTaskInstanceList.sort{ it.dateCreated }.reverse()}" var="tt">
-                            <i class="${Icon.TASK}"></i>
+                        <g:each in="${currentTasks.cmbTaskInstanceList.sort{ it.dateCreated }.reverse()}" var="tt">
+                            <g:if test="${tt in currentTasks.myTaskInstanceList}">
+                                <i class="${Icon.SIG.MY_OBJECT}"></i>
+                            </g:if>
+                            <g:else>
+                                <i class="${Icon.TASK}"></i>
+                            </g:else>
                             <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tt.dateCreated}"/> -
                             <a href="#" onclick="JSPC.app.editTask(${tt.id});">${tt.title}</a> <br />
                         </g:each>

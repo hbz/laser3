@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6415/6416    03.04.2025  dev     3.5         Andreas Bug         Nutzerzahlen waren nicht aufrufbar
+
 6414    31.03.2025  dev     3.5         Moe     Bug         Umfrage Balkendiagramm sortieren
 
 6114    31.03.2025  dev     3.5         Moe     Bug         Kostenanzeige in der Umfrage
