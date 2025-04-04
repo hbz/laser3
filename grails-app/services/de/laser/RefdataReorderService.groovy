@@ -126,6 +126,11 @@ class RefdataReorderService {
         RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = 10 where rdv.value = :value',[value:'Scientific staff'])
         RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = 20 where rdv.value = :value',[value:'User'])
         RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = 30 where rdv.value = :value',[value:'Population'])
+
+        //agreement: defined by external
+        RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = 0 where rdv.value = :value',[value:'Agree'])
+        RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = 10 where rdv.value = :value',[value:'Disagree'])
+
         List currencies = RefdataValue.findAllByOwner(RefdataCategory.getByDesc('Currency'),[sort:'value',order:'asc'])
         order = 40
         //currencies: defined by external
