@@ -92,7 +92,7 @@ class ControlledListService {
                 break
         }
         if(params.restrictLevel) {
-            if (org.isCustomerType_Consortium() && !params.member) {
+            if (org.isCustomerType_Inst() || (org.isCustomerType_Consortium() && !params.member)) {
                 queryString += " and s.instanceOf = null "
             }
         }
