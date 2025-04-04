@@ -165,7 +165,18 @@
             </g:if>
         </g:each>
         <div class="field la-field-right-aligned">
-            <a href="${request.forwardURI}" class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</a>
+            <g:if test="${surveyConfig && participant && controllerName == 'survey'}">
+                <g:set var="parame" value="${[surveyConfigID: surveyConfig.id, participant: participant.id, viewTab: params.viewTab, tabStat: params.tabStat]}"/>
+                <g:set var="participant" value="${participant}"/>
+            </g:if>
+            <g:elseif test="${surveyConfig}">
+                <g:set var="parame" value="${[surveyConfigID: surveyConfig.id, viewTab: params.viewTab, tabStat: params.tabStat]}"/>
+            </g:elseif>
+            <g:else>
+                <g:set var="parame" value="${[tab: params.tab, tabStat: params.tabStat]}"/>
+            </g:else>
+
+            <g:link controller="${controllerName}" action="${actionName}" id="${params.id}" params="${parame}" class="${Btn.SECONDARY} reset">${message(code: 'default.button.reset.label')}</g:link>
             <button type="submit" name="search" value="yes"
                     class="${Btn.PRIMARY}">${message(code: 'default.button.filter.label')}</button>
         </div>
