@@ -2,9 +2,6 @@
 Das Lizenzinformationsblatt beinhaltet alle Metadaten und Informationen, sowie Verknüpfung zu weiteren Objekten, wie Paketen und Verträgen, die der Lizenz angehören. 
 
 #### Konsortiallizenz
-**Vergößern: Auf Bild klicken**
-
-![Screenshot 1]({{url_laser_static}}/media/subscription/subHelp1.png "Klicken, um Größe zu ändern")
 
 1.	**Status:** Hier sehen Sie die Laufzeit der Lizenz. Der grüne Kreis kennzeichnet eine aktive Lizenz, rote hingegen eine nicht aktive Lizenz. Gelbe Kreise zeigen eine geplante Nachfolgerlizenz an. Über die Pfeile können Sie zwischen den Jahrgängen blättern.
 2.	**Identifikatoren**: Hier sind die hinterlegten Identifikatoren der Konsortiallizenz aufgelistet.   
@@ -18,11 +15,19 @@ Das Lizenzinformationsblatt beinhaltet alle Metadaten und Informationen, sowie V
 
 **Vergößern: Auf Bild klicken**
 
-![Screenshot 2]({{url_laser_static}}/media/subscription/subHelp2.png "Klicken, um Größe zu ändern")
+![Screenshot 1]({{url_laser_static}}/media/subscription/subHelp1.png "Klicken, um Größe zu ändern")
+
+--------------------
+
+
   
 1.	**Allgemeine Merkmale:** Metadaten, die zusätzliche Informationen zu der Lizenz liefern.
 2. **Meine Merkmale:** Pro-Nutzende können die Lizenzen um eigene Merkmale ergänzen. Die Merkmale können unter **Meine Einrichtung > Merkmale verwalten** erstellt und verwaltet werden.     
 3. **Lizenzverknüpfungen:** Jede Lizenz kann mit einer anderen Lizenz verknüpft werden, um Beziehungen nachhalten zu können, wie z.B. Vorgänger-/Nachfolger.
 4. **Eigene Anmerkungen**: es können Anmerkungen zu einer Lizenz verfasst und abgespeichert werden. Pro-Nutzende können zudem Dokumente anhängen und lizenzspezfische Aufgaben und Workflows erstellen.
 5. **Geteilte Anmerkungen/Dokumente**: von der Konsortialstelle mit den Einrichtungen geteilte Anmerkungen/Dokumente.
+
+**Vergößern: Auf Bild klicken**
+
+![Screenshot 2]({{url_laser_static}}/media/subscription/subHelp2.png "Klicken, um Größe zu ändern")
 
