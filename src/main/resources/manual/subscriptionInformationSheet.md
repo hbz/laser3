@@ -2,7 +2,9 @@
 Das Lizenzinformationsblatt beinhaltet alle Metadaten und Informationen, sowie Verknüpfung zu weiteren Objekten, wie Paketen und Verträgen, die der Lizenz angehören. 
 
 #### Konsortiallizenz
-**(Screenshot 1)**
+**Vergößern: Auf Bild klicken**
+
+![Screenshot 1]({{url_laser_static}}/media/subscription/subHelp1.png "Klicken, um Größe zu ändern")
 
 1.	**Status:** Hier sehen Sie die Laufzeit der Lizenz. Der grüne Kreis kennzeichnet eine aktive Lizenz, rote hingegen eine nicht aktive Lizenz. Gelbe Kreise zeigen eine geplante Nachfolgerlizenz an. Über die Pfeile können Sie zwischen den Jahrgängen blättern.
 2.	**Identifikatoren**: Hier sind die hinterlegten Identifikatoren der Konsortiallizenz aufgelistet.   
@@ -14,7 +16,9 @@ Das Lizenzinformationsblatt beinhaltet alle Metadaten und Informationen, sowie V
 8.	**Library Supplier:** Wie auch bei den Anbietern stammen die Kontaktangaben der Library Supplier aus der we:kb.
 9.	**Kostenübersicht:** Ein Übersicht der Kosten für die Lizenz. Weitere Details finden Sie oben im Reiter **Kosten**.  
 
-**(Screenshot 2)**
+**Vergößern: Auf Bild klicken**
+
+![Screenshot 2]({{url_laser_static}}/media/subscription/subHelp2.png "Klicken, um Größe zu ändern")
   
 1.	**Allgemeine Merkmale:** Metadaten, die zusätzliche Informationen zu der Lizenz liefern.
 2. **Meine Merkmale:** Pro-Nutzende können die Lizenzen um eigene Merkmale ergänzen. Die Merkmale können unter **Meine Einrichtung > Merkmale verwalten** erstellt und verwaltet werden.     
