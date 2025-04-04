@@ -69,113 +69,113 @@
                 </tr>
                 </tbody>
             </table>
+
+            <g:if test="${reportTypes}">
+                <g:if test="${revision == AbstractReport.COUNTER_4}">
+                <%-- taglib not displaying properly
+                <ui:msg class="info" showIcon="true"
+                        header="${message(code: 'default.usage.counter4reportInfo.header')}"
+                        message="default.usage.counter4reportInfo.text" hideClose="true"/>
+                --%>
+                    <ui:msg class="info" showIcon="true" hideClose="true"
+                            header="${message(code: 'default.usage.counter4reportInfo.header')}"
+                            message="default.usage.counter4reportInfo.text" />
+                </g:if>
+                <g:form controller="subscription" action="generateReport" name="stats" class="ui form" method="get">
+                    <g:hiddenField name="id" value="${subscription.id}"/>
+                    <g:hiddenField name="revision" value="${revision}"/>
+                    <div class="five fields" id="filterDropdownWrapper">
+                        <g:if test="${platformInstanceRecords.size() > 1}">
+                            <div class="field">
+                                <label for="platform"><g:message code="platform"/></label>
+                                <ui:select class="ui search selection dropdown" from="${platformInstanceRecords}"
+                                           name="platform"/>
+                            </div>
+                        </g:if>
+                        <g:elseif test="${platformInstanceRecords.size() == 1}">
+                            <g:hiddenField name="platform" value="${platformInstanceRecords.values()[0].id}"/>
+                        </g:elseif>
+                        <div class="field">
+                            <label for="reportType"><g:message code="default.usage.reportType"/></label>
+                            <select name="reportType" id="reportType" class="ui search selection dropdown">
+                                <option value=""><g:message code="default.select.choose.label"/></option>
+                                <g:each in="${reportTypes}" var="reportType">
+                                    <option <%=(params.reportType == reportType) ? 'selected="selected"' : ''%>
+                                            value="${reportType}">
+                                        <g:message code="default.usage.${reportType}"/>
+                                    </option>
+                                </g:each>
+                                <g:if test="${reportTypes.size() == 0}">
+                                    <option value="<g:message code="default.stats.noReport"/>"><g:message
+                                            code="default.stats.noReport"/></option>
+                                </g:if>
+                            </select>
+                        </div>
+                        <g:if test="${params.reportType}">
+                            <laser:render template="/templates/filter/statsFilter"/>
+                        </g:if>
+                        <%-- reports filters in COUNTER 5 count only for master reports (tr, pr, dr, ir)! COUNTER 4 has no restriction on filter usage afaik --%>
+                    </div>
+
+                    <div class="field">
+                        <label for="selDate">Zeitraum für Reports wählen (von .. bis)</label>
+                        <div style="margin:2em 2.5em 4em">
+                            <div id="selDate" class="ui green labeled ticked range slider"></div>
+                        </div>
+                    </div>
+
+                    <div class="field la-field-right-aligned">
+                        <input id="generateReport" type="button" class="${Btn.PRIMARY}" disabled="disabled"
+                               value="${message(code: 'default.stats.generateReport')}"/>
+                        <g:if test="${CostItem.findBySubAndCostItemElementConfiguration(subscription, RDStore.CIEC_POSITIVE)}">
+                            <input id="generateCostPerUse" type="button" class="${Btn.PRIMARY}" disabled="disabled"
+                                   value="${message(code: 'default.stats.generateCostPerUse')}"/>
+                        </g:if>
+
+                        <g:if test="${controllerName == 'survey'}">
+                            <g:set var="parame" value="${[surveyConfigID: surveyConfig.id, participant: participant.id, viewTab: params.viewTab]}"/>
+                            <g:set var="participant" value="${participant}"/>
+                        </g:if>
+                        <g:elseif test="${controllerName == 'myInstitution'}">
+                            <g:set var="parame" value="${[surveyConfigID: surveyConfig.id, viewTab: params.viewTab]}"/>
+                            <g:set var="participant" value="${institution}"/>
+                        </g:elseif>
+
+                        <g:link controller="$controllerName" action="$actionName" id="${params.id}" params="${parame}"
+                                class="${Btn.SECONDARY}">${message(code: 'default.button.reset.label')}</g:link>
+                    </div>
+                </g:form>
+                <div class="ui teal progress" id="progressIndicator" hidden="hidden">
+                    <div class="bar">
+                        <div class="progress"></div>
+                    </div>
+                    <div class="label"></div>
+                </div>
+                <div id="reportWrapper"></div>
+            </g:if>
+            <g:elseif test="${error}">
+
+                <ui:msg class="error" showIcon="true" hideClose="true">
+                    <g:if test="${error == 'noCustomerId'}">
+                        <g:message code="default.stats.error.${error}.local" args="${errorArgs}"/>
+
+                        <g:if test="${contextService.getOrg().id == subscription.getConsortium()?.id}">
+                            <br/>
+                            Alternativ: <g:link controller="subscription" action="membersSubscriptionsManagement"
+                                                id="${subscription.instanceOf.id}"
+                                                params="[tab: 'customerIdentifiers', isSiteReloaded: false]">
+                            <g:message code="subscriptionsManagement.subscriptions.members"/> &rarr; <g:message
+                                    code="org.customerIdentifier"/>
+                        </g:link>
+                        </g:if>
+                    </g:if>
+                    <g:else>
+                        <g:message code="default.stats.error.${error}" args="${errorArgs}"/>
+                    </g:else>
+                </ui:msg>
+            </g:elseif>
         </div>
     </g:each>
-
-    <g:if test="${reportTypes}">
-        <g:if test="${revision == AbstractReport.COUNTER_4}">
-        <%-- taglib not displaying properly
-        <ui:msg class="info" showIcon="true"
-                header="${message(code: 'default.usage.counter4reportInfo.header')}"
-                message="default.usage.counter4reportInfo.text" hideClose="true"/>
-        --%>
-            <ui:msg class="info" showIcon="true" hideClose="true"
-                        header="${message(code: 'default.usage.counter4reportInfo.header')}"
-                        message="default.usage.counter4reportInfo.text" />
-        </g:if>
-        <g:form controller="subscription" action="generateReport" name="stats" class="ui form" method="get">
-            <g:hiddenField name="id" value="${subscription.id}"/>
-            <g:hiddenField name="revision" value="${revision}"/>
-            <div class="five fields" id="filterDropdownWrapper">
-                <g:if test="${platformInstanceRecords.size() > 1}">
-                    <div class="field">
-                        <label for="platform"><g:message code="platform"/></label>
-                        <ui:select class="ui search selection dropdown" from="${platformInstanceRecords}"
-                                   name="platform"/>
-                    </div>
-                </g:if>
-                <g:elseif test="${platformInstanceRecords.size() == 1}">
-                    <g:hiddenField name="platform" value="${platformInstanceRecords.values()[0].id}"/>
-                </g:elseif>
-                <div class="field">
-                    <label for="reportType"><g:message code="default.usage.reportType"/></label>
-                    <select name="reportType" id="reportType" class="ui search selection dropdown">
-                        <option value=""><g:message code="default.select.choose.label"/></option>
-                        <g:each in="${reportTypes}" var="reportType">
-                            <option <%=(params.reportType == reportType) ? 'selected="selected"' : ''%>
-                                    value="${reportType}">
-                                <g:message code="default.usage.${reportType}"/>
-                            </option>
-                        </g:each>
-                        <g:if test="${reportTypes.size() == 0}">
-                            <option value="<g:message code="default.stats.noReport"/>"><g:message
-                                    code="default.stats.noReport"/></option>
-                        </g:if>
-                    </select>
-                </div>
-                <g:if test="${params.reportType}">
-                    <laser:render template="/templates/filter/statsFilter"/>
-                </g:if>
-                <%-- reports filters in COUNTER 5 count only for master reports (tr, pr, dr, ir)! COUNTER 4 has no restriction on filter usage afaik --%>
-            </div>
-
-            <div class="field">
-                <label for="selDate">Zeitraum für Reports wählen (von .. bis)</label>
-                <div style="margin:2em 2.5em 4em">
-                    <div id="selDate" class="ui green labeled ticked range slider"></div>
-                </div>
-            </div>
-
-            <div class="field la-field-right-aligned">
-                <input id="generateReport" type="button" class="${Btn.PRIMARY}" disabled="disabled"
-                       value="${message(code: 'default.stats.generateReport')}"/>
-                <g:if test="${CostItem.findBySubAndCostItemElementConfiguration(subscription, RDStore.CIEC_POSITIVE)}">
-                    <input id="generateCostPerUse" type="button" class="${Btn.PRIMARY}" disabled="disabled"
-                           value="${message(code: 'default.stats.generateCostPerUse')}"/>
-                </g:if>
-
-                <g:if test="${controllerName == 'survey'}">
-                    <g:set var="parame" value="${[surveyConfigID: surveyConfig.id, participant: participant.id, viewTab: params.viewTab]}"/>
-                    <g:set var="participant" value="${participant}"/>
-                </g:if>
-                <g:elseif test="${controllerName == 'myInstitution'}">
-                    <g:set var="parame" value="${[surveyConfigID: surveyConfig.id, viewTab: params.viewTab]}"/>
-                    <g:set var="participant" value="${institution}"/>
-                </g:elseif>
-
-                <g:link controller="$controllerName" action="$actionName" id="${params.id}" params="${parame}"
-                        class="${Btn.SECONDARY}">${message(code: 'default.button.reset.label')}</g:link>
-            </div>
-        </g:form>
-        <div class="ui teal progress" id="progressIndicator" hidden="hidden">
-            <div class="bar">
-                <div class="progress"></div>
-            </div>
-            <div class="label"></div>
-        </div>
-        <div id="reportWrapper"></div>
-    </g:if>
-    <g:elseif test="${error}">
-
-        <ui:msg class="error" showIcon="true" hideClose="true">
-            <g:if test="${error == 'noCustomerId'}">
-                <g:message code="default.stats.error.${error}.local" args="${errorArgs}"/>
-
-                <g:if test="${contextService.getOrg().id == subscription.getConsortium()?.id}">
-                    <br/>
-                    Alternativ: <g:link controller="subscription" action="membersSubscriptionsManagement"
-                                        id="${subscription.instanceOf.id}"
-                                        params="[tab: 'customerIdentifiers', isSiteReloaded: false]">
-                    <g:message code="subscriptionsManagement.subscriptions.members"/> &rarr; <g:message
-                            code="org.customerIdentifier"/>
-                </g:link>
-                </g:if>
-            </g:if>
-            <g:else>
-                <g:message code="default.stats.error.${error}" args="${errorArgs}"/>
-            </g:else>
-        </ui:msg>
-    </g:elseif>
 </g:if>
 <g:elseif test="${platformInstanceRecords.values().statisticsFormat.contains('Document') || platformInstanceRecords.values().statisticsFormat.contains('Diagram')}">
     <ui:tabs>
@@ -375,7 +375,7 @@
                 let percentage = 0;
                 setTimeout(function() {
                     $.ajax({
-                        url: "<g:createLink controller="ajaxJson" action="checkProgress" params="[cachePath: '/'+controllerName+'/'+actionName]"/>"
+                        url: "<g:createLink controller="ajaxJson" action="checkProgress" params="[cachePath: '/subscription/stats']"/>"
                     }).done(function(response){
                         percentage = response.percent;
                         $('#progressIndicator div.label').text(response.label);
