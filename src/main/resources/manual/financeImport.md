@@ -20,12 +20,12 @@ Nachfolgend eine Anleitung, wie Sie die Tabelle mit Excel befüllen können.
 ![financeupload_3.png]({{url_laser_static}}/media/finance/financeupload_3.png)
 
 7. Klicken Sie anschließend auf "Daten transformieren".
-8. In dem sich nun öffnenden Fenster klicken Sie auf "Erste Zeile als Überschriften verwenden" im Menü oben im Bereich "Transformieren".
+8. In dem sich nun öffnenden Fenster klicken Sie auf "Erste Zeile als Überschriften verwenden".
 ![financeupload_4.png]({{url_laser_static}}/media/finance/financeupload_4.png)
 
 9. Bestätigen Sie durch Klick auf "Schließen & laden" im oberen Menü links.
 10. Nun haben Sie die Vorlage importiert und können Sie befüllen. Wenn Sie die Formatierung stört, 
-können Sie sie durch Heraufscrollen im Bereich "Tabellenformatvorlagen" auf eine neutralere Formatierung umstellen.
+können Sie sie unter "Entwurf" durch Heraufscrollen im Bereich "Tabellenformatvorlagen" auf eine neutralere Formatierung umstellen.
 ![financeupload_5.png]({{url_laser_static}}/media/finance/financeupload_5.png)
 
 Nachdem Sie die Werte befüllt haben, gehen Sie bitte wie folgt vor:
