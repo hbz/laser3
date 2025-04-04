@@ -149,7 +149,7 @@
 
 <g:render template="/survey/participantInfos" model="[participant: subscriber]"/>
 
-        <laser:render template="/templates/filter/tipp_ieFilter" model="[notShow: params.tab == 'allTipps' || params.tab == 'selectableTipps', fillDropdownsWithPackage: params.tab == 'allTipps' || params.tab == 'selectableTipps']"/>
+<laser:render template="/templates/filter/tipp_ieFilter" model="[notShow: params.tab == 'allTipps' || params.tab == 'selectableTipps', fillDropdownsWithPackage: params.tab == 'allTipps' || params.tab == 'selectableTipps']"/>
 
 <h3 class="ui icon header la-clear-before la-noMargin-top">
     <ui:bubble count="${num_rows}" grey="true"/> <g:message code="title.filter.result"/>
@@ -163,7 +163,7 @@
         <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                      params="[id: subscription.id, surveyConfigID: surveyConfig.id, tab: 'selectableTipps']"
                      text="${message(code: "renewEntitlementsWithSurvey.selectableTipps")}" tab="selectableTipps"
-                     counts="${countAllTipps - countCurrentPermanentTitles}"/>
+                     counts="${countAllTipps - countSelectedIEs - countCurrentPermanentTitles}"/>
         <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                          params="[id: subscription.id, surveyConfigID: surveyConfig.id, tab: 'selectedIEs']"
                          text="${message(code: "renewEntitlementsWithSurvey.currentTitlesSelect")}" tab="selectedIEs"
@@ -348,6 +348,7 @@
             $.ajax({
                 url: "<g:createLink controller="ajax" action="updateChecked" />",
                 data: {
+                    id: "${subscription.id}",
                     sub: "${subscription.id}?${params.tab}",
                     index: index,
                     filterParams: JSON.stringify(filterParams),
