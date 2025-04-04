@@ -361,9 +361,9 @@ class PublicController {
     def manual() {
         Map<String, Object> result = [
                 content : [
-                        'various'                   : ['Allgemein', 'General'],
-                        'licenceInformationSheet'   : ['Lizenzinformationsblatt', 'Licence Information Sheet'],
-                        'financeImport'             : ['Kosten hochladen', 'Upload Cost Items']
+                        'various'                       : ['Allgemein', 'General'],
+                        'subscriptionInformationSheet'  : ['Lizenzinformationsblatt', 'Licence Information Sheet'],
+                        'financeImport'                 : ['Kosten hochladen', 'Upload Cost Items']
                 ], // todo
                 topic   : 'various'
         ]
