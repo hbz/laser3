@@ -97,6 +97,7 @@ class SystemEvent {
             'SYSTEM_UA_FLAG_EXPIRED'        : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'SYSTEM_UA_FLAG_LOCKED'         : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'SYSTEM_UA_FLAG_UNLOCKED'       : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
+            'YODA_DS_MOVE_OUTDATED'         : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
             'YODA_ES_RESET_START'           : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
             'YODA_ES_RESET_DELETED'         : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
             'YODA_ES_RESET_CREATED'         : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO]

@@ -15,35 +15,37 @@
     </div>
     <div class="content">
         <div class="ui list">
-            <div class="item">Dateien gefunden: ${dsFiles.size()}</div>
-            <div class="item">Zugehörige DOC-Verweise insgesamt: ${validDocs.size()}</div>
-            <div class="item">Dateien mit gültigem DOC-Verweis: ${validFiles.size()}</div>
-            <div class="item">Dateien ohne gültigen DOC-Verweis: ${invalidFiles.size()}</div>
+            <div class="item">
+                <div class="content"><i class="file outline icon"></i> Dateien gefunden: <strong>${dsFiles.size()}</strong></div>
+            </div>
+            <div class="item">
+                <div class="content"><i class="${Icon.SYM.YES}"></i> Matchende DOC-Verweise: <strong>${validDocs.size()}</strong></div>
+            </div>
+            <div class="item">
+                <div class="content"><i class="${Icon.SYM.YES} green"></i> Dateien mit gültigem DOC-Verweis: <strong>${validFiles.size()}</strong></div>
+            </div>
+            <div class="item">
+                <div class="content"><i class="${Icon.SYM.NO} red"></i>Dateien ohne gültigen DOC-Verweis: <strong>${invalidFiles.size()}</strong></div>
+            </div>
         </div>
     </div>
 </div>
 
-%{--<div class="ui fluid card">--}%
-%{--    <div class="content">--}%
-%{--        <div class="header">Dateien</div>--}%
-%{--    </div>--}%
-%{--    <div class="content">--}%
-%{--        ${dsFiles.join(', ')}--}%
-%{--    </div>--}%
-%{--</div>--}%
-
 <div class="ui fluid card">
     <div class="content">
-        <div class="header">DOC-Verweise</div>
+        <div class="header">Matchende DOC-Verweise: ${validDocs.size()}</div>
     </div>
     <div class="content">
-        ${validDocs.collect{ it.ckey ? '!' + it.id : it.id }.join(', ')}
+        <g:each in="${validDocs}" var="doc" status="i">
+            <g:if test="${doc.ckey}"><span>${doc.id}</span></g:if><g:else><span class="sc_darkgrey">${doc.id}</span></g:else>
+            <g:if test="${i < validDocs.size()-1}">, </g:if>
+        </g:each>
     </div>
 </div>
 
 <div class="ui fluid card">
     <div class="content">
-        <div class="header">Dateien mit gültigem DOC-Verweis</div>
+        <div class="header">Dateien mit gültigem DOC-Verweis: ${validFiles.size()}</div>
     </div>
     <div class="content">
         ${validFiles.join(', ')}
@@ -52,19 +54,19 @@
 
 <div class="ui fluid card">
     <div class="content">
-        <div class="header">Dateien ohne gültigen DOC-Verweis</div>
+        <div class="header">Dateien ohne gültigen DOC-Verweis: ${invalidFiles.size()}</div>
     </div>
     <div class="content">
         ${invalidFiles.join(', ')}
 
-%{--        <g:if test="${invalidFiles}">--}%
-%{--            <br/>--}%
-%{--            <br/>--}%
-%{--            <g:link controller="admin" action="simpleFilesCheck" params="${[moveOutdatedFiles: 1]}"--}%
-%{--                    class="${Btn.NEGATIVE_CONFIRM}"--}%
-%{--                    data-confirm-tokenMsg="Ungültige Dateien in den 'Outdated'-Ordner verschieben?"--}%
-%{--                    data-confirm-term-how="ok">Aufräumen</g:link>--}%
-%{--        </g:if>--}%
+        <g:if test="${invalidFiles}">
+            <br/>
+            <br/>
+            <g:link controller="admin" action="simpleFilesCheck" params="${[moveOutdatedFiles: 1]}"
+                    class="${Btn.NEGATIVE_CONFIRM}"
+                    data-confirm-tokenMsg="Ungültige Dateien in den 'Outdated'-Ordner verschieben?"
+                    data-confirm-term-how="ok">Aufräumen</g:link>
+        </g:if>
     </div>
 </div>
 

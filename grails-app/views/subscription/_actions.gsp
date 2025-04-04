@@ -79,9 +79,9 @@
                 <g:if test="${subscription.packages}">
                     <g:if test="${titleManipulation}">
                         <ui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
+                        <ui:actionsDropdownItem id="selectEntitlementsWithIDOnly" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscription.id, params: [referer: actionName, headerToken: 'subscription.details.addEntitlements.menuID', withIDOnly: true, progressCacheKey: '/subscription/addEntitlements/'])}" message="subscription.details.addEntitlements.menuID"/>
                         <ui:actionsDropdownItem id="selectEntitlementsWithKBART" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscription.id, params: [referer: actionName, headerToken: 'subscription.details.addEntitlements.menu', progressCacheKey: '/subscription/addEntitlements/'])}" message="subscription.details.addEntitlements.menu"/>
                         <ui:actionsDropdownItem id="selectEntitlementsWithPick" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscription.id, params: [referer: actionName, headerToken: 'subscription.details.addEntitlements.menuPick', withPick: true, progressCacheKey: '/subscription/addEntitlements/'])}" message="subscription.details.addEntitlements.menuPick"/>
-                        <ui:actionsDropdownItem id="selectEntitlementsWithIDOnly" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscription.id, params: [referer: actionName, headerToken: 'subscription.details.addEntitlements.menuID', withIDOnly: true, progressCacheKey: '/subscription/addEntitlements/'])}" message="subscription.details.addEntitlements.menuID"/>
                     </g:if>
                     <g:else>
                         <ui:actionsDropdownItemDisabled message="subscription.details.addEntitlements.label" tooltip="${message(code:'subscription.details.addEntitlements.holdingEntire')}"/>

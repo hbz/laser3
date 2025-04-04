@@ -6,6 +6,7 @@
 <g:if test="${error}">
     <input id="errorMailto" type="hidden" value="${mailTo.content.join(';')}" />
     <input id="errorMailcc" type="hidden" value="${contextService.getUser().email}" />
+    <textarea id="errorMailBody" class="hidden">${mailBody}</textarea>
     <ui:msg class="error" showIcon="true" message="subscription.details.addEntitlements.matchingError"
             args="[notAddedCount, notInPackageCount, perpetuallyPurchasedCount, g.createLink(controller: 'package', action:'downloadLargeFile', params:[token: token, fileformat: 'kbart'])]"/>
     <laser:script file="${this.getGroovyPageFileName()}">
@@ -13,7 +14,7 @@
             let mailto = $('#errorMailto').val();
             let mailcc = $('#errorMailcc').val();
             let subject = 'Fehlerhafte KBART';
-            let body = 'Laut ERMS-6359 noch t.b.d.';
+            let body = $('#errorMailBody').html();
             let href = 'mailto:' + mailto + '?subject=' + subject + '&cc=' + mailcc + '&body=' + body;
 
             window.location.href = encodeURI(href);

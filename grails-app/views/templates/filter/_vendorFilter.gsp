@@ -225,7 +225,15 @@
 
 <div class="field la-field-right-aligned">
 
-    <g:link controller="${processController}" action="${processAction}" id="${surveyInfo?.id}" params="[viewTab: params.viewTab, subTab: params.subTab]" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</g:link>
+    <g:if test="${surveyConfig && participant && controllerName == 'survey'}">
+        <g:set var="parame" value="${[surveyConfigID: surveyConfig.id, participant: participant.id, viewTab: params.viewTab]}"/>
+        <g:set var="participant" value="${participant}"/>
+    </g:if>
+    <g:elseif test="${surveyConfig}">
+        <g:set var="parame" value="${[surveyConfigID: surveyConfig.id, viewTab: params.viewTab]}"/>
+    </g:elseif>
+
+    <g:link controller="${controllerName}" action="${actionName}" id="${params.id}" params="${parame}" class="${Btn.SECONDARY} reset">${message(code:'default.button.reset.label')}</g:link>
 
         <input name="filterSet" type="hidden" value="true">
         <g:if test="${tmplConfigFormFilter}">

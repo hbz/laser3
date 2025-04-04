@@ -137,7 +137,7 @@ class VendorController {
             vendorQuery += " order by ${params.sort} ${params.order ?: 'asc'}, v.name ${params.order ?: 'asc'} "
         }
         else
-            vendorQuery += " order by v.sortname "
+            vendorQuery += " order by v.sortname, v.name "
         prf.setBenchmark("get total vendors")
         Set<Vendor> vendorsTotal = Vendor.executeQuery(vendorQuery, queryParams)
         prf.setBenchmark("get subscribed vendors")
