@@ -1008,7 +1008,7 @@ class MyInstitutionController  {
             providerQuery += " order by ${params.sort} ${params.order ?: 'asc'}, p.name ${params.order ?: 'asc'} "
         }
         else
-            providerQuery += " order by p.sortname "
+            providerQuery += " order by p.sortname, p.name "
         Set<Provider> providerListTotal = Provider.executeQuery(providerQuery, queryParams)
 
         result.wekbRecords = providerService.getWekbProviderRecords(params, result)
@@ -1203,7 +1203,7 @@ class MyInstitutionController  {
             query += " order by ${params.sort} ${params.order ?: 'asc'}, v.name ${params.order ?: 'asc'} "
         }
         else
-            query += " order by v.sortname "
+            query += " order by v.sortname, v.name "
 
         String currentSubQuery = "select vr from VendorRole vr, OrgRole oo join oo.sub s where vr.subscription = s and s.status = :current and oo.org = :contextOrg order by s.name, s.startDate desc"
         Map<String, Object> currentSubParams = [current: RDStore.SUBSCRIPTION_CURRENT, contextOrg: contextService.getOrg()]
