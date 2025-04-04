@@ -32,6 +32,7 @@ class IssueEntitlementService {
         Map<String, Object> titleConfigMap = parameterGenerics.titleConfigMap,
                             identifierConfigMap = parameterGenerics.identifierConfigMap,
                             issueEntitlementConfigMap = parameterGenerics.issueEntitlementConfigMap
+        titleConfigMap.noSort = true
         Set<Long> tippIDs = []
         Map<String, Object> queryPart1 = filterService.getIssueEntitlementSubsetQuery(issueEntitlementConfigMap), queryPart2 = filterService.getTippSubsetQuery(titleConfigMap)
         List<Map<String, Object>> tippIeMap = IssueEntitlement.executeQuery(queryPart1.query, queryPart1.queryParams)

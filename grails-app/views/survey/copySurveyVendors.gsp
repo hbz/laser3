@@ -96,7 +96,7 @@
 
         <g:form action="proccessCopySurveyVendors" controller="survey" id="${surveyInfo.id}"
                 params="[surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]"
-                method="post" class="ui form ">
+                method="post" class="ui form">
 
 
             <table class="ui celled sortable table la-js-responsive-table la-table" id="parentSubscription">

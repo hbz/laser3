@@ -26,7 +26,7 @@
 
                     <div class="field required">
                         <label for="prop_descr_selector"><g:message code="propertyDefinitionGroup.editModal.category"/> <g:message code="messageRequiredField" /></label>
-                        <select name="prop_descr" id="prop_descr_selector" class="ui dropdown">
+                        <select name="prop_descr" id="prop_descr_selector" class="ui dropdown clearable">
                             <g:each in="${PropertyDefinition.AVAILABLE_GROUPS_DESCR}" var="pdDescr">
                             <%-- TODO: REFACTORING: x.class.name with pd.desc --%>
                                 <g:if test="${pdDescr == PropertyDefinition.LIC_PROP && pdGroup?.ownerType == License.class.name}">

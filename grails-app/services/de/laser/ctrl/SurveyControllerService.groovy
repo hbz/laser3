@@ -986,7 +986,8 @@ class SurveyControllerService {
                                                                isil: IdentifierNamespace.findByNsAndNsType('ISIL', Org.class.name),
                                                                ror : IdentifierNamespace.findByNsAndNsType('ROR ID', Org.class.name),
                                                                wib : IdentifierNamespace.findByNsAndNsType('wibid', Org.class.name),
-                                                               dealId : IdentifierNamespace.findByNsAndNsType('deal_id', Org.class.name)]
+                                                               dealId : IdentifierNamespace.findByNsAndNsType('deal_id', Org.class.name),
+                                                               anbieterProduktID:  IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.PKG_ID, Package.class.name)]
                 String encoding = UniversalDetector.detectCharset(importFile.getInputStream())
 
                 if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
@@ -1033,6 +1034,8 @@ class SurveyControllerService {
                             case ["anmerkung", "description"]: colMap.description = c
                                 break
                             case ["sortiername", "sortname"]: colMap.sortname = c
+                                break
+                            case ["Anbieter-Produkt-ID", "Anbieter-Product-ID"]: colMap.anbieterProduktID = c
                                 break
                             default: log.info("unhandled parameter type ${headerCol}, ignoring ...")
                                 break
@@ -1107,13 +1110,34 @@ class SurveyControllerService {
                                     cost_item_element = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE
                                 }
 
-                                if (cost_item_element) {
-                                    if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element)) {
-                                        createCostItem = true
+                                Package pkg
+                                if (params.costItemsForSurveyPackage&& result.surveyConfig.packageSurvey){
+                                    if (colMap.anbieterProduktID >= 0 && cols[colMap.anbieterProduktID] != null && !cols[colMap.anbieterProduktID].trim().isEmpty()) {
+                                        List matchList = Package.executeQuery('select pkg from Identifier id join id.pkg pkg where id.value = :value and id.ns = :ns and pkg.id in (select scp.pkg.id from SurveyConfigPackage scp where scp.surveyConfig = :surveyConfig)', [surveyConfig: result.surveyConfig, value: cols[colMap.anbieterProduktID].trim(), ns: namespaces.anbieterProduktID])
+                                        if (matchList.size() == 1)
+                                            pkg = matchList[0] as Package
+                                    }
+
+                                    if(pkg) {
+                                        if (cost_item_element) {
+                                            if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element, pkg)) {
+                                                createCostItem = true
+                                            }
+                                        } else {
+                                            if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, pkg)) {
+                                                createCostItem = true
+                                            }
+                                        }
                                     }
                                 } else {
-                                    if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED)) {
-                                        createCostItem = true
+                                    if (cost_item_element) {
+                                        if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element)) {
+                                            createCostItem = true
+                                        }
+                                    } else {
+                                        if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED)) {
+                                            createCostItem = true
+                                        }
                                     }
                                 }
 
@@ -1228,6 +1252,10 @@ class SurveyControllerService {
                                         Date endDate = DateUtils.parseDateGeneric(cols[colMap.dateTo])
                                         if (endDate)
                                             costItem.endDate = endDate
+                                    }
+
+                                    if(params.costItemsForSurveyPackage && pkg){
+                                        costItem.pkg = pkg
                                     }
 
                                     if(costItem.save()){
@@ -1990,9 +2018,14 @@ class SurveyControllerService {
             result.participants = result.participants.sort { it.org.sortname }
 
             if(!params.fileformat) {
-                result.charts = surveyService.generatePropertyDataForCharts(result.surveyConfig, result.participants?.org)
+                 List charts = surveyService.generatePropertyDataForCharts(result.surveyConfig, result.participants?.org)
                 if(result.surveyConfig.vendorSurvey) {
-                    result.charts = result.charts + surveyService.generateSurveyVendorDataForCharts(result.surveyConfig, result.participants?.org)
+                    charts = charts + surveyService.generateSurveyVendorDataForCharts(result.surveyConfig, result.participants?.org)
+                }
+                if(params.chartSort){
+                    result.charts = [['property', 'value']] + charts.sort{it[1]}
+                }else {
+                    result.charts = [['property', 'value']] + charts
                 }
             }
 
@@ -2027,12 +2060,19 @@ class SurveyControllerService {
 
             result.participants = SurveyOrg.executeQuery(fsq.query, fsq.queryParams, params)
 
-
             result.propList = result.surveyConfig.surveyProperties.surveyProperty
 
             result.participants = result.participants.sort { it.org.sortname }
 
-            result.charts = surveyService.generateSurveyPackageDataForCharts(result.surveyConfig, result.participants?.org)
+            if(!params.fileformat) {
+                List charts = surveyService.generateSurveyPackageDataForCharts(result.surveyConfig, result.participants?.org)
+
+                if(params.chartSort){
+                    result.charts = [['property', 'value']] + charts.sort{it[1]}
+                }else {
+                    result.charts = [['property', 'value']] + charts
+                }
+            }
 
             [result: result, status: STATUS_OK]
         }

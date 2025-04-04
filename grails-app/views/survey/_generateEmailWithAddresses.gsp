@@ -16,7 +16,7 @@
                 <label><g:message code="person.function.label" /></label>
             </div>
             <div>
-                <ui:select class="ui dropdown search"
+                <ui:select class="ui dropdown clearable search"
                               name="prsFunctionMultiSelect2"
                               multiple=""
                               from="${rdvAllPersonFunctions}"
@@ -30,7 +30,7 @@
                 <label><g:message code="person.position.label" /></label>
             </div>
             <div>
-                <ui:select class="ui dropdown search"
+                <ui:select class="ui dropdown clearable search"
                               name="prsPositionMultiSelect2"
                               multiple=""
                               from="${rdvAllPersonPositions}"

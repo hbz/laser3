@@ -100,7 +100,7 @@
 
         <g:form action="proccessCopySurveyPackages" controller="survey" id="${surveyInfo.id}"
                 params="[surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]"
-                method="post" class="ui form ">
+                method="post" class="ui form">
 
 
             <table class="ui celled sortable table la-js-responsive-table la-table" id="parentSubscription">
@@ -252,7 +252,7 @@
                         <div class="four fields">
                             <g:if test="${parentSuccessorSubscription && auditService.getAuditConfig(parentSuccessorSubscription, 'holdingSelection')}">
                                 <div class="field">
-                                    <ui:select class="ui dropdown search selection" id="holdingSelection" name="holdingSelection"
+                                    <ui:select class="ui dropdown clearable search selection" id="holdingSelection" name="holdingSelection"
                                                from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" optionKey="id"
                                                optionValue="value"/>
                                 </div>

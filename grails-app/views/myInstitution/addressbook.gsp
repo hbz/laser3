@@ -84,7 +84,7 @@
         <div class="two fields">
             <div class="field">
                 <label for="function"><g:message code="person.function.label"/></label>
-                <select id="function" name="function" multiple="" class="ui dropdown search">
+                <select id="function" name="function" multiple="" class="ui dropdown clearable search">
                     <option value=""><g:message code="default.select.choose.label"/></option>
                     <g:each in="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}" var="rdv">
                         <option <%=Params.getLongList(params, 'function').contains(rdv.id) ? 'selected="selected"' : ''%> value="${rdv.id}">${rdv.getI10n('value')}</option>
@@ -94,7 +94,7 @@
 
             <div class="field">
                 <label for="position"><g:message code="person.position.label"/></label>
-                <select id="position" name="position" multiple="" class="ui dropdown search">
+                <select id="position" name="position" multiple="" class="ui dropdown clearable search">
                     <option value=""><g:message code="default.select.choose.label"/></option>
                     <g:each in="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}" var="rdv">
                         <option <%=Params.getLongList(params, 'position').contains(rdv.id) ? 'selected="selected"' : ''%> value="${rdv.id}">${rdv.getI10n('value')}</option>

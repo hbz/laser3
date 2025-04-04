@@ -83,17 +83,17 @@
 
     <g:form action="manageDiscountScale" controller="subscription" params="[id: params.id, cmd: 'createDiscountScale']"
             method="post" class="ui form">
-        <div class="field required ">
+        <div class="field required">
             <label>${message(code: 'default.name.label')} <g:message code="messageRequiredField" /></label>
             <input type="text" name="name" placeholder="" value="${params.name}" required/>
         </div>
 
-        <div class="field required ">
+        <div class="field required">
             <label>${message(code: 'default.discount.label')} <g:message code="messageRequiredField" /></label>
             <input type="text" name="discount" placeholder="" value="${params.discount}" required/>
         </div>
 
-        <div class="field ">
+        <div class="field">
             <label>${message(code: 'default.note.label')}</label>
 
             <textarea name="note">${params.note}</textarea>

@@ -35,6 +35,7 @@ import de.laser.config.ConfigMapper
 
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.StandardCopyOption
 import java.time.LocalDate
 
 /**
@@ -514,6 +515,83 @@ class AdminController  {
                     }
                 }
         }
+        result
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def simpleFilesCheck() {
+        log.debug('simpleFilesCheck')
+
+        Map<String, Object> result = [
+           dsPath   : ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK,
+           dsFiles  : [],
+           xxPath   : (ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK) + '_outdated',
+           xxFiles  : [],
+           validDocs    : [],
+           validFiles   : [],
+           invalidFiles : []
+        ]
+
+        try {
+            File ds = new File("${result.dsPath}")
+            if (ds.exists()) {
+                result.dsFiles = ds.listFiles().collect{it.getName()}
+
+                result.validDocs = Doc.executeQuery(
+                        'select doc from Doc doc where doc.contentType = :ctf and doc.uuid in (:files)',
+                        [ctf: Doc.CONTENT_TYPE_FILE, files: result.dsFiles]
+                )
+                Set<String> uuids = result.validDocs.collect{ it.uuid as String }
+
+                result.dsFiles.each { fn ->
+                    if (uuids.contains(fn)) {
+                        result.validFiles << fn
+                    }
+                    else {
+                        result.invalidFiles << fn
+                    }
+                }
+                result.validFiles.toSorted()
+                result.invalidFiles.toSorted()
+            }
+
+            File xx = new File("${result.xxPath}")
+            if (xx.exists()) {
+                result.xxFiles = xx.listFiles().collect { it.getName() }
+            }
+        }
+        catch (Exception e) {
+            log.error e.getMessage()
+        }
+
+//        if (params.moveOutdatedFiles) {
+//            List<String> movedFiles = []
+//
+//            File folder = new File(result.xxPath)
+//            if (!folder.exists()) {
+//                folder.mkdirs()
+//            }
+//
+//            result.invalidFiles.each { uuid ->
+//                try {
+//                    File src = new File("${result.dsPath}/${uuid}")
+//                    File dst = new File("${result.xxPath}/${uuid}")
+//                    if (src.exists() && src.isFile()) {
+//                        Files.move(src.toPath(), dst.toPath(), StandardCopyOption.REPLACE_EXISTING)
+//                        movedFiles << uuid
+//                    }
+//                }
+//                catch (Exception e) {
+//                    log.error e.getMessage()
+//                }
+//
+//            }
+//            //SystemEvent.createEvent()
+//            println 'movedFiles: ' + movedFiles
+//            redirect controller: 'admin', action: 'simpleFilesCheck'
+//            return
+//        }
+
         result
     }
 

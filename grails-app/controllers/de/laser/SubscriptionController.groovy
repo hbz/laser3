@@ -63,6 +63,7 @@ class SubscriptionController {
     SubscriptionService subscriptionService
     SurveyService surveyService
     TaskService taskService
+    TitleService titleService
 
     //-----
 
@@ -1055,10 +1056,9 @@ class SubscriptionController {
         ctx.contextService.isInstEditor_denySupport()
     })
     def linkTitle() {
-        Subscription subscription
-        if(Subscription.class.name in params.subscription)
-            subscription = (Subscription) genericOIDService.resolveOID(params.subscription)
-        else subscription = Subscription.get(params.subscription)
+        Subscription subscription = (Subscription) genericOIDService.resolveOID(params.subscription)
+        if(!subscription)
+            subscription = Subscription.get(params.subscription)
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(params.tippID)
         if(subscription && tipp) {
             Package pkg = tipp.pkg

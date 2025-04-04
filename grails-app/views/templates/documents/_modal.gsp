@@ -93,7 +93,7 @@
                         }
                     %>
                     <g:select from="${documentTypes}"
-                              class="ui dropdown fluid"
+                              class="ui dropdown clearable fluid"
                               optionKey="value"
                               optionValue="${{ it.getI10n('value') }}"
                               id="doctype-${labelId}"
@@ -108,7 +108,7 @@
                 </dt>
                 <dd>
                     <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_CONFIDENTIALITY)}"
-                              class="ui dropdown fluid"
+                              class="ui dropdown clearable fluid"
                               optionKey="value"
                               optionValue="${{ it.getI10n('value') }}"
                               id="confidentiality-${labelId}"

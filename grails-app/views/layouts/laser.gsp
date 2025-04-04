@@ -99,7 +99,9 @@
                     %{-- menu: devDocs --}%
 
                     <sec:ifAnyGranted roles="ROLE_ADMIN">
-                        <laser:render template="/layouts/laser/menu_devDocs" />
+                        <g:if test="${AppUtils.getCurrentServer() in [AppUtils.LOCAL, AppUtils.DEV]}">
+                            <laser:render template="/layouts/laser/menu_devDocs" />
+                        </g:if>
                     </sec:ifAnyGranted>
 
                     <div class="right menu la-right-menuPart">

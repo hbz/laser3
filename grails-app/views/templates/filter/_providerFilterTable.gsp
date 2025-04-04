@@ -132,11 +132,14 @@
                         List<Subscription> currentSubscriptions = Subscription.executeQuery("select s " + base_qry, qry_params)
                     %>
                     <g:if test="${currentSubscriptions}">
-                        <ul class="la-simpleList">
-                            <g:each in="${currentSubscriptions}" var="sub">
-                                <li><g:link controller="subscription" action="show" id="${sub.id}">${sub}</g:link></li>
-                            </g:each>
-                        </ul>
+                        <g:each in="${currentSubscriptions}" var="sub">
+                            <div class="la-flexbox">
+                                <g:if test="${currentSubscriptions.size() > 1}">
+                                    <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
+                                </g:if>
+                                <g:link controller="subscription" action="show" id="${sub.id}">${sub}</g:link>
+                            </div>
+                        </g:each>
                     </g:if>
                 </td>
             </g:if>

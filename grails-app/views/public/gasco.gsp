@@ -58,7 +58,7 @@
                         <fieldset>
                             <label for="consortia" id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</label>
 
-                            <g:select from="${allConsortia}" id="consortial" class="ui fluid search selection dropdown"
+                            <g:select from="${allConsortia}" id="consortial" class="ui fluid search selection dropdown clearable "
                                 optionKey="${{ Org.class.name + ':' + it.id }}"
                                 optionValue="${{ it.getName() }}"
                                 name="consortia" noSelection="${['' : message(code:'default.select.choose.label')]}" value="${params.consortia}"/>

@@ -2416,7 +2416,8 @@ class SurveyService {
     }
 
     List generatePropertyDataForCharts(SurveyConfig surveyConfig, List<Org> orgList){
-        List chartSource = [['property', 'value']]
+        //List chartSource = [['property', 'value']]
+        List chartSource = []
 
         List<PropertyDefinition> propList = SurveyConfigProperties.executeQuery("select scp.surveyProperty from SurveyConfigProperties scp where scp.surveyConfig = :surveyConfig", [surveyConfig: surveyConfig])
         propList.sort {it.getI10n('name')}.eachWithIndex {PropertyDefinition prop, int i ->
@@ -2443,11 +2444,12 @@ class SurveyService {
             }
         }
         chartSource = chartSource.reverse()
-        return chartSource.reverse()
+        return chartSource
     }
 
     List generateSurveyPackageDataForCharts(SurveyConfig surveyConfig, List<Org> orgList){
-        List chartSource = [['property', 'value']]
+        //List chartSource = [['property', 'value']]
+        List chartSource = []
 
         List<Package> packages = SurveyConfigPackage.executeQuery("select scp.pkg from SurveyConfigPackage scp where scp.surveyConfig = :surveyConfig order by scp.pkg.name asc", [surveyConfig: surveyConfig])
 
@@ -2459,7 +2461,7 @@ class SurveyService {
         }
 
         chartSource = chartSource.reverse()
-        return chartSource.reverse()
+        return chartSource
     }
 
     List generateSurveyVendorDataForCharts(SurveyConfig surveyConfig, List<Org> orgList){
@@ -2595,7 +2597,7 @@ class SurveyService {
                         if (person && !SurveyPersonResult.findByParticipantAndSurveyConfigAndBillingPerson(participant, result.surveyConfig, true)) {
                             new SurveyPersonResult(participant: participant, surveyConfig: result.surveyConfig, person: person, billingPerson: true, owner: result.surveyInfo.owner).save()
                         }else {
-                            result.error = message(code: 'person.preferredBillingPerson.fail')
+                            result.error = messageSource.getMessage('person.preferredBillingPerson.fail', null, LocaleUtils.getCurrentLocale())
                         }
                     }
                     if (params.setPreferredBillingPerson == 'false') {
@@ -2610,7 +2612,7 @@ class SurveyService {
                 if (params.addressId && params.setAddress) {
                     if (params.setAddress == 'true') {
                         if(result.surveyOrg.address){
-                            result.error = message(code: 'address.preferredForSurvey.fail')
+                            result.error = messageSource.getMessage('person.preferredBillingPerson.fail', null, LocaleUtils.getCurrentLocale())
                         }else {
                             result.surveyOrg.address = Address.get(Long.valueOf(params.addressId))
                         }
