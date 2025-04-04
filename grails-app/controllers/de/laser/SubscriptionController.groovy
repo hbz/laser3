@@ -1353,6 +1353,16 @@ class SubscriptionController {
                 Set<Contact> mailTo = Contact.executeQuery("select ct from PersonRole pr join pr.prs p join p.contacts ct where (p.isPublic = true or p.tenant = :context) and pr.functionType in (:functionTypes) and ct.contentType.value in (:contentTypes) and pr.provider in (:providers)",
                         [context: contextService.getOrg(), providers: subPkgs.provider, functionTypes: [RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS], contentTypes: [RDStore.CCT_EMAIL.value, 'Mail']])
                 result.mailTo = mailTo
+                Set<CustomerIdentifier> customerIdentifierSet = CustomerIdentifier.findAllByPlatformInListAndCustomer(subPkgs.nominalPlatform, contextService.getOrg())
+                String customerIdentifier = "", notInPackageRows = ""
+                if(customerIdentifierSet)
+                    customerIdentifier = customerIdentifierSet.join(',')
+                if(result.notInPackage) {
+                    result.notInPackage.each { Map<String, Object> row ->
+                        notInPackageRows << "${row.values().join('\t')}\n"
+                    }
+                }
+                result.mailBody = message(code: 'subscription.details.addEntitlements.matchingErrorMailBody', args: [contextService.getOrg().name, customerIdentifier, subPkgs.name.join(','), notInPackageRows])
                 String returnKBART = exportService.generateSeparatorTableString(result.titleRow, result.notAddedTitles, '\t')
                 FileOutputStream fos = new FileOutputStream(f)
                 fos.withWriter { Writer w ->
@@ -1460,6 +1470,7 @@ class SubscriptionController {
             result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
             result.countSelectedTipps = result.checkedCount
             if(configMap.packages) {
+                configMap.newEntitlements = true
                 Map<String, Object> keys = issueEntitlementService.getKeys(configMap)
                 Set<Long> tippIDs = keys.tippIDs
                 tippIDs.removeAll(keys.ieIDs)
@@ -1624,6 +1635,21 @@ class SubscriptionController {
             Set<Contact> mailTo = Contact.executeQuery("select ct from PersonRole pr join pr.prs p join p.contacts ct where (p.isPublic = true or p.tenant = :context) and pr.functionType in (:functionTypes) and ct.contentType.value in (:contentTypes) and pr.provider in (:providers)",
                     [context: contextService.getOrg(), providers: subPkgs.provider, functionTypes: [RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS], contentTypes: [RDStore.CCT_EMAIL.value, 'Mail']])
             result.mailTo = mailTo
+            Set<CustomerIdentifier> customerIdentifierSet = CustomerIdentifier.findAllByPlatformInListAndCustomer(subPkgs.nominalPlatform, contextService.getOrg())
+            String customerIdentifier = "", notInPackageRows = "", productIDString = ""
+            if(customerIdentifierSet)
+                customerIdentifier = customerIdentifierSet.join(',')
+            if(result.notInPackage) {
+                notInPackageRows += "\n"
+                result.notInPackage.each { Map<String, Object> row ->
+                    notInPackageRows += "${row.values().join('\t')}\n"
+                }
+                notInPackageRows += "\n"
+            }
+            Set<Identifier> productIDs = subPkgs.ids.findAll { id -> id.ns == IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.PKG_ID, de.laser.wekb.Package.class.name) }
+            if(productIDs)
+                productIDString = productIDs.join('/')
+            result.mailBody = message(code: 'subscription.details.addEntitlements.matchingErrorMailBody', args: [contextService.getOrg().name, customerIdentifier, subPkgs.name.join(','), productIDString, notInPackageRows])
             String returnKBART = exportService.generateSeparatorTableString(result.titleRow, result.notAddedTitles, '\t')
             FileOutputStream fos = new FileOutputStream(f)
             fos.withWriter { Writer w ->
@@ -1670,6 +1696,18 @@ class SubscriptionController {
             Set<Contact> mailTo = Contact.executeQuery("select ct from PersonRole pr join pr.prs p join p.contacts ct where (p.isPublic = true or p.tenant = :context) and pr.functionType in (:functionTypes) and ct.contentType.value in (:contentTypes) and pr.provider in (:providers)",
                     [context: contextService.getOrg(), providers: subPkgs.provider, functionTypes: [RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_GENERAL_CONTACT_PRS], contentTypes: [RDStore.CCT_EMAIL.value, 'Mail']])
             result.mailTo = mailTo
+            Set<CustomerIdentifier> customerIdentifierSet = CustomerIdentifier.findAllByPlatformInListAndCustomer(subPkgs.toList(), contextService.getOrg())
+            String customerIdentifier = "", notInPackageRows = ""
+            if(customerIdentifierSet)
+                customerIdentifier = customerIdentifierSet.join(',')
+            if(result.notInPackage) {
+                notInPackageRows << "<ul>"
+                result.notInPackage.each { Map<String, Object> row ->
+                    notInPackageRows << "<li>${row.values().join('\t')}</li>"
+                }
+                notInPackageRows << "</ul>"
+            }
+            result.mailBody = message(code: 'subscription.details.addEntitlements.matchingErrorMailBody', args: [contextService.getOrg().name, customerIdentifier, subPkgs.name.join(','), notInPackageRows])
             String returnKBART = exportService.generateSeparatorTableString(result.titleRow, result.notAddedTitles, '\t')
             FileOutputStream fos = new FileOutputStream(f)
             fos.withWriter { Writer w ->
