@@ -522,18 +522,25 @@ class AdminController  {
     def simpleFilesCheck() {
         log.debug('simpleFilesCheck')
 
+        String dsl = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
+
         Map<String, Object> result = [
-           dsPath   : ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK,
-           dsFiles  : [],
-           xxPath   : (ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK) + '_outdated',
-           xxFiles  : [],
+           dsPath       : dsl,
+           dsFiles      : [],
+           xxPath       : dsl + '_outdated',
+           xxFiles      : [],
            validDocs    : [],
            validFiles   : [],
            invalidFiles : []
         ]
 
+        File ds = new File("${result.dsPath}")
+        File xx = new File("${result.xxPath}")
+        if (!xx.exists()) {
+            xx.mkdirs()
+        }
+
         try {
-            File ds = new File("${result.dsPath}")
             if (ds.exists()) {
                 result.dsFiles = ds.listFiles().collect{it.getName()}
 
@@ -544,18 +551,13 @@ class AdminController  {
                 Set<String> uuids = result.validDocs.collect{ it.uuid as String }
 
                 result.dsFiles.each { fn ->
-                    if (uuids.contains(fn)) {
-                        result.validFiles << fn
-                    }
-                    else {
-                        result.invalidFiles << fn
-                    }
+                    if (uuids.contains(fn)) { result.validFiles << fn }
+                    else                    { result.invalidFiles << fn }
                 }
                 result.validFiles.toSorted()
                 result.invalidFiles.toSorted()
             }
 
-            File xx = new File("${result.xxPath}")
             if (xx.exists()) {
                 result.xxFiles = xx.listFiles().collect { it.getName() }
             }
@@ -564,33 +566,30 @@ class AdminController  {
             log.error e.getMessage()
         }
 
-//        if (params.moveOutdatedFiles) {
-//            List<String> movedFiles = []
-//
-//            File folder = new File(result.xxPath)
-//            if (!folder.exists()) {
-//                folder.mkdirs()
-//            }
-//
-//            result.invalidFiles.each { uuid ->
-//                try {
-//                    File src = new File("${result.dsPath}/${uuid}")
-//                    File dst = new File("${result.xxPath}/${uuid}")
-//                    if (src.exists() && src.isFile()) {
-//                        Files.move(src.toPath(), dst.toPath(), StandardCopyOption.REPLACE_EXISTING)
-//                        movedFiles << uuid
-//                    }
-//                }
-//                catch (Exception e) {
-//                    log.error e.getMessage()
-//                }
-//
-//            }
-//            //SystemEvent.createEvent()
-//            println 'movedFiles: ' + movedFiles
-//            redirect controller: 'admin', action: 'simpleFilesCheck'
-//            return
-//        }
+        if (params.moveOutdatedFiles) {
+            List<String> movedFiles = []
+            String pk = DateUtils.getSDF_yyyyMMdd().format(new Date())
+
+            result.invalidFiles.each { uuid ->
+                try {
+                    String pkid = uuid + '-' + pk
+                    File src = new File("${result.dsPath}/${uuid}")
+                    File dst = new File("${result.xxPath}/${pkid}")
+                    if (src.exists() && src.isFile()) {
+                        Files.move(src.toPath(), dst.toPath(), StandardCopyOption.REPLACE_EXISTING)
+                        movedFiles << pkid
+                    }
+                }
+                catch (Exception e) {
+                    log.error e.getMessage()
+                }
+            }
+            log.info 'moved outdated files: ' + movedFiles.size() + ', pk: ' + pk + ', path:' + result.xxPath
+            SystemEvent.createEvent('YODA_DS_MOVE_OUTDATED', [count: movedFiles.size(), files: movedFiles])
+
+            redirect controller: 'admin', action: 'simpleFilesCheck'
+            return
+        }
 
         result
     }

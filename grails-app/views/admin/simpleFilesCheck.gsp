@@ -59,14 +59,14 @@
     <div class="content">
         ${invalidFiles.join(', ')}
 
-%{--        <g:if test="${invalidFiles}">--}%
-%{--            <br/>--}%
-%{--            <br/>--}%
-%{--            <g:link controller="admin" action="simpleFilesCheck" params="${[moveOutdatedFiles: 1]}"--}%
-%{--                    class="${Btn.NEGATIVE_CONFIRM}"--}%
-%{--                    data-confirm-tokenMsg="Ungültige Dateien in den 'Outdated'-Ordner verschieben?"--}%
-%{--                    data-confirm-term-how="ok">Aufräumen</g:link>--}%
-%{--        </g:if>--}%
+        <g:if test="${invalidFiles}">
+            <br/>
+            <br/>
+            <g:link controller="admin" action="simpleFilesCheck" params="${[moveOutdatedFiles: 1]}"
+                    class="${Btn.NEGATIVE_CONFIRM}"
+                    data-confirm-tokenMsg="Ungültige Dateien in den 'Outdated'-Ordner verschieben?"
+                    data-confirm-term-how="ok">Aufräumen</g:link>
+        </g:if>
     </div>
 </div>
 
