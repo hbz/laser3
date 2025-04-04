@@ -2597,7 +2597,7 @@ class SurveyService {
                         if (person && !SurveyPersonResult.findByParticipantAndSurveyConfigAndBillingPerson(participant, result.surveyConfig, true)) {
                             new SurveyPersonResult(participant: participant, surveyConfig: result.surveyConfig, person: person, billingPerson: true, owner: result.surveyInfo.owner).save()
                         }else {
-                            result.error = message(code: 'person.preferredBillingPerson.fail')
+                            result.error = messageSource.getMessage('person.preferredBillingPerson.fail', null, LocaleUtils.getCurrentLocale())
                         }
                     }
                     if (params.setPreferredBillingPerson == 'false') {
@@ -2612,7 +2612,7 @@ class SurveyService {
                 if (params.addressId && params.setAddress) {
                     if (params.setAddress == 'true') {
                         if(result.surveyOrg.address){
-                            result.error = message(code: 'address.preferredForSurvey.fail')
+                            result.error = messageSource.getMessage('person.preferredBillingPerson.fail', null, LocaleUtils.getCurrentLocale())
                         }else {
                             result.surveyOrg.address = Address.get(Long.valueOf(params.addressId))
                         }
