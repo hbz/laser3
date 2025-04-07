@@ -519,9 +519,27 @@ class AdminController  {
     }
 
     @Secured(['ROLE_ADMIN'])
+    def simpleDocsCheck() {
+        log.debug('simpleDocsCheck')
+        String dsl = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
+
+        Map<String, Object> result = [
+                dsPath              : dsl,
+                docsWithoutContext  : []
+        ]
+
+        result.docsWithoutContext = Doc.executeQuery(
+                'select doc from Doc doc where doc.contentType = :ctf' +
+                        ' and not exists (select dc.id from DocContext dc where dc.owner = doc) order by doc.id',
+                [ctf: Doc.CONTENT_TYPE_FILE]
+        )
+
+        result
+    }
+
+    @Secured(['ROLE_ADMIN'])
     def simpleFilesCheck() {
         log.debug('simpleFilesCheck')
-
         String dsl = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
 
         Map<String, Object> result = [

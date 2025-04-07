@@ -97,6 +97,14 @@
             <div class="content"> &lt;icon:database/> </div>
         </div>
         <div class="item">
+            <icon:pathFolder/>
+            <div class="content"> &lt;icon:pathFolder/> </div>
+        </div>
+        <div class="item">
+            <icon:pathFile/>
+            <div class="content"> &lt;icon:pathFile/> </div>
+        </div>
+        <div class="item">
             <icon:universalAccess/>
             <div class="content"> &lt;icon:universalAccess/> </div>
         </div>

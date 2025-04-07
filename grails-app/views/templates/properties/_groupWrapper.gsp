@@ -6,9 +6,7 @@
     <div class="content">
         <h3 class="ui header">
             <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
-            ${message(code: 'subscription.properties.public')}
-            (${propDefGroup.name})
-
+            ${propDefGroup.name} ${message(code: 'subscription.propertiesBrackets')}
             <g:if test="${showConsortiaFunctions}">
                 <g:if test="${propDefGroup.ownerType in [License.class.name, Subscription.class.name]}">
                     <g:if test="${propDefGroupBinding?.isVisibleForConsortiaMembers}">

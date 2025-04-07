@@ -28,7 +28,7 @@ deactivated as of ERMS-4837
     <div class="content">
         <h2 class="ui header">
             <g:if test="${allPropDefGroups.global || allPropDefGroups.local || allPropDefGroups.member}">
-                ${message(code:'subscription.properties.orphaned')}
+                ${message(code: 'subscription.properties.orphanedMajuscule')} ${message(code: 'subscription.propertiesBrackets')}
             </g:if>
             <g:else>
                 ${message(code:'license.properties')}

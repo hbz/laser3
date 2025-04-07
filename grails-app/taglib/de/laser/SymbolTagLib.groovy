@@ -27,6 +27,14 @@ class SymbolTagLib {
     def bug = { attrs, body ->
         out << '<i class="bug icon"></i>'
     }
+    @UIDoc(usage = 'Generic symbol for: File (Path)')
+    def pathFile = { attrs, body ->
+        out << '<i class="file outline icon"></i>'
+    }
+    @UIDoc(usage = 'Generic symbol for: Folder (Path)')
+    def pathFolder = { attrs, body ->
+        out << '<i class="folder icon"></i>'
+    }
     @UIDoc(usage = 'Generic symbol for: Data/Database')
     def database = { attrs, body ->
         out << '<i class="database icon"></i>'
