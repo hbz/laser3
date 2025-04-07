@@ -3415,9 +3415,33 @@ class SurveyControllerService {
 
                 if (params.surveyOrg) {
                     try {
-                        surveyOrgsDo << genericOIDService.resolveOID(params.surveyOrg)
+                        SurveyOrg surveyOrg = genericOIDService.resolveOID(params.surveyOrg)
+                        if (costItemsForSurveyPackage) {
+                            if (pkg) {
+                                if (cost_item_element) {
+                                    if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element, pkg)) {
+                                        surveyOrgsDo << surveyOrg
+                                    }
+                                } else {
+                                    if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, pkg)) {
+                                        surveyOrgsDo << surveyOrg
+                                    }
+                                }
+                            }
+                        } else {
+                            if (cost_item_element) {
+                                if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element)) {
+                                    surveyOrgsDo << surveyOrg
+                                }
+                            } else {
+                                if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED)) {
+                                    surveyOrgsDo << surveyOrg
+                                }
+                            }
+                        }
+
                     } catch (Exception e) {
-                        log.error("Non-valid surveyOrg sent ${params.surveyOrg}", e)
+                        log.error("Non-valid surveyOrg sent ${it}", e)
                     }
                 }
 
