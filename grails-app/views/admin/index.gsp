@@ -1,4 +1,4 @@
-<%@ page import="de.laser.config.ConfigMapper; de.laser.utils.DateUtils; grails.util.Metadata; de.laser.utils.AppUtils" %>
+<%@ page import="de.laser.ui.Icon; de.laser.config.ConfigMapper; de.laser.utils.DateUtils; grails.util.Metadata; de.laser.utils.AppUtils" %>
 
 <laser:htmlStart text="${message(code:'menu.admin')} ${message(code:'default.dashboard')}" />
 
@@ -100,7 +100,9 @@
         <g:each in="${systemService.serviceCheck()}" var="systemCheck">
             <tr>
                 <td>${systemCheck.key}</td>
-                <td>${systemCheck.value}</td>
+                <td>
+                    <i class="${Icon.SYM.SQUARE} ${systemCheck.value.equalsIgnoreCase('active') ? 'green' : 'red'}"></i> ${systemCheck.value}
+                </td>
             </tr>
         </g:each>
     </tbody>

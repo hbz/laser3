@@ -1,7 +1,7 @@
 <%@ page import="de.laser.utils.RandomUtils; de.laser.ui.Icon;" %>
 <laser:serviceInjection />
 
-<ui:modal id="modalReadTask" message="task.label" hideSubmitButton="true">
+<ui:modal id="modalReadTask" text="${message(code:'task.label')} (${message(code:'default.readOnly.label')})" hideSubmitButton="true">
 
     <g:set var="preID" value="${RandomUtils.getHtmlID()}" />
 
