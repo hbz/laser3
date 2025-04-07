@@ -120,7 +120,7 @@
         <h3 class="ui header">
             <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
             <g:if test="${allPropDefGroups.global || allPropDefGroups.local || allPropDefGroups.member}">
-                ${message(code:'subscription.properties.orphaned')}
+                ${message(code: 'subscription.properties.orphanedMajuscule')} ${message(code: 'subscription.propertiesBrackets')}
             </g:if>
             <g:else>
                 ${message(code:'license.properties')}

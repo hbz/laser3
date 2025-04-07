@@ -70,7 +70,7 @@
                 <div class="content">
                     <h2 class="ui header">
                         <g:if test="${groupedProperties?.size() > 0}">
-                            ${message(code: 'subscription.properties.orphaned')}
+                            ${message(code: 'subscription.properties.orphanedMajuscule')} ${message(code: 'subscription.propertiesBrackets')}
                         </g:if>
                         <g:else>
                             ${message(code: 'subscription.properties')}

@@ -110,6 +110,7 @@ class ClickMeController {
                 result.exportController = 'subscription'
                 result.exportAction = 'exportHolding'
                 result.exportFileName = result.exportFileName ?: escapeService.escapeString(result.subscription.name) + "_" + message(code:'default.ie')
+                result.overrideFormat = [xlsx: 'XLSX', csv: 'CSV']
                 break
             case ExportClickMeService.LICENSES:
                 result.formFields = exportClickMeService.getExportLicenseFieldsForUI()
@@ -169,6 +170,7 @@ class ClickMeController {
                     result.exportAction = 'exportPossibleEntitlements'
                 result.formFields = exportClickMeService.getExportTippFieldsForUI()
                 result.exportFileName = result.exportFileName ?: message(code:'default.title.label')
+                result.overrideFormat = [xlsx: 'XLSX', csv: 'CSV']
                 break
             case ExportClickMeService.VENDORS:
                 result.formFields = exportClickMeService.getExportVendorFieldsForUI()

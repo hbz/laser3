@@ -91,7 +91,7 @@
                             <div class="ui grid">
                                 <div class="row">
                                     <div class="fourteen wide column">
-                                        <h3 class="ui header">${message(code: 'subscription.properties.orphaned')}</h3>
+                                        <h3 class="ui header">${message(code: 'subscription.properties.orphanedMajuscule')} ${message(code: 'subscription.propertiesBrackets')}</h3>
                                     </div>
                                     <div class="two wide column">
                                         <div class="ui compact inverted segment right floated" style="margin-right: 0;">

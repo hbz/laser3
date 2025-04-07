@@ -61,9 +61,10 @@ class TitleService {
         String sort = configMap.containsKey('sort') && configMap.sort ? configMap.sort : 'tipp.sortname'
         String order = configMap.containsKey('order') && configMap.order ? configMap.order : 'asc'
         Map<String, Object> titleConfigMap = [filter: configMap.filter, packages: configMap.packages, platforms: configMap.platforms, ddcs: configMap.ddcs, languages: configMap.languages,
+                                              first_author: configMap.first_author, first_editor: configMap.first_editor,
                                               subject_references: configMap.subject_references, series_names: configMap.series_names, summaryOfContent: configMap.summaryOfContent,
                                               ebookFirstAutorOrFirstEditor: configMap.ebookFirstAutorOrFirstEditor, dateFirstOnlineFrom: configMap.dateFirstOnlineFrom, openAccess: configMap.openAccess,
-                                              dateFirstOnlineTo: configMap.dateFirstOnlineFrom, yearsFirstOnline: configMap.yearsFirstOnline, publishers: configMap.publishers,
+                                              dateFirstOnlineTo: configMap.dateFirstOnlineFrom, yearsFirstOnline: configMap.yearsFirstOnline, publishers: configMap.publishers, provider: configMap.provider,
                                               coverageDepth: configMap.coverageDepth, title_types: configMap.title_types, medium: configMap.medium, sort: sort, order: order],
                             identifierConfigMap = [identifier: configMap.identifier, packages: configMap.packages, titleNS: IdentifierNamespace.CORE_TITLE_NS, titleObj: IdentifierNamespace.NS_TITLE] //, sort: sort, order: order
         [titleConfigMap: titleConfigMap, identifierConfigMap: identifierConfigMap]

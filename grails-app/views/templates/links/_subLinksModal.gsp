@@ -87,7 +87,7 @@
                 }
                 refdataValues.each { RefdataValue rv ->
                     boolean isSimpleLinkType = (rv.id == RDStore.LINKTYPE_SIMPLE.id) // forced: bidirectional
-                    String[] linkArray = rv.getI10n("value").split("\\|").reverse()
+                    String[] linkArray = rv.getI10n("value").split("\\|")
                     if (isSimpleLinkType) { linkArray = [linkArray[0]] }
 
                     linkArray.eachWithIndex { l, int perspective ->

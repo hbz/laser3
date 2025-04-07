@@ -1233,7 +1233,7 @@
             type: string
             description: The type of tax for this cost item; maps to RefdataCategory "${RDConstants.TAX_TYPE}".
             enum: <% printRefdataEnum(RDConstants.TAX_TYPE, 12) %>
-            example: "${CostItem.TAX_TYPES.TAXABLE_7.taxRate.value}"
+            example: "${CostItem.TAX_TYPES.TAXABLE_7.taxRate}"
           taxRate:
             type: string
             description: The percent value of tax issues to this cost item.

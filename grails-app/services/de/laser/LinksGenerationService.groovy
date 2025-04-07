@@ -73,12 +73,12 @@ class LinksGenerationService {
         // links
         Set<Links> sources = [], destinations = []
         if(obj instanceof Subscription) {
-            sources.addAll(Links.executeQuery('select li from Links li where :context = li.sourceSubscription and linkType in (:linkTypes)',[context:obj,linkTypes:linkTypes]))
-            destinations.addAll(Links.executeQuery('select li from Links li where :context = li.destinationSubscription and linkType in (:linkTypes)',[context:obj,linkTypes: linkTypes]))
+            sources.addAll(Links.executeQuery('select li from Links li where :context = li.destinationSubscription and linkType in (:linkTypes)',[context:obj,linkTypes:linkTypes]))
+            destinations.addAll(Links.executeQuery('select li from Links li where :context = li.sourceSubscription and linkType in (:linkTypes)',[context:obj,linkTypes: linkTypes]))
         }
         else if(obj instanceof License) {
-            sources.addAll(Links.executeQuery('select li from Links li where :context = li.sourceLicense and linkType in (:linkTypes)',[context:obj,linkTypes:linkTypes]))
-            destinations.addAll(Links.executeQuery('select li from Links li where :context = li.destinationLicense and linkType in (:linkTypes)',[context:obj,linkTypes: linkTypes]))
+            sources.addAll(Links.executeQuery('select li from Links li where :context = li.destinationLicense and linkType in (:linkTypes)',[context:obj,linkTypes:linkTypes]))
+            destinations.addAll(Links.executeQuery('select li from Links li where :context = li.sourceLicense and linkType in (:linkTypes)',[context:obj,linkTypes: linkTypes]))
         }
         //IN is from the point of view of the context object (= obj)
 
@@ -110,6 +110,7 @@ class LinksGenerationService {
                 links[index].add(link)
             }
         }
+        log.debug(links.toMapString())
         links
     }
 
@@ -279,12 +280,12 @@ class LinksGenerationService {
                 configMap.linkType = genericOIDService.resolveOID(linkTypeString)
                 configMap.commentContent = params.linkComment_new
                 if(perspectiveIndex == 0) {
-                    configMap.source = genericOIDService.resolveOID(params.pair_new)
-                    configMap.destination = genericOIDService.resolveOID(params.context)
-                }
-                else if(perspectiveIndex == 1) {
                     configMap.source = genericOIDService.resolveOID(params.context)
                     configMap.destination = genericOIDService.resolveOID(params.pair_new)
+                }
+                else if(perspectiveIndex == 1) {
+                    configMap.source = genericOIDService.resolveOID(params.pair_new)
+                    configMap.destination = genericOIDService.resolveOID(params.context)
                 }
                 def currentObject = genericOIDService.resolveOID(params.context)
                 List childInstances = currentObject.getClass().findAllByInstanceOf(currentObject)
