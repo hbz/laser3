@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.DocContext" %>
+<%@ page import="de.laser.Doc; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.DocContext" %>
 
 <laser:htmlStart message="menu.admin.simpleFilesCheck" />
 
@@ -9,17 +9,25 @@
 
 <ui:h1HeaderWithIcon message="menu.admin.simpleFilesCheck" type="admin"/>
 
+<nav class="ui secondary menu">
+    <g:link controller="admin" action="simpleFilesCheck" class="item active">Dateisystem</g:link>
+    <g:link controller="admin" action="simpleDocsCheck" class="item">Datenbank</g:link>
+</nav>
+
 <div class="ui fluid card">
     <div class="content">
-        <div class="header">documentStorage: ${dsPath}</div>
+        <div class="header">documentStorage</div>
     </div>
     <div class="content">
         <div class="ui list">
             <div class="item">
-                <div class="content"><i class="file outline icon"></i> Dateien gefunden: <strong>${dsFiles.size()}</strong></div>
+                <div class="content"><icon:pathFolder/> Pfad: <strong>${dsPath}</strong></div>
             </div>
             <div class="item">
-                <div class="content"><i class="${Icon.SYM.YES}"></i> Matchende DOC-Verweise: <strong>${validDocs.size()}</strong></div>
+                <div class="content"><icon:pathFile/> Dateien gefunden: <strong>${dsFiles.size()}</strong></div>
+            </div>
+            <div class="item">
+                <div class="content"><i class="check double icon"></i> Matchende DOC-Verweise: <strong>${validDocs.size()}</strong></div>
             </div>
             <div class="item">
                 <div class="content"><i class="${Icon.SYM.YES} green"></i> Dateien mit gültigem DOC-Verweis: <strong>${validFiles.size()}</strong></div>
@@ -72,12 +80,21 @@
 
 <div class="ui fluid card">
     <div class="content">
-        <div class="header">documentStorage (outdated) : ${xxPath}</div>
+        <div class="header">documentStorage (outdated)</div>
     </div>
     <div class="content">
         <div class="ui list">
-            <div class="item">Dateien gefunden: ${xxFiles.size()}</div>
+            <div class="item">
+                <div class="content"><icon:pathFolder/> Pfad: <strong>${xxPath}</strong></div>
+            </div>
+            <div class="item">
+                <div class="content"><icon:pathFile/> Dateien gefunden: <strong>${xxFiles.size()}</strong></div>
+            </div>
         </div>
+        <g:if test="${xxFiles}">
+            <br />
+        </g:if>
+        ${xxFiles.join(', ')}
     </div>
 </div>
 
