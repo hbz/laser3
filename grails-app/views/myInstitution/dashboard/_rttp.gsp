@@ -30,14 +30,21 @@
                                 </g:link>
                             </td>
                             <td colspan="4" class="center aligned">
-                                <a href="#" onclick="JSPC.app.dashboard.editTask(${task.id});">
-                                    <g:if test="${task.creator.id == contextService.getUser().id}">
+                                <g:if test="${task.creator.id == contextService.getUser().id}">
+                                    <a href="#" onclick="JSPC.app.dashboard.editTask(${task.id});">
                                         <i class="${Icon.SIG.MY_OBJECT} la-list-icon"></i>${DateUtils.getLocalizedSDF_noTime().format(task.endDate)}
-                                    </g:if>
-                                    <g:else>
+                                    </a>
+                                </g:if>
+                                <g:elseif test="${taskService.hasWRITE()}">
+                                    <a href="#" onclick="JSPC.app.dashboard.editTask(${task.id});">
                                         <i class="${Icon.TASK} la-list-icon"></i>${DateUtils.getLocalizedSDF_noTime().format(task.endDate)}
-                                    </g:else>
-                                </a>
+                                    </a>
+                                </g:elseif>
+                                <g:else>
+                                    <a href="#" onclick="JSPC.app.dashboard.readTask(${task.id});">
+                                        <i class="${Icon.TASK} la-list-icon"></i>${DateUtils.getLocalizedSDF_noTime().format(task.endDate)}
+                                    </a>
+                                </g:else>
                             </td>
                         </tr>
                     </g:each>
