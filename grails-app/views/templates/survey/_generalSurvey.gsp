@@ -23,33 +23,6 @@
                             </dd>
                         </dl>
                     </g:each>
-
-                    <div class="ui form la-padding-left-07em">
-                        <div class="field">
-                            <label>
-                                <g:message code="surveyConfigsInfo.comment"/>
-                            </label>
-                            <g:if test="${surveyConfig.comment}">
-                                <g:if test="${surveyConfig.dateCreated > DateUtils.getSDF_yyyyMMdd().parse('2023-01-12')}">
-                                    <div id="comment-wrapper-${surveyConfig.id}">
-                                        <article id="comment-${surveyConfig.id}" class="ui segment trumbowyg-editor trumbowyg-reset-css" style="margin:0; padding:0.5em 1em; box-shadow:none;">
-                                            ${raw(surveyConfig.comment)}
-                                        </article>
-                                        <laser:script file="${this.getGroovyPageFileName()}">
-                                            wysiwyg.analyzeNote_TMP( $("#comment-${surveyConfig.id}"), $("#comment-wrapper-${surveyConfig.id}"), true );
-                                        </laser:script>
-                                    </div>
-                                </g:if>
-                                <g:else>
-                                    <textarea class="la-textarea-resize-vertical" readonly="readonly"
-                                              rows="1">${surveyConfig.comment}</textarea>
-                                </g:else>
-                            </g:if>
-                            <g:else>
-                                <g:message code="surveyConfigsInfo.comment.noComment"/>
-                            </g:else>
-                        </div>
-                    </div>
             </div>
         </div>
 

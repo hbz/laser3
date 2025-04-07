@@ -153,11 +153,6 @@ class SurveyControllerService {
                 result.surveyLinksMessage << messageSource.getMessage('surveyLinks.surveysNotSameEndDate', null, result.locale)
             }
 
-            if (params.commentTab) {
-                result.commentTab = params.commentTab
-            }
-
-
             result.navigation = surveyService.getConfigNavigation(result.surveyInfo, result.surveyConfig)
 
             if (result.surveyConfig.subscription) {
@@ -192,6 +187,17 @@ class SurveyControllerService {
             result.showSurveyPropertiesForOwer = true
 
             params.viewTab = params.viewTab ?: 'overview'
+
+            if (params.commentTab) {
+                result.commentTab = params.commentTab
+            }else {
+                if(!result.surveyConfig.subscription){
+                    result.commentTab = 'commentForNewParticipants'
+                }else {
+                    result.commentTab = result.surveyConfig.getSurveyOrgsIDs().orgsWithSubIDs ? 'comment' : 'commentForNewParticipants'
+                }
+            }
+
 
             [result: result, status: STATUS_OK]
         }
