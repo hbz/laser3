@@ -42,7 +42,7 @@
                                 </g:elseif>
                                 <g:else>
                                     <a href="#" onclick="JSPC.app.dashboard.readTask(${task.id});">
-                                        <i class="${Icon.TASK} la-list-icon"></i>${DateUtils.getLocalizedSDF_noTime().format(task.endDate)}
+                                        <i class="${Icon.CMD.READ} la-list-icon"></i>${DateUtils.getLocalizedSDF_noTime().format(task.endDate)}
                                     </a>
                                 </g:else>
                             </td>
