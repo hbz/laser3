@@ -2846,7 +2846,7 @@ class SurveyController {
         result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID) : null
         result.selectedPackageID = params.selectedPackageID ? Long.valueOf(params.selectedPackageID) : null
         if(params.selectPkg == "true"){
-            result.selectPkg = "true"
+            result.selectPkg = params.selectPkg
         }
         result.taxKey = result.costItem ? result.costItem.taxKey : null
         result.idSuffix = "edit_${result.costItem ? result.costItem.id : result.participant.id}"
@@ -2895,7 +2895,7 @@ class SurveyController {
         }
 
         if(params.selectPkg == "true"){
-            result.selectPkg = "true"
+            result.selectPkg = params.selectPkg
         }
 
         result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID) : null
