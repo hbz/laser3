@@ -42,8 +42,8 @@
                 <div class="content">
                     <h3 class="ui header">
                         <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
-                        ${message(code: 'surveyConfigsInfo.properties')}
-                        (${pdg.name})
+                        ${pdg.name}
+                        (${message(code: 'surveyConfigsInfo.properties')})
                     </h3>
 
                     <div id="survey_grouped_custom_properties_${pdg.id}">
@@ -64,8 +64,8 @@
                 <div class="content">
                     <h3 class="ui header">
                         <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
-                        ${message(code: 'surveyConfigsInfo.properties')}
-                        (${pdg.name})
+                        ${pdg.name}
+                        (${message(code: 'surveyConfigsInfo.properties')})
                     </h3>
 
                     <div>
