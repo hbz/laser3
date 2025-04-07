@@ -2439,12 +2439,6 @@ class SurveyControllerService {
             result.participant = Org.get(params.participant)
             result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
 
-            result.surveyResults = []
-
-            result.surveyConfig.getSortedProperties().each { PropertyDefinition propertyDefinition ->
-                result.surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(result.participant, result.surveyConfig, propertyDefinition)
-            }
-
             result.ownerId = result.surveyInfo.owner.id
 
             params.viewTab = params.viewTab ?: 'overview'

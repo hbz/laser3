@@ -2418,13 +2418,6 @@ class MyInstitutionController  {
 
         result.ownerId = result.surveyInfo.owner?.id
 
-        result.surveyResults = []
-
-        result.surveyConfig.getSortedProperties().each{ PropertyDefinition propertyDefinition ->
-            SurveyResult surre = SurveyResult.findByParticipantAndSurveyConfigAndType(contextService.getOrg(), result.surveyConfig, propertyDefinition)
-            result.surveyResults << surre
-        }
-
         params.viewTab = params.viewTab ?: 'overview'
 
         result = surveyService.participantResultGenerics(result, contextService.getOrg(), params)
