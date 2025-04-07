@@ -999,16 +999,39 @@ class AjaxController {
         else
         {
               if (params.propDefGroup) {
-                render(template: "/templates/properties/group", model: [
-                        ownobj          : owner,
-                        newProp         : newProp,
-                        error           : error,
-                        showConsortiaFunctions: showConsortiaFunctions,
-                        propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
-                        propDefGroupBinding : genericOIDService.resolveOID(params.propDefGroupBinding),
-                        custom_props_div: "${params.custom_props_div}", // JS markup id
-                        prop_desc       : type.descr // form data
-                ])
+                  Org consortium
+                  boolean atSubscr
+                  List propDefGroupItems = []
+                  PropertyDefinitionGroup propDefGroup = genericOIDService.resolveOID(params.propDefGroup)
+                  PropertyDefinitionGroupBinding propDefGroupBinding = genericOIDService.resolveOID(params.propDefGroupBinding)
+                  boolean isGroupVisible = propDefGroup.isVisible || propDefGroupBinding?.isVisible
+                  if (owner instanceof License) {
+                      consortium = owner.getLicensingConsortium()
+                      atSubscr = owner._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION
+                  } else if (owner instanceof Subscription) {
+                      consortium = owner.getConsortium()
+                      atSubscr = owner._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION
+                  }
+                  if (isGroupVisible) {
+                      propDefGroupItems = propDefGroup.getCurrentProperties(owner)
+                  } else if (consortium != null) {
+                      propDefGroupItems = propDefGroup.getCurrentPropertiesOfTenant(owner, consortium)
+                  }
+                  Map<String, Object> modelMap = [
+                          isGroupVisible: isGroupVisible,
+                          atSubscr: atSubscr,
+                          consortium: consortium,
+                          propDefGroupItems: propDefGroupItems,
+                          ownobj          : owner,
+                          newProp         : newProp,
+                          error           : error,
+                          showConsortiaFunctions: showConsortiaFunctions,
+                          propDefGroup    : propDefGroup,
+                          propDefGroupBinding : propDefGroupBinding,
+                          custom_props_div: "${params.custom_props_div}", // JS markup id
+                          prop_desc       : type.descr // form data
+                  ]
+                render(template: "/templates/properties/group", model: modelMap)
               }
               else {
                   Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
@@ -1375,15 +1398,40 @@ class AjaxController {
             property.isPublic = !property.isPublic
             property.save()
             request.setAttribute("editable", params.editable == "true")
+            boolean showConsortiaFunctions = Boolean.parseBoolean(params.showConsortiaFunctions)
             if(params.propDefGroup) {
-                render(template: "/templates/properties/group", model: [
+                Org consortium
+                boolean atSubscr
+                List propDefGroupItems = []
+                PropertyDefinitionGroup propDefGroup = genericOIDService.resolveOID(params.propDefGroup)
+                PropertyDefinitionGroupBinding propDefGroupBinding = genericOIDService.resolveOID(params.propDefGroupBinding)
+                boolean isGroupVisible = propDefGroup.isVisible || propDefGroupBinding?.isVisible
+                if (property.owner instanceof License) {
+                    consortium = property.owner.getLicensingConsortium()
+                    atSubscr = property.owner._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION
+                } else if (property.owner instanceof Subscription) {
+                    consortium = property.owner.getConsortium()
+                    atSubscr = property.owner._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION
+                }
+                if (isGroupVisible) {
+                    propDefGroupItems = propDefGroup.getCurrentProperties(property.owner)
+                } else if (consortium != null) {
+                    propDefGroupItems = propDefGroup.getCurrentPropertiesOfTenant(property.owner, consortium)
+                }
+                Map<String, Object> modelMap = [
+                        isGroupVisible: isGroupVisible,
+                        atSubscr: atSubscr,
+                        consortium: consortium,
+                        propDefGroupItems: propDefGroupItems,
                         ownobj          : property.owner,
                         newProp         : property,
-                        showConsortiaFunctions: params.showConsortiaFunctions == "true",
-                        propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
+                        showConsortiaFunctions: showConsortiaFunctions,
+                        propDefGroup    : propDefGroup,
+                        propDefGroupBinding : propDefGroupBinding,
                         custom_props_div: "${params.custom_props_div}", // JS markup id
                         prop_desc       : property.type.descr // form data
-                ])
+                ]
+                render(template: "/templates/properties/group", model: modelMap)
             }
             else {
                 Map<String, Object>  allPropDefGroups = property.owner.getCalculatedPropDefGroups(contextService.getOrg())
@@ -1391,7 +1439,7 @@ class AjaxController {
                 Map<String, Object> modelMap =  [
                         ownobj                : property.owner,
                         newProp               : property,
-                        showConsortiaFunctions: params.showConsortiaFunctions == "true",
+                        showConsortiaFunctions: showConsortiaFunctions,
                         custom_props_div      : "${params.custom_props_div}", // JS markup id
                         prop_desc             : property.type.descr, // form data
                         orphanedProperties    : allPropDefGroups.orphanedProperties
@@ -1470,15 +1518,41 @@ class AjaxController {
         }
 
         request.setAttribute("editable", params.editable == "true")
+        boolean showConsortiaFunctions = Boolean.parseBoolean(params.showConsortiaFunctions)
         if (params.propDefGroup) {
-          render(template: "/templates/properties/group", model: [
-                  ownobj          : owner,
-                  newProp         : property,
-                  showConsortiaFunctions: params.showConsortiaFunctions,
-                  propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
-                  custom_props_div: "${params.custom_props_div}", // JS markup id
-                  prop_desc       : prop_desc // form data
-          ])
+            Org consortium
+            boolean atSubscr
+            List propDefGroupItems = []
+            PropertyDefinitionGroup propDefGroup = genericOIDService.resolveOID(params.propDefGroup)
+            PropertyDefinitionGroupBinding propDefGroupBinding = genericOIDService.resolveOID(params.propDefGroupBinding)
+            boolean isGroupVisible = propDefGroup.isVisible || propDefGroupBinding?.isVisible
+            if (owner instanceof License) {
+                consortium = owner.getLicensingConsortium()
+                atSubscr = owner._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION
+            } else if (owner instanceof Subscription) {
+                consortium = owner.getConsortium()
+                atSubscr = owner._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION
+            }
+            if (isGroupVisible) {
+                propDefGroupItems = propDefGroup.getCurrentProperties(owner)
+            } else if (consortium != null) {
+                propDefGroupItems = propDefGroup.getCurrentPropertiesOfTenant(owner, consortium)
+            }
+            Map<String, Object> modelMap = [
+                    isGroupVisible: isGroupVisible,
+                    atSubscr: atSubscr,
+                    consortium: consortium,
+                    propDefGroupItems: propDefGroupItems,
+                    ownobj          : owner,
+                    newProp         : property,
+                    showConsortiaFunctions: showConsortiaFunctions,
+                    propDefGroup    : propDefGroup,
+                    propDefGroupBinding : propDefGroupBinding,
+                    custom_props_div: "${params.custom_props_div}", // JS markup id
+                    prop_desc       : prop_desc // form data
+            ]
+
+          render(template: "/templates/properties/group", model: modelMap)
         }
         else {
             Map<String, Object>  allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
@@ -1486,7 +1560,7 @@ class AjaxController {
             Map<String, Object> modelMap =  [
                     ownobj                : owner,
                     newProp               : property,
-                    showConsortiaFunctions: params.showConsortiaFunctions,
+                    showConsortiaFunctions: showConsortiaFunctions,
                     custom_props_div      : "${params.custom_props_div}", // JS markup id
                     prop_desc             : prop_desc, // form data
                     orphanedProperties    : allPropDefGroups.orphanedProperties
@@ -1528,9 +1602,29 @@ class AjaxController {
             request.setAttribute("editable", params.editable == "true")
             boolean showConsortiaFunctions = Boolean.parseBoolean(params.showConsortiaFunctions)
             if(params.propDefGroup) {
+                Org consortium
+                boolean atSubscr
+                List propDefGroupItems = []
                 PropertyDefinitionGroup propDefGroup = genericOIDService.resolveOID(params.propDefGroup)
                 PropertyDefinitionGroupBinding propDefGroupBinding = genericOIDService.resolveOID(params.propDefGroupBinding)
+                boolean isGroupVisible = propDefGroup.isVisible || propDefGroupBinding?.isVisible
+                if (owner instanceof License) {
+                    consortium = owner.getLicensingConsortium()
+                    atSubscr = owner._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION
+                } else if (owner instanceof Subscription) {
+                    consortium = owner.getConsortium()
+                    atSubscr = owner._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION
+                }
+                if (isGroupVisible) {
+                    propDefGroupItems = propDefGroup.getCurrentProperties(owner)
+                } else if (consortium != null) {
+                    propDefGroupItems = propDefGroup.getCurrentPropertiesOfTenant(owner, consortium)
+                }
                 Map<String, Object> modelMap = [
+                        isGroupVisible: isGroupVisible,
+                        atSubscr: atSubscr,
+                        consortium: consortium,
+                        propDefGroupItems: propDefGroupItems,
                         ownobj          : owner,
                         newProp         : property,
                         showConsortiaFunctions: showConsortiaFunctions,
