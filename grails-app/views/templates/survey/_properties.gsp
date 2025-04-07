@@ -70,7 +70,7 @@
 
                     <div>
                         <laser:render template="/templates/survey/properties_table" model="${[
-                                surveyProperties: surveyProperties, pdg: pdg]}"/>
+                                surveyProperties: surveyProperties]}"/>
                     </div>
                 </div>
             </g:if>
