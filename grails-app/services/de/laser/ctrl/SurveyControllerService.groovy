@@ -1397,49 +1397,96 @@ class SurveyControllerService {
 
             } else {
                 result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+                transferWorkflowSubs << result.parentSuccessorSubscription
             }
 
             transferWorkflowSubs.eachWithIndex { Subscription subscription, int i ->
                 if (subscription == result.parentSuccessorSubscription) {
                     if (i == 0) {
-                        if (params.transferMembers != null) {
-                            transferWorkflow.transferMembers = params.transferMembers
-                            if (result.surveyConfig.subSurveyUseForTransfer) {
-                                result.surveyConfig.subscription.participantTransferWithSurvey = transferWorkflow.transferMembers
-                                result.surveyConfig.subscription.save()
+                        if (subscription == result.surveyConfig.subscription) {
+                            if (params.transferMembers != null) {
+                                transferWorkflow.transferMembers = params.transferMembers
+                                if (result.surveyConfig.subSurveyUseForTransfer) {
+                                    result.surveyConfig.subscription.participantTransferWithSurvey = transferWorkflow.transferMembers
+                                    result.surveyConfig.subscription.save()
+                                }
                             }
-                        }
 
-                        if (params.transferSurveyCostItems != null) {
-                            transferWorkflow.transferSurveyCostItems = params.transferSurveyCostItems
-                        }
+                            if (params.transferSurveyCostItems != null) {
+                                transferWorkflow.transferSurveyCostItems = params.transferSurveyCostItems
+                            }
 
-                        if (params.transferSurveyCostItemPackage != null) {
-                            transferWorkflow.transferSurveyCostItemPackage = params.transferSurveyCostItemPackage
-                        }
+                            if (params.transferSurveyCostItemPackage != null) {
+                                transferWorkflow.transferSurveyCostItemPackage = params.transferSurveyCostItemPackage
+                            }
 
-                        if (params.transferSurveyProperties != null) {
-                            transferWorkflow.transferSurveyProperties = params.transferSurveyProperties
-                        }
+                            if (params.transferSurveyProperties != null) {
+                                transferWorkflow.transferSurveyProperties = params.transferSurveyProperties
+                            }
 
-                        if (params.transferCustomProperties != null) {
-                            transferWorkflow.transferCustomProperties = params.transferCustomProperties
-                        }
+                            if (params.transferCustomProperties != null) {
+                                transferWorkflow.transferCustomProperties = params.transferCustomProperties
+                            }
 
-                        if (params.transferPrivateProperties != null) {
-                            transferWorkflow.transferPrivateProperties = params.transferPrivateProperties
-                        }
+                            if (params.transferPrivateProperties != null) {
+                                transferWorkflow.transferPrivateProperties = params.transferPrivateProperties
+                            }
 
-                        if (params.transferSubPackagesAndIes != null) {
-                            transferWorkflow.transferSubPackagesAndIes = params.transferSubPackagesAndIes
-                        }
+                            if (params.transferSubPackagesAndIes != null) {
+                                transferWorkflow.transferSubPackagesAndIes = params.transferSubPackagesAndIes
+                            }
 
-                        if (params.transferSurveyPackages != null) {
-                            transferWorkflow.transferSurveyPackages = params.transferSurveyPackages
-                        }
+                            if (params.transferSurveyPackages != null) {
+                                transferWorkflow.transferSurveyPackages = params.transferSurveyPackages
+                            }
 
-                        if (params.transferSurveyVendors != null) {
-                            transferWorkflow.transferSurveyVendors = params.transferSurveyVendors
+                            if (params.transferSurveyVendors != null) {
+                                transferWorkflow.transferSurveyVendors = params.transferSurveyVendors
+                            }
+                        }else {
+                            Map transferWorkflowForSub = [:]
+                            if (transferWorkflow["transferWorkflowForSub_${subscription.id}"]) {
+                                transferWorkflowForSub = transferWorkflow["transferWorkflowForSub_${subscription.id}"]
+                            } else {
+                                transferWorkflowForSub = [:]
+                            }
+
+                            if (params.transferMembers != null) {
+                                transferWorkflowForSub.transferMembers = params.transferMembers
+                            }
+
+                            if (params.transferSurveyCostItems != null) {
+                                transferWorkflowForSub.transferSurveyCostItems = params.transferSurveyCostItems
+                            }
+
+                            if (params.transferSurveyCostItemPackage != null) {
+                                transferWorkflowForSub.transferSurveyCostItemPackage = params.transferSurveyCostItemPackage
+                            }
+
+                            if (params.transferSurveyProperties != null) {
+                                transferWorkflowForSub.transferSurveyProperties = params.transferSurveyProperties
+                            }
+
+                            if (params.transferCustomProperties != null) {
+                                transferWorkflowForSub.transferCustomProperties = params.transferCustomProperties
+                            }
+
+                            if (params.transferPrivateProperties != null) {
+                                transferWorkflowForSub.transferPrivateProperties = params.transferPrivateProperties
+                            }
+
+                            if (params.transferSubPackagesAndIes != null) {
+                                transferWorkflowForSub.transferSubPackagesAndIes = params.transferSubPackagesAndIes
+                            }
+
+                            if (params.transferSurveyPackages != null) {
+                                transferWorkflowForSub.transferSurveyPackages = params.transferSurveyPackages
+                            }
+
+                            if (params.transferSurveyVendors != null) {
+                                transferWorkflowForSub.transferSurveyVendors = params.transferSurveyVendors
+                            }
+                            transferWorkflow["transferWorkflowForSub_${subscription.id}"] = transferWorkflowForSub
                         }
                     } else {
                         Map transferWorkflowForMultiYear = [:]
@@ -1458,7 +1505,7 @@ class SurveyControllerService {
                         }
 
                         if (params.transferSurveyCostItemPackage != null) {
-                            transferWorkflow.transferSurveyCostItemPackage = params.transferSurveyCostItemPackage
+                            transferWorkflowForMultiYear.transferSurveyCostItemPackage = params.transferSurveyCostItemPackage
                         }
 
                         if (params.transferSurveyProperties != null) {
@@ -5081,6 +5128,13 @@ class SurveyControllerService {
 
         } else {
             result.parentSuccessorSubscription = parameterMap.targetSubscriptionId ? Subscription.get(parameterMap.targetSubscriptionId) : null
+
+            if (result.transferWorkflow && result.transferWorkflow.containsKey('transferWorkflowForSub_' + result.parentSuccessorSubscription.id)) {
+                result.transferWorkflow = result.transferWorkflow['transferWorkflowForSub_' + result.parentSuccessorSubscription.id]
+            } else if (result.parentSuccessorSubscription != result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()) {
+                result.transferWorkflow = [:]
+            }
+
         }
         result.targetSubscription = result.parentSuccessorSubscription
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
