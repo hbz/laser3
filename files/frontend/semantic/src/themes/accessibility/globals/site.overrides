@@ -405,9 +405,9 @@ i.icon.la-list-icon{
 }
 /* new buttons */
 .ui table td.x {
-    text-align: right;
     margin-right: 0;
     white-space: nowrap;
+    text-align: center!important;
 }
 .js-gost {
     display: none;

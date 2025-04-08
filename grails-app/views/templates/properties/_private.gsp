@@ -17,14 +17,14 @@
         <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
         ${message(code: 'subscription.properties.private')} ${contextService.getOrg().name}
     </h3>
-
+</g:if>
 
     <g:if test="${newProp}">
         <ui:errors bean="${newProp}" />
     </g:if>
 
     <table class="ui compact la-js-responsive-table la-table-inCard table">
-
+    <g:if test="${privateProperties}">
             <colgroup>
                 <col class="la-prop-col-1">
                 <col class="la-prop-col-2">
@@ -49,7 +49,7 @@
                     </th>
                 </tr>
             </thead>
-
+    </g:if>
         <tbody>
             <g:each in="${privateProperties}" var="prop">
                 <g:if test="${prop.type.tenant?.id == tenant?.id}">
@@ -173,7 +173,7 @@
             </tfoot>
         </g:if>
     </table>
-</g:if>
+
 <g:if test="${error}">
     <ui:msg class="error" header="${message(code: 'myinst.message.attention')}" text="${error}"/>
 </g:if>
