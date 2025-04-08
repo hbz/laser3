@@ -116,6 +116,8 @@
     <uiSurvey:status object="${surveyConfig.surveyInfo}"/>
 </ui:h1HeaderWithIcon>
 
+<div id="downloadWrapper"></div>
+
     <ui:messages data="${flash}"/>
 
 <div class="sixteen wide column">
@@ -149,13 +151,11 @@
 
 <g:render template="/survey/participantInfos" model="[participant: subscriber]"/>
 
-<laser:render template="/templates/filter/tipp_ieFilter" model="[notShow: params.tab in ['allTipps', 'selectableTipps', 'currentPerpetualAccessIEs'], fillDropdownsWithPackage: params.tab in ['allTipps', 'selectableTipps']]"/>
+<laser:render template="/templates/filter/tipp_ieFilter" model="[notShow: params.tab in ['selectedIEs', 'selectableTipps', 'currentPerpetualAccessIEs'], fillDropdownsWithPackage: params.tab in ['allTipps', 'selectableTipps']]"/>
 
 <h3 class="ui icon header la-clear-before la-noMargin-top">
     <ui:bubble count="${num_rows}" grey="true"/> <g:message code="title.filter.result"/>
 </h3>
-
-<div id="downloadWrapper"></div>
 
 <br />
 

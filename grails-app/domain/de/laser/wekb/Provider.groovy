@@ -190,9 +190,7 @@ class Provider extends AbstractBaseWithCalculatedLastUpdated implements DeleteFl
 
     @Override
     int compareTo(Provider p) {
-        int result = sortname <=> p.sortname
-        if(!result)
-            result = name <=> p.name
+        int result = name <=> p.name
         if(!result)
             result = id <=> p.id
         result

@@ -19,6 +19,9 @@
 
 <h2 class="ui left aligned icon header la-clear-before">${message(code: 'subscription.details.addEntitlements.label')}</h2>
 <%-- <laser:render template="nav"/> --%>
+
+<div id="downloadWrapper"></div>
+
 <g:if test="${subscription.instanceOf && contextService.getOrg().id == subscription.getConsortium()?.id}">
     <laser:render template="message"/>
 </g:if>
@@ -72,8 +75,6 @@
         </div>
     </g:form>
 </ui:modal>
-
-<div id="downloadWrapper"></div>
 
 <div class="ui segment">
 
