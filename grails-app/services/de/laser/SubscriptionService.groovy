@@ -558,8 +558,8 @@ class SubscriptionService {
             result.costs = costs
 
             Map queryParamsProviders = [context: contextOrg]
-            String queryProviders = 'select p from ProviderRole pvr join pvr.provider p where pvr.subscription in (select oo.sub from OrgRole oo where oo.org = :context) order by p.sortname, p.name',
-            queryVendors = 'select v from VendorRole vr join vr.vendor v where vr.subscription in (select oo.sub from OrgRole oo where oo.org = :context) order by v.sortname, v.name'
+            String queryProviders = 'select p from ProviderRole pvr join pvr.provider p where pvr.subscription in (select oo.sub from OrgRole oo where oo.org = :context) order by p.name',
+            queryVendors = 'select v from VendorRole vr join vr.vendor v where vr.subscription in (select oo.sub from OrgRole oo where oo.org = :context) order by v.name'
             result.providers = Provider.executeQuery(queryProviders, queryParamsProviders) as Set<Provider>
             result.vendors = Vendor.executeQuery(queryVendors, queryParamsProviders) as Set<Vendor>
             result.totalCount = costs.size()
@@ -1089,7 +1089,7 @@ class SubscriptionService {
      */
     SortedSet<ProviderRole> getVisibleProviders(Subscription subscription) {
         SortedSet<ProviderRole> visibleProviderRelations = new TreeSet<ProviderRole>()
-        visibleProviderRelations.addAll(ProviderRole.executeQuery('select pr from ProviderRole pr join pr.provider p where pr.subscription = :subscription order by p.sortname', [subscription: subscription]))
+        visibleProviderRelations.addAll(ProviderRole.executeQuery('select pr from ProviderRole pr join pr.provider p where pr.subscription = :subscription order by p.name', [subscription: subscription]))
         visibleProviderRelations
     }
 
@@ -1100,7 +1100,7 @@ class SubscriptionService {
      */
     SortedSet<VendorRole> getVisibleVendors(Subscription subscription) {
         SortedSet<VendorRole> visibleVendorRelations = new TreeSet<VendorRole>()
-        visibleVendorRelations.addAll(VendorRole.executeQuery('select vr from VendorRole vr join vr.vendor v where vr.subscription = :subscription order by v.sortname', [subscription: subscription]))
+        visibleVendorRelations.addAll(VendorRole.executeQuery('select vr from VendorRole vr join vr.vendor v where vr.subscription = :subscription order by v.name', [subscription: subscription]))
         visibleVendorRelations
     }
 

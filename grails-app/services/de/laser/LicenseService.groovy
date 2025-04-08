@@ -205,7 +205,7 @@ class LicenseService {
      */
     SortedSet<ProviderRole> getVisibleProviders(License license) {
         SortedSet<ProviderRole> visibleProviderRelations = new TreeSet<ProviderRole>()
-        visibleProviderRelations.addAll(ProviderRole.executeQuery('select pr from ProviderRole pr join pr.provider p where pr.license = :license order by p.sortname', [license: license]))
+        visibleProviderRelations.addAll(ProviderRole.executeQuery('select pr from ProviderRole pr join pr.provider p where pr.license = :license order by p.name', [license: license]))
         visibleProviderRelations
     }
 
@@ -216,7 +216,7 @@ class LicenseService {
      */
     SortedSet<VendorRole> getVisibleVendors(License license) {
         SortedSet<VendorRole> visibleVendorRelations = new TreeSet<VendorRole>()
-        visibleVendorRelations.addAll(VendorRole.executeQuery('select vr from VendorRole vr join vr.vendor v where vr.license = :license order by v.sortname', [license: license]))
+        visibleVendorRelations.addAll(VendorRole.executeQuery('select vr from VendorRole vr join vr.vendor v where vr.license = :license order by v.name', [license: license]))
         visibleVendorRelations
     }
 

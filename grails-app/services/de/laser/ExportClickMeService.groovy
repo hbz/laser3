@@ -1440,7 +1440,7 @@ class ExportClickMeService {
                         message: 'provider.label',
                         fields: [
                                 'provider.name'                  : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                                'provider.sortname'              : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
+                                'provider.sortname'              : [field: 'sortname', label: 'Sortname', message: 'default.shortname.label', defaultChecked: 'true'],
                                 'provider.altnames'              : [field: 'altnames', label: 'Alternative names', message: 'altname.plural'],
                                 'provider.status'                : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: true],
                                 'provider.homepage'              : [field: 'homepage', label: 'Homepage URL', message: 'org.homepage.label', defaultChecked: true],
@@ -1500,7 +1500,7 @@ class ExportClickMeService {
                         message: 'vendor.label',
                         fields: [
                                 'vendor.name'                  : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                                'vendor.sortname'              : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
+                                'vendor.sortname'              : [field: 'sortname', label: 'Sortname', message: 'default.shortname.label', defaultChecked: 'true'],
                                 'vendor.altnames'              : [field: 'altnames', label: 'Alternative names', message: 'altname.plural'],
                                 'vendor.status'                : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: true],
                                 'vendor.homepage'              : [field: 'homepage', label: 'Homepage URL', message: 'org.homepage.label', defaultChecked: true],
