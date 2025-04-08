@@ -8,6 +8,7 @@
     <g:set var="mailString" value=""/>
 </g:if>
 
+<div id="downloadWrapper"></div>
 
 <g:if test="${surveyConfig}">
 
@@ -139,7 +140,6 @@
 </ui:filter>
 
 
-<div id="downloadWrapper"></div>
 
 <g:form action="${processAction}" controller="${processController ?: 'survey'}" method="post" class="ui form"
         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab]">

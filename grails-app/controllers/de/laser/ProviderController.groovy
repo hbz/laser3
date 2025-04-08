@@ -145,7 +145,7 @@ class ProviderController {
             providerQuery += " order by ${params.sort} ${params.order ?: 'asc'}, p.name ${params.order ?: 'asc'} "
         }
         else
-            providerQuery += " order by p.sortname, p.name "
+            providerQuery += " order by p.name "
         Set<Provider> providersTotal = Provider.executeQuery(providerQuery, queryParams)
         result.currentProviderIdList = Provider.executeQuery('select pvr.provider.id from ProviderRole pvr, OrgRole oo join oo.sub s where s = pvr.subscription and oo.org = :context and s.status = :current', [current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()])
 

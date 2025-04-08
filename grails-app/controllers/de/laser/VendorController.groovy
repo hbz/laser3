@@ -137,7 +137,7 @@ class VendorController {
             vendorQuery += " order by ${params.sort} ${params.order ?: 'asc'}, v.name ${params.order ?: 'asc'} "
         }
         else
-            vendorQuery += " order by v.sortname, v.name "
+            vendorQuery += " order by v.name "
         prf.setBenchmark("get total vendors")
         Set<Vendor> vendorsTotal = Vendor.executeQuery(vendorQuery, queryParams)
         prf.setBenchmark("get subscribed vendors")
@@ -239,7 +239,7 @@ class VendorController {
             }
             Set<Package> allPackages = vendor.packages?.pkg
             result.allPackages = allPackages
-            result.providers = Provider.executeQuery('select p from Package pkg join pkg.provider p where pkg in (:allPackages) order by p.sortname, p.name', [allPackages: allPackages]).toSet()
+            result.providers = Provider.executeQuery('select p from Package pkg join pkg.provider p where pkg in (:allPackages) order by p.name', [allPackages: allPackages]).toSet()
             result.packages = Package.executeQuery('select pkg from PackageVendor pv join pv.pkg pkg, VendorRole vr, OrgRole oo join oo.sub s where pv.vendor = vr.vendor and vr.subscription = s and vr.vendor = :vendor and s.status = :current and oo.org = :context order by pkg.name', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()]) as Set<Package>
             result.platforms = Platform.executeQuery('select plat from PackageVendor pv join pv.pkg pkg join pkg.nominalPlatform plat, VendorRole vr, OrgRole oo join oo.sub s where pkg.provider = :vendor and vr.subscription = s and s.status = :current and oo.org = :context order by plat.name', [vendor: vendor, current: RDStore.SUBSCRIPTION_CURRENT, context: contextService.getOrg()]) as Set<Platform>
             result.tasks = taskService.getTasksByResponsibilityAndObject(result.user, vendor)

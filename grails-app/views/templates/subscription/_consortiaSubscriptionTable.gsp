@@ -166,14 +166,14 @@
                 <g:if test="${'showProviders' in tableConfig}">
                     <td>
                         <g:each in="${subCons.providers}" var="p">
-                            <g:link controller="provider" action="show" id="${p.id}">${p.sortname}</g:link> <br />
+                            <g:link controller="provider" action="show" id="${p.id}">${p.name}</g:link> <br />
                         </g:each>
                     </td>
                 </g:if>
                 <g:if test="${'showVendors' in tableConfig}">
                     <td>
                         <g:each in="${subCons.vendors}" var="v">
-                            <g:link controller="vendor" action="show" id="${v.id}">${v.sortname}</g:link> <br />
+                            <g:link controller="vendor" action="show" id="${v.id}">${v.name}</g:link> <br />
                         </g:each>
                     </td>
                 </g:if>

@@ -110,7 +110,6 @@ class LinksGenerationService {
                 links[index].add(link)
             }
         }
-        log.debug(links.toMapString())
         links
     }
 
