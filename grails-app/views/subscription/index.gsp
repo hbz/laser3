@@ -11,7 +11,7 @@
 
 <g:if test="${params.asAt}">
     <h1 class="ui header" style="display: inline">
-        ${message(code: 'subscription.details.snapshot', args: [params.asAt])} 
+        ${message(code: 'subscription.details.snapshot', args: [params.asAt])}
     </h1>
 </g:if>
 
