@@ -78,6 +78,8 @@
 
   <laser:render template="nav"/>
 
+  <div id="downloadWrapper"></div>
+
   <ui:messages data="${flash}" />
 
   <ui:errors bean="${packageInstance}" />
@@ -87,8 +89,6 @@
     <h3 class="ui icon header la-clear-before la-noMargin-top">
         <ui:bubble count="${num_tipp_rows}" grey="true"/> <g:message code="title.filter.result"/>
     </h3>
-
-<div id="downloadWrapper"></div>
 
 <div class="ui form">
     <div class="three wide fields">

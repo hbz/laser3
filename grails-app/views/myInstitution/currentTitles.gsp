@@ -31,6 +31,8 @@
     </ui:exportDropdown>
 </ui:controlButtons>
 
+<div id="downloadWrapper"></div>
+
 <ui:h1HeaderWithIcon message="myinst.currentTitles.label" total="${num_ti_rows}" floated="true"/>
 
 <ui:messages data="${flash}"/>
@@ -199,8 +201,6 @@
 
     </g:form>
 </ui:filter>
-
-<div id="downloadWrapper"></div>
 
 <laser:render template="/templates/titles/top_attached_title_tabs"
               model="${[

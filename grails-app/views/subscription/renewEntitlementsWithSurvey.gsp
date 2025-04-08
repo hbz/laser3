@@ -116,6 +116,8 @@
     <uiSurvey:status object="${surveyConfig.surveyInfo}"/>
 </ui:h1HeaderWithIcon>
 
+<div id="downloadWrapper"></div>
+
     <ui:messages data="${flash}"/>
 
 <div class="sixteen wide column">
@@ -154,8 +156,6 @@
 <h3 class="ui icon header la-clear-before la-noMargin-top">
     <ui:bubble count="${num_rows}" grey="true"/> <g:message code="title.filter.result"/>
 </h3>
-
-<div id="downloadWrapper"></div>
 
 <br />
 
