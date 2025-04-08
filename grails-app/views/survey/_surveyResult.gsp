@@ -34,9 +34,16 @@
         </g:if>
     </g:elseif>
     <g:elseif test="${surResult.type.isRefdataValueType()}">
-        <ui:xEditableRefData owner="${surResult}" type="text"
-                                field="refValue"
-                                config="${surResult.type.refdataCategory}"/>
+        <g:if test="${surResult.type == PropertyStore.SURVEY_PROPERTY_INVOICE_PROCESSING}">
+            <ui:xEditableRefData owner="${surResult}" type="text" field="refValue" constraint="removeValues_invoiceProcessing"
+                                 config="${surResult.type.refdataCategory}"/>
+        </g:if>
+        <g:else>
+            <ui:xEditableRefData owner="${surResult}" type="text"
+                             field="refValue"
+                             config="${surResult.type.refdataCategory}"/>
+        </g:else>
+
     </g:elseif>
     <g:if test="${surResult.comment}">
         <span class="la-long-tooltip la-popup-tooltip"
