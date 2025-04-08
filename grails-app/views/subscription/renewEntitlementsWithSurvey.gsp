@@ -149,7 +149,7 @@
 
 <g:render template="/survey/participantInfos" model="[participant: subscriber]"/>
 
-<laser:render template="/templates/filter/tipp_ieFilter" model="[notShow: params.tab == 'allTipps' || params.tab == 'selectableTipps', fillDropdownsWithPackage: params.tab == 'allTipps' || params.tab == 'selectableTipps']"/>
+<laser:render template="/templates/filter/tipp_ieFilter" model="[notShow: params.tab in ['allTipps', 'selectableTipps', 'currentPerpetualAccessIEs'], fillDropdownsWithPackage: params.tab in ['allTipps', 'selectableTipps']]"/>
 
 <h3 class="ui icon header la-clear-before la-noMargin-top">
     <ui:bubble count="${num_rows}" grey="true"/> <g:message code="title.filter.result"/>
