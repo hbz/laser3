@@ -419,7 +419,7 @@ class ReportingGlobalService {
                         result.list = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
                     }
                     else if (tmpl == BaseConfig.KEY_VENDOR) {
-                        result.list = Vendor.executeQuery('select v from Vendor v where v.id in (:idList) order by v.sortname, v.name', [idList: idList])
+                        result.list = Vendor.executeQuery('select v from Vendor v where v.id in (:idList) order by v.name', [idList: idList])
                     }
                 }
                 else {
@@ -452,7 +452,7 @@ class ReportingGlobalService {
                         result.tmpl = TMPL_PATH_DETAILS + BaseConfig.KEY_SUBSCRIPTION
                     }
                     else if (prefix in [ BaseConfig.KEY_VENDOR ]) {
-                        result.list = idList ? Vendor.executeQuery('select v from Vendor v where v.id in (:idList) order by v.sortname, v.name', [idList: idList]) : []
+                        result.list = idList ? Vendor.executeQuery('select v from Vendor v where v.id in (:idList) order by v.name', [idList: idList]) : []
                     }
                 }
             }

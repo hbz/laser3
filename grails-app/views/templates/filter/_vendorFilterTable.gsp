@@ -16,7 +16,7 @@
                     <th>${message(code: 'sidewide.number')}</th>
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('sortname')}">
-                    <g:sortableColumn title="${message(code: 'org.sortname.label')}" property="lower(o.sortname)" params="${request.getParameterMap()}"/>
+                    <th>${message(code: 'default.shortname.label')}</th>
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
                     <g:sortableColumn title="${message(code: 'org.fullName.label')}" property="lower(o.name)" params="${request.getParameterMap()}"/>
