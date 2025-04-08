@@ -141,11 +141,6 @@
                 </div>
             </div>
             <div class="content">
-                <h3 class="ui header">
-                    <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
-                    ${message(code:'org.properties.private')} ${authOrg.name}
-                </h3>
-
                 <g:set var="propertyWrapper" value="private-property-wrapper-${authOrg.id}" />
                 <div id="${propertyWrapper}">
                     <laser:render template="/templates/properties/private" model="${[
