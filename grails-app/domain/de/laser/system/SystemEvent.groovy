@@ -51,6 +51,8 @@ class SystemEvent {
             'DBDD_SERVICE_ERROR_3'          : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
             'DBM_SCRIPT_INFO'               : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'DBM_SCRIPT_ERROR'              : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
+            'DOCSTORE_MOV_OUTDATED_FILES'   : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
+            'DOCSTORE_DEL_ORPHANED_DOCS'    : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
             'FT_INDEX_UPDATE_START'         : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'FT_INDEX_UPDATE_COMPLETE'      : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'FT_INDEX_UPDATE_ERROR'         : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
@@ -97,7 +99,6 @@ class SystemEvent {
             'SYSTEM_UA_FLAG_EXPIRED'        : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'SYSTEM_UA_FLAG_LOCKED'         : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'SYSTEM_UA_FLAG_UNLOCKED'       : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
-            'YODA_DS_MOVE_OUTDATED'         : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
             'YODA_ES_RESET_START'           : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
             'YODA_ES_RESET_DELETED'         : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
             'YODA_ES_RESET_CREATED'         : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO]
