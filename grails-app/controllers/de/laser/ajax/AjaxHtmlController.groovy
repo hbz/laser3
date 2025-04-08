@@ -526,14 +526,14 @@ class AjaxHtmlController {
                 if(params.providerId)
                     model.providerId = params.providerId
                 else
-                    model.providerList = Provider.executeQuery("from Provider p order by LOWER(p.sortname), LOWER(p.name)")
+                    model.providerList = Provider.executeQuery("from Provider p order by LOWER(p.name)")
                 model.tenant = model.contextOrg.id
                 break
             case 'addressForVendor':
                 if(params.vendorId)
                     model.vendorId = params.vendorId
                 else
-                    model.vendorList = Vendor.executeQuery("from Vendor v order by LOWER(v.sortname), LOWER(v.name)")
+                    model.vendorList = Vendor.executeQuery("from Vendor v order by LOWER(v.name)")
                 model.tenant = model.contextOrg.id
                 break
             default: model.orgId = params.orgId ?: model.contextOrg.id

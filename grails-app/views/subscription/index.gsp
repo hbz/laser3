@@ -23,6 +23,8 @@
 
 <laser:render template="nav"/>
 
+<div id="downloadWrapper"></div>
+
 <g:if test="${permanentTitlesProcessRunning}">
     <ui:msg class="warning" showIcon="true" hideClose="true" header="Info" message="subscription.details.permanentTitlesProcessRunning.info" />
 </g:if>
@@ -221,7 +223,6 @@
 
     <laser:render template="/templates/filter/tipp_ieFilter" model="[forTitles: tab]"/>
 
-<div id="downloadWrapper"></div>
 
     <div class="ui grid">
         <div class="row">
