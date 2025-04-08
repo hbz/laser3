@@ -215,9 +215,7 @@ class Vendor extends AbstractBaseWithCalculatedLastUpdated
 
     @Override
     int compareTo(Vendor v) {
-        int result = sortname <=> v.sortname
-        if(!result)
-            result = name <=> v.name
+        int result = name <=> v.name
         if(!result)
             result = id <=> v.id
         result

@@ -36,7 +36,7 @@
                         </dd>
                     </dl>
                     <dl>
-                        <dt class="control-label"><g:message code="org.sortname.label" /></dt>
+                        <dt class="control-label"><g:message code="default.shortname.label" /></dt>
                         <dd>
                             <ui:xEditable
                                     data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"

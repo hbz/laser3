@@ -1,7 +1,5 @@
 package de.laser
 
-import de.laser.annotations.DebugInfo
-import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigDefaults
 import de.laser.finance.CostInformationDefinition
 import de.laser.mail.MailTemplate
@@ -10,6 +8,7 @@ import de.laser.utils.AppUtils
 import de.laser.helper.DatabaseInfo
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
+import de.laser.utils.FileUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import de.laser.remote.FTControl
@@ -46,7 +45,6 @@ import java.time.LocalDate
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AdminController  {
 
-    CacheService cacheService
     ContextService contextService
     DataConsistencyService dataConsistencyService
     DataloadService dataloadService
@@ -524,15 +522,34 @@ class AdminController  {
         String dsl = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
 
         Map<String, Object> result = [
-                dsPath              : dsl,
-                docsWithoutContext  : []
+                dsPath          : dsl,
+                orphanedDocs    : []
         ]
 
-        result.docsWithoutContext = Doc.executeQuery(
+        result.orphanedDocs = Doc.executeQuery(
                 'select doc from Doc doc where doc.contentType = :ctf' +
                         ' and not exists (select dc.id from DocContext dc where dc.owner = doc) order by doc.id',
                 [ctf: Doc.CONTENT_TYPE_FILE]
         )
+
+        if (params.deleteOrphanedDocs) {
+            List<Long> deletedDocs = []
+            result.orphanedDocs.each { doc ->
+                try {
+                    Long did = doc.id
+                    doc.delete()
+                    deletedDocs << did
+                }
+                catch (Exception e) {
+                    log.error e.getMessage()
+                }
+            }
+            log.info 'removed orphaned docs: ' + deletedDocs.size()
+            SystemEvent.createEvent('DOCSTORE_DEL_ORPHANED_DOCS', [count: deletedDocs.size(), server: AppUtils.getCurrentServer(), docs: deletedDocs])
+
+            redirect controller: 'admin', action: 'simpleDocsCheck'
+            return
+        }
 
         result
     }
@@ -603,7 +620,7 @@ class AdminController  {
                 }
             }
             log.info 'moved outdated files: ' + movedFiles.size() + ', pk: ' + pk + ', path:' + result.xxPath
-            SystemEvent.createEvent('YODA_DS_MOVE_OUTDATED', [count: movedFiles.size(), files: movedFiles])
+            SystemEvent.createEvent('DOCSTORE_MOV_OUTDATED_FILES', [count: movedFiles.size(), server: AppUtils.getCurrentServer(), files: movedFiles])
 
             redirect controller: 'admin', action: 'simpleFilesCheck'
             return
@@ -635,19 +652,6 @@ class AdminController  {
         ]
 
         result.filePath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
-
-        Closure fileCheck = { Doc doc ->
-
-            try {
-                File test = new File("${result.filePath}/${doc.uuid}")
-                if (test.exists() && test.isFile()) {
-                    return true
-                }
-            }
-            catch (Exception e) {
-                return false
-            }
-        }
 
         // files
 
@@ -685,12 +689,12 @@ class AdminController  {
         )
 
         result.listOfDocsInUse.each { Doc doc ->
-            if (! fileCheck(doc)) {
+            if (! FileUtils.fileCheck("${result.filePath}/${doc.uuid}")) {
                 result.listOfDocsInUseOrphaned << doc
             }
         }
         result.listOfDocsNotInUse.each { Doc doc ->
-            if (! fileCheck(doc)) {
+            if (! FileUtils.fileCheck("${result.filePath}/${doc.uuid}")) {
                 result.listOfDocsNotInUseOrphaned << doc
             }
         }
@@ -720,22 +724,9 @@ class AdminController  {
 
         result.filePath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
 
-        Closure fileCheck = { Doc doc ->
-
-            try {
-                File test = new File("${result.filePath}/${doc.uuid}")
-                if (test.exists() && test.isFile()) {
-                    return true
-                }
-            }
-            catch (Exception e) {
-                return false
-            }
-        }
-
         Doc doc = Doc.findByIdAndContentType( params.long('docID'), Doc.CONTENT_TYPE_FILE )
 
-        if (!fileCheck(doc)) {
+        if (!FileUtils.fileCheck("${result.filePath}/${doc.uuid}")) {
             result.doc = doc
 
             List docs = Doc.findAllWhere(
@@ -762,29 +753,16 @@ class AdminController  {
 
         result.filePath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
 
-        Closure fileCheck = { Doc doc ->
-
-            try {
-                File test = new File("${result.filePath}/${doc.uuid}")
-                if (test.exists() && test.isFile()) {
-                    return true
-                }
-            }
-            catch (Exception e) {
-                return false
-            }
-        }
-
         Doc docWithoutFile = Doc.findByIdAndContentType( params.long('sourceDoc'), Doc.CONTENT_TYPE_FILE )
         Doc docWithFile = Doc.findByIdAndContentType( params.long('targetDoc'), Doc.CONTENT_TYPE_FILE )
 
-        if (!fileCheck(docWithoutFile) && fileCheck(docWithFile)) {
+        if (!FileUtils.fileCheck("${result.filePath}/${docWithoutFile.uuid}") && FileUtils.fileCheck("${result.filePath}/${docWithFile.uuid}")) {
 
             Path source = new File("${result.filePath}/${docWithFile.uuid}").toPath()
             Path target = new File("${result.filePath}/${docWithoutFile.uuid}").toPath()
             Files.copy(source, target)
 
-            if(fileCheck(docWithoutFile)){
+            if (FileUtils.fileCheck("${result.filePath}/${docWithoutFile.uuid}")){
                 flash.message = "Datei erfolgreich wiederhergestellt!"
             }else{
                 flash.error = "Datei nicht erfolgreich wiederhergestellt!"

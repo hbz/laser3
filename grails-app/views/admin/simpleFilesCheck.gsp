@@ -27,13 +27,13 @@
                 <div class="content"><icon:pathFile/> Dateien gefunden: <strong>${dsFiles.size()}</strong></div>
             </div>
             <div class="item">
-                <div class="content"><i class="check double icon"></i> Matchende DOC-Verweise: <strong>${validDocs.size()}</strong></div>
+                <div class="content"><i class="check double icon"></i> Matchende DOC-Referenzen: <strong>${validDocs.size()}</strong></div>
             </div>
             <div class="item">
-                <div class="content"><i class="${Icon.SYM.YES} green"></i> Dateien mit gültigem DOC-Verweis: <strong>${validFiles.size()}</strong></div>
+                <div class="content"><i class="${Icon.SYM.YES} green"></i> Dateien mit gültiger DOC-Referenz: <strong>${validFiles.size()}</strong></div>
             </div>
             <div class="item">
-                <div class="content"><i class="${Icon.SYM.NO} red"></i>Dateien ohne gültigen DOC-Verweis: <strong>${invalidFiles.size()}</strong></div>
+                <div class="content"><i class="${Icon.SYM.NO} red"></i>Dateien ohne gültige DOC-Referenz: <strong>${invalidFiles.size()}</strong></div>
             </div>
         </div>
     </div>
@@ -41,7 +41,7 @@
 
 <div class="ui fluid card">
     <div class="content">
-        <div class="header">Matchende DOC-Verweise: ${validDocs.size()}</div>
+        <div class="header">Matchende DOC-Referenzen: ${validDocs.size()}</div>
     </div>
     <div class="content">
         <g:each in="${validDocs}" var="doc" status="i">
@@ -53,7 +53,7 @@
 
 <div class="ui fluid card">
     <div class="content">
-        <div class="header">Dateien mit gültigem DOC-Verweis: ${validFiles.size()}</div>
+        <div class="header">Dateien mit gültiger DOC-Referenz: ${validFiles.size()}</div>
     </div>
     <div class="content">
         ${validFiles.join(', ')}
@@ -62,7 +62,7 @@
 
 <div class="ui fluid card">
     <div class="content">
-        <div class="header">Dateien ohne gültigen DOC-Verweis: ${invalidFiles.size()}</div>
+        <div class="header">Dateien ohne gültige DOC-Referenz: ${invalidFiles.size()}</div>
     </div>
     <div class="content">
         ${invalidFiles.join(', ')}

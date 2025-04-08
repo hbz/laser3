@@ -11,7 +11,7 @@
 
 <g:if test="${params.asAt}">
     <h1 class="ui header" style="display: inline">
-        ${message(code: 'subscription.details.snapshot', args: [params.asAt])} 
+        ${message(code: 'subscription.details.snapshot', args: [params.asAt])}
     </h1>
 </g:if>
 
@@ -22,6 +22,8 @@
 <ui:anualRings object="${subscription}" controller="subscription" action="index" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 <laser:render template="nav"/>
+
+<div id="downloadWrapper"></div>
 
 <g:if test="${permanentTitlesProcessRunning}">
     <ui:msg class="warning" showIcon="true" hideClose="true" header="Info" message="subscription.details.permanentTitlesProcessRunning.info" />
@@ -221,7 +223,6 @@
 
     <laser:render template="/templates/filter/tipp_ieFilter" model="[forTitles: tab]"/>
 
-<div id="downloadWrapper"></div>
 
     <div class="ui grid">
         <div class="row">
