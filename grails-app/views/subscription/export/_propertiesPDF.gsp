@@ -82,33 +82,36 @@
         </div>
     </g:if>
 
-<%-- orphaned properties --%>
+    <g:if test="${allPropDefGroups.orphanedProperties}">
+    <%-- orphaned properties --%>
 
     <%--<div class="ui card la-dl-no-table"> --%>
-    <div class="content">
-        <h2 class="ui header">
-            <g:if test="${allPropDefGroups.global || allPropDefGroups.local || allPropDefGroups.member}">
-                ${message(code:'subscription.properties.orphaned')}
-            </g:if>
-            <g:else>
-                ${message(code:'subscription.properties')}
-            </g:else>
-        </h2>
-        <div id="custom_props_div_props">
-            <g:render template="/templates/properties/custom" model="${[
-                    prop_desc: PropertyDefinition.SUB_PROP,
-                    ownobj: subscription,
-                    orphanedProperties: allPropDefGroups.orphanedProperties,
-                    editable: (!calledFromSurvey && contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)),
-                    custom_props_div: "custom_props_div_props" ]}"/>
+        <div class="content">
+            <h2 class="ui header">
+                <g:if test="${allPropDefGroups.global || allPropDefGroups.local || allPropDefGroups.member}">
+                    ${message(code: 'subscription.properties.orphanedMajuscule')} ${message(code: 'subscription.propertiesBrackets')}
+                </g:if>
+                <g:else>
+                    ${message(code: 'subscription.properties')}
+                </g:else>
+            </h2>
+
+            <div id="custom_props_div_props">
+                <g:render template="/templates/properties/custom" model="${[
+                        prop_desc         : PropertyDefinition.SUB_PROP,
+                        ownobj            : subscription,
+                        orphanedProperties: allPropDefGroups.orphanedProperties,
+                        editable          : (!calledFromSurvey && contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)),
+                        custom_props_div  : "custom_props_div_props"]}"/>
+            </div>
         </div>
-    </div>
     <%--</div>--%>
 
         <laser:script file="${this.getGroovyPageFileName()}">
-            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${genericOIDService.getOID(subscription)}"]'/>", "#custom_props_div_props");
+            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'
+                                               params='[oid: "${genericOIDService.getOID(subscription)}"]'/>", "#custom_props_div_props");
         </laser:script>
-
+    </g:if>
 </div><!--.card -->
 
 <%-- private properties --%>

@@ -225,7 +225,7 @@ class IssueEntitlementService {
                 if(!configMap.containsKey('withPick') || (configMap.containsKey('withPick') && colMap.pick > -1)) {
                     for(int i = start; i < total; i++) {
                         String[] line = lines[i]
-                        if(line[0]) {
+                        //if(line[0]) {
                             /*
                                 here the switch between the matching methods:
                                 Select from total list (KBART) -> used now in tippSelectForSurvey()
@@ -305,7 +305,7 @@ class IssueEntitlementService {
                             //start from floor, end at ceil
                             percentage = configMap.floor+countRows*((configMap.ceil-configMap.floor)/total)
                             userCache.put('progress', percentage)
-                        }
+                        //}
                     }
                 }
                 else pickWithNoPick = true
@@ -427,9 +427,10 @@ class IssueEntitlementService {
         String sort = configMap.containsKey('sort') && configMap.sort ? configMap.sort : 'tipp.sortname'
         String order = configMap.containsKey('order') && configMap.order ? configMap.order : 'asc'
         Map<String, Object> titleConfigMap = [filter: configMap.filter, packages: configMap.packages, platforms: configMap.platforms, ddcs: configMap.ddcs, languages: configMap.languages,
+                                              first_author: configMap.first_author, first_editor: configMap.first_editor,
                                               subject_references: configMap.subject_references, series_names: configMap.series_names, summaryOfContent: configMap.summaryOfContent,
                                               ebookFirstAutorOrFirstEditor: configMap.ebookFirstAutorOrFirstEditor, dateFirstOnlineFrom: configMap.dateFirstOnlineFrom,
-                                              dateFirstOnlineTo: configMap.dateFirstOnlineFrom, yearsFirstOnline: configMap.yearsFirstOnline, publishers: configMap.publishers,
+                                              dateFirstOnlineTo: configMap.dateFirstOnlineFrom, yearsFirstOnline: configMap.yearsFirstOnline, publishers: configMap.publishers, provider: configMap.provider,
                                               coverageDepth: configMap.coverageDepth, title_types: configMap.title_types, medium: configMap.medium, sort: sort, order: order],
                             identifierConfigMap = [identifier: configMap.identifier, packages: configMap.packages, titleNS: IdentifierNamespace.CORE_TITLE_NS, titleObj: IdentifierNamespace.NS_TITLE], //may be needed elsewhere sort: sort, order: order
                             issueEntitlementConfigMap = [subscription: configMap.subscription, asAt: configMap.asAt, hasPerpetualAccess: configMap.hasPerpetualAccess, titleGroup: configMap.titleGroup, sort: sort, order: order]

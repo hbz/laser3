@@ -153,11 +153,6 @@ class SurveyControllerService {
                 result.surveyLinksMessage << messageSource.getMessage('surveyLinks.surveysNotSameEndDate', null, result.locale)
             }
 
-            if (params.commentTab) {
-                result.commentTab = params.commentTab
-            }
-
-
             result.navigation = surveyService.getConfigNavigation(result.surveyInfo, result.surveyConfig)
 
             if (result.surveyConfig.subscription) {
@@ -192,6 +187,17 @@ class SurveyControllerService {
             result.showSurveyPropertiesForOwer = true
 
             params.viewTab = params.viewTab ?: 'overview'
+
+            if (params.commentTab) {
+                result.commentTab = params.commentTab
+            }else {
+                if(!result.surveyConfig.subscription){
+                    result.commentTab = 'commentForNewParticipants'
+                }else {
+                    result.commentTab = result.surveyConfig.getSurveyOrgsIDs().orgsWithSubIDs ? 'comment' : 'commentForNewParticipants'
+                }
+            }
+
 
             [result: result, status: STATUS_OK]
         }
@@ -2433,12 +2439,6 @@ class SurveyControllerService {
             result.participant = Org.get(params.participant)
             result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
 
-            result.surveyResults = []
-
-            result.surveyConfig.getSortedProperties().each { PropertyDefinition propertyDefinition ->
-                result.surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(result.participant, result.surveyConfig, propertyDefinition)
-            }
-
             result.ownerId = result.surveyInfo.owner.id
 
             params.viewTab = params.viewTab ?: 'overview'
@@ -3415,9 +3415,33 @@ class SurveyControllerService {
 
                 if (params.surveyOrg) {
                     try {
-                        surveyOrgsDo << genericOIDService.resolveOID(params.surveyOrg)
+                        SurveyOrg surveyOrg = genericOIDService.resolveOID(params.surveyOrg)
+                        if (costItemsForSurveyPackage) {
+                            if (pkg) {
+                                if (cost_item_element) {
+                                    if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element, pkg)) {
+                                        surveyOrgsDo << surveyOrg
+                                    }
+                                } else {
+                                    if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, pkg)) {
+                                        surveyOrgsDo << surveyOrg
+                                    }
+                                }
+                            }
+                        } else {
+                            if (cost_item_element) {
+                                if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element)) {
+                                    surveyOrgsDo << surveyOrg
+                                }
+                            } else {
+                                if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED)) {
+                                    surveyOrgsDo << surveyOrg
+                                }
+                            }
+                        }
+
                     } catch (Exception e) {
-                        log.error("Non-valid surveyOrg sent ${params.surveyOrg}", e)
+                        log.error("Non-valid surveyOrg sent ${it}", e)
                     }
                 }
 

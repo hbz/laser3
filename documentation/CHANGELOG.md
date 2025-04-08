@@ -9,6 +9,8 @@
 
 2221    08.04.2025  rc-3.5  3.5-RC      David   Feature     Docs ohne DocContext aus DB und FileSystem löschen
 
+6427    07.04.2025  dev     3.5         Andreas Bug         Benennungen bei der Lizenzverknüpfung behoben
+
 6362    03.04.2025  rc-3.5  3.5-RC      Moe     Feature     Merkmal Category A-F ummappen zu Beck: Kategory A-F 
 
 6415/6416    03.04.2025  dev     3.5         Andreas Bug         Nutzerzahlen waren nicht aufrufbar

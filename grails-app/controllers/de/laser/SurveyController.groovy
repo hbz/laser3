@@ -2845,7 +2845,9 @@ class SurveyController {
         result.mode = result.costItem ? "edit" : ""
         result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID) : null
         result.selectedPackageID = params.selectedPackageID ? Long.valueOf(params.selectedPackageID) : null
-        result.selectPkg = params.selectPkg
+        if(params.selectPkg == "true"){
+            result.selectPkg = params.selectPkg
+        }
         result.taxKey = result.costItem ? result.costItem.taxKey : null
         result.idSuffix = "edit_${result.costItem ? result.costItem.id : result.participant.id}"
         result.modalID = 'surveyCostItemModal'
@@ -2892,8 +2894,8 @@ class SurveyController {
             result.surveyOrgList = orgList.isEmpty() ? [] : SurveyOrg.findAllByOrgInListAndSurveyConfig(orgList, result.surveyConfig)
         }
 
-        if(params.selectPkg){
-            result.selectPkg = "true"
+        if(params.selectPkg == "true"){
+            result.selectPkg = params.selectPkg
         }
 
         result.selectedCostItemElementID = params.selectedCostItemElementID ? Long.valueOf(params.selectedCostItemElementID) : null

@@ -1298,7 +1298,8 @@ class FilterService {
         if (params.subject_references && params.subject_references != "" && listReaderWrapper(params, 'subject_references')) {
             Set<String> subjectQuery = []
             params.list('subject_references').each { String subReference ->
-                subjectQuery << "genfunc_filter_matcher(tipp.subjectReference, '${subReference.toLowerCase()}') = true"
+                //subjectQuery << "genfunc_filter_matcher(tipp.subjectReference, '${subReference.toLowerCase()}') = true"
+                subjectQuery << "tipp.subjectReference = '${subReference}'"
             }
             base_qry += " and (${subjectQuery.join(" or ")}) "
             filterSet = true
@@ -1609,7 +1610,8 @@ class FilterService {
         if (params.subject_references && params.subject_references != "" && params.list('subject_references')) {
             Set<String> subjectQuery = []
             params.list('subject_references').each { String subReference ->
-                subjectQuery << "genfunc_filter_matcher(tipp.subjectReference, '${subReference.toLowerCase()}') = true"
+                //subjectQuery << "genfunc_filter_matcher(tipp.subjectReference, '${subReference.toLowerCase()}') = true"
+                subjectQuery << "tipp.subjectReference = '${subReference}'"
             }
             base_qry += " and (${subjectQuery.join(" or ")}) "
             filterSet = true
@@ -1771,7 +1773,8 @@ class FilterService {
         if (params.subject_references && params.subject_references != "" && listReaderWrapper(params, 'subject_references')) {
             String q = ' ( '
             listReaderWrapper(params, 'subject_references').eachWithIndex { String subRef, int i ->
-                q += " genfunc_filter_matcher(tipp.subjectReference,'"+subRef.trim().toLowerCase()+"') = true "
+                //q += " genfunc_filter_matcher(tipp.subjectReference,'"+subRef.trim().toLowerCase()+"') = true "
+                q += " tipp.subjectReference = '"+subRef.trim()+"' "
                 if(i < listReaderWrapper(params, 'subject_references').size()-1)
                     q += 'or'
             }
@@ -1782,6 +1785,18 @@ class FilterService {
         if (params.series_names && params.series_names != "" && listReaderWrapper(params, 'series_names')) {
             qry_parts << " lower(tipp.seriesName) in (:series_names) "
             qry_params.series_names = listReaderWrapper(params, 'series_names').collect { ""+it.toLowerCase()+"" }
+            filterSet = true
+        }
+
+        if(params.first_author) {
+            qry_parts << " lower(tipp.firstAuthor) like :first_author "
+            qry_params.first_author = "%${params.first_author.toLowerCase()}%"
+            filterSet = true
+        }
+
+        if(params.first_editor) {
+            qry_parts << " lower(tipp.firstEditor) like :first_editor "
+            qry_params.first_editor = "%${params.first_editor.toLowerCase()}%"
             filterSet = true
         }
 
@@ -1818,6 +1833,12 @@ class FilterService {
         if (params.identifier) {
             qry_parts << " ( exists ( from Identifier ident where ident.tipp.id = tipp.id and ident.value like :identifier ) ) "
             qry_params.identifier = "${params.identifier}"
+            filterSet = true
+        }
+
+        if (params.provider) {
+            qry_parts << " tipp.pkg in (select pkg from Package pkg where pkg.provider.id in (:provider)) "
+            qry_params.provider = Params.getLongList(params, 'provider')
             filterSet = true
         }
 
@@ -1933,7 +1954,8 @@ class FilterService {
         if (params.subject_references && params.subject_references != "" && listReaderWrapper(params, 'subject_references')) {
             String q = ' ( '
             listReaderWrapper(params, 'subject_references').eachWithIndex { String subRef, int i ->
-                q += " genfunc_filter_matcher(tipp.subjectReference,'"+subRef.trim().toLowerCase()+"') = true "
+                //q += " genfunc_filter_matcher(tipp.subjectReference,'"+subRef.trim().toLowerCase()+"') = true "
+                q += " tipp.subjectReference = '"+subRef.trim()+"' "
                 if(i < listReaderWrapper(params, 'subject_references').size()-1)
                     q += 'or'
             }
@@ -1943,6 +1965,16 @@ class FilterService {
         if (params.series_names && params.series_names != "" && listReaderWrapper(params, 'series_names')) {
             queryArgs << " tipp.seriesName in (:series_names) "
             queryParams.series_names = listReaderWrapper(params, 'series_names').collect { ""+it+"" }
+        }
+
+        if (params.first_author && params.first_author != "" && listReaderWrapper(params, 'first_author')) {
+            queryArgs << " lower(tipp.firstAuthor) like :first_author "
+            queryParams.first_author = "${params.first_author.toLowerCase()}"
+        }
+
+        if (params.first_editor && params.first_editor != "" && listReaderWrapper(params, 'first_editor')) {
+            queryArgs << " lower(tipp.firstEditor) like :first_editor "
+            queryParams.first_editor = "${params.first_editor.toLowerCase()}"
         }
 
         if(params.summaryOfContent) {
@@ -1980,6 +2012,11 @@ class FilterService {
             openAccessString += ')'
             queryArgs << openAccessString
             queryParams.openAccess = openAccess
+        }
+
+        if (params.provider) {
+            queryArgs << " tipp.pkg in (select pkg from Package pkg where pkg.provider.id in (:provider)) "
+            queryParams.provider = Params.getLongList(params, 'provider')
         }
 
         if (params.publishers) {
