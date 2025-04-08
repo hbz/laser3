@@ -53,10 +53,10 @@
                         <td>${doc.filename.size() < 70 ? doc.filename : (doc.filename.take(55) + '[..]' + doc.filename.takeRight(15))}</td>
                         <td class="center aligned">
                             <g:if test="${FileUtils.fileCheck("${dsPath}/${doc.uuid}")}">
-                                <i class="${Icon.SYM.CIRCLE} green">
+                                <i class="${Icon.SYM.YES} green">
                             </g:if>
                             <g:else>
-                                <i class="${Icon.SYM.NO} red">
+                                <i class="${Icon.SYM.CIRCLE} red">
                             </g:else>
                         </td>
                         <td>${doc.owner?.getDesignation()}</td>
