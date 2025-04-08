@@ -43,6 +43,16 @@ class IssueEntitlementService {
         if(configMap.identifier) {
             tippIDs = tippIDs.intersect(titleService.getTippsByIdentifier(identifierConfigMap, configMap.identifier))
         }
+        if (configMap.containsKey('hasPerpetualAccess')) {
+            String permanentTitleQuery = "select pt.tipp.id from PermanentTitle pt where pt.owner = :subscriber"
+            Map<String, Object> permanentTitleParams = [subscriber: configMap.subscription.getSubscriberRespConsortia()]
+            Set<Long> permanentTitles = TitleInstancePackagePlatform.executeQuery(permanentTitleQuery, permanentTitleParams)
+            if (RefdataValue.get(configMap.hasPerpetualAccess) == RDStore.YN_YES) {
+                tippIDs = tippIDs.intersect(permanentTitles)
+            }else{
+                tippIDs.removeAll(permanentTitles)
+            }
+        }
         tippIDs.collate(65000).each { List<Long> subset ->
             List counts = IssueEntitlement.executeQuery('select count(*), rv.id from IssueEntitlement ie join ie.status rv where ie.tipp.id in (:subset) and ie.subscription.id = :subscription and ie.status.id != :removed group by rv.id', [subset: subset, subscription: configMap.subscription.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
             counts.each { row ->
@@ -79,6 +89,9 @@ class IssueEntitlementService {
             issueEntitlementConfigMap.ieStatus = configMap.status
         }
         Set<Long> tippIDs = [], ieIDs = []
+        //may become a performance bottleneck; keep under observation!
+        String permanentTitleQuery = "select pt.tipp.id from PermanentTitle pt where pt.owner = :subscriber"
+        Map<String, Object> permanentTitleParams = [subscriber: configMap.subscription.getSubscriberRespConsortia()]
         if(configMap.containsKey('newEntitlements')) {
             //process here the title-related parameters
             Map<String, Object> queryPart1 = filterService.getTippSubsetQuery(titleConfigMap)
@@ -87,6 +100,7 @@ class IssueEntitlementService {
                 tippIDs = tippIDs.intersect(titleService.getTippsByIdentifier(identifierConfigMap, configMap.identifier))
             }
             tippIDs.removeAll(IssueEntitlement.executeQuery('select ie.tipp.id from IssueEntitlement ie where ie.subscription = :subscription and ie.status != :removed', [subscription: configMap.subscription, removed: RDStore.TIPP_STATUS_REMOVED]))
+            tippIDs.removeAll(TitleInstancePackagePlatform.executeQuery(permanentTitleQuery, permanentTitleParams))
         }
         else {
             //process here the issue entitlement-related parameters
@@ -100,6 +114,14 @@ class IssueEntitlementService {
             tippIDs = tippIDs.intersect(TitleInstancePackagePlatform.executeQuery(queryPart2.query, queryPart2.queryParams))
             if(configMap.identifier) {
                 tippIDs = tippIDs.intersect(titleService.getTippsByIdentifier(identifierConfigMap, configMap.identifier))
+            }
+            if (configMap.containsKey('hasPerpetualAccess')) {
+                Set<Long> permanentTitles = TitleInstancePackagePlatform.executeQuery(permanentTitleQuery, permanentTitleParams)
+                if (RefdataValue.get(configMap.hasPerpetualAccess) == RDStore.YN_YES) {
+                    tippIDs = tippIDs.intersect(permanentTitles)
+                }else{
+                    tippIDs.removeAll(permanentTitles)
+                }
             }
             tippIeMap.each { row ->
                 if(row.tippID in tippIDs)

@@ -1801,8 +1801,18 @@ class SubscriptionService {
             }
             Map<String, Object> query = filterService.getTippSubsetQuery(titleConfigMap)
             Set<Long> tippIDs = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
-            if(result.identifier) {
-                tippIDs = tippIDs.intersect(titleService.getTippsByIdentifier(identifierConfigMap, result.identifier))
+            if(result.configMap.identifier) {
+                tippIDs = tippIDs.intersect(titleService.getTippsByIdentifier(identifierConfigMap, result.configMap.identifier))
+            }
+            if (result.configMap.containsKey('hasPerpetualAccess')) {
+                String permanentTitleQuery = "select pt.tipp.id from PermanentTitle pt where pt.owner = :subscriber"
+                Map<String, Object> permanentTitleParams = [subscriber: result.subscription.getSubscriberRespConsortia()]
+                Set<Long> permanentTitles = TitleInstancePackagePlatform.executeQuery(permanentTitleQuery, permanentTitleParams)
+                if (RefdataValue.get(result.configMap.hasPerpetualAccess) == RDStore.YN_YES) {
+                    tippIDs = tippIDs.intersect(permanentTitles)
+                }else{
+                    tippIDs.removeAll(permanentTitles)
+                }
             }
             EhcacheWrapper userCache = contextService.getUserCache("/subscription/renewEntitlementsWithSurvey/${result.subscription.id}?${params.tab}")
             Map<String, Object> checkedCache = userCache.get('selectedTitles')
