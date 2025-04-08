@@ -11,7 +11,7 @@
 <g:set var="overwriteEditable" value="${editable || contextService.isInstEditor( CustomerTypeService.ORG_INST_PRO ) || contextService.isInstEditor( CustomerTypeService.ORG_CONSORTIUM_BASIC )}" />
 
 <g:set var="privateProperties" value="${ownobj.propertySet.findAll { cp -> cp.type.tenant?.id == contextService.getOrg().id && cp.tenant?.id == contextService.getOrg().id }.sort{ cp -> cp.type[de.laser.utils.LocaleUtils.getLocalizedAttributeName('name')].toLowerCase() }}"/>
-<g:if test="${privateProperties}">
+<g:if test="${privateProperties || ( overwriteEditable && ownobj instanceof Person )}">
 
     <h3 class="ui header">
         <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
