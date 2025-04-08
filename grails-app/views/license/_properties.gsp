@@ -113,35 +113,37 @@
         </div>
     </g:if>
 
-<%-- orphaned properties --%>
+    <g:if test="${allPropDefGroups.orphanedProperties}">
+    <%-- orphaned properties --%>
 
     <%--<div class="ui card la-dl-no-table">--%>
-    <div class="content">
-        <h3 class="ui header">
-            <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
-            <g:if test="${allPropDefGroups.global || allPropDefGroups.local || allPropDefGroups.member}">
-                ${message(code: 'subscription.properties.orphanedMajuscule')} ${message(code: 'subscription.propertiesBrackets')}
-            </g:if>
-            <g:else>
-                ${message(code:'license.properties')}
-            </g:else>
-        </h3>
+        <div class="content">
+            <h3 class="ui header">
+                <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
+                <g:if test="${allPropDefGroups.global || allPropDefGroups.local || allPropDefGroups.member}">
+                    ${message(code: 'subscription.properties.orphanedMajuscule')} ${message(code: 'subscription.propertiesBrackets')}
+                </g:if>
+                <g:else>
+                    ${message(code: 'license.properties')}
+                </g:else>
+            </h3>
 
-        <div id="custom_props_div_props">
-            <laser:render template="/templates/properties/custom" model="${[
-                    prop_desc: PropertyDefinition.LIC_PROP,
-                    ownobj: license,
-                    orphanedProperties: allPropDefGroups.orphanedProperties,
-                    editable: contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC),
-                    custom_props_div: "custom_props_div_props" ]}"/>
+            <div id="custom_props_div_props">
+                <laser:render template="/templates/properties/custom" model="${[
+                        prop_desc         : PropertyDefinition.LIC_PROP,
+                        ownobj            : license,
+                        orphanedProperties: allPropDefGroups.orphanedProperties,
+                        editable          : contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC),
+                        custom_props_div  : "custom_props_div_props"]}"/>
+            </div>
         </div>
-    </div>
     <%--</div>--%>
 
-    <laser:script file="${this.getGroovyPageFileName()}">
-        c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${genericOIDService.getOID(license)}"]'/>", "#custom_props_div_props");
-    </laser:script>
-
+        <laser:script file="${this.getGroovyPageFileName()}">
+            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'
+                                               params='[oid: "${genericOIDService.getOID(license)}"]'/>", "#custom_props_div_props");
+        </laser:script>
+    </g:if>
 </div><!-- .card -->
 
 <%-- private properties --%>

@@ -174,7 +174,9 @@
             <tr>
                 <th class="center aligned">${message(code: 'sidewide.number')}</th>
                 <th>${message(code: 'surveyProperty.label')}</th>
+                <th>${message(code: 'surveyProperty.expl.label')}</th>
                 <th>${message(code: 'default.type.label')}</th>
+                <th>${message(code: 'surveyProperty.mandatoryProperty.short')}</th>
                 <th>${message(code: 'surveyResult.result')}</th>
                 <th>
                     <g:if test="${contextService.isInstUser(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
@@ -207,30 +209,19 @@
             </tr>
             </thead>
             <g:each in="${surveyProperties}" var="surveyResult" status="i">
-
+                <g:set var="surveyConfigProperties"
+                       value="${SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyResult.surveyConfig, surveyResult.type)}"/>
                 <tr>
                     <td class="center aligned">
                         ${i + 1}
                     </td>
                     <td>
                         ${surveyResult.type.getI10n('name')}
-
+                    </td>
+                    <td>
                         <g:if test="${surveyResult.type.getI10n('expl')}">
-                            <span class="la-long-tooltip la-popup-tooltip" data-position="bottom center"
-                                  data-content="${surveyResult.type.getI10n('expl')}">
-                                <i class="${Icon.TOOLTIP.HELP}"></i>
-                            </span>
+                            ${surveyResult.type.getI10n('expl')}
                         </g:if>
-
-                        <g:set var="surveyConfigProperties"
-                               value="${SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyResult.surveyConfig, surveyResult.type)}"/>
-                        <g:if test="${surveyConfigProperties && surveyConfigProperties.mandatoryProperty}">
-                            <span class="la-long-tooltip la-popup-tooltip" data-position="bottom center"
-                                  data-content="${message(code: 'default.mandatory.tooltip')}">
-                                <i class="${Icon.TOOLTIP.INFO}"></i>
-                            </span>
-                        </g:if>
-
                     </td>
                     <td>
                         ${PropertyDefinition.getLocalizedValue(surveyResult.type.type)}
@@ -250,8 +241,15 @@
                                     </g:if>
                                 </g:each>
                             </g:else>
-                            <br/>
-                            (${refdataValues.join('/')})
+                            <span class="la-long-tooltip la-popup-tooltip" data-position="bottom center"
+                                  data-content="${refdataValues.join('/')}">
+                                <i class="${Icon.TOOLTIP.INFO}"></i>
+                            </span>
+                        </g:if>
+                    </td>
+                    <td>
+                        <g:if test="${surveyConfigProperties && surveyConfigProperties.mandatoryProperty}">
+                            <i class="${Icon.SYM.CHECKBOX_CHECKED} large"></i>
                         </g:if>
                     </td>
                     <g:set var="surveyOrg"

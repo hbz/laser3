@@ -261,8 +261,7 @@
                         <div class="la-inline-lists">
                             <laser:render template="/templates/survey/subscriptionSurvey" model="[surveyConfig    : surveyConfig,
                                                                                                   subscription    : subscription,
-                                                                                                  visibleProviders: providerRoles,
-                                                                                                  surveyResults   : surveyResults]"/>
+                                                                                                  visibleProviders: providerRoles]"/>
                         </div>
                     </div>
                 </g:if>

@@ -125,7 +125,7 @@
                     <tr class="">
                         <g:if test="${editable}">
                             <td>
-                            <g:if test="${editable && participant.surveyVendors && !VendorRole.findByVendorInListAndSubscription(participant.surveyVendors, newSub)}">
+                            <g:if test="${editable && participant.surveyVendors && !VendorRole.findByVendorInListAndSubscription(participant.surveyVendors, participant.newSub)}">
                                 <%-- This whole construct is necessary for that the form validation works!!! --%>
                                 <div class="field">
                                     <div class="ui checkbox">

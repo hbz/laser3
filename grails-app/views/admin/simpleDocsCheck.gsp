@@ -1,4 +1,4 @@
-<%@ page import="de.laser.config.ConfigDefaults; de.laser.config.ConfigMapper; de.laser.utils.DateUtils; de.laser.Doc; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.DocContext" %>
+<%@ page import="de.laser.utils.FileUtils; de.laser.config.ConfigDefaults; de.laser.config.ConfigMapper; de.laser.utils.DateUtils; de.laser.Doc; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.storage.RDStore; de.laser.DocContext" %>
 
 <laser:htmlStart message="menu.admin.simpleDocsCheck" />
 
@@ -14,20 +14,6 @@
     <g:link controller="admin" action="simpleDocsCheck" class="item active">Datenbank</g:link>
 </nav>
 
-<%
-    Closure fileCheck = { Doc doc ->
-        try {
-            File test = new File("${dsPath}/${doc.uuid}")
-            if (test.exists() && test.isFile()) {
-                return true
-            }
-        }
-        catch (Exception e) {
-            return false
-        }
-    }
-%>
-
 <div class="ui fluid card">
     <div class="content">
         <div class="header">Doc <- DocContext</div>
@@ -38,7 +24,7 @@
                 <div class="content"><icon:pathFolder/> Pfad: <strong>${dsPath}</strong></div>
             </div>
             <div class="item">
-                <div class="content"><i class="${Icon.SYM.CIRCLE} red"></i> DOC ohne DocContext-Referenz: <strong>${docsWithoutContext.size()}</strong></div>
+                <div class="content"><i class="${Icon.SYM.CIRCLE} red"></i> DOC ohne DocContext-Referenz: <strong>${orphanedDocs.size()}</strong></div>
             </div>
         </div>
     </div>
@@ -46,7 +32,7 @@
 
 <div class="ui fluid card">
     <div class="content">
-        <div class="header">DOC ohne DocContext-Referenz: ${docsWithoutContext.size()}</div>
+        <div class="header">DOC ohne DocContext-Referenz: ${orphanedDocs.size()}</div>
     </div>
     <div class="content">
         <table class="ui table very compact">
@@ -54,31 +40,41 @@
                 <tr>
                     <th class="center aligned">#</th>
                     <th>Dateiname</th>
-                    <th class="center aligned">DCTX</th>
-                    <th class="center aligned">FILE</th>
+                    <th class="center aligned">Datei</th>
                     <th>Besitzer</th>
                     <th>Erstellt</th>
                     <th>Bearbeitet</th>
                 </tr>
             </thead>
             <tbody>
-                <g:each in="${docsWithoutContext}" var="doc">
+                <g:each in="${orphanedDocs}" var="doc">
                     <tr>
                         <td class="center aligned">${doc.id}</td>
                         <td>${doc.filename.size() < 70 ? doc.filename : (doc.filename.take(55) + '[..]' + doc.filename.takeRight(15))}</td>
                         <td class="center aligned">
-                            <i class="${DocContext.executeQuery('select count(*) from DocContext where owner.id = :docId', [docId: doc.id])[0] > 0 ? 'green' : 'red'} circle icon"></i>
+                            <g:if test="${FileUtils.fileCheck("${dsPath}/${doc.uuid}")}">
+                                <i class="${Icon.SYM.CIRCLE} green">
+                            </g:if>
+                            <g:else>
+                                <i class="${Icon.SYM.NO} red">
+                            </g:else>
                         </td>
-                        <td class="center aligned">
-                            <i class="${Icon.SYM.CIRCLE} ${fileCheck(doc) ? 'green' : 'red'}"></i>
-                        </td>
-                        <td>${doc.owner.getDesignation()}</td>
+                        <td>${doc.owner?.getDesignation()}</td>
                         <td>${DateUtils.getSDF_yyyyMMdd().format(doc.dateCreated)}</td>
                         <td>${DateUtils.getSDF_yyyyMMdd().format(doc.lastUpdated)}</td>
                     </tr>
                 </g:each>
             </tbody>
         </table>
+
+        <g:if test="${orphanedDocs}">
+            <br/>
+            <br/>
+            <g:link controller="admin" action="simpleDocsCheck" params="${[deleteOrphanedDocs: 1]}"
+                    class="${Btn.NEGATIVE_CONFIRM}"
+                    data-confirm-tokenMsg="Ungültige DOC-Einträge aus der Datenbank löschen?"
+                    data-confirm-term-how="ok">Aufräumen</g:link>
+        </g:if>
     </div>
 </div>
 

@@ -261,4 +261,16 @@ class DocstoreService {
             }
         }
     }
+
+    @Deprecated
+    boolean fileCheck (String pathname) {
+        try {
+            File test = new File(pathname)
+            if (test.exists() && test.isFile()) {
+                return true
+            }
+        }
+        catch (Exception e) {}
+        false
+    }
 }

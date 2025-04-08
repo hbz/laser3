@@ -650,15 +650,14 @@ class SurveyConfig {
 
         LinkedHashSet<SurveyResult> properties = []
 
-        propertyDefinitionGroup.items.each {
-            SurveyResult surveyResult = SurveyResult.findByParticipantAndSurveyConfigAndType(org, this, it.propDef)
-            if(surveyResult) {
-                properties << surveyResult
+        this.getSortedSurveyConfigProperties().each {
+            if(propertyDefinitionGroup && propertyDefinitionGroup.items  && it.surveyProperty.id in propertyDefinitionGroup.items.propDef.id){
+                SurveyResult surveyResult = SurveyResult.findByParticipantAndSurveyConfigAndType(org, this, it.surveyProperty)
+                if(surveyResult) {
+                    properties << surveyResult
+                }
             }
         }
-
-        //properties = properties.sort {it.type.getI10n('name')}
-        properties = properties.sort {this.getSortedProperties().indexOf(it.type)}
 
         return properties
 

@@ -14,7 +14,9 @@
         <g:hiddenField name="surveyOrg" value="${surveyOrg.class.getName()}:${surveyOrg.id}"/>
     </g:if>
 </g:else>
-<g:hiddenField name="selectPkg" value="${selectPkg}"/>
+<g:if test="${selectPkg == "true"}">
+    <g:hiddenField name="selectPkg" value="${selectPkg}"/>
+</g:if>
 
 <div class="fields la-forms-grid">
     <div class="eight wide field">
