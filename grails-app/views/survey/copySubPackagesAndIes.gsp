@@ -43,9 +43,9 @@
 
     <g:render template="navCompareMembers"/>
 
-    <h2 class="ui header">
+   %{-- <h2 class="ui header">
         ${message(code: 'copySubPackagesAndIes.titel')}
-    </h2>
+    </h2>--}%
 
 
     <ui:greySegment>
