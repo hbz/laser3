@@ -18,6 +18,7 @@ import de.laser.wekb.Platform
 import de.laser.wekb.Provider
 import de.laser.wekb.ProviderRole
 import grails.gorm.transactions.Transactional
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 
 @Transactional
@@ -339,6 +340,7 @@ class ProviderService {
         if (params.id) {
             result.provider = Provider.get(params.id)
             result.editable = contextService.isInstEditor()
+            result.isAdmin = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
             //set isMyOrg-flag for relations context -> provider
             int relationCheck = OrgRole.executeQuery('select count(oo) from ProviderRole pvr join pvr.subscription sub, OrgRole oo where pvr.subscription = oo.org and oo.org = :context and sub.status = :current', [context: org, current: RDStore.SUBSCRIPTION_CURRENT])[0]
             result.isMyProvider = relationCheck > 0

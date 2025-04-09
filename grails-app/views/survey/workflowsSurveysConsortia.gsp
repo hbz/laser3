@@ -61,7 +61,19 @@
 
         </div>
 
-        <div class="three fields">
+        <div class="four fields">
+
+            <div class="field">
+                <label>${message(code: 'surveyInfo.type.label')}</label>
+                <ui:select class="ui dropdown clearable" name="type"
+                           from="${RefdataCategory.getAllRefdataValues(de.laser.storage.RDConstants.SURVEY_TYPE)}"
+                           optionKey="id"
+                           optionValue="value"
+                           value="${params.type}"
+                           noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+            </div>
+
+
             <div class="field">
                 <label for="filterPvd">${message(code: 'menu.my.providers')}</label>
                 <select id="filterPvd" name="filterPvd" multiple="" class="ui search selection fluid dropdown">
@@ -97,18 +109,7 @@
 
         </div>
 
-        <div class="two fields">
-
-            <div class="field">
-                <label>${message(code: 'surveyInfo.type.label')}</label>
-                <ui:select class="ui dropdown clearable" name="type"
-                           from="${RefdataCategory.getAllRefdataValues(de.laser.storage.RDConstants.SURVEY_TYPE)}"
-                           optionKey="id"
-                           optionValue="value"
-                           value="${params.type}"
-                           noSelection="${['': message(code: 'default.select.choose.label')]}"/>
-            </div>
-
+        <div class="one fields">
             <div class="field">
                 <label>${message(code: 'surveyInfo.options')}</label>
 

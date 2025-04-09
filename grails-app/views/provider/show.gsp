@@ -124,167 +124,171 @@
                             </g:if>
                         </dd>
                     </dl>
-                    <dl>
-                        <dt class="control-label">
-                            <g:message code="org.metadataDownloaderURL.label" />
-                        </dt>
-                        <dd>
-                            <ui:xEditable data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                          data_confirm_term_how="ok"
-                                          class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                          owner="${provider}" type="url" field="metadataDownloaderURL"  overwriteEditable="${editable && !provider.gokbId}"/>
-                            <g:if test="${provider.metadataDownloaderURL}">
-                                 <ui:linkWithIcon href="${provider.metadataDownloaderURL}"/>
-                            </g:if>
-                        </dd>
-                    </dl>
-                    <dl>
-                        <dt class="control-label">
-                            <g:message code="org.KBARTDownloaderURL.label" />
-                        </dt>
-                        <dd>
-                            <ui:xEditable data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                          data_confirm_term_how="ok"
-                                          class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                          owner="${provider}" type="url" field="kbartDownloaderURL"  overwriteEditable="${editable && !provider.gokbId}"/>
-                            <g:if test="${provider.kbartDownloaderURL}">
-                                <ui:linkWithIcon href="${provider.kbartDownloaderURL}"/>
-                            </g:if>
-                        </dd>
-                    </dl>
-                </div>
-            </div><!-- .card -->
-
-            <div class="ui card">
-                <div class="content">
-                    <h2 class="ui header"><g:message code="vendor.invoicing.header"/></h2>
-                    <dl>
-                        <dt class="control-label">
-                            <g:message code="vendor.invoicing.inhouse.label"/>
-                        </dt>
-                        <dd>
-                            <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                                 data_confirm_term_how="ok"
-                                                 class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                                 owner="${provider}" type="url" field="inhouseInvoicing"  overwriteEditable="${editable && !provider.gokbId}"/>
-                        </dd>
-                    </dl>
-                    <g:if test="${provider.inhouseInvoicing}">
+                    <g:if test="${provider.gokbId}">
                         <dl>
                             <dt class="control-label">
-                                <g:message code="vendor.invoicing.formats.label" />
+                                <g:message code="org.metadataDownloaderURL.label" />
                             </dt>
                             <dd>
-                                <%
-                                    List<RefdataValue> invoicingFormats = RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_FORMAT)
-                                %>
-                                <laser:render template="/templates/attributesList"
-                                              model="${[ownObj: provider, deleteAction: 'deleteAttribute', attributes: provider.electronicBillings, field: 'invoicingFormat', availableAttributeIds: invoicingFormats.collect { RefdataValue rdv -> rdv.id }, editable: editable && !provider.gokbId]}"/>
-
-                                <laser:render template="/templates/attributesModal"
-                                              model="${[ownObj: provider, addAction: 'addAttribute', modalId: 'electronicBilling', buttonText: 'vendor.invoicing.formats.add', label: 'vendor.invoicing.formats.label', field: 'invoicingFormat', availableAttributes: invoicingFormats, editable: editable && !provider.gokbId]}"/>
+                                <ui:xEditable data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                              data_confirm_term_how="ok"
+                                              class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                              owner="${provider}" type="url" field="metadataDownloaderURL"/>
+                                <g:if test="${provider.metadataDownloaderURL}">
+                                    <ui:linkWithIcon href="${provider.metadataDownloaderURL}"/>
+                                </g:if>
                             </dd>
                         </dl>
                         <dl>
                             <dt class="control-label">
-                                <g:message code="vendor.invoicing.dispatch.label" />
+                                <g:message code="org.KBARTDownloaderURL.label" />
                             </dt>
                             <dd>
-                                <%
-                                    List<RefdataValue> invoiceDispatchs = RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_DISPATCH)
-                                %>
-                                <laser:render template="/templates/attributesList"
-                                              model="${[ownObj: provider, deleteAction: 'deleteAttribute', attributes: provider.invoiceDispatchs, field: 'invoiceDispatch', availableAttributeIds: invoiceDispatchs.collect { RefdataValue rdv -> rdv.id }, editable: editable && !provider.gokbId]}"/>
-
-                                <laser:render template="/templates/attributesModal"
-                                              model="${[ownObj: provider, addAction: 'addAttribute', modalId: 'invoiceDispatch', buttonText: 'vendor.invoicing.dispatch.add', label: 'vendor.invoicing.dispatch.label', field: 'invoiceDispatch', availableAttributes: invoiceDispatchs, editable: editable && !provider.gokbId]}"/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt class="control-label">
-                                <g:message code="vendor.invoicing.paperInvoice.label" />
-                            </dt>
-                            <dd>
-                                <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                                     data_confirm_term_how="ok"
-                                                     class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                                     owner="${provider}" field="paperInvoice"  overwriteEditable="${editable && !provider.gokbId}"/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt class="control-label">
-                                <g:message code="vendor.invoicing.managementOfCredits.label" />
-                            </dt>
-                            <dd>
-                                <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                                     data_confirm_term_how="ok"
-                                                     class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                                     owner="${provider}" field="managementOfCredits"  overwriteEditable="${editable && !provider.gokbId}"/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt class="control-label">
-                                <g:message code="vendor.invoicing.compensationPayments.label" />
-                            </dt>
-                            <dd>
-                                <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                                     data_confirm_term_how="ok"
-                                                     class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                                     owner="${provider}" field="processingOfCompensationPayments"  overwriteEditable="${editable && !provider.gokbId}"/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt class="control-label">
-                                <g:message code="vendor.invoicing.individualInvoiceDesign.label" />
-                            </dt>
-                            <dd>
-                                <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                                     data_confirm_term_how="ok"
-                                                     class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                                     owner="${provider}" field="individualInvoiceDesign"  overwriteEditable="${editable && !provider.gokbId}"/>
-                            </dd>
-                        </dl>
-                    </g:if>
-                    <dl>
-                        <dt class="control-label">
-                            <g:message code="vendor.invoicing.vendors.label" />
-                        </dt>
-                        <dd>
-                            <ul>
-                                <%
-                                    List<Vendor> invoicingVendors = Vendor.findAll([sort: 'sortname'])
-                                %>
-                                <laser:render template="/templates/attributesList"
-                                              model="${[ownObj: provider, deleteAction: 'deleteAttribute', attributes: provider.invoicingVendors, field: 'vendor', availableAttributeIds: invoicingVendors.collect { Vendor v -> v.id }, editable: editable && !provider.gokbId]}"/>
-
-                                <laser:render template="/templates/attributesModal"
-                                              model="${[ownObj: provider, addAction: 'addAttribute', modalId: 'invoicingVendor', buttonText: 'vendor.invoicing.vendors.add', label: 'vendor.invoicing.vendors.label', field: 'invoicingVendor', availableAttributes: invoicingVendors, editable: editable && !provider.gokbId]}"/>
-                            </ul>
-                        </dd>
-                    </dl>
-                </div>
-            </div><!-- .card -->
-
-            <div class="ui card">
-                <div class="content">
-                    <dl>
-                        <dt class="control-label">${message(code: 'default.status.label')}</dt>
-                        <dd>
-                            <ui:xEditableRefData owner="${provider}" field="status" config="${RDConstants.PROVIDER_STATUS}" overwriteEditable="${editable && !provider.gokbId}"/>
-                        </dd>
-                    </dl>
-                    <g:if test="${provider.status == RDStore.PROVIDER_STATUS_RETIRED}">
-                        <dl>
-                            <dt class="control-label">${message(code: 'provider.retirementDate.label')}</dt>
-                            <dd>
-                                <g:formatDate date="${provider.retirementDate}" format="${message(code: 'default.date.format.notime')}"/>
+                                <ui:xEditable data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                              data_confirm_term_how="ok"
+                                              class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                              owner="${provider}" type="url" field="kbartDownloaderURL"/>
+                                <g:if test="${provider.kbartDownloaderURL}">
+                                    <ui:linkWithIcon href="${provider.kbartDownloaderURL}"/>
+                                </g:if>
                             </dd>
                         </dl>
                     </g:if>
                 </div>
             </div><!-- .card -->
 
-            <g:if test="${links || editable}">
+            <g:if test="${provider.gokbId}">
+                <div class="ui card">
+                    <div class="content">
+                        <h2 class="ui header"><g:message code="vendor.invoicing.header"/></h2>
+                        <dl>
+                            <dt class="control-label">
+                                <g:message code="vendor.invoicing.inhouse.label"/>
+                            </dt>
+                            <dd>
+                                <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                     data_confirm_term_how="ok"
+                                                     class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                     owner="${provider}" type="url" field="inhouseInvoicing"/>
+                            </dd>
+                        </dl>
+                        <g:if test="${provider.inhouseInvoicing}">
+                            <dl>
+                                <dt class="control-label">
+                                    <g:message code="vendor.invoicing.formats.label" />
+                                </dt>
+                                <dd>
+                                    <%
+                                        List<RefdataValue> invoicingFormats = RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_FORMAT)
+                                    %>
+                                    <laser:render template="/templates/attributesList"
+                                                  model="${[ownObj: provider, deleteAction: 'deleteAttribute', attributes: provider.electronicBillings, field: 'invoicingFormat', availableAttributeIds: invoicingFormats.collect { RefdataValue rdv -> rdv.id }, editable: editable && !provider.gokbId]}"/>
+
+                                    <laser:render template="/templates/attributesModal"
+                                                  model="${[ownObj: provider, addAction: 'addAttribute', modalId: 'electronicBilling', buttonText: 'vendor.invoicing.formats.add', label: 'vendor.invoicing.formats.label', field: 'invoicingFormat', availableAttributes: invoicingFormats, editable: editable && !provider.gokbId]}"/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt class="control-label">
+                                    <g:message code="vendor.invoicing.dispatch.label" />
+                                </dt>
+                                <dd>
+                                    <%
+                                        List<RefdataValue> invoiceDispatchs = RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_DISPATCH)
+                                    %>
+                                    <laser:render template="/templates/attributesList"
+                                                  model="${[ownObj: provider, deleteAction: 'deleteAttribute', attributes: provider.invoiceDispatchs, field: 'invoiceDispatch', availableAttributeIds: invoiceDispatchs.collect { RefdataValue rdv -> rdv.id }, editable: editable && !provider.gokbId]}"/>
+
+                                    <laser:render template="/templates/attributesModal"
+                                                  model="${[ownObj: provider, addAction: 'addAttribute', modalId: 'invoiceDispatch', buttonText: 'vendor.invoicing.dispatch.add', label: 'vendor.invoicing.dispatch.label', field: 'invoiceDispatch', availableAttributes: invoiceDispatchs, editable: editable && !provider.gokbId]}"/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt class="control-label">
+                                    <g:message code="vendor.invoicing.paperInvoice.label" />
+                                </dt>
+                                <dd>
+                                    <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                         data_confirm_term_how="ok"
+                                                         class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                         owner="${provider}" field="paperInvoice"/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt class="control-label">
+                                    <g:message code="vendor.invoicing.managementOfCredits.label" />
+                                </dt>
+                                <dd>
+                                    <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                         data_confirm_term_how="ok"
+                                                         class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                         owner="${provider}" field="managementOfCredits"/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt class="control-label">
+                                    <g:message code="vendor.invoicing.compensationPayments.label" />
+                                </dt>
+                                <dd>
+                                    <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                         data_confirm_term_how="ok"
+                                                         class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                         owner="${provider}" field="processingOfCompensationPayments"/>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt class="control-label">
+                                    <g:message code="vendor.invoicing.individualInvoiceDesign.label" />
+                                </dt>
+                                <dd>
+                                    <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                         data_confirm_term_how="ok"
+                                                         class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                         owner="${provider}" field="individualInvoiceDesign"/>
+                                </dd>
+                            </dl>
+                        </g:if>
+                        <dl>
+                            <dt class="control-label">
+                                <g:message code="vendor.invoicing.vendors.label" />
+                            </dt>
+                            <dd>
+                                <ul>
+                                    <%
+                                        List<Vendor> invoicingVendors = Vendor.findAll([sort: 'sortname'])
+                                    %>
+                                    <laser:render template="/templates/attributesList"
+                                                  model="${[ownObj: provider, deleteAction: 'deleteAttribute', attributes: provider.invoicingVendors, field: 'vendor', availableAttributeIds: invoicingVendors.collect { Vendor v -> v.id }, editable: editable && !provider.gokbId]}"/>
+
+                                    <laser:render template="/templates/attributesModal"
+                                                  model="${[ownObj: provider, addAction: 'addAttribute', modalId: 'invoicingVendor', buttonText: 'vendor.invoicing.vendors.add', label: 'vendor.invoicing.vendors.label', field: 'invoicingVendor', availableAttributes: invoicingVendors, editable: editable && !provider.gokbId]}"/>
+                                </ul>
+                            </dd>
+                        </dl>
+                    </div>
+                </div><!-- .card -->
+
+                <div class="ui card">
+                    <div class="content">
+                        <dl>
+                            <dt class="control-label">${message(code: 'default.status.label')}</dt>
+                            <dd>
+                                <ui:xEditableRefData owner="${provider}" field="status" config="${RDConstants.PROVIDER_STATUS}"/>
+                            </dd>
+                        </dl>
+                        <g:if test="${provider.status == RDStore.PROVIDER_STATUS_RETIRED}">
+                            <dl>
+                                <dt class="control-label">${message(code: 'provider.retirementDate.label')}</dt>
+                                <dd>
+                                    <g:formatDate date="${provider.retirementDate}" format="${message(code: 'default.date.format.notime')}"/>
+                                </dd>
+                            </dl>
+                        </g:if>
+                    </div>
+                </div><!-- .card -->
+            </g:if>
+
+            <g:if test="${isAdmin}">
                 <div class="ui card">
                     <div class="content">
                         <h2 class="ui header"><g:message code="provider.retirementLinking.label"/></h2>
@@ -308,7 +312,7 @@
                                         <th scope="row" class="control-label">${linkTypes[perspectiveIndex]}</th>
                                         <td><g:link action="show" id="${pair.id}">${pair.name}</g:link></td>
                                         <td class="right aligned">
-                                            <g:if test="${editable}">
+                                            <g:if test="${isAdmin}">
                                                 <span class="la-popup-tooltip" data-content="${message(code:'license.details.unlink')}">
                                                     <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
                                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.general")}"
@@ -325,14 +329,14 @@
                                 </g:each>
                             </table>
                         </g:if>
-                        <g:if test="${editable}">
+                        <g:if test="${isAdmin}">
                             <div class="ui la-vertical buttons">
                                 <%
                                     Map<String,Object> model = [tmplText:message(code: 'provider.linking.addLink'),
                                                                 tmplID:'addLink',
                                                                 tmplButtonText:message(code: 'provider.linking.addLink'),
                                                                 tmplModalID:'provider_add_link',
-                                                                editmode: editable,
+                                                                editmode: isAdmin,
                                                                 linkInstanceType: ProviderLink.class.name,
                                                                 context: provider
                                     ]
@@ -345,53 +349,55 @@
                 </div>
             </g:if>
 
-            <div class="ui card">
-                <div class="content">
-                    <h2 class="ui header"><g:message code="vendor.general.objects.label"/></h2>
-                </div>
-                <div class="content">
-                    <div class="ui accordion">
-                        <div class="title">
-                            <i class="dropdown icon la-dropdown-accordion"></i>
-                            <div class="ui horizontal relaxed list">
-                                <div class="item">
-                                    <strong><g:message code="package.plural" /></strong>
-                                    &nbsp;<ui:bubble count="${allPackages.size()}" />
-                                </div>
-                                <div class="item">
-                                    <strong><g:message code="platform.plural" /></strong>
-                                    &nbsp;<ui:bubble count="${allPlatforms.size()}" />
+            <g:if test="${provider.gokbId}">
+                <div class="ui card">
+                    <div class="content">
+                        <h2 class="ui header"><g:message code="vendor.general.objects.label"/></h2>
+                    </div>
+                    <div class="content">
+                        <div class="ui accordion">
+                            <div class="title">
+                                <i class="dropdown icon la-dropdown-accordion"></i>
+                                <div class="ui horizontal relaxed list">
+                                    <div class="item">
+                                        <strong><g:message code="package.plural" /></strong>
+                                        &nbsp;<ui:bubble count="${allPackages.size()}" />
+                                    </div>
+                                    <div class="item">
+                                        <strong><g:message code="platform.plural" /></strong>
+                                        &nbsp;<ui:bubble count="${allPlatforms.size()}" />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="content">
-                            <p class="ui header"><g:message code="package.plural" /></p>
+                            <div class="content">
+                                <p class="ui header"><g:message code="package.plural" /></p>
 
-                            <div class="ui divided middle aligned selection list la-flex-list">
-                                <g:each in="${allPackages}" var="pkg">
-                                    <div class="ui item">
-                                        <div class="content la-space-right">
-                                            <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link>
+                                <div class="ui divided middle aligned selection list la-flex-list">
+                                    <g:each in="${allPackages}" var="pkg">
+                                        <div class="ui item">
+                                            <div class="content la-space-right">
+                                                <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link>
+                                            </div>
                                         </div>
-                                    </div>
-                                </g:each>
-                            </div>
+                                    </g:each>
+                                </div>
 
-                            <p class="ui header"><g:message code="platform.plural" /></p>
+                                <p class="ui header"><g:message code="platform.plural" /></p>
 
-                            <div class="ui divided middle aligned selection list la-flex-list">
-                                <g:each in="${allPlatforms}" var="platform">
-                                    <div class="ui item">
-                                        <div class="content la-space-right">
-                                            <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
+                                <div class="ui divided middle aligned selection list la-flex-list">
+                                    <g:each in="${allPlatforms}" var="platform">
+                                        <div class="ui item">
+                                            <div class="content la-space-right">
+                                                <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
+                                            </div>
                                         </div>
-                                    </div>
-                                </g:each>
+                                    </g:each>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </g:if>
 
             <div class="ui card">
                 <div class="content">
@@ -402,14 +408,16 @@
                         <div class="title">
                             <i class="dropdown icon la-dropdown-accordion"></i>
                             <div class="ui horizontal relaxed list">
-                                <div class="item">
-                                    <strong><g:message code="org.platforms.label" /></strong>
-                                    &nbsp;<ui:bubble count="${platforms.size()}" />
-                                </div>
-                                <div class="item">
-                                    <strong><g:message code="package.plural" /></strong>
-                                    &nbsp;<ui:bubble count="${packages.size()}" />
-                                </div>
+                                <g:if test="${provider.gokbId}">
+                                    <div class="item">
+                                        <strong><g:message code="org.platforms.label" /></strong>
+                                        &nbsp;<ui:bubble count="${platforms.size()}" />
+                                    </div>
+                                    <div class="item">
+                                        <strong><g:message code="package.plural" /></strong>
+                                        &nbsp;<ui:bubble count="${packages.size()}" />
+                                    </div>
+                                </g:if>
                                 <div class="item">
                                     <strong><g:message code="subscription.plural" /></strong>
                                     &nbsp;<ui:bubble count="${subLinks}/${currentSubscriptionsCount}" />
@@ -421,31 +429,33 @@
                             </div>
                         </div>
                         <div class="content">
-                            <p class="ui header">%{--<i class="${Icon.PLATFORM} icon"></i>--}% <g:message code="org.platforms.label" /></p>
+                            <g:if test="${provider.gokbId}">
+                                <p class="ui header">%{--<i class="${Icon.PLATFORM} icon"></i>--}% <g:message code="org.platforms.label" /></p>
 
-                            <div class="ui divided middle aligned selection list la-flex-list">
-                                <g:each in="${platforms}" var="platform">
-                                    <g:if test="${platform.status == RDStore.PLATFORM_STATUS_CURRENT}">
+                                <div class="ui divided middle aligned selection list la-flex-list">
+                                    <g:each in="${platforms}" var="platform">
+                                        <g:if test="${platform.status == RDStore.PLATFORM_STATUS_CURRENT}">
+                                            <div class="ui item">
+                                                <div class="content la-space-right">
+                                                    <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
+                                                </div>
+                                            </div>
+                                        </g:if>
+                                    </g:each>
+                                </div>
+
+                                <p class="ui header">%{--<i class="${Icon.PACKAGE}"></i>--}% <g:message code="package.plural" /></p>
+
+                                <div class="ui divided middle aligned selection list la-flex-list">
+                                    <g:each in="${packages}" var="pkg">
                                         <div class="ui item">
                                             <div class="content la-space-right">
-                                                <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
+                                                <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link>
                                             </div>
                                         </div>
-                                    </g:if>
-                                </g:each>
-                            </div>
-
-                            <p class="ui header">%{--<i class="${Icon.PACKAGE}"></i>--}% <g:message code="package.plural" /></p>
-
-                            <div class="ui divided middle aligned selection list la-flex-list">
-                                <g:each in="${packages}" var="pkg">
-                                    <div class="ui item">
-                                        <div class="content la-space-right">
-                                            <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link>
-                                        </div>
-                                    </div>
-                                </g:each>
-                            </div>
+                                    </g:each>
+                                </div>
+                            </g:if>
 
                             <p class="ui header">%{--<i class="${Icon.SUBSCRIPTION}"></i>--}% <g:message code="subscription.plural" /></p>
 
@@ -494,136 +504,6 @@
                 </div>
             </div>
 
-                %{--
-                <div class="ui card">
-                    <div class="content">
-                        <div class="ui accordion">
-                            <div class="title">
-                                <i class="dropdown icon la-dropdown-accordion"></i> <g:message code="org.platforms.label" />
-                                &nbsp;<ui:bubble count="${provider.platforms.size()}" />
-                            </div>
-                            <div class="content">
-                                <div class="ui divided middle aligned selection list la-flex-list">
-                                    <g:each in="${provider.platforms}" var="platform">
-                                        <g:if test="${platform.status == RDStore.PLATFORM_STATUS_CURRENT}">
-                                            <div class="ui item">
-                                                <div class="content la-space-right">
-                                                    <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
-                                                </div>
-                                            </div>
-                                        </g:if>
-                                    </g:each>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                    <div class="ui card">
-                        <div class="content">
-                            <div class="ui accordion">
-                                <div class="title">
-                                    <i class="dropdown icon la-dropdown-accordion"></i> <g:message code="package.plural" />
-                                    &nbsp;<ui:bubble count="${packages.size()}" />
-                                </div>
-                                <div class="content">
-                                    <div class="ui divided middle aligned selection list la-flex-list">
-                                        <g:each in="${packages}" var="pkg">
-                                            <div class="ui item">
-                                                <div class="content la-space-right">
-                                                    <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link>
-                                                </div>
-                                            </div>
-                                        </g:each>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                <div class="ui card">
-                    <div class="content">
-                        <div class="ui accordion">
-                            <div class="title">
-                                <i class="dropdown icon la-dropdown-accordion"></i> <g:message code="subscription.plural" />
-                                &nbsp;<ui:bubble count="${currentSubscriptionsCount}/${subLinks.size()}" />
-                            </div>
-                            <div class="content">
-                                <div class="ui divided middle aligned selection list la-flex-list">
-                                    <div class="ui item">
-                                        <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: provider.globalUID, status: RDStore.SUBSCRIPTION_CURRENT.id]">
-                                            <div class="content la-space-right">
-                                                <i class="${Icon.LNK.FILTERED} icon"></i> <g:message code="subscription.plural.current" />
-                                                &nbsp;<ui:bubble count="${currentSubscriptionsCount}" />
-                                            </div>
-                                        </g:link>
-                                    </div>
-                                    <div class="ui item">
-                                        <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: provider.globalUID, status: 'FETCH_ALL']">
-                                            <div class="content la-space-right">
-                                                <i class="${Icon.LNK.FILTERED} icon"></i> <g:message code="subscription.plural.total" />
-                                                &nbsp;<ui:bubble count="${subLinks.size()}" />
-                                            </div>
-                                        </g:link>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="ui card">
-                    <div class="content">
-                        <div class="ui accordion">
-                            <div class="title">
-                                <i class="dropdown icon la-dropdown-accordion"></i> <g:message code="license.plural" />
-                                &nbsp;<ui:bubble count="${currentLicensesCount}/${licLinks.size()}" />
-                            </div>
-                            <div class="content">
-                                <div class="ui divided middle aligned selection list la-flex-list">
-                                    <div class="ui item">
-                                        <div class="content la-space-right">
-                                            <g:link controller="myInstitution" action="currentLicenses" params="[licensor: provider.id, status: RDStore.LICENSE_CURRENT.id, subStatus: RDStore.SUBSCRIPTION_CURRENT.id, filterSubmit: 'Filtern']">
-                                                <i class="${Icon.LNK.FILTERED} icon"></i> <g:message code="license.plural.current" />
-                                                &nbsp;<ui:bubble count="${currentLicensesCount}" /></g:link>
-                                        </div>
-                                    </div>
-                                    <div class="ui item">
-                                        <div class="content la-space-right">
-                                            <g:link controller="myInstitution" action="currentLicenses" params="[licensor: provider.id, filterSubmit: 'Filtern']">
-                                                <i class="${Icon.LNK.FILTERED} icon"></i> <g:message code="license.plural.total" />
-                                                &nbsp;<ui:bubble count="${licLinks.size()}" /></g:link>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                --}%
-                        <%--
-                        <div class="ui accordion">
-                            <div class="title">
-                                <i class="dropdown icon la-dropdown-accordion"></i>
-                            </div>
-                            <div class="content">
-                                <div class="ui divided middle aligned selection list la-flex-list">
-                                    <g:each in="${subLinks}" var="subLink">
-                                        <div class="ui item">
-                                            <div class="content la-space-right">
-                                                <strong><g:link controller="subscription" action="show"
-                                                                id="${subLink.id}">${subLink.name} (${subLink.status.getI10n('value')})
-                                                                <g:if test="${subLink.startDate && subLink.endDate}">
-                                                                    (${ DateUtils.getLocalizedSDF_noTime().format(subLink.startDate)}-${DateUtils.getLocalizedSDF_noTime().format(subLink.endDate)})
-                                                                </g:if>
-                                                </g:link>
-                                                </strong>
-                                            </div>
-                                        </div>
-                                    </g:each>
-                                </div>
-                            </div>
-                        </div>
-                        --%>
             <g:if test="${provider.createdBy || provider.legallyObligedBy}">
                 <div class="ui card">
                     <div class="content">

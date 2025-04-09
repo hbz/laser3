@@ -7,9 +7,13 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6445    09.04.2025  rc-3.5  3.5-RC      Andreas Feature     Reduktion der Informationen für Anbieter/Library Supplier auf Minimum
+
 6435    08.04.2025  rc-3.5  3.5-RC      Andreas Feature     Download-Wrapper zur Bereitstellung der KBART-Datei versetzt
 
 6384    08.04.2025  rc-3.5  3.5-RC      Andreas Bug         verschiedene Bugs im Titelfilter
+
+6382    08.04.2025  rc-3.5  3.5-RC      David   Feature     Upload-Dateien / documentStorage verschlüsseln
 
 2221    08.04.2025  rc-3.5  3.5-RC      David   Feature     Docs ohne DocContext aus DB und FileSystem löschen
 
