@@ -23,6 +23,7 @@ import de.laser.wekb.Platform
 import de.laser.wekb.Vendor
 import de.laser.wekb.VendorRole
 import grails.gorm.transactions.Transactional
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 
@@ -31,11 +32,9 @@ class VendorService {
 
     ContextService contextService
     DocstoreService docstoreService
-    DeletionService deletionService
     GokbService gokbService
     MessageSource messageSource
     TaskService taskService
-    UserService userService
     WorkflowService workflowService
 
     static String RESULT_BLOCKED            = 'RESULT_BLOCKED'
@@ -383,6 +382,7 @@ class VendorService {
         if(params.id) {
             result.vendor = Vendor.get(params.id)
             result.editable = contextService.isInstEditor()
+            result.isAdmin = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
             int tc1 = taskService.getTasksByResponsibilityAndObject(result.user, result.vendor).size()
             int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.vendor).size()
             result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
