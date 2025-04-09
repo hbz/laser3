@@ -347,7 +347,7 @@
                 <div class="ui card">
                     <div class="content">
                         <g:set var="propertyWrapper" value="private-property-wrapper-${contextService.getOrg().id}" />
-                        <h2 class="ui header">${message(code: 'org.properties.private')} ${contextService.getOrg().name}</h2>
+                        <h2 class="ui header">${message(code: 'default.properties.my')}</h2>
                         <div id="${propertyWrapper}">
                             <laser:render template="/templates/properties/private" model="${[
                                     prop_desc       : PropertyDefinition.PRS_PROP,

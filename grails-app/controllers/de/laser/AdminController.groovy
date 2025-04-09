@@ -716,65 +716,6 @@ class AdminController  {
     }
 
     /**
-     * Searches for a given document context if the file is missing and proposes an alternative based on database record matching
-     */
-    @Secured(['ROLE_ADMIN'])
-    def recoveryDoc() {
-        Map<String, Object> result = [:]
-
-        result.filePath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
-
-        Doc doc = Doc.findByIdAndContentType( params.long('docID'), Doc.CONTENT_TYPE_FILE )
-
-        if (!FileUtils.fileCheck("${result.filePath}/${doc.uuid}")) {
-            result.doc = doc
-
-            List docs = Doc.findAllWhere(
-                    status: doc.status,
-                    type: doc.type,
-                    content: doc.content,
-                    contentType: doc.contentType,
-                    title: doc.title,
-                    filename: doc.filename,
-                    mimeType: doc.mimeType,
-                    owner: doc.owner
-            )
-            result.docsToRecovery = docs
-        }
-        result
-    }
-
-    /**
-     * Restores the file by copying back a matched alternative
-     */
-    @Secured(['ROLE_ADMIN'])
-    def processRecoveryDoc() {
-        Map<String, Object> result = [:]
-
-        result.filePath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
-
-        Doc docWithoutFile = Doc.findByIdAndContentType( params.long('sourceDoc'), Doc.CONTENT_TYPE_FILE )
-        Doc docWithFile = Doc.findByIdAndContentType( params.long('targetDoc'), Doc.CONTENT_TYPE_FILE )
-
-        if (!FileUtils.fileCheck("${result.filePath}/${docWithoutFile.uuid}") && FileUtils.fileCheck("${result.filePath}/${docWithFile.uuid}")) {
-
-            Path source = new File("${result.filePath}/${docWithFile.uuid}").toPath()
-            Path target = new File("${result.filePath}/${docWithoutFile.uuid}").toPath()
-            Files.copy(source, target)
-
-            if (FileUtils.fileCheck("${result.filePath}/${docWithoutFile.uuid}")){
-                flash.message = "Datei erfolgreich wiederhergestellt!"
-            }else{
-                flash.error = "Datei nicht erfolgreich wiederhergestellt!"
-            }
-        }else {
-            flash.error = "Keine Quell-Datei gefunden um Wiederherzustellen!"
-        }
-        redirect(action:'recoveryDoc', params: ['docID': docWithoutFile.id])
-
-    }
-
-    /**
      * Lists all organisations (i.e. institutions, providers, agencies), their customer types, GASCO entry, legal information and API information
      */
     @Secured(['ROLE_ADMIN'])
