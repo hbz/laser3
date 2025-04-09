@@ -23,7 +23,6 @@
     </g:if>
 
     <div class="content">
-        <h2 class="ui header">${message(code:'org.properties.private')} ${contextService.getOrg().name}</h2>
         <g:set var="propertyWrapper" value="private-property-wrapper-${contextService.getOrg().id}" />
         <div id="${propertyWrapper}">
             <laser:render template="/templates/properties/private" model="${[
