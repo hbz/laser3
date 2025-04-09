@@ -151,11 +151,10 @@
                            params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
                            message="surveyInfo.renewal"/>
         </g:if>
-        <g:else>
             <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyTransfer"
                            params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
                            message="surveyTransfer.label"/>
-        </g:else>
+
 
         <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="notes"
                        params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${notesCount}"
