@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.AuditConfig; de.laser.storage.RDConstants; de.laser.SubscriptionPackage; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.survey.SurveyConfigPackage; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.AuditConfig; de.laser.storage.RDConstants; de.laser.SubscriptionPackage; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
 <laser:htmlStart message="copySurveyPackages.transfer" />
 
 <ui:breadcrumbs>
@@ -96,10 +96,43 @@
         </div>
     </ui:greySegment>
 
+
+    <ui:greySegment>
+        <g:form action="copySurveyPackages" method="post" class="ui small form"
+                params="${[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab, targetSubscriptionId: targetSubscription?.id]}">
+            <div class="field">
+                <label>${message(code: 'copySurveyPackages.label')}:</label>
+                <select id="selectedPackages" name="selectedPackages" multiple="" class="ui search selection fluid dropdown">
+                    <option value="all" <%=("all" in params.list('selectedPackages')) ? 'selected="selected"' : ''%>>
+                        ${message(code: 'default.select.all.label')}
+                    </option>
+
+                    <g:each in="${SurveyConfigPackage.findAllBySurveyConfig(surveyConfig)}" var="surveyPackage">
+                        <option <%=(params.list('selectedPackages').contains(surveyPackage.pkg.id.toString())) ? 'selected="selected"' : ''%>
+                                value="${surveyPackage.pkg.id}" title="${surveyPackage.pkg.name}">
+                            ${surveyPackage.pkg.name}
+                        </option>
+                    </g:each>
+
+                </select>
+            </div>
+
+            <div class="field la-field-right-aligned">
+
+                <div class="field la-field-right-aligned">
+                    <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.select2.label', args: [message(code: 'copySurveyPackages.label')])}">
+                </div>
+
+            </div>
+
+        </g:form>
+    </ui:greySegment>
+
+
     <ui:greySegment>
 
         <g:form action="proccessCopySurveyPackages" controller="survey" id="${surveyInfo.id}"
-                params="[surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]"
+                params="[surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id, selectedPackages: params.selectedPackages]"
                 method="post" class="ui form">
 
 

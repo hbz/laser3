@@ -3740,6 +3740,29 @@ class SurveyControllerService {
 
             result = surveyControllerService.getSubResultForTranfser(result, params)
 
+            if('all' in params.list('selectedPackages') && params.list('selectedPackages').size() > 1){
+                List selectedPackages = []
+                params.list('selectedPackages').each {
+                    if(it != 'all'){
+                        selectedPackages << it
+                    }
+                }
+                params.selectedPackages = selectedPackages
+            }else {
+                params.selectedPackages = params.selectedPackages ?: 'all'
+            }
+
+            List packages = []
+            if(!('all' in params.list('selectedPackages')) && params.list('selectedPackages')){
+                params.list('selectedPackages').each {
+                    if(it != 'all'){
+                        packages << Package.get(Long.valueOf(it))
+                    }
+                }
+            }else {
+                packages = SurveyConfigPackage.findAllBySurveyConfig(result.surveyConfig).pkg
+            }
+
             result.participantsList = []
 
             result.parentSuccessortParticipantsList = []
@@ -3752,7 +3775,7 @@ class SurveyControllerService {
                 newMap.name = org.name
                 newMap.newSub = sub
                 newMap.oldSub = sub._getCalculatedPreviousForSurvey()
-                newMap.surveyPackages = SurveyPackageResult.executeQuery("select spr.pkg from SurveyPackageResult spr where spr.surveyConfig = :surveyConfig and spr.participant = :participant", [surveyConfig: result.surveyConfig, participant: org])
+                newMap.surveyPackages = SurveyPackageResult.executeQuery("select spr.pkg from SurveyPackageResult spr where spr.surveyConfig = :surveyConfig and spr.participant = :participant and spr.pkg in (:pkgs)", [pkgs: packages, surveyConfig: result.surveyConfig, participant: org])
 
                 result.participantsList << newMap
 
@@ -3866,6 +3889,17 @@ class SurveyControllerService {
         result = surveyControllerService.getSubResultForTranfser(result, params)
 
         if (!subscriptionService.checkThreadRunning('CopySurPkgs_' + result.parentSuccessorSubscription.id)) {
+            List packages = []
+            if(params.list('selectedPackages')){
+                params.list('selectedPackages').each {
+                    if(it != 'all'){
+                        packages << Package.get(Long.valueOf(it))
+                    }
+                }
+            }else {
+                packages = SurveyConfigPackage.findAllBySurveyConfig(result.surveyConfig).pkg
+            }
+
             Set<Subscription> subscriptions, permittedSubs = []
             if (params.containsKey("membersListToggler")) {
                 subscriptions = result.parentSuccessorSubChilds
@@ -3882,7 +3916,7 @@ class SurveyControllerService {
                    RefdataValue holdingSelection = RefdataValue.get(params.holdingSelection)
                    permittedSubs.each { Subscription selectedSub ->
                        Org org = selectedSub.getSubscriberRespConsortia()
-                       if(SurveyPackageResult.executeQuery("select count(*) from SurveyPackageResult spr where spr.surveyConfig = :surveyConfig and spr.participant = :participant", [surveyConfig: result.surveyConfig, participant: org])[0] > 0) {
+                       if(SurveyPackageResult.executeQuery("select count(*) from SurveyPackageResult spr where spr.surveyConfig = :surveyConfig and spr.participant = :participant and spr.pkg in (:pkgs)", [pkgs: packages, surveyConfig: result.surveyConfig, participant: org])[0] > 0) {
                            selectedSub.holdingSelection = holdingSelection
                            selectedSub.save()
                        }
@@ -3896,7 +3930,7 @@ class SurveyControllerService {
                     permittedSubs.each { Subscription selectedSub ->
                         selectedSub = selectedSub.refresh()
                         Org org = selectedSub.getSubscriberRespConsortia()
-                        List<Package> surveyPackages = SurveyPackageResult.executeQuery("select spr.pkg from SurveyPackageResult spr where spr.surveyConfig = :surveyConfig and spr.participant = :participant", [surveyConfig: result.surveyConfig, participant: org])
+                        List<Package> surveyPackages = SurveyPackageResult.executeQuery("select spr.pkg from SurveyPackageResult spr where spr.surveyConfig = :surveyConfig and spr.participant = :participant and spr.pkg in (:pkgs)", [pkgs: packages, surveyConfig: result.surveyConfig, participant: org])
                         surveyPackages.each { Package pkg ->
                         SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(selectedSub, pkg)
                             if (!sp) {
