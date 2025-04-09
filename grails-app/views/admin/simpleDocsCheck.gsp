@@ -24,7 +24,7 @@
                 <div class="content"><icon:pathFolder/> Pfad: <strong>${dsPath}</strong></div>
             </div>
             <div class="item">
-                <div class="content"><i class="${Icon.SYM.CIRCLE} red"></i> DOC ohne DocContext-Referenz: <strong>${orphanedDocs.size()}</strong></div>
+                <div class="content"><i class="${Icon.SYM.NO} red"></i> DOC ohne DocContext-Referenz: <strong>${orphanedDocs.size()}</strong></div>
             </div>
         </div>
     </div>
