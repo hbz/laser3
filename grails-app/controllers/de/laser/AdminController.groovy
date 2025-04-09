@@ -33,7 +33,6 @@ import org.hibernate.query.NativeQuery
 import de.laser.config.ConfigMapper
 
 import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import java.time.LocalDate
 
@@ -49,6 +48,7 @@ class AdminController  {
     DataConsistencyService dataConsistencyService
     DataloadService dataloadService
     DeletionService deletionService
+    FileCryptService fileCryptService
     FilterService filterService
     GenericOIDService genericOIDService
     GlobalSourceSyncService globalSourceSyncService
@@ -565,8 +565,9 @@ class AdminController  {
            xxPath       : dsl + '_outdated',
            xxFiles      : [],
            validDocs    : [],
-           validFiles   : [],
-           invalidFiles : []
+           validFiles       : [],
+           validFilesRaw    : [],
+           invalidFiles     : []
         ]
 
         File ds = new File("${result.dsPath}")
@@ -583,13 +584,16 @@ class AdminController  {
                         'select doc from Doc doc where doc.contentType = :ctf and doc.uuid in (:files)',
                         [ctf: Doc.CONTENT_TYPE_FILE, files: result.dsFiles]
                 )
-                Set<String> uuids = result.validDocs.collect{ it.uuid as String }
+                Set<String> docs    = result.validDocs.findAll{   it.ckey }.collect{ it.uuid as String }
+                Set<String> docsRaw = result.validDocs.findAll{ ! it.ckey }.collect{ it.uuid as String }
 
                 result.dsFiles.each { fn ->
-                    if (uuids.contains(fn)) { result.validFiles << fn }
-                    else                    { result.invalidFiles << fn }
+                    if      (docs.contains(fn))     { result.validFiles << fn }
+                    else if (docsRaw.contains(fn))  { result.validFilesRaw << fn }
+                    else                            { result.invalidFiles << fn }
                 }
                 result.validFiles.toSorted()
+                result.validFilesRaw.toSorted()
                 result.invalidFiles.toSorted()
             }
 
@@ -599,6 +603,33 @@ class AdminController  {
         }
         catch (Exception e) {
             log.error e.getMessage()
+        }
+
+        if (params.encryptRawFiles) {
+            List<String> encryptedFiles = []
+            List<String> fails = []
+
+            result.validFilesRaw.each { uuid ->
+                try {
+                    File raw = new File("${result.dsPath}/${uuid}")
+                    Doc doc  = Doc.findByUuidAndContentType(uuid, Doc.CONTENT_TYPE_FILE)
+                    if (raw && doc && !doc.ckey) {
+                        fileCryptService.encryptRawFileAndUpdateDoc(raw, doc)
+                        encryptedFiles << uuid
+                    }
+                    else {
+                        fails << uuid
+                    }
+                }
+                catch (Exception e) {
+                    log.error e.getMessage()
+                }
+            }
+            log.info 'encrypted raw files: ' + encryptedFiles.size() + ', path:' + result.dsPath
+            SystemEvent.createEvent('DOCSTORE_ENC_RAW_FILES', [count: encryptedFiles.size(), server: AppUtils.getCurrentServer(), files: encryptedFiles, fails: fails])
+
+            redirect controller: 'admin', action: 'simpleFilesCheck'
+            return
         }
 
         if (params.moveOutdatedFiles) {

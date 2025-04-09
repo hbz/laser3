@@ -13,6 +13,8 @@
 
 6384    08.04.2025  rc-3.5  3.5-RC      Andreas Bug         verschiedene Bugs im Titelfilter
 
+6382    08.04.2025  rc-3.5  3.5-RC      David   Feature     Upload-Dateien / documentStorage verschlüsseln
+
 2221    08.04.2025  rc-3.5  3.5-RC      David   Feature     Docs ohne DocContext aus DB und FileSystem löschen
 
 6427    07.04.2025  rc-3.5  3.5-RC      Andreas Bug         Benennungen bei der Lizenzverknüpfung behoben

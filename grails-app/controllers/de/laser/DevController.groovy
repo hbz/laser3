@@ -22,8 +22,21 @@ class DevController  {
      */
     @Secured(['ROLE_ADMIN'])
     def frontend() {
-        Map<String, Object> result = [user: contextService.getUser(), institution: contextService.getOrg()]
+        Map<String, Object> result = [
+            user: contextService.getUser(),
+            institution: contextService.getOrg()
+        ]
         result
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def backend() {
+        Map<String, Object> result = [
+            user: contextService.getUser(),
+            institution: contextService.getOrg(),
+            view: (params.id ?: 'index')
+        ]
+        render view: 'backend/' + result.view, model: result
     }
 
     /**
@@ -31,9 +44,12 @@ class DevController  {
      */
     @Secured(['ROLE_ADMIN'])
     def klodav() {
-        Map<String, Object> result = [user: contextService.getUser(), institution: contextService.getOrg(), view: (params.id ?: 'index')]
-        String view = params.id ? 'klodav/' + params.id : 'klodav/index'
-        render view: view, model: result
+        Map<String, Object> result = [
+            user: contextService.getUser(),
+            institution: contextService.getOrg(),
+            view: (params.id ?: 'index')
+        ]
+        render view: 'klodav/' + result.view, model: result
     }
 
     /**

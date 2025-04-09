@@ -102,8 +102,7 @@ class DocumentController {
                                 type:       RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE),
                                 creator:    contextService.getUser(),
                                 owner:      contextService.getOrg(),
-                                server:     AppUtils.getCurrentServer(),
-                                ckey:       fileCryptService.generateCKey()
+                                server:     AppUtils.getCurrentServer()
                         )
                         doc.save()
 
@@ -120,7 +119,7 @@ class DocumentController {
                             targetFile = new File("${tfPath}/${tfName}")
                             uploadFile.transferTo(targetFile)
 
-                            fileCryptService.encryptRawFile(targetFile, doc)
+                            fileCryptService.encryptRawFileAndUpdateDoc(targetFile, doc)
                         }
                         catch (Exception e) {
                             e.printStackTrace()
