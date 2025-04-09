@@ -162,7 +162,7 @@
                     <tr class="">
                         <g:if test="${editable}">
                             <td>
-                            <g:if test="${editable && participant.surveyPackages && SubscriptionPackage.countByPkgInList(participant.surveyPackages) < participant.surveyPackages.size()}">
+                            <g:if test="${editable && participant.surveyPackages && participant.newSub && SubscriptionPackage.countByPkgInListAndSubscription(participant.surveyPackages, participant.newSub) < participant.surveyPackages.size()}">
                                 <%-- This whole construct is necessary for that the form validation works!!! --%>
                                 <div class="field">
                                     <div class="ui checkbox">
