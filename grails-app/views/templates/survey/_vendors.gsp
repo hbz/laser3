@@ -14,7 +14,7 @@
         </g:if>
         <laser:render template="/templates/filter/vendorFilter"
                       model="[
-                              tmplConfigShow: [['name'], ['supportedLibrarySystems', 'electronicBillings', 'invoiceDispatchs'], ['property&value', 'isMyX'], ['providers']],
+                              tmplConfigShow: tmplConfigShowFilter,
                               tmplConfigFormFilter: true,
                               showAllIsMyXOptions: true
                       ]"/>

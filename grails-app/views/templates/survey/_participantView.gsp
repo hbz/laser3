@@ -75,7 +75,7 @@
                     ${message(code: 'surveyconfig.vendorSurvey.label')}
 
                     <ui:bubble float="true"
-                               count="${SurveyVendorResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}/${SurveyConfigVendor.countBySurveyConfig(surveyConfig)}"/>
+                               count="${SurveyVendorResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}"/>
                 </g:link>
             </g:if>
 
@@ -325,40 +325,20 @@
 
                 <g:if test="${params.viewTab == 'vendorSurvey' && surveyConfig.vendorSurvey}">
 
-                    <div class="ui top attached stackable tabular menu">
-                        <g:link class="item ${params.viewTab == 'vendorSurvey' && params.subTab == 'allVendors' ? 'active' : ''}"
-                                controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
-                                params="${parame + [viewTab: 'vendorSurvey', subTab: 'allVendors']}">
-                            ${message(code: 'surveyVendors.all')}
-                            <ui:bubble float="true" count="${SurveyConfigVendor.countBySurveyConfig(surveyConfig)}"/>
-                        </g:link>
-                        <g:link class="item ${params.viewTab == 'vendorSurvey' && params.subTab == 'selectVendors' ? 'active' : ''}"
-                                controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
-                                params="${parame + [viewTab: 'vendorSurvey', subTab: 'selectVendors']}">
-                            ${message(code: 'surveyVendors.selectedVendor')}
-                            <ui:bubble float="true" count="${SurveyVendorResult.countBySurveyConfigAndParticipant(surveyConfig, participant)}"/>
-                        </g:link>
-                    </div>
+                    <div class="sixteen wide column">
 
-                    <div class="ui bottom attached tab segment active">
-
-                        <h2 class="ui left floated aligned icon header la-clear-before">${message(code: params.subTab == 'selectVendors' ? 'surveyVendors.selectedVendors' : 'surveyVendors.all')}
+                        <h2 class="ui left floated aligned icon header la-clear-before">${message(code:'surveyVendors.all')}
                         <ui:totalNumber total="${vendorListTotal}"/>
                         </h2>
 
-                        <g:if test="${params.subTab == 'selectVendors'}">
-                            <g:set var="tmplConfigShowList"
-                                   value="${['lineNumber', 'sortname', 'name', 'isWekbCurated', 'surveyVendorsComments', 'removeSurveyVendorResult']}"/>
-                        </g:if>
-                        <g:else>
-                            <g:set var="tmplConfigShowList" value="${['lineNumber', 'sortname', 'name', 'isWekbCurated', 'addSurveyVendorResult']}"/>
-                        </g:else>
+                        <g:set var="tmplConfigShowList" value="${['lineNumber', 'sortname', 'name', 'isWekbCurated', 'selectSurveyVendorResult']}"/>
 
                         <g:render template="/templates/survey/vendors" model="[
                                 processController: controllerName,
                                 processAction    : actionName,
                                 tmplShowCheckbox : false,
-                                tmplConfigShow   : tmplConfigShowList]"/>
+                                tmplConfigShow   : tmplConfigShowList,
+                                tmplConfigShowFilter: [['name']]]"/>
                     </div>
 
                 </g:if>
