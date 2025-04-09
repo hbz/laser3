@@ -77,6 +77,10 @@ class FileCryptService {
     }
 
     void doCrypto(File inFile, File outFile, int cipherMode, String ckey) {
+        if (!ckey) {
+            log.info 'no ckey given'
+        }
+
         try {
             Map cfg           = getConfig()
 

@@ -33,7 +33,10 @@
                 <div class="content"><i class="${Icon.SYM.YES} green"></i> Dateien mit gültiger DOC-Referenz: <strong>${validFiles.size()}</strong></div>
             </div>
             <div class="item">
-                <div class="content"><i class="${Icon.SYM.NO} red"></i>Dateien ohne gültige DOC-Referenz: <strong>${invalidFiles.size()}</strong></div>
+                <div class="content"><i class="${Icon.SYM.YES} yellow"></i> Dateien mit gültiger DOC-Referenz, aber unverschlüsselt: <strong>${validFilesRaw.size()}</strong></div>
+            </div>
+            <div class="item">
+                <div class="content"><i class="${Icon.SYM.NO} red"></i> Dateien ohne gültige DOC-Referenz: <strong>${invalidFiles.size()}</strong></div>
             </div>
         </div>
     </div>
@@ -57,6 +60,24 @@
     </div>
     <div class="content">
         ${validFiles.join(', ')}
+    </div>
+</div>
+
+<div class="ui fluid card">
+    <div class="content">
+        <div class="header">Dateien mit gültiger DOC-Referenz, aber unverschlüsselt: ${validFilesRaw.size()}</div>
+    </div>
+    <div class="content">
+        ${validFilesRaw.join(', ')}
+
+        <g:if test="${validFilesRaw}">
+            <br/>
+            <br/>
+            <g:link controller="admin" action="simpleFilesCheck" params="${[encryptRawFiles: 1]}"
+                    class="${Btn.NEGATIVE_CONFIRM}"
+                    data-confirm-tokenMsg="Unverschlüsselte Dateien verschlüsseln?"
+                    data-confirm-term-how="ok">Verschlüsseln</g:link>
+        </g:if>
     </div>
 </div>
 
