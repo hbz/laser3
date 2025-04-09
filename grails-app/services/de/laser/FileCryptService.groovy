@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.config.ConfigMapper
 import de.laser.system.SystemEvent
+import de.laser.utils.DateUtils
 import de.laser.utils.RandomUtils
 import grails.gorm.transactions.Transactional
 
@@ -37,50 +38,49 @@ class FileCryptService {
         ]
     ]
 
-    boolean encryptRawFile(File rawFile, Doc doc) {
-        log.debug '[encryptRawFile] ' + rawFile.toPath() + ', doc #' + doc.id
+    void encryptRawFileAndUpdateDoc(File rawFile, Doc doc) {
+        log.debug '[encryptRawFileAndUpdateDoc] file: ' + rawFile.toPath() + ', doc: ' + doc.id
 
+        String ckey     = generateCKey()
         Path rfPath     = rawFile.toPath()
-        File encTmpFile = encryptToTmpFile(rawFile, doc.ckey)
-        File decTmpFile = decryptToTmpFile(encTmpFile, doc.ckey)
+        File encTmpFile = encryptToTmpFile(rawFile, ckey)
+        File decTmpFile = decryptToTmpFile(encTmpFile, ckey)
 
         if (validateFiles(decTmpFile, rawFile)) {
             Files.copy(encTmpFile.toPath(), rfPath, StandardCopyOption.REPLACE_EXISTING)
+            doc.ckey = ckey
+            doc.save()
         }
         else {
-            log.debug '[encryptRawFile: FAILED] ' + rfPath
-            doc.ckey = null
-            doc.save()
+            log.debug '[encryptRawFileAndUpdateDoc] FAILED -> file: ' + rfPath
         }
         encTmpFile.delete()
         decTmpFile.delete()
-
-        true
     }
 
     File encryptToTmpFile(File inFile, String ckey) {
-        File outFile = File.createTempFile('doc_', '.enc', getTmpDir())
+        String pf = DateUtils.getSDF_yyyyMMdd().format(new Date()) + '-'
+
+        File outFile = File.createTempFile(pf, '.enc', getTmpDir())
         doCrypto(inFile, outFile, Cipher.ENCRYPT_MODE, ckey)
         outFile
     }
 
     File decryptToTmpFile(File inFile, String ckey) {
-        File outFile = File.createTempFile('doc_', '.dec', getTmpDir())
+        String pf = DateUtils.getSDF_yyyyMMdd().format(new Date()) + '-'
+
+        File outFile = File.createTempFile(pf, '.dec', getTmpDir())
         if (ckey) {
             doCrypto(inFile, outFile, Cipher.DECRYPT_MODE, ckey)
         }
         else {
-            log.debug'[decryptToTmpFile: FAILED] -> no ckey -> raw file copied'
+            log.debug'[decryptToTmpFile] FAILED -> no ckey -> raw file copied'
             Files.copy(inFile.toPath(), outFile.toPath(), StandardCopyOption.REPLACE_EXISTING) // todo: ERMS-6382 FALLBACK
         }
         outFile
     }
 
     void doCrypto(File inFile, File outFile, int cipherMode, String ckey) {
-        if (!ckey) {
-            log.info 'no ckey given'
-        }
-
         try {
             Map cfg           = getConfig()
 

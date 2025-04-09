@@ -33,7 +33,6 @@ import org.hibernate.query.NativeQuery
 import de.laser.config.ConfigMapper
 
 import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import java.time.LocalDate
 
@@ -614,11 +613,8 @@ class AdminController  {
                 try {
                     File raw = new File("${result.dsPath}/${uuid}")
                     Doc doc  = Doc.findByUuidAndContentType(uuid, Doc.CONTENT_TYPE_FILE)
-                    if (doc && raw) {
-                        doc.ckey = fileCryptService.generateCKey()
-                        doc.save()
-
-                        fileCryptService.encryptRawFile(raw, doc)
+                    if (raw && doc && !doc.ckey) {
+                        fileCryptService.encryptRawFileAndUpdateDoc(raw, doc)
                         encryptedFiles << uuid
                     }
                     else {
