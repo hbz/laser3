@@ -39,10 +39,10 @@
 
     <g:render template="navCompareMembers"/>
 
-    <h2 class="ui header">
+  %{--  <h2 class="ui header">
         ${message(code: 'copySurveyPackages.transfer')}
     </h2>
-
+--}%
     <g:if test="${isLinkingRunning}">
         <ui:msg class="warning" showIcon="true" hideClose="true" header="Info" message="subscriptionsManagement.isLinkingRunning.info" />
     </g:if>

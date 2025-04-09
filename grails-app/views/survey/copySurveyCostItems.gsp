@@ -39,9 +39,9 @@
 
     <g:render template="navCompareMembers"/>
 
-    <h2 class="ui header">
+  %{--  <h2 class="ui header">
         ${message(code: 'surveyInfo.copySurveyCostItems')}
-    </h2>
+    </h2>--}%
 
     <g:render template="costItemsByCostItemElementTable" model="${[costItemsByCTE: costItemsByCostItemElement, header: g.message(code: 'costItem.label')+' in '+ g.message(code: 'survey.label')]}"/>
 

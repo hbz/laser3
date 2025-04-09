@@ -42,9 +42,9 @@
 
         <g:render template="navCompareMembers"/>
 
-        <h2 class="ui header">
+     %{--   <h2 class="ui header">
             ${message(code: 'surveyInfo.transferMembers')}
-        </h2>
+        </h2>--}%
 
 
 

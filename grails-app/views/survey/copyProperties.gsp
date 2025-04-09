@@ -39,11 +39,9 @@
 
     <g:render template="navCompareMembers"/>
 
-    <ui:messages data="${flash}"/>
-
-    <h2 class="ui header">
+   %{-- <h2 class="ui header">
         ${message(code: 'copyProperties.copyProperties', args: [message(code: 'copyProperties.' + params.tab)])}
-    </h2>
+    </h2>--}%
 
     <ui:greySegment>
         <div class="ui grid">
