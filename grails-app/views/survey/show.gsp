@@ -89,6 +89,34 @@
 
                         </dl>
 
+                        <g:set var="countParticipants" value="${surveyConfig.countParticipants()}"/>
+
+                        <g:if test="${surveyConfig.subscription}">
+                            <dl>
+                                <dt class="control-label">
+                                    ${message(code: 'surveyconfig.subOrgs.label')}
+                                </dt>
+                                <dd>
+                                    <g:link controller="subscription" action="members"
+                                            id="${subscription.id}">
+                                        <ui:bubble count="${countParticipants.subMembers}"/>
+                                    </g:link>
+                                </dd>
+                            </dl>
+                        </g:if>
+                        <g:if test="${surveyConfig.subscription && countParticipants.subMembersWithMultiYear > 0}">
+                            <dl>
+                                <dt class="control-label">
+                                    ${message(code: 'surveyconfig.subOrgsWithMultiYear.label')}
+                                </dt>
+                                <dd>
+                                    <g:link controller="subscription" action="members"
+                                            id="${subscription.id}" params="[subRunTimeMultiYear: 'on']">
+                                        <ui:bubble count="${countParticipants.subMembersWithMultiYear}"/>
+                                    </g:link>
+                                </dd>
+                            </dl>
+                        </g:if>
                     </div>
                 </div>
 
@@ -284,34 +312,6 @@
                     <g:if test="${params.viewTab == 'overview'}">
                         <div class="ui stackable grid">
                             <div class="eleven wide column">
-
-                                <g:set var="countParticipants" value="${surveyConfig.countParticipants()}"/>
-
-                                <g:if test="${surveyConfig.subscription}">
-                                    <g:link class="${Btn.SIMPLE} right floated" controller="subscription" action="members"
-                                            id="${subscription.id}">
-                                        <strong>${message(code: 'surveyconfig.subOrgs.label')}:</strong>
-
-                                        <ui:bubble count="${countParticipants.subMembers}"/>
-                                    </g:link>
-                                </g:if>
-
-
-                                <g:link class="${Btn.SIMPLE} right floated" controller="survey" action="surveyParticipants"
-                                        id="${surveyConfig.surveyInfo.id}"
-                                        params="[surveyConfigID: surveyConfig.id]">
-                                    <strong>${message(code: 'surveyconfig.orgs.label')}:</strong>
-
-                                    <ui:bubble count="${countParticipants.surveyMembers}"/>
-                                </g:link>
-
-
-                                <g:if test="${countParticipants.subMembersWithMultiYear > 0}">
-                                    ( ${countParticipants.subMembersWithMultiYear}
-                                    ${message(code: 'surveyconfig.subOrgsWithMultiYear.label')} )
-                                </g:if>
-                                <br><br><br>
-
                                 <ui:card message="surveyconfig.url.plural.label" href="#surveyUrls" editable="${editable}">
                                     <g:each in="${surveyConfig.surveyUrls}" var="surveyUrl" status="i">
                                         <dl>
