@@ -39,7 +39,7 @@ class FileCryptService {
     ]
 
     void encryptRawFileAndUpdateDoc(File rawFile, Doc doc) {
-        log.debug '[encryptRawFileAndUpdateDoc] file: ' + rawFile.toPath() + ', doc: ' + doc.id
+        log.debug '[encryptRawFileAndUpdateDoc] file: ' + rawFile.getName() + ', doc: ' + doc.id
 
         String ckey     = generateCKey()
         Path rfPath     = rawFile.toPath()
