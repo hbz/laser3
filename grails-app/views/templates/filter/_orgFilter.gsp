@@ -432,6 +432,27 @@
                     </select>
                 </div>
             </g:if>
+            <g:if test="${field.equalsIgnoreCase('subscriptionAdjustDropdown')}">
+                <ui:greySegment>
+                    <div class="field">
+                        <label for="status">${message(code: 'filter.status')}</label>
+                        <ui:select class="ui search selection fluid dropdown" name="status" id="status"
+                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
+                                   optionKey="id"
+                                   optionValue="value"
+                                   value="${RDStore.SUBSCRIPTION_CURRENT.id}"
+                                   noSelection="${['': message(code: 'default.select.choose.label')]}"
+                                   onchange="JSPC.app.adjustDropdown()"/>
+                    </div>
+
+                    <div class="field">
+                        <label for="subs">${message(code: 'subscription.label')}</label>
+                        <select id="subs" name="sub" class="ui fluid search selection dropdown">
+                            <option value="">${message(code: 'default.select.choose.label')}</option>
+                        </select>
+                    </div>
+                </ui:greySegment>
+            </g:if>
 
             <g:if test="${field.equals('')}">
                 <div class="field"></div>
@@ -469,4 +490,44 @@
 
 </div>
 
+<g:if test="${'subscriptionAdjustDropdown' in tmplConfigShow}">
+<laser:script file="${this.getGroovyPageFileName()}">
+    JSPC.app.adjustDropdown = function () {
+        var url = '<g:createLink controller="ajaxJson" action="adjustSubscriptionList"/>'
+
+        url = url + '?'
+
+        var status = $("select#status").serialize()
+        if (status) {
+            url = url + '&' + status
+        }
+
+    var dropdownSelectedObjects = $('#subs');
+
+    dropdownSelectedObjects.empty();
+    dropdownSelectedObjects.append($('<option></option>').attr('value', '').text("${message(code: 'default.select.choose.label')}"));
+
+    $.ajax({
+            url: url,
+            success: function (data) {
+                $.each(data, function (key, entry) {
+                <g:if test="${params.sub}">
+                    if(entry.value === ${params.sub.id}){
+                        dropdownSelectedObjects.append($('<option></option>').attr('value', entry.value).attr('selected', 'selected').text(entry.text));
+                    }else{
+                        dropdownSelectedObjects.append($('<option></option>').attr('value', entry.value).text(entry.text));
+                    }
+                </g:if>
+                <g:else>
+                        dropdownSelectedObjects.append($('<option></option>').attr('value', entry.value).text(entry.text));
+                </g:else>
+                   });
+                }
+        });
+    }
+
+    JSPC.app.adjustDropdown();
+
+</laser:script>
+</g:if>
 
