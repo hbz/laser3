@@ -40,10 +40,10 @@
             %>
             <g:if test="${surveyProperties.size() > 0}">
                 <div class="content">
-                    <h3 class="ui  header">
+                    <h3 class="ui header">
                         <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
-                        ${message(code: 'surveyConfigsInfo.properties')}
-                        (${pdg.name})
+                        ${pdg.name}
+                        (${message(code: 'surveyConfigsInfo.properties')})
                     </h3>
 
                     <div id="survey_grouped_custom_properties_${pdg.id}">
@@ -62,15 +62,15 @@
             %>
             <g:if test="${surveyProperties.size() > 0}">
                 <div class="content">
-                    <h3 class="ui  header">
+                    <h3 class="ui header">
                         <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
-                        ${message(code: 'surveyConfigsInfo.properties')}
-                        (${pdg.name})
+                        ${pdg.name}
+                        (${message(code: 'surveyConfigsInfo.properties')})
                     </h3>
 
                     <div>
                         <laser:render template="/templates/survey/properties_table" model="${[
-                                surveyProperties: surveyProperties, pdg: pdg]}"/>
+                                surveyProperties: surveyProperties]}"/>
                     </div>
                 </div>
             </g:if>
@@ -144,7 +144,7 @@
         <g:set var="surveyProperties" value="${surveyConfig.getPrivateSurveyConfigProperties()}"/>
         <g:if test="${surveyProperties.size() > 0}">
             <div class="content">
-                <h3 class="ui  header">
+                <h3 class="ui header">
                     <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
                     ${message(code: 'surveyConfigsInfo.properties.privat')}
                 </h3>
@@ -161,7 +161,7 @@
                value="${surveyConfig.getPrivateSurveyResultsByOrg(participant)}"/>
         <g:if test="${surveyProperties.size() > 0}">
             <div class="content">
-                <h3 class="ui  header">
+                <h3 class="ui header">
                     <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
                     ${message(code: 'surveyConfigsInfo.properties.privat')}
                 </h3>

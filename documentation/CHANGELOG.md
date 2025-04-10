@@ -7,6 +7,24 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6445    09.04.2025  rc-3.5  3.5-RC      Andreas Feature     Reduktion der Informationen für Anbieter/Library Supplier auf Minimum
+
+6435    08.04.2025  rc-3.5  3.5-RC      Andreas Feature     Download-Wrapper zur Bereitstellung der KBART-Datei versetzt
+
+6384    08.04.2025  rc-3.5  3.5-RC      Andreas Bug         verschiedene Bugs im Titelfilter
+
+6382    08.04.2025  rc-3.5  3.5-RC      David   Feature     Upload-Dateien / documentStorage verschlüsseln
+
+2221    08.04.2025  rc-3.5  3.5-RC      David   Feature     Docs ohne DocContext aus DB und FileSystem löschen
+
+6427    07.04.2025  rc-3.5  3.5-RC      Andreas Bug         Benennungen bei der Lizenzverknüpfung behoben
+
+6362    03.04.2025  rc-3.5  3.5-RC      Moe     Feature     Merkmal Category A-F ummappen zu Beck: Kategory A-F 
+
+6415/6416    03.04.2025  rc-3.5     3.5-RC      Andreas Bug         Nutzerzahlen waren nicht aufrufbar
+
+6414    31.03.2025  dev     3.5         Moe     Bug         Umfrage Balkendiagramm sortieren
+
 6114    31.03.2025  dev     3.5         Moe     Bug         Kostenanzeige in der Umfrage
      
 6389    31.03.2025  dev     3.5         Moe     Bug         Filter, die mit Umfragen-Teilnehmer zu tun haben, anpassen

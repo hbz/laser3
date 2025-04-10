@@ -153,11 +153,6 @@ class SurveyControllerService {
                 result.surveyLinksMessage << messageSource.getMessage('surveyLinks.surveysNotSameEndDate', null, result.locale)
             }
 
-            if (params.commentTab) {
-                result.commentTab = params.commentTab
-            }
-
-
             result.navigation = surveyService.getConfigNavigation(result.surveyInfo, result.surveyConfig)
 
             if (result.surveyConfig.subscription) {
@@ -192,6 +187,17 @@ class SurveyControllerService {
             result.showSurveyPropertiesForOwer = true
 
             params.viewTab = params.viewTab ?: 'overview'
+
+            if (params.commentTab) {
+                result.commentTab = params.commentTab
+            }else {
+                if(!result.surveyConfig.subscription){
+                    result.commentTab = 'commentForNewParticipants'
+                }else {
+                    result.commentTab = result.surveyConfig.getSurveyOrgsIDs().orgsWithSubIDs ? 'comment' : 'commentForNewParticipants'
+                }
+            }
+
 
             [result: result, status: STATUS_OK]
         }
@@ -986,7 +992,8 @@ class SurveyControllerService {
                                                                isil: IdentifierNamespace.findByNsAndNsType('ISIL', Org.class.name),
                                                                ror : IdentifierNamespace.findByNsAndNsType('ROR ID', Org.class.name),
                                                                wib : IdentifierNamespace.findByNsAndNsType('wibid', Org.class.name),
-                                                               dealId : IdentifierNamespace.findByNsAndNsType('deal_id', Org.class.name)]
+                                                               dealId : IdentifierNamespace.findByNsAndNsType('deal_id', Org.class.name),
+                                                               anbieterProduktID:  IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.PKG_ID, Package.class.name)]
                 String encoding = UniversalDetector.detectCharset(importFile.getInputStream())
 
                 if(encoding in ["US-ASCII", "UTF-8", "WINDOWS-1252"]) {
@@ -1033,6 +1040,8 @@ class SurveyControllerService {
                             case ["anmerkung", "description"]: colMap.description = c
                                 break
                             case ["sortiername", "sortname"]: colMap.sortname = c
+                                break
+                            case ["Anbieter-Produkt-ID", "Anbieter-Product-ID"]: colMap.anbieterProduktID = c
                                 break
                             default: log.info("unhandled parameter type ${headerCol}, ignoring ...")
                                 break
@@ -1107,13 +1116,34 @@ class SurveyControllerService {
                                     cost_item_element = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE
                                 }
 
-                                if (cost_item_element) {
-                                    if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element)) {
-                                        createCostItem = true
+                                Package pkg
+                                if (params.costItemsForSurveyPackage&& result.surveyConfig.packageSurvey){
+                                    if (colMap.anbieterProduktID >= 0 && cols[colMap.anbieterProduktID] != null && !cols[colMap.anbieterProduktID].trim().isEmpty()) {
+                                        List matchList = Package.executeQuery('select pkg from Identifier id join id.pkg pkg where id.value = :value and id.ns = :ns and pkg.id in (select scp.pkg.id from SurveyConfigPackage scp where scp.surveyConfig = :surveyConfig)', [surveyConfig: result.surveyConfig, value: cols[colMap.anbieterProduktID].trim(), ns: namespaces.anbieterProduktID])
+                                        if (matchList.size() == 1)
+                                            pkg = matchList[0] as Package
+                                    }
+
+                                    if(pkg) {
+                                        if (cost_item_element) {
+                                            if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element, pkg)) {
+                                                createCostItem = true
+                                            }
+                                        } else {
+                                            if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, pkg)) {
+                                                createCostItem = true
+                                            }
+                                        }
                                     }
                                 } else {
-                                    if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED)) {
-                                        createCostItem = true
+                                    if (cost_item_element) {
+                                        if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element)) {
+                                            createCostItem = true
+                                        }
+                                    } else {
+                                        if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED)) {
+                                            createCostItem = true
+                                        }
                                     }
                                 }
 
@@ -1228,6 +1258,10 @@ class SurveyControllerService {
                                         Date endDate = DateUtils.parseDateGeneric(cols[colMap.dateTo])
                                         if (endDate)
                                             costItem.endDate = endDate
+                                    }
+
+                                    if(params.costItemsForSurveyPackage && pkg){
+                                        costItem.pkg = pkg
                                     }
 
                                     if(costItem.save()){
@@ -1363,49 +1397,96 @@ class SurveyControllerService {
 
             } else {
                 result.parentSuccessorSubscription = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+                transferWorkflowSubs << result.parentSuccessorSubscription
             }
 
             transferWorkflowSubs.eachWithIndex { Subscription subscription, int i ->
                 if (subscription == result.parentSuccessorSubscription) {
                     if (i == 0) {
-                        if (params.transferMembers != null) {
-                            transferWorkflow.transferMembers = params.transferMembers
-                            if (result.surveyConfig.subSurveyUseForTransfer) {
-                                result.surveyConfig.subscription.participantTransferWithSurvey = transferWorkflow.transferMembers
-                                result.surveyConfig.subscription.save()
+                        if (subscription == result.surveyConfig.subscription) {
+                            if (params.transferMembers != null) {
+                                transferWorkflow.transferMembers = params.transferMembers
+                                if (result.surveyConfig.subSurveyUseForTransfer) {
+                                    result.surveyConfig.subscription.participantTransferWithSurvey = transferWorkflow.transferMembers
+                                    result.surveyConfig.subscription.save()
+                                }
                             }
-                        }
 
-                        if (params.transferSurveyCostItems != null) {
-                            transferWorkflow.transferSurveyCostItems = params.transferSurveyCostItems
-                        }
+                            if (params.transferSurveyCostItems != null) {
+                                transferWorkflow.transferSurveyCostItems = params.transferSurveyCostItems
+                            }
 
-                        if (params.transferSurveyCostItemPackage != null) {
-                            transferWorkflow.transferSurveyCostItemPackage = params.transferSurveyCostItemPackage
-                        }
+                            if (params.transferSurveyCostItemPackage != null) {
+                                transferWorkflow.transferSurveyCostItemPackage = params.transferSurveyCostItemPackage
+                            }
 
-                        if (params.transferSurveyProperties != null) {
-                            transferWorkflow.transferSurveyProperties = params.transferSurveyProperties
-                        }
+                            if (params.transferSurveyProperties != null) {
+                                transferWorkflow.transferSurveyProperties = params.transferSurveyProperties
+                            }
 
-                        if (params.transferCustomProperties != null) {
-                            transferWorkflow.transferCustomProperties = params.transferCustomProperties
-                        }
+                            if (params.transferCustomProperties != null) {
+                                transferWorkflow.transferCustomProperties = params.transferCustomProperties
+                            }
 
-                        if (params.transferPrivateProperties != null) {
-                            transferWorkflow.transferPrivateProperties = params.transferPrivateProperties
-                        }
+                            if (params.transferPrivateProperties != null) {
+                                transferWorkflow.transferPrivateProperties = params.transferPrivateProperties
+                            }
 
-                        if (params.transferSubPackagesAndIes != null) {
-                            transferWorkflow.transferSubPackagesAndIes = params.transferSubPackagesAndIes
-                        }
+                            if (params.transferSubPackagesAndIes != null) {
+                                transferWorkflow.transferSubPackagesAndIes = params.transferSubPackagesAndIes
+                            }
 
-                        if (params.transferSurveyPackages != null) {
-                            transferWorkflow.transferSurveyPackages = params.transferSurveyPackages
-                        }
+                            if (params.transferSurveyPackages != null) {
+                                transferWorkflow.transferSurveyPackages = params.transferSurveyPackages
+                            }
 
-                        if (params.transferSurveyVendors != null) {
-                            transferWorkflow.transferSurveyVendors = params.transferSurveyVendors
+                            if (params.transferSurveyVendors != null) {
+                                transferWorkflow.transferSurveyVendors = params.transferSurveyVendors
+                            }
+                        }else {
+                            Map transferWorkflowForSub = [:]
+                            if (transferWorkflow["transferWorkflowForSub_${subscription.id}"]) {
+                                transferWorkflowForSub = transferWorkflow["transferWorkflowForSub_${subscription.id}"]
+                            } else {
+                                transferWorkflowForSub = [:]
+                            }
+
+                            if (params.transferMembers != null) {
+                                transferWorkflowForSub.transferMembers = params.transferMembers
+                            }
+
+                            if (params.transferSurveyCostItems != null) {
+                                transferWorkflowForSub.transferSurveyCostItems = params.transferSurveyCostItems
+                            }
+
+                            if (params.transferSurveyCostItemPackage != null) {
+                                transferWorkflowForSub.transferSurveyCostItemPackage = params.transferSurveyCostItemPackage
+                            }
+
+                            if (params.transferSurveyProperties != null) {
+                                transferWorkflowForSub.transferSurveyProperties = params.transferSurveyProperties
+                            }
+
+                            if (params.transferCustomProperties != null) {
+                                transferWorkflowForSub.transferCustomProperties = params.transferCustomProperties
+                            }
+
+                            if (params.transferPrivateProperties != null) {
+                                transferWorkflowForSub.transferPrivateProperties = params.transferPrivateProperties
+                            }
+
+                            if (params.transferSubPackagesAndIes != null) {
+                                transferWorkflowForSub.transferSubPackagesAndIes = params.transferSubPackagesAndIes
+                            }
+
+                            if (params.transferSurveyPackages != null) {
+                                transferWorkflowForSub.transferSurveyPackages = params.transferSurveyPackages
+                            }
+
+                            if (params.transferSurveyVendors != null) {
+                                transferWorkflowForSub.transferSurveyVendors = params.transferSurveyVendors
+                            }
+                            transferWorkflow["transferWorkflowForSub_${subscription.id}"] = transferWorkflowForSub
                         }
                     } else {
                         Map transferWorkflowForMultiYear = [:]
@@ -1424,7 +1505,7 @@ class SurveyControllerService {
                         }
 
                         if (params.transferSurveyCostItemPackage != null) {
-                            transferWorkflow.transferSurveyCostItemPackage = params.transferSurveyCostItemPackage
+                            transferWorkflowForMultiYear.transferSurveyCostItemPackage = params.transferSurveyCostItemPackage
                         }
 
                         if (params.transferSurveyProperties != null) {
@@ -1990,9 +2071,14 @@ class SurveyControllerService {
             result.participants = result.participants.sort { it.org.sortname }
 
             if(!params.fileformat) {
-                result.charts = surveyService.generatePropertyDataForCharts(result.surveyConfig, result.participants?.org)
+                 List charts = surveyService.generatePropertyDataForCharts(result.surveyConfig, result.participants?.org)
                 if(result.surveyConfig.vendorSurvey) {
-                    result.charts = result.charts + surveyService.generateSurveyVendorDataForCharts(result.surveyConfig, result.participants?.org)
+                    charts = charts + surveyService.generateSurveyVendorDataForCharts(result.surveyConfig, result.participants?.org)
+                }
+                if(params.chartSort){
+                    result.charts = [['property', 'value']] + charts.sort{it[1]}
+                }else {
+                    result.charts = [['property', 'value']] + charts
                 }
             }
 
@@ -2027,12 +2113,19 @@ class SurveyControllerService {
 
             result.participants = SurveyOrg.executeQuery(fsq.query, fsq.queryParams, params)
 
-
             result.propList = result.surveyConfig.surveyProperties.surveyProperty
 
             result.participants = result.participants.sort { it.org.sortname }
 
-            result.charts = surveyService.generateSurveyPackageDataForCharts(result.surveyConfig, result.participants?.org)
+            if(!params.fileformat) {
+                List charts = surveyService.generateSurveyPackageDataForCharts(result.surveyConfig, result.participants?.org)
+
+                if(params.chartSort){
+                    result.charts = [['property', 'value']] + charts.sort{it[1]}
+                }else {
+                    result.charts = [['property', 'value']] + charts
+                }
+            }
 
             [result: result, status: STATUS_OK]
         }
@@ -2392,12 +2485,6 @@ class SurveyControllerService {
 
             result.participant = Org.get(params.participant)
             result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
-
-            result.surveyResults = []
-
-            result.surveyConfig.getSortedProperties().each { PropertyDefinition propertyDefinition ->
-                result.surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(result.participant, result.surveyConfig, propertyDefinition)
-            }
 
             result.ownerId = result.surveyInfo.owner.id
 
@@ -3375,9 +3462,33 @@ class SurveyControllerService {
 
                 if (params.surveyOrg) {
                     try {
-                        surveyOrgsDo << genericOIDService.resolveOID(params.surveyOrg)
+                        SurveyOrg surveyOrg = genericOIDService.resolveOID(params.surveyOrg)
+                        if (costItemsForSurveyPackage) {
+                            if (pkg) {
+                                if (cost_item_element) {
+                                    if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element, pkg)) {
+                                        surveyOrgsDo << surveyOrg
+                                    }
+                                } else {
+                                    if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, pkg)) {
+                                        surveyOrgsDo << surveyOrg
+                                    }
+                                }
+                            }
+                        } else {
+                            if (cost_item_element) {
+                                if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element)) {
+                                    surveyOrgsDo << surveyOrg
+                                }
+                            } else {
+                                if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED)) {
+                                    surveyOrgsDo << surveyOrg
+                                }
+                            }
+                        }
+
                     } catch (Exception e) {
-                        log.error("Non-valid surveyOrg sent ${params.surveyOrg}", e)
+                        log.error("Non-valid surveyOrg sent ${it}", e)
                     }
                 }
 
@@ -3629,6 +3740,29 @@ class SurveyControllerService {
 
             result = surveyControllerService.getSubResultForTranfser(result, params)
 
+            if('all' in params.list('selectedPackages') && params.list('selectedPackages').size() > 1){
+                List selectedPackages = []
+                params.list('selectedPackages').each {
+                    if(it != 'all'){
+                        selectedPackages << it
+                    }
+                }
+                params.selectedPackages = selectedPackages
+            }else {
+                params.selectedPackages = params.selectedPackages ?: 'all'
+            }
+
+            List packages = []
+            if(!('all' in params.list('selectedPackages')) && params.list('selectedPackages')){
+                params.list('selectedPackages').each {
+                    if(it != 'all'){
+                        packages << Package.get(Long.valueOf(it))
+                    }
+                }
+            }else {
+                packages = SurveyConfigPackage.findAllBySurveyConfig(result.surveyConfig).pkg
+            }
+
             result.participantsList = []
 
             result.parentSuccessortParticipantsList = []
@@ -3641,7 +3775,7 @@ class SurveyControllerService {
                 newMap.name = org.name
                 newMap.newSub = sub
                 newMap.oldSub = sub._getCalculatedPreviousForSurvey()
-                newMap.surveyPackages = SurveyPackageResult.executeQuery("select spr.pkg from SurveyPackageResult spr where spr.surveyConfig = :surveyConfig and spr.participant = :participant", [surveyConfig: result.surveyConfig, participant: org])
+                newMap.surveyPackages = SurveyPackageResult.executeQuery("select spr.pkg from SurveyPackageResult spr where spr.surveyConfig = :surveyConfig and spr.participant = :participant and spr.pkg in (:pkgs)", [pkgs: packages, surveyConfig: result.surveyConfig, participant: org])
 
                 result.participantsList << newMap
 
@@ -3755,6 +3889,17 @@ class SurveyControllerService {
         result = surveyControllerService.getSubResultForTranfser(result, params)
 
         if (!subscriptionService.checkThreadRunning('CopySurPkgs_' + result.parentSuccessorSubscription.id)) {
+            List packages = []
+            if(params.list('selectedPackages')){
+                params.list('selectedPackages').each {
+                    if(it != 'all'){
+                        packages << Package.get(Long.valueOf(it))
+                    }
+                }
+            }else {
+                packages = SurveyConfigPackage.findAllBySurveyConfig(result.surveyConfig).pkg
+            }
+
             Set<Subscription> subscriptions, permittedSubs = []
             if (params.containsKey("membersListToggler")) {
                 subscriptions = result.parentSuccessorSubChilds
@@ -3771,7 +3916,7 @@ class SurveyControllerService {
                    RefdataValue holdingSelection = RefdataValue.get(params.holdingSelection)
                    permittedSubs.each { Subscription selectedSub ->
                        Org org = selectedSub.getSubscriberRespConsortia()
-                       if(SurveyPackageResult.executeQuery("select count(*) from SurveyPackageResult spr where spr.surveyConfig = :surveyConfig and spr.participant = :participant", [surveyConfig: result.surveyConfig, participant: org])[0] > 0) {
+                       if(SurveyPackageResult.executeQuery("select count(*) from SurveyPackageResult spr where spr.surveyConfig = :surveyConfig and spr.participant = :participant and spr.pkg in (:pkgs)", [pkgs: packages, surveyConfig: result.surveyConfig, participant: org])[0] > 0) {
                            selectedSub.holdingSelection = holdingSelection
                            selectedSub.save()
                        }
@@ -3785,7 +3930,7 @@ class SurveyControllerService {
                     permittedSubs.each { Subscription selectedSub ->
                         selectedSub = selectedSub.refresh()
                         Org org = selectedSub.getSubscriberRespConsortia()
-                        List<Package> surveyPackages = SurveyPackageResult.executeQuery("select spr.pkg from SurveyPackageResult spr where spr.surveyConfig = :surveyConfig and spr.participant = :participant", [surveyConfig: result.surveyConfig, participant: org])
+                        List<Package> surveyPackages = SurveyPackageResult.executeQuery("select spr.pkg from SurveyPackageResult spr where spr.surveyConfig = :surveyConfig and spr.participant = :participant and spr.pkg in (:pkgs)", [pkgs: packages, surveyConfig: result.surveyConfig, participant: org])
                         surveyPackages.each { Package pkg ->
                         SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(selectedSub, pkg)
                             if (!sp) {
@@ -5017,6 +5162,13 @@ class SurveyControllerService {
 
         } else {
             result.parentSuccessorSubscription = parameterMap.targetSubscriptionId ? Subscription.get(parameterMap.targetSubscriptionId) : null
+
+            if (result.transferWorkflow && result.transferWorkflow.containsKey('transferWorkflowForSub_' + result.parentSuccessorSubscription.id)) {
+                result.transferWorkflow = result.transferWorkflow['transferWorkflowForSub_' + result.parentSuccessorSubscription.id]
+            } else if (result.parentSuccessorSubscription != result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()) {
+                result.transferWorkflow = [:]
+            }
+
         }
         result.targetSubscription = result.parentSuccessorSubscription
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null

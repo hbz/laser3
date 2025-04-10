@@ -39,11 +39,9 @@
 
     <g:render template="navCompareMembers"/>
 
-    <ui:messages data="${flash}"/>
-
-    <h2 class="ui header">
+   %{-- <h2 class="ui header">
         ${message(code: 'copyProperties.copyProperties', args: [message(code: 'copyProperties.' + params.tab)])}
-    </h2>
+    </h2>--}%
 
     <ui:greySegment>
         <div class="ui grid">
@@ -154,7 +152,7 @@
 
                     <tr>
                         <td>${i + 1}</td>
-                        <td><g:link controller="survey" action=" $actionName"
+                        <td><g:link controller="survey" action="$actionName"
                                     params="${params + [id: surveyInfo.id, surveyConfigID: params.surveyConfigID, selectedProperty: property.id]}">${property.getI10n('name')}</g:link></td>
                         <td>${subscriptionService.countCustomSubscriptionPropertyOfMembersByParentSub(contextService.getOrg(), parentSubscription, property)}</td>
                         <g:if test="${params.tab == 'surveyProperties'}">
@@ -174,7 +172,7 @@
 
             <g:form action="proccessCopyProperties" controller="survey" id="${surveyInfo.id}"
                     params="[surveyConfigID: surveyConfig.id, tab: params.tab, targetSubscriptionId: targetSubscription?.id]"
-                    method="post" class="ui form ">
+                    method="post" class="ui form">
                 <g:hiddenField name="copyProperty" value="${selectedProperty}"/>
 
                 <table class="ui celled sortable table la-js-responsive-table la-table" id="parentSubscription">
@@ -201,7 +199,7 @@
                                                   optionKey="id"
                                                   optionValue="name"
                                                   value="${selectedProperty}"
-                                                  class="ui dropdown"
+                                                  class="ui dropdown clearable"
                                                   onchange="this.form.submit()"/>
                                 </g:form>
                             </th>
@@ -220,7 +218,7 @@
                                               optionKey="id"
                                               optionValue="name"
                                               value="${selectedProperty}"
-                                              class="ui dropdown"
+                                              class="ui dropdown clearable"
                                               onchange="this.form.submit()"/>
                             </g:form>
                             </th>

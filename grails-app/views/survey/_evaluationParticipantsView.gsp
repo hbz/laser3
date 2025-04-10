@@ -8,6 +8,7 @@
     <g:set var="mailString" value=""/>
 </g:if>
 
+<div id="downloadWrapper"></div>
 
 <g:if test="${surveyConfig}">
 
@@ -139,7 +140,6 @@
 </ui:filter>
 
 
-<div id="downloadWrapper"></div>
 
 <g:form action="${processAction}" controller="${processController ?: 'survey'}" method="post" class="ui form"
         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab]">
@@ -1374,7 +1374,7 @@
                 <div class="ui field">
                     <div class="field">
                         <label>${message(code: 'filter.status')}</label>
-                        <ui:select class="ui dropdown" name="status" id="status"
+                        <ui:select class="ui dropdown clearable" name="status" id="status"
                                    from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
                                    optionKey="id"
                                    optionValue="value"
@@ -1464,7 +1464,7 @@
                 select += '<div class="item" data-value="' + optionValue + '">'+ count + ': ' + optionText + '</div>';
             }
 
-            select = ' <div class="ui fluid search selection dropdown la-filterProp">' +
+            select = ' <div class="ui fluid search selection dropdown clearable la-filterProp">' +
     '   <input type="hidden" id="subscription" name="targetSubscriptionId">' +
     '   <i class="dropdown icon"></i>' +
     '   <div class="default text">${message(code: 'default.select.choose.label')}</div>' +

@@ -50,7 +50,7 @@
                     }
                     $("#subscription").dropdown({
                         apiSettings: {
-                            url: "<g:createLink controller="ajaxJson" action="lookupSubscriptions"/>?status=FETCH_ALL&query={query}&holdingSelection=notEntire&restrictLevel=${isConsortium}"+providerFilter,
+                            url: "<g:createLink controller="ajaxJson" action="lookupSubscriptions"/>?status=FETCH_ALL&query={query}&holdingSelection=notEntire&restrictLevel=true"+providerFilter,
                         cache: false
                     },
                     clearable: true,

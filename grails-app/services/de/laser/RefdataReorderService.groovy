@@ -126,6 +126,19 @@ class RefdataReorderService {
         RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = 10 where rdv.value = :value',[value:'Scientific staff'])
         RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = 20 where rdv.value = :value',[value:'User'])
         RefdataValue.executeUpdate('update RefdataValue rdv set rdv.order = 30 where rdv.value = :value',[value:'Population'])
+
+        //agreement: defined by external
+        List agreements = RefdataCategory.getAllRefdataValues(RDConstants.AGREEMENT)
+        agreements.each { RefdataValue a ->
+            switch (a.value) {
+                case 'Agree': a.order = 0
+                    break
+                case 'Disagree': a.order = 10
+                    break
+            }
+            a.save()
+        }
+
         List currencies = RefdataValue.findAllByOwner(RefdataCategory.getByDesc('Currency'),[sort:'value',order:'asc'])
         order = 40
         //currencies: defined by external
@@ -197,7 +210,7 @@ class RefdataReorderService {
         list.add([owner: 'confidentiality',         sortToEnd: ['Unknown']])
         list.add([owner: 'cost.item.category',      sortToEnd: ['Other']])
         list.add([owner: 'cost.item.status',        sortToEnd: ['Other']])
-        list.add([owner: 'funder.type',             sortToEnd: ['Other Territorial Authorit', 'Other Public Sector Funder', 'Other Religious Communities']])
+        list.add([owner: 'funder.type',             sortToEnd: ['Other Territorial Authority', 'Other Public Sector Funder', 'Other Religious Communities']])
         list.add([owner: 'indemnification',         sortToEnd: ['Other', 'Unknown']])
         list.add([owner: 'invoicing',               sortToEnd: ['Other']])
         list.add([owner: 'library.network',         sortToEnd: ['No Network']])

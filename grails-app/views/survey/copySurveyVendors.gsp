@@ -39,9 +39,9 @@
 
     <g:render template="navCompareMembers"/>
 
-    <h2 class="ui header">
+ %{--   <h2 class="ui header">
         ${message(code: 'copySurveyVendors.transfer')}
-    </h2>
+    </h2>--}%
 
 
     <ui:greySegment>
@@ -96,7 +96,7 @@
 
         <g:form action="proccessCopySurveyVendors" controller="survey" id="${surveyInfo.id}"
                 params="[surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]"
-                method="post" class="ui form ">
+                method="post" class="ui form">
 
 
             <table class="ui celled sortable table la-js-responsive-table la-table" id="parentSubscription">
@@ -125,7 +125,7 @@
                     <tr class="">
                         <g:if test="${editable}">
                             <td>
-                            <g:if test="${editable && participant.surveyVendors && !VendorRole.findByVendorInListAndSubscription(participant.surveyVendors, newSub)}">
+                            <g:if test="${editable && participant.surveyVendors && !VendorRole.findByVendorInListAndSubscription(participant.surveyVendors, participant.newSub)}">
                                 <%-- This whole construct is necessary for that the form validation works!!! --%>
                                 <div class="field">
                                     <div class="ui checkbox">

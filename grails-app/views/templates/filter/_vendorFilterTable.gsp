@@ -16,7 +16,7 @@
                     <th>${message(code: 'sidewide.number')}</th>
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('sortname')}">
-                    <g:sortableColumn title="${message(code: 'org.sortname.label')}" property="lower(o.sortname)" params="${request.getParameterMap()}"/>
+                    <th>${message(code: 'default.shortname.label')}</th>
                 </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
                     <g:sortableColumn title="${message(code: 'org.fullName.label')}" property="lower(o.name)" params="${request.getParameterMap()}"/>
@@ -137,20 +137,23 @@
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('currentSubscriptions')}">
                     <td>
                         <g:if test="${currentSubscriptions}">
-                            <ul class="la-simpleList">
+
                                 <g:each in="${currentSubscriptions.get(vendor.id)}" var="sub">
                                     <g:if test="${!sub.instanceOf || (sub.instanceOf && !(sub.instanceOf in currentSubscriptions.get(vendor.id)))}">
-                                        <li>
+                                        <div class="la-flexbox">
+                                            <g:if test="${currentSubscriptions.get(vendor.id).size() > 1}">
+                                                <i class="${Icon.SUBSCRIPTION} la-list-icon"></i>
+                                            </g:if>
                                             <g:link controller="subscription" action="show" id="${sub.id}">
                                                 ${sub}
                                                 <g:if test="${sub.instanceOf}">
                                                     <br>(${sub.getSubscriberRespConsortia()})
                                                 </g:if>
                                             </g:link>
-                                        </li>
+                                        </div>
                                     </g:if>
                                 </g:each>
-                            </ul>
+
                         </g:if>
                     </td>
                 </g:if>

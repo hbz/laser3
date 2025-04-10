@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.AuditConfig; de.laser.storage.RDConstants; de.laser.SubscriptionPackage; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.survey.SurveyConfigPackage; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.AuditConfig; de.laser.storage.RDConstants; de.laser.SubscriptionPackage; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
 <laser:htmlStart message="copySurveyPackages.transfer" />
 
 <ui:breadcrumbs>
@@ -39,10 +39,10 @@
 
     <g:render template="navCompareMembers"/>
 
-    <h2 class="ui header">
+  %{--  <h2 class="ui header">
         ${message(code: 'copySurveyPackages.transfer')}
     </h2>
-
+--}%
     <g:if test="${isLinkingRunning}">
         <ui:msg class="warning" showIcon="true" hideClose="true" header="Info" message="subscriptionsManagement.isLinkingRunning.info" />
     </g:if>
@@ -96,11 +96,44 @@
         </div>
     </ui:greySegment>
 
+
+    <ui:greySegment>
+        <g:form action="copySurveyPackages" method="post" class="ui small form"
+                params="${[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab, targetSubscriptionId: targetSubscription?.id]}">
+            <div class="field">
+                <label>${message(code: 'copySurveyPackages.label')}:</label>
+                <select id="selectedPackages" name="selectedPackages" multiple="" class="ui search selection fluid dropdown">
+                    <option value="all" <%=("all" in params.list('selectedPackages')) ? 'selected="selected"' : ''%>>
+                        ${message(code: 'default.select.all.label')}
+                    </option>
+
+                    <g:each in="${SurveyConfigPackage.findAllBySurveyConfig(surveyConfig)}" var="surveyPackage">
+                        <option <%=(params.list('selectedPackages').contains(surveyPackage.pkg.id.toString())) ? 'selected="selected"' : ''%>
+                                value="${surveyPackage.pkg.id}" title="${surveyPackage.pkg.name}">
+                            ${surveyPackage.pkg.name}
+                        </option>
+                    </g:each>
+
+                </select>
+            </div>
+
+            <div class="field la-field-right-aligned">
+
+                <div class="field la-field-right-aligned">
+                    <input type="submit" class="${Btn.PRIMARY}" value="${message(code: 'default.select2.label', args: [message(code: 'copySurveyPackages.label')])}">
+                </div>
+
+            </div>
+
+        </g:form>
+    </ui:greySegment>
+
+
     <ui:greySegment>
 
         <g:form action="proccessCopySurveyPackages" controller="survey" id="${surveyInfo.id}"
-                params="[surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]"
-                method="post" class="ui form ">
+                params="[surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id, selectedPackages: params.selectedPackages]"
+                method="post" class="ui form">
 
 
             <table class="ui celled sortable table la-js-responsive-table la-table" id="parentSubscription">
@@ -129,7 +162,7 @@
                     <tr class="">
                         <g:if test="${editable}">
                             <td>
-                            <g:if test="${editable && participant.surveyPackages && SubscriptionPackage.countByPkgInList(participant.surveyPackages) < participant.surveyPackages.size()}">
+                            <g:if test="${editable && participant.surveyPackages && participant.newSub && SubscriptionPackage.countByPkgInListAndSubscription(participant.surveyPackages, participant.newSub) < participant.surveyPackages.size()}">
                                 <%-- This whole construct is necessary for that the form validation works!!! --%>
                                 <div class="field">
                                     <div class="ui checkbox">
@@ -252,7 +285,7 @@
                         <div class="four fields">
                             <g:if test="${parentSuccessorSubscription && auditService.getAuditConfig(parentSuccessorSubscription, 'holdingSelection')}">
                                 <div class="field">
-                                    <ui:select class="ui dropdown search selection" id="holdingSelection" name="holdingSelection"
+                                    <ui:select class="ui dropdown clearable search selection" id="holdingSelection" name="holdingSelection"
                                                from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" optionKey="id"
                                                optionValue="value"/>
                                 </div>

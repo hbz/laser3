@@ -43,8 +43,18 @@ class IssueEntitlementService {
         if(configMap.identifier) {
             tippIDs = tippIDs.intersect(titleService.getTippsByIdentifier(identifierConfigMap, configMap.identifier))
         }
+        if (configMap.containsKey('hasPerpetualAccess')) {
+            String permanentTitleQuery = "select pt.tipp.id from PermanentTitle pt where pt.owner = :subscriber"
+            Map<String, Object> permanentTitleParams = [subscriber: configMap.subscription.getSubscriberRespConsortia()]
+            Set<Long> permanentTitles = TitleInstancePackagePlatform.executeQuery(permanentTitleQuery, permanentTitleParams)
+            if (RefdataValue.get(configMap.hasPerpetualAccess) == RDStore.YN_YES) {
+                tippIDs = tippIDs.intersect(permanentTitles)
+            }else{
+                tippIDs.removeAll(permanentTitles)
+            }
+        }
         tippIDs.collate(65000).each { List<Long> subset ->
-            List counts = IssueEntitlement.executeQuery('select count(*), rv.id from IssueEntitlement ie join ie.status rv where ie.tipp.id in (:subset) and ie.subscription = :subscription group by rv.id', [subset: subset, subscription: configMap.subscription])
+            List counts = IssueEntitlement.executeQuery('select count(*), rv.id from IssueEntitlement ie join ie.status rv where ie.tipp.id in (:subset) and ie.subscription.id = :subscription and ie.status.id != :removed group by rv.id', [subset: subset, subscription: configMap.subscription.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
             counts.each { row ->
                 switch (row[1]) {
                     case RDStore.TIPP_STATUS_CURRENT.id: currentIECounts += row[0]
@@ -79,26 +89,49 @@ class IssueEntitlementService {
             issueEntitlementConfigMap.ieStatus = configMap.status
         }
         Set<Long> tippIDs = [], ieIDs = []
-        //process here the issue entitlement-related parameters
-        Map<String, Object> queryPart1 = filterService.getIssueEntitlementSubsetQuery(issueEntitlementConfigMap)
-        List<Map<String, Object>> tippIeMap = IssueEntitlement.executeQuery(queryPart1.query, queryPart1.queryParams)
-        tippIeMap.each { row ->
-            tippIDs << row.tippID
+        //may become a performance bottleneck; keep under observation!
+        String permanentTitleQuery = "select pt.tipp.id from PermanentTitle pt where pt.owner = :subscriber"
+        Map<String, Object> permanentTitleParams = [subscriber: configMap.subscription.getSubscriberRespConsortia()]
+        if(configMap.containsKey('newEntitlements')) {
+            //process here the title-related parameters
+            Map<String, Object> queryPart1 = filterService.getTippSubsetQuery(titleConfigMap)
+            tippIDs = TitleInstancePackagePlatform.executeQuery(queryPart1.query, queryPart1.queryParams)
+            if(configMap.identifier) {
+                tippIDs = tippIDs.intersect(titleService.getTippsByIdentifier(identifierConfigMap, configMap.identifier))
+            }
+            tippIDs.removeAll(IssueEntitlement.executeQuery('select ie.tipp.id from IssueEntitlement ie where ie.subscription = :subscription and ie.status != :removed', [subscription: configMap.subscription, removed: RDStore.TIPP_STATUS_REMOVED]))
+            tippIDs.removeAll(TitleInstancePackagePlatform.executeQuery(permanentTitleQuery, permanentTitleParams))
         }
-        //process here the title-related parameters
-        Map<String, Object> queryPart2 = filterService.getTippSubsetQuery(titleConfigMap)
-        tippIDs = tippIDs.intersect(TitleInstancePackagePlatform.executeQuery(queryPart2.query, queryPart2.queryParams))
-        if(configMap.identifier) {
-            tippIDs = tippIDs.intersect(titleService.getTippsByIdentifier(identifierConfigMap, configMap.identifier))
+        else {
+            //process here the issue entitlement-related parameters
+            Map<String, Object> queryPart1 = filterService.getIssueEntitlementSubsetQuery(issueEntitlementConfigMap)
+            List<Map<String, Object>> tippIeMap = IssueEntitlement.executeQuery(queryPart1.query, queryPart1.queryParams)
+            tippIeMap.each { row ->
+                tippIDs << row.tippID
+            }
+            //process here the title-related parameters
+            Map<String, Object> queryPart2 = filterService.getTippSubsetQuery(titleConfigMap)
+            tippIDs = tippIDs.intersect(TitleInstancePackagePlatform.executeQuery(queryPart2.query, queryPart2.queryParams))
+            if(configMap.identifier) {
+                tippIDs = tippIDs.intersect(titleService.getTippsByIdentifier(identifierConfigMap, configMap.identifier))
+            }
+            if (configMap.containsKey('hasPerpetualAccess')) {
+                Set<Long> permanentTitles = TitleInstancePackagePlatform.executeQuery(permanentTitleQuery, permanentTitleParams)
+                if (RefdataValue.get(configMap.hasPerpetualAccess) == RDStore.YN_YES) {
+                    tippIDs = tippIDs.intersect(permanentTitles)
+                }else{
+                    tippIDs.removeAll(permanentTitles)
+                }
+            }
+            tippIeMap.each { row ->
+                if(row.tippID in tippIDs)
+                    ieIDs << row.ieID
+            }
+            /*tippIDs.collate(65000).each { List<Long> subset ->
+                queryPart2.queryParams.subset = subset
+                ieIDs.addAll(IssueEntitlement.executeQuery(queryPart2.query, queryPart2.queryParams))
+            }*/
         }
-        tippIeMap.each { row ->
-            if(row.tippID in tippIDs)
-                ieIDs << row.ieID
-        }
-        /*tippIDs.collate(65000).each { List<Long> subset ->
-            queryPart2.queryParams.subset = subset
-            ieIDs.addAll(IssueEntitlement.executeQuery(queryPart2.query, queryPart2.queryParams))
-        }*/
         [tippIDs: tippIDs, ieIDs: ieIDs]
     }
 
@@ -118,10 +151,10 @@ class IssueEntitlementService {
             userCache.put('label', 'Verarbeite Titel ...')
             userCache.put('progress', configMap.floor)
             boolean pickWithNoPick = false
-            int countRows = 0, total = 0, toAddCount = 0, notInPackageCount = 0, start, percentage = 0
+            int countRows = 0, total = 0, toAddCount = 0, start, percentage = 0
             Set<String> titleRow = []
             Map<TitleInstancePackagePlatform, Map<String, Object>> matchedTitles = [:] //use keySet() to use only the retrieved we:kb keys
-            Set<Map<String, Object>> notAddedTitles = []
+            Set<Map<String, Object>> notAddedTitles = [], notInPackage = []
             //now, assemble the identifiers available to highlight
             Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNsAndNsType('zdb', TitleInstancePackagePlatform.class.name),
                                                            eissn: IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name),
@@ -214,7 +247,7 @@ class IssueEntitlementService {
                 if(!configMap.containsKey('withPick') || (configMap.containsKey('withPick') && colMap.pick > -1)) {
                     for(int i = start; i < total; i++) {
                         String[] line = lines[i]
-                        if(line[0]) {
+                        //if(line[0]) {
                             /*
                                 here the switch between the matching methods:
                                 Select from total list (KBART) -> used now in tippSelectForSurvey()
@@ -286,21 +319,21 @@ class IssueEntitlementService {
                                         toAddCount++
                                 }
                                 else if(!match) {
+                                    notInPackage << externalTitleData
                                     externalTitleData.put('found_in_package', RDStore.YN_NO.getI10n('value'))
                                     notAddedTitles << externalTitleData
-                                    notInPackageCount++
                                 }
                             }
                             //start from floor, end at ceil
                             percentage = configMap.floor+countRows*((configMap.ceil-configMap.floor)/total)
                             userCache.put('progress', percentage)
-                        }
+                        //}
                     }
                 }
                 else pickWithNoPick = true
             }
             userCache.put('progress', configMap.ceil)
-            [titleRow: titleRow, pickWithNoPick: pickWithNoPick, matchedTitles: matchedTitles, notAddedTitles: notAddedTitles, toAddCount: toAddCount, processedCount: countRows, notInPackageCount: notInPackageCount]
+            [titleRow: titleRow, pickWithNoPick: pickWithNoPick, matchedTitles: matchedTitles, notAddedTitles: notAddedTitles, toAddCount: toAddCount, processedCount: countRows, notInPackage: notInPackage, notInPackageCount: notInPackage.size()]
         }
     }
 
@@ -408,7 +441,7 @@ class IssueEntitlementService {
 
     boolean existsSerialInHolding(Subscription subscription, List statusKeys) {
         String query = 'select distinct(tipp.titleType) from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :sub and ie.status in (:status)'
-        List titleTypes = IssueEntitlement.executeQuery(query, [sub: subscription, status: statusKeys.collect { Long key -> RefdataValue.get(key) }])
+        List titleTypes = IssueEntitlement.executeQuery(query, [sub: subscription, status: statusKeys.collect { key -> RefdataValue.get(key) }])
         return titleTypes.contains('serial')
     }
 
@@ -416,9 +449,10 @@ class IssueEntitlementService {
         String sort = configMap.containsKey('sort') && configMap.sort ? configMap.sort : 'tipp.sortname'
         String order = configMap.containsKey('order') && configMap.order ? configMap.order : 'asc'
         Map<String, Object> titleConfigMap = [filter: configMap.filter, packages: configMap.packages, platforms: configMap.platforms, ddcs: configMap.ddcs, languages: configMap.languages,
+                                              first_author: configMap.first_author, first_editor: configMap.first_editor,
                                               subject_references: configMap.subject_references, series_names: configMap.series_names, summaryOfContent: configMap.summaryOfContent,
                                               ebookFirstAutorOrFirstEditor: configMap.ebookFirstAutorOrFirstEditor, dateFirstOnlineFrom: configMap.dateFirstOnlineFrom,
-                                              dateFirstOnlineTo: configMap.dateFirstOnlineFrom, yearsFirstOnline: configMap.yearsFirstOnline, publishers: configMap.publishers,
+                                              dateFirstOnlineTo: configMap.dateFirstOnlineFrom, yearsFirstOnline: configMap.yearsFirstOnline, publishers: configMap.publishers, provider: configMap.provider,
                                               coverageDepth: configMap.coverageDepth, title_types: configMap.title_types, medium: configMap.medium, sort: sort, order: order],
                             identifierConfigMap = [identifier: configMap.identifier, packages: configMap.packages, titleNS: IdentifierNamespace.CORE_TITLE_NS, titleObj: IdentifierNamespace.NS_TITLE], //may be needed elsewhere sort: sort, order: order
                             issueEntitlementConfigMap = [subscription: configMap.subscription, asAt: configMap.asAt, hasPerpetualAccess: configMap.hasPerpetualAccess, titleGroup: configMap.titleGroup, sort: sort, order: order]

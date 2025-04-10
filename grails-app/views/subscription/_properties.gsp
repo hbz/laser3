@@ -113,34 +113,37 @@
         </div>
     </g:if>
 
-<%-- orphaned properties --%>
+    <g:if test="${allPropDefGroups.orphanedProperties}">
+    <%-- orphaned properties --%>
 
-<%--<div class="ui card la-dl-no-table"> --%>
-    <div class="content">
-        <h3 class="ui  header">
-            <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
-            <g:if test="${allPropDefGroups.global || allPropDefGroups.local || allPropDefGroups.member}">
-                ${message(code: 'subscription.properties.orphaned')}
-            </g:if>
-            <g:else>
-                ${message(code: 'subscription.properties')}
-            </g:else>
-        </h3>
-        <div id="custom_props_div_props">
-            <laser:render template="/templates/properties/custom" model="${[
-                    prop_desc         : PropertyDefinition.SUB_PROP,
-                    ownobj            : subscription,
-                    orphanedProperties: allPropDefGroups.orphanedProperties,
-                    editable          : (!calledFromSurvey && contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)),
-                    custom_props_div  : "custom_props_div_props"]}"/>
+    <%--<div class="ui card la-dl-no-table"> --%>
+        <div class="content">
+            <h3 class="ui header">
+                <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
+                <g:if test="${allPropDefGroups.global || allPropDefGroups.local || allPropDefGroups.member}">
+                    ${message(code: 'subscription.properties.orphanedMajuscule')} ${message(code: 'subscription.propertiesBrackets')}
+                </g:if>
+                <g:else>
+                    ${message(code: 'subscription.properties')}
+                </g:else>
+            </h3>
+
+            <div id="custom_props_div_props">
+                <laser:render template="/templates/properties/custom" model="${[
+                        prop_desc         : PropertyDefinition.SUB_PROP,
+                        ownobj            : subscription,
+                        orphanedProperties: allPropDefGroups.orphanedProperties,
+                        editable          : (!calledFromSurvey && contextService.isInstEditor(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)),
+                        custom_props_div  : "custom_props_div_props"]}"/>
+            </div>
         </div>
-    </div>
     <%--</div>--%>
 
-    <laser:script file="${this.getGroovyPageFileName()}">
-        c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'
-                                           params='[oid: "${genericOIDService.getOID(subscription)}"]'/>", "#custom_props_div_props");
-    </laser:script>
+        <laser:script file="${this.getGroovyPageFileName()}">
+            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'
+                                               params='[oid: "${genericOIDService.getOID(subscription)}"]'/>", "#custom_props_div_props");
+        </laser:script>
+    </g:if>
 
 </div><!--.card -->
 
@@ -168,10 +171,6 @@
 
 
     <div class="content">
-        <h3 class="ui  header">
-            <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
-            ${message(code: 'subscription.properties.private')} ${contextService.getOrg().name}
-        </h3>
         <g:set var="propertyWrapper" value="private-property-wrapper-${contextService.getOrg().id}"/>
         <div id="${propertyWrapper}">
             <laser:render template="/templates/properties/private" model="${[

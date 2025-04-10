@@ -1,7 +1,5 @@
 package de.laser
 
-import de.laser.annotations.DebugInfo
-import de.laser.cache.EhcacheWrapper
 import de.laser.config.ConfigDefaults
 import de.laser.finance.CostInformationDefinition
 import de.laser.mail.MailTemplate
@@ -10,6 +8,7 @@ import de.laser.utils.AppUtils
 import de.laser.helper.DatabaseInfo
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
+import de.laser.utils.FileUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import de.laser.remote.FTControl
@@ -34,7 +33,7 @@ import org.hibernate.query.NativeQuery
 import de.laser.config.ConfigMapper
 
 import java.nio.file.Files
-import java.nio.file.Path
+import java.nio.file.StandardCopyOption
 import java.time.LocalDate
 
 /**
@@ -45,11 +44,11 @@ import java.time.LocalDate
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AdminController  {
 
-    CacheService cacheService
     ContextService contextService
     DataConsistencyService dataConsistencyService
     DataloadService dataloadService
     DeletionService deletionService
+    FileCryptService fileCryptService
     FilterService filterService
     GenericOIDService genericOIDService
     GlobalSourceSyncService globalSourceSyncService
@@ -517,6 +516,150 @@ class AdminController  {
         result
     }
 
+    @Secured(['ROLE_ADMIN'])
+    def simpleDocsCheck() {
+        log.debug('simpleDocsCheck')
+        String dsl = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
+
+        Map<String, Object> result = [
+                dsPath          : dsl,
+                orphanedDocs    : []
+        ]
+
+        result.orphanedDocs = Doc.executeQuery(
+                'select doc from Doc doc where doc.contentType = :ctf' +
+                        ' and not exists (select dc.id from DocContext dc where dc.owner = doc) order by doc.id',
+                [ctf: Doc.CONTENT_TYPE_FILE]
+        )
+
+        if (params.deleteOrphanedDocs) {
+            List<Long> deletedDocs = []
+            result.orphanedDocs.each { doc ->
+                try {
+                    Long did = doc.id
+                    doc.delete()
+                    deletedDocs << did
+                }
+                catch (Exception e) {
+                    log.error e.getMessage()
+                }
+            }
+            log.info 'removed orphaned docs: ' + deletedDocs.size()
+            SystemEvent.createEvent('DOCSTORE_DEL_ORPHANED_DOCS', [count: deletedDocs.size(), server: AppUtils.getCurrentServer(), docs: deletedDocs])
+
+            redirect controller: 'admin', action: 'simpleDocsCheck'
+            return
+        }
+
+        result
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def simpleFilesCheck() {
+        log.debug('simpleFilesCheck')
+        String dsl = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
+
+        Map<String, Object> result = [
+           dsPath       : dsl,
+           dsFiles      : [],
+           xxPath       : dsl + '_outdated',
+           xxFiles      : [],
+           validDocs    : [],
+           validFiles       : [],
+           validFilesRaw    : [],
+           invalidFiles     : []
+        ]
+
+        File ds = new File("${result.dsPath}")
+        File xx = new File("${result.xxPath}")
+        if (!xx.exists()) {
+            xx.mkdirs()
+        }
+
+        try {
+            if (ds.exists()) {
+                result.dsFiles = ds.listFiles().collect{it.getName()}
+
+                result.validDocs = Doc.executeQuery(
+                        'select doc from Doc doc where doc.contentType = :ctf and doc.uuid in (:files)',
+                        [ctf: Doc.CONTENT_TYPE_FILE, files: result.dsFiles]
+                )
+                Set<String> docs    = result.validDocs.findAll{   it.ckey }.collect{ it.uuid as String }
+                Set<String> docsRaw = result.validDocs.findAll{ ! it.ckey }.collect{ it.uuid as String }
+
+                result.dsFiles.each { fn ->
+                    if      (docs.contains(fn))     { result.validFiles << fn }
+                    else if (docsRaw.contains(fn))  { result.validFilesRaw << fn }
+                    else                            { result.invalidFiles << fn }
+                }
+                result.validFiles.toSorted()
+                result.validFilesRaw.toSorted()
+                result.invalidFiles.toSorted()
+            }
+
+            if (xx.exists()) {
+                result.xxFiles = xx.listFiles().collect { it.getName() }
+            }
+        }
+        catch (Exception e) {
+            log.error e.getMessage()
+        }
+
+        if (params.encryptRawFiles) {
+            List<String> encryptedFiles = []
+            List<String> fails = []
+
+            result.validFilesRaw.each { uuid ->
+                try {
+                    File raw = new File("${result.dsPath}/${uuid}")
+                    Doc doc  = Doc.findByUuidAndContentType(uuid, Doc.CONTENT_TYPE_FILE)
+                    if (raw && doc && !doc.ckey) {
+                        fileCryptService.encryptRawFileAndUpdateDoc(raw, doc)
+                        encryptedFiles << uuid
+                    }
+                    else {
+                        fails << uuid
+                    }
+                }
+                catch (Exception e) {
+                    log.error e.getMessage()
+                }
+            }
+            log.info 'encrypted raw files: ' + encryptedFiles.size() + ', path:' + result.dsPath
+            SystemEvent.createEvent('DOCSTORE_ENC_RAW_FILES', [count: encryptedFiles.size(), server: AppUtils.getCurrentServer(), files: encryptedFiles, fails: fails])
+
+            redirect controller: 'admin', action: 'simpleFilesCheck'
+            return
+        }
+
+        if (params.moveOutdatedFiles) {
+            List<String> movedFiles = []
+            String pk = DateUtils.getSDF_yyyyMMdd().format(new Date())
+
+            result.invalidFiles.each { uuid ->
+                try {
+                    String pkid = uuid + '-' + pk
+                    File src = new File("${result.dsPath}/${uuid}")
+                    File dst = new File("${result.xxPath}/${pkid}")
+                    if (src.exists() && src.isFile()) {
+                        Files.move(src.toPath(), dst.toPath(), StandardCopyOption.REPLACE_EXISTING)
+                        movedFiles << pkid
+                    }
+                }
+                catch (Exception e) {
+                    log.error e.getMessage()
+                }
+            }
+            log.info 'moved outdated files: ' + movedFiles.size() + ', pk: ' + pk + ', path:' + result.xxPath
+            SystemEvent.createEvent('DOCSTORE_MOV_OUTDATED_FILES', [count: movedFiles.size(), server: AppUtils.getCurrentServer(), files: movedFiles])
+
+            redirect controller: 'admin', action: 'simpleFilesCheck'
+            return
+        }
+
+        result
+    }
+
     /**
      * Checks the state of the files in the data storage, namely if the files have a database record and if there
      * are files matching the UUIDs from the database and if the database records are attached to an object
@@ -540,19 +683,6 @@ class AdminController  {
         ]
 
         result.filePath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
-
-        Closure fileCheck = { Doc doc ->
-
-            try {
-                File test = new File("${result.filePath}/${doc.uuid}")
-                if (test.exists() && test.isFile()) {
-                    return true
-                }
-            }
-            catch (Exception e) {
-                return false
-            }
-        }
 
         // files
 
@@ -590,12 +720,12 @@ class AdminController  {
         )
 
         result.listOfDocsInUse.each { Doc doc ->
-            if (! fileCheck(doc)) {
+            if (! FileUtils.fileCheck("${result.filePath}/${doc.uuid}")) {
                 result.listOfDocsInUseOrphaned << doc
             }
         }
         result.listOfDocsNotInUse.each { Doc doc ->
-            if (! fileCheck(doc)) {
+            if (! FileUtils.fileCheck("${result.filePath}/${doc.uuid}")) {
                 result.listOfDocsNotInUseOrphaned << doc
             }
         }
@@ -614,91 +744,6 @@ class AdminController  {
 
         log.debug('fileConsistency - done')
         result
-    }
-
-    /**
-     * Searches for a given document context if the file is missing and proposes an alternative based on database record matching
-     */
-    @Secured(['ROLE_ADMIN'])
-    def recoveryDoc() {
-        Map<String, Object> result = [:]
-
-        result.filePath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
-
-        Closure fileCheck = { Doc doc ->
-
-            try {
-                File test = new File("${result.filePath}/${doc.uuid}")
-                if (test.exists() && test.isFile()) {
-                    return true
-                }
-            }
-            catch (Exception e) {
-                return false
-            }
-        }
-
-        Doc doc = Doc.findByIdAndContentType( params.long('docID'), Doc.CONTENT_TYPE_FILE )
-
-        if (!fileCheck(doc)) {
-            result.doc = doc
-
-            List docs = Doc.findAllWhere(
-                    status: doc.status,
-                    type: doc.type,
-                    content: doc.content,
-                    contentType: doc.contentType,
-                    title: doc.title,
-                    filename: doc.filename,
-                    mimeType: doc.mimeType,
-                    owner: doc.owner
-            )
-            result.docsToRecovery = docs
-        }
-        result
-    }
-
-    /**
-     * Restores the file by copying back a matched alternative
-     */
-    @Secured(['ROLE_ADMIN'])
-    def processRecoveryDoc() {
-        Map<String, Object> result = [:]
-
-        result.filePath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
-
-        Closure fileCheck = { Doc doc ->
-
-            try {
-                File test = new File("${result.filePath}/${doc.uuid}")
-                if (test.exists() && test.isFile()) {
-                    return true
-                }
-            }
-            catch (Exception e) {
-                return false
-            }
-        }
-
-        Doc docWithoutFile = Doc.findByIdAndContentType( params.long('sourceDoc'), Doc.CONTENT_TYPE_FILE )
-        Doc docWithFile = Doc.findByIdAndContentType( params.long('targetDoc'), Doc.CONTENT_TYPE_FILE )
-
-        if (!fileCheck(docWithoutFile) && fileCheck(docWithFile)) {
-
-            Path source = new File("${result.filePath}/${docWithFile.uuid}").toPath()
-            Path target = new File("${result.filePath}/${docWithoutFile.uuid}").toPath()
-            Files.copy(source, target)
-
-            if(fileCheck(docWithoutFile)){
-                flash.message = "Datei erfolgreich wiederhergestellt!"
-            }else{
-                flash.error = "Datei nicht erfolgreich wiederhergestellt!"
-            }
-        }else {
-            flash.error = "Keine Quell-Datei gefunden um Wiederherzustellen!"
-        }
-        redirect(action:'recoveryDoc', params: ['docID': docWithoutFile.id])
-
     }
 
     /**

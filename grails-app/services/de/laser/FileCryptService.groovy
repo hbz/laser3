@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.config.ConfigMapper
 import de.laser.system.SystemEvent
+import de.laser.utils.DateUtils
 import de.laser.utils.RandomUtils
 import grails.gorm.transactions.Transactional
 
@@ -14,6 +15,7 @@ import javax.crypto.spec.SecretKeySpec
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
+import java.security.MessageDigest
 import java.security.spec.KeySpec
 
 @Transactional
@@ -21,53 +23,58 @@ class FileCryptService {
 
     public final static Map CONFIG = [
         DEFAULT : [
+            ID               : 'DEFAULT',
             ALGORITHM        : 'AES',
             ALGORITHM_PRF    : 'PBKDF2WithHmacSHA256',
             ALGORITHM_XFORM  : 'AES/CBC/PKCS5Padding',
             ALGORITHM_IC     : 65536,
             ALGORITHM_KL     : 256,
-            CKEY             : 64,
             SALT             : 32,
             IV               : 16,
+            DIGEST           : 4,
+            DIGEST_DELIM     : ':',
             PASSPHRASE       : 'd3f4Ul7_P4zzphr4Z3', // local
             TMP_DIR          : '/laser-docs'
         ]
     ]
 
-    boolean encryptRawFile(File rawFile, Doc doc) {
-        log.debug '[encryptRawFile] ' + rawFile.toPath() + ', doc #' + doc.id
+    void encryptRawFileAndUpdateDoc(File rawFile, Doc doc) {
+        log.debug '[encryptRawFileAndUpdateDoc] file: ' + rawFile.toPath() + ', doc: ' + doc.id
 
+        String ckey     = generateCKey()
         Path rfPath     = rawFile.toPath()
-        File encTmpFile = encryptToTmpFile(rawFile, doc.ckey)
-        File decTmpFile = decryptToTmpFile(encTmpFile, doc.ckey)
+        File encTmpFile = encryptToTmpFile(rawFile, ckey)
+        File decTmpFile = decryptToTmpFile(encTmpFile, ckey)
 
         if (validateFiles(decTmpFile, rawFile)) {
             Files.copy(encTmpFile.toPath(), rfPath, StandardCopyOption.REPLACE_EXISTING)
+            doc.ckey = ckey
+            doc.save()
         }
         else {
-            log.debug '[encryptRawFile: FAILED] ' + rfPath
-            doc.ckey = null
-            doc.save()
+            log.debug '[encryptRawFileAndUpdateDoc] FAILED -> file: ' + rfPath
         }
         encTmpFile.delete()
         decTmpFile.delete()
-
-        true
     }
 
     File encryptToTmpFile(File inFile, String ckey) {
-        File outFile = File.createTempFile('doc_', '.enc', getTempDirectory())
+        String pf = DateUtils.getSDF_yyyyMMdd().format(new Date()) + '-'
+
+        File outFile = File.createTempFile(pf, '.enc', getTmpDir())
         doCrypto(inFile, outFile, Cipher.ENCRYPT_MODE, ckey)
         outFile
     }
 
     File decryptToTmpFile(File inFile, String ckey) {
-        File outFile = File.createTempFile('doc_', '.dec', getTempDirectory())
+        String pf = DateUtils.getSDF_yyyyMMdd().format(new Date()) + '-'
+
+        File outFile = File.createTempFile(pf, '.dec', getTmpDir())
         if (ckey) {
             doCrypto(inFile, outFile, Cipher.DECRYPT_MODE, ckey)
         }
         else {
-            log.debug'[decryptToTmpFile: FAILED] -> no ckey -> raw file copied'
+            log.debug'[decryptToTmpFile] FAILED -> no ckey -> raw file copied'
             Files.copy(inFile.toPath(), outFile.toPath(), StandardCopyOption.REPLACE_EXISTING) // todo: ERMS-6382 FALLBACK
         }
         outFile
@@ -78,8 +85,9 @@ class FileCryptService {
             Map cfg           = getConfig()
 
             String passphrase = ConfigMapper.getDocumentStorageKey() ?: cfg.PASSPHRASE
-            String salt       = ckey.take(cfg.SALT)
-            String iv         = ckey.takeRight(cfg.IV)
+            String ckeyValue  = ckey.split(cfg.DIGEST_DELIM).last()
+            String salt       = ckeyValue.take(cfg.SALT)
+            String iv         = ckeyValue.takeRight(cfg.IV)
 
             SecretKeyFactory factory = SecretKeyFactory.getInstance(cfg.ALGORITHM_PRF)
             KeySpec spec    = new PBEKeySpec(passphrase.toCharArray(), salt.getBytes(), cfg.ALGORITHM_IC, cfg.ALGORITHM_KL)
@@ -118,12 +126,11 @@ class FileCryptService {
         catch (Exception e) {
             log.error e.toString()
 
-            String pck = ckey.take(4) + '..' + ckey.takeRight(4)
             if (cipherMode == Cipher.DECRYPT_MODE) {
-                SystemEvent.createEvent('CRYPTO_DECRYPT_ERROR', ['error': e.toString(), file: inFile.getName(), ckey: pck])
+                SystemEvent.createEvent('CRYPTO_DECRYPT_ERROR', ['error': e.toString(), file: inFile.getName(), ckey: ckey.take(16)])
             }
             if (cipherMode == Cipher.ENCRYPT_MODE) {
-                SystemEvent.createEvent('CRYPTO_ENCRYPT_ERROR', ['error': e.toString(), file: inFile.getName(), ckey: pck])
+                SystemEvent.createEvent('CRYPTO_ENCRYPT_ERROR', ['error': e.toString(), file: inFile.getName(), ckey: ckey.take(16)])
             }
         }
     }
@@ -132,11 +139,7 @@ class FileCryptService {
         (-1L == Files.mismatch(aFile.toPath(), bFile.toPath()))
     }
 
-    Map getConfig() {
-        CONFIG.DEFAULT
-    }
-
-    File getTempDirectory() {
+    File getTmpDir() {
         File dir = new File(System.getProperty('java.io.tmpdir') + getConfig().TMP_DIR)
         if (! dir.exists()) {
             dir.mkdirs()
@@ -144,7 +147,25 @@ class FileCryptService {
         dir
     }
 
+    Map getConfig() {
+        CONFIG.DEFAULT
+    }
+
+    String getMessageDigest(String message, int length = 64) {
+        MessageDigest md = MessageDigest.getInstance('SHA-256')
+        md.update(message.getBytes())
+        md.digest().encodeHex().toString().take(length)
+    }
+
     String generateCKey() {
-        RandomUtils.getAlphaNumeric(getConfig().CKEY)
+        Map cfg     = getConfig()
+        String salt = RandomUtils.getAlphaNumeric(cfg.SALT)
+        String iv   = RandomUtils.getAlphaNumeric(cfg.IV)
+
+        String passphrase = ConfigMapper.getDocumentStorageKey() ?: cfg.PASSPHRASE
+        String cfgMd      = getMessageDigest(cfg.ID, cfg.DIGEST)
+        String ppMd       = getMessageDigest(passphrase, cfg.DIGEST)
+
+        cfgMd + cfg.DIGEST_DELIM + ppMd + cfg.DIGEST_DELIM + salt + iv
     }
 }

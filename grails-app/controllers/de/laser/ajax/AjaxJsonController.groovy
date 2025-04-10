@@ -863,17 +863,17 @@ class AjaxJsonController {
     }
 
     /**
-     * Call to retrieve all possible title series for the given context
+     * Call to retrieve all possible first authors of titles for the given context
      */
     @Secured(['ROLE_USER'])
-    def getAllPossibleSeries() {
+    def getAllPossibleSimpleFieldValues() {
         Map result = [:]
         switch(params.by) {
-            case 'pkg': result.results = controlledListService.getAllPossibleSeriesByPackage(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
+            case 'pkg': result.results = controlledListService.getAllPossibleSimpleFieldValuesByPackage(genericOIDService.resolveOID(params.obj), params.query, params.forTitles, params.fieldName)
                 break
-            case 'status': result.results = controlledListService.getAllPossibleSeriesByStatus(params)
+            case 'status': result.results = controlledListService.getAllPossibleSimpleFieldValuesByStatus(params)
                 break
-            case 'sub': result.results = controlledListService.getAllPossibleSeriesBySub(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
+            case 'sub': result.results = controlledListService.getAllPossibleSimpleFieldValuesBySub(genericOIDService.resolveOID(params.obj), params.query, params.forTitles, params.fieldName)
                 break
         }
         render result as JSON
@@ -965,34 +965,17 @@ class AjaxJsonController {
     }
 
     /**
-     * Call to retrieve all possible title types for the given context
-     */
-    @Secured(['ROLE_USER'])
-    def getAllPossibleTitleTypes() {
-        Map result = [:]
-        switch(params.by) {
-            case 'pkg': result.results = controlledListService.getAllPossibleTitleTypesByPackage(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
-                break
-            case 'status': result.results = controlledListService.getAllPossibleTitleTypesByStatus(params)
-                break
-            case 'sub': result.results = controlledListService.getAllPossibleTitleTypesBySub(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
-                break
-        }
-        render result as JSON
-    }
-
-    /**
      * Call to retrieve all possible title publishers (not providers nor vendors!) for the given context
      */
     @Secured(['ROLE_USER'])
-    def getAllPossiblePublishers() {
+    def getAllPossibleProviders() {
         Map result = [:]
         switch(params.by) {
-            case 'pkg': result.results = controlledListService.getAllPossiblePublisherByPackage(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
+            case 'pkg': result.results = controlledListService.getAllPossibleProvidersByPackage(genericOIDService.resolveOID(params.obj), params.query)
                 break
-            case 'status': result.results = controlledListService.getAllPossiblePublisherByStatus(params)
+            case 'status': result.results = controlledListService.getAllPossibleProvidersByStatus(params)
                 break
-            case 'sub': result.results = controlledListService.getAllPossiblePublisherBySub(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
+            case 'sub': result.results = controlledListService.getAllPossibleProvidersBySub(genericOIDService.resolveOID(params.obj), params.query, params.forTitles)
                 break
         }
         render result as JSON

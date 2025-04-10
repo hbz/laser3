@@ -6,7 +6,7 @@
     <ui:errors bean="${newProp}" />
 </g:if>
 <table class="ui compact la-js-responsive-table la-table-inCard table">
-    <g:if test="${propDefGroup}">
+    <g:if test="${propDefGroupItems && propDefGroup}">
         <colgroup>
             <col class="la-prop-col-1">
             <col class="la-prop-col-2">
@@ -33,21 +33,6 @@
         </thead>
     </g:if>
     <tbody>
-        <g:set var="isGroupVisible" value="${propDefGroup.isVisible || propDefGroupBinding?.isVisible}"/>
-        <g:if test="${ownobj instanceof License}">
-            <g:set var="consortium" value="${ownobj.getLicensingConsortium()}"/>
-            <g:set var="atSubscr" value="${ownobj._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION}"/>
-        </g:if>
-        <g:elseif test="${ownobj instanceof Subscription}">
-            <g:set var="consortium" value="${ownobj.getConsortium()}"/>
-            <g:set var="atSubscr" value="${ownobj._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION}"/>
-        </g:elseif>
-        <g:if test="${isGroupVisible}">
-            <g:set var="propDefGroupItems" value="${propDefGroup.getCurrentProperties(ownobj)}" />
-        </g:if>
-        <g:elseif test="${consortium != null}">
-            <g:set var="propDefGroupItems" value="${propDefGroup.getCurrentPropertiesOfTenant(ownobj,consortium)}" />
-        </g:elseif>
         <g:each in="${propDefGroupItems}" var="prop">
             <g:set var="overwriteEditable" value="${(prop.tenant?.id == contextService.getOrg().id && editable) || (!prop.tenant && editable)}"/>
             <g:if test="${(prop.tenant?.id == contextService.getOrg().id || !prop.tenant) || prop.isPublic || (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf))}">
@@ -259,7 +244,7 @@
                                 </g:else>
                             </g:if>
                             <g:elseif test="${prop.tenant?.id == consortium?.id && atSubscr}">
-                                <span class="la-popup-tooltip" data-content="${message(code:'property.notInherited.fromConsortia')}" data-position="top right"><i class="icon cart arrow down grey "></i></span>
+                                <span class="la-popup-tooltip" data-content="${message(code:'property.notInherited.fromConsortia')}" data-position="top right"><i class="icon cart arrow down grey"></i></span>
                             </g:elseif>
                         </g:else>
                     </td>

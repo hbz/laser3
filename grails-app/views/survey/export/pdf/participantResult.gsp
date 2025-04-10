@@ -104,7 +104,6 @@
     <g:render template="/templates/survey/export/subscriptionSurveyPDF" model="[surveyConfig       : surveyConfig,
                                                                                 subscription       : subscription,
                                                                                 visibleProviders: providerRoles,
-                                                                                surveyResults      : surveyResults,
                                                                                 participant: participant,
                                                                                 ownerView: ownerView]"/>
 </g:if>
@@ -125,7 +124,6 @@
     <g:render template="/templates/survey/export/subscriptionSurveyPDF" model="[surveyConfig       : surveyConfig,
                                                                                 subscription       : subscription,
                                                                                 visibleProviders: providerRoles,
-                                                                                surveyResults      : surveyResults,
                                                                                 participant: participant,
                                                                                 ownerView: ownerView]"/>
 

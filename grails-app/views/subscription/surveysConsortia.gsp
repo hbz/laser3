@@ -93,7 +93,7 @@
                             </span>
                         </g:if>
 
-                        <g:link controller="survey" action="show" id="${surveyInfo.id}" class="ui ">
+                        <g:link controller="survey" action="show" id="${surveyInfo.id}" class="ui">
                             ${surveyConfig.getConfigNameShort()}
                         </g:link>
                     </div>

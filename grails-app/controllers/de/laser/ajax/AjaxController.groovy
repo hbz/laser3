@@ -41,6 +41,7 @@ import de.laser.wekb.VendorRole
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
+import groovy.sql.GroovyRowResult
 import org.apache.http.HttpStatus
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.transaction.TransactionStatus
@@ -62,7 +63,7 @@ import java.util.concurrent.ExecutorService
 class AjaxController {
 
     AccessService accessService
-    CacheService cacheService
+    BatchQueryService batchQueryService
     ContextService contextService
     DashboardDueDatesService dashboardDueDatesService
     EscapeService escapeService
@@ -71,12 +72,14 @@ class AjaxController {
     FormService formService
     GenericOIDService genericOIDService
     IdentifierService identifierService
+    IssueEntitlementService issueEntitlementService
     LinksGenerationService linksGenerationService
     ManagementService managementService
     PackageService packageService
     PropertyService propertyService
     SubscriptionControllerService subscriptionControllerService
     SubscriptionService subscriptionService
+    TitleService titleService
 
     def refdata_config = [
     "Licenses" : [
@@ -463,102 +466,72 @@ class AjaxController {
           }
 		  Map<String, String> newChecked = checked ?: [:]
           if(params.referer == 'renewEntitlementsWithSurvey'){
-
-              /*Subscription baseSub = Subscription.get(params.baseSubID)
-              Subscription newSub = Subscription.get(params.newSubID)
-              Subscription previousSubscription = newSub._getCalculatedPreviousForSurvey()
-
-              List<Long> sourceTipps
-              GrailsParameterMap parameterMap = params.clone()
-              Map query2 = filterService.getIssueEntitlementQuery(parameterMap+[titleGroup: params.titleGroup], newSub)
-              List<Long> selectedIETipps = IssueEntitlement.executeQuery("select ie.tipp.id " + query2.query, query2.queryParams)
-
-              Map query3 = filterService.getIssueEntitlementQuery(params, newSub)
-              List<Long> targetIETipps = IssueEntitlement.executeQuery("select ie.tipp.id " + query3.query, query3.queryParams)
-
-              List<IssueEntitlement> sourceIEs
-
-              if(params.tab == 'selectedIEs') {
-                  sourceTipps = selectedIETipps
-                  sourceTipps = sourceTipps.minus(targetIETipps)
-                  sourceIEs = sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotEqual(TitleInstancePackagePlatform.findAllByIdInList(sourceTipps), newSub, RDStore.TIPP_STATUS_REMOVED) : []
+              Map<String, Object> result = subscriptionService.getRenewalGenerics(params)
+              IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
+              if(issueEntitlementGroup) {
+                  result.titleGroup = issueEntitlementGroup
               }
-
-              sourceIEs.each { IssueEntitlement ie ->
-                  newChecked[ie.id.toString()] = params.checked == 'true' ? 'checked' : null
-              }*/
-
-              newChecked = [:]
-              Subscription baseSub = Subscription.get(params.baseSubID)
-
-              if(params.tab == 'allTipps') {
-                  filterParams.status = [RDStore.TIPP_STATUS_CURRENT.id]
-                  Map<String, Object> query = filterService.getTippQuery(filterParams, baseSub.packages.pkg)
-                  List<Long> titleIDList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
-
-
-                  Subscription subscriberSub = Subscription.get(params.newSubID)
-                  SurveyConfig surveyConfig = SurveyConfig.findById(params.surveyConfigID)
-                  IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub)
-                  Set<Subscription> subscriptions = []
-                  if(surveyConfig.pickAndChoosePerpetualAccess) {
-                      subscriptions = linksGenerationService.getSuccessionChain(subscriberSub, 'sourceSubscription')
-                  }
-                  else {
-                      subscriptions << subscriberSub
-                  }
-                  if(subscriptions) {
-                      Set<Long> sourceTIPPs = []
-                      List rows
-                      if(surveyConfig.pickAndChoosePerpetualAccess) {
-                          rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, tipp.id as tipp_id) from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subs) and ie.perpetualAccessBySub in (:subs) and ie.status = :current and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) group by tipp.hostPlatformURL, tipp.id, ie.id', [subs: subscriptions, current: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
-                      }
-                      else {
-                          rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, ie.tipp.id as tipp_id) from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)', [sub: subscriberSub, ieStatus: RDStore.TIPP_STATUS_CURRENT, ieGroup: issueEntitlementGroup])
-                      }
-                      sourceTIPPs.addAll(rows["tipp_id"])
-                      titleIDList = titleIDList.minus(sourceTIPPs)
-                  }
-
-
-                  titleIDList.each { Long tippID ->
-                      newChecked[tippID.toString()] = params.checked == 'true' ? 'checked' : null
-                  }
+              else {
+                  result.titleGroup = null
               }
-
-              if(params.tab == 'selectedIEs') {
-                  Subscription subscriberSub = Subscription.get(params.newSubID)
-                  SurveyConfig surveyConfig = SurveyConfig.findById(params.surveyConfigID)
-                  IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub)
-                  if(issueEntitlementGroup) {
-                      if(params.subTab){
-                          if(params.subTab == 'currentIEs'){
-                              params.status = [RDStore.TIPP_STATUS_CURRENT.id]
-                          }else if(params.subTab == 'plannedIEs'){
-                              params.status = [RDStore.TIPP_STATUS_EXPECTED.id]
-                          }else if(params.subTab == 'expiredIEs'){
-                              params.status = [RDStore.TIPP_STATUS_RETIRED.id]
-                          }else if(params.subTab == 'deletedIEs'){
-                              params.status = [RDStore.TIPP_STATUS_DELETED.id]
-                          }else if(params.subTab == 'allIEs'){
-                              params.status = [RDStore.TIPP_STATUS_CURRENT.id, RDStore.TIPP_STATUS_EXPECTED.id, RDStore.TIPP_STATUS_RETIRED.id, RDStore.TIPP_STATUS_DELETED.id]
+              Map<String, Object> parameterGenerics = issueEntitlementService.getParameterGenerics(result.configMap)
+              Map<String, Object> titleConfigMap = parameterGenerics.titleConfigMap,
+                                  identifierConfigMap = parameterGenerics.identifierConfigMap,
+                                  issueEntitlementConfigMap = parameterGenerics.issueEntitlementConfigMap
+              //build up title data
+              if(!result.configMap.containsKey('status')) {
+                  titleConfigMap.tippStatus = RDStore.TIPP_STATUS_CURRENT.id
+                  issueEntitlementConfigMap.ieStatus = RDStore.TIPP_STATUS_CURRENT.id
+              }
+              Map<String, Object> query = filterService.getTippSubsetQuery(titleConfigMap)
+              Set<Long> tippIDs = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+              if(result.identifier) {
+                  tippIDs = tippIDs.intersect(titleService.getTippsByIdentifier(identifierConfigMap, result.identifier))
+              }
+              switch (params.tab) {
+                  case 'allTipps': tippIDs.each { Long tippID ->
+                      if(newChecked.containsKey(tippID.toString()))
+                          newChecked.remove(tippID.toString())
+                      else newChecked.put(tippID.toString(), 'checked')
+                  }
+                      break
+                  case 'selectableTipps':
+                      Set<Subscription> subscriptions = []
+                      if(result.surveyConfig.pickAndChoosePerpetualAccess) {
+                          subscriptions = linksGenerationService.getSuccessionChain(result.subscription, 'sourceSubscription')
+                      }
+                      //else {
+                          subscriptions << result.subscription
+                      //}
+                      if(subscriptions) {
+                          Set<Long> sourceTIPPs = []
+                          List rows
+                          //and ie not in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) - does not make sense for bulkcheck???
+                          if(result.surveyConfig.pickAndChoosePerpetualAccess) {
+                              rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, tipp.id as tipp_id) from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subs) and ie.perpetualAccessBySub in (:subs) and ie.status = :current group by tipp.hostPlatformURL, tipp.id, ie.id', [subs: subscriptions, current: RDStore.TIPP_STATUS_CURRENT])
                           }
-                      } else{
-                          params.currentIEs = 'currentIEs'
-                          params.status = [RDStore.TIPP_STATUS_CURRENT.id]
+                          else {
+                              rows = IssueEntitlement.executeQuery('select new map(ie.id as ie_id, ie.tipp.id as tipp_id) from IssueEntitlement ie where ie.subscription = :sub and ie.status = :ieStatus)', [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])
+                          }
+                          sourceTIPPs.addAll(rows["tipp_id"])
+                          tippIDs = tippIDs.minus(sourceTIPPs)
                       }
-
-                      params.titleGroup = issueEntitlementGroup.id
-                      Map query = filterService.getIssueEntitlementQuery(params, subscriberSub)
-                      List<Long> ieIDList = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
-
-                      ieIDList.each { Long ieID ->
-                          newChecked[ieID.toString()] = params.checked == 'true' ? 'checked' : null
+                      tippIDs.each { Long tippID ->
+                          if(newChecked.containsKey(tippID.toString()))
+                              newChecked.remove(tippID.toString())
+                          else newChecked.put(tippID.toString(), 'checked')
                       }
-
-                  }
+                      break
+                  case 'selectedIEs': issueEntitlementConfigMap.tippIDs = tippIDs
+                      Map<String, Object> queryPart2 = filterService.getIssueEntitlementSubsetSQLQuery(issueEntitlementConfigMap)
+                      List<GroovyRowResult> rows = batchQueryService.longArrayQuery(queryPart2.query, queryPart2.arrayParams, queryPart2.queryParams)
+                      rows.each { GroovyRowResult row ->
+                          if(newChecked.containsKey(row['ie_id']))
+                              newChecked.remove(row['ie_id'])
+                          else newChecked.put(row['ie_id'], 'checked')
+                      }
+                      break
               }
-
           }
           else {
               Set<Package> pkgFilter = []
@@ -1026,16 +999,39 @@ class AjaxController {
         else
         {
               if (params.propDefGroup) {
-                render(template: "/templates/properties/group", model: [
-                        ownobj          : owner,
-                        newProp         : newProp,
-                        error           : error,
-                        showConsortiaFunctions: showConsortiaFunctions,
-                        propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
-                        propDefGroupBinding : genericOIDService.resolveOID(params.propDefGroupBinding),
-                        custom_props_div: "${params.custom_props_div}", // JS markup id
-                        prop_desc       : type.descr // form data
-                ])
+                  Org consortium
+                  boolean atSubscr
+                  List propDefGroupItems = []
+                  PropertyDefinitionGroup propDefGroup = genericOIDService.resolveOID(params.propDefGroup)
+                  PropertyDefinitionGroupBinding propDefGroupBinding = genericOIDService.resolveOID(params.propDefGroupBinding)
+                  boolean isGroupVisible = propDefGroup.isVisible || propDefGroupBinding?.isVisible
+                  if (owner instanceof License) {
+                      consortium = owner.getLicensingConsortium()
+                      atSubscr = owner._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION
+                  } else if (owner instanceof Subscription) {
+                      consortium = owner.getConsortium()
+                      atSubscr = owner._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION
+                  }
+                  if (isGroupVisible) {
+                      propDefGroupItems = propDefGroup.getCurrentProperties(owner)
+                  } else if (consortium != null) {
+                      propDefGroupItems = propDefGroup.getCurrentPropertiesOfTenant(owner, consortium)
+                  }
+                  Map<String, Object> modelMap = [
+                          isGroupVisible: isGroupVisible,
+                          atSubscr: atSubscr,
+                          consortium: consortium,
+                          propDefGroupItems: propDefGroupItems,
+                          ownobj          : owner,
+                          newProp         : newProp,
+                          error           : error,
+                          showConsortiaFunctions: showConsortiaFunctions,
+                          propDefGroup    : propDefGroup,
+                          propDefGroupBinding : propDefGroupBinding,
+                          custom_props_div: "${params.custom_props_div}", // JS markup id
+                          prop_desc       : type.descr // form data
+                  ]
+                render(template: "/templates/properties/group", model: modelMap)
               }
               else {
                   Map<String, Object> allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
@@ -1402,15 +1398,40 @@ class AjaxController {
             property.isPublic = !property.isPublic
             property.save()
             request.setAttribute("editable", params.editable == "true")
+            boolean showConsortiaFunctions = Boolean.parseBoolean(params.showConsortiaFunctions)
             if(params.propDefGroup) {
-                render(template: "/templates/properties/group", model: [
+                Org consortium
+                boolean atSubscr
+                List propDefGroupItems = []
+                PropertyDefinitionGroup propDefGroup = genericOIDService.resolveOID(params.propDefGroup)
+                PropertyDefinitionGroupBinding propDefGroupBinding = genericOIDService.resolveOID(params.propDefGroupBinding)
+                boolean isGroupVisible = propDefGroup.isVisible || propDefGroupBinding?.isVisible
+                if (property.owner instanceof License) {
+                    consortium = property.owner.getLicensingConsortium()
+                    atSubscr = property.owner._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION
+                } else if (property.owner instanceof Subscription) {
+                    consortium = property.owner.getConsortium()
+                    atSubscr = property.owner._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION
+                }
+                if (isGroupVisible) {
+                    propDefGroupItems = propDefGroup.getCurrentProperties(property.owner)
+                } else if (consortium != null) {
+                    propDefGroupItems = propDefGroup.getCurrentPropertiesOfTenant(property.owner, consortium)
+                }
+                Map<String, Object> modelMap = [
+                        isGroupVisible: isGroupVisible,
+                        atSubscr: atSubscr,
+                        consortium: consortium,
+                        propDefGroupItems: propDefGroupItems,
                         ownobj          : property.owner,
                         newProp         : property,
-                        showConsortiaFunctions: params.showConsortiaFunctions == "true",
-                        propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
+                        showConsortiaFunctions: showConsortiaFunctions,
+                        propDefGroup    : propDefGroup,
+                        propDefGroupBinding : propDefGroupBinding,
                         custom_props_div: "${params.custom_props_div}", // JS markup id
                         prop_desc       : property.type.descr // form data
-                ])
+                ]
+                render(template: "/templates/properties/group", model: modelMap)
             }
             else {
                 Map<String, Object>  allPropDefGroups = property.owner.getCalculatedPropDefGroups(contextService.getOrg())
@@ -1418,7 +1439,7 @@ class AjaxController {
                 Map<String, Object> modelMap =  [
                         ownobj                : property.owner,
                         newProp               : property,
-                        showConsortiaFunctions: params.showConsortiaFunctions == "true",
+                        showConsortiaFunctions: showConsortiaFunctions,
                         custom_props_div      : "${params.custom_props_div}", // JS markup id
                         prop_desc             : property.type.descr, // form data
                         orphanedProperties    : allPropDefGroups.orphanedProperties
@@ -1497,15 +1518,41 @@ class AjaxController {
         }
 
         request.setAttribute("editable", params.editable == "true")
+        boolean showConsortiaFunctions = Boolean.parseBoolean(params.showConsortiaFunctions)
         if (params.propDefGroup) {
-          render(template: "/templates/properties/group", model: [
-                  ownobj          : owner,
-                  newProp         : property,
-                  showConsortiaFunctions: params.showConsortiaFunctions,
-                  propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
-                  custom_props_div: "${params.custom_props_div}", // JS markup id
-                  prop_desc       : prop_desc // form data
-          ])
+            Org consortium
+            boolean atSubscr
+            List propDefGroupItems = []
+            PropertyDefinitionGroup propDefGroup = genericOIDService.resolveOID(params.propDefGroup)
+            PropertyDefinitionGroupBinding propDefGroupBinding = genericOIDService.resolveOID(params.propDefGroupBinding)
+            boolean isGroupVisible = propDefGroup.isVisible || propDefGroupBinding?.isVisible
+            if (owner instanceof License) {
+                consortium = owner.getLicensingConsortium()
+                atSubscr = owner._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION
+            } else if (owner instanceof Subscription) {
+                consortium = owner.getConsortium()
+                atSubscr = owner._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION
+            }
+            if (isGroupVisible) {
+                propDefGroupItems = propDefGroup.getCurrentProperties(owner)
+            } else if (consortium != null) {
+                propDefGroupItems = propDefGroup.getCurrentPropertiesOfTenant(owner, consortium)
+            }
+            Map<String, Object> modelMap = [
+                    isGroupVisible: isGroupVisible,
+                    atSubscr: atSubscr,
+                    consortium: consortium,
+                    propDefGroupItems: propDefGroupItems,
+                    ownobj          : owner,
+                    newProp         : property,
+                    showConsortiaFunctions: showConsortiaFunctions,
+                    propDefGroup    : propDefGroup,
+                    propDefGroupBinding : propDefGroupBinding,
+                    custom_props_div: "${params.custom_props_div}", // JS markup id
+                    prop_desc       : prop_desc // form data
+            ]
+
+          render(template: "/templates/properties/group", model: modelMap)
         }
         else {
             Map<String, Object>  allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
@@ -1513,7 +1560,7 @@ class AjaxController {
             Map<String, Object> modelMap =  [
                     ownobj                : owner,
                     newProp               : property,
-                    showConsortiaFunctions: params.showConsortiaFunctions,
+                    showConsortiaFunctions: showConsortiaFunctions,
                     custom_props_div      : "${params.custom_props_div}", // JS markup id
                     prop_desc             : prop_desc, // form data
                     orphanedProperties    : allPropDefGroups.orphanedProperties
@@ -1555,9 +1602,29 @@ class AjaxController {
             request.setAttribute("editable", params.editable == "true")
             boolean showConsortiaFunctions = Boolean.parseBoolean(params.showConsortiaFunctions)
             if(params.propDefGroup) {
+                Org consortium
+                boolean atSubscr
+                List propDefGroupItems = []
                 PropertyDefinitionGroup propDefGroup = genericOIDService.resolveOID(params.propDefGroup)
                 PropertyDefinitionGroupBinding propDefGroupBinding = genericOIDService.resolveOID(params.propDefGroupBinding)
+                boolean isGroupVisible = propDefGroup.isVisible || propDefGroupBinding?.isVisible
+                if (owner instanceof License) {
+                    consortium = owner.getLicensingConsortium()
+                    atSubscr = owner._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION
+                } else if (owner instanceof Subscription) {
+                    consortium = owner.getConsortium()
+                    atSubscr = owner._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_PARTICIPATION
+                }
+                if (isGroupVisible) {
+                    propDefGroupItems = propDefGroup.getCurrentProperties(owner)
+                } else if (consortium != null) {
+                    propDefGroupItems = propDefGroup.getCurrentPropertiesOfTenant(owner, consortium)
+                }
                 Map<String, Object> modelMap = [
+                        isGroupVisible: isGroupVisible,
+                        atSubscr: atSubscr,
+                        consortium: consortium,
+                        propDefGroupItems: propDefGroupItems,
                         ownobj          : owner,
                         newProp         : property,
                         showConsortiaFunctions: showConsortiaFunctions,

@@ -231,19 +231,22 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
         SimpleDateFormat sdf = DateUtils.getSDF_yy()
         //Month is zero-based, April-September is summer term
         String semesterKey
-        if(now.get(Calendar.MONTH) < 3) {
+        //if(now.get(Calendar.MONTH) < 10) {
             adjacentYear.add(Calendar.YEAR, -1)
             //semesterKey = "w${adjacentYear.getTime().format("yy")}/${now.getTime().format("yy")}"
             semesterKey = "w${sdf.format(adjacentYear.getTime())}/${sdf.format(now.getTime())}"
-        }
-        else if(now.get(Calendar.MONTH) >= 9) {
+        //}
+        /*else if(now.get(Calendar.MONTH) >= 9) {
+        //else {
             adjacentYear.add(Calendar.YEAR, 1)
             //semesterKey = "w${now.getTime().format("yy")}/${adjacentYear.getTime().format("yy")}"
             semesterKey = "w${sdf.format(now.getTime())}/${sdf.format(adjacentYear.getTime())}"
-        }
+        }*/
+        /* summer terms are not being recorded as of ERMS-6179
         else {
             semesterKey = "s${sdf.format(now.getTime())}"
         }
+        */
         RefdataValue.getByValue(semesterKey)
     }
 

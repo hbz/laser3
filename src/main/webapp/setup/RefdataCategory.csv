@@ -42,8 +42,8 @@ cost.information.availability.database,Informationsversorgungskosten Datenbanken
 cost.information.availability.ill,Informationsversorgungskosten für Fernleihe oder Dokumentlieferung,TODO ERMS-6310
 cost.information.availability.journal,Informationsversorgungskosten Zeitschriften (nur lesen),TODO ERMS-6310
 cost.information.availability.other,Informationsversorgungskosten sonstige Medien oder Dienste,TODO ERMS-6310
-cost.information.contracts.contractual,Überregionale bibliothekarische Dienste,TODO ERMS-6310
-cost.information.contracts.library,Rahmenvertrag technisch-inhaltlich,TODO ERMS-6310
+cost.information.contracts.contractual,Rahmenvertrag technisch-inhaltlich,TODO ERMS-6310
+cost.information.contracts.library,Überregionale bibliothekarische Dienste,TODO ERMS-6310
 cost.information.contracts.membership,Institutionelle Mitgliedschaften in Verbünden oder erstattungsfähige persönliche Mitgliedschaften in Berufsverbänden o. ä.,TODO ERMS-6310
 cost.information.personnel.infrastructure,Personal Betrieb Infrastrukturen,TODO ERMS-6310
 cost.information.personnel.service,Serviceangebote und Workflows,TODO ERMS-6310

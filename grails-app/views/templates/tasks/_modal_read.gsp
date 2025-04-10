@@ -1,7 +1,7 @@
 <%@ page import="de.laser.utils.RandomUtils; de.laser.ui.Icon;" %>
 <laser:serviceInjection />
 
-<ui:modal id="modalReadTask" message="task.label" hideSubmitButton="true">
+<ui:modal id="modalReadTask" text="${message(code:'task.label')} (${message(code:'default.readOnly.label')})" hideSubmitButton="true">
 
     <g:set var="preID" value="${RandomUtils.getHtmlID()}" />
 
@@ -18,20 +18,6 @@
                 <g:message code="default.description.label"/>
             </label>
             <g:textArea id="${preID}_description" name="description" readonly="readonly" value="${taskInstance.description}" rows="5" cols="40"/>
-        </div>
-
-        <div class="field">
-            <label>${message(code: 'task.object.label')}: </label>
-            <g:if test="${taskInstance.getObjectInfo()}">
-                <g:set var="tskObj" value="${taskInstance.getObjectInfo()}" />
-                <div class="la-flexbox">
-                    <i class="${tskObj.icon} la-list-icon"></i>
-                    <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object.id]}">${tskObj.object}</g:link>
-                </div>
-            </g:if>
-            <g:else>
-                <div class="la-flexbox">${message(code: 'task.general')}</div>
-            </g:else>
         </div>
 
         <div class="field">
@@ -61,6 +47,42 @@
             <g:if test="${taskInstance.responsibleUser?.id}">
                 <g:textField id="${preID}_responsible" name="responsible" readonly="readonly" value="${taskInstance.responsibleUser.getDisplayName()}"/>
             </g:if>
+        </div>
+
+        <div class="field">
+            <div class="two fields">
+                <div class="field">
+                    <label>${message(code: 'task.object.label')}: </label>
+                    <div style="padding:0.5em 0.75em; border:1px dashed lightgrey; border-radius:0.3rem">
+                        <g:if test="${taskInstance.getObjectInfo()}">
+                            <g:set var="tskObj" value="${taskInstance.getObjectInfo()}" />
+                            <div class="la-flexbox">
+                                <i class="${tskObj.icon} la-list-icon"></i>
+                                <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object.id]}">${tskObj.object}</g:link>
+                            </div>
+                        </g:if>
+                        <g:else>
+                            <div class="la-flexbox">${message(code: 'task.general')}</div>
+                        </g:else>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>
+                        <g:message code="task.creator.label"/>
+                    </label>
+                    <div style="padding:0.5em 0.75em; border:1px dashed lightgrey; border-radius:0.3rem">
+                        <div class="la-flexbox">
+                            <g:if test="${taskInstance.creator.id == contextService.getUser().id}">
+                                <i class="${Icon.SIG.MY_OBJECT} la-list-icon"></i>
+                            </g:if>
+                            <g:else>
+                                <i class="${Icon.ATTR.TASK_CREATOR} la-list-icon"></i>
+                            </g:else>
+                            ${taskInstance.creator.getDisplayName()}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>

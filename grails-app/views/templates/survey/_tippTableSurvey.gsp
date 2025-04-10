@@ -38,7 +38,8 @@
                             </span>
                         </g:if>
                         <div class="one wide column">
-                            <g:if test="${(params.tab == 'allTipps') && (editable && !ieInNewSub && allowedToSelect)}">
+                            <%-- TODO ask Moe: is params.tab == 'allTipps' relevant? --%>
+                            <g:if test="${editable && !ieInNewSub && allowedToSelect}">
                                 <input type="checkbox" name="bulkflag"
                                        class="bulkcheck la-js-notOpenAccordion la-vertical-centered" ${checkedCache ? checkedCache[tipp.id.toString()] : ''}>
                             </g:if>
@@ -241,9 +242,9 @@
         </g:each>
     </div><%-- .accordions --%>
     <div class="ui segment grid la-filter">
-        <div class="twelve wide column ">
+        <div class="twelve wide column">
         </div>
-        <div class="four wide column ">
+        <div class="four wide column">
             <div class="ui list">
                %{-- <div class="item">
                     <div class="content">

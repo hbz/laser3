@@ -1440,7 +1440,7 @@ class ExportClickMeService {
                         message: 'provider.label',
                         fields: [
                                 'provider.name'                  : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                                'provider.sortname'              : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
+                                'provider.sortname'              : [field: 'sortname', label: 'Sortname', message: 'default.shortname.label', defaultChecked: 'true'],
                                 'provider.altnames'              : [field: 'altnames', label: 'Alternative names', message: 'altname.plural'],
                                 'provider.status'                : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: true],
                                 'provider.homepage'              : [field: 'homepage', label: 'Homepage URL', message: 'org.homepage.label', defaultChecked: true],
@@ -1500,7 +1500,7 @@ class ExportClickMeService {
                         message: 'vendor.label',
                         fields: [
                                 'vendor.name'                  : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                                'vendor.sortname'              : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
+                                'vendor.sortname'              : [field: 'sortname', label: 'Sortname', message: 'default.shortname.label', defaultChecked: 'true'],
                                 'vendor.altnames'              : [field: 'altnames', label: 'Alternative names', message: 'altname.plural'],
                                 'vendor.status'                : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: true],
                                 'vendor.homepage'              : [field: 'homepage', label: 'Homepage URL', message: 'org.homepage.label', defaultChecked: true],
@@ -1797,11 +1797,11 @@ class ExportClickMeService {
                         label  : 'IssueEntitlement',
                         message: 'issueEntitlement.label',
                         fields : [
-                                'issueEntitlement.tipp.name'                : [field: 'tipp.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true', sqlCol: 'tipp_name'],
+                                'issueEntitlement.tipp.name'                : [field: 'tipp.name', label: 'Name', message: 'tipp.name', defaultChecked: 'true', sqlCol: 'tipp_name'],
                                 'issueEntitlement.status'                   : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: 'true', sqlCol: 'ie_status_rv_fk'],
                                 'issueEntitlement.tipp.medium'              : [field: 'tipp.medium', label: 'Status', message: 'tipp.medium', defaultChecked: 'true', sqlCol: 'tipp_medium_rv_fk'],
-                                'issueEntitlement.accessStartDate'          : [field: 'accessStartDate', label: 'Access Start Date', message: 'subscription.details.access_start', defaultChecked: 'true', sqlCol: 'ie_access_start_date'],
-                                'issueEntitlement.accessEndDate'            : [field: 'accessEndDate', label: 'Access End Date', message: 'subscription.details.access_end', defaultChecked: 'true', sqlCol: 'ie_access_end_date'],
+                                'issueEntitlement.accessStartDate'          : [field: 'accessStartDate', label: 'Access Start Date', message: 'tipp.accessStartDate', defaultChecked: 'true', sqlCol: 'ie_access_start_date'],
+                                'issueEntitlement.accessEndDate'            : [field: 'accessEndDate', label: 'Access End Date', message: 'tipp.accessEndDate', defaultChecked: 'true', sqlCol: 'ie_access_end_date'],
                                 'issueEntitlement.tipp.titleType'           : [field: 'tipp.titleType', label: 'Title Type', message: 'tipp.titleType', defaultChecked: 'true', sqlCol: 'tipp_title_type'],
                                 'issueEntitlement.tipp.pkg'                 : [field: 'tipp.pkg.name', label: 'Package', message: 'package.label', defaultChecked: 'true', sqlCol: 'pkg_name'],
                                 'issueEntitlement.tipp.platform.name'       : [field: 'tipp.platform.name', label: 'Platform', message: 'tipp.platform', defaultChecked: 'true', sqlCol: 'plat_name'],
@@ -1901,7 +1901,7 @@ class ExportClickMeService {
                         label: 'Title',
                         message: 'default.title.label',
                         fields: [
-                                'tipp.name'            : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true', sqlCol: 'tipp_name' ],
+                                'tipp.name'            : [field: 'name', label: 'Name', message: 'tipp.name', defaultChecked: 'true', sqlCol: 'tipp_name' ],
                                 'tipp.status'          : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: 'true', sqlCol: 'tipp_status_rv_fk'],
                                 'tipp.medium'          : [field: 'medium', label: 'Status', message: 'tipp.medium', defaultChecked: 'true', sqlCol: 'tipp_medium_rv_fk'],
                                 'tipp.titleType'       : [field: 'titleType', label: 'Title Type', message: 'tipp.titleType', defaultChecked: 'true', sqlCol: 'tipp_title_type'],

@@ -176,7 +176,7 @@
                                    optionKey="id"
                                    optionValue="value"
                                    value="${selectedCostItemElementID}"
-                                   class="ui dropdown"
+                                   class="ui dropdown clearable"
                                    id="selectedCostItemElementID"
                                    noSelection="${['': message(code: 'default.select.choose.label')]}"/>--}%
                     </g:if>

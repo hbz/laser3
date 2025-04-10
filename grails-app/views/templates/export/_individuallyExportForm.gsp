@@ -93,7 +93,7 @@
                         <g:each in="${field.value}" var="costItemsElements" status="gc">
                             <div class="wide eight field">
 
-                                <div class="ui checkbox ">
+                                <div class="ui checkbox">
                                     <input type="checkbox" name="ief:${costItemsElements.key}"
                                            id="ief:${costItemsElements.key}" ${costItemsElements.value.defaultChecked ? 'checked="checked"' : ''}>
                                     <label for="ief:${costItemsElements.key}">${costItemsElements.value.message ? message(code: costItemsElements.value.message) : costItemsElements.value.label}</label>
@@ -219,7 +219,7 @@
                         <g:each in="${field.value}" var="costItemsElements" status="gc">
                             <div class="wide eight field">
 
-                                <div class="ui checkbox ">
+                                <div class="ui checkbox">
                                     <input type="checkbox" name="iex:${costItemsElements.key}"
                                            id="iex:${costItemsElements.key}" ${costItemsElements.value.defaultChecked ? 'checked="checked"' : ''}>
                                     <label for="iex:${costItemsElements.key}">${costItemsElements.value.message ? message(code: costItemsElements.value.message) : costItemsElements.value.label}</label>

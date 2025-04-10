@@ -95,7 +95,14 @@
             },
             toolbox: {
                 feature: {
-                    saveAsImage: {}
+                    saveAsImage: {},
+                     mySortToggle: {
+                        title: 'Sort',
+                        icon: 'image://${resource(dir:'images', file:'loading.gif', absolute:true)}',
+                        onclick: function (){
+                            window.location.replace("<g:createLink controller="survey" action="surveyPackagesEvaluation" params="[id: params.id, surveyConfigID: surveyConfig.id, tab: params.tab]"/>"+'&chartSort=X');
+                        }
+                    },
                 }
             },
             dataset: {

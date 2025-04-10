@@ -85,33 +85,36 @@
         </div>
     </g:if>
 
-<%-- orphaned properties --%>
+    <g:if test="${allPropDefGroups.orphanedProperties}">
+    <%-- orphaned properties --%>
 
     <%--<div class="ui card la-dl-no-table">--%>
-    <div class="content">
-        <h3 class="ui header">
-            <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
-            <g:if test="${allPropDefGroups.global || allPropDefGroups.local || allPropDefGroups.member}">
-                ${message(code:'subscription.properties.orphaned')}
-            </g:if>
-            <g:else>
-                ${message(code:'org.properties')}
-            </g:else>
-        </h3>
+        <div class="content">
+            <h3 class="ui header">
+                <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
+                <g:if test="${allPropDefGroups.global || allPropDefGroups.local || allPropDefGroups.member}">
+                    ${message(code: 'subscription.properties.orphanedMajuscule')} ${message(code: 'subscription.propertiesBrackets')}
+                </g:if>
+                <g:else>
+                    ${message(code: 'org.properties')}
+                </g:else>
+            </h3>
 
-        <div id="custom_props_div_props">
-            <laser:render template="/templates/properties/custom" model="${[
-                    prop_desc: PropertyDefinition.ORG_PROP,
-                    ownobj: orgInstance,
-                    orphanedProperties: allPropDefGroups.orphanedProperties,
-                    custom_props_div: "custom_props_div_props" ]}"/>
+            <div id="custom_props_div_props">
+                <laser:render template="/templates/properties/custom" model="${[
+                        prop_desc         : PropertyDefinition.ORG_PROP,
+                        ownobj            : orgInstance,
+                        orphanedProperties: allPropDefGroups.orphanedProperties,
+                        custom_props_div  : "custom_props_div_props"]}"/>
+            </div>
         </div>
-    </div>
     <%--</div>--%>
 
-    <laser:script file="${this.getGroovyPageFileName()}">
-        c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup' params='[oid:"${orgInstance.class.simpleName}:${orgInstance.id}"]'/>", "#custom_props_div_props");
-    </laser:script>
+        <laser:script file="${this.getGroovyPageFileName()}">
+            c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'
+                                               params='[oid: "${orgInstance.class.simpleName}:${orgInstance.id}"]'/>", "#custom_props_div_props");
+        </laser:script>
+    </g:if>
 
 </div><!-- .card -->
 
@@ -138,11 +141,6 @@
                 </div>
             </div>
             <div class="content">
-                <h3 class="ui  header">
-                    <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
-                    ${message(code:'org.properties.private')} ${authOrg.name}
-                </h3>
-
                 <g:set var="propertyWrapper" value="private-property-wrapper-${authOrg.id}" />
                 <div id="${propertyWrapper}">
                     <laser:render template="/templates/properties/private" model="${[

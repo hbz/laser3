@@ -1660,9 +1660,9 @@ i.icon.la-list-icon:before {
 /* new buttons */
 
 .ui table td.x {
-  text-align: right;
   margin-right: 0;
   white-space: nowrap;
+  text-align: center!important;
 }
 
 .js-gost {
@@ -72286,6 +72286,77 @@ body.pushable > .pusher {
 /*******************************
          Theme Overrides
 *******************************/
+
+/* -- flyouts / markdown -- */
+
+#help-content.la-markdown > .content {
+  padding-top: 70px;
+}
+
+#help-content.la-markdown > .basic.actions {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #DCDDDE;
+}
+
+.la-markdown img {
+  max-width: 100%;
+}
+
+/* todo .. fix markup and remove */
+
+.ui.flyout:not(.la-markdown) {
+  padding: 50px 0 10px 0;
+  overflow: scroll;
+}
+
+.la-markdown ol {
+  list-style: none;
+  padding-left: 0;
+}
+
+.la-markdown ol li {
+  position: relative;
+  padding-left: 1.8em;
+}
+
+.la-markdown ol li::before {
+  content: counter(list-item);
+  position: absolute;
+  left: 0;
+  width: 1.3em;
+  height: 1.3em;
+  background: #fa820a;
+  color: white;
+  font-weight: bold;
+  font-size: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.3em;
+}
+
+.la-markdown ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.la-markdown ul li {
+  position: relative;
+  padding-left: 1.8em;
+}
+
+.la-markdown ul li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 1.3em;
+  height: 1.3em;
+  background: #767676;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.3em;
+}
 /*!
  * # Fomantic-UI 2.9.3 - Modal
  * https://github.com/fomantic/Fomantic-UI/

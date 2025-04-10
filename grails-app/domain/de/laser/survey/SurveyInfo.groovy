@@ -103,19 +103,27 @@ class SurveyInfo {
 
             if(it.subscription)
             {
-                if(!it.pickAndChoose && !(it.surveyProperties.size() > 0)) {
+                if(!it.pickAndChoose && SurveyConfigProperties.countBySurveyConfig(it)  == 0) {
                     check = false
                 }
             }
 
             if(!it.subscription)
             {
-                if(!(it.surveyProperties.size() > 0)) {
+                if(SurveyConfigProperties.countBySurveyConfig(it)  == 0) {
                     check = false
                 }
             }
 
-            if(!(it.orgs.org.size() > 0)){
+            if(SurveyOrg.countBySurveyConfig(it) == 0){
+                check = false
+            }
+
+            if(it.vendorSurvey && (SurveyConfigVendor.countBySurveyConfig(it) == 0)){
+                check = false
+            }
+
+            if(it.packageSurvey && (SurveyConfigPackage.countBySurveyConfig(it) == 0)){
                 check = false
             }
         }

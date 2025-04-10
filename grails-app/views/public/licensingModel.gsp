@@ -215,7 +215,7 @@
             <laser:script file="${this.getGroovyPageFileName()}">
                 $('#${mpg5}').click(function(){
                     $.modal({
-                        title: '${message(code:"marketing.featureList.major.${mpg5}")}<button class="ui right floated button la-animatedGif-redo ">Animation wiederholen</button>',
+                        title: '${message(code:"marketing.featureList.major.${mpg5}")}<button class="ui right floated button la-animatedGif-redo">Animation wiederholen</button>',
                         class: 'large',
                         closeIcon: true,
                         content: '<img width="100%" alt="" class="la-animatedGif-img la-padding-top-1em" src="${resource(dir: 'media', file: "showcase/${mpg5}.gif")}"/>',

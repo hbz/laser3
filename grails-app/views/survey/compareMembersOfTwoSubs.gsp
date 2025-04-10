@@ -42,9 +42,9 @@
 
         <g:render template="navCompareMembers"/>
 
-        <h2 class="ui header">
+     %{--   <h2 class="ui header">
             ${message(code: 'surveyInfo.transferMembers')}
-        </h2>
+        </h2>--}%
 
 
 
@@ -207,9 +207,10 @@
                             </thead>
                             <g:each in="${participantsList}" var="participant" status="j">
                                 <g:if test="${participant.id in parentSuccessortParticipantsList?.id}">
+                                    <g:set var="surveyOrg" value="${SurveyOrg.findByOrgAndSurveyConfig(participant, surveyConfig)}"/>
                                     <g:set var="participantSub"
                                            value="${parentSuccessorSubscription.getDerivedSubscriptionForNonHiddenSubscriber(participant)}"/>
-                                    <tr class="${participant.id in parentParticipantsList?.id ? '' : 'positive'}">
+                                    <tr class="${(participant.id in parentParticipantsList?.id || !surveyOrg) ? '' : 'positive'}">
                                         <g:set var="count2" value="${count2 + 1}"/>
                                         <td>${count2}</td>
                                         <td class="titleCell">
@@ -259,7 +260,7 @@
 
 
 
-                                            <g:if test="${SurveyOrg.findByOrgAndSurveyConfig(participant, surveyConfig)}">
+                                            <g:if test="${surveyOrg}">
                                                 <br>
                                                 <br>
 

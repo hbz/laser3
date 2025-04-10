@@ -23,6 +23,8 @@
 
 <laser:render template="nav"/>
 
+<div id="downloadWrapper"></div>
+
 <g:if test="${permanentTitlesProcessRunning}">
     <ui:msg class="warning" showIcon="true" hideClose="true" header="Info" message="subscription.details.permanentTitlesProcessRunning.info" />
 </g:if>
@@ -45,6 +47,7 @@
         <g:else>
             <input id="errorMailto" type="hidden" value="${mailTo.content.join(';')}" />
             <input id="errorMailcc" type="hidden" value="${contextService.getUser().email}" />
+            <textarea id="errorMailBody" class="hidden">${mailBody}</textarea>
             <ui:msg class="error" showIcon="true" message="subscription.details.issueEntitlementEnrichment.matchingError"
                     args="[notAddedCount, notSubscribedCount, notInPackageCount, g.createLink(controller: 'package', action:'downloadLargeFile', params:[token: token, fileformat: 'kbart'])]"/>
             <laser:script file="${this.getGroovyPageFileName()}">
@@ -52,7 +55,7 @@
                     let mailto = $('#errorMailto').val();
                     let mailcc = $('#errorMailcc').val();
                     let subject = 'Fehlerhafte KBART';
-                    let body = 'Laut ERMS-6359 noch t.b.d.';
+                    let body = $('#errorMailBody').html();
                     let href = 'mailto:' + mailto + '?subject=' + subject + '&cc=' + mailcc + '&body=' + body;
 
                     window.location.href = encodeURI(href);
@@ -220,7 +223,6 @@
 
     <laser:render template="/templates/filter/tipp_ieFilter" model="[forTitles: tab]"/>
 
-<div id="downloadWrapper"></div>
 
     <div class="ui grid">
         <div class="row">
@@ -358,7 +360,7 @@
                         </div>
                         <div class="four wide column">
                             <div class="field la-field-noLabel">
-                                <ui:select class="ui dropdown" name="bulk_local_currency" title="${message(code: 'financials.addNew.currencyType')}"
+                                <ui:select class="ui dropdown clearable" name="bulk_local_currency" title="${message(code: 'financials.addNew.currencyType')}"
                                     optionKey="id" optionValue="value" from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.CURRENCY)}"/>
                             </div>
                         </div>
@@ -374,7 +376,7 @@
                             <g:if test="${subscription.ieGroups.size() > 0}">
                                 <div class="field">
                                     <label><g:message code="subscription.details.ieGroups"/></label>
-                                    <select class="ui dropdown" name="titleGroupInsert" id="titleGroupInsert">
+                                    <select class="ui dropdown clearable" name="titleGroupInsert" id="titleGroupInsert">
                                         <option value="">${message(code: 'default.select.choose.label')}</option>
                                         <g:each in="${subscription.ieGroups.sort { it.name }}" var="titleGroup">
                                             <option value="${titleGroup.id}">${titleGroup.name}</option>

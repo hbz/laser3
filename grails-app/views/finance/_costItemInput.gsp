@@ -24,7 +24,7 @@
                             <label><g:message code="financials.isVisibleForSubscriber"/></label>
                             <g:set var="newIsVisibleForSubscriberValue" value="${costItem?.isVisibleForSubscriber ? RDStore.YN_YES.id : RDStore.YN_NO.id}" />
                             <g:if test="${idSuffix == 'bulk'}">
-                                <ui:select name="newIsVisibleForSubscriber" id="newIsVisibleForSubscriber_${idSuffix}" class="ui dropdown"
+                                <ui:select name="newIsVisibleForSubscriber" id="newIsVisibleForSubscriber_${idSuffix}" class="ui dropdown clearable"
                                               from="${yn}"
                                               optionKey="id"
                                               optionValue="value"
@@ -32,7 +32,7 @@
                                               value="" />
                             </g:if>
                             <g:else>
-                                <ui:select name="newIsVisibleForSubscriber" id="newIsVisibleForSubscriber_${idSuffix}" class="ui dropdown"
+                                <ui:select name="newIsVisibleForSubscriber" id="newIsVisibleForSubscriber_${idSuffix}" class="ui dropdown clearable"
                                               from="${yn}"
                                               optionKey="id"
                                               optionValue="value"
@@ -73,7 +73,7 @@
                     <div class="field">
                         <label><g:message code="financials.costItemElement"/></label>
                         <g:if test="${costItemElements}">
-                            <ui:select name="newCostItemElement" id="newCostItemElement_${idSuffix}" class="ui dropdown"
+                            <ui:select name="newCostItemElement" id="newCostItemElement_${idSuffix}" class="ui dropdown clearable"
                                           from="${costItemElements.collect{ ciec -> ciec.costItemElement }}"
                                           optionKey="id"
                                           optionValue="value"
@@ -86,7 +86,7 @@
                     </div><!-- .field -->
                     <div class="field">
                         <label><g:message code="financials.costItemConfiguration"/></label>
-                        <ui:select name="ciec" id="ciec_${idSuffix}" class="ui dropdown"
+                        <ui:select name="ciec" id="ciec_${idSuffix}" class="ui dropdown clearable"
                                       from="${costItemSigns}"
                                       optionKey="id"
                                       optionValue="value"
@@ -96,7 +96,7 @@
                 </div>
                 <div class="field">
                     <label>${message(code:'default.status.label')}</label>
-                    <ui:select name="newCostItemStatus" id="newCostItemStatus_${idSuffix}" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
+                    <ui:select name="newCostItemStatus" id="newCostItemStatus_${idSuffix}" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown clearable"
                                   from="${costItemStatus}"
                                   optionKey="id"
                                   optionValue="value"
@@ -166,7 +166,7 @@
                     </div><!-- .field -->
                     <div class="field">
                         <label>${message(code:'financials.newCosts.taxTypeAndRate')}</label>
-                        <g:select class="ui dropdown calc" name="newTaxRate" id="newTaxRate_${idSuffix}" title="TaxRate"
+                        <g:select class="ui dropdown clearable calc" name="newTaxRate" id="newTaxRate_${idSuffix}" title="TaxRate"
                               from="${CostItem.TAX_TYPES}"
                               optionKey="${{it.taxType.class.name+":"+it.taxType.id+"§"+it.taxRate}}"
                               optionValue="${{it.display ? it.taxType.getI10n("value")+" ("+it.taxRate+"%)" : it.taxType.getI10n("value")}}"
@@ -260,7 +260,7 @@
                             </g:if>
                             <g:elseif test="${costItem?.sub == subscription && subscription._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL}">
                                 <input type="button" name="toggleLicenseeTarget" id="toggleLicenseeTarget_${idSuffix}" class="${Btn.SIMPLE} la-full-width" value="${message(code:'financials.newCosts.toggleLicenseeTarget')}">
-                                <g:select name="newLicenseeTarget" id="newLicenseeTarget_${idSuffix}" class="ui dropdown multiple search"
+                                <g:select name="newLicenseeTarget" id="newLicenseeTarget_${idSuffix}" class="ui dropdown clearable multiple search"
                                           from="${validSubChilds}" multiple="multiple"
                                           optionValue="${{it.name ? it.getSubscriberRespConsortia().dropdownNamingConvention(institution) : it.label}}"
                                           optionKey="id"
@@ -270,7 +270,7 @@
                             </g:elseif>
                             <g:else>
                                 <input type="button" name="toggleLicenseeTarget" id="toggleLicenseeTarget_${idSuffix}" class="${Btn.SIMPLE} la-full-width" value="${message(code:'financials.newCosts.toggleLicenseeTarget')}">
-                                <g:select name="newLicenseeTarget" id="newLicenseeTarget_${idSuffix}" class="ui dropdown multiple search"
+                                <g:select name="newLicenseeTarget" id="newLicenseeTarget_${idSuffix}" class="ui dropdown clearable multiple search"
                                           from="${validSubChilds}" multiple="multiple"
                                           optionValue="${{it.name ? it.getSubscriberRespConsortia().dropdownNamingConvention(institution) : it.label}}"
                                           optionKey="id"
@@ -286,7 +286,7 @@
                         <div class="field">
                             <label>${message(code:'financials.newCosts.package')}</label>
                             <g:if test="${costItem?.sub}">
-                                <g:select name="newPackage" id="newPackage_${idSuffix}" class="ui dropdown search"
+                                <g:select name="newPackage" id="newPackage_${idSuffix}" class="ui dropdown clearable search"
                                           from="${costItem?.sub?.packages?.pkg}"
                                           optionValue="${{it?.name ?: message(code:'financials.newCosts.noPackageLink')}}"
                                           optionKey="id"
@@ -375,7 +375,7 @@
                 <div class="field">
                     <label>${g.message(code: 'financials.costInformationDefinition')}</label>
                     <ui:dropdown name="newCostInformationDefinition"
-                                 class="newCostInformationDefinition_${idSuffix}"
+                                 class="newCostInformationDefinition_${idSuffix} clearable"
                                  from="${costInformationDefinitions}"
                                  iconWhich="${Icon.PROP.IS_PRIVATE}"
                                  optionKey="${{it.id}}"
@@ -396,7 +396,7 @@
 
         <g:if test="${mode == 'copy' && copyToOtherSub}">
         <div class="fields">
-            <fieldset class="sixteen wide field la-modal-fieldset-margin-right ">
+            <fieldset class="sixteen wide field la-modal-fieldset-margin-right">
                 <label>${g.message(code: 'financials.copyCostItem.toOtherSub')}</label>
 
                 <div class="ui field">
@@ -649,7 +649,8 @@
             if(localHandInput === true) {
                 //manipulate iff localCurrency has been changed by user
                 parsedLocalCurrency = JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val().trim());
-                JSPC.app.finance${idSuffix}.costCurrencyRate.val(JSPC.app.finance${idSuffix}.doubleToString((parsedLocalCurrency / parsedBillingCurrency), true));
+                if(parsedLocalCurrency != 0 && parsedBillingCurrency != 0)
+                    JSPC.app.finance${idSuffix}.costCurrencyRate.val(JSPC.app.finance${idSuffix}.doubleToString((parsedLocalCurrency / parsedBillingCurrency), true));
             }
             let billingCurrencyAfterRounding = roundB ? Math.round(parsedBillingCurrency) : parsedBillingCurrency
             let localCurrencyAfterRounding = roundB ? Math.round(parsedLocalCurrency) : parsedLocalCurrency
@@ -692,6 +693,8 @@
         },
         doubleToString: function (input, currencyRate = false) {
             let rndInput = currencyRate ? input : input.toFixed(2)
+            if(currencyRate)
+                console.log(input);
             if(!isNaN(input)) {
                 let output;
                 if(JSPC.app.finance${idSuffix}.userLang !== 'en')

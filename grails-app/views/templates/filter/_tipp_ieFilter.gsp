@@ -43,7 +43,7 @@
             <g:if test="${controllerName == 'subscription'}">
                 <div class="field">
                     <label for="pkgfilter">${message(code: 'subscription.details.from_pkg')}</label>
-                    <select class="ui dropdown" name="pkgfilter" id="pkgfilter">
+                    <select class="ui dropdown clearable" name="pkgfilter" id="pkgfilter">
                         <option value="">${message(code: 'default.all')}</option>
                         <g:each in="${subscription.packages}" var="sp">
                             <option value="${sp.pkg.id}" ${sp.pkg.id == params.long('pkgfilter') ? 'selected=true' : ''}>${sp.pkg.name}</option>
@@ -51,6 +51,7 @@
                     </select>
                 </div>
             </g:if>
+            <%-- removed as of ERMS-6370
             <g:if test="${!showStatsFilter && action != 'renewEntitlementsWithSurvey'}">
                 <div class="field">
                     <ui:datepicker label="subscription.details.asAt" id="asAt" name="asAt"
@@ -58,6 +59,8 @@
                                       placeholder="subscription.details.asAt.placeholder"/>
                 </div>
             </g:if>
+            --%>
+
             <g:if test="${!disableStatus && !showStatsFilter && !(action in ['renewEntitlementsWithSurvey', 'current', 'planned', 'expired', 'deleted'])}">
                 <div class="field">
                     <label for="status">${message(code: 'default.status.label')}</label>
@@ -74,6 +77,7 @@
                     </select>
                 </div>
             </g:if>
+            <%-- removed as of ERMS-6370
             <div class="field">
                 <label for="coverageDepth"><g:message code="tipp.coverageDepth"/></label>
                 <div class="ui search selection fluid multiple dropdown" id="coverageDepth">
@@ -82,9 +86,41 @@
                     <i class="dropdown icon"></i>
                 </div>
             </div>
+            --%>
         </div>
 
         <div class="four fields">
+            <div class="field">
+                <label for="provider">${message(code: 'tipp.provider')}</label>
+                <div class="ui search selection fluid multiple dropdown" id="provider">
+                    <input type="hidden" name="provider"/>
+                    <div class="default text"><g:message code="default.select.choose.label"/></div>
+                    <i class="dropdown icon"></i>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="publishers">${message(code: 'tipp.publisher')}</label>
+                <div class="ui search selection fluid multiple dropdown" id="publishers">
+                    <input type="hidden" name="publishers"/>
+                    <div class="default text"><g:message code="default.select.choose.label"/></div>
+                    <i class="dropdown icon"></i>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="first_author">${message(code: 'tipp.firstAuthor')}</label>
+                <input name="first_author" id="first_author" value="${params.first_author}"/>
+            </div>
+
+            <div class="field">
+                <label for="first_editor">${message(code: 'tipp.firstEditor')}</label>
+                <input name="first_editor" id="first_editor" value="${params.first_editor}"/>
+            </div>
+        </div>
+
+        <div class="three fields">
+            <%--
             <div class="field ${disableFilter ? 'disabled' : ''}">
                 <label for="series_names">${message(code: 'titleInstance.seriesName.label')}</label>
                 <div class="ui search selection fluid multiple dropdown" id="series_names">
@@ -92,7 +128,7 @@
                     <div class="default text"><g:message code="default.select.choose.label"/></div>
                     <i class="dropdown icon"></i>
                 </div>
-                <%--
+
                 <select name="series_names" id="series_names" multiple=""
                         class="ui search selection dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
@@ -104,66 +140,9 @@
                         </option>
                     </g:each>
                 </select>
-                --%>
-            </div>
 
-            <div class="field ${disableFilter ? 'disabled' : ''}">
-                <label for="subject_references">${message(code: 'titleInstance.subjectReference.label')}</label>
-                <div class="ui search selection fluid multiple dropdown" id="subject_references">
-                    <input type="hidden" name="subject_references"/>
-                    <div class="default text"><g:message code="default.select.choose.label"/></div>
-                    <i class="dropdown icon"></i>
-                </div>
-                <%--<select name="subject_references" id="subject_reference" multiple=""
-                        class="ui search selection dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                    <g:each in="${subjects}" var="subject">
-                        <option <%=(params.list('subject_references')?.contains(subject)) ? 'selected="selected"' : ''%>
-                                value="${subject}">
-                            ${subject}
-                        </option>
-                    </g:each>
-                </select>--%>
             </div>
-
-            <div class="field">
-                <label for="ddcs">${message(code: 'titleInstance.ddc.label')}</label>
-                <div class="ui search selection fluid multiple dropdown" id="ddcs">
-                    <input type="hidden" name="ddcs"/>
-                    <div class="default text"><g:message code="default.select.choose.label"/></div>
-                    <i class="dropdown icon"></i>
-                </div>
-            </div>
-
-            <div class="field">
-                <label for="languages">${message(code: 'titleInstance.language.label')}</label>
-                <div class="ui search selection fluid multiple dropdown" id="languages">
-                    <input type="hidden" name="languages"/>
-                    <div class="default text"><g:message code="default.select.choose.label"/></div>
-                    <i class="dropdown icon"></i>
-                </div>
-            </div>
-        </div>
-
-        <div class="five fields">
-            <div class="field">
-                <label for="yearsFirstOnline">${message(code: 'tipp.YearFirstOnline')}</label>
-                <div class="ui search selection fluid multiple dropdown" id="yearsFirstOnline">
-                    <input type="hidden" name="yearsFirstOnline"/>
-                    <div class="default text"><g:message code="default.select.choose.label"/></div>
-                    <i class="dropdown icon"></i>
-                </div>
-            </div>
-
-            <div class="field">
-                <label for="medium">${message(code: 'default.search.medium')}</label>
-                <div class="ui search selection fluid multiple dropdown" id="medium">
-                    <input type="hidden" name="medium"/>
-                    <div class="default text"><g:message code="default.select.choose.label"/></div>
-                    <i class="dropdown icon"></i>
-                </div>
-            </div>
+            --%>
 
             <div class="field">
                 <label for="title_types">${message(code: 'default.search.titleTyp')}
@@ -192,15 +171,68 @@
                 </select>
             </div>
 
+            <div class="field ${disableFilter ? 'disabled' : ''}">
+                <label for="subject_references">${message(code: 'titleInstance.subjectReference.label')}</label>
+                <div class="ui search selection fluid multiple dropdown" id="subject_references">
+                    <input type="hidden" name="subject_references"/>
+                    <div class="default text"><g:message code="default.select.choose.label"/></div>
+                    <i class="dropdown icon"></i>
+                </div>
+                <%--<select name="subject_references" id="subject_reference" multiple=""
+                        class="ui search selection dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${subjects}" var="subject">
+                        <option <%=(params.list('subject_references')?.contains(subject)) ? 'selected="selected"' : ''%>
+                                value="${subject}">
+                            ${subject}
+                        </option>
+                    </g:each>
+                </select>--%>
+            </div>
+
+            <%-- removed as of ERMS-6370
             <div class="field">
-                <label for="publishers">${message(code: 'tipp.publisher')}</label>
-                <div class="ui search selection fluid multiple dropdown" id="publishers">
-                    <input type="hidden" name="publishers"/>
+                <label for="ddcs">${message(code: 'titleInstance.ddc.label')}</label>
+                <div class="ui search selection fluid multiple dropdown" id="ddcs">
+                    <input type="hidden" name="ddcs"/>
                     <div class="default text"><g:message code="default.select.choose.label"/></div>
                     <i class="dropdown icon"></i>
                 </div>
             </div>
+
+            <div class="field">
+                <label for="languages">${message(code: 'titleInstance.language.label')}</label>
+                <div class="ui search selection fluid multiple dropdown" id="languages">
+                    <input type="hidden" name="languages"/>
+                    <div class="default text"><g:message code="default.select.choose.label"/></div>
+                    <i class="dropdown icon"></i>
+                </div>
+            </div>
+            --%>
         </div>
+
+        <%-- removed as of ERMS-6370
+        <div class="five fields">
+            <%-- rem <div class="field">
+                <label for="yearsFirstOnline">${message(code: 'tipp.YearFirstOnline')}</label>
+                <div class="ui search selection fluid multiple dropdown" id="yearsFirstOnline">
+                    <input type="hidden" name="yearsFirstOnline"/>
+                    <div class="default text"><g:message code="default.select.choose.label"/></div>
+                    <i class="dropdown icon"></i>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="medium">${message(code: 'default.search.medium')}</label>
+                <div class="ui search selection fluid multiple dropdown" id="medium">
+                    <input type="hidden" name="medium"/>
+                    <div class="default text"><g:message code="default.select.choose.label"/></div>
+                    <i class="dropdown icon"></i>
+                </div>
+            </div>
+
+        </div>--%>
 
         <div class="three fields">
             <g:if test="${controllerName == 'subscription' && !showStatsFilter && !notShow}">
@@ -359,9 +391,15 @@
         });
     </g:if>
 
-    JSPC.app.ajaxDropdown = function(selector, url, valuesRaw) {
+    JSPC.app.ajaxDropdown = function(selector, url, valuesRaw, fieldName, minLength) {
         let values = [];
         let valuesString = valuesRaw.replace(/&amp;quot;/g, '&quot;');
+        let minLengthInit = 0;
+        if (typeof(minLength) !== 'undefined')
+            minLengthInit = minLength;
+        let fieldNameQuery = '';
+        if (typeof(fieldName) !== 'undefined')
+            fieldNameQuery = '&fieldName='+fieldName;
         if (valuesString.includes(',')) {
             values = valuesString.split(',');
         }
@@ -388,12 +426,12 @@
 
         selector.dropdown('destroy').dropdown({
             apiSettings: {
-                url: url + '&by=' + by + '&obj=' + obj + '&forTitles=${forTitles}&query={query}',
+                url: url + '&by=' + by + '&obj=' + obj + '&forTitles=${forTitles}'+fieldNameQuery+'&query={query}',
                 cache: false
             },
             clearable: true,
             throttle: 500,
-            minCharacters: 0
+            minCharacters: minLengthInit
         });
         if (values.length > 0) {
             selector.dropdown('queryRemote', '', () => {
@@ -402,13 +440,14 @@
         }
     }
 
-    JSPC.app.ajaxDropdown($('#series_names'),       '<g:createLink controller="ajaxJson" action="getAllPossibleSeries" params="${configMap}"/>', '${params.series_names}');
+    JSPC.app.ajaxDropdown($('#series_names'),       '<g:createLink controller="ajaxJson" action="getAllPossibleSimpleFieldValues" params="${configMap}"/>', '${params.series_names}', 'seriesName');
     JSPC.app.ajaxDropdown($('#subject_references'), '<g:createLink controller="ajaxJson" action="getAllPossibleSubjects" params="${configMap}"/>', '${params.subject_references}');
     JSPC.app.ajaxDropdown($('#ddcs'),               '<g:createLink controller="ajaxJson" action="getAllPossibleDdcs" params="${configMap}"/>', '${params.ddcs}');
     JSPC.app.ajaxDropdown($('#languages'),          '<g:createLink controller="ajaxJson" action="getAllPossibleLanguages" params="${configMap}"/>', '${params.languages}');
     JSPC.app.ajaxDropdown($('#yearsFirstOnline'),   '<g:createLink controller="ajaxJson" action="getAllPossibleDateFirstOnlineYears" params="${configMap}"/>', '${params.yearsFirstOnline}');
     JSPC.app.ajaxDropdown($('#medium'),             '<g:createLink controller="ajaxJson" action="getAllPossibleMediumTypes" params="${configMap}"/>', '${params.medium}');
-    JSPC.app.ajaxDropdown($('#title_types'),        '<g:createLink controller="ajaxJson" action="getAllPossibleTitleTypes" params="${configMap}"/>', '${params.title_types}');
-    JSPC.app.ajaxDropdown($('#publishers'),         '<g:createLink controller="ajaxJson" action="getAllPossiblePublishers" params="${configMap}"/>', '${params.publishers}');
+    JSPC.app.ajaxDropdown($('#title_types'),        '<g:createLink controller="ajaxJson" action="getAllPossibleSimpleFieldValues" params="${configMap}"/>', '${params.title_types}', 'titleType');
+    JSPC.app.ajaxDropdown($('#publishers'),         '<g:createLink controller="ajaxJson" action="getAllPossibleSimpleFieldValues" params="${configMap}"/>', '${params.publishers}', 'publisherName');
+    JSPC.app.ajaxDropdown($('#provider'),           '<g:createLink controller="ajaxJson" action="getAllPossibleProviders" params="${configMap}"/>', '${params.provider}');
     JSPC.app.ajaxDropdown($('#coverageDepth'),      '<g:createLink controller="ajaxJson" action="getAllPossibleCoverageDepths" params="${configMap}"/>', '${params.coverageDepth}');
 </laser:script>

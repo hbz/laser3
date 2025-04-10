@@ -2,6 +2,7 @@
 <laser:serviceInjection />
 <g:if test="${actionName == 'show'}">
     <ui:exportDropdown>
+        <%-- deactivated as of ERMS-5716, comment from April 8th, '25
         <g:set var="validationPrecheckErrors" value="${licenseService.precheckValidation(license, contextService.getOrg())}"/>
         <g:if test="${validationPrecheckErrors}">
             <ui:actionsDropdownItemDisabled tooltip="${validationPrecheckErrors}" message="Export ONIX-PL"/>
@@ -10,7 +11,7 @@
             <ui:exportDropdownItem>
                 <g:link class="item" action="show" target="_blank" params="[id: license.id, export: 'onix']">Export ONIX-PL</g:link>
             </ui:exportDropdownItem>
-        </g:else>
+        </g:else>--%>
         <ui:exportDropdownItem>
             <g:link class="item" action="show" target="_blank" params="[id: license.id, export: 'pdf']">Export PDF</g:link>
         </ui:exportDropdownItem>

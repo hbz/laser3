@@ -1126,8 +1126,7 @@ class ManagementService {
                                             type: RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE),
                                             creator: result.user,
                                             owner: contextService.getOrg(),
-                                            server: AppUtils.getCurrentServer(),
-                                            ckey: fileCryptService.generateCKey()
+                                            server: AppUtils.getCurrentServer()
                                     )
                                     doc_content.save()
 
@@ -1144,7 +1143,7 @@ class ManagementService {
                                             sourceFile = new File("${fPath}/${fName}")
                                             input_file.transferTo(sourceFile)
 
-                                            fileCryptService.encryptRawFile(sourceFile, doc_content) // TODO: ERMS-6382
+                                            fileCryptService.encryptRawFileAndUpdateDoc(sourceFile, doc_content)
                                         }else {
                                             Path source = sourceFile.toPath()
                                             Path target = new File("${fPath}/${fName}").toPath()

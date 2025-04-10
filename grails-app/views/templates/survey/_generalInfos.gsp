@@ -148,13 +148,13 @@
             </g:if>
         </div>
 
-        <g:if test="${surveyConfig.invoicingInformation}">
+%{--        <g:if test="${surveyConfig.invoicingInformation}">
             <g:link class="${Btn.SIMPLE} left floated"
                     controller="${controllerName}" action="${actionName}" id="${surveyInfo.id}"
                     params="${parame+[viewTab: 'invoicingInformation']}">
                 ${message(code: 'default.edit.label', args:  [message(code: 'surveyOrg.invoicingInformation')])}
             </g:link>
-        </g:if>
+        </g:if>--}%
 
     </div>
 </div>

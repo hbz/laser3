@@ -105,9 +105,9 @@
     </ui:exportDropdown>
     <g:if test="${editable}">
         <ui:actionsDropdown>
+            <ui:actionsDropdownItem id="selectEntitlementsWithIDOnly" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscription.id, params: [referer: actionName, headerToken: 'subscription.details.addEntitlements.menuID', withIDOnly: true, progressCacheKey: '/survey/renewEntitlementsWithSurvey/', surveyConfigID: surveyConfig.id, tab: params.tab])}" message="subscription.details.addEntitlements.menuID"/>
             <ui:actionsDropdownItem id="selectEntitlementsWithKBART" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscription.id, params: [referer: actionName, headerToken: 'subscription.details.addEntitlements.menu', progressCacheKey: '/survey/renewEntitlementsWithSurvey/', surveyConfigID: surveyConfig.id, tab: params.tab])}" message="subscription.details.addEntitlements.menu"/>
             <ui:actionsDropdownItem id="selectEntitlementsWithPick" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscription.id, params: [referer: actionName, headerToken: 'subscription.details.addEntitlements.menuPick', withPick: true, progressCacheKey: '/survey/renewEntitlementsWithSurvey/', surveyConfigID: surveyConfig.id, tab: params.tab])}" message="subscription.details.addEntitlements.menuPick"/>
-            <ui:actionsDropdownItem id="selectEntitlementsWithIDOnly" href="${createLink(action: 'kbartSelectionUpload', controller: 'ajaxHtml', id: subscription.id, params: [referer: actionName, headerToken: 'subscription.details.addEntitlements.menuID', withIDOnly: true, progressCacheKey: '/survey/renewEntitlementsWithSurvey/', surveyConfigID: surveyConfig.id, tab: params.tab])}" message="subscription.details.addEntitlements.menuID"/>
         </ui:actionsDropdown>
     </g:if>
 </ui:controlButtons>
@@ -115,6 +115,8 @@
 <ui:h1HeaderWithIcon text="${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.name}">
     <uiSurvey:status object="${surveyConfig.surveyInfo}"/>
 </ui:h1HeaderWithIcon>
+
+<div id="downloadWrapper"></div>
 
     <ui:messages data="${flash}"/>
 
@@ -149,13 +151,11 @@
 
 <g:render template="/survey/participantInfos" model="[participant: subscriber]"/>
 
-        <laser:render template="/templates/filter/tipp_ieFilter" model="[notShow: params.tab == 'allTipps' || params.tab == 'selectableTipps', fillDropdownsWithPackage: params.tab == 'allTipps' || params.tab == 'selectableTipps']"/>
+<laser:render template="/templates/filter/tipp_ieFilter" model="[notShow: params.tab in ['selectedIEs', 'selectableTipps', 'currentPerpetualAccessIEs'], fillDropdownsWithPackage: params.tab in ['allTipps', 'selectableTipps']]"/>
 
 <h3 class="ui icon header la-clear-before la-noMargin-top">
     <ui:bubble count="${num_rows}" grey="true"/> <g:message code="title.filter.result"/>
 </h3>
-
-<div id="downloadWrapper"></div>
 
 <br />
 
@@ -163,7 +163,7 @@
         <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                      params="[id: subscription.id, surveyConfigID: surveyConfig.id, tab: 'selectableTipps']"
                      text="${message(code: "renewEntitlementsWithSurvey.selectableTipps")}" tab="selectableTipps"
-                     counts="${countAllTipps - countCurrentPermanentTitles}"/>
+                     counts="${countAllTipps - countSelectedIEs - countCurrentPermanentTitles}"/>
         <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                          params="[id: subscription.id, surveyConfigID: surveyConfig.id, tab: 'selectedIEs']"
                          text="${message(code: "renewEntitlementsWithSurvey.currentTitlesSelect")}" tab="selectedIEs"
@@ -268,7 +268,7 @@
 
 </div>
 
-    <div class="ui clearing segment la-segmentNotVisable ">
+    <div class="ui clearing segment la-segmentNotVisable">
         <g:if test="${contextService.getOrg().id == surveyConfig.surveyInfo.owner.id}">
             <g:link controller="survey" action="evaluationParticipant"
                     params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: subscriber.id]"
@@ -348,6 +348,7 @@
             $.ajax({
                 url: "<g:createLink controller="ajax" action="updateChecked" />",
                 data: {
+                    id: "${subscription.id}",
                     sub: "${subscription.id}?${params.tab}",
                     index: index,
                     filterParams: JSON.stringify(filterParams),

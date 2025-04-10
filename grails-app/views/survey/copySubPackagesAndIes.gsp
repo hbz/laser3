@@ -43,9 +43,9 @@
 
     <g:render template="navCompareMembers"/>
 
-    <h2 class="ui header">
+   %{-- <h2 class="ui header">
         ${message(code: 'copySubPackagesAndIes.titel')}
-    </h2>
+    </h2>--}%
 
 
     <ui:greySegment>
@@ -130,7 +130,7 @@
 
         <g:form action="proccessCopySubPackagesAndIes" controller="survey" id="${surveyInfo.id}"
                 params="[surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]"
-                method="post" class="ui form ">
+                method="post" class="ui form">
 
             <div class="ui segment">
                 <div class="field required">

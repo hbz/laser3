@@ -28,7 +28,7 @@ deactivated as of ERMS-4837
     <div class="content">
         <h2 class="ui header">
             <g:if test="${allPropDefGroups.global || allPropDefGroups.local || allPropDefGroups.member}">
-                ${message(code:'subscription.properties.orphaned')}
+                ${message(code: 'subscription.properties.orphanedMajuscule')} ${message(code: 'subscription.propertiesBrackets')}
             </g:if>
             <g:else>
                 ${message(code:'license.properties')}
@@ -74,10 +74,6 @@ deactivated as of ERMS-4837
         </g:if>
 
         <div class="content">
-            <h3 class="ui  header">
-                <i class="${Icon.SYM.PROPERTIES}" style="font-size: 1em; margin-right: .25rem"></i>
-                ${message(code: 'subscription.properties.private')} ${contextService.getOrg().name}
-            </h3>
             <g:set var="propertyWrapper" value="private-property-wrapper-${contextService.getOrg().id}"/>
             <div id="${propertyWrapper}">
                 <laser:render template="/templates/properties/private" model="${[

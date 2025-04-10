@@ -23,6 +23,7 @@ import de.laser.wekb.Platform
 import de.laser.wekb.Vendor
 import de.laser.wekb.VendorRole
 import grails.gorm.transactions.Transactional
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 
@@ -31,11 +32,9 @@ class VendorService {
 
     ContextService contextService
     DocstoreService docstoreService
-    DeletionService deletionService
     GokbService gokbService
     MessageSource messageSource
     TaskService taskService
-    UserService userService
     WorkflowService workflowService
 
     static String RESULT_BLOCKED            = 'RESULT_BLOCKED'
@@ -383,6 +382,7 @@ class VendorService {
         if(params.id) {
             result.vendor = Vendor.get(params.id)
             result.editable = contextService.isInstEditor()
+            result.isAdmin = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
             int tc1 = taskService.getTasksByResponsibilityAndObject(result.user, result.vendor).size()
             int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.vendor).size()
             result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
@@ -473,7 +473,7 @@ class VendorService {
         if (params.containsKey('sort')) {
             vendorQuery += " order by ${params.sort} ${params.order ?: 'asc'}, v.name ${params.order ?: 'asc'} "
         } else
-            vendorQuery += " order by v.sortname "
+            vendorQuery += " order by v.name "
 
         Set<Vendor> vendorsTotal = Vendor.executeQuery(vendorQuery, queryParams)
 
@@ -485,7 +485,7 @@ class VendorService {
     }
 
     Set<Vendor> getCurrentVendors(Org context) {
-        Set<Vendor> result = VendorRole.executeQuery("select v from VendorRole vr join vr.vendor as v where (vr.subscription in (select sub from OrgRole where org = :context and roleType in (:subRoleTypes)) or vr.license in (select lic from OrgRole where org = :context and roleType in (:licRoleTypes))) order by v.name, v.sortname",
+        Set<Vendor> result = VendorRole.executeQuery("select v from VendorRole vr join vr.vendor as v where (vr.subscription in (select sub from OrgRole where org = :context and roleType in (:subRoleTypes)) or vr.license in (select lic from OrgRole where org = :context and roleType in (:licRoleTypes))) order by v.name",
                 [context:context,
                  subRoleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIUM,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER],
                  licRoleTypes:[RDStore.OR_LICENSING_CONSORTIUM,RDStore.OR_LICENSEE_CONS,RDStore.OR_LICENSEE]])

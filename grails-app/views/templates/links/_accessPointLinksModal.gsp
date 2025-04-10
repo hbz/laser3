@@ -35,7 +35,7 @@
                                 <g:message code="platform.accessPoint" />
                             </div>
                             <div class="twelve wide column">
-                                <g:select class="ui dropdown la-full-width" name="AccessPoints"
+                                <g:select class="ui dropdown clearable la-full-width" name="AccessPoints"
                                           from="${accessPointList}"
                                           optionKey="id"
                                           optionValue="name"

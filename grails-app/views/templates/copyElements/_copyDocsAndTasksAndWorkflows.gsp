@@ -169,7 +169,7 @@
                         <div class="la-min-height"><strong><i class="${Icon.SYM.NOTE}"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</strong></div>
                         <g:each in="${sourceDocuments}" var="docctx">
                             <g:if test="${docctx.isDocANote() && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id}">
-                                <div data-id="${docctx.id}" class="la-element la-min-height ">
+                                <div data-id="${docctx.id}" class="la-element la-min-height">
                                     <label>
                                         <g:if test="${docctx.owner.title}">
                                             <strong>${docctx.owner.title}</strong>

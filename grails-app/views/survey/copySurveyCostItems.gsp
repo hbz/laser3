@@ -39,9 +39,9 @@
 
     <g:render template="navCompareMembers"/>
 
-    <h2 class="ui header">
+  %{--  <h2 class="ui header">
         ${message(code: 'surveyInfo.copySurveyCostItems')}
-    </h2>
+    </h2>--}%
 
     <g:render template="costItemsByCostItemElementTable" model="${[costItemsByCTE: costItemsByCostItemElement, header: g.message(code: 'costItem.label')+' in '+ g.message(code: 'survey.label')]}"/>
 
@@ -98,7 +98,7 @@
 
         <g:form action="proccessCopySurveyCostItems" controller="survey" id="${surveyInfo.id}"
                 params="[surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]"
-                method="post" class="ui form ">
+                method="post" class="ui form">
 
             <g:set var="sumOldCostItem" value="${0.0}"/>
             <g:set var="sumNewCostItem" value="${0.0}"/>
@@ -126,7 +126,7 @@
                                    optionKey="id"
                                    optionValue="value"
                                    value="${selectedCostItemElementID}"
-                                   class="ui dropdown"
+                                   class="ui dropdown clearable"
                                    id="selectedCostItemElementID"/>--}%
                     </th>
                     <th>${message(code: 'copySurveyCostItems.newCostItem')}</th>

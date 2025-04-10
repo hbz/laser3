@@ -18,7 +18,7 @@
 
         <ui:messages data="${flash}"/>
 
-        <laser:render template="/readerNumber/formModal" model="[formId: 'newForUni',withSemester: true,title:message(code: 'readerNumber.createForUni.label'), semester: RefdataValue.getCurrentSemester().id]"/>
+        <laser:render template="/readerNumber/formModal" model="[formId: 'newForUni',withSemester: true,title:message(code: 'readerNumber.createForUni.label')]"/>
         <laser:render template="/readerNumber/formModal" model="[formId: 'newForPublic',withYear: true,title:message(code: 'readerNumber.createForPublic.label')]"/>
         <laser:render template="/readerNumber/formModal" model="[formId: 'newForState',withYear: true,title:message(code: 'readerNumber.createForState.label')]"/>
         <laser:render template="/readerNumber/formModal" model="[formId: 'newForResearchInstitute',withYear: true,title:message(code: 'readerNumber.createForResearchInstitute.label')]"/>

@@ -3,7 +3,7 @@
 </h2>
 
 
-<div class="ui list ">
+<div class="ui list">
     <div class="item js-copyTriggerParent">
         <span class="js-copyTrigger js-copyTopic la-popup-tooltip"
               data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
@@ -13,7 +13,7 @@
     </div>
 </div>
 
-<div class="ui list ">
+<div class="ui list">
     <div class="item js-copyTriggerParent">
         <span class="ui small basic image label js-copyTrigger la-popup-tooltip"
               data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">

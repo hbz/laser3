@@ -6,7 +6,7 @@
             <g:form class="ui form" method="post" enctype="multipart/form-data" mapping="subfinance" controller="finance" action="index" params="[sub: subscription.id]">
                 <div class="two fields">
                     <div class="field">
-                        <ui:select name="selectedCostItemElement" id="selectedCostItemElement" class="ui dropdown"
+                        <ui:select name="selectedCostItemElement" id="selectedCostItemElement" class="ui dropdown clearable "
                                    from="${assignedCostItemElements}"
                                    optionKey="id"
                                    optionValue="value" />
@@ -30,14 +30,14 @@
             <g:form class="ui form" method="post" enctype="multipart/form-data" controller="survey" action="$actionName" params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">
                 <div class="${actionName == 'surveyCostItemsPackages' ? 'three' : 'two'} fields">
                     <div class="field">
-                        <ui:select name="selectedCostItemElement" id="selectedCostItemElement" class="ui dropdown"
+                        <ui:select name="selectedCostItemElement" id="selectedCostItemElement" class="ui dropdown clearable "
                                    from="${assignedCostItemElements}"
                                    optionKey="id"
                                    optionValue="value" />
                     </div>
                     <g:if test="${actionName == 'surveyCostItemsPackages'}">
                         <div class="field">
-                            <g:select name="selectedPackageID" id="selectedPackageID" class="ui dropdown"
+                            <g:select name="selectedPackageID" id="selectedPackageID" class="ui dropdown clearable "
                             from="${assignedPackages}"
                             optionKey="id"
                             optionValue="name" />

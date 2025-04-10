@@ -146,7 +146,7 @@
                         <label for="gender">
                             <g:message code="person.gender.label"/>
                         </label>
-                        <ui:select class="ui dropdown" id="gender" name="gender"
+                        <ui:select class="ui dropdown clearable " id="gender" name="gender"
                                    from="${Person.getAllRefdataValues(RDConstants.GENDER)}"
                                    optionKey="id"
                                    optionValue="value"
@@ -311,7 +311,7 @@
                         </div>
 
                         <div class="field wide four">
-                            <ui:select class="ui dropdown contentType" name="contentType.id"
+                            <ui:select class="ui dropdown clearable contentType" name="contentType.id"
                                        from="${[RDStore.CCT_EMAIL, RDStore.CCT_FAX, RDStore.CCT_MOBILE, RDStore.CCT_PHONE, RDStore.CCT_URL]}"
                                        optionKey="id"
                                        optionValue="value"
@@ -347,7 +347,7 @@
                 <div class="ui card">
                     <div class="content">
                         <g:set var="propertyWrapper" value="private-property-wrapper-${contextService.getOrg().id}" />
-                        <h2 class="ui header">${message(code: 'org.properties.private')} ${contextService.getOrg().name}</h2>
+                        <h2 class="ui header">${message(code: 'default.properties.my')}</h2>
                         <div id="${propertyWrapper}">
                             <laser:render template="/templates/properties/private" model="${[
                                     prop_desc       : PropertyDefinition.PRS_PROP,

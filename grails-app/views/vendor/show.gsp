@@ -36,7 +36,7 @@
                         </dd>
                     </dl>
                     <dl>
-                        <dt class="control-label"><g:message code="org.sortname.label" /></dt>
+                        <dt class="control-label"><g:message code="default.shortname.label" /></dt>
                         <dd>
                             <ui:xEditable
                                     data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
@@ -120,293 +120,297 @@
                             </g:if>
                         </dd>
                     </dl>
-                    <dl>
-                        <dt class="control-label"><g:message code="default.status.label"/></dt>
-                        <dd>
-                            <ui:xEditableRefData owner="${vendor}" field="status" config="${RDConstants.VENDOR_STATUS}" overwriteEditable="${editable && !vendor.gokbId}"/>
-                        </dd>
-                    </dl>
-                    <g:if test="${vendor.status == RDStore.VENDOR_STATUS_RETIRED}">
+                    <g:if test="${vendor.gokbId}">
                         <dl>
-                            <dt class="control-label">${message(code: 'vendor.retirementDate.label')}</dt>
+                            <dt class="control-label"><g:message code="default.status.label"/></dt>
                             <dd>
-                                <g:formatDate date="${vendor.retirementDate}" format="${message(code: 'default.date.format.notime')}"/>
+                                <ui:xEditableRefData owner="${vendor}" field="status" config="${RDConstants.VENDOR_STATUS}"/>
                             </dd>
                         </dl>
+                        <g:if test="${vendor.status == RDStore.VENDOR_STATUS_RETIRED}">
+                            <dl>
+                                <dt class="control-label">${message(code: 'vendor.retirementDate.label')}</dt>
+                                <dd>
+                                    <g:formatDate date="${vendor.retirementDate}" format="${message(code: 'default.date.format.notime')}"/>
+                                </dd>
+                            </dl>
+                        </g:if>
                     </g:if>
                 </div>
             </div><!-- .card -->
 
-            <div class="ui card">
-                <div class="content">
-                    <h2 class="ui header"><g:message code="vendor.ordering.header"/></h2>
-                    <dl>
-                        <dt class="control-label">
-                            <g:message code="vendor.ordering.webshop.label" />
-                        </dt>
-                        <dd>
-                            <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                                 data_confirm_term_how="ok"
-                                                 class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                                 owner="${vendor}" field="webShopOrders"  overwriteEditable="${editable && !vendor.gokbId}"/>
-                        </dd>
-                    </dl>
-                    <dl>
-                        <dt class="control-label">
-                            <g:message code="vendor.ordering.xml.label" />
-                        </dt>
-                        <dd>
-                            <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                                 data_confirm_term_how="ok"
-                                                 class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                                 owner="${vendor}" field="xmlOrders"  overwriteEditable="${editable && !vendor.gokbId}"/>
-                        </dd>
-                    </dl>
-                    <dl>
-                        <dt class="control-label">
-                            <g:message code="vendor.ordering.edi.label" />
-                        </dt>
-                        <dd>
-                            <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                                 data_confirm_term_how="ok"
-                                                 class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                                 owner="${vendor}" field="ediOrders"  overwriteEditable="${editable && !vendor.gokbId}"/>
-                        </dd>
-                    </dl>
-                    <dl>
-                        <dt class="control-label">
-                            <g:message code="vendor.ordering.supportedLibrarySystems.label" />
-                        </dt>
-                        <dd>
-                            <%
-                                List<RefdataValue> supportedLibrarySystems = RefdataCategory.getAllRefdataValues(RDConstants.SUPPORTED_LIBRARY_SYSTEM)
-                            %>
-                            <laser:render template="/templates/attributesList"
-                                          model="${[ownObj: vendor, deleteAction: 'deleteAttribute', attributes: vendor.supportedLibrarySystems, field: 'librarySystem', availableAttributeIds: supportedLibrarySystems.collect { RefdataValue rdv -> rdv.id }, editable: editable && !vendor.gokbId]}"/>
+            <g:if test="${vendor.gokbId}">
+                <div class="ui card">
+                    <div class="content">
+                        <h2 class="ui header"><g:message code="vendor.ordering.header"/></h2>
+                        <dl>
+                            <dt class="control-label">
+                                <g:message code="vendor.ordering.webshop.label" />
+                            </dt>
+                            <dd>
+                                <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                     data_confirm_term_how="ok"
+                                                     class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                     owner="${vendor}" field="webShopOrders"/>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt class="control-label">
+                                <g:message code="vendor.ordering.xml.label" />
+                            </dt>
+                            <dd>
+                                <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                     data_confirm_term_how="ok"
+                                                     class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                     owner="${vendor}" field="xmlOrders"/>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt class="control-label">
+                                <g:message code="vendor.ordering.edi.label" />
+                            </dt>
+                            <dd>
+                                <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                     data_confirm_term_how="ok"
+                                                     class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                     owner="${vendor}" field="ediOrders"/>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt class="control-label">
+                                <g:message code="vendor.ordering.supportedLibrarySystems.label" />
+                            </dt>
+                            <dd>
+                                <%
+                                    List<RefdataValue> supportedLibrarySystems = RefdataCategory.getAllRefdataValues(RDConstants.SUPPORTED_LIBRARY_SYSTEM)
+                                %>
+                                <laser:render template="/templates/attributesList"
+                                              model="${[ownObj: vendor, deleteAction: 'deleteAttribute', attributes: vendor.supportedLibrarySystems, field: 'librarySystem', availableAttributeIds: supportedLibrarySystems.collect { RefdataValue rdv -> rdv.id }]}"/>
 
-                            <laser:render template="/templates/attributesModal"
-                                          model="${[ownObj: vendor, addAction: 'addAttribute', modalId: 'librarySystem', buttonText: 'vendor.ordering.supportedLibrarySystems.add', label: 'vendor.ordering.supportedLibrarySystems.label', field: 'librarySystem', availableAttributes: supportedLibrarySystems, editable: editable && !vendor.gokbId]}"/>
-                        </dd>
-                        <dd>
-                            <g:if test="${editable}">
-                                <a  data-content="<g:message code="vendor.ordering.supportedLibrarySystems.add"/>" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-ui="modal" href="#librarySystem"  style="margin: 0.5em 0 0 0.5em">
-                                    <i class="${Icon.CMD.ADD}"></i>
-                                </a>
-                            </g:if>
-                        </dd>
-                    </dl>
-                    <dl>
-                        <dt class="control-label">
-                            <g:message code="vendor.ordering.electronicDeliveryDelayNotifications.label" />
-                        </dt>
-                        <dd>
-                            <%
-                                List<RefdataValue> electronicDeliveryDelayNotifications = RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_ELECTRONIC_DELIVERY_DELAY)
-                            %>
-                            <laser:render template="/templates/attributesList"
-                                          model="${[ownObj: vendor, deleteAction: 'deleteAttribute', attributes: vendor.electronicDeliveryDelays, field: 'delayNotification', availableAttributeIds: electronicDeliveryDelayNotifications.collect { RefdataValue rdv -> rdv.id }, editable: editable && !vendor.gokbId]}"/>
+                                <laser:render template="/templates/attributesModal"
+                                              model="${[ownObj: vendor, addAction: 'addAttribute', modalId: 'librarySystem', buttonText: 'vendor.ordering.supportedLibrarySystems.add', label: 'vendor.ordering.supportedLibrarySystems.label', field: 'librarySystem', availableAttributes: supportedLibrarySystems]}"/>
+                            </dd>
+                            <dd>
+                                <g:if test="${editable}">
+                                    <a  data-content="<g:message code="vendor.ordering.supportedLibrarySystems.add"/>" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-ui="modal" href="#librarySystem"  style="margin: 0.5em 0 0 0.5em">
+                                        <i class="${Icon.CMD.ADD}"></i>
+                                    </a>
+                                </g:if>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt class="control-label">
+                                <g:message code="vendor.ordering.electronicDeliveryDelayNotifications.label" />
+                            </dt>
+                            <dd>
+                                <%
+                                    List<RefdataValue> electronicDeliveryDelayNotifications = RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_ELECTRONIC_DELIVERY_DELAY)
+                                %>
+                                <laser:render template="/templates/attributesList"
+                                              model="${[ownObj: vendor, deleteAction: 'deleteAttribute', attributes: vendor.electronicDeliveryDelays, field: 'delayNotification', availableAttributeIds: electronicDeliveryDelayNotifications.collect { RefdataValue rdv -> rdv.id }]}"/>
 
-                            <laser:render template="/templates/attributesModal"
-                                          model="${[ownObj: vendor, addAction: 'addAttribute', modalId: 'delayNotification', buttonText: 'vendor.ordering.electronicDeliveryDelayNotifications.add', label: 'vendor.ordering.electronicDeliveryDelayNotifications.label', field: 'delayNotification', availableAttributes: electronicDeliveryDelayNotifications, editable: editable && !vendor.gokbId]}"/>
-                        </dd>
-                        <dd>
-                            <g:if test="${editable}">
-                                <a  data-content="<g:message code="vendor.ordering.electronicDeliveryDelayNotifications.add"/>" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-ui="modal" href="#delayNotification" >
-                                    <i class="${Icon.CMD.ADD}"></i>
-                                </a>
-                            </g:if>
-                        </dd>
-                    </dl>
-                </div>
-            </div><!-- .card -->
+                                <laser:render template="/templates/attributesModal"
+                                              model="${[ownObj: vendor, addAction: 'addAttribute', modalId: 'delayNotification', buttonText: 'vendor.ordering.electronicDeliveryDelayNotifications.add', label: 'vendor.ordering.electronicDeliveryDelayNotifications.label', field: 'delayNotification', availableAttributes: electronicDeliveryDelayNotifications]}"/>
+                            </dd>
+                            <dd>
+                                <g:if test="${editable}">
+                                    <a  data-content="<g:message code="vendor.ordering.electronicDeliveryDelayNotifications.add"/>" class="${Btn.MODERN.SIMPLE_TOOLTIP}" data-ui="modal" href="#delayNotification" >
+                                        <i class="${Icon.CMD.ADD}"></i>
+                                    </a>
+                                </g:if>
+                            </dd>
+                        </dl>
+                    </div>
+                </div><!-- .card -->
 
-            <div class="ui card">
-                <div class="content">
-                    <h2 class="ui header"><g:message code="vendor.invoicing.header"/></h2>
-                    <dl>
-                        <dt class="control-label">
-                            <g:message code="vendor.invoicing.formats.label" />
-                        </dt>
-                        <dd>
-                            <%
-                                List<RefdataValue> invoicingFormats = RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_FORMAT)
-                            %>
-                            <laser:render template="/templates/attributesList"
-                                          model="${[ownObj: vendor, deleteAction: 'deleteAttribute', attributes: vendor.electronicBillings, field: 'invoicingFormat', availableAttributeIds: invoicingFormats.collect { RefdataValue rdv -> rdv.id }, editable: editable && !vendor.gokbId]}"/>
+                <div class="ui card">
+                    <div class="content">
+                        <h2 class="ui header"><g:message code="vendor.invoicing.header"/></h2>
+                        <dl>
+                            <dt class="control-label">
+                                <g:message code="vendor.invoicing.formats.label" />
+                            </dt>
+                            <dd>
+                                <%
+                                    List<RefdataValue> invoicingFormats = RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_FORMAT)
+                                %>
+                                <laser:render template="/templates/attributesList"
+                                              model="${[ownObj: vendor, deleteAction: 'deleteAttribute', attributes: vendor.electronicBillings, field: 'invoicingFormat', availableAttributeIds: invoicingFormats.collect { RefdataValue rdv -> rdv.id }]}"/>
 
-                            <laser:render template="/templates/attributesModal"
-                                          model="${[ownObj: vendor, addAction: 'addAttribute', modalId: 'electronicBilling', buttonText: 'vendor.invoicing.formats.add', label: 'vendor.invoicing.formats.label', field: 'invoicingFormat', availableAttributes: invoicingFormats, editable: editable && !vendor.gokbId]}"/>
-                        </dd>
-                    </dl>
-                    <dl>
-                        <dt class="control-label">
-                            <g:message code="vendor.invoicing.dispatch.label" />
-                        </dt>
-                        <dd>
-                            <%
-                                List<RefdataValue> invoiceDispatchs = RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_DISPATCH)
-                            %>
-                            <laser:render template="/templates/attributesList"
-                                          model="${[ownObj: vendor, deleteAction: 'deleteAttribute', attributes: vendor.invoiceDispatchs, field: 'invoiceDispatch', availableAttributeIds: invoiceDispatchs.collect { RefdataValue rdv -> rdv.id }, editable: editable && !vendor.gokbId]}"/>
+                                <laser:render template="/templates/attributesModal"
+                                              model="${[ownObj: vendor, addAction: 'addAttribute', modalId: 'electronicBilling', buttonText: 'vendor.invoicing.formats.add', label: 'vendor.invoicing.formats.label', field: 'invoicingFormat', availableAttributes: invoicingFormats]}"/>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt class="control-label">
+                                <g:message code="vendor.invoicing.dispatch.label" />
+                            </dt>
+                            <dd>
+                                <%
+                                    List<RefdataValue> invoiceDispatchs = RefdataCategory.getAllRefdataValues(RDConstants.VENDOR_INVOICING_DISPATCH)
+                                %>
+                                <laser:render template="/templates/attributesList"
+                                              model="${[ownObj: vendor, deleteAction: 'deleteAttribute', attributes: vendor.invoiceDispatchs, field: 'invoiceDispatch', availableAttributeIds: invoiceDispatchs.collect { RefdataValue rdv -> rdv.id }]}"/>
 
-                            <laser:render template="/templates/attributesModal"
-                                          model="${[ownObj: vendor, addAction: 'addAttribute', modalId: 'invoiceDispatch', buttonText: 'vendor.invoicing.dispatch.add', label: 'vendor.invoicing.dispatch.label', field: 'invoiceDispatch', availableAttributes: invoiceDispatchs, editable: editable && !vendor.gokbId]}"/>
-                        </dd>
-                    </dl>
-                    <dl>
-                        <dt class="control-label">
-                            <g:message code="vendor.invoicing.paperInvoice.label" />
-                        </dt>
-                        <dd>
-                            <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                                 data_confirm_term_how="ok"
-                                                 class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                                 owner="${vendor}" field="paperInvoice"  overwriteEditable="${editable && !vendor.gokbId}"/>
-                        </dd>
-                    </dl>
-                    <dl>
-                        <dt class="control-label">
-                            <g:message code="vendor.invoicing.managementOfCredits.label" />
-                        </dt>
-                        <dd>
-                            <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                                 data_confirm_term_how="ok"
-                                                 class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                                 owner="${vendor}" field="managementOfCredits"  overwriteEditable="${editable && !vendor.gokbId}"/>
-                        </dd>
-                    </dl>
-                    <dl>
-                        <dt class="control-label">
-                            <g:message code="vendor.invoicing.compensationPayments.label" />
-                        </dt>
-                        <dd>
-                            <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                                 data_confirm_term_how="ok"
-                                                 class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                                 owner="${vendor}" field="processingOfCompensationPayments"  overwriteEditable="${editable && !vendor.gokbId}"/>
-                        </dd>
-                    </dl>
-                    <dl>
-                        <dt class="control-label">
-                            <g:message code="vendor.invoicing.individualInvoiceDesign.label" />
-                        </dt>
-                        <dd>
-                            <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                                 data_confirm_term_how="ok"
-                                                 class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                                 owner="${vendor}" field="individualInvoiceDesign"  overwriteEditable="${editable && !vendor.gokbId}"/>
-                        </dd>
-                    </dl>
-                </div>
-            </div><!-- .card -->
+                                <laser:render template="/templates/attributesModal"
+                                              model="${[ownObj: vendor, addAction: 'addAttribute', modalId: 'invoiceDispatch', buttonText: 'vendor.invoicing.dispatch.add', label: 'vendor.invoicing.dispatch.label', field: 'invoiceDispatch', availableAttributes: invoiceDispatchs]}"/>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt class="control-label">
+                                <g:message code="vendor.invoicing.paperInvoice.label" />
+                            </dt>
+                            <dd>
+                                <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                     data_confirm_term_how="ok"
+                                                     class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                     owner="${vendor}" field="paperInvoice"/>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt class="control-label">
+                                <g:message code="vendor.invoicing.managementOfCredits.label" />
+                            </dt>
+                            <dd>
+                                <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                     data_confirm_term_how="ok"
+                                                     class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                     owner="${vendor}" field="managementOfCredits"/>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt class="control-label">
+                                <g:message code="vendor.invoicing.compensationPayments.label" />
+                            </dt>
+                            <dd>
+                                <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                     data_confirm_term_how="ok"
+                                                     class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                     owner="${vendor}" field="processingOfCompensationPayments"/>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt class="control-label">
+                                <g:message code="vendor.invoicing.individualInvoiceDesign.label" />
+                            </dt>
+                            <dd>
+                                <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                     data_confirm_term_how="ok"
+                                                     class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                     owner="${vendor}" field="individualInvoiceDesign"/>
+                            </dd>
+                        </dl>
+                    </div>
+                </div><!-- .card -->
 
-            <div class="ui card">
-                <div class="content">
-                    <h2 class="ui header"><g:message code="vendor.general.header"/></h2>
-                    <dl>
-                        <dt class="control-label">
-                            <g:message code="vendor.general.technicalSupport.label" />
-                        </dt>
-                        <dd>
-                            <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                                 data_confirm_term_how="ok"
-                                                 class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                                 owner="${vendor}" field="technicalSupport"  overwriteEditable="${editable && !vendor.gokbId}"/>
-                        </dd>
-                    </dl>
-                    <dl>
-                        <dt class="control-label">
-                            <g:message code="vendor.general.metadata.label" />
-                        </dt>
-                        <dd>
-                            <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                                 data_confirm_term_how="ok"
-                                                 class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                                 owner="${vendor}" field="shippingMetadata"  overwriteEditable="${editable && !vendor.gokbId}"/>
-                        </dd>
-                    </dl>
-                    <dl>
-                        <dt class="control-label">
-                            <g:message code="vendor.general.usageStats.label" />
-                        </dt>
-                        <dd>
-                            <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                                 data_confirm_term_how="ok"
-                                                 class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                                 owner="${vendor}" field="forwardingUsageStatisticsFromPublisher"  overwriteEditable="${editable && !vendor.gokbId}"/>
-                        </dd>
-                    </dl>
-                    <dl>
-                        <dt class="control-label">
-                            <g:message code="vendor.general.newReleaseInformation.label" />
-                        </dt>
-                        <dd>
-                            <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                                 data_confirm_term_how="ok"
-                                                 class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                                 owner="${vendor}" field="activationForNewReleases"  overwriteEditable="${editable && !vendor.gokbId}"/>
-                        </dd>
-                    </dl>
-                    <dl>
-                        <dt class="control-label">
-                            <g:message code="vendor.general.exchangeIndividualTitles.label" />
-                        </dt>
-                        <dd>
-                            <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                                 data_confirm_term_how="ok"
-                                                 class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                                 owner="${vendor}" field="exchangeOfIndividualTitles"  overwriteEditable="${editable && !vendor.gokbId}"/>
-                        </dd>
-                    </dl>
-                    <dl>
-                        <dt class="control-label">
-                            <g:message code="vendor.general.researchPlatform.label" />
-                        </dt>
-                        <dd>
-                            <ui:xEditable data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                          data_confirm_term_how="ok"
-                                          class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                          owner="${vendor}" type="url" field="researchPlatformForEbooks" overwriteEditable="${editable && !vendor.gokbId}"/>
-                            <g:if test="${vendor.researchPlatformForEbooks}">
-                                <ui:linkWithIcon href="${vendor.researchPlatformForEbooks}"/>
-                            </g:if>
-                        </dd>
-                    </dl>
-                </div>
-            </div><!-- .card -->
+                <div class="ui card">
+                    <div class="content">
+                        <h2 class="ui header"><g:message code="vendor.general.header"/></h2>
+                        <dl>
+                            <dt class="control-label">
+                                <g:message code="vendor.general.technicalSupport.label" />
+                            </dt>
+                            <dd>
+                                <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                     data_confirm_term_how="ok"
+                                                     class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                     owner="${vendor}" field="technicalSupport"/>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt class="control-label">
+                                <g:message code="vendor.general.metadata.label" />
+                            </dt>
+                            <dd>
+                                <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                     data_confirm_term_how="ok"
+                                                     class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                     owner="${vendor}" field="shippingMetadata"/>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt class="control-label">
+                                <g:message code="vendor.general.usageStats.label" />
+                            </dt>
+                            <dd>
+                                <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                     data_confirm_term_how="ok"
+                                                     class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                     owner="${vendor}" field="forwardingUsageStatisticsFromPublisher"/>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt class="control-label">
+                                <g:message code="vendor.general.newReleaseInformation.label" />
+                            </dt>
+                            <dd>
+                                <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                     data_confirm_term_how="ok"
+                                                     class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                     owner="${vendor}" field="activationForNewReleases"/>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt class="control-label">
+                                <g:message code="vendor.general.exchangeIndividualTitles.label" />
+                            </dt>
+                            <dd>
+                                <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                     data_confirm_term_how="ok"
+                                                     class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                     owner="${vendor}" field="exchangeOfIndividualTitles"/>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt class="control-label">
+                                <g:message code="vendor.general.researchPlatform.label" />
+                            </dt>
+                            <dd>
+                                <ui:xEditable data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                              data_confirm_term_how="ok"
+                                              class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                              owner="${vendor}" type="url" field="researchPlatformForEbooks"/>
+                                <g:if test="${vendor.researchPlatformForEbooks}">
+                                    <ui:linkWithIcon href="${vendor.researchPlatformForEbooks}"/>
+                                </g:if>
+                            </dd>
+                        </dl>
+                    </div>
+                </div><!-- .card -->
 
-            <div class="ui card">
-                <div class="content">
-                    <h2 class="ui header"><g:message code="vendor.supplier.header"/></h2>
-                    <dl>
-                        <dt class="control-label">
-                            <g:message code="vendor.supplier.prequalification.label" />
-                        </dt>
-                        <dd>
-                            <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                                 data_confirm_term_how="ok"
-                                                 class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                                 owner="${vendor}" field="prequalification"  overwriteEditable="${editable && !vendor.gokbId}"/>
-                        </dd>
-                    </dl>
-                    <dl>
-                        <dt class="control-label">
-                            <g:message code="vendor.supplier.infoPrequalification.label" />
-                        </dt>
-                        <dd>
-                            <ui:xEditable data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                          data_confirm_term_how="ok"
-                                          class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
-                                          owner="${vendor}" field="prequalificationInfo"  overwriteEditable="${editable && !vendor.gokbId}"/>
-                            <g:if test="${vendor.prequalificationInfo}">
-                                <ui:linkWithIcon href="${vendor.prequalificationInfo}"/>
-                            </g:if>
-                        </dd>
-                    </dl>
-                </div>
-            </div><!-- .card -->
+                <div class="ui card">
+                    <div class="content">
+                        <h2 class="ui header"><g:message code="vendor.supplier.header"/></h2>
+                        <dl>
+                            <dt class="control-label">
+                                <g:message code="vendor.supplier.prequalification.label" />
+                            </dt>
+                            <dd>
+                                <ui:xEditableBoolean data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                     data_confirm_term_how="ok"
+                                                     class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                                     owner="${vendor}" field="prequalification"/>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt class="control-label">
+                                <g:message code="vendor.supplier.infoPrequalification.label" />
+                            </dt>
+                            <dd>
+                                <ui:xEditable data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                              data_confirm_term_how="ok"
+                                              class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                              owner="${vendor}" field="prequalificationInfo"/>
+                                <g:if test="${vendor.prequalificationInfo}">
+                                    <ui:linkWithIcon href="${vendor.prequalificationInfo}"/>
+                                </g:if>
+                            </dd>
+                        </dl>
+                    </div>
+                </div><!-- .card -->
+            </g:if>
 
-            <g:if test="${links || editable}">
+            <g:if test="${isAdmin}">
                 <div class="ui card">
                     <div class="content">
                         <h2 class="ui header"><g:message code="vendor.retirementLinking.label"/></h2>
@@ -430,7 +434,7 @@
                                         <th scope="row" class="control-label">${linkTypes[perspectiveIndex]}</th>
                                         <td><g:link action="show" id="${pair.id}">${pair.name}</g:link></td>
                                         <td class="right aligned">
-                                            <g:if test="${subEditor}">
+                                            <g:if test="${isAdmin}">
                                                 <span class="la-popup-tooltip" data-content="${message(code:'license.details.unlink')}">
                                                     <g:link class="${Btn.MODERN.NEGATIVE_CONFIRM} la-selectable-button"
                                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.general")}"
@@ -447,14 +451,14 @@
                                 </g:each>
                             </table>
                         </g:if>
-                        <g:if test="${editable}">
+                        <g:if test="${isAdmin}">
                             <div class="ui la-vertical buttons">
                                 <%
                                     Map<String,Object> model = [tmplText:message(code: 'vendor.linking.addLink'),
                                                                 tmplID:'addLink',
                                                                 tmplButtonText:message(code: 'vendor.linking.addLink'),
                                                                 tmplModalID:'ven_add_link',
-                                                                editmode: editable,
+                                                                editmode: isAdmin,
                                                                 linkInstanceType: VendorLink.class.name,
                                                                 context: vendor
                                     ]
@@ -467,53 +471,55 @@
                 </div>
             </g:if>
 
-            <div class="ui card">
-                <div class="content">
-                    <h2 class="ui header"><g:message code="vendor.general.objects.label"/></h2>
-                </div>
-                <div class="content">
-                    <div class="ui accordion">
-                        <div class="title">
-                            <i class="dropdown icon la-dropdown-accordion"></i>
-                            <div class="ui horizontal relaxed list">
-                                <div class="item">
-                                    <strong><g:message code="package.plural" /></strong>
-                                    &nbsp;<ui:bubble count="${allPackages.size()}" />
-                                </div>
-                                <div class="item">
-                                    <strong><g:message code="provider.plural" /></strong>
-                                    &nbsp;<ui:bubble count="${providers.size()}" />
+            <g:if test="${vendor.gokbId}">
+                <div class="ui card">
+                    <div class="content">
+                        <h2 class="ui header"><g:message code="vendor.general.objects.label"/></h2>
+                    </div>
+                    <div class="content">
+                        <div class="ui accordion">
+                            <div class="title">
+                                <i class="dropdown icon la-dropdown-accordion"></i>
+                                <div class="ui horizontal relaxed list">
+                                    <div class="item">
+                                        <strong><g:message code="package.plural" /></strong>
+                                        &nbsp;<ui:bubble count="${allPackages.size()}" />
+                                    </div>
+                                    <div class="item">
+                                        <strong><g:message code="provider.plural" /></strong>
+                                        &nbsp;<ui:bubble count="${providers.size()}" />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="content">
-                            <p class="ui header"><g:message code="package.plural" /></p>
+                            <div class="content">
+                                <p class="ui header"><g:message code="package.plural" /></p>
 
-                            <div class="ui divided middle aligned selection list la-flex-list">
-                                <g:each in="${allPackages}" var="pkg">
-                                    <div class="ui item">
-                                        <div class="content la-space-right">
-                                            <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link>
+                                <div class="ui divided middle aligned selection list la-flex-list">
+                                    <g:each in="${allPackages}" var="pkg">
+                                        <div class="ui item">
+                                            <div class="content la-space-right">
+                                                <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link>
+                                            </div>
                                         </div>
-                                    </div>
-                                </g:each>
-                            </div>
+                                    </g:each>
+                                </div>
 
-                            <p class="ui header"><g:message code="provider.plural" /></p>
+                                <p class="ui header"><g:message code="provider.plural" /></p>
 
-                            <div class="ui divided middle aligned selection list la-flex-list">
-                                <g:each in="${providers}" var="provider">
-                                    <div class="ui item">
-                                        <div class="content la-space-right">
-                                            <g:link controller="provider" action="show" id="${provider.id}">${provider.name}</g:link>
+                                <div class="ui divided middle aligned selection list la-flex-list">
+                                    <g:each in="${providers}" var="provider">
+                                        <div class="ui item">
+                                            <div class="content la-space-right">
+                                                <g:link controller="provider" action="show" id="${provider.id}">${provider.name}</g:link>
+                                            </div>
                                         </div>
-                                    </div>
-                                </g:each>
+                                    </g:each>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </g:if>
 
             <div class="ui card">
                 <div class="content">
@@ -524,14 +530,16 @@
                         <div class="title">
                             <i class="dropdown icon la-dropdown-accordion"></i>
                             <div class="ui horizontal relaxed list">
-                                <div class="item">
-                                    <strong><g:message code="org.platforms.label" /></strong>
-                                    &nbsp;<ui:bubble count="${platforms.size()}" />
-                                </div>
-                                <div class="item">
-                                    <strong><g:message code="package.plural" /></strong>
-                                    &nbsp;<ui:bubble count="${packages.size()}" />
-                                </div>
+                                <g:if test="${vendor.gokbId}">
+                                    <div class="item">
+                                        <strong><g:message code="org.platforms.label" /></strong>
+                                        &nbsp;<ui:bubble count="${platforms.size()}" />
+                                    </div>
+                                    <div class="item">
+                                        <strong><g:message code="package.plural" /></strong>
+                                        &nbsp;<ui:bubble count="${packages.size()}" />
+                                    </div>
+                                </g:if>
                                 <div class="item">
                                     <strong><g:message code="subscription.plural" /></strong>
                                     &nbsp;<ui:bubble count="${currentSubscriptionsCount}/${subLinks}" />
@@ -543,31 +551,33 @@
                             </div>
                         </div>
                         <div class="content">
-                            <p class="ui header"><g:message code="org.platforms.label" /></p>
+                            <g:if test="${vendor.gokbId}">
+                                <p class="ui header"><g:message code="org.platforms.label" /></p>
 
-                            <div class="ui divided middle aligned selection list la-flex-list">
-                                <g:each in="${platforms}" var="platform">
-                                    <g:if test="${platform.status == RDStore.PLATFORM_STATUS_CURRENT}">
+                                <div class="ui divided middle aligned selection list la-flex-list">
+                                    <g:each in="${platforms}" var="platform">
+                                        <g:if test="${platform.status == RDStore.PLATFORM_STATUS_CURRENT}">
+                                            <div class="ui item">
+                                                <div class="content la-space-right">
+                                                    <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
+                                                </div>
+                                            </div>
+                                        </g:if>
+                                    </g:each>
+                                </div>
+
+                                <p class="ui header"><g:message code="package.plural" /></p>
+
+                                <div class="ui divided middle aligned selection list la-flex-list">
+                                    <g:each in="${packages}" var="pkg">
                                         <div class="ui item">
                                             <div class="content la-space-right">
-                                                <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
+                                                <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link>
                                             </div>
                                         </div>
-                                    </g:if>
-                                </g:each>
-                            </div>
-
-                            <p class="ui header"><g:message code="package.plural" /></p>
-
-                            <div class="ui divided middle aligned selection list la-flex-list">
-                                <g:each in="${packages}" var="pkg">
-                                    <div class="ui item">
-                                        <div class="content la-space-right">
-                                            <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link>
-                                        </div>
-                                    </div>
-                                </g:each>
-                            </div>
+                                    </g:each>
+                                </div>
+                            </g:if>
 
                             <p class="ui header"><g:message code="subscription.plural" /></p>
 
