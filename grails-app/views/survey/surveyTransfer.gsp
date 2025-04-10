@@ -33,7 +33,12 @@
 
 <br/>
 
-<g:if test="${(surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED, RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED])}">
+<g:if test="${!(surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY])}">
+    <div class="ui segment">
+        <strong>${message(code: 'survey.notStarted ')}</strong>
+    </div>
+</g:if>
+<g:else>
     <ui:greySegment>
 
         <div class="ui top attached stackable tabular la-tab-with-js menu">
@@ -95,11 +100,6 @@
         </div>
 
     </ui:greySegment>
-</g:if>
-<g:else>
-    <div class="ui segment">
-        <strong>${message(code: 'renewalEvaluation.notInEvaliation')}</strong>
-    </div>
 </g:else>
 
 <laser:htmlEnd/>

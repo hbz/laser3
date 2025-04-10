@@ -2799,6 +2799,8 @@ class SurveyService {
                         if (SurveyConfigVendor.findBySurveyConfigAndVendor(result.surveyConfig, vendor) && !SurveyVendorResult.findBySurveyConfigAndParticipant(result.surveyConfig, participant)) {
                             SurveyVendorResult surveyVendorResult = new SurveyVendorResult(surveyConfig: result.surveyConfig, participant: participant, vendor: vendor, owner: result.surveyInfo.owner)
                             surveyVendorResult.save()
+                        } else {
+                        result.error = messageSource.getMessage('surveyVendors.selectedVendor.fail', null, LocaleUtils.getCurrentLocale())
                         }
 
                         break
@@ -2813,24 +2815,11 @@ class SurveyService {
             }
 
             result.propList    = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.VEN_PROP], contextService.getOrg())
-            params.subTab = params.subTab ?: 'allVendors'
 
-            List configVendorIds
-            if (params.subTab == 'allVendors') {
-                result.selectedVendorIdList = SurveyVendorResult.executeQuery("select svr.vendor.id from SurveyVendorResult svr where svr.surveyConfig = :surveyConfig and svr.participant = :participant", [participant: participant, surveyConfig: result.surveyConfig])
-                configVendorIds = SurveyConfigVendor.executeQuery("select scv.vendor.id from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
-            } else if (params.subTab == 'selectVendors') {
-                List<Long> ids = SurveyVendorResult.executeQuery("select svr.vendor.id from SurveyVendorResult svr where svr.surveyConfig = :surveyConfig and svr.participant = :participant", [participant: participant, surveyConfig: result.surveyConfig])
-                if (ids.size() > 0) {
-                    configVendorIds = ids
-                } else {
-                    //Fallback with fake ID
-                    configVendorIds = [0]
-                }
-                result.selectedVendorIdList = configVendorIds
-            }
-
+            List configVendorIds = SurveyConfigVendor.executeQuery("select scv.vendor.id from SurveyConfigVendor scv where scv.surveyConfig = :surveyConfig ", [surveyConfig: result.surveyConfig])
             params.ids = configVendorIds
+            params.max = configVendorIds.size()
+
             result.putAll(vendorService.getWekbVendors(params))
 
             if (params.isMyX) {

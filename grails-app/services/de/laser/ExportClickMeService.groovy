@@ -5274,12 +5274,12 @@ class ExportClickMeService {
                     SurveyVendorResult surveyVendorResult = SurveyVendorResult.findBySurveyConfigAndParticipant(participantResult.surveyConfig, participantResult.participant)
                     if (surveyVendorResult) {
                         row.add(createTableCell(format, surveyVendorResult.vendor.name))
-                        row.add(createTableCell(format, surveyVendorResult.comment))
-                        row.add(createTableCell(format, surveyVendorResult.ownerComment))
+                       /* row.add(createTableCell(format, surveyVendorResult.comment))
+                        row.add(createTableCell(format, surveyVendorResult.ownerComment))*/
                     }else {
                         row.add(createTableCell(format, ''))
-                        row.add(createTableCell(format, ''))
-                        row.add(createTableCell(format, ''))
+                       /* row.add(createTableCell(format, ''))
+                        row.add(createTableCell(format, ''))*/
                     }
                 }
                 else if (fieldKey == 'survey.finishDate') {
@@ -6439,12 +6439,12 @@ class ExportClickMeService {
                     SurveyVendorResult surveyVendorResult = SurveyVendorResult.findBySurveyConfigAndParticipant(participantResult.surveyConfig, participantResult.participant)
                     if (surveyVendorResult) {
                         row.add(createTableCell(format, surveyVendorResult.vendor.name))
-                        row.add(createTableCell(format, surveyVendorResult.comment))
-                        row.add(createTableCell(format, surveyVendorResult.ownerComment))
+                       /* row.add(createTableCell(format, surveyVendorResult.comment))
+                        row.add(createTableCell(format, surveyVendorResult.ownerComment))*/
                     }else {
                         row.add(createTableCell(format, ''))
-                        row.add(createTableCell(format, ''))
-                        row.add(createTableCell(format, ''))
+                       /* row.add(createTableCell(format, ''))
+                        row.add(createTableCell(format, ''))*/
                     }
                 } else if (fieldKey == 'survey.finishDate') {
                     String finishDate = ""
@@ -7724,8 +7724,8 @@ class ExportClickMeService {
                 }
                 else if(fieldKey.contains('vendorSurvey')) {
                     titles.add(createTableCell(format,  fields.label))
-                    titles.add(createTableCell(format,  "${fields.label}: ${messageSource.getMessage('surveyResult.participantComment', null, locale)}"))
-                    titles.add(createTableCell(format,  "${fields.label}: ${messageSource.getMessage('surveyResult.commentOnlyForOwner', null, locale)}"))
+                    /*titles.add(createTableCell(format,  "${fields.label}: ${messageSource.getMessage('surveyResult.participantComment', null, locale)}"))
+                    titles.add(createTableCell(format,  "${fields.label}: ${messageSource.getMessage('surveyResult.commentOnlyForOwner', null, locale)}"))*/
                 }
                 else {
                     String label = (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label)
@@ -8056,12 +8056,12 @@ class ExportClickMeService {
                 SurveyVendorResult surveyVendorResult = SurveyVendorResult.findBySurveyConfigAndVendorAndParticipant(surveyConfig, surveyConfigVendor.vendor, org)
                 if(surveyVendorResult){
                     row.add(createTableCell(format, messageSource.getMessage('default.selected.label', null, locale), 'positive'))
-                    row.add(createTableCell(format, surveyVendorResult.comment))
-                    row.add(createTableCell(format, surveyVendorResult.ownerComment))
+                   /* row.add(createTableCell(format, surveyVendorResult.comment))
+                    row.add(createTableCell(format, surveyVendorResult.ownerComment))*/
                 }else{
                     row.add(createTableCell(format, ' '))
-                    row.add(createTableCell(format, ' '))
-                    row.add(createTableCell(format, ' '))
+                   /* row.add(createTableCell(format, ' '))
+                    row.add(createTableCell(format, ' '))*/
                 }
             }
 

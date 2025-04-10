@@ -34,6 +34,7 @@
         processController: 'survey',
         processAction: 'processLinkSurveyVendor',
         tmplShowCheckbox: editable,
-        tmplConfigShow: ['lineNumber', 'sortname', 'name', 'isWekbCurated', 'linkSurveyVendor']]"/>
+        tmplConfigShow: ['lineNumber', 'sortname', 'name', 'isWekbCurated', 'linkSurveyVendor'],
+        tmplConfigShowFilter: [['name'], ['supportedLibrarySystems', 'electronicBillings', 'invoiceDispatchs'], ['property&value', 'isMyX'], ['providers']]]"/>
 
 <laser:htmlEnd />

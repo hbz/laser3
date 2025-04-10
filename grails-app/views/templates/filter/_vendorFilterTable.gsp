@@ -39,7 +39,7 @@
                         <ui:markerIcon type="WEKB_CHANGES" />
                     </th>
                 </g:if>
-                <g:if test="${tmplConfigItem == 'surveyVendorsComments'}">
+                %{--<g:if test="${tmplConfigItem == 'surveyVendorsComments'}">
                     <th>
                         <g:if test="${contextService.isInstUser(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
                             ${message(code: 'surveyResult.participantComment')}
@@ -68,8 +68,8 @@
                             </span>
                         </g:else>
                     </th>
-                </g:if>
-                <g:if test="${tmplConfigItem == 'linkSurveyVendor' || tmplConfigItem == 'unLinkSurveyVendor' || tmplConfigItem == 'removeSurveyVendorResult' || tmplConfigItem == 'addSurveyVendorResult'}">
+                </g:if>--}%
+                <g:if test="${tmplConfigItem == 'linkSurveyVendor' || tmplConfigItem == 'unLinkSurveyVendor' || tmplConfigItem == 'selectSurveyVendorResult'}">
                     <th class="center aligned">
                         <ui:optionsIcon />
                     </th>
@@ -217,33 +217,32 @@
                         </g:if>
                     </td>
                 </g:if>
-                <g:if test="${tmplConfigItem == 'addSurveyVendorResult'}">
-                    <td class="right aligned">
-                        <g:if test="${editable && (!SurveyVendorResult.findBySurveyConfigAndParticipant(surveyConfig, participant))}">
-                            <g:link type="button" class="${Btn.SIMPLE}" controller="${controllerName}" action="${actionName}" id="${params.id}"
-                                    params="${parame+ [viewTab: 'vendorSurvey', actionsForSurveyVendors: 'addSurveyVendor', vendorId: vendor.id]}"><g:message
-                                    code="surveyVendors.linkVendor"/></g:link>
+                <g:if test="${tmplConfigItem == 'selectSurveyVendorResult'}">
+                    <td class="center aligned">
+                        <g:set var="surveyVendor" value="${SurveyVendorResult.findBySurveyConfigAndParticipantAndVendor(surveyConfig, participant, vendor)}"/>
+                        <g:if test="${editable}">
+                            <g:if test="${surveyVendor}">
+                                <g:link controller="${controllerName}" action="${actionName}" id="${params.id}"
+                                        params="${parame + [viewTab: 'vendorSurvey', actionsForSurveyVendors: 'removeSurveyVendor', vendorId: vendor.id]}">
+                                    <i class="${Icon.SYM.CHECKBOX_CHECKED} large"></i>
+                                </g:link>
+                            </g:if>
+                            <g:else>
+                                <g:link controller="${controllerName}" action="${actionName}" id="${params.id}"
+                                        params="${parame + [viewTab: 'vendorSurvey', actionsForSurveyVendors: 'addSurveyVendor', vendorId: vendor.id]}">
+                                    <i class="${Icon.SYM.CHECKBOX} large"></i>
+                                </g:link>
+                            </g:else>
                         </g:if>
-                        <g:elseif test="${editable && (SurveyVendorResult.findByVendorAndSurveyConfigAndParticipant(vendor, surveyConfig, participant))}">
-                            <g:link type="button" class="${Btn.NEGATIVE}" controller="${controllerName}" action="${actionName}" id="${params.id}"
-                                    params="${parame+ [viewTab: 'vendorSurvey', actionsForSurveyVendors: 'removeSurveyVendor', vendorId: vendor.id]}"><g:message
-                                    code="surveyVendors.unlinkVendor"/></g:link>
-
-                        </g:elseif>
+                        <g:else>
+                            <g:if test="${surveyVendor}">
+                                <i class="${Icon.SYM.CHECKBOX_CHECKED} large"></i>
+                            </g:if>
+                        </g:else>
                     </td>
                 </g:if>
-                <g:if test="${tmplConfigItem == 'removeSurveyVendorResult'}">
-                    <td class="right aligned">
-                        <g:if test="${editable && (SurveyVendorResult.findByVendorAndSurveyConfigAndParticipant(vendor, surveyConfig, participant))}">
-                            <g:link type="button" class="${Btn.NEGATIVE}" controller="${controllerName}" action="${actionName}" id="${params.id}"
-                                    params="${parame+ [viewTab: 'vendorSurvey', actionsForSurveyVendors: 'removeSurveyVendor', vendorId: vendor.id]}"><g:message
-                                    code="surveyVendors.unlinkVendor"/></g:link>
 
-                        </g:if>
-                    </td>
-                </g:if>
-
-                <g:if test="${tmplConfigItem == 'surveyVendorsComments'}">
+         %{--       <g:if test="${tmplConfigItem == 'surveyVendorsComments'}">
                     <g:set var="surveyVendorResult"
                            value="${SurveyVendorResult.findByParticipantAndSurveyConfigAndVendor(participant, surveyConfig, vendor)}"/>
                     <g:if test="${surveyVendorResult}">
@@ -263,7 +262,7 @@
                         <td></td>
                         <td></td>
                     </g:else>
-                </g:if>
+                </g:if>--}%
 
             </g:each><!-- tmplConfigShow -->
             </tr>
