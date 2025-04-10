@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6459    10.04.2025  rc-3.5  3.5-RC      Andreas Bug         Aufschlag auf vorhandene Rechnungssumme war nicht möglich
+
 6445    09.04.2025  rc-3.5  3.5-RC      Andreas Feature     Reduktion der Informationen für Anbieter/Library Supplier auf Minimum
 
 6435    08.04.2025  rc-3.5  3.5-RC      Andreas Feature     Download-Wrapper zur Bereitstellung der KBART-Datei versetzt
