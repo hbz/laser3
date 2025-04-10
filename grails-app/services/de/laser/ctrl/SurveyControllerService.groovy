@@ -346,7 +346,7 @@ class SurveyControllerService {
 
             result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
-            result.editable = (result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
+            //result.editable = (result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
             Map<String, Object> fsq = filterService.getSurveyOrgQuery(params, result.surveyConfig)
 
@@ -426,7 +426,7 @@ class SurveyControllerService {
 
             result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
-            result.editable = (result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
+            //result.editable = (result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
             Map<String, Object> fsq = filterService.getSurveyOrgQuery(params, result.surveyConfig)
 
