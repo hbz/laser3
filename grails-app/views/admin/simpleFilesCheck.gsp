@@ -76,7 +76,7 @@
             <g:link controller="admin" action="simpleFilesCheck" params="${[encryptRawFiles: 1]}"
                     class="${Btn.NEGATIVE_CONFIRM}"
                     data-confirm-tokenMsg="Unverschlüsselte Dateien verschlüsseln?"
-                    data-confirm-term-how="ok">Verschlüsseln</g:link>
+                    data-confirm-term-how="ok">Verschlüsseln (max.250)</g:link>
         </g:if>
     </div>
 </div>
@@ -94,7 +94,7 @@
             <g:link controller="admin" action="simpleFilesCheck" params="${[moveOutdatedFiles: 1]}"
                     class="${Btn.NEGATIVE_CONFIRM}"
                     data-confirm-tokenMsg="Ungültige Dateien in den 'Outdated'-Ordner verschieben?"
-                    data-confirm-term-how="ok">Aufräumen</g:link>
+                    data-confirm-term-how="ok">Aufräumen (max.1000)</g:link>
         </g:if>
     </div>
 </div>
@@ -112,10 +112,10 @@
                 <div class="content"><icon:pathFile/> Dateien gefunden: <strong>${xxFiles.size()}</strong></div>
             </div>
         </div>
-        <g:if test="${xxFiles}">
-            <br />
-        </g:if>
-        ${xxFiles.join(', ')}
+%{--        <g:if test="${xxFiles}">--}%
+%{--            <br />--}%
+%{--        </g:if>--}%
+%{--        ${xxFiles.join(', ')}--}%
     </div>
 </div>
 

@@ -607,9 +607,9 @@ class AdminController  {
 
         if (params.encryptRawFiles) {
             List<String> encryptedFiles = []
-            List<String> fails = []
+            List<String> ignored = []
 
-            result.validFilesRaw.each { uuid ->
+            result.validFilesRaw.take(250).each { uuid ->
                 try {
                     File raw = new File("${result.dsPath}/${uuid}")
                     Doc doc  = Doc.findByUuidAndContentType(uuid, Doc.CONTENT_TYPE_FILE)
@@ -618,7 +618,7 @@ class AdminController  {
                         encryptedFiles << uuid
                     }
                     else {
-                        fails << uuid
+                        ignored << uuid
                     }
                 }
                 catch (Exception e) {
@@ -626,7 +626,7 @@ class AdminController  {
                 }
             }
             log.info 'encrypted raw files: ' + encryptedFiles.size() + ', path:' + result.dsPath
-            SystemEvent.createEvent('DOCSTORE_ENC_RAW_FILES', [count: encryptedFiles.size(), server: AppUtils.getCurrentServer(), files: encryptedFiles, fails: fails])
+            SystemEvent.createEvent('DOCSTORE_ENC_RAW_FILES', [count: encryptedFiles.size(), server: AppUtils.getCurrentServer(), files: encryptedFiles, ignored: ignored])
 
             redirect controller: 'admin', action: 'simpleFilesCheck'
             return
@@ -636,7 +636,7 @@ class AdminController  {
             List<String> movedFiles = []
             String pk = DateUtils.getSDF_yyyyMMdd().format(new Date())
 
-            result.invalidFiles.each { uuid ->
+            result.invalidFiles.take(1000).each { uuid ->
                 try {
                     String pkid = uuid + '-' + pk
                     File src = new File("${result.dsPath}/${uuid}")
