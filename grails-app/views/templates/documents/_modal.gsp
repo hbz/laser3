@@ -1,4 +1,4 @@
-<%@page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.*; de.laser.storage.RDStore; de.laser.storage.RDConstants"%>
+<%@page import="de.laser.interfaces.CalculatedType; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.*; de.laser.storage.RDStore; de.laser.storage.RDConstants"%>
 <laser:serviceInjection/>
 <%
     String modalText
@@ -142,8 +142,15 @@
                 if(controllerName == 'organisation') {
                     availableConfigs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.SHARE_CONFIGURATION)
                 }
-                else if(controllerName in ['license', 'subscription']) {
+                else if(controllerName == 'subscription') {
                     availableConfigs = [RDStore.SHARE_CONF_UPLOADER_ORG, RDStore.SHARE_CONF_UPLOADER_AND_TARGET]
+                }
+                else if(controllerName == 'license') {
+                    if(ownobj?.getAllLicensee()?.size() == 1) {
+                        availableConfigs = [RDStore.SHARE_CONF_UPLOADER_ORG, RDStore.SHARE_CONF_UPLOADER_AND_TARGET]
+                    }
+                    else if(ownobj?._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
+                        availableConfigs = [RDStore.SHARE_CONF_UPLOADER_ORG, RDStore.SHARE_CONF_ALL]
                 }
                 if(inContextOrg)
                     availableConfigs.remove(RDStore.SHARE_CONF_UPLOADER_AND_TARGET)
