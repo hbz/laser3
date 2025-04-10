@@ -33,7 +33,10 @@
                 <div class="content"><i class="${Icon.SYM.YES} green"></i> Dateien mit gültiger DOC-Referenz: <strong>${validFiles.size()}</strong></div>
             </div>
             <div class="item">
-                <div class="content"><i class="${Icon.SYM.NO} red"></i>Dateien ohne gültige DOC-Referenz: <strong>${invalidFiles.size()}</strong></div>
+                <div class="content"><i class="${Icon.SYM.YES} yellow"></i> Dateien mit gültiger DOC-Referenz, aber unverschlüsselt: <strong>${validFilesRaw.size()}</strong></div>
+            </div>
+            <div class="item">
+                <div class="content"><i class="${Icon.SYM.NO} red"></i> Dateien ohne gültige DOC-Referenz: <strong>${invalidFiles.size()}</strong></div>
             </div>
         </div>
     </div>
@@ -62,6 +65,24 @@
 
 <div class="ui fluid card">
     <div class="content">
+        <div class="header">Dateien mit gültiger DOC-Referenz, aber unverschlüsselt: ${validFilesRaw.size()}</div>
+    </div>
+    <div class="content">
+        ${validFilesRaw.join(', ')}
+
+        <g:if test="${validFilesRaw}">
+            <br/>
+            <br/>
+            <g:link controller="admin" action="simpleFilesCheck" params="${[encryptRawFiles: 1]}"
+                    class="${Btn.NEGATIVE_CONFIRM}"
+                    data-confirm-tokenMsg="Unverschlüsselte Dateien verschlüsseln?"
+                    data-confirm-term-how="ok">Verschlüsseln (max.250)</g:link>
+        </g:if>
+    </div>
+</div>
+
+<div class="ui fluid card">
+    <div class="content">
         <div class="header">Dateien ohne gültige DOC-Referenz: ${invalidFiles.size()}</div>
     </div>
     <div class="content">
@@ -73,7 +94,7 @@
             <g:link controller="admin" action="simpleFilesCheck" params="${[moveOutdatedFiles: 1]}"
                     class="${Btn.NEGATIVE_CONFIRM}"
                     data-confirm-tokenMsg="Ungültige Dateien in den 'Outdated'-Ordner verschieben?"
-                    data-confirm-term-how="ok">Aufräumen</g:link>
+                    data-confirm-term-how="ok">Aufräumen (max.1000)</g:link>
         </g:if>
     </div>
 </div>
@@ -91,10 +112,10 @@
                 <div class="content"><icon:pathFile/> Dateien gefunden: <strong>${xxFiles.size()}</strong></div>
             </div>
         </div>
-        <g:if test="${xxFiles}">
-            <br />
-        </g:if>
-        ${xxFiles.join(', ')}
+%{--        <g:if test="${xxFiles}">--}%
+%{--            <br />--}%
+%{--        </g:if>--}%
+%{--        ${xxFiles.join(', ')}--}%
     </div>
 </div>
 
