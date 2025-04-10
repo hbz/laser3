@@ -18,7 +18,7 @@
     <div class="ui info message">
         <i class="${Icon.UI.INFO}"></i> ${message(code: 'subscription.details.linkProvider.minTwoLetters')}
     </div>
-    <g:form id="create_provider_role_link_${tmplModalID}" class="ui form" url="[controller:'ajax', action:'delAllProviderRoles']" method="post">
+    <g:form id="create_provider_role_unlink_${tmplModalID}" class="ui form" url="[controller:'ajax', action:'delAllProviderRoles']" method="post">
         <g:if test="${parent}">
             <input type="hidden" name="parent" value="${parent}" />
         </g:if>
@@ -47,7 +47,7 @@
             }
             searchTimer = setTimeout(function() {
                 $.ajax({
-                    url: "<g:createLink controller="ajaxHtml" action="lookupProviders"/>?tableView=true&query="+searchVal,
+                    url: "<g:createLink controller="ajaxHtml" action="lookupProviders"/>?tableView=true&subscription=${params.id}&query="+searchVal,
                     success: function (data) {
                         $('#${tmplModalID}_providerResultWrapper').html(data);
                     }
