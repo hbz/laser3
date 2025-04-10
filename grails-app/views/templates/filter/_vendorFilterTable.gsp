@@ -7,7 +7,7 @@
             <g:if test="${tmplShowCheckbox}">
                 <th>
                     <g:if test="${vendorList}">
-                        <g:checkBox name="vendorListToggler" id="vendorListToggler" checked="false"/>
+                        <g:checkBox name="vendorListToggler" id="vendorListToggler" checked="${allChecked ? 'true' : 'false'}"/>
                     </g:if>
                 </th>
             </g:if>
@@ -80,12 +80,15 @@
     </thead>
     <tbody>
         <g:each in="${vendorList}" var="vendor" status="i">
-
+            <tr <g:if test="${currVenSharedLinks.get(vendor.id) == true}">class="disabled"</g:if>>
             <g:if test="${tmplShowCheckbox}">
                 <td>
-                    <g:if test="${'linkVendors' in tmplConfigShow || 'linkSurveyVendor' in tmplConfigShow && (!selectedVendorIdList || !(vendor.id in selectedVendorIdList)) || 'unLinkSurveyVendor' in tmplConfigShow && (selectedVendorIdList && (vendor.id in selectedVendorIdList))}">
-                        <g:checkBox id="selectedVendors_${vendor.id}" name="selectedVendors" value="${vendor.id}" checked="false"/>
+                    <g:if test="${currVenSharedLinks.get(vendor.id) == true}">
+                        <i class="${Icon.SIG.SHARED_OBJECT_ON}"></i>
                     </g:if>
+                    <g:elseif test="${'linkVendors' in tmplConfigShow || 'linkSurveyVendor' in tmplConfigShow && (!selectedVendorIdList || !(vendor.id in selectedVendorIdList)) || 'unLinkSurveyVendor' in tmplConfigShow && (selectedVendorIdList && (vendor.id in selectedVendorIdList))}">
+                        <g:checkBox id="selectedVendors_${vendor.id}" name="selectedVendors" value="${vendor.id}" checked="${vendor.id in currVendors ? 'true' : 'false'}"/>
+                    </g:elseif>
                 </td>
             </g:if>
 
@@ -270,7 +273,7 @@
 
 <g:if test="${tmplShowCheckbox}">
     <laser:script file="${this.getGroovyPageFileName()}">
-        $('#vendorListToggler').click(function () {
+        $('#vendorListToggler').change(function () {
             if ($(this).prop('checked')) {
                 $("tr[class!=disabled] input[name=selectedVendors]").prop('checked', true)
             } else {
