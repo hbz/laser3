@@ -12,9 +12,9 @@ import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
 import de.laser.properties.PersonProperty
 import de.laser.properties.SubscriptionProperty
-import de.laser.remote.Wekb
 import de.laser.remote.FTControl
 import de.laser.remote.GlobalRecordSource
+import de.laser.remote.Wekb
 import de.laser.reporting.report.ReportingCache
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
@@ -33,8 +33,8 @@ import de.laser.wekb.Provider
 import de.laser.wekb.TitleInstancePackagePlatform
 import de.laser.wekb.Vendor
 import grails.converters.JSON
-import grails.plugin.springsecurity.annotation.Secured
 import grails.gorm.transactions.Transactional
+import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import grails.web.Action
 import org.elasticsearch.client.RequestOptions
@@ -1542,23 +1542,41 @@ class YodaController {
 //        log.info ' (' + sc_upOrg.id + ') SHARE_CONF_UPLOADER_ORG : ' + dc_upOrg.collect { it.id }
 //        log.info ' (' + sc_upOrgAndTarget.id + ') SHARE_CONF_UPLOADER_AND_TARGET : ' + dc_upOrgAndTarget.collect { it.id }
 
-        dc_all.each {dc ->
-            dc.targetOrg = dc.owner.owner
-            dc.save()
-            changes << [dc.shareConf.id, dc.id, dc.targetOrg.id, 'dc.owner.owner']
-        }
+//        dc_all.each {dc ->
+//            dc.targetOrg = dc.owner.owner
+//            dc.save()
+//            changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'dc.owner.owner']
+//        }
 
         dc_upOrg.each {dc ->
-            dc.targetOrg = dc.owner.owner
-            dc.save()
-            changes << [dc.shareConf.id, dc.id, dc.targetOrg.id, 'dc.owner.owner']
+            if (dc.org) {
+                dc.shareConf = null
+                dc.save()
+                changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'ORG: UPLOADER_ORG > DELETE']
+            }
+            else {
+                log.debug 'TODO: SHARE_CONF_UPLOADER_ORG @ ' + dc.id
+//                dc.targetOrg = dc.owner.owner
+//                dc.save()
+//                changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'dc.owner.owner']
+            }
         }
 
         dc_upOrgAndTarget.each {dc ->
             if (dc.license) {
-                dc.targetOrg = dc.license.getLicensee()
-                dc.save()
-                changes << [dc.shareConf.id, dc.id, dc.targetOrg.id, 'dc.license.getLicensee()']
+                if (dc.license.getAllLicensee().size() == 1) {
+                    dc.targetOrg = dc.license.getLicensee()
+                    dc.save()
+                    changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'LIC: dc.license.getLicensee()']
+                }
+                else {
+                    log.debug 'TODO: SHARE_CONF_UPLOADER_AND_TARGET > license with multiple licensees @ ' + dc.id  // possible information leak
+
+//                    dc.targetOrg = dc.owner.owner
+//                    dc.shareConf = sc_all
+//                    dc.save()
+//                    changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'LIC: dc.owner.owner/SHARE_CONF_ALL']
+                }
             }
             else if (dc.link) {
                 log.debug 'TODO: link @ ' + dc.id
@@ -1566,21 +1584,25 @@ class YodaController {
             else if (dc.org) {
                 dc.targetOrg = dc.org
                 dc.save()
-                changes << [dc.shareConf.id, dc.id, dc.targetOrg.id, 'dc.org']
+                changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'ORG: dc.org']
             }
             else if (dc.provider) {
-                log.debug 'TODO: provider @ ' + dc.id
+                dc.shareConf = null
+                dc.save()
+                changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'PROV: UPLOADER_AND_TARGET > DELETE']
             }
             else if (dc.subscription) {
                 dc.targetOrg = dc.subscription.getSubscriber()
                 dc.save()
-                changes << [dc.shareConf.id, dc.id, dc.targetOrg.id, 'dc.subscription.getSubscriber()']
+                changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'SUB: dc.subscription.getSubscriber()']
             }
             else if (dc.surveyConfig) {
                 log.debug 'TODO: surveyConfig @ ' + dc.id
             }
             else if (dc.vendor) {
-                log.debug 'TODO: vendor @ ' + dc.id
+                dc.shareConf = null
+                dc.save()
+                changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'VEN: UPLOADER_AND_TARGET > DELETE']
             }
         }
 
