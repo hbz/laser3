@@ -19,7 +19,7 @@
         <div class="header"> <i class="icon medkit"></i> de.laser.helper.* </div>
     </div>
     <div class="content">
-        <table class="ui table">
+        <table class="ui compact table">
             <thead>
                 <tr>
                     <td class="three wide"></td>
@@ -63,7 +63,7 @@
         <div class="header"> <i class="icon toolbox"></i> de.laser.utils.* </div>
     </div>
     <div class="content">
-        <table class="ui table">
+        <table class="ui compact table">
             <thead>
                 <tr>
                     <td class="three wide"></td>
