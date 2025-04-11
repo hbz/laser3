@@ -25,11 +25,6 @@
 
 <ui:objectStatus object="${surveyInfo}" />
 
-<g:link class="${Btn.SIMPLE} right floated" controller="survey" action="surveyParticipants"
-        params="${[id: params.id, surveyConfigID: surveyConfig.id]}"><g:message code="default.button.back"/></g:link>
-<br>
-<br>
-
 <ui:messages data="${flash}"/>
 
 <br />

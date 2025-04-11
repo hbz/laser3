@@ -2793,6 +2793,18 @@ class SurveyControllerService {
                                 it.delete()
                             }
 
+                            SurveyPackageResult.findAllBySurveyConfigAndParticipant(result.surveyConfig, surveyOrg.org).each {
+                                it.delete()
+                            }
+
+                            SurveyVendorResult.findAllBySurveyConfigAndParticipant(result.surveyConfig, surveyOrg.org).each {
+                                it.delete()
+                            }
+
+                            SurveyPersonResult.findAllBySurveyConfigAndParticipant(result.surveyConfig, surveyOrg.org).each {
+                                it.delete()
+                            }
+
                             if (surveyOrg.delete()) {
                                 //result.message = messageSource.getMessage("surveyParticipants.delete.successfully", null, result.locale)
                             }
