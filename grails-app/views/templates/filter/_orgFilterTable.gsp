@@ -254,10 +254,13 @@
         <g:if test="${controllerName in ["survey"]}">
             <g:set var="surveyOrg" value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org)}"/>
 
-            <g:set var="existSubforOrg"
-                   value="${Subscription.get(surveyConfig.subscription?.id)?.getDerivedNonHiddenSubscribers()?.id?.contains(org?.id)}"/>
+            <g:set var="orgSub" value="${(surveyConfig.subscription || params.sub instanceof Subscription) ?  OrgRole.executeQuery('select oo.sub from OrgRole oo where oo.org = :org and oo.roleType in (:subscrRoles) and oo.sub.instanceOf = :sub',
+                    [org: org, subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], sub: (params.sub instanceof Subscription ? params.sub : surveyConfig.subscription)])[0] : null}"/>
 
-            <g:set var="orgSub" value="${surveyConfig.subscription?.getDerivedSubscriptionForNonHiddenSubscriber(org)}"/>
+            <g:set var="existSubforOrg"
+                   value="${orgSub ? true : false}"/>
+
+
         </g:if>
 
         <tr class="${org.isArchived() ? 'warning' : ''} ${tmplDisableOrgIds && (org.id in tmplDisableOrgIds) ? 'disabled' : ''}">

@@ -848,6 +848,11 @@ class SurveyController {
                 return
             }
         }else {
+
+            if(!params.sub && ((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime))){
+                flash.error = message(code: 'filter.subscription.empty')
+            }
+
             ctrlResult.result
         }
 
