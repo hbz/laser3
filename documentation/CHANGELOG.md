@@ -11,6 +11,8 @@
 
 6463    11.04.2025  rc-3.5  3.5-RC      Andreas Bug         Verknüpfung Anbieter/LS funktionierte nicht
 
+6459    11.04.2025  rc-3.5  3.5-RC      Andreas Bug         falsches Befüllen des Dropdowns behoben
+
 6457    10.04.2025  rc-3.5  3.5-RC      Moe     Feature     Umfrage-Teilnehmer hinzufügen: Lizenzfiltern einbauen
 
 6458    10.04.2025  rc-3.5  3.5-RC      Moe     Feature     Umfrage-Kosten editierbar machen während Umfrage
