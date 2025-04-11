@@ -197,9 +197,9 @@
                     <label for="qp_invoicingVendors">${message(code: 'vendor.invoicing.vendors.label')}</label>
                     <select name="qp_invoicingVendors" id="qp_invoicingVendors" multiple="multiple" class="ui search selection dropdown">
                         <option value="">${message(code:'default.select.choose.label')}</option>
-                        <g:each in="${InvoicingVendor.executeQuery('select v from InvoicingVendor iv join iv.vendor v order by v.name').toSet()}" var="invoicingVendors">
+                        <g:each in="${InvoicingVendor.executeQuery('select distinct(v) from InvoicingVendor iv join iv.vendor v order by v.name')}" var="invoicingVendors">
                             <option <%=Params.getLongList(params, 'qp_invoicingVendors').contains(invoicingVendors.id) ? 'selected=selected"' : ''%> value="${invoicingVendors.id}">
-                                ${invoicingVendors.sortname}
+                                ${invoicingVendors.name}
                             </option>
                         </g:each>
                     </select>
