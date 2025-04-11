@@ -1570,7 +1570,7 @@ class YodaController {
                     changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'LIC: dc.license.getLicensee()']
                 }
                 else {
-                    log.debug 'TODO: license with multiple licensees @ ' + dc.id  // possible information leak
+                    log.debug 'TODO: SHARE_CONF_UPLOADER_AND_TARGET > license with multiple licensees @ ' + dc.id  // possible information leak
 
 //                    dc.targetOrg = dc.owner.owner
 //                    dc.shareConf = sc_all
