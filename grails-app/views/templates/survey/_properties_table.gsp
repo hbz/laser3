@@ -10,7 +10,11 @@
             <th>${message(code: 'surveyProperty.name')}</th>
             <th>${message(code: 'surveyProperty.expl.label')}</th>
             <th>${message(code: 'default.type.label')}</th>
-            <th>${message(code: 'surveyProperty.mandatoryProperty')}</th>
+            <th>
+                <span class="la-popup-tooltip" data-content="${message(code:'surveyProperty.mandatoryProperty')}" data-position="bottom center">
+                <i class="${Icon.PROP.MANDATORY} large"></i>
+                </span>
+            </th>
             <th>${message(code: 'surveyProperty.propertyOrder')}</th>
             <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING && surveyProperties}">
                 <th class="center aligned">
@@ -176,7 +180,11 @@
                 <th>${message(code: 'surveyProperty.label')}</th>
                 <th>${message(code: 'surveyProperty.expl.label')}</th>
                 <th>${message(code: 'default.type.label')}</th>
-                <th>${message(code: 'surveyProperty.mandatoryProperty.short')}</th>
+                <th>
+                    <span class="la-popup-tooltip" data-content="${message(code:'surveyProperty.mandatoryProperty')}" data-position="bottom center">
+                        <i class="${Icon.PROP.MANDATORY} large"></i>
+                    </span>
+                </th>
                 <th>${message(code: 'surveyResult.result')}</th>
                 <th>
                     <g:if test="${contextService.isInstUser(CustomerTypeService.ORG_CONSORTIUM_PRO)}">

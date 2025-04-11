@@ -831,6 +831,11 @@ class SurveyController {
                 return
             }
         }else {
+
+            if(!params.sub && ((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime))){
+                flash.error = message(code: 'filter.subscription.empty')
+            }
+
             ctrlResult.result
         }
 
@@ -848,6 +853,11 @@ class SurveyController {
                 return
             }
         }else {
+
+            if(!params.sub && ((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime))){
+                flash.error = message(code: 'filter.subscription.empty')
+            }
+
             ctrlResult.result
         }
 
@@ -902,6 +912,10 @@ class SurveyController {
 
                 Set<CostItem> missing = CostItem.executeQuery(query, [status: RDStore.COST_ITEM_DELETED, surConfig: ctrlResult.result.surveyConfig, element: pickedElement])
                 ctrlResult.result.missing = missing
+            }
+
+            if(!params.sub && ((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime))){
+                flash.error = message(code: 'filter.subscription.empty')
             }
 
             ctrlResult.result
@@ -960,6 +974,10 @@ class SurveyController {
 
                 Set<CostItem> missing = CostItem.executeQuery(query, [pkg: pkg, status: RDStore.COST_ITEM_DELETED, surConfig: ctrlResult.result.surveyConfig, element: pickedElement])
                 ctrlResult.result.missing = missing
+            }
+
+            if(!params.sub && ((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime))){
+                flash.error = message(code: 'filter.subscription.empty')
             }
 
             ctrlResult.result
@@ -1170,7 +1188,7 @@ class SurveyController {
 
         String filename = "template_cost_import"
 
-        ArrayList titles = ["WIB-ID", "ISIL", "ROR-ID", "GND-ID", "DEAL-ID"]
+        ArrayList titles = ["LAS:eR-UUID", "WIB-ID", "ISIL", "ROR-ID", "GND-ID", "DEAL-ID"]
         titles.addAll([message(code: 'org.customerIdentifier'),
                        message(code: 'org.sortname.label'), message(code: 'default.name.label'),
                        message(code: 'financials.costItemElement'),
@@ -1192,7 +1210,7 @@ class SurveyController {
             String ror = org.getIdentifierByType('ROR ID')?.value
             String gng = org.getIdentifierByType('gnd_org_nr')?.value
             String deal = org.getIdentifierByType('deal_id')?.value
-
+            row.add(org.globalUID)
             row.add((wibid != IdentifierNamespace.UNKNOWN && wibid != null) ? wibid : '')
             row.add((isil != IdentifierNamespace.UNKNOWN && isil != null) ? isil : '')
             row.add((ror != IdentifierNamespace.UNKNOWN && ror != null) ? ror : '')
@@ -1252,7 +1270,7 @@ class SurveyController {
 
         List<Org> members = Org.executeQuery(fsr.query, fsr.queryParams, params)
 
-        ArrayList titles = ["WIB-ID", "ISIL", "ROR-ID", "GND-ID", "DEAL-ID", message(code: 'org.sortname.label'), message(code: 'default.name.label'), message(code: 'org.libraryType.label'), message(code: 'surveyconfig.orgs.label')]
+        ArrayList titles = ["LAS:eR-UUID", "WIB-ID", "ISIL", "ROR-ID", "GND-ID", "DEAL-ID", message(code: 'org.sortname.label'), message(code: 'default.name.label'), message(code: 'org.libraryType.label'), message(code: 'surveyconfig.orgs.label')]
 
         ArrayList rowData = []
         ArrayList row
@@ -1264,7 +1282,7 @@ class SurveyController {
             String ror = org.getIdentifierByType('ROR ID')?.value
             String gng = org.getIdentifierByType('gnd_org_nr')?.value
             String deal = org.getIdentifierByType('deal_id')?.value
-
+            row.add(org.globalUID)
             row.add((wibid != IdentifierNamespace.UNKNOWN && wibid != null) ? wibid : '')
             row.add((isil != IdentifierNamespace.UNKNOWN && isil != null) ? isil : '')
             row.add((ror != IdentifierNamespace.UNKNOWN && ror != null) ? ror : '')

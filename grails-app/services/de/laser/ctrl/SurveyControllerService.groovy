@@ -27,6 +27,7 @@ import de.laser.Links
 import de.laser.LinksGenerationService
 import de.laser.Org
 import de.laser.OrgRole
+import de.laser.survey.SurveyPersonResult
 import de.laser.utils.RandomUtils
 import de.laser.wekb.Package
 import de.laser.PackageService
@@ -249,6 +250,14 @@ class SurveyControllerService {
 
             result.participantsTotal = SurveyOrg.countBySurveyConfig(result.surveyConfig)
 
+            if(params.sub){
+                params.sub = Subscription.get(params.long('sub'))
+            }else{
+                if((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime)){
+                    params.sub = params.sub ? Subscription.get(params.long('sub')) : result.subscription
+                }
+            }
+
             Map<String, Object> fsq = filterService.getSurveyOrgQuery(params, result.surveyConfig)
 
             result.participants = SurveyOrg.executeQuery('select org '+ fsq.query, fsq.queryParams, params)
@@ -341,6 +350,14 @@ class SurveyControllerService {
 
             //result.editable = (result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
+            if(params.sub){
+                params.sub = Subscription.get(params.long('sub'))
+            }else{
+                if((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime)){
+                    params.sub = params.sub ? Subscription.get(params.long('sub')) : result.subscription
+                }
+            }
+
             Map<String, Object> fsq = filterService.getSurveyOrgQuery(params, result.surveyConfig)
 
             result.participants = SurveyOrg.executeQuery('select org '+ fsq.query, fsq.queryParams, params)
@@ -420,6 +437,14 @@ class SurveyControllerService {
             result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
             //result.editable = (result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
+
+            if(params.sub){
+                params.sub = Subscription.get(params.long('sub'))
+            }else{
+                if((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime)){
+                    params.sub = params.sub ? Subscription.get(params.long('sub')) : result.subscription
+                }
+            }
 
             Map<String, Object> fsq = filterService.getSurveyOrgQuery(params, result.surveyConfig)
 
@@ -998,6 +1023,8 @@ class SurveyControllerService {
                         if (headerCol.startsWith("\uFEFF"))
                             headerCol = headerCol.substring(1)
                         switch (headerCol.toLowerCase().trim()) {
+                            case ["laser-uuid", "las:er-uuid", "las:er-uuid (einrichtung)", "las:er-uuid (institution)", "las:er-uuid (einrichtungslizenz)", "las:er-uuid (institution subscription)"]: colMap.uuidCol = c
+                                break
                             case "gnd-id": colMap.gndCol = c
                                 break
                             case "isil": colMap.isilCol = c
@@ -1048,7 +1075,11 @@ class SurveyControllerService {
                         log.debug("now processing entry ${r}")
                         List<String> cols = row.split('\t', -1)
                         Org match = null
-                        if (colMap.wibCol >= 0 && cols[colMap.wibCol] != null && !cols[colMap.wibCol].trim().isEmpty()) {
+                        if (colMap.uuidCol >= 0 && cols[colMap.uuidCol] != null && !cols[colMap.uuidCol].trim().isEmpty()) {
+                            match = Org.findByGlobalUIDAndArchiveDateIsNull(cols[colMap.uuidCol].trim())
+                        }
+
+                        if (!match && colMap.wibCol >= 0 && cols[colMap.wibCol] != null && !cols[colMap.wibCol].trim().isEmpty()) {
                             List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.archiveDate is null', [value: cols[colMap.wibCol].trim(), ns: namespaces.wib])
                             if (matchList.size() == 1)
                                 match = matchList[0] as Org
@@ -1075,12 +1106,12 @@ class SurveyControllerService {
                                 match = matchList[0] as Org
                         }
 
-                        if (colMap.dealCol >= 0 && cols[colMap.dealCol] != null && !cols[colMap.dealCol].trim().isEmpty()) {
+                        if (!match && colMap.dealCol >= 0 && cols[colMap.dealCol] != null && !cols[colMap.dealCol].trim().isEmpty()) {
                             List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.archiveDate is null', [value: cols[colMap.dealCol].trim(), ns: namespaces.dealId])
                             if (matchList.size() == 1)
                                 match = matchList[0] as Org
                         }
-                         if (colMap.sortname >= 0 && cols[colMap.sortname] != null && !cols[colMap.sortname].trim().isEmpty()) {
+                         if (!match && colMap.sortname >= 0 && cols[colMap.sortname] != null && !cols[colMap.sortname].trim().isEmpty()) {
                             List matchList = Org.executeQuery('select org from Org org where org.sortname = :sortname and org.archiveDate is null', [sortname: cols[colMap.sortname].trim()])
                             if (matchList.size() == 1)
                                  match = matchList[0] as Org
@@ -2759,6 +2790,18 @@ class SurveyControllerService {
                             }
 
                             SurveyResult.findAllBySurveyConfigAndParticipant(result.surveyConfig, surveyOrg.org).each {
+                                it.delete()
+                            }
+
+                            SurveyPackageResult.findAllBySurveyConfigAndParticipant(result.surveyConfig, surveyOrg.org).each {
+                                it.delete()
+                            }
+
+                            SurveyVendorResult.findAllBySurveyConfigAndParticipant(result.surveyConfig, surveyOrg.org).each {
+                                it.delete()
+                            }
+
+                            SurveyPersonResult.findAllBySurveyConfigAndParticipant(result.surveyConfig, surveyOrg.org).each {
                                 it.delete()
                             }
 
