@@ -1519,4 +1519,82 @@ class YodaController {
         flash.message = 'removePerpetualAccessByIes process is now running. In SystemEvents you see when removePerpetualAccessByIes is finish!'
         redirect controller: 'yoda', action: 'index'
     }
+
+    @Secured(['ROLE_YODA'])
+    def gdc_docContextTargetOrg() {
+        log.debug 'gdc_docContextTargetOrg'
+
+        List changes = [] // [shareConf, docContext, source, newTargetOrg]
+
+        RefdataValue sc_all             = RDStore.SHARE_CONF_ALL
+        RefdataValue sc_upOrg           = RDStore.SHARE_CONF_UPLOADER_ORG
+        RefdataValue sc_upOrgAndTarget  = RDStore.SHARE_CONF_UPLOADER_AND_TARGET
+
+        List<DocContext> dc_all             = DocContext.findAllByShareConfAndTargetOrgIsNull( sc_all )
+        List<DocContext> dc_upOrg           = DocContext.findAllByShareConfAndTargetOrgIsNull( sc_upOrg )
+        List<DocContext> dc_upOrgAndTarget  = DocContext.findAllByShareConfAndTargetOrgIsNull( sc_upOrgAndTarget )
+
+        log.info ' (' + sc_all.id + ') SHARE_CONF_ALL : ' + dc_all.size()
+        log.info ' (' + sc_upOrg.id + ') SHARE_CONF_UPLOADER_ORG : ' + dc_upOrg.size()
+        log.info ' (' + sc_upOrgAndTarget.id + ') SHARE_CONF_UPLOADER_AND_TARGET : ' + dc_upOrgAndTarget.size()
+
+//        log.info ' (' + sc_all.id + ') SHARE_CONF_ALL : ' + dc_all.collect { it.id }
+//        log.info ' (' + sc_upOrg.id + ') SHARE_CONF_UPLOADER_ORG : ' + dc_upOrg.collect { it.id }
+//        log.info ' (' + sc_upOrgAndTarget.id + ') SHARE_CONF_UPLOADER_AND_TARGET : ' + dc_upOrgAndTarget.collect { it.id }
+
+        dc_all.each {dc ->
+            dc.targetOrg = dc.owner.owner
+            dc.save()
+            changes << [dc.shareConf.id, dc.id, dc.targetOrg.id, 'dc.owner.owner']
+        }
+
+        dc_upOrg.each {dc ->
+            dc.targetOrg = dc.owner.owner
+            dc.save()
+            changes << [dc.shareConf.id, dc.id, dc.targetOrg.id, 'dc.owner.owner']
+        }
+
+        dc_upOrgAndTarget.each {dc ->
+            if (dc.license) {
+                dc.targetOrg = dc.license.getLicensee()
+                dc.save()
+                changes << [dc.shareConf.id, dc.id, dc.targetOrg.id, 'dc.license.getLicensee()']
+            }
+            else if (dc.link) {
+                log.debug 'TODO: link @ ' + dc.id
+            }
+            else if (dc.org) {
+                dc.targetOrg = dc.org
+                dc.save()
+                changes << [dc.shareConf.id, dc.id, dc.targetOrg.id, 'dc.org']
+            }
+            else if (dc.provider) {
+                log.debug 'TODO: provider @ ' + dc.id
+            }
+            else if (dc.subscription) {
+                dc.targetOrg = dc.subscription.getSubscriber()
+                dc.save()
+                changes << [dc.shareConf.id, dc.id, dc.targetOrg.id, 'dc.subscription.getSubscriber()']
+            }
+            else if (dc.surveyConfig) {
+                log.debug 'TODO: surveyConfig @ ' + dc.id
+            }
+            else if (dc.vendor) {
+                log.debug 'TODO: vendor @ ' + dc.id
+            }
+        }
+
+        if (changes) {
+            log.info 'gdc_docContextTargetOrg: ' + changes.size()
+
+            SystemEvent.createEvent('GDC_INFO', [
+                    server: AppUtils.getCurrentServer(),
+                    op: 'DocContext: fixed missing target org',
+                    count: changes.size(),
+                    changes: changes
+            ])
+        }
+
+        log.debug changes.toListString()
+    }
 }
