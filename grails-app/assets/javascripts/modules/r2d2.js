@@ -732,8 +732,8 @@ r2d2 = {
         // DROPDOWN
 
         // simple dropdown
-        $(ctxSel + ' .ui.dropdown').dropdown({
-            selectOnKeydown: false,
+        $(ctxSel + ' .ui.dropdown').not('#mainMenue .ui.dropdown').dropdown({
+            selectOnKeydown: false
         });
         // search dropdown
         $(ctxSel + ' .ui.search.dropdown').dropdown({
