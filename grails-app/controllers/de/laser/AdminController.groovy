@@ -545,7 +545,11 @@ class AdminController  {
                 }
             }
             log.info 'removed orphaned docs: ' + deletedDocs.size()
-            SystemEvent.createEvent('DOCSTORE_DEL_ORPHANED_DOCS', [count: deletedDocs.size(), server: AppUtils.getCurrentServer(), docs: deletedDocs])
+            SystemEvent.createEvent('DOCSTORE_DEL_ORPHANED_DOCS', [
+                    server: AppUtils.getCurrentServer(),
+                    count: deletedDocs.size(),
+                    docs: deletedDocs
+            ])
 
             redirect controller: 'admin', action: 'simpleDocsCheck'
             return
@@ -626,7 +630,12 @@ class AdminController  {
                 }
             }
             log.info 'encrypted raw files: ' + encryptedFiles.size() + ', path:' + result.dsPath
-            SystemEvent.createEvent('DOCSTORE_ENC_RAW_FILES', [count: encryptedFiles.size(), server: AppUtils.getCurrentServer(), files: encryptedFiles, ignored: ignored])
+            SystemEvent.createEvent('DOCSTORE_ENC_RAW_FILES', [
+                    server: AppUtils.getCurrentServer(),
+                    count: encryptedFiles.size(),
+                    files: encryptedFiles,
+                    ignored: ignored
+            ])
 
             redirect controller: 'admin', action: 'simpleFilesCheck'
             return
@@ -651,7 +660,11 @@ class AdminController  {
                 }
             }
             log.info 'moved outdated files: ' + movedFiles.size() + ', pk: ' + pk + ', path:' + result.xxPath
-            SystemEvent.createEvent('DOCSTORE_MOV_OUTDATED_FILES', [count: movedFiles.size(), server: AppUtils.getCurrentServer(), files: movedFiles])
+            SystemEvent.createEvent('DOCSTORE_MOV_OUTDATED_FILES', [
+                    server: AppUtils.getCurrentServer(),
+                    count: movedFiles.size(),
+                    files: movedFiles
+            ])
 
             redirect controller: 'admin', action: 'simpleFilesCheck'
             return
