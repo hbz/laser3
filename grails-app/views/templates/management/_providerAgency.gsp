@@ -217,7 +217,36 @@
             </tbody>
         </table>
     </div>
-
+    <div class="ui segment">
+        <div class="ui la-vertical buttons">
+            <a role="button"
+               class="ui icon button la-modern-button la-popup-tooltip"
+               data-ui="modal"
+               href="#modal_add_all_provider">
+                <g:message code="subscription.details.linkProvider.all.tmplButtonText"/>
+            </a>
+            <a role="button"
+               class="ui icon button la-modern-button la-popup-tooltip"
+               data-ui="modal"
+               href="#modal_add_all_agency">
+                <g:message code="subscription.details.linkAgency.all.tmplButtonText"/>
+            </a>
+        </div>
+        <div class="ui la-vertical buttons">
+            <a role="button"
+               class="ui icon negative button la-modern-button la-popup-tooltip"
+               data-ui="modal"
+               href="#modal_del_all_provider">
+                <g:message code="subscription.details.unlinkProvider.all.tmplButtonText"/>
+            </a>
+            <a role="button"
+               class="ui icon negative button la-modern-button la-popup-tooltip"
+               data-ui="modal"
+               href="#modal_del_all_agency">
+                <g:message code="subscription.details.unlinkAgency.all.tmplButtonText"/>
+            </a>
+        </div>
+    </div>
 </g:if>
 <g:else>
     <g:if test="${filterSet}">
