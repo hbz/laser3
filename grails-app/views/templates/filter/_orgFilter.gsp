@@ -387,6 +387,7 @@
 
             <g:if test="${field.equalsIgnoreCase('hasSubscription')}">
                 <div class="field">
+                    <label>${message(code: 'subscription.label')}</label>
                     <div class="inline fields la-filter-inline">
                         <div class="inline field">
                             <div class="ui checkbox">

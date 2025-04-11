@@ -27,6 +27,7 @@ import de.laser.Links
 import de.laser.LinksGenerationService
 import de.laser.Org
 import de.laser.OrgRole
+import de.laser.survey.SurveyPersonResult
 import de.laser.utils.RandomUtils
 import de.laser.wekb.Package
 import de.laser.PackageService
@@ -249,6 +250,14 @@ class SurveyControllerService {
 
             result.participantsTotal = SurveyOrg.countBySurveyConfig(result.surveyConfig)
 
+            if(params.sub){
+                params.sub = Subscription.get(params.long('sub'))
+            }else{
+                if((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime)){
+                    params.sub = params.sub ? Subscription.get(params.long('sub')) : result.subscription
+                }
+            }
+
             Map<String, Object> fsq = filterService.getSurveyOrgQuery(params, result.surveyConfig)
 
             result.participants = SurveyOrg.executeQuery('select org '+ fsq.query, fsq.queryParams, params)
@@ -341,6 +350,14 @@ class SurveyControllerService {
 
             //result.editable = (result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
+            if(params.sub){
+                params.sub = Subscription.get(params.long('sub'))
+            }else{
+                if((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime)){
+                    params.sub = params.sub ? Subscription.get(params.long('sub')) : result.subscription
+                }
+            }
+
             Map<String, Object> fsq = filterService.getSurveyOrgQuery(params, result.surveyConfig)
 
             result.participants = SurveyOrg.executeQuery('select org '+ fsq.query, fsq.queryParams, params)
@@ -420,6 +437,14 @@ class SurveyControllerService {
             result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
             //result.editable = (result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
+
+            if(params.sub){
+                params.sub = Subscription.get(params.long('sub'))
+            }else{
+                if((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime)){
+                    params.sub = params.sub ? Subscription.get(params.long('sub')) : result.subscription
+                }
+            }
 
             Map<String, Object> fsq = filterService.getSurveyOrgQuery(params, result.surveyConfig)
 

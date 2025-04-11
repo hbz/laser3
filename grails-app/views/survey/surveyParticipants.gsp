@@ -37,18 +37,11 @@
             <br />
 
             <ui:filter>
-                <g:if test="${surveyConfig.subscription}">
-                    <g:set var="tmplConfigShowFilter" value="${[['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['discoverySystemsFrontend', 'discoverySystemsIndex'], ['hasSubscription', 'subRunTimeMultiYear']]}"/>
-                </g:if>
-                <g:else>
-                    <g:set var="tmplConfigShowFilter" value="${[['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['discoverySystemsFrontend', 'discoverySystemsIndex'], ['subStatus']]}"/>
-                </g:else>
-
                 <g:form action="surveyParticipants" method="post" class="ui form"
                         params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
                     <laser:render template="/templates/filter/orgFilter"
                                   model="[
-                                          tmplConfigShow      : tmplConfigShowFilter,
+                                          tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['discoverySystemsFrontend', 'discoverySystemsIndex'], ['hasSubscription', 'subRunTimeMultiYear'], ['subscriptionAdjustDropdown']],
                                           tmplConfigFormFilter: true
                                   ]"/>
                 </g:form>

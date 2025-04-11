@@ -831,6 +831,11 @@ class SurveyController {
                 return
             }
         }else {
+
+            if(!params.sub && ((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime))){
+                flash.error = message(code: 'filter.subscription.empty')
+            }
+
             ctrlResult.result
         }
 
@@ -909,6 +914,10 @@ class SurveyController {
                 ctrlResult.result.missing = missing
             }
 
+            if(!params.sub && ((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime))){
+                flash.error = message(code: 'filter.subscription.empty')
+            }
+
             ctrlResult.result
         }
 
@@ -965,6 +974,10 @@ class SurveyController {
 
                 Set<CostItem> missing = CostItem.executeQuery(query, [pkg: pkg, status: RDStore.COST_ITEM_DELETED, surConfig: ctrlResult.result.surveyConfig, element: pickedElement])
                 ctrlResult.result.missing = missing
+            }
+
+            if(!params.sub && ((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime))){
+                flash.error = message(code: 'filter.subscription.empty')
             }
 
             ctrlResult.result
