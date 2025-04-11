@@ -264,28 +264,21 @@ class SurveyControllerService {
             [result: null, status: STATUS_ERROR]
         } else {
 
-            // new: filter preset
-            //params.orgType = RDStore.OT_INSTITUTION.id
-            params.customerType = customerTypeService.getOrgInstRoles().id // ERMS-6009
-
-            /* if (params.tab == 'selectedParticipants') {
-                 params.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id)
-             }*/
-
             result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
+            params.customerType = customerTypeService.getOrgInstRoles().id // ERMS-6009
             params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
-            params.sub = result.subscription
+            if(params.sub){
+                params.sub = Subscription.get(params.long('sub'))
+            }else{
+                if((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription) || (params.subRunTimeMultiYear || params.subRunTime)){
+                    params.sub = params.sub ? Subscription.get(params.long('sub')) : result.subscription
+                }
+            }
 
             GrailsParameterMap cloneParams = params.clone()
             cloneParams.removeAll { it.value != '' }
-
-            //cloneParams.orgType = RDStore.OT_INSTITUTION.id
-            cloneParams.customerType = customerTypeService.getOrgInstRoles().id // ERMS-6009
-
-            //cloneParams.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id)
             cloneParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
-            cloneParams.sub = result.subscription
 
             FilterService.Result countFsr = filterService.getOrgComboQuery(cloneParams, result.institution as Org)
             if (countFsr.isFilterSet) {
@@ -346,7 +339,7 @@ class SurveyControllerService {
 
             result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
-            result.editable = (result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
+            //result.editable = (result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
             Map<String, Object> fsq = filterService.getSurveyOrgQuery(params, result.surveyConfig)
 
@@ -426,7 +419,7 @@ class SurveyControllerService {
 
             result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
-            result.editable = (result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
+            //result.editable = (result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
             Map<String, Object> fsq = filterService.getSurveyOrgQuery(params, result.surveyConfig)
 
