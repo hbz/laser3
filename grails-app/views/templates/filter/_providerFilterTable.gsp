@@ -58,7 +58,7 @@
     </thead>
     <tbody>
     <g:each in="${providerList}" var="provider" status="i">
-        <tr <g:if test="${currProvSharedLinks.get(provider.id) == true}">class="disabled"</g:if>>
+        <tr <g:if test="${tmplShowCheckbox && currProvSharedLinks.get(provider.id) == true}">class="disabled"</g:if>>
         <g:if test="${tmplShowCheckbox}">
             <td>
                 <g:if test="${currProvSharedLinks.get(provider.id) == true}">

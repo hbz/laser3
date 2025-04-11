@@ -442,20 +442,20 @@ class LinksGenerationService {
         log.debug(params.toMapString())
         def l
         if(params.linkType_new) {
-            Long from, to
+            def from, to
             int perspectiveIndex = Integer.parseInt(params["linkType_new"].split("§")[1])
             if(perspectiveIndex == 0) {
-                from = params.long('pair_new')
-                to = params.long('context')
+                from = genericOIDService.resolveOID(params.pair_new)
+                to = genericOIDService.resolveOID(params.context)
             }
             else if(perspectiveIndex == 1) {
-                from = params.long('context')
-                to = params.long('pair_new')
+                from = genericOIDService.resolveOID(params.context)
+                to = genericOIDService.resolveOID(params.pair_new)
             }
             switch(linkInstanceType) {
-                case ProviderLink: l = new ProviderLink(type: RDStore.PROVIDER_LINK_FOLLOWS, from: Provider.get(from), to: Provider.get(to))
+                case ProviderLink.class.name: l = new ProviderLink(type: RDStore.PROVIDER_LINK_FOLLOWS, from: from, to: to)
                     break
-                case VendorLink: l = new VendorLink(type: RDStore.PROVIDER_LINK_FOLLOWS, from: Vendor.get(from), to: Vendor.get(to))
+                case VendorLink.class.name: l = new VendorLink(type: RDStore.PROVIDER_LINK_FOLLOWS, from: from, to: to)
                     break
             }
             if(l) {
