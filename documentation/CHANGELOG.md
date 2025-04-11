@@ -9,6 +9,8 @@
 
 6466    11.04.2025  rc-3.5  3.5-RC      Andreas Bug         falsche Anzeige der Merkmale in Vertrags-Kurzübersicht
 
+6463    11.04.2025  rc-3.5  3.5-RC      Andreas Bug         Verknüpfung Anbieter/LS funktionierte nicht
+
 6457    10.04.2025  rc-3.5  3.5-RC      Moe     Feature     Umfrage-Teilnehmer hinzufügen: Lizenzfiltern einbauen
 
 6458    10.04.2025  rc-3.5  3.5-RC      Moe     Feature     Umfrage-Kosten editierbar machen während Umfrage
