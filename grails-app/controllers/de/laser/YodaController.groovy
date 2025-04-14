@@ -1549,16 +1549,33 @@ class YodaController {
 //        }
 
         dc_upOrg.each {dc ->
+//            if (dc.license) {
+//                dc.targetOrg = dc.owner.owner
+//                dc.save()
+//                changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'LIC: dc.owner.owner']
+//            }
             if (dc.org) {
                 dc.shareConf = null
                 dc.save()
                 changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'ORG: UPLOADER_ORG > DELETE']
             }
-            else {
-                log.debug 'TODO: SHARE_CONF_UPLOADER_ORG @ ' + dc.id
+            else if (dc.provider) {
+                dc.shareConf = null
+                dc.save()
+                changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'PROV: UPLOADER_ORG > DELETE']
+            }
+//            else if (dc.subscription) {
 //                dc.targetOrg = dc.owner.owner
 //                dc.save()
-//                changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'dc.owner.owner']
+//                changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'SUB: dc.owner.owner']
+//            }
+            else if (dc.vendor) {
+                dc.shareConf = null
+                dc.save()
+                changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'VEN: UPLOADER_ORG > DELETE']
+            }
+            else {
+                log.debug 'TODO: SHARE_CONF_UPLOADER_ORG @ ' + dc.id
             }
         }
 
@@ -1604,6 +1621,17 @@ class YodaController {
                 dc.save()
                 changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'VEN: UPLOADER_AND_TARGET > DELETE']
             }
+        }
+
+        List<DocContext> selfUpOrgAndTarget = DocContext.executeQuery(
+                'select dc from DocContext dc where dc.shareConf = :sc and dc.org = dc.targetOrg and dc.targetOrg = dc.owner.owner ',
+                [sc: sc_upOrgAndTarget]
+        )
+        selfUpOrgAndTarget.each { dc ->
+            dc.shareConf = null
+            dc.targetOrg = null
+            dc.save()
+            changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'ORG: UPLOADER_AND_TARGET (SELF) > DELETE']
         }
 
         if (changes) {
