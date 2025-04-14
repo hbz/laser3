@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ui.Btn; de.laser.ui.Icon; de.laser.IssueEntitlementCoverage; de.laser.storage.RDStore; de.laser.Subscription; de.laser.wekb.Package; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.AuditConfig; de.laser.ui.Btn; de.laser.ui.Icon; de.laser.IssueEntitlementCoverage; de.laser.storage.RDStore; de.laser.Subscription; de.laser.wekb.Package; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
 
 <laser:htmlStart message="subscription.details.current_ent" />
 
@@ -113,7 +113,7 @@
         <div class="ui grid">
             <div class="row">
                 <div class="column">
-                    <g:if test="${subscription.holdingSelection != RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+                    <g:if test="${!AuditConfig.getConfig(subscription, 'holdingSelection')}">
                         <div class="ui la-filter segment">
                             <h4 class="ui header"><g:message code="subscription.details.issueEntitlementEnrichment.label"/></h4>
 
@@ -514,7 +514,7 @@
                                                         <div class="${Btn.MODERN.SIMPLE}">
                                                             <i class="${Icon.CMD.SHOW_MORE}"></i>
                                                         </div>
-                                                        <g:if test="${editable && subscription.holdingSelection != RDStore.SUBSCRIPTION_HOLDING_ENTIRE}">
+                                                        <g:if test="${editable && !AuditConfig.getConfig(subscription, 'holdingSelection')}">
                                                             <g:if test="${subscription.ieGroups.size() > 0}">
                                                                 <g:link action="removeEntitlementWithIEGroups"
                                                                         class="${Btn.MODERN.NEGATIVE_CONFIRM}"
