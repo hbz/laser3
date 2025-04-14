@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6441    14.04.2025  rc-3.5  3.5-RC      Andreas Feature     verschiedene Verbesserungen des Kostenmenüs
+
 6466    11.04.2025  rc-3.5  3.5-RC      Andreas Bug         falsche Anzeige der Merkmale in Vertrags-Kurzübersicht
 
 6463    11.04.2025  rc-3.5  3.5-RC      Andreas Bug         Verknüpfung Anbieter/LS funktionierte nicht
