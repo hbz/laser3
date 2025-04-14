@@ -3,7 +3,7 @@
 
         <g:if test="${subscription && !surveyInfo}">
             <ui:msg class="info" hideClose="true" showIcon="true" message="financials.enrichment.manual" />
-            <g:form class="ui form" method="post" enctype="multipart/form-data" mapping="subfinance" controller="finance" action="index" params="[sub: subscription.id]">
+            <g:form class="ui form" method="post" enctype="multipart/form-data" mapping="subfinance" controller="finance" action="index" params="[sub: subscription.id, showBulkCostItems: true]">
                 <div class="two fields">
                     <div class="field">
                         <ui:select name="selectedCostItemElement" id="selectedCostItemElement" class="ui dropdown clearable "
