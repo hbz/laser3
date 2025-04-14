@@ -1112,7 +1112,7 @@ class ExportService {
 					else if(reportItem.containsKey('Attribute_Performance')) {
 						for (Map struct : reportItem.Attribute_Performance) {
 							String dataType = struct.Data_Type, accessType = struct.Access_Type,
-							yopKey = struct.containsKey('YOP') && reportItem.get('YOP') != 'null' && reportItem.get('YOP') != null ? reportItem.get('YOP') : 'empty'
+							yopKey = struct.containsKey('YOP') && struct.get('YOP') != 'null' && struct.get('YOP') != null ? struct.get('YOP') : 'empty'
 							for (Map.Entry performance : struct.Performance) {
 								for (Map.Entry instance : performance) {
 									String metricType = instance.getKey()
@@ -1871,7 +1871,7 @@ class ExportService {
 		}
 		else if(revision == AbstractReport.COUNTER_5) {
 			reportItem["Item_ID"].each { idData ->
-				switch (idData.Type.toLowerCase()) {
+				switch (idData.getKey().toLowerCase()) {
 					case 'isbn': identifierMap.isbn = idData.Value
 						break
 					case 'online_issn':
@@ -1884,7 +1884,23 @@ class ExportService {
 						break
 					case 'proprietary_id': identifierMap.proprietaryIdentifier = idData.Value
 						break
-				}
+					case 'type':
+						switch (idData.Type.toLowerCase()) {
+							case 'isbn': identifierMap.isbn = idData.Value
+								break
+							case 'online_issn':
+							case 'online_isbn': identifierMap.onlineIdentifier = idData.Value
+								break
+							case 'print_isbn':
+							case 'print_issn': identifierMap.printIdentifier = idData.Value
+								break
+							case 'doi': identifierMap.doi = idData.Value
+								break
+							case 'proprietary_id': identifierMap.proprietaryIdentifier = idData.Value
+								break
+						}
+						break
+					}
 			}
 		}
 		identifierMap
