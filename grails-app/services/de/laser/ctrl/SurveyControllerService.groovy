@@ -3496,73 +3496,58 @@ class SurveyControllerService {
 
                 List surveyOrgsDo = []
 
+                List surveyOrgs = []
+
                 if (params.surveyOrg) {
+                    surveyOrgs << params.surveyOrg
+
+                }
+
+                if (params.get('surveyOrgs')) {
+                    surveyOrgs = (params.get('surveyOrgs').split(',').collect {
+                        String.valueOf(it.replaceAll("\\s", ""))
+                    }).toList()
+                }
+
+                surveyOrgs.each {
                     try {
-                        SurveyOrg surveyOrg = genericOIDService.resolveOID(params.surveyOrg)
-                        if (costItemsForSurveyPackage) {
-                            if (pkg) {
-                                if (cost_item_element) {
-                                    if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element, pkg)) {
-                                        surveyOrgsDo << surveyOrg
+
+                        SurveyOrg surveyOrg = genericOIDService.resolveOID(it)
+                        if(surveyOrg) {
+                            if (params.oldCostItem) {
+                                CostItem costItem = genericOIDService.resolveOID(params.oldCostItem)
+                                if (costItem.surveyOrg == surveyOrg) {
+                                    surveyOrgsDo << surveyOrg
+                                }
+                            }else{
+                                if (costItemsForSurveyPackage) {
+                                    if (pkg) {
+                                        if (cost_item_element) {
+                                            if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element, pkg)) {
+                                                surveyOrgsDo << surveyOrg
+                                            }
+                                        } else {
+                                            if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, pkg)) {
+                                                surveyOrgsDo << surveyOrg
+                                            }
+                                        }
                                     }
                                 } else {
-                                    if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, pkg)) {
-                                        surveyOrgsDo << surveyOrg
+                                    if (cost_item_element) {
+                                        if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element)) {
+                                            surveyOrgsDo << surveyOrg
+                                        }
+                                    } else {
+                                        if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED)) {
+                                            surveyOrgsDo << surveyOrg
+                                        }
                                     }
-                                }
-                            }
-                        } else {
-                            if (cost_item_element) {
-                                if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element)) {
-                                    surveyOrgsDo << surveyOrg
-                                }
-                            } else {
-                                if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED)) {
-                                    surveyOrgsDo << surveyOrg
                                 }
                             }
                         }
 
                     } catch (Exception e) {
                         log.error("Non-valid surveyOrg sent ${it}", e)
-                    }
-                }
-
-                if (params.get('surveyOrgs')) {
-                    List surveyOrgs = (params.get('surveyOrgs').split(',').collect {
-                        String.valueOf(it.replaceAll("\\s", ""))
-                    }).toList()
-                    surveyOrgs.each {
-                        try {
-
-                            SurveyOrg surveyOrg = genericOIDService.resolveOID(it)
-                            if (costItemsForSurveyPackage) {
-                                if(pkg) {
-                                    if (cost_item_element) {
-                                        if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element, pkg)) {
-                                            surveyOrgsDo << surveyOrg
-                                        }
-                                    } else {
-                                        if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkg(surveyOrg, RDStore.COST_ITEM_DELETED, pkg)) {
-                                            surveyOrgsDo << surveyOrg
-                                        }
-                                    }
-                                }
-                            } else {
-                                if (cost_item_element) {
-                                    if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndCostItemElementAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED, cost_item_element)) {
-                                        surveyOrgsDo << surveyOrg
-                                    }
-                                } else {
-                                    if (!CostItem.findBySurveyOrgAndCostItemStatusNotEqualAndPkgIsNull(surveyOrg, RDStore.COST_ITEM_DELETED)) {
-                                        surveyOrgsDo << surveyOrg
-                                    }
-                                }
-                            }
-
-                        } catch (Exception e) {
-                            log.error("Non-valid surveyOrg sent ${it}", e)
-                        }
                     }
                 }
 
