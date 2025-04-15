@@ -6,54 +6,9 @@
     <meta name="layout" content="public">
     <meta name="description" content="${message(code: 'metaDescription.landingPage')}">
     <title>${message(code: 'laser')}</title>
-    <style>
-    /** inline style here with intention:
-        flex layout helps footer to stick at bottom when main high not high enough
-        but would make a bug when using the sidebars at all the other sides without the footer
-     */
-    .pusher {
-        flex: 1;
-    }
-    body {
-        display: flex;
-        min-height: 100vh;
-        flex-direction: column;
-    }
-
-    main {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-
-    }
-    .la-login {
-        flex: 3!important; /* 3/4 of height of main */
-        display: flex!important;
-    }
-    .la-login-left,
-    .la-login-right{
-        min-height: 100%;
-    }
-    img.la-hero-image {
-        max-height: 100%;
-        min-width: 100%;
-        object-fit: cover;
-        vertical-align: bottom;
-        border-radius: 1vmin;
-    }
-    .pushable>.pusher {
-        overflow-y: visible!important;
-        overflow-x: visible!important;
-        min-height: auto!important;
-    }
-    .la-js-verticalNavi {
-        display: block!important;
-    }
-
-    </style>
 </head>
 <body>
-
+<laser:render template="/templates/system/serverIndicator" />
     <div class="landingpage">
     <!--Page Contents-->
 
@@ -73,108 +28,120 @@
         </nav>
 
         <main>
-            <div class="ui middle aligned stackable centered grid container la-login">
+            <div class="ui stackable centered grid container la-login middle aligned">
                 <div class="row">
 
                     <div class="eight wide column la-login-left">
-                        <g:img  class="ui large bordered rounded image la-hero-image" dir="images" file="landingpage/hero.png" />
+                        <g:img class="ui large bordered rounded image la-hero-image" dir="images"
+                               file="landingpage/hero.png"/>
                     </div>
+
                     <div class="eight wide column la-login-right">
                         <h1 class="ui header">
                             <div class="content">
                                 Login bei LAS:eR
                             </div>
                         </h1>
-                        <div id="login" class="container">
-                            <div class="inner">
-                                <ui:messages data="${flash}" />
 
-                                <ui:card>
-                                    <form action="${postUrl}" method="POST" id="basicLoginForm" class="ui big form" autocomplete="off" style="display:block !important;">
+                        <div id="login">
+                            <div class="inner">
+                                <ui:messages data="${flash}"/>
+
+
+                                    <form action="${postUrl}" method="POST" id="basicLoginForm" class="ui big form"
+                                          autocomplete="off" style="display:block !important;">
                                         <div class="field">
-                                            <label for="username"><g:message code="springSecurity.login.username.label"/>:</label>
+                                            <label for="username"><g:message
+                                                code="springSecurity.login.username.label"/>:</label>
+
                                             <div class="ui left icon input">
                                                 <i class="user icon"></i>
-                                                <input type="text" class="text_" name="${SpringSecurityUtils.securityConfig.apf.usernameParameter}" id="username"/>
+                                                <input type="text" class="text_"
+                                                       name="${SpringSecurityUtils.securityConfig.apf.usernameParameter}"
+                                                       id="username"/>
                                             </div>
                                         </div>
 
                                         <div class="field">
-                                            <label for="password"><g:message code="springSecurity.login.password.label"/>:</label>
+                                            <label for="password"><g:message
+                                                code="springSecurity.login.password.label"/>:</label>
+
                                             <div class="ui left icon input">
                                                 <i class="lock icon"></i>
-                                                <input type="password" class="text_" name="${SpringSecurityUtils.securityConfig.apf.passwordParameter}" id="password"/>
+                                                <input type="password" class="text_"
+                                                       name="${SpringSecurityUtils.securityConfig.apf.passwordParameter}"
+                                                       id="password"/>
                                             </div>
                                         </div>
 
                                         <div class="field">
-                                            <label for="remember_me"><g:message code="springSecurity.login.remember.me.label"/></label>
-                                            <input type="checkbox" class="chk" name="${SpringSecurityUtils.securityConfig.rememberMe.parameter}" id="remember_me" <g:if test="${hasCookie}">checked="checked"</g:if>/>
+                                            <label for="remember_me"><g:message
+                                                code="springSecurity.login.remember.me.label"/></label>
+                                            <input type="checkbox" class="chk"
+                                                   name="${SpringSecurityUtils.securityConfig.rememberMe.parameter}"
+                                                   id="remember_me" <g:if test="${hasCookie}">checked="checked"</g:if>/>
                                         </div>
 
                                         <div class="field">
-                                            <input type="submit" class="${Btn.SIMPLE}" value="${message(code: "menu.user.login")}"/>
+                                            <input type="submit" class="${Btn.SIMPLE}"
+                                                   value="${message(code: "menu.user.login")}"/>
                                         </div>
                                     </form>
+
                                     <div class="field">
-                                        <a data-ui="modal" href="#forgottenPassword">${message(code:"menu.user.forgottenPassword")}</a>
+                                        <a data-ui="modal"
+                                           href="#forgottenPassword">${message(code: "menu.user.forgottenPassword")}</a>
                                     </div>
                                     <br>
+
                                     <div class="field">
-                                        <a data-ui="modal" href="#forgottenUsername">${message(code:"menu.user.forgottenUsername")}</a>
+                                        <a data-ui="modal"
+                                           href="#forgottenUsername">${message(code: "menu.user.forgottenUsername")}</a>
                                     </div>
 
-                                    <ui:modal id="forgottenPassword" message="menu.user.forgottenPassword" msgSave="${message(code: 'default.button.submit.label')}">
-                                        <g:form class="ui form" controller="login" action="resetForgottenPassword" method="post">
+                                    <ui:modal id="forgottenPassword" message="menu.user.forgottenPassword"
+                                              msgSave="${message(code: 'default.button.submit.label')}">
+                                        <g:form class="ui form" controller="login" action="resetForgottenPassword"
+                                                method="post">
                                             <div class="field required">
-                                                <label for="forgotten_username"><g:message code="menu.user.forgottenPassword.username"/>:</label>
+                                                <label for="forgotten_username"><g:message
+                                                    code="menu.user.forgottenPassword.username"/>:</label>
+
                                                 <div class="ui left icon input">
                                                     <i class="user icon"></i>
-                                                    <input type="text" class="text_" name="forgotten_username" id="forgotten_username"/>
+                                                    <input type="text" class="text_" name="forgotten_username"
+                                                           id="forgotten_username"/>
                                                 </div>
                                             </div>
                                         </g:form>
                                     </ui:modal>
 
-                                    <ui:modal id="forgottenUsername" message="menu.user.forgottenUsername" msgSave="${message(code: 'default.button.submit.label')}">
-                                        <g:form class="ui form" controller="login" action="getForgottenUsername" method="post">
+                                    <ui:modal id="forgottenUsername" message="menu.user.forgottenUsername"
+                                              msgSave="${message(code: 'default.button.submit.label')}">
+                                        <g:form class="ui form" controller="login" action="getForgottenUsername"
+                                                method="post">
                                             <div class="field required">
-                                                <label for="forgotten_username_mail"><g:message code="menu.user.forgottenUsername.email"/>:</label>
+                                                <label for="forgotten_username_mail"><g:message
+                                                    code="menu.user.forgottenUsername.email"/>:</label>
+
                                                 <div class="ui left icon input">
                                                     <i class="user icon"></i>
-                                                    <input type="text" class="text_" name="forgotten_username_mail" id="forgotten_username_mail"/>
+                                                    <input type="text" class="text_" name="forgotten_username_mail"
+                                                           id="forgotten_username_mail"/>
                                                 </div>
                                             </div>
                                         </g:form>
                                     </ui:modal>
-                                </ui:card>
+
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
-%{--           <!-- HERO -->
-            <div class="ui masthead center aligned segment">
-                <div class="ui container">
 
-                    <div class="ui grid">
-                        <div class="five wide column la-hero left aligned" style="background-color: #447294;">
-                            <h1 class="ui inverted header">
-                                ${message(code: 'landingpage.hero.h1')}
-                            </h1>
-                            <h2 style="padding-bottom: 1rem;">
-                                ${message(code: 'landingpage.hero.h2',args: [message(code: 'Umfragen')]) as String}
-                            </h2>
-                            <g:link controller="public" action="licensingModel" class="ui massive white button">
-                                ${message(code: 'landingpage.hero.button.licensingModel')} <icon:arrow />
-                            </g:link>
-                        </div>
-                    </div>
-                </div>
 
-            </div>--}%
-
-            <!-- NEWS -->
+        <!-- NEWS -->
             <g:set var="startpageMessages" value="${SystemMessage.getActiveMessages(SystemMessage.TYPE_STARTPAGE)}" />
 
             <g:if test="${startpageMessages}">
