@@ -1521,7 +1521,8 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
-    def gdc_docContextTargetOrg() {
+    def gdc_docContextTargetOrg_DONOTUSE() { // ERMS-6460
+        return
         log.debug 'gdc_docContextTargetOrg'
 
         List changes = [] // [shareConf, docContext, source, newTargetOrg]
@@ -1538,22 +1539,9 @@ class YodaController {
         log.info ' (' + sc_upOrg.id + ') SHARE_CONF_UPLOADER_ORG : ' + dc_upOrg.size()
         log.info ' (' + sc_upOrgAndTarget.id + ') SHARE_CONF_UPLOADER_AND_TARGET : ' + dc_upOrgAndTarget.size()
 
-//        log.info ' (' + sc_all.id + ') SHARE_CONF_ALL : ' + dc_all.collect { it.id }
-//        log.info ' (' + sc_upOrg.id + ') SHARE_CONF_UPLOADER_ORG : ' + dc_upOrg.collect { it.id }
-//        log.info ' (' + sc_upOrgAndTarget.id + ') SHARE_CONF_UPLOADER_AND_TARGET : ' + dc_upOrgAndTarget.collect { it.id }
-
-//        dc_all.each {dc ->
-//            dc.targetOrg = dc.owner.owner
-//            dc.save()
-//            changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'dc.owner.owner']
-//        }
+        // remove unnecessary org, provider and vendor shares (SHARE_CONF_UPLOADER_ORG)
 
         dc_upOrg.each {dc ->
-//            if (dc.license) {
-//                dc.targetOrg = dc.owner.owner
-//                dc.save()
-//                changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'LIC: dc.owner.owner']
-//            }
             if (dc.org) {
                 dc.shareConf = null
                 dc.save()
@@ -1564,11 +1552,6 @@ class YodaController {
                 dc.save()
                 changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'PROV: UPLOADER_ORG > DELETE']
             }
-//            else if (dc.subscription) {
-//                dc.targetOrg = dc.owner.owner
-//                dc.save()
-//                changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'SUB: dc.owner.owner']
-//            }
             else if (dc.vendor) {
                 dc.shareConf = null
                 dc.save()
@@ -1577,61 +1560,66 @@ class YodaController {
             else {
                 log.debug 'TODO: SHARE_CONF_UPLOADER_ORG @ ' + dc.id
             }
+
+//            if (dc.license) {
+//                dc.targetOrg = dc.owner.owner
+//                dc.save()
+//                changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'LIC: dc.owner.owner']
+//            }
+//            else if (dc.subscription) {
+//                dc.targetOrg = dc.owner.owner
+//                dc.save()
+//                changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'SUB: dc.owner.owner']
+//            }
         }
 
+        // remove invalid provider and vendor shares (SHARE_CONF_UPLOADER_AND_TARGET)
+        // set missing targetOrg for org shares (SHARE_CONF_UPLOADER_AND_TARGET)
+
         dc_upOrgAndTarget.each {dc ->
-            if (dc.license) {
-                if (dc.license.getAllLicensee().size() == 1) {
-                    dc.targetOrg = dc.license.getLicensee()
+//            if (dc.license) {
+//                if (dc.license.getAllLicensee().size() == 1) {
+//                    dc.targetOrg = dc.license.getLicensee()
+//                    dc.save()
+//                    changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'LIC: dc.license.getLicensee()']
+//                }
+//                else {
+//                    log.debug 'TODO: SHARE_CONF_UPLOADER_AND_TARGET > license with multiple licensees @ ' + dc.id  // possible information leak
+
+//                  -- // dc.targetOrg = dc.owner.owner
+//                  -- // dc.shareConf = sc_all
+//                  -- // dc.save()
+//                  -- //  changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'LIC: dc.owner.owner/SHARE_CONF_ALL']
+//                }
+//            }
+//            else
+            if (dc.org) {
+                if (dc.org == dc.owner.owner) {
+                    dc.shareConf = null
                     dc.save()
-                    changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'LIC: dc.license.getLicensee()']
+                    changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'ORG: UPLOADER_AND_TARGET (SELF) > DELETE']
                 }
                 else {
-                    log.debug 'TODO: SHARE_CONF_UPLOADER_AND_TARGET > license with multiple licensees @ ' + dc.id  // possible information leak
-
-//                    dc.targetOrg = dc.owner.owner
-//                    dc.shareConf = sc_all
-//                    dc.save()
-//                    changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'LIC: dc.owner.owner/SHARE_CONF_ALL']
+                    dc.targetOrg = dc.org
+                    dc.save()
+                    changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'ORG: targetOrg = dc.org']
                 }
-            }
-            else if (dc.link) {
-                log.debug 'TODO: link @ ' + dc.id
-            }
-            else if (dc.org) {
-                dc.targetOrg = dc.org
-                dc.save()
-                changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'ORG: dc.org']
             }
             else if (dc.provider) {
                 dc.shareConf = null
                 dc.save()
                 changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'PROV: UPLOADER_AND_TARGET > DELETE']
             }
-            else if (dc.subscription) {
-                dc.targetOrg = dc.subscription.getSubscriber()
-                dc.save()
-                changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'SUB: dc.subscription.getSubscriber()']
-            }
-            else if (dc.surveyConfig) {
-                log.debug 'TODO: surveyConfig @ ' + dc.id
-            }
+//            else if (dc.subscription) {
+//                dc.targetOrg = dc.subscription.getSubscriber()
+//                dc.save()
+//                changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'SUB: dc.subscription.getSubscriber()']
+//            }
             else if (dc.vendor) {
                 dc.shareConf = null
                 dc.save()
                 changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'VEN: UPLOADER_AND_TARGET > DELETE']
             }
-        }
-
-        List<DocContext> selfUpOrgAndTarget = DocContext.executeQuery(
-                'select dc from DocContext dc where dc.shareConf = :sc and dc.org = dc.targetOrg and dc.targetOrg = dc.owner.owner ',
-                [sc: sc_upOrgAndTarget]
-        )
-        selfUpOrgAndTarget.each { dc ->
-            dc.shareConf = null
-            dc.targetOrg = null
-            dc.save()
-            changes << [dc.shareConf?.id, dc.id, dc.targetOrg?.id, 'ORG: UPLOADER_AND_TARGET (SELF) > DELETE']
         }
 
         if (changes) {
