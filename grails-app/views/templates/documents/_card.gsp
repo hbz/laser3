@@ -54,10 +54,11 @@
                     visible = true
                 break
         }
-        if (ownobj instanceof Org && it.shareConf == RDStore.SHARE_CONF_UPLOADER_AND_TARGET && inTargetOrg && inOwnerOrg) {
-            baseItems << it // workaround: ERMS-6460 / ERMS-6467
-        }
-        else if ((it.sharedFrom || (ownobj instanceof Org && inTargetOrg)) && visible) {
+//        if (ownobj instanceof Org && it.shareConf == RDStore.SHARE_CONF_UPLOADER_AND_TARGET && inTargetOrg && inOwnerOrg) {
+//            baseItems << it // workaround: ERMS-6460 / ERMS-6467
+//        }
+//        else
+        if ((it.sharedFrom || (ownobj instanceof Org && inTargetOrg)) && visible) {
             //a shared item; assign it to the shared docs section
             sharedItems << it
         }
