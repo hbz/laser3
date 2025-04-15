@@ -886,12 +886,16 @@ class AjaxHtmlController {
             }
         }else if (notProcessedMandatoryProperties.size() > 0) {
             result.error = message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')])
-        } else if (surveyConfig.subSurveyUseForTransfer && noParticipation) {
-            result.message = message(code: "confirm.dialog.concludeBinding.survey")
-        } else if (noParticipation || allResultHaveValue) {
-            result.message = message(code: "confirm.dialog.concludeBinding.survey")
-        } else if (!noParticipation && !allResultHaveValue) {
-            result.message = message(code: "confirm.dialog.concludeBinding.surveyIncomplete")
+        }
+
+        if(!result.error) {
+            if (surveyConfig.subSurveyUseForTransfer && noParticipation) {
+                result.message = message(code: "confirm.dialog.concludeBinding.survey")
+            } else if (noParticipation || allResultHaveValue) {
+                result.message = message(code: "confirm.dialog.concludeBinding.survey")
+            } else if (!noParticipation && !allResultHaveValue) {
+                result.message = message(code: "confirm.dialog.concludeBinding.surveyIncomplete")
+            }
         }
 
 
