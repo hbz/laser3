@@ -50,9 +50,9 @@ cost.information.personnel.service,Serviceangebote und Workflows,TODO ERMS-6310
 cost.information.publication.book,Publikationskosten Bücher,TODO ERMS-6310
 cost.information.publication.journal,Publikationskosten Zeitschriftenartikel,TODO ERMS-6310
 cost.information.publication.other,Publikationskosten Sonstiges,TODO ERMS-6310
-cost.information.service.editor,Universitätsverlag (Betrieb und Wartung technisch),TODO ERMS-6310
+cost.information.service.editor,"Universitätsverlag (Betrieb und Wartung technisch, ggf. Anschaffung)",TODO ERMS-6310
 cost.information.service.hardware,"Bibliotheksausstattung und -hardware (Anschaffung, Betrieb, Wartung technisch)",TODO ERMS-6310
-cost.information.service.infrastructure,Infrastrukturen,TODO ERMS-6310
+cost.information.service.infrastructure,"Infrastrukturen (Betrieb und Wartung technisch, ggf. Anschaffung)",TODO ERMS-6310
 cost.information.service.software,Software,TODO ERMS-6310
 cost.information.source.own,Eigenmittel der Einrichtung,TODO ERMS-6310
 cost.information.source.central,Zentrale Drittmittel (DM),TODO ERMS-6310
