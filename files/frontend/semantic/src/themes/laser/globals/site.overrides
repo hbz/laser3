@@ -126,7 +126,7 @@ aside.ui.accordion .title:not(.ui) {
             h2{
                 color: white!important;
             }
-            background-image: url('../../images/landingpage/hero.jpg') !important;
+            background-image: url('../../images/anbieter-wekb-laser-konsortialstelle-940.png') !important;
             background-repeat: no-repeat !important;
             background-position: top center !important;
             background-color: #447294;
