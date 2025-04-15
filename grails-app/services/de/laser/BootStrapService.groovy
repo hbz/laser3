@@ -8,6 +8,7 @@ import de.laser.auth.*
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
 import de.laser.finance.CostInformationDefinition
+import de.laser.gdc.ERMS6460
 import de.laser.properties.PropertyDefinition
 import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
@@ -115,6 +116,9 @@ class BootStrapService {
 
             log.debug("setIdentifierNamespace ..")
             setIdentifierNamespace()
+
+            log.debug("genericDataCleansing ..")
+            genericDataCleansing()
         }
 
         log.debug("JSON.registerObjectMarshaller(Date) ..")
@@ -549,5 +553,9 @@ class BootStrapService {
                 IdentifierNamespace.construct(namespaceProperties)
             }
         }
+    }
+
+    void genericDataCleansing() {
+        ERMS6460.go() // TMP only - remove after release
     }
 }
