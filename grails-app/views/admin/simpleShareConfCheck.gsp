@@ -59,8 +59,7 @@
                                     ${DocContext.executeQuery(cbq + 'org != null and shareConf = :sc and targetOrg != null', [sc: RDStore.SHARE_CONF_ALL])} + TARGET_ORG
 
     Einträge mit TARGET_ORG = docContext -> doc -> owner überflüssig?
-
-    Beim Upload in eigener Einrichtung Option SHARE_CONF_UPLOADER_AND_TARGET entfernt <<< gefixt
+    Beim Upload in eigener Einrichtung Option SHARE_CONF_UPLOADER_AND_TARGET entfernt   <<< gefixt
 </pre>
 
 <p class="ui header small">DocContext @ LICENSE</p>
@@ -73,6 +72,9 @@
                                     ${DocContext.executeQuery(cbq + 'license != null and shareConf = :sc and targetOrg != null', [sc: RDStore.SHARE_CONF_UPLOADER_AND_TARGET])} + TARGET_ORG
     SHARE_CONF_ALL                  ${DocContext.executeQuery(cbq + 'license != null and shareConf = :sc and targetOrg is null', [sc: RDStore.SHARE_CONF_ALL])} TARGET_ORG = null
                                     ${DocContext.executeQuery(cbq + 'license != null and shareConf = :sc and targetOrg != null', [sc: RDStore.SHARE_CONF_ALL])} + TARGET_ORG
+
+    Für TN in Einrichtungsvertrag Sichtbarkeitseinstellung beim Upload (SHARE_CONF_ALL, SHARE_CONF_UPLOADER_ORG)
+    Für Konsortialmanager in Einrichtungsvertrag Sichtbarkeitseinstellung beim Upload (SHARE_CONF_ALL, SHARE_CONF_UPLOADER_ORG)
 </pre>
 
 <p class="ui header small">DocContext @ SUBSCRIPTION</p>
@@ -85,6 +87,9 @@
                                     ${DocContext.executeQuery(cbq + 'subscription != null and shareConf = :sc and targetOrg != null', [sc: RDStore.SHARE_CONF_UPLOADER_AND_TARGET])} + TARGET_ORG
     SHARE_CONF_ALL                  ${DocContext.executeQuery(cbq + 'subscription != null and shareConf = :sc and targetOrg is null', [sc: RDStore.SHARE_CONF_ALL])} TARGET_ORG = null
                                     ${DocContext.executeQuery(cbq + 'subscription != null and shareConf = :sc and targetOrg != null', [sc: RDStore.SHARE_CONF_ALL])} + TARGET_ORG
+
+    Für TN keine Sichtbarkeitseinstellung beim Upload
+    Für Konsortialmanager in TN bei SHARE_CONF_UPLOADER_AND_TARGET wird TARGET_ORG gesetzt   <<< OK, aber alte Daten müssen migriert werden
 </pre>
 
 <laser:htmlEnd />
