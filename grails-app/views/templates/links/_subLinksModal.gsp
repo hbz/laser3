@@ -57,7 +57,7 @@
             break
         case Provider.class.name: header = message(code:"provider.linking.header")
             thisString = context.name
-            lookupName = "lookupproviders"
+            lookupName = "lookupProviders"
             instanceType = message(code:"provider.label")
             urlParams.controller = 'provider'
             urlParams.action = 'link'
@@ -104,7 +104,7 @@
                             linkType = "${genericOIDService.getOID(rv)}§${perspIndex}"
                         }
                     }
-                    else if(linkInstanceType in [Provider.class.name, Vendor.class.name]) {
+                    else if(linkInstanceType in [ProviderLink.class.name, VendorLink.class.name]) {
                         if(link && link.type == rv) {
                             if(context == link.from)
                                 perspIndex = 0
@@ -233,6 +233,10 @@
     <laser:script file="${this.getGroovyPageFileName()}">
         function initPairDropdown(selProv) {
             let providerFilter = '';
+            let adminLinking = '';
+            <g:if test="${context.class.name in [Provider.class.name, Vendor.class.name]}">
+                adminLinking = '&adminLinking=true'
+            </g:if>
             let minChars = 1;
             if(typeof(selProv) !== 'undefined' && selProv.length > 0) {
                 providerFilter = '&providerFilter='+selProv;
@@ -240,7 +244,7 @@
             }
             $("#${selectPair}").dropdown({
                 apiSettings: {
-                    url: "<g:createLink controller="ajaxJson" action="${lookupName}"/>?status=FETCH_ALL&query={query}&filterMembers=${atConsortialParent}&ctx=${genericOIDService.getOID(context)}"+providerFilter,
+                    url: "<g:createLink controller="ajaxJson" action="${lookupName}"/>?status=FETCH_ALL&query={query}&filterMembers=${atConsortialParent}&ctx=${genericOIDService.getOID(context)}"+providerFilter+adminLinking,
                     cache: false
                 },
                 clearable: true,

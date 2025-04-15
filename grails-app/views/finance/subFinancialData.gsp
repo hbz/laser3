@@ -68,7 +68,10 @@
                         <g:else>
                             <ui:actionsDropdownItemDisabled message="financials.enrichment.menu" tooltip="${message(code:'financials.enrichment.menu.disabled')}" />
                         </g:else>
+                        <div class="divider"></div>
+                        <%-- merged into myInstitution/financeImport as of ERMS-6441
                         <ui:actionsDropdownItem data-ui="modal" id="generateFinanceImportWorksheet" href="#financeImportTemplate" message="myinst.financeImport.subscription.template"/>
+                        --%>
                         <ui:actionsDropdownItem controller="myInstitution" action="financeImport" params="${[id:subscription.id]}" message="menu.institutions.financeImport" />
                         <ui:actionsDropdownItem controller="subscription" action="compareSubMemberCostItems" params="${[id:subscription.id]}" message="subscription.details.compareSubMemberCostItems.label" />
                     </g:if>

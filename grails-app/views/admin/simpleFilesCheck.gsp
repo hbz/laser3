@@ -12,6 +12,7 @@
 <nav class="ui secondary menu">
     <g:link controller="admin" action="simpleFilesCheck" class="item active">Dateisystem</g:link>
     <g:link controller="admin" action="simpleDocsCheck" class="item">Datenbank</g:link>
+    <g:link controller="admin" action="simpleShareConfCheck" class="item">Sichtbarkeit</g:link>
 </nav>
 
 <div class="ui fluid card">

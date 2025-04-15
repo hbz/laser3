@@ -344,34 +344,33 @@ class FinanceService {
                 Double percentage = 1 + params.double('percentOnCurrentPrice') / 100
                 CostItem.findAllByIdInList(selectedCostItems).each { CostItem ci ->
                     if(ci.sub) {
-                            ci.billingSumRounding = billingSumRounding != ci.billingSumRounding ? billingSumRounding : ci.billingSumRounding
-                            ci.finalCostRounding = finalCostRounding != ci.finalCostRounding ? finalCostRounding : ci.finalCostRounding
-                            ci.costInBillingCurrency = ci.costInBillingCurrency ? BigDecimal.valueOf(ci.costInBillingCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInBillingCurrency
-                            ci.costInLocalCurrency = ci.costInLocalCurrency ? BigDecimal.valueOf(ci.costInLocalCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInLocalCurrency
-                            if (ci.billingSumRounding) {
-                                ci.costInBillingCurrency = Math.round(ci.costInBillingCurrency)
-                                ci.costInLocalCurrency = Math.round(ci.costInLocalCurrency)
-                            }
+                        ci.billingSumRounding = billingSumRounding != ci.billingSumRounding ? billingSumRounding : ci.billingSumRounding
+                        ci.finalCostRounding = finalCostRounding != ci.finalCostRounding ? finalCostRounding : ci.finalCostRounding
+                        ci.costInBillingCurrency = ci.costInBillingCurrency ? BigDecimal.valueOf(ci.costInBillingCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInBillingCurrency
+                        ci.costInLocalCurrency = ci.costInLocalCurrency ? BigDecimal.valueOf(ci.costInLocalCurrency * percentage).setScale(2, RoundingMode.HALF_UP).toDouble() : ci.costInLocalCurrency
+                        if (ci.billingSumRounding) {
+                            ci.costInBillingCurrency = Math.round(ci.costInBillingCurrency)
+                            ci.costInLocalCurrency = Math.round(ci.costInLocalCurrency)
+                        }
 
-                            int taxRate = 0 //fallback
-                            if(ci.taxKey)
-                                taxRate = ci.taxKey.taxRate
-
+                        int taxRate = 0 //fallback
+                        if(ci.taxKey)
+                            taxRate = ci.taxKey.taxRate
+                        if(ci.costInBillingCurrency != null)
                             ci.costInBillingCurrencyAfterTax = ci.costInBillingCurrency * (1.0 + (0.01 * taxRate))
+                        if(ci.costInLocalCurrency != null)
                             ci.costInLocalCurrencyAfterTax = ci.costInLocalCurrency * (1.0 + (0.01 * taxRate))
+                        if (ci.billingSumRounding) {
+                            ci.costInBillingCurrency = Math.round(ci.costInBillingCurrency)
+                            ci.costInLocalCurrency = Math.round(ci.costInLocalCurrency)
+                        }
 
-                            if (ci.billingSumRounding) {
-                                ci.costInBillingCurrency = Math.round(ci.costInBillingCurrency)
-                                ci.costInLocalCurrency = Math.round(ci.costInLocalCurrency)
-                            }
+                        if (ci.finalCostRounding) {
+                            ci.costInBillingCurrencyAfterTax = Math.round(ci.costInBillingCurrencyAfterTax)
+                            ci.costInLocalCurrencyAfterTax = Math.round(ci.costInLocalCurrencyAfterTax)
+                        }
 
-                            if (ci.finalCostRounding) {
-                                ci.costInBillingCurrencyAfterTax = Math.round(ci.costInBillingCurrencyAfterTax)
-                                ci.costInLocalCurrencyAfterTax = Math.round(ci.costInLocalCurrencyAfterTax)
-                            }
-
-
-                            ci.save()
+                        ci.save()
                     }
                 }
             }

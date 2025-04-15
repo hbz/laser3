@@ -7,7 +7,33 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+6441    14.04.2025  rc-3.5  3.5-RC      Andreas Feature     verschiedene Verbesserungen des Kostenmenüs
+
+6466    11.04.2025  rc-3.5  3.5-RC      Andreas Bug         falsche Anzeige der Merkmale in Vertrags-Kurzübersicht
+
+6463    11.04.2025  rc-3.5  3.5-RC      Andreas Bug         Verknüpfung Anbieter/LS funktionierte nicht
+
+6459    11.04.2025  rc-3.5  3.5-RC      Andreas Bug         falsches Befüllen des Dropdowns behoben
+
+6457    10.04.2025  rc-3.5  3.5-RC      Moe     Feature     Umfrage-Teilnehmer hinzufügen: Lizenzfiltern einbauen
+
+6458    10.04.2025  rc-3.5  3.5-RC      Moe     Feature     Umfrage-Kosten editierbar machen während Umfrage
+
+6460    10.04.2025  rc-3.5  3.5-RC      Andreas Feature     Setzen von targetOrg erweitert
+
+6459    10.04.2025  rc-3.5  3.5-RC      Andreas Bug         Aufschlag auf vorhandene Rechnungssumme war nicht möglich
+
+6436    09.04.2025  rc-3.5  3.5-RC      Moe     Feature     Teilnehmer übertragen/verlängern während Umfragelaufzeit
+
+6455    09.04.2025  rc-3.5  3.5-RC      Moe     Feature     Umfrage-Übertrag bei Verlängerungsumfrage erlauben
+
+6448    09.04.2025  rc-3.5  3.5-RC      Moe     Feature     Auswahl Library Supplier auf Teilnehmerebene
+
+6449    09.04.2025  rc-3.5  3.5-RC      Moe     Feature     Anzeige Einrichtungen in Umfrage
+
 6445    09.04.2025  rc-3.5  3.5-RC      Andreas Feature     Reduktion der Informationen für Anbieter/Library Supplier auf Minimum
+
+6451    09.04.2025  rc-3.5  3.5-RC      Moe     Feature      Umfrage "meine Merkmale"
 
 6435    08.04.2025  rc-3.5  3.5-RC      Andreas Feature     Download-Wrapper zur Bereitstellung der KBART-Datei versetzt
 
@@ -16,6 +42,10 @@
 6382    08.04.2025  rc-3.5  3.5-RC      David   Feature     Upload-Dateien / documentStorage verschlüsseln
 
 2221    08.04.2025  rc-3.5  3.5-RC      David   Feature     Docs ohne DocContext aus DB und FileSystem löschen
+
+6446    08.04.2025  rc-3.5  3.5-RC      Moe     Feature     Umfrage /Library Supplier
+
+6437    08.04.2025  rc-3.5  3.5-RC      Moe     Feature     Umfrage Rechnungsabwicklung
 
 6427    07.04.2025  rc-3.5  3.5-RC      Andreas Bug         Benennungen bei der Lizenzverknüpfung behoben
 

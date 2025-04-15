@@ -132,7 +132,15 @@ class DocumentController {
                         )
                         //set sharing settings (counts iff document is linked to an Org, are null otherwise)
                         docctx.shareConf = RefdataValue.get(params.shareConf) ?: null
-                        docctx.targetOrg = params.targetOrg ? Org.get(params.targetOrg) : null
+                        if(params.targetOrg) {
+                            docctx.targetOrg = Org.get(params.targetOrg)
+                        }
+                        else if(docctx.shareConf == RDStore.SHARE_CONF_UPLOADER_AND_TARGET) {
+                            if(instance instanceof Subscription)
+                                docctx.targetOrg = instance.getSubscriber()
+                            if(instance instanceof License)
+                                docctx.targetOrg = instance.getLicensee()
+                        }
                         //set sharing setting for license or subscription documents
                         if(params.setSharing) {
                             docctx.isShared = true
@@ -187,9 +195,15 @@ class DocumentController {
                     doc.save()
 
                     // 4644 docctx.doctype = params.doctype ? RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE) : null
+                    docctx.shareConf = RefdataValue.get(params.shareConf) ?: null
                     if(params.targetOrg)
                         docctx.targetOrg = Org.get(params.targetOrg)
-                    docctx.shareConf = RefdataValue.get(params.shareConf) ?: null
+                    else if(docctx.shareConf == RDStore.SHARE_CONF_UPLOADER_AND_TARGET) {
+                        if(instance instanceof Subscription)
+                            docctx.targetOrg = instance.getSubscriber()
+                        if(instance instanceof License)
+                            docctx.targetOrg = instance.getLicensee()
+                    }
                     docctx.save()
 
                     log.debug("Doc updated and new doc context updated on ${params.ownertp} for ${params.ownerid}")

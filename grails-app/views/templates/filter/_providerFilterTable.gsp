@@ -7,7 +7,7 @@
         <g:if test="${tmplShowCheckbox}">
             <th>
                 <g:if test="${providerList}">
-                    <g:checkBox name="providerListToggler" id="providerListToggler" checked="false"/>
+                    <g:checkBox name="providerListToggler" id="providerListToggler" checked="${allChecked ? 'true' : 'false'}"/>
                 </g:if>
             </th>
         </g:if>
@@ -58,10 +58,15 @@
     </thead>
     <tbody>
     <g:each in="${providerList}" var="provider" status="i">
-
+        <tr <g:if test="${tmplShowCheckbox && currProvSharedLinks.get(provider.id) == true}">class="disabled"</g:if>>
         <g:if test="${tmplShowCheckbox}">
             <td>
-                <g:checkBox id="selectedProviders_${provider.id}" name="selectedProviders" value="${provider.id}" checked="false"/>
+                <g:if test="${currProvSharedLinks.get(provider.id) == true}">
+                    <i class="${Icon.SIG.SHARED_OBJECT_ON}"></i>
+                </g:if>
+                <g:else>
+                    <g:checkBox id="selectedProviders_${provider.id}" name="selectedProviders" value="${provider.id}" checked="${provider.id in currProviders ? 'true' : 'false'}"/>
+                </g:else>
             </td>
         </g:if>
 
@@ -190,3 +195,14 @@
     </g:each><!-- providerList -->
     </tbody>
 </table>
+<g:if test="${tmplShowCheckbox}">
+    <laser:script file="${this.getGroovyPageFileName()}">
+        $("#providerListToggler").change(function() {
+            if ($(this).prop('checked')) {
+                $("tr[class!=disabled] input[name=selectedProviders]").prop('checked', true);
+            } else {
+                $("tr[class!=disabled] input[name=selectedProviders]").prop('checked', false);
+            }
+        });
+    </laser:script>
+</g:if>

@@ -4279,7 +4279,7 @@ class SubscriptionService {
         List titleRow = rows.remove(0).split('\t'), wrongOrgs = [], truncatedRows = []
         titleRow.eachWithIndex { headerCol, int c ->
             switch (headerCol.toLowerCase().trim()) {
-                case ["laser-uuid", "las:er-uuid (einrichtung)", "las:er-uuid (institution)"]: colMap.uuidCol = c
+                case ["laser-uuid", "las:er-uuid", "las:er-uuid (einrichtung)", "las:er-uuid (institution)", "las:er-uuid (einrichtungslizenz)", "las:er-uuid (institution subscription)"]: colMap.uuidCol = c
                     break
                 case "gnd-id": colMap.gndCol = c
                     break
@@ -4332,7 +4332,7 @@ class SubscriptionService {
                         if (matchList.size() == 1)
                             match = matchList[0] as Org
                     }
-                    if (colMap.dealCol >= 0 && cols[colMap.dealCol] != null && !cols[colMap.dealCol].trim().isEmpty()) {
+                    if (!match && colMap.dealCol >= 0 && cols[colMap.dealCol] != null && !cols[colMap.dealCol].trim().isEmpty()) {
                         List matchList = Org.executeQuery('select org from Identifier id join id.org org where id.value = :value and id.ns = :ns and org.archiveDate is null', [value: cols[colMap.dealCol].trim(), ns: namespaces.dealId])
                         if (matchList.size() == 1)
                             match = matchList[0] as Org

@@ -2,7 +2,7 @@
 <%@ page import="de.laser.ui.Icon; de.laser.License; de.laser.Subscription; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.*" %>
 <laser:serviceInjection />
 
-<g:set var="propList" value="${propDefGroup.getCurrentProperties(ownObj)}" />
+<g:set var="propList" value="${propDefGroup.getCurrentVisibleProperties(ownObj, contextService.getOrg())}" />
 
 <g:if test="${propList}">
     <div class="content">

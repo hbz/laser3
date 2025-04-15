@@ -105,6 +105,22 @@ class PropertyDefinitionGroup {
     }
 
     /**
+     * Retrieves the currently contained properties ({@link de.laser.base.AbstractPropertyWithCalculatedLastUpdated}) of {@link PropertyDefinition} types contained in this group, owned by a given {@link Org} or which are openly visible
+     * @param currentObject the object whose properties should be queried
+     * @param tenant the {@link Org} which owns the property (!)
+     * @return a {@link List} of properties ({@link de.laser.base.AbstractPropertyWithCalculatedLastUpdated}) contained by the given object in this group of {@link PropertyDefinition}s
+     */
+    List getCurrentVisibleProperties(def currentObject, Org tenant) {
+        List result = []
+        List<Long> givenIds = getPropertyDefinitions().collect{ it.id }
+        String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+        Class propertyClass = getOwnerClass(currentObject)
+        String query = "select prop from ${propertyClass.simpleName} prop join prop.type pd where pd.id in (:propIds) and prop.owner = :owner and (prop.tenant = :tenant or prop.isPublic = true) order by pd.${localizedName}"
+        result.addAll(propertyClass.executeQuery(query, [owner: currentObject, propIds: givenIds, tenant: tenant]))
+        result
+    }
+
+    /**
      * Retrieves the currently contained properties ({@link de.laser.base.AbstractPropertyWithCalculatedLastUpdated}) of {@link PropertyDefinition} types contained in this group, owned by a given {@link Org}
      * @param currentObject the object whose properties should be queried
      * @param tenant the {@link Org} which owns the property (!)
