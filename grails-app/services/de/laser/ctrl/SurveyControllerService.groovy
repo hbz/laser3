@@ -4521,6 +4521,15 @@ class SurveyControllerService {
                 result.properties = result.parentSubscription.propertySet.findAll { it.type.tenant?.id == contextService.getOrg().id }.type
             }
 
+            List<Subscription> childSubs = result.parentSubscription.getNonDeletedDerivedSubscriptions()
+            if(childSubs) {
+                String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+                String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
+                Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet:childSubs, context:result.institution] )
+
+                result.memberProperties = memberProperties
+            }
+
             if (result.properties) {
                 result.selectedProperty = params.selectedProperty ?: result.properties[0].id
 
