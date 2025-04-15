@@ -53,6 +53,10 @@ class AccessService {
             }
         }
         else if (dctx.shareConf) {
+            if (!dctx.targetOrg) {
+                println '------------------- ERMS-6460: hasAccessToDocument() NO docContext.targetOrg' // TODO - REMOVE!!
+            }
+
             if (dctx.shareConf == RDStore.SHARE_CONF_UPLOADER_ORG) {
                 // .. if (doc.owner.id == ctxOrg.id)
             }
