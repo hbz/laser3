@@ -204,9 +204,6 @@
             </div>
     </div>
 
-
-    <ui:greySegment>
-
         <div class="ui top attached stackable tabular la-tab-with-js menu">
             <a class="active item" data-tab="orgsContinuetoSubscription">
                 ${message(code: 'renewalEvaluation.continuetoSubscription.label')} <ui:totalNumber
@@ -391,7 +388,6 @@
 
         </div>
 
-    </ui:greySegment>
 
     <g:if test="${editable}">
         <g:form action="setSurveyWorkFlowInfos" method="post" class="ui form"

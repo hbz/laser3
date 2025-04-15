@@ -39,7 +39,6 @@
     </div>
 </g:if>
 <g:else>
-    <ui:greySegment>
 
         <div class="ui top attached stackable tabular la-tab-with-js menu">
 
@@ -99,7 +98,7 @@
                                                                         tmplConfigShow                        : tmplConfigShowList]"/>
         </div>
 
-    </ui:greySegment>
+
 </g:else>
 
 <laser:htmlEnd/>

@@ -61,11 +61,7 @@
         </g:else>
     </g:if>
 
-    <div class="ui grid">
 
-        <div class="sixteen wide stretched column">
-
-    <div class="ui bottom attached tab segment active">
 
     <g:if test="${costItemsByCostItemElementOfSubs}">
         <g:render template="costItemsByCostItemElementTable"
@@ -289,8 +285,6 @@
         </g:form>
     </g:if>
 
-    </div>
-    </div>
 </g:if>
 <g:else>
     <p><strong>${message(code: 'surveyConfigs.noConfigList')}</strong></p>
